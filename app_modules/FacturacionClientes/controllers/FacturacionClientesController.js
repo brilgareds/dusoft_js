@@ -494,7 +494,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             throw {msj:'[consultarTerceroContrato]: Consulta sin resultados', status: 404}; 
         }
 
-    } .then(function(resultado){  
+    }).then(function(resultado){  
        consultarParametrosRetencion = resultado;
         if(resultado.length > 0){
             

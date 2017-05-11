@@ -55,7 +55,7 @@ FacturacionProveedores.prototype.listarOrdenesCompraProveedor = function(req, re
                     fechaInicio: fechaInicio,
                     fechaFin: fechaFin,
                     usuarioId : usuario};
-    console.log("parametros ", parametros);           
+               
     G.Q.ninvoke(that.m_facturacion_proveedores,'consultarOrdenesCompraProveedor',parametros).then(function(resultado){
         
     if(resultado.length >0){
@@ -63,6 +63,73 @@ FacturacionProveedores.prototype.listarOrdenesCompraProveedor = function(req, re
     }else{
         throw 'Consulta sin resultados';
     }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion  Metodo encargado de obtener la lista de las facturas proveedores                                       
+ * @fecha 2017-05-08 (YYYY-MM-DD)
+ */
+FacturacionProveedores.prototype.listarFacturaProveedor = function(req, res){
+   
+    var that = this;
+    var args = req.body.data;
+    var fechaFin='';
+    var fechaInicio='';
+    
+    if (args.listar_proveedores === undefined || args.listar_proveedores.paginaActual === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+     
+    if (args.listar_proveedores.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {listar_proveedores: []}));
+        return;
+    }
+
+    if (args.listar_proveedores.paginaActual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+    
+    if (args.listar_proveedores.terminoBusqueda === '') {
+        res.send(G.utils.r(req.url, '', 404, {}));
+        return;
+    }
+    
+    if (!args.listar_proveedores.filtro ) {
+        res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
+        return;
+    }
+    
+    var empresaId = args.listar_proveedores.empresaId;
+    var terminoBusqueda = args.listar_proveedores.terminoBusqueda;
+    var paginaActual = args.listar_proveedores.paginaActual;
+    var filtro = args.listar_proveedores.filtro;
+    var usuario = req.session.user.usuario_id;
+    fechaInicio=args.listar_proveedores.fechaInicio;
+    fechaFin=args.listar_proveedores.fechaFin;
+    
+   var parametros={ empresaId:empresaId,
+                    terminoBusqueda: terminoBusqueda,
+                    paginaActual:paginaActual,
+                    filtro: filtro,
+                    fechaInicio: fechaInicio,
+                    fechaFin: fechaFin,
+                    usuarioId : usuario};
+        console.log("parametros ",parametros);
+               
+    G.Q.ninvoke(that.m_facturacion_proveedores,'consultarFacturaProveedor',parametros).then(function(resultado){
+        
+        if(resultado.length >0){
+            res.send(G.utils.r(req.url, 'Consulta con formulas', 200, {listarFacturaProveedor:resultado}));
+        }else{
+            throw 'Consulta sin resultados';
+        }
         
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
@@ -148,7 +215,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
     var args = req.body.data;
     var usuario = req.session.user.usuario_id;
 
-    if (args.facturaProveedor.parmetros.numroFactura === undefined) {
+    if (args.facturaProveedor.parmetros.numeroFactura === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de Factura', 404, {ingresarFactura: []}));
         return;
     }
@@ -168,7 +235,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere la observacion', 404, {ingresarFactura: []}));
         return;
     }
-    if (args.facturaProveedor.parmetros.fechaVencimeinto === undefined) {
+    if (args.facturaProveedor.parmetros.fechaVencimiento === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere la fecha Vencimiento', 404, {ingresarFactura: []}));
         return;
     }
@@ -176,16 +243,20 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere la fecha Factura', 404, {ingresarFactura: []}));
         return;
     }
+    if (args.facturaProveedor.parmetros.totalDescuento <= 0) {
+        res.send(G.utils.r(req.url, 'Se requiere el valor del Descuento', 404, {ingresarFactura: []}));
+        return;
+    }
 
     var parametros = {
-        numero_factura: args.facturaProveedor.parmetros.numroFactura,
+        numero_factura: args.facturaProveedor.parmetros.numeroFactura,
         empresa_id: args.facturaProveedor.empresaId,
         centro_utilidad: args.facturaProveedor.centroUtilidad,
         bodega: args.facturaProveedor.bodega,
         codigo_proveedor_id: args.facturaProveedor.parmetros.recepciones[0].proveedor,
         observaciones: args.facturaProveedor.parmetros.descripcionFactura + '' + args.facturaProveedor.parmetros.descripcionFija,
         valor_descuento: args.facturaProveedor.parmetros.totalDescuento,
-        fecha_factura: args.facturaProveedor.parmetros.fechaVencimeinto,
+        fecha_factura: args.facturaProveedor.parmetros.fechaVencimiento,
         fecha_radicacion_factura: args.facturaProveedor.parmetros.fechaFactura,
         usuario_id: usuario
     };
@@ -217,6 +288,120 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
     }).done();
 
 };
+
+
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion  Metodo encargado crear el reporte factura proveedor                                      
+ * @fecha 2017-05-08 (YYYY-MM-DD)
+ */
+FacturacionProveedores.prototype.reporteFacturaProveedor = function(req, res){
+
+    var that = this;
+    var args = req.body.data;
+    var usuario = req.session.user.usuario_id;
+    var cabeceraFactura=[];
+    var detalleFactura=[];
+    var impuestos=[];
+    
+    if (args.facturaProveedor.numeroFactura === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de Factura', 404, {reporteFacturaProveedor: []}));
+        return;
+    }
+    if (args.facturaProveedor.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el Id de la Empresa', 404, {reporteFacturaProveedor: []}));
+        return;
+    }
+    if (args.facturaProveedor.codigoProveedorId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el codigo_proveedor_id', 404, {reporteFacturaProveedor: []}));
+        return;
+    }
+    
+    var parametros = {
+        numero_factura: args.facturaProveedor.numeroFactura,
+        empresaId: args.facturaProveedor.empresaId, 
+        empresa_id: args.facturaProveedor.empresaId, 
+        codigo_proveedor_id: args.facturaProveedor.codigoProveedorId,
+        terminoBusqueda:"",
+        fechaInicio:"",
+        fechaFin:"",
+        filtro:{}
+    };
+    parametros.filtro.tipo="";
+    
+    G.Q.ninvoke(that.m_facturacion_proveedores,'consultarFacturaProveedor',parametros).then(function(resultado){
+//        console.log("consultarFacturaProveedor ",resultado);
+        cabeceraFactura=resultado;
+        parametros.anio=cabeceraFactura[0].anio_factura;
+        return G.Q.ninvoke(that.m_facturacion_proveedores, "listarParametrosRetencion", parametros);
+
+    }).then(function(resultado) {
+//        console.log("listarParametrosRetencion ",resultado);
+        impuestos=resultado;
+        return G.Q.ninvoke(that.m_facturacion_proveedores, "consultarFacturaProveedorDetalle", parametros);
+        
+    }).then(function(resultado) {
+        detalleFactura=resultado;
+        var datos=[];
+        datos['cabecera']=cabeceraFactura[0];
+        datos['impuestos']=impuestos[0];
+        datos['detalle']=detalleFactura;
+        datos['serverUrl']= req.protocol + '://' + req.get('host') + "/";
+        datos['usuario']= usuario;
+        return G.Q.nfcall(__generarReporteFactura,datos);
+        
+    }).then(function(resultado) {  
+       
+//        console.log("consultarFacturaProveedorDetalle ",resultado);
+        res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {reporteFacturaProveedor: []}));
+//        detalleFactura=resultado;
+        
+    }).fail(function(err) {
+        console.log("Error reporteFacturaProveedor ", err);
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+
+};
+
+// Funcion que genera el reporte en formato PDF usando la libreria JSReport
+function __generarReporteFactura(rows, callback) {
+ console.log("datossss  ",rows['cabecera']);
+// callback(true);
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/FacturacionProveedores/reports/factura.html', 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/FacturacionProveedores/reports/javascripts/helpers.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender'
+        },
+        data: {
+            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
+            cabecera: rows['cabecera'],
+//            lista_productos: rows.lista_productos,
+            fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
+            usuario_imprime: rows['usuario'],
+            serverUrl: rows['serverUrl']
+        }
+    }, function(err, response) {
+
+        response.body(function(body) {
+
+            var fecha_actual = new Date();
+            var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
+
+                if (err) {
+
+                    res.send(G.utils.r(req.url, 'Se ha generado un error generando el reporte', 200, {nombre_reporte: {}}));
+                } else {
+                    callback(nombre_reporte);
+                }
+            });
+
+        });
+    });
+}
 
 /**
  * @author Andres Mauricio Gonzalez

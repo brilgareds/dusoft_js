@@ -2,9 +2,9 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('facturacionProveedoresService',
-            ['Request', 'API', "OrdenesComprasProveedores","ProductoRecepcion","Totales",
+            ['Request', 'API', "OrdenesComprasProveedores","ProductoRecepcion","Totales","FacturaProveedores",
 
-                function (Request, API, OrdenesComprasProveedores,ProductoRecepcion,Totales) {
+                function (Request, API, OrdenesComprasProveedores,ProductoRecepcion,Totales,FacturaProveedores) {
 
                     var self = this;
 
@@ -91,6 +91,26 @@ define(["angular", "js/services"], function (angular, services) {
                             callback(data);
                         });
                     };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  21/05/2016 DD/MM/YYYYY
+                     * +Descripcion lista todas las facturas de proveedores
+                     */
+                    self.listarFacturaProveedores = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONPROVEEDOR.LISTAR_FACTURA_PROVEEDOR, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  21/05/2016 DD/MM/YYYYY
+                     * +Descripcion lista todas las facturas de proveedores
+                     */
+                    self.reporteFacturaProveedores = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONPROVEEDOR.REPORTE_FACTURA_PROVEEDOR, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
                     
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -123,6 +143,28 @@ define(["angular", "js/services"], function (angular, services) {
                             });
                         
                         return compras;
+                    };
+                    
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * +Descripcion Funcion encargada de serializar el resultado de la
+                     *              consulta que obtiene las ordenes de compra de proveedores
+                     * @fecha 10/05/2017 DD/MM/YYYYY
+                     */
+                    self.renderFacturasProveedores = function (facturasProveedores) {
+                      
+                        var facturas = [];
+                        facturasProveedores.forEach(function(data) {  
+                                var factura = FacturaProveedores.get(data.numero_factura,data.codigo_proveedor_id,data.fecha_registro,data.observaciones);
+                                factura.setMensaje(data.mensaje);
+                                factura.setNombreUsuario(data.nombre);
+                                factura.setEstado(data.estado);
+                                factura.setEmpresa(data.empresa_id);
+                                factura.setDescripcionEstado(data.descripcion_estado);
+                                facturas.push(factura);                                
+                            });
+                        
+                        return facturas;
                     };
 
                     

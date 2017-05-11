@@ -13,6 +13,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                  
                     var that = this;
                     $scope.paginaactual = 1;
+                    $scope.paginaactual_factura = 1;
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
                     var fecha_actual = new Date();
                     that.recepcionesId="";
@@ -23,15 +24,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         totalDescuento:0,
                         fechaVencimiento:$filter('date')(fecha_actual, "yyyy-MM-dd"),
                         fechaFactura:$filter('date')(fecha_actual, "yyyy-MM-dd"),
-                        numeroFactura:"",
-                        descripcionFija:"",
-                        descripcionFactura:"",
+                        numeroFactura: "",
+                        descripcionFija: "",
+                        descripcionFactura: "",
+                        facturasProveedores:"",
                         descripcionFija:"",
                         termino_busqueda_proveedores: "",
-                        fecha_inicial_aprobaciones:"", //$filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
-                        fecha_final_aprobaciones:"",//$filter('date')(fecha_actual, "yyyy-MM-dd"),
+                        fecha_inicial_aprobaciones: "", 
+                        fecha_final_aprobaciones: "",
+                        fecha_inicial_facturas: "",
+                        fecha_final_facturas: "",
                         empresaSeleccionada: '',
                         termino_busqueda: '',
+                        termino_busqueda_factura: '',
                         estadoSesion: true,
                         items: 0,
                         productosRecepcion:[],
@@ -254,6 +259,133 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @fecha 02/05/2017 DD/MM/YYYY
                      * @returns {undefined}
                      */
+                    that.listarFacturasProveedores = function () {
+                        var inicioFecha="";
+                        var finFecha="";
+                        
+                        if($scope.root.termino_busqueda_factura===''){
+                            return;
+                        }
+                        if ($scope.ultima_busqueda_factura !== $scope.termino_busqueda_factura) {
+                            $scope.paginaactual_factura = 1;
+                        }
+                        
+                        if($scope.root.fecha_inicial_facturas !== ""){
+                            var mes=$scope.root.fecha_inicial_facturas.getMonth()+1;
+                            inicioFecha = $scope.root.fecha_inicial_facturas.getDate()+"/"+mes+"/"+$scope.root.fecha_inicial_facturas.getFullYear();
+                        }
+                        
+                        if($scope.root.fecha_final_facturas !== ""){
+                            var mes=$scope.root.fecha_final_facturas.getMonth()+1;
+                            finFecha = $scope.root.fecha_final_facturas.getDate()+"/"+mes+"/"+$scope.root.fecha_final_facturas.getFullYear();
+                        }
+                        
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listar_proveedores: {
+                                    filtro:$scope.root.filtro,
+                                    terminoBusqueda: $scope.root.termino_busqueda_factura,
+                                    empresaId:$scope.root.empresaSeleccionada.getCodigo(),
+                                    fechaInicio:inicioFecha,
+                                    fechaFin:finFecha,
+                                    paginaActual:$scope.paginaactual_factura
+                                }
+                            }
+                        };
+                         
+                        facturacionProveedoresService.listarFacturaProveedores(obj, function (data) {
+                            $scope.root.clientes = [];
+                            if (data.status === 200) { 
+                                console.log("Data ",data.obj.listarFacturaProveedor);
+//                                $scope.root.items = data.obj.listarOrdenesCompraProveedor.length;  
+                                  $scope.root.facturasProveedores=facturacionProveedoresService.renderFacturasProveedores(data.obj.listarFacturaProveedor);
+//                                $scope.ultima_busqueda_factura = $scope.termino_busqueda_factura;
+//                                $scope.root.ordenProveedores = facturacionProveedoresService.renderOrdenesComprasProveedores(data.obj.listarOrdenesCompraProveedor);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                          
+                        });
+                        
+                    };
+                    
+                    
+                    /**
+                     * +Descripcion Se visualiza la tabla con todos los clientes
+                     */
+                    $scope.listaFacturasProveedores = {
+                        data: 'root.facturasProveedores',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+                        columnDefs: [
+
+                            {field: '#Factura', width: "10%", displayName: '#Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNumeroFactura()}}</p></div>'},
+                           
+                            {field: 'Fecha', width: "10%", displayName: 'Fecha',cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro()}}</p></div>'},
+                            
+                            {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText",cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},                           
+                                                     
+                            {field: 'Sincronizado DUSOFT FI', width: "10%", displayName: 'Sincronizado DUSOFT FI', cellClass: "ngCellText",cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionEstado()}}</p></div>'},
+                            
+                            {displayName: "Detalle", cellClass: "txt-center dropdown-button", width: "25%",
+                                cellTemplate: ' <div class="row">\
+                                                 <button class="btn btn-default btn-xs" ng-click="impimirFactura(row.entity)">\
+                                                     <span class="glyphicon glyphicon-print"> Imprimir</span>\
+                                                 </button>\
+                                               </div>'
+                            },
+                            {displayName: "Sincronizar DUSOFT FI", cellClass: "txt-center dropdown-button", width: "25%",
+                                cellTemplate: ' <div class="row">\
+                                                 <button class="btn btn-default btn-xs" ng-click="ver_detalleRecepcion(row.entity)">\
+                                                     <span class="glyphicon glyphicon-export"> Sincronizar</span>\
+                                                 </button>\
+                                               </div>'
+                            }
+                                                       
+                        ]
+                    };
+                    
+                    
+                    $scope.impimirFactura = function(data){
+                        console.log("data::: ",data);
+                      //  reporteFacturaProveedores
+                        that.reporteFactura(data);
+                    };
+                    
+                    that.reporteFactura= function(data){
+                        
+                         var obj = {
+                            session: $scope.session,
+                            data: {
+                                facturaProveedor: {
+                                    numeroFactura:data.numeroFactura,
+                                    empresaId: data.empresa,
+                                    codigoProveedorId:data.codigoProveedor                                    
+                                }
+                            }
+                        };
+                         
+                        facturacionProveedoresService.reporteFacturaProveedores(obj, function (data) {
+                            $scope.root.clientes = [];
+                            if (data.status === 200) { 
+                                console.log("data impimirFactura",data);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                          
+                        });
+                    };
+                    
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara 
+                     *              los tipos de terceros
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 02/05/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
                     that.listarProveedores = function () {
                         var inicioFecha="";
                         var finFecha="";
@@ -324,6 +456,28 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
                 that.listarProveedores();
+            };
+            /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 10/05/2017
+             * @returns {pagina}
+             */
+             $scope.paginaAnteriorFactura  = function() {
+                if($scope.paginaactual_factura === 1) return;
+                $scope.paginaactual_factura--;
+                that.listarFacturasProveedores();
+            };
+            
+            /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 10/05/2017
+             * @returns {pagina}
+             */
+            $scope.paginaSiguienteFactura = function() {
+                $scope.paginaactual_factura++;
+                that.listarFacturasProveedores();
             };
                     
                     /**
@@ -503,7 +657,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             keyboard: true,
                             template: ' <div class="modal-header">\
                                                 <button type="button" class="close" ng-click="cerrar()">&times;</button>\
-                                                <h4 class="modal-title">RECEPCIONES PARCIALES</h4>\
+                                                <h4 class="modal-title"><b>RECEPCIONES PARCIALES</b></h4>\
                                             </div>\
                                             <div class="modal-body">\
                                                <div class="row">\
@@ -631,7 +785,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                      return;
                                     }
                                     
-                                    if(($scope.root.descripcionFactura).trim() !== ""){
+                                    if(($scope.root.descripcionFactura).trim() === ""){
                                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe Ingresar una Observacion");
                                      return;
                                     }
@@ -644,9 +798,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     var parametros={
                                         recepciones: $scope.root.pedidosSeleccionados,
                                         fechaFactura: $scope.root.fechaFactura,
-                                        fechaVencimeinto: $scope.root.fechaVencimiento,
+                                        fechaVencimiento: $scope.root.fechaVencimiento,
                                         totalFactura: $scope.root.totalFactura,
-                                        numroFactura: $scope.root.numeroFactura,
+                                        numeroFactura: $scope.root.numeroFactura,
                                         totalDescuento: $scope.root.totalDescuento,
                                         descripcionFactura : $scope.root.descripcionFactura,
                                         descripcionFija : $scope.root.descripcionFija
@@ -735,7 +889,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.fechaVencimiento=$filter('date')(fecha_actual, "yyyy-MM-dd");
                         $scope.root.totalFactura="";
                         $scope.root.numeroFactura="";
-                        $scope.root.totalDescuento="";
+                        $scope.root.totalDescuento=0;
                         $scope.root.descripcionFactura="";
                         $scope.root.descripcionFija="";
                     };
@@ -813,6 +967,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                    };
                     
                    
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 03/05/2017
+                     * +Descripcion Metodo encargado de invocar el servicio que
+                     *              listara los clientes para facturar
+                     *  @parametros ($event = eventos del teclado)
+                     *              (pendiente = 0 Formulas sin pendientes)
+                     *              (pendiente = 1 Formulas con pendientes)
+                     */
+                    $scope.buscarProveedoresFactura = function (event) {
+
+                        if (event.which === 13) {
+
+                            that.listarFacturasProveedores();
+                        }
+                    };
                     /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 03/05/2017

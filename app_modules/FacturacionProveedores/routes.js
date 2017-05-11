@@ -20,6 +20,16 @@ module.exports = function(app, di_container) {
         c_facturacion_proveedores.ingresarFactura(req, res);
     });
     
+    app.post('/api/FacturacionProveedores/listarFacturaProveedor', function(req, res) {
+       
+        c_facturacion_proveedores.listarFacturaProveedor(req, res);
+    });
+    
+    app.post('/api/FacturacionProveedores/reporteFacturaProveedor', function(req, res) {
+       
+        c_facturacion_proveedores.reporteFacturaProveedor(req, res);
+    });
+    
     
     
 };

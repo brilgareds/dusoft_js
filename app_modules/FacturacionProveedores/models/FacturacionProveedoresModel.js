@@ -50,13 +50,14 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
     })
             .innerJoin('terceros as t', function() {
         this.on("t.tipo_id_tercero", "tp.tipo_id_tercero")
-                .on("t.tercero_id", "tp.tercero_id")
+            .on("t.tercero_id", "tp.tercero_id")
     })
             .innerJoin('inv_recepciones_parciales as a', function() { 
         this.on("a.orden_pedido_id", "c.orden_pedido_id")
                 .on("a.empresa_id", "c.empresa_id")
     })
-            .orderBy("c.fecha_orden", "desc")
+            .orderBy("c.orden_pedido_id", "desc")
+            .orderBy("c.fecha_orden", "desc")            
             .where(function() {
 
         if (obj.fechaInicio !== '') {
@@ -78,11 +79,162 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
 
         callback(false, resultado)
     }). catch (function(err) {
-        console.log("err [listarClientes]:", err);
+        console.log("err [consultarOrdenesCompraProveedor]:", err);
         callback(err);
     });
+}  
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de consultar facturas Proveedor
+ * @fecha 2017-02-05 YYYY-DD-MM
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, callback) {
 
-}
+    var columnas = [
+        "a.numero_factura",
+        "c.mensaje",
+        "b.nombre",
+        "a.observaciones",
+        "c.estado",
+        "a.codigo_proveedor_id",
+        "f.nombre_tercero",
+        "f.tercero_id",
+        "f.tipo_id_tercero",
+        "f.direccion",
+        "g.razon_social",
+        "g.tipo_id_tercero",
+        "g.id",
+        "a.empresa_id",
+        "g.direccion as direccion_empresa",
+        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY') as anio_factura"),
+        G.knex.raw("TO_CHAR(a.fecha_factura,'dd/mm/yy') as fecha_factura_n"),
+        G.knex.raw("TO_CHAR(a.fecha_radicacion_factura,'dd/mm/yy') as fecha_radicacion_n"),
+        G.knex.raw("to_char(a.fecha_registro,'dd-MM-yyyy') as fecha_registro"),
+        G.knex.raw("(case when c.estado='0' then 'Sincronizado' else 'NO Sincronizado' end) as descripcion_estado")
+    ];
+    
+    var query = G.knex.select(columnas)
+            .from('inv_facturas_proveedores as a')
+                .innerJoin('system_usuarios as b', function() {
+            this.on("a.usuario_id", "b.usuario_id")
+        })           
+                .leftJoin('logs_facturacion_proveedores_ws_fi as c', function() {
+            this.on("a.codigo_proveedor_id", "c.codigo_proveedor_id")
+                .on("a.numero_factura", "c.numero_factura")
+        })    
+                .innerJoin('terceros_proveedores as d', function() {
+            this.on("d.codigo_proveedor_id", "a.codigo_proveedor_id")
+        })
+                .innerJoin('terceros as f', function() {
+            this.on("f.tipo_id_tercero", "d.tipo_id_tercero")
+                .on("f.tercero_id", "d.tercero_id")
+        })
+                .innerJoin('empresas as g', function() {
+            this.on("a.empresa_id", "g.empresa_id")
+        })
+            .orderBy("a.fecha_registro", "desc")        
+            .where(function() {
+
+        if (obj.fechaInicio !== '') {
+            this.andWhere(G.knex.raw("a.fecha_registro::date  >= '" + obj.fechaInicio + "' "))
+        }
+        if (obj.fechaFin !== '') {
+            this.andWhere(G.knex.raw("a.fecha_registro::date  <= '" + obj.fechaFin + "' "))
+        }
+        if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
+            this.andWhere(G.knex.raw("f.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
+        }
+        if (obj.codigo_proveedor_id !== undefined) {
+            this.andWhere("a.codigo_proveedor_id",obj.codigo_proveedor_id)
+        }
+        if (obj.numero_factura !== undefined) {
+            this.andWhere("a.numero_factura",obj.numero_factura)
+        }
+    }).andWhere('a.empresa_id', obj.empresaId)
+      .whereNull('c.prefijo_nota');
+            
+    query.limit(G.settings.limit).
+            offset((obj.paginaActual - 1) * G.settings.limit)
+    query.then(function(resultado) {
+        callback(false, resultado)
+    }). catch (function(err) {
+        console.log("err [consultarFacturaProveedor]:", err);
+        callback(err);
+    });
+};
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de consultar detalle facturas Proveedor detalle
+ * @fecha 2017-02-05 YYYY-DD-MM
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = function(obj, callback) {
+
+    var columnas = [
+        "a.codigo_producto",
+        "a.porc_iva",
+        "a.cantidad",
+        "a.valor",
+        "a.lote",
+        "a.fecha_vencimiento",
+        "a.numero_factura",
+        "a.item_id",
+        "a.cantidad_devuelta",
+        "a.codigo_proveedor_id",
+        "b.prefijo",
+        "e.sw_insumos",
+        "e.sw_medicamento",
+        "d.codigo_cum",
+        G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
+        G.knex.raw("b.prefijo||'-'||b.numero as recepcion_parcial_id"),
+        G.knex.raw("(a.valor/((a.porc_iva/100)+1)) as valor_unitario"),
+        G.knex.raw("(a.valor-(a.valor/((a.porc_iva/100)+1))) as iva"),
+        G.knex.raw("((a.valor/((a.porc_iva/100)+1))*a.cantidad) as subtotal"),
+        G.knex.raw("((a.valor-(a.valor/((a.porc_iva/100)+1)))*a.cantidad) as iva_total"),
+        G.knex.raw("(a.valor * a.cantidad) as total"),
+        G.knex.raw("c.descripcion as documento")
+    ];
+    
+    var query = G.knex.select(columnas)
+            .from('inv_facturas_proveedores_d as a')
+                .innerJoin('inventarios_productos as d', function() {
+            this.on("a.codigo_producto", "d.codigo_producto")
+        })    
+                .innerJoin('inv_grupos_inventarios as e', function() {
+            this.on("d.grupo_id", "e.grupo_id")
+        })
+                .innerJoin('inv_recepciones_parciales as b', function() {
+            this.on("a.recepcion_parcial_id", "b.recepcion_parcial_id")
+        })
+                .innerJoin('documentos as c', function() {
+            this.on("b.empresa_id", "c.empresa_id")
+                .on("b.prefijo", "c.prefijo")
+        })
+            .orderBy("a.item_id", "ASC")        
+            .where(function() {
+        
+        if (obj.codigo_proveedor_id !== undefined) {
+            this.andWhere("a.codigo_proveedor_id",obj.codigo_proveedor_id)
+        }
+        if (obj.numero_factura !== undefined) {
+            this.andWhere("a.numero_factura",obj.numero_factura)
+        }
+    });
+      
+    query.limit(G.settings.limit).
+            offset((obj.paginaActual - 1) * G.settings.limit)
+    query.then(function(resultado) {
+        callback(false, resultado)
+    }). catch (function(err) {
+        console.log("err [consultarFacturaProveedorDetalle]:", err);
+        callback(err);
+    });
+};
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -132,9 +284,14 @@ FacturacionProveedoresModel.prototype.detalleRecepcionParcial = function(obj, ca
  * @returns {undefined}
  */
 FacturacionProveedoresModel.prototype.listarParametrosRetencion = function(parametros, callback) {
-    var now = new Date();
-    var anio = G.moment(now).format('YYYY');
-
+    
+    var anio;
+    if(parametros.anio !== undefined){
+     var now = new Date();
+      anio = G.moment(now).format('YYYY');
+    }else{
+      anio = parametros.anio; 
+    }
     var columna = ["anio",
         "base_rtf",
         "base_ica",

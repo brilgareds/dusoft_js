@@ -47,6 +47,7 @@ define([
     "models/Totales",
     "models/TerceroDespacho",
     "models/EmpresaDespacho",
+    "models/FacturaProveedores",
     "models/ProductoRecepcion",
     "models/DocumentoDespacho",
     "models/VendedorDespacho",

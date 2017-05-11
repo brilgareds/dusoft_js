@@ -286,12 +286,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         
                         for(var i in $scope.root.documentoSeleccionados) {
                             var _documento = $scope.root.documentoSeleccionados[i];
-                            if (_documento.prefijo === documento.prefijo) {
+                            if (_documento.prefijo === documento.prefijo && _documento.numero === documento.numero) {
                                 $scope.root.documentoSeleccionados.splice(i, true);
                                 break;
                             }  
                         }
-                        console.log("Quitados ", $scope.root.documentoSeleccionados)
+                       
                     }; 
 
                     that.agregarDocumento = function (documento) {
@@ -303,7 +303,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }  
                         }
                         $scope.root.documentoSeleccionados.push(documento);
-                        console.log("Agregados ", $scope.root.documentoSeleccionados)
+                      
                     }; 
 
 
@@ -319,12 +319,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
  
                     }; 
-                  
-
-                    
-
-
-                    
+                   
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio
                      *              que generara las facturas agrupadas
@@ -342,6 +337,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
 
                             if(resultadoStorage){
+                                $scope.root.documentosSeleccionadosFiltrados = [];
+                                    /**
+                                     * +Descripcion Se recorren los documentos checkeados en los pedidos
+                                     *              y se valida cual corresponde con cada pedido
+                                     *              para almacenarlos en un nuevo arreglo el cual sera
+                                     *              enviado al servidor para posteriormente ser
+                                     *              registrados
+                                     */
+                                    $scope.root.pedidosSeleccionados.forEach(function(row){
+                                    
+                                        row.pedidos[0].vaciarDocumentosSeleccionados();
+                                        $scope.root.documentoSeleccionados.forEach(function(documentos){
+                                            if(row.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id ){                                        
+                                                row.pedidos[0].agregarDocumentosSeleccionados(documentos);  
+                                            }
+                                        });
+                                    });
+                                
+                                //console.log(" PEDIDOS SELECCIONADOS ",  $scope.root.pedidosSeleccionados);
+                                
+                                
                                 var obj = {
                                     session: $scope.session,
                                     data: {
@@ -360,11 +376,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
                                      console.log("AQUI MIRA ", data)
                                     if (data.status === 200) {
-                                        
-                                        
-                                       // $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
-                                       // $scope.root.pedidos_clientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
-
+                                         
                                     }
                                     if(data.status === 404){
                                         AlertService.mostrarMensaje("warning", data.msj);

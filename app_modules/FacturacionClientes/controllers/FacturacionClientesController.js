@@ -1,6 +1,7 @@
-var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc) {
+var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e008) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
+    this.m_e008 = m_e008;
 };
 
 /*
@@ -582,6 +583,6 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
     }).done(); 
     
 }
-FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc"];
+FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc", "m_e008"];
 //, "e_facturacion_clientes", "m_usuarios"
 module.exports = FacturacionClientes;

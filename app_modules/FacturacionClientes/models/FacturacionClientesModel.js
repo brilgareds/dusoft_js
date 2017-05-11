@@ -1,4 +1,6 @@
-var FacturacionClientesModel = function () {};
+var FacturacionClientesModel = function (m_e008) {
+    this.m_e008 = m_e008;
+};
 
 /**
  * @author Cristian Ardila
@@ -811,7 +813,7 @@ function __actualizarDespacho(obj,transaccion,callback) {
     console.log("********__actualizarDespacho***************");
     console.log("********__actualizarDespacho***************");
     
-    var parametros = {empresa_id:obj.empresa_id,
+    var parametros ={empresa_id:obj.empresa_id,
                     prefijo:obj.prefijo,
                     numero: obj.numero                   
                     };
@@ -844,7 +846,7 @@ function __detallePedidosClientes(that, index, pedidos,transaccion, callback) {
         callback(false);  
         return;                     
     }  
-    
+             
     //console.log("pedidos ----->>> ", pedido.pedidos[0]);
     /*console.log("Tipo Id tercero ", pedido.pedidos[0].vendedor[0].tipo_id_tercero);
     console.log("Tercero Id ", pedido.pedidos[0].vendedor[0].id);
@@ -927,16 +929,17 @@ function __guardarDespachoIndidual(that, index, documentos,transaccion, callback
      
     index++;
    
-     G.Q.nfcall(__actualizarDespacho, {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero},transaccion)
+   G.Q.ninvoke(that.m_e008,'consultarDatosAdicionales', {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero})
             .then(function(resultado){    
        
-       /* if(resultado >= 1){      
-            return  G.Q.nfcall(__actualizarExistenciasBodegas, producto, transaccion);      
-        }else{
-            throw 'Error al actualizar las existencias de los lotes por que no pueden ser menores a 0'
-        }*/
-         
-    }).fail(function(err){ 
+       console.log("resultado [consultarDatosAdicionales]: ", resultado)
+      
+    })
+    /*G.Q.nfcall(__actualizarDespacho, {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero},transaccion)
+            .then(function(resultado){    
+       
+      
+    })*/.fail(function(err){ 
         console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
         callback(err);            
     }).done();
@@ -1011,7 +1014,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
     
 };
 
-FacturacionClientesModel.$inject = [];
+FacturacionClientesModel.$inject = ["m_e008"];
 
 
 module.exports = FacturacionClientesModel;

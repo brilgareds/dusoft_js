@@ -36,6 +36,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.vendedor = [];
                 this.seleccionado;
                 this.prefijoNumero = "";
+                this.documentoSeleccionado = [];
             };
 
             PedidoDespacho.prototype = Object.create(Pedido.getClass().prototype);
@@ -387,6 +388,35 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 return this.documento;
             };
             
+            
+            PedidoDespacho.prototype.agregarDocumentosSeleccionados = function (documentoSeleccionado) {
+                //console.log("this.documentoSeleccionado.length ", this.documentoSeleccionado.length)
+                 
+                if(this.documentoSeleccionado.length === 0){
+                    this.documentoSeleccionado.push(documentoSeleccionado);
+                } 
+                for(var i=0; i<this.documentoSeleccionado.length; i++){
+                    if(!(this.documentoSeleccionado[i].bodegas_doc_id === documentoSeleccionado.bodegas_doc_id
+                            && this.documentoSeleccionado[i].prefijo === documentoSeleccionado.prefijo
+                            && this.documentoSeleccionado[i].numero === documentoSeleccionado.numero)){
+
+                       
+                       this.documentoSeleccionado.push(documentoSeleccionado);
+                    }
+
+                };
+                //console.log("EL ARREGLO ", this.documentoSeleccionado);
+                
+                
+            };
+
+            PedidoDespacho.prototype.vaciarDocumentosSeleccionados = function () {
+                this.documentoSeleccionado = [];
+            };
+
+            PedidoDespacho.prototype.mostrarDocumentosSeleccionados = function () {
+                return this.documentoSeleccionado;
+            };
             
             PedidoDespacho.prototype.agregarVendedor = function (vendedor) {
                 this.vendedor.push(vendedor);

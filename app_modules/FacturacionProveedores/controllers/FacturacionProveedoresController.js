@@ -365,7 +365,7 @@ FacturacionProveedores.prototype.reporteFacturaProveedor = function(req, res){
 
 // Funcion que genera el reporte en formato PDF usando la libreria JSReport
 function __generarReporteFactura(rows, callback) {
- console.log("datossss  ",rows['cabecera']);
+ console.log("datossss  ",rows['detalle']);
 // callback(true);
     G.jsreport.render({
         template: {
@@ -377,6 +377,7 @@ function __generarReporteFactura(rows, callback) {
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",
             cabecera: rows['cabecera'],
+            detalle: rows['detalle'],
 //            lista_productos: rows.lista_productos,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
             usuario_imprime: rows['usuario'],

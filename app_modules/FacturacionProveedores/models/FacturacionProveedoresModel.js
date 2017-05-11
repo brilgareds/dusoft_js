@@ -181,7 +181,7 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
         "a.cantidad",
         "a.valor",
         "a.lote",
-        "a.fecha_vencimiento",
+        G.knex.raw("TO_CHAR(a.fecha_vencimiento,'dd-MM-yyyy') as fecha_vencimiento"),
         "a.numero_factura",
         "a.item_id",
         "a.cantidad_devuelta",

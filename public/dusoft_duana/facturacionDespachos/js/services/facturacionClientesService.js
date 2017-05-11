@@ -142,7 +142,7 @@ define(["angular", "js/services"], function (angular, services) {
                        
                         var tercerosDespacho = [];
                         for (var i in datos) {
-                            console.log("A QUI ESTAN ", datos[i]);
+                           // console.log("A QUI ESTAN ", datos[i]);
                             var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
                                                     datos[i].tercero_id,
                                                     datos[i].direccion,
@@ -180,7 +180,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 _pedido.setSeleccionado(datos[i].seleccionado);
                             }
                              
-                                _pedido.agregarDocumentos(_documento);
+                                //_pedido.agregarDocumentos(_documento);
                             
                                 _pedido.agregarVendedor(_vendedorDespacho);
                                 _terceroDespacho.agregarPedidos(_pedido);
@@ -191,13 +191,22 @@ define(["angular", "js/services"], function (angular, services) {
                     };
                     
                     
-                    
+                    self.renderDocumentosPrefijosClientes = function (documento_id,prefijo,factura_fiscal,fecha_registro,empresa_id) {     
+               
+                        
+                         
+                            var _documento = DocumentoDespacho.get(documento_id, prefijo, factura_fiscal||'', fecha_registro||'');
+                                _documento.set_empresa(empresa_id);
+                            return _documento;
+                        
+                       
+                    };
                     
                     return this;
                 }]);
             
             
-                
+          
  
 
 });

@@ -35,9 +35,16 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.documento = [];
                 this.vendedor = [];
                 this.seleccionado;
+                this.prefijoNumero = "";
+                this.documentoSeleccionado = [];
             };
 
             PedidoDespacho.prototype = Object.create(Pedido.getClass().prototype);
+            
+            PedidoDespacho.prototype.setPrefijoNumero = function(prefijoNumero) {
+                this.prefijoNumero = prefijoNumero;
+                return this;
+            };
             
             PedidoDespacho.prototype.setFechaRegistro = function(fechaRegistro) {
                 this.fechaRegistro = fechaRegistro;
@@ -358,6 +365,12 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 return this.filtroEstadoFacturado;
             };
             
+            
+            PedidoDespacho.prototype.getPrefijoNumero = function() {
+                return this.prefijoNumero;
+               
+            };
+            
             this.get = function(empresa_id, centro_utilidad_id, bodega_id) {
                 return new PedidoDespacho(empresa_id, centro_utilidad_id, bodega_id);
             };
@@ -375,6 +388,35 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 return this.documento;
             };
             
+            
+            PedidoDespacho.prototype.agregarDocumentosSeleccionados = function (documentoSeleccionado) {
+                //console.log("this.documentoSeleccionado.length ", this.documentoSeleccionado.length)
+                 
+                if(this.documentoSeleccionado.length === 0){
+                    this.documentoSeleccionado.push(documentoSeleccionado);
+                } 
+                for(var i=0; i<this.documentoSeleccionado.length; i++){
+                    if(!(this.documentoSeleccionado[i].bodegas_doc_id === documentoSeleccionado.bodegas_doc_id
+                            && this.documentoSeleccionado[i].prefijo === documentoSeleccionado.prefijo
+                            && this.documentoSeleccionado[i].numero === documentoSeleccionado.numero)){
+
+                       
+                       this.documentoSeleccionado.push(documentoSeleccionado);
+                    }
+
+                };
+                //console.log("EL ARREGLO ", this.documentoSeleccionado);
+                
+                
+            };
+
+            PedidoDespacho.prototype.vaciarDocumentosSeleccionados = function () {
+                this.documentoSeleccionado = [];
+            };
+
+            PedidoDespacho.prototype.mostrarDocumentosSeleccionados = function () {
+                return this.documentoSeleccionado;
+            };
             
             PedidoDespacho.prototype.agregarVendedor = function (vendedor) {
                 this.vendedor.push(vendedor);

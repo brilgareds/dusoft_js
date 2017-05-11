@@ -191,12 +191,12 @@ define(["angular", "js/services"], function (angular, services) {
                     };
                     
                     
-                    self.renderDocumentosPrefijosClientes = function (documento_id,prefijo,factura_fiscal,fecha_registro) {     
+                    self.renderDocumentosPrefijosClientes = function (documento_id,prefijo,factura_fiscal,fecha_registro,empresa_id) {     
                
                         
                          
                             var _documento = DocumentoDespacho.get(documento_id, prefijo, factura_fiscal||'', fecha_registro||'');
-                                 
+                                _documento.set_empresa(empresa_id);
                             return _documento;
                         
                        

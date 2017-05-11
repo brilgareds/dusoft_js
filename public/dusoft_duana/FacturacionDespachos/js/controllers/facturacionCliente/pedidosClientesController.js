@@ -149,7 +149,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                     row.pedidos[0].numero_cotizacion, 
                                                     resultado.prefijo,
                                                     resultado.numero,
-                                                    row.pedidos[0].fechaRegistro))
+                                                    row.pedidos[0].fechaRegistro,
+                                                    resultado.empresa_id))
                                             }                                             
                                         });                                        
                                     });
@@ -184,16 +185,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getPrefijoNumero()}}</p></div>'},
                             //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()}}</p></div>'},
                             
-                            /*{filed: 'PRUEBA', 
-                                cellClass: "ngCellText", 
-                                width: "25%", 
-                                displayName: '#Factura',
-                                cellTemplate: '<ul >\
-                                    <li class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()">\
-                                      <input type="checkbox" ng-checked="buscarDocumentoSeleccion(row)" class="checkpedido"\n\
-                                       ng-click="onDocumentoSeleccionado($event.currentTarget.checked,row.entity)"> {{item.prefijo}} - {{item.numero}} <br> \
-                                    </li>\
-                                  </ul>'},*/
+                            
                             {filed: 'PRUEBA', 
                                 cellClass: "ngCellText", 
                                 width: "25%", 
@@ -327,25 +319,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
  
                     }; 
-                    
-                    $scope.buscarDocumentoSeleccion = function (row) {
-                        var documento = row.entity;
-                        
-                        //console.log("row ", row)
-                        //console.log("pedido ", documento.mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo());
-                        //console.log("numero ", documento.mostrarPedidos()[0].mostrarFacturas()[0].get_numero());
-                        /*for (var i in $scope.documentoSeleccionados) {
-                            var _pedido = $scope.documentoSeleccionados[i];
-                            if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === documento.mostrarPedidos()[0].get_numero_cotizacion()) {
-                                row.selected = true;
-                                return true;
-                            }
-                        }*/
-
-                        //row.selected = false;
-                        //return false;
-                    }; 
-                    
+                  
 
                     
 
@@ -421,13 +395,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         console.log("**********$scope.generarFacturasAgrupadas***************00");
                         console.log("**********$scope.generarFacturasAgrupadas***************00");
                         console.log("**********$scope.generarFacturasAgrupadas***************00");
-                        
+                        console.log("pedido ", pedido)
                         var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
                         
                         if(resultadoStorage){                           
                             AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizar la facturacion ",
                                 function(estadoConfirm){                
                                     if(estadoConfirm){
+                                       
                                         $scope.root.documentosSeleccionadosFiltrados = [];
                                         /**
                                          * +Descripcion Se recorren los documentos checkeados en los pedidos
@@ -439,14 +414,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         $scope.root.documentoSeleccionados.forEach(function(documentos){
                                             
                                             if(pedido.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id ){
-                                                
-                                                $scope.root.documentosSeleccionadosFiltrados.push(documentos);
+                                               
+                                               $scope.root.documentosSeleccionadosFiltrados.push(documentos);
                                                
                                             }
                                             
                                         });
-                                        
-                                      
+                                        console.log(" $scope.root.documentosSeleccionadosFiltrados ",  $scope.root.documentosSeleccionadosFiltrados);
+                                         
                                         var obj = {
                                             session: $scope.session,
                                             data: {
@@ -456,7 +431,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                     paginaActual: $scope.paginaactual,
                                                     tipoIdTercero: resultadoStorage.tipoIdTercero,
                                                     terceroId: resultadoStorage.terceroId,
-                                                    tipoPago: $scope.tipoPagoFactura,
+                                                    tipoPago: $scope.tipoPagoFactura,  
+                                                    pedido: pedido,
                                                     documentos: $scope.root.documentosSeleccionadosFiltrados
                                                 }
                                             }
@@ -473,7 +449,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             if(data.status === 409){
                                                 AlertService.mostrarMensaje("danger", data.msj);
                                             }
-                                        });                                                
+                                        });                                            
                                     }
                                 }
                             );

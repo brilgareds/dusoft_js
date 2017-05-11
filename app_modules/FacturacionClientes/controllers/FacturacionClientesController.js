@@ -482,8 +482,8 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
         return;
     }
     
-    console.log("PEDIDOS DOCUMENTOS FACTURAR ", args.generar_factura_individual.documentos.pedidos[0])
-    /*var usuario = req.session.user.usuario_id;
+    
+    var usuario = req.session.user.usuario_id;
     var parametros = {
         empresaId: args.generar_factura_individual.empresaId,
         tipoIdTercero: args.generar_factura_individual.tipoIdTercero,
@@ -493,7 +493,9 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
         tipoPago: args.generar_factura_individual.tipoPago,
         usuario:usuario,
         direccion_ip: '',
-        pedido: args.generar_factura_individual.documentos
+        pedido: args.generar_factura_individual.pedido,
+        documentos: args.generar_factura_individual.documentos,
+        
     };    
     var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };    
     var documentoFacturacion;
@@ -518,7 +520,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
         
         console.log("resultado [listarPrefijosFacturas]: ", resultado);
         documentoFacturacion = resultado;
-        //console.log("resultado [listarPrefijosFacturas]: ", resultado);
+      
         if(resultado.length >0){
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTerceroContrato',parametros);
         }else{
@@ -577,7 +579,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             err.msj = "Se ha generado un error..";
         }
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
-    }).done();*/
+    }).done(); 
     
 }
 FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc"];

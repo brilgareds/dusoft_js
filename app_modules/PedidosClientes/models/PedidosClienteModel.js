@@ -147,6 +147,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 ) ;";
     
     console.log("termino_busqueda ", parametros);
+    console.log("termino_busqueda.termino_busqueda ", termino_busqueda.termino_busqueda);
     console.log("andSql ", andSql);
 
     G.knex.raw(sql, parametros ).then(function(resultado) {

@@ -912,10 +912,10 @@ function __guardarDespachoIndidual(that, index, documentos,transaccion, callback
    
    console.log("*****__guardarDespachoIndidual********");
     var documento = documentos[index];   
-    
-    if (!documento) {       
+                                          
+    if (!documento) {                                             
          
-        callback(false);  
+        callback(false);                                   
         return;                     
     }  
     
@@ -929,10 +929,10 @@ function __guardarDespachoIndidual(that, index, documentos,transaccion, callback
      
     index++;
    
-   G.Q.ninvoke(that.m_e008,'consultarDatosAdicionales', {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero})
+   G.Q.ninvoke(that.m_e008,'obtenerDocumentoBodega', {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero})
             .then(function(resultado){    
        
-       console.log("resultado [consultarDatosAdicionales]: ", resultado)
+       //console.log("resultado [consultarDatosAdicionales]: ", resultado)
       
     })
     /*G.Q.nfcall(__actualizarDespacho, {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero},transaccion)

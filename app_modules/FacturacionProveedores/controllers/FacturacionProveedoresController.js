@@ -303,6 +303,7 @@ FacturacionProveedores.prototype.reporteFacturaProveedor = function(req, res){
     var cabeceraFactura=[];
     var detalleFactura=[];
     var impuestos=[];
+    var valores=[];
     
     if (args.facturaProveedor.numeroFactura === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de Factura', 404, {reporteFacturaProveedor: []}));
@@ -342,12 +343,31 @@ FacturacionProveedores.prototype.reporteFacturaProveedor = function(req, res){
         
     }).then(function(resultado) {
         detalleFactura=resultado;
+        
+        var valores = {
+                    Total    :0,   
+                    porcIva  :0,
+                    SubTotal :0,   
+                    Iva      :0,
+                    Cantidad :0,
+                    _subTotal:0,
+                    _iva     :0,
+                    impuesto_cree : 0,
+                    Cantidad:0
+
+            };
+                             
+            return G.Q.nfcall(__impuestos, that, 0, detalleFactura, impuestos[0], valores, cabeceraFactura[0]);
+            
+     }).then(function(resultado) { 
+        valores=resultado;
         var datos=[];
         datos['cabecera']=cabeceraFactura[0];
         datos['impuestos']=impuestos[0];
         datos['detalle']=detalleFactura;
         datos['serverUrl']= req.protocol + '://' + req.get('host') + "/";
         datos['usuario']= usuario;
+        datos['valores']= valores[0];
         return G.Q.nfcall(__generarReporteFactura,datos);
         
     }).then(function(resultado) {  
@@ -365,7 +385,10 @@ FacturacionProveedores.prototype.reporteFacturaProveedor = function(req, res){
 
 // Funcion que genera el reporte en formato PDF usando la libreria JSReport
 function __generarReporteFactura(rows, callback) {
- console.log("datossss  ",rows['cabecera']);
+ console.log("cabecerassss  ",rows['cabecera']);
+ console.log("datossss  ",rows['detalle']);
+ console.log("impuestossss  ",rows['impuestos']);
+ console.log("valores  ",rows['valores']);
 // callback(true);
     G.jsreport.render({
         template: {
@@ -377,13 +400,15 @@ function __generarReporteFactura(rows, callback) {
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",
             cabecera: rows['cabecera'],
+            detalle: rows['detalle'],
+            valores: rows['valores'],
 //            lista_productos: rows.lista_productos,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
             usuario_imprime: rows['usuario'],
             serverUrl: rows['serverUrl']
         }
     }, function(err, response) {
-
+console.log("reporte1",err);
         response.body(function(body) {
 
             var fecha_actual = new Date();
@@ -392,8 +417,8 @@ function __generarReporteFactura(rows, callback) {
             G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
 
                 if (err) {
-
-                    res.send(G.utils.r(req.url, 'Se ha generado un error generando el reporte', 200, {nombre_reporte: {}}));
+                    console.log("reporte2",err);
+                   // res.send(G.utils.r(req.url, 'Se ha generado un error generando el reporte', 200, {nombre_reporte: {}}));
                 } else {
                     callback(nombre_reporte);
                 }

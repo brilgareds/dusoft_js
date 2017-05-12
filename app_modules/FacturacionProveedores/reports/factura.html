@@ -103,48 +103,67 @@
             <div class="row pad-top-botm">
                 <div class="col-lg-12 col-md-12 col-sm-12">
                     <div class="">
-                        <table class="table table-striped" width='100%' style="font-size: 5px;">
+                        <table class="table table-striped" width='100%' style="font-size: 5px; line-height: 1;">
                             <thead>
                                 <tr>
                                     <th width='5%'>#DOC</th>
-                                    <th width='37%'>Producto</th>
+                                    <th width='45%'>Producto</th>
                                     <th width='5%'>Lote</th>
                                     <th width='8%'>Codigo Cum</th>
                                     <th width='5%'>Fecha Vencimiento</th>
                                     <th width='5%'>Cantidad</th>
-                                    <th width='10%'>Unitario</th>
+                                    <th width='6%'>Unitario</th>
                                     <th width='5%'>%Iva</th>
-                                    <th width='10%'>Subtotal</th>
-                                    <th width='10%'>Total</th>
+                                    <th width='8%'>Subtotal</th>
+                                    <th width='8%'>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {{for detalle}}
                                 <tr>
                                     <td align='center'>{{:recepcion_parcial_id}}</td>
-                                    <td align='left'>{{:descripcion}}</td>
+                                    <td align='left'>{{:codigo_producto}}-{{:descripcion}}</td>
                                     <td align='center'>{{:lote}}</td>
                                     <td align='left'>{{:codigo_cum}}</td>
                                     <td align='center'>{{:fecha_vencimiento}}</td>
-                                    <td align='right'>{{:cantidad}}</td>
-                                    <td align='right'>{{:~formatMoney(valor_unitario)}}</td>
+                                    <td align='right'HEIGHT="10">{{:cantidad}}</td>
+                                    <td align='right'HEIGHT="10">{{:~formatMoney(valor_unitario)}}</td>
                                     <td align='right'>{{:porc_iva}}%</td>
                                     <td align='right'>{{:~formatMoney(subtotal)}}</td>
                                     <td align='right'>{{:~formatMoney(total)}}</td>
                                 </tr>
+                                <tr>
+                                    <td align='left' colspan='10'>{{:documento}}</td>    
+                                </tr>
                                 {{/for}}
                             </tbody>
                         </table>
-                    </div>                    
-                    <div class="ttl-amts">
-                        <!--Subtotal : {{:~formatMoney(cabecera.subtotal)}}-->
                     </div>
-                    <div class="ttl-amts">
-                        <!--IVA : {{:~formatMoney(cabecera.valor_iva)}}-->
-                    </div>
-                    <div class="ttl-amts">
-                        <!--<strong style="font-size: 15px">Total : {{:~formatMoney(cabecera.total)}}</strong>--> 
-                    </div>
+                    <br />
+                    <table width='100%' style="font-size: 6px; line-height: 1;">
+                        <thead>
+                                <tr>
+                                    <th width='14%'>SUB-TOTAL</th>
+                                    <th width='14%'>IVA</th>
+                                    <th width='14%'>RET-FTE</th>
+                                    <th width='14%'>RETE-ICA</th>
+                                    <th width='14%'>RETE-IVA</th>
+                                    <th width='14%'>VALOR DESCUENTO</th>
+                                    <th width='16%'>TOTAL</th>
+                                </tr>
+                            </thead>
+                         <tbody>
+                                <tr>
+                                    <td align='center'>{{:~formatMoney(valores._subTotal)}}</td>
+                                    <td align='center'>{{:~formatMoney(valores._iva)}}</td>
+                                    <td align='center'>{{:~formatMoney(valores.valorRetFte)}}</td>
+                                    <td align='center'>{{:~formatMoney(valores.valorRetIca)}}</td>
+                                    <td align='center'>{{:~formatMoney(valores.valorRetIva)}}</td>
+                                    <td align='center'>{{:cabecera.valor_descuento}}</td>
+                                    <td align='center'>{{:~formatMoney(valores.Total - cabecera.valor_descuento)}}</td>
+                                </tr>
+                            </tbody>
+                    </table>                    
                 </div>
             </div>
             <div  class="row contact-info pad-top-botm footer-info">

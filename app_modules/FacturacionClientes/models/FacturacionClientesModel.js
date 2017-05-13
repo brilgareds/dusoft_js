@@ -931,8 +931,8 @@ function __guardarDespachoIndidual(that, index, documentos,transaccion, callback
    
    G.Q.ninvoke(that.m_e008,'obtenerDocumentoBodega', {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero})
             .then(function(resultado){    
-       
-       //console.log("resultado [consultarDatosAdicionales]: ", resultado)
+                            
+       // console.log("resultado [consultarDatosAdicionales]: ", resultado)
       
     })
     /*G.Q.nfcall(__actualizarDespacho, {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero},transaccion)

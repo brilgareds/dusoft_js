@@ -145,10 +145,11 @@ DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
                  "y.tipo_movimiento",	
                  "y.tipo_doc_bodega_id",
                  "y.tipo_clase_documento",
-                 "y.descripcion"/*,
-                 G.knex.raw("list(y.obs_pedido) as obs_pedido")*/
-]
-    
+                 "y.descripcion",
+                 G.knex.raw("list(y.obs_pedido) as obs_pedido")
+];                                     
+
+    //obtenerTotalDetalleDespacho
     var consultaMovimientoClientes = __camposObtenerDocumentoBodega(G.knex.raw("vop.observacion as obs_pedido"),
                             "inv_bodegas_movimiento_despachos_clientes as dc");
     
@@ -192,7 +193,7 @@ DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
         callback({err:err, msj: "Error al obtener el documento de bodega"});   
     }); 
 
-};
+};          
 /*********************************************************************************************************************************
  * ============= DOCUMENTOS TEMPORALES =============
  /*********************************************************************************************************************************/

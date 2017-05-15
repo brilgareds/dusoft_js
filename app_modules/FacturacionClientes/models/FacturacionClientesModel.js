@@ -1100,7 +1100,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
         }).then(function(){
                                                
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
-            //transaccion.commit(); 
+           //transaccion.commit(); 
         }).fail(function(err){
             console.log("err (/fail) [transaccionGenerarFacturaIndividual]: ", err);
             transaccion.rollback(err);

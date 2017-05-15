@@ -453,7 +453,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         facturacionClientesService.generarFacturaIndividual(obj, function (data) {
                                              console.log("AQUI MIRA ", data)
                                             if (data.status === 200) {
- 
+                                               AlertService.mostrarMensaje("warning", data.msj);
                                             }
                                             if(data.status === 404){
                                                 AlertService.mostrarMensaje("warning", data.msj);

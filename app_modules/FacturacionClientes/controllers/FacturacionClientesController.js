@@ -557,9 +557,6 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};    
             
         }
-        /*}else{   
-            throw {msj:'Se ha generado un error (Duplicate-key) Al crear la factura ['+ documentoFacturacion[0].id +"-" + documentoFacturacion[0].numeracion+"]", status: 409};                       
-        }*/
          
     }).then(function(resultado){
        

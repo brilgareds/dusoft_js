@@ -575,7 +575,8 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
             
-    }).then(function(resultado){
+    }).then(function(resultado){                              
+        
         
         console.log("resultado [transaccionGenerarFacturasAgrupadas]: ", resultado);
         

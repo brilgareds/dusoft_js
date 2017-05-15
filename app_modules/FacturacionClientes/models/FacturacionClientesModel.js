@@ -755,18 +755,20 @@ FacturacionClientesModel.prototype.actualizarNumeracion = function(obj,transacci
 FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,transaccion, callback){
     
     var parametros = { 
+            pedido_cliente_id: obj.parametros.parametros.pedido.pedidos[0].numero_cotizacion, 
             tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
             tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
             tipo_id_vendedor:obj.parametros.parametros.pedido.pedidos[0].vendedor[0].tipo_id_tercero, 
             vendedor_id: obj.parametros.parametros.pedido.pedidos[0].vendedor[0].id
         };
         
-    var query = G.knex("hc_despacho_medicamentos_eventos")
+    var query = G.knex("ventas_ordenes_pedidos")
                 .where(parametros)            
-                .update({pedido_cliente_id: '0'});
+                .update({estado_factura_fiscal: '1'});
     
     if(transaccion) query.transacting(transaccion);    
-        query.then(function(resultado){          
+        query.then(function(resultado){        
+            console.log("resultado [actualizarEstadoFacturaPedido]: ", resultado); 
             callback(false, resultado);
     }).catch(function(err){   
             console.log("err (/catch) [actualizarEstadoFacturaPedido]: ", err);        
@@ -1093,6 +1095,10 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
             
         }).then(function(){
             
+            return G.Q.ninvoke(that,'actualizarEstadoFacturaPedido',{parametros:obj}, transaccion);
+            
+        }).then(function(){
+                                               
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
             //transaccion.commit(); 
         }).fail(function(err){

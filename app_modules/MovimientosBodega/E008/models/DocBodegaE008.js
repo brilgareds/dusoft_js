@@ -87,13 +87,16 @@ DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback
        
 };
 
+/**
+ * +Descripcion Metodo encargado de retornar la consulta que genera
+ *              el detalle del documento, con la diferencia dde que
+ *              recibira como parametro un campo y una tabla para
+ *              ser reutilizada
+ * @author Cristian Ardila
+ * @fecha  2017/05/15 YYYY/MM/DD
+ */
 function __camposObtenerDocumentoBodega(observacion, tablaPedidos){
-    
-    /*console.log("*******__camposObtenerDocumentoBodega************");
-    console.log("*******__camposObtenerDocumentoBodega************");
-    console.log("*******__camposObtenerDocumentoBodega************");
-    console.log("tablaPedidos ", tablaPedidos);*/
-    
+     
      var columnSubQueryA = [ G.knex.raw("m.*"),
                     G.knex.raw("c.inv_tipo_movimiento as tipo_movimiento"),
                     G.knex.raw("b.tipo_doc_general_id as tipo_doc_bodega_id"),
@@ -120,12 +123,15 @@ function __camposObtenerDocumentoBodega(observacion, tablaPedidos){
             });  
         return consulta;
 }
+
+/**
+ * +Descripcion Metodo encargado de obtener el detalle del documento
+ *              de bodega generado
+ * @author Cristian Manuel Ardila Troches
+ * @fecha 2017/05/15 YYYY/MM/DD
+ */
 DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
-    
-    console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
-    console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
-    console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
-    
+     
     var column = ["y.documento_id",
                 "y.centro_utilidad",	
                  "y.bodega",	

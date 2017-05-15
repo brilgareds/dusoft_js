@@ -13,7 +13,7 @@ define(["angular", "js/models", "includes/classes/Tercero"], function (angular, 
 
             TerceroDespacho.prototype = Object.create(Tercero.getClass().prototype);
 
-            TerceroDespacho.prototype.setEmail = function (email) {
+            TerceroDespacho.prototype.setEmail = function (email) {   
                 this.email = email;
             };
 

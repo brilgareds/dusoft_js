@@ -13,12 +13,12 @@ var DocumentoBodegaE008 = function(movientos_bodegas, m_pedidos_clientes, m_pedi
  */
 DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback){
     
-    console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
+   /* console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
     console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
     console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
      
     console.log("obj ", obj); 
-     
+     */
     var columnSubQueryA = [
         G.knex.raw("'CLIENTES' as tipo_despacho"),
         G.knex.raw("a.tipo_id_tercero || ' ' || a.tercero_id || ' : '|| b.nombre_tercero as farmacia_cliente "),
@@ -131,7 +131,11 @@ function __camposObtenerDocumentoBodega(observacion, tablaPedidos){
  * @fecha 2017/05/15 YYYY/MM/DD
  */
 DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
-     
+    
+    /*console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
+    console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
+    console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
+    */
     var column = ["y.documento_id",
                 "y.centro_utilidad",	
                  "y.bodega",	
@@ -192,7 +196,7 @@ DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
             .groupBy(G.knex.raw("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21"));
     
     queryA.then(function(resultado) {
-        console.log("resultado ", resultado);
+        //console.log("resultado [obtenerDocumentoBodega]: ", resultado);
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [obtenerDocumentoBodega] ", err);

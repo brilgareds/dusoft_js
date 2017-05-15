@@ -673,18 +673,55 @@ FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,tran
             porcentaje_cree: obj.porcentaje_cree,
             tipo_pago_id: obj.tipoPago};
     
-     console.log("parametros [insertarFacturaIndividual]: ", parametros)
+     //console.log("parametros [insertarFacturaIndividual]: ", parametros)
     
     var query = G.knex('inv_facturas_despacho').insert(parametros);     
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){
-            console.log("resultado [insertarFacturaIndividual]", resultado);
+            //console.log("resultado [insertarFacturaIndividual]", resultado);
             callback(false, resultado);
     }).catch(function(err){
             console.log("err (/catch) [insertarFacturaIndividual]: ", err);     
             callback({err:err, msj: "Error al guardar la factura individual]"});   
     });
+};
+
+/**
+ * +Descripcion Metodo encargado de insertar el detalle de la factura 
+ *              individual
+ * @author Cristian Ardila
+ * @fecha 2017-15-05 YYYY-DD-MM
+ */
+function __insertarFacturaIndividualDetalle(obj,transaccion, callback){
+      
+    var parametros = {
+            item_id: G.knex.raw('DEFAULT'),
+            prefijo: obj.prefijo,
+            factura_fiscal: obj.numeracion,
+            observacion: '', 
+            codigo_producto: obj.codigo_producto,
+            cantidad: parseInt(obj.cantidad),
+            fecha_vencimiento: obj.fecha_vencimiento,
+            lote: obj.lote,
+            valor_unitario: parseInt(obj.valor_unitario),
+            empresa_id: obj.empresa_id,
+            cantidad_devuelta:parseInt(0),
+            porc_iva: obj.porcentaje_gravamen
+        };
+      
+   
+    
+    var query = G.knex('inv_facturas_despacho_d').insert(parametros);     
+       
+    if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){
+            console.log("resultado [insertarFacturaIndividualDetalle]", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [insertarFacturaIndividualDetalle]: ", err);     
+            callback({err:err, msj: "Error al guardar la factura individual]"});   
+    }); 
 };
 
 /**
@@ -908,18 +945,19 @@ function __detallePedidosClientes(that, index, pedidos,transaccion, callback) {
  * +Descripcion Metodo encargado de registrar los despachos agrupados
  * @fecha 2017-05-11
  */
-function __guardarDespachoIndidual(that, index, documentos,transaccion, callback) {
+function __guardarDespachoIndividual(that, index, documentos,consultaCompleta,transaccion,callback) {
    
-   console.log("*****__guardarDespachoIndidual********");
+   console.log("*****__guardarDespachoIndividual********");
     var documento = documentos[index];   
-                                          
+    var def = G.Q.defer();
+    var retorno = {cabecera:'',datos_adicionales:'', detalle:''};
     if (!documento) {                                             
-         
-        callback(false);                                   
-        return;                     
+        //console.log("retorno >>>>>>> ", retorno);
+        callback(false,consultaCompleta);                                   
+        return;                                                        
     }  
     
-    console.log("documentos ----->>> ",documento);
+    //console.log("documentos ----->>> ",documento);
     /*console.log("Tipo Id tercero ", pedido.pedidos[0].vendedor[0].tipo_id_tercero);
     console.log("Tercero Id ", pedido.pedidos[0].vendedor[0].id);
     console.log("#Pedido ", pedido.pedidos[0].numero_cotizacion);
@@ -928,24 +966,49 @@ function __guardarDespachoIndidual(that, index, documentos,transaccion, callback
     console.log("Numero ", pedido.pedidos[0].documento[0].numero);*/
      
     index++;
-   
-   G.Q.ninvoke(that.m_e008,'obtenerDocumentoBodega', {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero})
-            .then(function(resultado){    
+    var parametros = {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero};
+    
+    G.Q.ninvoke(that.m_e008,'obtenerDocumentoBodega', parametros).then(function(resultado){     
+                   
+             
+            if(resultado.length > 0){
+               retorno.cabecera = resultado;
+               return G.Q.ninvoke(that.m_e008,'consultarDatosAdicionales',parametros);
+            }else{
+                throw {msj:'El documento no existe', state:404};
+            }
                             
        // console.log("resultado [consultarDatosAdicionales]: ", resultado)
       
+    }).then(function(resultado){
+        
+        //console.log("resultado [consultarDatosAdicionales]: ", resultado);
+        if(resultado.length > 0){
+            retorno.datos_adicionales = resultado;
+            return G.Q.ninvoke(that.m_e008,'obtenerTotalDetalleDespacho',{empresa:documento.empresa,prefijoDocumento:documento.prefijo,numeroDocumento: documento.numero});
+        }else{
+            throw {msj:'El documento no tiene datos adicionales', state:404};
+        }
+    }).then(function(resultado){
+        
+        //console.log("resultado [obtenerTotalDetalleDespacho]: ", resultado)
+        if(resultado.length > 0){
+            retorno.detalle = resultado;
+        }else{
+            throw {msj:'El documento no tiene detalle', state:404};
+        }
+        consultaCompleta.push(retorno);
+    }).then(function(resultado){
+        
+        return G.Q.nfcall(__actualizarDespacho, {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero},transaccion);
     })
-    /*G.Q.nfcall(__actualizarDespacho, {empresa_id:documento.empresa,prefijo:documento.prefijo,numero: documento.numero},transaccion)
-            .then(function(resultado){    
-       
-      
-    })*/.fail(function(err){ 
+   .fail(function(err){ 
         console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
         callback(err);            
     }).done();
     
     setTimeout(function() {
-            __guardarDespachoIndidual(that, index, documentos,transaccion, callback);
+            __guardarDespachoIndividual(that, index, documentos,consultaCompleta,transaccion,callback);
     }, 300);
    
 };
@@ -959,11 +1022,11 @@ function __guardarDespachoIndidual(that, index, documentos,transaccion, callback
  */
 FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = function(obj, callback)
 {   
+   /* console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*************************");
     console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*************************");
     console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*************************");
-    console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*************************");
-    
-    //console.log("PARAMETROS OK ", obj);
+    */
+     
     var that = this;
     var def = G.Q.defer();
     var porcentajeRtf = '0';
@@ -991,19 +1054,50 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
          tipoPago: obj.parametros.tipoPago
          
         },transaccion).then(function(resultado){   
-            console.log("resultado >>>>> ", resultado);
+             
             return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);                                  
         }).then(function(){
             
-            return G.Q.nfcall(__guardarDespachoIndidual,that,0, obj.parametros.documentos,transaccion);
+            return G.Q.nfcall(__guardarDespachoIndividual,that,0, obj.parametros.documentos,[],transaccion);
+            
+        }).then(function(consultaCompleta){
+             
+            obj.documento_facturacion.forEach(function(documento){
+                
+                consultaCompleta.forEach(function(row){
+                
+                    row.detalle.forEach(function(rowDetalle){
+                        
+                        if(obj.consultar_tercero_contrato[0].facturar_iva === '0'){
+                            rowDetalle.porcentaje_gravamen = 0;
+                        }
+                        var parametros = {empresa_id:documento.empresa_id, 
+                                numeracion:documento.numeracion,
+                                prefijo: documento.id,
+                                codigo_producto: rowDetalle.codigo_producto,
+                                cantidad: rowDetalle.cantidad,
+                                valor_unitario: rowDetalle.valor_unitario,
+                                lote:rowDetalle.lote,
+                                fecha_vencimiento: rowDetalle.fecha_vencimiento,
+                                porcentaje_gravamen: rowDetalle.porcentaje_gravamen
+                            };
+                            
+                        return G.Q.nfcall(__insertarFacturaIndividualDetalle,parametros,transaccion);
+                    });    
+                });                 
+            });
+             
+        }).then(function(){
+            
+            return G.Q.ninvoke(that,'actualizarNumeracion',{parametros:obj}, transaccion);
             
         }).then(function(){
             
-            console.log("AQUI VA OK OKo OK");
-            //transaccion.commit();    
+           console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
+            //transaccion.commit(); 
         }).fail(function(err){
-                console.log("err (/fail) [transaccionGenerarFacturaIndividual]: ", err);
-                transaccion.rollback(err);
+            console.log("err (/fail) [transaccionGenerarFacturaIndividual]: ", err);
+            transaccion.rollback(err);
         }).done();
 
     }).then(function(){
@@ -1014,6 +1108,11 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
     
 };
 
+
+
+                
+                
+                
 FacturacionClientesModel.$inject = ["m_e008"];
 
 

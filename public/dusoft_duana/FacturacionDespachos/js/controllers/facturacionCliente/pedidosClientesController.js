@@ -353,13 +353,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 row.pedidos[0].agregarDocumentosSeleccionados(documentos);  
                                             }
                                         });
+                                        
                                     });
                                 
                                 //console.log(" PEDIDOS SELECCIONADOS ",  $scope.root.pedidosSeleccionados);
                                 
                                 
                                 var obj = {
-                                    session: $scope.session,
+                                    session: $scope.session,                          
                                     data: {
                                         generar_factura_agrupada: {
                                             terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,

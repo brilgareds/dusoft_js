@@ -272,7 +272,7 @@ define(["angular", "js/controllers",
                 var ONE_DAY = 1000 * 60 * 60 * 24;
 
                 // Convert both dates to milliseconds
-                var date1_ms = (orden.fecha_recibido === "") ? new Date().getTime() : new Date(orden.fecha_recibido.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")).getTime();
+                var date1_ms = (orden.fecha_recibido === "" || !orden.fecha_recibido) ? new Date().getTime() : new Date(orden.fecha_recibido.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")).getTime();
                 var date2_ms = new Date(orden.fecha_registro.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")).getTime();
 
                 // Calculate the difference in milliseconds

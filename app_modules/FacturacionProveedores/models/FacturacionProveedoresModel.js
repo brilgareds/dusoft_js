@@ -86,7 +86,7 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
         console.log("err [consultarOrdenesCompraProveedor]:", err);
         callback(err);
     });
-}  
+};  
 /**
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de consultar facturas Proveedor
@@ -377,8 +377,8 @@ FacturacionProveedoresModel.prototype.ingresarFacturaCabecera = function(obj, ca
  */
 FacturacionProveedoresModel.prototype.ingresarFacturaDetalle = function(obj, callback) {
 
-    G.knex("inv_facturas_proveedores_d").
-            insert({
+    G.knex("inv_facturas_proveedores_d").insert({
+        
         codigo_producto: obj.codigo_producto,
         porc_iva: obj.porc_iva,
         recepcion_parcial_id: obj.recepcion_parcial_id,
@@ -387,7 +387,7 @@ FacturacionProveedoresModel.prototype.ingresarFacturaDetalle = function(obj, cal
         lote: obj.lote,
         fecha_vencimiento: obj.fecha_vencimiento,
         numero_factura: obj.numero_factura,
-        item_id: obj.item_id,
+//        item_id: obj.item_id,
         codigo_proveedor_id: obj.codigo_proveedor_id
 
     }).then(function(resultado) {

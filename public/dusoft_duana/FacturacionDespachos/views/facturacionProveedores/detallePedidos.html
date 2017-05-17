@@ -1,6 +1,6 @@
 <div class ="row">
 
-     <div class="col-md-2">
+    <div class="col-md-2">
         <p class="input-group">
             <input type="text" class="form-control readonlyinput" 
                    datepicker-popup="{{format}}" 
@@ -19,7 +19,7 @@
             </span>
         </p>
     </div>
-    
+
     <div class="col-md-2">
         <p class="input-group">
             <input type="text" class="form-control readonlyinput" 
@@ -63,10 +63,6 @@
                    ng-keypress="buscarProveedoresFactura($event);"  
                    ng-model="root.termino_busqueda_factura" 
                    placeholder="Buscar" name="" id="" />
-            <div class="input-group-btn" ng-show="root.visibleBotonBuscador" >
-                <button class="btn btn-default pull-right" type="submit" ng-click ="buscarProveedoresFactura($event)">
-                    <i class="glyphicon glyphicon-search"></i></button>
-            </div>
         </div>   
     </div>
 </div>
@@ -83,7 +79,7 @@
         <span class="glyphicon glyphicon-chevron-right" ></span>
     </button>
 </div>
-  <div class="input-group-btn" >
-                <button class="btn btn-default pull-right" type="submit" ng-click ="onFacturas()">
-                    Facturar <i class="glyphicon glyphicon-floppy-disk"></i></button>
- </div>
+<div class="input-group-btn" >
+    <button class="btn btn-default pull-right" type="submit" ng-click ="onFacturas()">
+        Facturar <i class="glyphicon glyphicon-floppy-disk"></i></button>
+</div>

@@ -2,7 +2,6 @@ var FacturacionProveedores = function(m_facturacion_proveedores) {
     this.m_facturacion_proveedores = m_facturacion_proveedores;   
 };
 
-
 /**
  * @author Andres Mauricio Gonzalez
  * +Descripcion  Metodo encargado de obtener la lista de las ordenes de compra                                         
@@ -214,6 +213,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
     var that = this;
     var args = req.body.data;
     var usuario = req.session.user.usuario_id;
+    var respuestaFI=[];
 
     if (args.facturaProveedor.parmetros.numeroFactura === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de Factura', 404, {ingresarFactura: []}));
@@ -287,81 +287,105 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones, parametros);
 
     }).then(function(resultado) {
-       
+        
+        var paramt=[];
+        paramt[0]=parametros.empresaId;
+        paramt[1]=parametros.codigo_proveedor_id;
+        paramt[2]=parametros.numero_factura;
+        var param={param:paramt};
+        return G.Q.nfcall(__sincronizarCuentasXpagarFi, param);
+        
+    }).then(function(resultado) {
+        respuestaFI=resultado;
         return G.Q.nfcall(__reporteFactura, parametros);
             
     }).then(function(resultado) {
 
-        res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: resultado}));
+        res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: resultado,respuestaFI:respuestaFI}));
 
     }).fail(function(err) {
         console.log("Error ingresarFactura ", err);
         G.Q.nfcall(__eliminarFactura, that, parametros);
-        res.send(G.utils.r(req.url, err, 500, {}));
+        res.send(G.utils.r(req.url, err, 500, {err:err}));
     }).done();
 
 };
-
 
 /**
  * @author Andres Mauricio Gonzalez
  * +Descripcion  Metodo encargado crear el reporte factura proveedor                                      
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */
-FacturacionProveedores.prototype.sincronizarFi = function(req, res){
-var args = req.body.data;
-console.log("paramtrose:::: ",args);
-  __sincronizarCuentasXpagarFi({},function(resultado){
-      console.log("resultado::: ",resultado); 
-      res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: resultado}));
-  });
-}
+FacturacionProveedores.prototype.sincronizarFi = function(req, res) {
+
+    var args = req.body.data;
+
+    if (args.sincronizarFI.empresa === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la Empresa', 404, {sincronizarFi: []}));
+        return;
+    }
+
+    if (args.sincronizarFI.codigoProveedor === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el codigo del producto', 404, {sincronizarFi: []}));
+        return;
+    }
+
+    if (args.sincronizarFI.numeroFactura === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero factura', 404, {sincronizarFi: []}));
+        return;
+    }
+
+    var parametros = [];
+    parametros[0] = args.sincronizarFI.empresa;
+    parametros[1] = args.sincronizarFI.codigoProveedor;
+    parametros[2] = args.sincronizarFI.numeroFactura;
+
+    var param = {param: parametros};
+    G.Q.nfcall(__sincronizarCuentasXpagarFi, param).then(function(resultado) {
+
+        console.log("AAAAAAAA", resultado);
+        res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {sincronizarFi: resultado}));
+
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, err, 500, {err: err}));
+    }).done();
+
+};
 
 function __sincronizarCuentasXpagarFi(obj, callback){
   
    var url =  G.constants.WS().FI.DUSOFT_FI;
-   var resultado;
    
     obj.parametros = {
         function:'cuentas_x_pagar_fi',
-        parametros:obj.param
-      
+        parametros:obj.param      
     };
-    obj.error = false;
     
-    //Se invoca el ws
-    G.Q.nfcall(G.soap.createClient, url).
-    then(function(client) {
+    obj.error = false;
+
+    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
         
         return G.Q.ninvoke(client, "sincronizarFi", obj.parametros);
-    }).
-    spread(function(result,raw,soapHeader){
-     var resul=JSON.parse(result.return.msj["$value"]);
-                console.log("resultado:: ",resul.mensaje_ws);
-                console.log("resultado:::: ",resul);
+        
+    }).spread(function(result,raw,soapHeader){
+        
         if(!result.return.msj["$value"]){
             throw {msj:"Se ha generado un error", status:403, obj:{}}; 
         } else {            
-            obj.resultado = result.return.msj["$value"];
-          
+            obj.resultado = JSON.parse(result.return.msj["$value"]);          
         }
         
-    }).
-   then(function(){
-        callback(false, obj);
+    }).then(function(){
+        callback(false,obj);
         
     }).fail(function(err) {
         
         obj.error = true;
         obj.tipo = '0';
-        console.log("ERROR ***************** ", err);
         callback(err);
        
     }).done();
-}
-
-
-
+};
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -507,7 +531,7 @@ function __generarReporteFactura(rows, callback) {
 
         });
     });
-}
+};
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -542,11 +566,11 @@ function __ingresarFacturaDetalle(that, index, detalle, parametros, callback) {
         
     }).fail(function(err) {
        G.Q.nfcall(__eliminarFactura, that, producto);       
-       console.log("Error __ingresarFacturaDetalle ",err);
-       callback(true);
+       console.log("(Error err:::: __ingresarFacturaDetalle )",err);
+       callback(err);
        return;
     }).done();
-}
+};
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -561,7 +585,7 @@ function __eliminarFactura(that,parametros, callback){
        return;
    }).fail(function(err) {
       console.log("Error __eliminarFactura ",err);
-      callback(true);
+      callback(err);
       return;
    }).done();
 };
@@ -591,10 +615,10 @@ function __insertarDetalle(that, index, productos, parametros, callback) {
         
     }).fail(function(err) {
         console.log("Error __insertarDetalle",err);
-        callback(true);
+        callback(err);
         return;
     }).done();
-}
+};
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -613,7 +637,7 @@ function __impuestoProveedor(impuesto,impuestoProveedor,resultado, callback){
         resultado.iva=impuestoProveedor.porcentaje_reteiva;
   callback(false, resultado);
   return;
-}
+};
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -671,8 +695,6 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
     }, 3);
 
 };
-
-
 
 FacturacionProveedores.$inject = ["m_facturacion_proveedores"];
 //, "e_facturacion_clientes", "m_usuarios"

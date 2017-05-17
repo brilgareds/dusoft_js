@@ -30,6 +30,11 @@ module.exports = function(app, di_container) {
         c_facturacion_proveedores.reporteFacturaProveedor(req, res);
     });
     
+    app.post('/api/FacturacionProveedores/sincronizarFi', function(req, res) {
+       
+        c_facturacion_proveedores.sincronizarFi(req, res);
+    });
+    
     
     
 };

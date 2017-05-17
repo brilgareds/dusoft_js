@@ -87,14 +87,7 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.descripcionEstado;
             };
             
-            FacturaProveedores.prototype.setdescripcionEstado = function(descripcionEstado) {
-                this.descripcionEstado = descripcionEstado;
-            };
-
-            FacturaProveedores.prototype.getdescripcionEstado = function() {
-                return this.descripcionEstado;
-            };
-            
+                       
             FacturaProveedores.prototype.setEmpresa = function(empresa) {
                 this.empresa = empresa;
             };
@@ -127,12 +120,12 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.valorDescuento;
             };
             
-            FacturaProveedores.prototype.setValorDescuento = function(valorDescuento) {
-                this.valorDescuento = valorDescuento;
+            FacturaProveedores.prototype.setValorFactura = function(valorFactura) {
+                this.valorFactura = valorFactura;
             };
 
-            FacturaProveedores.prototype.getValorDescuento= function() {
-                return this.valorDescuento;
+            FacturaProveedores.prototype.getValorFactura= function() {
+                return this.valorFactura;
             };
             
             FacturaProveedores.prototype.setUsuarioId = function(usuarioId) {

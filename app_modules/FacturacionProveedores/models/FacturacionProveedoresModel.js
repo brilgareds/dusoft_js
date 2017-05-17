@@ -71,6 +71,10 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
         if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
             this.andWhere(G.knex.raw("t.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
         }
+        if ((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !== "") {
+            this.andWhere(G.knex.raw("t.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
+                .andWhere(G.knex.raw("t.tipo_id_tercero = '"+obj.filtro.tipo+"'"))
+        }
     }).andWhere('c.empresa_id', obj.empresaId);
 
     query.limit(G.settings.limit).
@@ -152,6 +156,10 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
         }
         if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
             this.andWhere(G.knex.raw("f.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
+        }
+        if ((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !== "") {
+            this.andWhere(G.knex.raw("f.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
+                .andWhere(G.knex.raw("f.tipo_id_tercero = '"+obj.filtro.tipo+"'"))
         }
         if (obj.codigo_proveedor_id !== undefined) {
             this.andWhere("a.codigo_proveedor_id",obj.codigo_proveedor_id)
@@ -292,7 +300,7 @@ FacturacionProveedoresModel.prototype.detalleRecepcionParcial = function(obj, ca
 FacturacionProveedoresModel.prototype.listarParametrosRetencion = function(parametros, callback) {
     
     var anio;
-    if(parametros.anio !== undefined){
+    if(parametros.anio === undefined){
      var now = new Date();
       anio = G.moment(now).format('YYYY');
     }else{
@@ -324,7 +332,6 @@ FacturacionProveedoresModel.prototype.listarParametrosRetencion = function(param
         callback(false, resultado);
     }). catch (function(error) {
         console.log("error [parametrosRetencion]: ", error);
-        console.log("error [parametros.empresa_id]: ", parametros.empresa_id);
         callback(error);
     });
 };

@@ -462,6 +462,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             if(data.status === 409){
                                                 AlertService.mostrarMensaje("danger", data.msj);
                                             }
+                                            if(data.status === 500){
+                                                AlertService.mostrarMensaje("danger", data.msj);
+                                            }
                                         });                                            
                                     }
                                 }

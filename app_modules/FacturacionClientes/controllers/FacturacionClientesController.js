@@ -567,19 +567,18 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
              consultar_tercero_contrato:consultarTerceroContrato,
              consultar_parametros_retencion:consultarParametrosRetencion,
              parametros:parametros
-             });
+             });                                                      
         }else{
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
             
     }).then(function(resultado){                              
-        
-        
-        console.log("resultado [transaccionGenerarFacturasAgrupadas]: ", resultado);
+         
+        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_individual:''}));
+       
         
     }).fail(function(err){  
-        
-        console.log("err ", err);
+         
         if(!err.status){
             err = {};
             err.status = 500;
@@ -588,7 +587,8 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done(); 
     
-}
+};
+
 FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc", "m_e008"];
 //, "e_facturacion_clientes", "m_usuarios"
 module.exports = FacturacionClientes;

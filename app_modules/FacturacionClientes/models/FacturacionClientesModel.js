@@ -876,44 +876,51 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
             
         }).then(function(){ 
             
-           
-            obj.documento_facturacion.forEach(function(documento){                
+            if(datosAdicionalesAgrupados.length > 0){
+            
+                obj.documento_facturacion.forEach(function(documento){                
+
+                    datosAdicionalesAgrupados.forEach(function(rowDatosAdicionalesAgrupados){                    
+
+                        rowDatosAdicionalesAgrupados.forEach(function(row){
+
+                            row.datos_adicionales.forEach(function(rowDatosAdicionales){
+
+                                row.detalle.forEach(function(rowDetalle){
+
+                                    if(obj.consultar_tercero_contrato[0].facturar_iva === '0'){
+                                        rowDetalle.porcentaje_gravamen = 0;
+                                    }
+
+                                    parametrosFacturasAgrupadas = {
+                                        tipo_id_tercero: obj.parametros.tipoIdTercero,
+                                        tercero_id: obj.parametros.terceroId,
+                                        tipo_id_vendedor: row.vendedor.tipo_id_tercero,
+                                        vendedor_id: row.vendedor.id,
+                                        pedido_cliente_id : rowDatosAdicionales.numero_pedido,
+                                        empresa_id:documento.empresa_id, 
+                                        factura_fiscal:documento.numeracion,
+                                        prefijo: documento.id,
+                                        codigo_producto: rowDetalle.codigo_producto,
+                                        cantidad: parseInt(rowDetalle.cantidad),
+                                        valor_unitario: rowDetalle.valor_unitario,
+                                        lote:rowDetalle.lote,
+                                        fecha_vencimiento: rowDetalle.fecha_vencimiento,
+                                        porcentaje_gravamen: rowDetalle.porcentaje_gravamen
+                                    };                                                                
+                                    parametrosInsertaFacturaAgrupadaDetalle.push(parametrosFacturasAgrupadas);                            
+                                });
+                            });                      
+                        });                   
+                        parametrosActualizarEstadoFactura.push(parametrosFacturasAgrupadas);
+                    });                           
+                }); 
+            
+            }else{
                 
-                datosAdicionalesAgrupados.forEach(function(rowDatosAdicionalesAgrupados){                    
-                   
-                    rowDatosAdicionalesAgrupados.forEach(function(row){
-                     
-                        row.datos_adicionales.forEach(function(rowDatosAdicionales){
-                         
-                            row.detalle.forEach(function(rowDetalle){
-                               
-                                if(obj.consultar_tercero_contrato[0].facturar_iva === '0'){
-                                    rowDetalle.porcentaje_gravamen = 0;
-                                }
-                                   
-                                parametrosFacturasAgrupadas = {
-                                    tipo_id_tercero: obj.parametros.tipoIdTercero,
-                                    tercero_id: obj.parametros.terceroId,
-                                    tipo_id_vendedor: row.vendedor.tipo_id_tercero,
-                                    vendedor_id: row.vendedor.id,
-                                    pedido_cliente_id : rowDatosAdicionales.numero_pedido,
-                                    empresa_id:documento.empresa_id, 
-                                    factura_fiscal:documento.numeracion,
-                                    prefijo: documento.id,
-                                    codigo_producto: rowDetalle.codigo_producto,
-                                    cantidad: parseInt(rowDetalle.cantidad),
-                                    valor_unitario: rowDetalle.valor_unitario,
-                                    lote:rowDetalle.lote,
-                                    fecha_vencimiento: rowDetalle.fecha_vencimiento,
-                                    porcentaje_gravamen: rowDetalle.porcentaje_gravamen
-                                };                                                                
-                                parametrosInsertaFacturaAgrupadaDetalle.push(parametrosFacturasAgrupadas);                            
-                            });
-                        });                      
-                    });                   
-                    parametrosActualizarEstadoFactura.push(parametrosFacturasAgrupadas);
-                });                           
-            }); 
+                throw {msj:'No hay documentos seleccionados', status: 404};  
+                
+            }
                                       
         }).then(function(){
             //console.log("*******parametrosInsertaFacturaAgrupadaDetalle  ", parametrosInsertaFacturaAgrupadaDetalle);
@@ -930,16 +937,16 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
         }).then(function(){
                                                
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
-           //transaccion.commit(); 
+           transaccion.commit(); 
         }).fail(function(err){
-                console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
-                transaccion.rollback(err);
+            console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
+            transaccion.rollback(err);
         }).done();
 
     }).then(function(){
        callback(false);
     }).catch(function(err){      
-       callback(err.msj);
+       callback(err);
     }).done(); 
     
 };

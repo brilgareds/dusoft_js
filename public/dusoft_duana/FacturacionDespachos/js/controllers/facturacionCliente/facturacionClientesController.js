@@ -329,7 +329,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                    <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                   <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
+                                   <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print">factura </a>\
                                 </li>\
                            </ul>\
                       </div>'

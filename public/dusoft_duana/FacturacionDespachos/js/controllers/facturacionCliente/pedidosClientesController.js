@@ -377,16 +377,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                 facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
                                      console.log("AQUI MIRA ", data)
-                                    if (data.status === 200) {
-                                         
-                                    }
-                                    if(data.status === 404){
+                                  /**
+                                    * +Descripcion si se genera la factura satisfacturiamente,
+                                    *              el sistema activara la vista que lista las facturas generadas
+                                    *              haciendo referencia a la factura reciente
+                                    */
+                                    if (data.status === 200) {                                                                                   
+                                        localStorageService.add("listaFacturaDespachoGenerada",
+                                           {active:true, datos:data.obj.generar_factura_agrupada[0]}
+                                        );
+                                        $state.go('Despacho');                                             
                                         AlertService.mostrarMensaje("warning", data.msj);
                                     }
-                                    if(data.status === 409){
-                                        AlertService.mostrarMensaje("danger", data.msj);
+                                    if(data.status === 404){
+                                       AlertService.mostrarMensaje("warning", data.msj);
                                     }
-
+                                    if(data.status === 409){
+                                       AlertService.mostrarMensaje("danger", data.msj);
+                                    }
+                                    if(data.status === 500){
+                                       AlertService.mostrarMensaje("danger", data.msj);
+                                    }
                                 }); 
 
                                 }
@@ -480,16 +491,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             );
                         }                              
                     };
-                    
-                    
-                    /*  localStorageService.add("clientePedidoDespacho",{
-               tipoIdTercero: entity.getTipoId(),
-               terceroId: entity.getId()
-
-            });
-            
-            */
-                    
+                     
                     $scope.seleccionarTipoPago = function(tipoPago){
                         $scope.tipoPagoFactura = tipoPago;
                     };

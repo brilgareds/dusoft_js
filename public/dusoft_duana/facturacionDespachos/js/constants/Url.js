@@ -25,6 +25,7 @@ define(["angular"], function (angular) {
                  "INSERTAR_FACTURA": BASE_URL + "/FacturacionProveedores/ingresarFactura", 
                  "LISTAR_FACTURA_PROVEEDOR": BASE_URL + "/FacturacionProveedores/listarFacturaProveedor", 
                  "REPORTE_FACTURA_PROVEEDOR": BASE_URL + "/FacturacionProveedores/reporteFacturaProveedor", 
+                 "SINCRONIZAR_FI": BASE_URL + "/FacturacionProveedores/sincronizarFi", 
             },
         }
 

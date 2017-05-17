@@ -177,6 +177,35 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
                     
                     /**
+                     * +Descripcion Metodo encargado de sincronizar en FI
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+                    that.sincronizarFI = function () {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listar_tipo_terceros: {
+
+                                }
+                            }
+                        };
+                       
+                        facturacionProveedoresService.sincronizarFi(obj, function (data) {
+                            
+                            if (data.status === 200) { 
+//                                console.log("Data::: ",data);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+
+                        });
+                        
+                    };
+                    
+                    /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara 
                      *              los tipos de terceros
                      * @author Andres Mauricio Gonzalez
@@ -297,7 +326,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         facturacionProveedoresService.listarFacturaProveedores(obj, function (data) {
                             $scope.root.clientes = [];
                             if (data.status === 200) { 
-                                console.log("Data ",data.obj.listarFacturaProveedor);
+//                                console.log("Data ",data.obj.listarFacturaProveedor);
 //                                $scope.root.items = data.obj.listarOrdenesCompraProveedor.length;  
                                   $scope.root.facturasProveedores=facturacionProveedoresService.renderFacturasProveedores(data.obj.listarFacturaProveedor);
 //                                $scope.ultima_busqueda_factura = $scope.termino_busqueda_factura;
@@ -324,34 +353,56 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             {field: '#Factura', width: "10%", displayName: '#Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNumeroFactura()}}</p></div>'},
                            
-                            {field: 'Fecha', width: "10%", displayName: 'Fecha',cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro()}}</p></div>'},
+                            {field: 'Total', width: "10%", displayName: 'Total',cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 " style="text-align:right;" ><p class="text-uppercase">{{row.entity.getValorFactura() | currency:"$"}}</p></div>'},
+                            
+                            {field: 'Descuento', width: "10%" ,displayName: 'Descuento',cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 " style="text-align:right;"><p class="text-uppercase">{{row.entity.getValorDescuento() | currency:"$"}}</p></div>'},
                             
                             {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText",cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},                           
                                                      
-                            {field: 'Sincronizado DUSOFT FI', width: "10%", displayName: 'Sincronizado DUSOFT FI', cellClass: "ngCellText",cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionEstado()}}</p></div>'},
-                            
-                            {displayName: "Detalle", cellClass: "txt-center dropdown-button", width: "25%",
+                            {field: 'Observaciones', width: "30%", displayName: 'Observaciones', cellClass: "ngCellText",cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getObservacion()}}</p></div>'},
+                                                        
+                            {displayName: "Detalle", cellClass: "txt-center dropdown-button", width: "10%",
                                 cellTemplate: ' <div class="row">\
-                                                 <button class="btn btn-default btn-xs" ng-click="impimirFactura(row.entity)">\
+                                                 <button class="btn btn-default btn-xs" ng-click="imprimirFactura(row.entity)">\
                                                      <span class="glyphicon glyphicon-print"> Imprimir</span>\
                                                  </button>\
                                                </div>'
                             },
-                            {displayName: "Sincronizar DUSOFT FI", cellClass: "txt-center dropdown-button", width: "25%",
+                            {displayName: "Sincronizar DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
                                 cellTemplate: ' <div class="row">\
-                                                 <button class="btn btn-default btn-xs" ng-click="ver_detalleRecepcion(row.entity)">\
-                                                     <span class="glyphicon glyphicon-export"> Sincronizar</span>\
-                                                 </button>\
+                                                  <div ng-if="validarSincronizacion(row.entity)" >\
+                                                    <button class="btn btn-default btn-xs" ng-click="sincronizar(row.entity)">\
+                                                        <span class="glyphicon glyphicon-export"> Sincronizar</span>\
+                                                    </button>\
+                                                  </div>\
+                                                  <div ng-if="!validarSincronizacion(row.entity)" >\
+                                                    <button class="btn btn-default btn-xs" ng-click="sincronizar(row.entity)">\
+                                                        <span class="glyphicon glyphicon-export"> ok</span>\
+                                                    </button>\
+                                                  </div>\
                                                </div>'
                             }
                                                        
                         ]
                     };
                     
+                    $scope.validarSincronizacion=function(data){
+                        
+                        var estado=false;
+                        if(data.estado === '0'){
+                            console.log("validarSincronizacion",data.estado);
+                            estado=true;
+                        }
+                        return estado; 
+                        
+                    };
                     
-                    $scope.impimirFactura = function(data){
-                        console.log("data::: ",data);
-                      //  reporteFacturaProveedores
+                    $scope.sincronizar = function(data){
+                       // console.log("data:::::",data);
+                        that.sincronizarFI();
+                    };
+                    
+                    $scope.imprimirFactura = function(data){
                         that.reporteFactura(data);
                     };
                     
@@ -370,8 +421,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                          
                         facturacionProveedoresService.reporteFacturaProveedores(obj, function (data) {
                             $scope.root.clientes = [];
+                            
                             if (data.status === 200) { 
-                                console.log("data impimirFactura",data);
+                                console.log("data imprimirFactura",data.reporteFacturaProveedor);
+                                var nombre=data.obj.reporteFacturaProveedor;
+                                console.log("nombre",nombre);
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
@@ -732,7 +787,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                               <label>Valor Total Factura:</label>\
                                                              </div>\
                                                              <div class="col-sm-8">\
-                                                              <input type="text" ng-model="root.totalFactura" class="form-control grid-inline-input" required="required" >\
+                                                              <input type="text" ng-model="root.totalFactura" validacion-numero-decimal class="form-control grid-inline-input" required="required" >\
                                                              </div>\
                                                         </div>\
                                                        <div class="form-group">\
@@ -740,7 +795,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                                <label>Total de Descuento:</label>\
                                                             </div>\
                                                             <div class="col-sm-8">\
-                                                              <input type="text" ng-model="root.totalDescuento" class="form-control grid-inline-input">\
+                                                              <input type="text" ng-model="root.totalDescuento" validacion-numero-decimal class="form-control grid-inline-input">\
                                                             </div>\
                                                        </div>\
                                                        <div class="form-group">\
@@ -780,8 +835,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                      return;
                                     }   
                                     
-                                    if($scope.root.totalDescuento < 0){
-                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No Es Posible Valores Negativos En El Descuento");
+                                    if(parseInt($scope.root.totalDescuento) < 0){
+                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No es posible valores negativos en el Descuento");
+                                     return;
+                                    }
+                                    
+                                    if($scope.root.totalDescuento === ""){
+                                     $scope.root.totalDescuento = 0;
+                                    }
+                                    
+                                    if(parseInt($scope.root.totalFactura)< 0 || $scope.root.totalFactura===""){
+                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El valor de la factura minimo debe ser 0");
+                                     return;
+                                    }
+                                    
+                                    if(parseInt($scope.root.totalDescuento) > parseInt($scope.root.totalFactura)){
+                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El Descuento no debe superar el valor de la Factura");
                                      return;
                                     }
                                     
@@ -850,6 +919,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.status === 200) { 
                                 that.listarProveedores();
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Factura Creada Correctamente");
+                                var nombre=data.obj.ingresarFactura;
+                                console.log("nombre",nombre);
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
@@ -868,6 +940,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var salto= "";
                         $scope.root.pedidosSeleccionados.forEach(function(data) {                        
                            that.listarRecepcionProductos(data,function(resultado){
+                               console.log("resultado:: ",resultado);
                                 that.recepcionesId +="<label class='btn btn-success btn btn-default btn-xs'>"+data.recepcion_parcial+"</label> ";
                                 that.proveedor="<b>"+data.nombre_proveedor+"</b>";                                
                                 $scope.root.totalFactura +=parseInt(resultado['total'].subtotal);

@@ -243,14 +243,16 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere la fecha Factura', 404, {ingresarFactura: []}));
         return;
     }
-    if (args.facturaProveedor.parmetros.totalDescuento <= 0) {
+    if (parseInt(args.facturaProveedor.parmetros.totalDescuento) < 0) {
         res.send(G.utils.r(req.url, 'Se requiere el valor del Descuento', 404, {ingresarFactura: []}));
         return;
     }
 
     var parametros = {
+        that:that,
         numero_factura: args.facturaProveedor.parmetros.numeroFactura,
         empresa_id: args.facturaProveedor.empresaId,
+        empresaId: args.facturaProveedor.empresaId,
         centro_utilidad: args.facturaProveedor.centroUtilidad,
         bodega: args.facturaProveedor.bodega,
         codigo_proveedor_id: args.facturaProveedor.parmetros.recepciones[0].proveedor,
@@ -258,9 +260,16 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         valor_descuento: args.facturaProveedor.parmetros.totalDescuento,
         fecha_factura: args.facturaProveedor.parmetros.fechaVencimiento,
         fecha_radicacion_factura: args.facturaProveedor.parmetros.fechaFactura,
-        usuario_id: usuario
+        usuario_id: usuario,
+        usuario:usuario,
+        terminoBusqueda:"",
+        fechaInicio:"",
+        fechaFin:"",filtro:{},
+        protocol:req.protocol,
+        host: req.get('host')
+        
     };
-
+       
     G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', parametros).then(function(resultado) {
 
         return G.Q.nfcall(__impuestoProveedor, resultado[0], args.facturaProveedor.parmetros.recepciones[0], {});
@@ -278,8 +287,12 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones, parametros);
 
     }).then(function(resultado) {
+       
+        return G.Q.nfcall(__reporteFactura, parametros);
+            
+    }).then(function(resultado) {
 
-        res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: []}));
+        res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: resultado}));
 
     }).fail(function(err) {
         console.log("Error ingresarFactura ", err);
@@ -295,15 +308,71 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
  * +Descripcion  Metodo encargado crear el reporte factura proveedor                                      
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */
+FacturacionProveedores.prototype.sincronizarFi = function(req, res){
+var args = req.body.data;
+console.log("paramtrose:::: ",args);
+  __sincronizarCuentasXpagarFi({},function(resultado){
+      console.log("resultado::: ",resultado); 
+      res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: resultado}));
+  });
+}
+
+function __sincronizarCuentasXpagarFi(obj, callback){
+  
+   var url =  G.constants.WS().FI.DUSOFT_FI;
+   var resultado;
+   
+    obj.parametros = {
+        function:'cuentas_x_pagar_fi',
+        parametros:obj.param
+      
+    };
+    obj.error = false;
+    
+    //Se invoca el ws
+    G.Q.nfcall(G.soap.createClient, url).
+    then(function(client) {
+        
+        return G.Q.ninvoke(client, "sincronizarFi", obj.parametros);
+    }).
+    spread(function(result,raw,soapHeader){
+     var resul=JSON.parse(result.return.msj["$value"]);
+                console.log("resultado:: ",resul.mensaje_ws);
+                console.log("resultado:::: ",resul);
+        if(!result.return.msj["$value"]){
+            throw {msj:"Se ha generado un error", status:403, obj:{}}; 
+        } else {            
+            obj.resultado = result.return.msj["$value"];
+          
+        }
+        
+    }).
+   then(function(){
+        callback(false, obj);
+        
+    }).fail(function(err) {
+        
+        obj.error = true;
+        obj.tipo = '0';
+        console.log("ERROR ***************** ", err);
+        callback(err);
+       
+    }).done();
+}
+
+
+
+
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion  Metodo encargado crear el reporte factura proveedor                                      
+ * @fecha 2017-05-08 (YYYY-MM-DD)
+ */
 FacturacionProveedores.prototype.reporteFacturaProveedor = function(req, res){
 
     var that = this;
     var args = req.body.data;
     var usuario = req.session.user.usuario_id;
-    var cabeceraFactura=[];
-    var detalleFactura=[];
-    var impuestos=[];
-    var valores=[];
     
     if (args.facturaProveedor.numeroFactura === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de Factura', 404, {reporteFacturaProveedor: []}));
@@ -319,6 +388,8 @@ FacturacionProveedores.prototype.reporteFacturaProveedor = function(req, res){
     }
     
     var parametros = {
+        that:that,
+        usuario:usuario,
         numero_factura: args.facturaProveedor.numeroFactura,
         empresaId: args.facturaProveedor.empresaId, 
         empresa_id: args.facturaProveedor.empresaId, 
@@ -326,20 +397,38 @@ FacturacionProveedores.prototype.reporteFacturaProveedor = function(req, res){
         terminoBusqueda:"",
         fechaInicio:"",
         fechaFin:"",
-        filtro:{}
+        filtro:{},
+        protocol:req.protocol,
+        host: req.get('host')
     };
     parametros.filtro.tipo="";
+     G.Q.nfcall(__reporteFactura, parametros).then(function(resultado){
+       
+       res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {reporteFacturaProveedor: resultado}));
+         
+     }).fail(function(err) {
+         res.send(G.utils.r(req.url, err, 500, {}));
+     }).done();
+};
+
+function __reporteFactura(parametros,callback){
+ 
+    var cabeceraFactura=[];
+    var detalleFactura=[];
+    var impuestos=[];
+    var valores=[];
     
-    G.Q.ninvoke(that.m_facturacion_proveedores,'consultarFacturaProveedor',parametros).then(function(resultado){
-//        console.log("consultarFacturaProveedor ",resultado);
+    G.Q.ninvoke(parametros.that.m_facturacion_proveedores,'consultarFacturaProveedor',parametros).then(function(resultado){
+
         cabeceraFactura=resultado;
         parametros.anio=cabeceraFactura[0].anio_factura;
-        return G.Q.ninvoke(that.m_facturacion_proveedores, "listarParametrosRetencion", parametros);
+        
+        return G.Q.ninvoke(parametros.that.m_facturacion_proveedores, "listarParametrosRetencion", parametros);
 
     }).then(function(resultado) {
-//        console.log("listarParametrosRetencion ",resultado);
+        
         impuestos=resultado;
-        return G.Q.ninvoke(that.m_facturacion_proveedores, "consultarFacturaProveedorDetalle", parametros);
+        return G.Q.ninvoke(parametros.that.m_facturacion_proveedores, "consultarFacturaProveedorDetalle", parametros);
         
     }).then(function(resultado) {
         detalleFactura=resultado;
@@ -357,39 +446,34 @@ FacturacionProveedores.prototype.reporteFacturaProveedor = function(req, res){
 
             };
                              
-            return G.Q.nfcall(__impuestos, that, 0, detalleFactura, impuestos[0], valores, cabeceraFactura[0]);
+            return G.Q.nfcall(__impuestos, parametros.that, 0, detalleFactura, impuestos[0], valores, cabeceraFactura[0]);
             
      }).then(function(resultado) { 
+         
         valores=resultado;
         var datos=[];
         datos['cabecera']=cabeceraFactura[0];
         datos['impuestos']=impuestos[0];
         datos['detalle']=detalleFactura;
-        datos['serverUrl']= req.protocol + '://' + req.get('host') + "/";
-        datos['usuario']= usuario;
+        datos['serverUrl']= parametros.protocol + '://' + parametros.host + "/";
+        datos['usuario']= parametros.usuario;
         datos['valores']= valores[0];
         return G.Q.nfcall(__generarReporteFactura,datos);
         
-    }).then(function(resultado) {  
-       
-//        console.log("consultarFacturaProveedorDetalle ",resultado);
-        res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {reporteFacturaProveedor: []}));
-//        detalleFactura=resultado;
+    }).then(function(resultado) { 
+        
+       callback(false,resultado);       
         
     }).fail(function(err) {
         console.log("Error reporteFacturaProveedor ", err);
-        res.send(G.utils.r(req.url, err, 500, {}));
+        callback(true,err);   
+        
     }).done();
 
 };
 
 // Funcion que genera el reporte en formato PDF usando la libreria JSReport
 function __generarReporteFactura(rows, callback) {
- console.log("cabecerassss  ",rows['cabecera']);
- console.log("datossss  ",rows['detalle']);
- console.log("impuestossss  ",rows['impuestos']);
- console.log("valores  ",rows['valores']);
-// callback(true);
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/FacturacionProveedores/reports/factura.html', 'utf8'),
@@ -402,13 +486,11 @@ function __generarReporteFactura(rows, callback) {
             cabecera: rows['cabecera'],
             detalle: rows['detalle'],
             valores: rows['valores'],
-//            lista_productos: rows.lista_productos,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
             usuario_imprime: rows['usuario'],
             serverUrl: rows['serverUrl']
         }
     }, function(err, response) {
-console.log("reporte1",err);
         response.body(function(body) {
 
             var fecha_actual = new Date();
@@ -417,10 +499,9 @@ console.log("reporte1",err);
             G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
 
                 if (err) {
-                    console.log("reporte2",err);
-                   // res.send(G.utils.r(req.url, 'Se ha generado un error generando el reporte', 200, {nombre_reporte: {}}));
+                    callback(true,err);
                 } else {
-                    callback(nombre_reporte);
+                    callback(false,nombre_reporte);
                 }
             });
 

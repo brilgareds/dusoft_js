@@ -12,6 +12,16 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     /**
                      * @author Andres Mauricio Gonzalez
+                     * @fecha  15/05/2017 DD/MM/YYYYY
+                     * +Descripcion insertar factura proveedor
+                     */
+                    self.sincronizarFi = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONPROVEEDOR.SINCRONIZAR_FI, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
                      * @fecha  08/05/2017 DD/MM/YYYYY
                      * +Descripcion insertar factura proveedor
                      */
@@ -161,6 +171,8 @@ define(["angular", "js/services"], function (angular, services) {
                                 factura.setEstado(data.estado);
                                 factura.setEmpresa(data.empresa_id);
                                 factura.setDescripcionEstado(data.descripcion_estado);
+                                factura.setValorFactura(data.valor_factura);
+                                factura.setValorDescuento(data.valor_descuento);
                                 facturas.push(factura);                                
                             });
                         

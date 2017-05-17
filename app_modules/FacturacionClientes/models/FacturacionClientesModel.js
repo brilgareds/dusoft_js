@@ -135,6 +135,12 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
 
 };
 
+/**
+ * +Descripcion Campos en comun para la consulta que tiene dos union
+ *              para listar las facturas generadas
+ * @fecha 17/05/2017
+ * @author Cristian Ardila
+ */
 function __camposListaFacturasGeneradas() {
 
     var colSubQuery2 = [
@@ -181,7 +187,12 @@ function __camposListaFacturasGeneradas() {
 }
 ;
 
-
+/**
+ * +Descripcion Consulta que se reutilizara para una consulta mayor con dos
+ *              uniones
+ * @author Cristian Ardila
+ * @fecha 17/05/2017
+ */
 function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
  
     var consulta = G.knex.select(columna)
@@ -274,9 +285,6 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de listar los clientes
  * @fecha 2017-02-05 YYYY-DD-MM
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
  */
 FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, callback) {
 
@@ -392,7 +400,11 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
  */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
    
-   var columnQuery = [
+   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes****************");
+   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes****************");
+   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes****************");
+
+    var columnQuery = [
         "a.tipo_id_tercero",
 	"a.tercero_id",
 	"c.nombre_tercero",
@@ -441,7 +453,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
-       
+       console.log("resultado [listarPedidosClientes] ", resultado);
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarPedidosClientes] ", err);
@@ -1187,7 +1199,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
              
             return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);                                  
         }).then(function(){
-            
+                                
             return G.Q.nfcall(__guardarDespachoIndividual,that,0, obj.parametros.documentos,[],transaccion);
             
         }).then(function(consultaCompleta){
@@ -1218,7 +1230,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
                         });    
                     });                 
                 });
-                
+                                                       
             }else{
                 throw {msj:'No hay documentos seleccionados', status: 404};  
                 
@@ -1239,11 +1251,11 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
             };
           
             return G.Q.ninvoke(that,'actualizarEstadoFacturaPedido',parametros, transaccion);
-            
+                                                                      
         }).then(function(){
                                                
-           console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
-           transaccion.commit(); 
+           console.log("AQUI VA OK OKo OK [consultaCompleta]: ");         
+           //transaccion.commit(); 
         }).fail(function(err){
             console.log("err (/fail) [transaccionGenerarFacturaIndividual]: ", err);
             transaccion.rollback(err);

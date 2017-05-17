@@ -334,6 +334,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 },
             ]
         };
+        
+        if ($state.is("Despacho") === true) {
+              
+            var storageListaFacturaDespachoGenerada = localStorageService.get('listaFacturaDespachoGenerada');
+            
+            console.log("storageListaFacturaDespachoGenerada ", storageListaFacturaDespachoGenerada);
+            
+        };
         /**
          * @author Cristian Ardila
          * @fecha 04/02/2016
@@ -442,9 +450,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-
+            
+            console.log("SALIO Y BORRO ")
             $scope.$$watchers = null;
-
+            
             $scope.root = null;
 
         });

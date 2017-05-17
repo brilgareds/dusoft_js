@@ -161,14 +161,7 @@ define(["angular", "js/services"], function (angular, services) {
                             
                             var _documento = DocumentoDespacho.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal||'', datos[i].fecha_registro||'');
                             
-                            if(estado === 0){    
-                                _documento.setValor(datos[i].valor_total);
-                                _documento.setSaldo(datos[i].saldo);
-                                _documento.setDescripcionEstado(datos[i].descripcion_estado);
-                                _documento.setEstadoSincronizaciono(datos[i].estado);
-                                _documento.setFechaFactura(datos[i].fecha_registro);
-                                _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
-                            }
+                            
                                 //
                             
                             
@@ -180,7 +173,17 @@ define(["angular", "js/services"], function (angular, services) {
                                 _pedido.setSeleccionado(datos[i].seleccionado);
                             }
                              
-                                //_pedido.agregarDocumentos(_documento);
+                            if(estado === 0){    
+                                _documento.setValor(datos[i].valor_total);
+                                _documento.setSaldo(datos[i].saldo);
+                                _documento.setDescripcionEstado(datos[i].descripcion_estado);
+                                _documento.setEstadoSincronizaciono(datos[i].estado);
+                                _documento.setFechaFactura(datos[i].fecha_registro);
+                                _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
+                                
+                                _pedido.agregarDocumentos(_documento);
+                            } 
+                                
                             
                                 _pedido.agregarVendedor(_vendedorDespacho);
                                 _terceroDespacho.agregarPedidos(_pedido);

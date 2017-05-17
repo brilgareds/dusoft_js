@@ -137,7 +137,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     }) 
                                     
                                     /**
-                                     * +Descripcion
+                                     * +Descripcion Lista de los pedidos que estan listos
+                                     *              para facturarse
                                      */
                                     prefijosDocumentos.forEach(function(resultado){
                                           
@@ -452,8 +453,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         };
                                         
                                         facturacionClientesService.generarFacturaIndividual(obj, function (data) {
-                                             console.log("AQUI MIRA ", data)
-                                            if (data.status === 200) {
+                                             
+                                            if (data.status === 200) {                                     
+                                               
+                                                localStorageService.add("listaFacturaDespachoGenerada",
+                                                    data.obj.generar_factura_individual[0]
+                                                );
+                                               $state.go('Despacho', data.obj.generar_factura_individual[0]);
+                                               //console.log("data ", data.obj.generar_factura_individual[0]);
                                                AlertService.mostrarMensaje("warning", data.msj);
                                             }
                                             if(data.status === 404){
@@ -471,7 +478,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             );
                         }                              
                     };
-                   
+                    
+                    
+                    /*  localStorageService.add("clientePedidoDespacho",{
+               tipoIdTercero: entity.getTipoId(),
+               terceroId: entity.getId()
+
+            });
+            
+            */
+                    
                     $scope.seleccionarTipoPago = function(tipoPago){
                         $scope.tipoPagoFactura = tipoPago;
                     };

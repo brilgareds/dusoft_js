@@ -353,13 +353,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 row.pedidos[0].agregarDocumentosSeleccionados(documentos);  
                                             }
                                         });
+                                        
                                     });
                                 
                                 //console.log(" PEDIDOS SELECCIONADOS ",  $scope.root.pedidosSeleccionados);
                                 
                                 
                                 var obj = {
-                                    session: $scope.session,
+                                    session: $scope.session,                          
                                     data: {
                                         generar_factura_agrupada: {
                                             terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
@@ -453,7 +454,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         facturacionClientesService.generarFacturaIndividual(obj, function (data) {
                                              console.log("AQUI MIRA ", data)
                                             if (data.status === 200) {
- 
+                                               AlertService.mostrarMensaje("warning", data.msj);
                                             }
                                             if(data.status === 404){
                                                 AlertService.mostrarMensaje("warning", data.msj);

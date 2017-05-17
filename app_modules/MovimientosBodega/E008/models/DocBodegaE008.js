@@ -6,12 +6,19 @@ var DocumentoBodegaE008 = function(movientos_bodegas, m_pedidos_clientes, m_pedi
 
 };
 
+/**
+ * +Descripcion Metodo encargado de consultar el detalle de un pedido ya despachado
+ * @author Cristian Ardila
+ * @fecha 2017-05-12 YYYY-MM-DD
+ */
 DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback){
     
-    console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
+   /* console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
     console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
     console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
      
+    console.log("obj ", obj); 
+     */
     var columnSubQueryA = [
         G.knex.raw("'CLIENTES' as tipo_despacho"),
         G.knex.raw("a.tipo_id_tercero || ' ' || a.tercero_id || ' : '|| b.nombre_tercero as farmacia_cliente "),
@@ -21,15 +28,15 @@ DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback
         
    ];
    
-   var columnSubQueryB = [
+    var columnSubQueryB = [
         G.knex.raw("'FARMACIAS' as tipo_despacho"),
         G.knex.raw("e.empresa_id || ' - '|| e.razon_social ||' ::: '||c.descripcion as farmacia_cliente "),
-        G.knex.raw("e.solicitud_prod_a_bod_ppal_id AS numero_pedido"),
+        G.knex.raw("a.solicitud_prod_a_bod_ppal_id AS numero_pedido"),
         G.knex.raw("e.direccion AS direccion"),
-        G.knex.raw("e.telefono AS telefono"), 
+        G.knex.raw("e.telefonos AS telefono"), 
         
-   ];
-    
+   ]; 
+                   
    var subQueryA = G.knex.select(columnSubQueryA)
             .from("inv_bodegas_movimiento_despachos_clientes as a")
               .innerJoin("terceros as b", function () {
@@ -40,9 +47,9 @@ DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback
                 this.andWhere("a.empresa_id", obj.empresa_id)
                     .andWhere("a.prefijo", obj.prefijo)
                     .andWhere("a.numero", obj.numero)
-            });
+            }).as("a");
     
-    var subQueryB = G.knex.select(columnSubQueryA)
+    var subQueryB = G.knex.select(columnSubQueryB)
             .from("inv_bodegas_movimiento_despachos_farmacias as a")
               .join("solicitud_productos_a_bodega_principal as b", function () {
                 this.on("a.solicitud_prod_a_bod_ppal_id","b.solicitud_prod_a_bod_ppal_id")
@@ -52,28 +59,151 @@ DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback
                     .on("b.bodega","c.bodega")
             }).join("centros_utilidad as d", function(){
                 this.on("c.centro_utilidad","d.centro_utilidad")
-                        .on("c.empresa_id","d.empresa_id")
-            }).join("empresas as e")
+                    .on("c.empresa_id","d.empresa_id")
+            }).join("empresas as e", function(){
                 this.on("d.empresa_id","e.empresa_id")
                     
-            where(function(){
+            }).where(function(){
                 this.andWhere("a.empresa_id", obj.empresa_id)
                     .andWhere("a.prefijo", obj.prefijo)
                     .andWhere("a.numero", obj.numero)
+            }).as("b");
+    
+    
+    var query = G.knex.select('*')
+            .from(subQueryA)
+            .unionAll(function(){
+                this.select('*')
+                 .from(subQueryB)                           
             });
-   
-   subQueryB.then(function(resultado) {
-      
+    
+   query.then(function(resultado) {
+        //console.log("query ", query.toSQL());
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [consultarDatosAdicionales] ", err);
         callback({err:err, msj: "Error al consultar los datos adicionales"});   
     });
-   
-    
-    
+       
 };
 
+/**
+ * +Descripcion Metodo encargado de retornar la consulta que genera
+ *              el detalle del documento, con la diferencia dde que
+ *              recibira como parametro un campo y una tabla para
+ *              ser reutilizada
+ * @author Cristian Ardila
+ * @fecha  2017/05/15 YYYY/MM/DD
+ */
+function __camposObtenerDocumentoBodega(observacion, tablaPedidos){
+     
+     var columnSubQueryA = [ G.knex.raw("m.*"),
+                    G.knex.raw("c.inv_tipo_movimiento as tipo_movimiento"),
+                    G.knex.raw("b.tipo_doc_general_id as tipo_doc_bodega_id"),
+                    G.knex.raw("c.descripcion as tipo_clase_documento"),
+                    G.knex.raw("b.descripcion"),
+                    observacion
+                    ];
+    var consulta = G.knex.select(columnSubQueryA)
+            .from('inv_bodegas_movimiento as m')
+            .join('inv_bodegas_documentos as a', function () {
+                this.on("a.documento_id", "m.documento_id")
+                        .on("a.empresa_id"," m.empresa_id")
+                        .on("a.centro_utilidad"," m.centro_utilidad")
+                        .on("a.bodega"," m.bodega")
+            }).join('documentos as b', function(){
+                this.on("b.documento_id","a.documento_id")
+                        .on("b.empresa_id","a.empresa_id")
+            }).join("tipos_doc_generales as c", function(){
+                this.on("c.tipo_doc_general_id","b.tipo_doc_general_id")
+            }).leftJoin(tablaPedidos, function(){
+                this.on("m.empresa_id","dc.empresa_id")
+                    .on("m.prefijo","dc.prefijo")
+                    .on("m.numero","dc.numero")
+            });  
+        return consulta;
+}
+
+/**
+ * +Descripcion Metodo encargado de obtener el detalle del documento
+ *              de bodega generado
+ * @author Cristian Manuel Ardila Troches
+ * @fecha 2017/05/15 YYYY/MM/DD
+ */
+DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
+    
+    /*console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
+    console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
+    console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
+    */
+    var column = ["y.documento_id",
+                "y.centro_utilidad",	
+                 "y.bodega",	
+                 "y.prefijo",
+                 "y.numero",
+                 "y.observacion",	
+                 "y.sw_estado",	
+                 "y.usuario_id",
+                 "y.fecha_registro",
+                 "y.total_costo", 
+                 "y.abreviatura",
+                 "y.empresa_destino",
+                 "y.sw_verificado",
+                 "y.porcentaje_rtf",
+                 "y.porcentaje_ica",
+                 "y.porcentaje_reteiva",
+                 "y.tipo_movimiento",	
+                 "y.tipo_doc_bodega_id",
+                 "y.tipo_clase_documento",
+                 "y.descripcion",
+                 G.knex.raw("list(y.obs_pedido) as obs_pedido")
+];                                     
+
+    //obtenerTotalDetalleDespacho
+    var consultaMovimientoClientes = __camposObtenerDocumentoBodega(G.knex.raw("vop.observacion as obs_pedido"),
+                            "inv_bodegas_movimiento_despachos_clientes as dc");
+    
+    var consultaMovimientoFarmacias = __camposObtenerDocumentoBodega(G.knex.raw("sp.observacion as obs_pedido"),
+                            "inv_bodegas_movimiento_despachos_farmacias as dc");
+                            
+    var queryA = consultaMovimientoClientes.leftJoin("ventas_ordenes_pedidos as vop", function(){
+                this.on("dc.pedido_cliente_id","vop.pedido_cliente_id")
+            }).where(function(){
+                this.andWhere("m.empresa_id", obj.empresa_id)
+                    .andWhere("m.prefijo", obj.prefijo)
+                    .andWhere("m.numero", obj.numero)
+            }).as("a");
+         
+                                                       
+    var queryB = consultaMovimientoFarmacias.leftJoin("solicitud_productos_a_bodega_principal as sp", function(){
+                this.on("dc.solicitud_prod_a_bod_ppal_id","sp.solicitud_prod_a_bod_ppal_id")
+            }).where(function(){
+                this.andWhere("m.empresa_id", obj.empresa_id)
+                    .andWhere("m.prefijo", obj.prefijo)
+                    .andWhere("m.numero", obj.numero)
+            }).as("b");
+            
+    var queryUnion = G.knex.select('*')
+            .from(queryA)
+            .union(function(){
+                this.select('*')
+                 .from(queryB)                           
+            }).as("y");
+    
+    var query =  G.knex.column(column)
+            .select()
+            .from(queryUnion)
+            .groupBy(G.knex.raw("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21"));
+    
+    queryA.then(function(resultado) {
+        //console.log("resultado [obtenerDocumentoBodega]: ", resultado);
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [obtenerDocumentoBodega] ", err);
+        callback({err:err, msj: "Error al obtener el documento de bodega"});   
+    }); 
+
+};          
 /*********************************************************************************************************************************
  * ============= DOCUMENTOS TEMPORALES =============
  /*********************************************************************************************************************************/

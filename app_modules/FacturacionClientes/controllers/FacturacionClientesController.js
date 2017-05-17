@@ -399,7 +399,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
             throw {msj:'Se ha generado un error (Duplicate-key) Al crear la factura ['+ documentoFacturacion[0].id +"-" + documentoFacturacion[0].numeracion+"]", status: 409};   
 
         }else{           
-            
+            console.log("ip ", ip)
             if(ip.substr(0, 6) === '::ffff'){               
                 return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
             }else{                
@@ -544,22 +544,19 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
        
         consultarParametrosRetencion = resultado;
         
- 
         if(resultado.length > 0){
             
-            throw {msj:'Se ha generado un error (Duplicate-key) Al crear la factura ['+ documentoFacturacion[0].id +"-" + documentoFacturacion[0].numeracion+"]", status: 409};   
-
-        }else{           
- 
             if(ip.substr(0, 6) === '::ffff'){               
                 return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
             }else{                
                 def.resolve();                
             } 
+            
+        }else{           
+            
+            throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};    
+            
         }
-        /*}else{   
-            throw {msj:'Se ha generado un error (Duplicate-key) Al crear la factura ['+ documentoFacturacion[0].id +"-" + documentoFacturacion[0].numeracion+"]", status: 409};                       
-        }*/
          
     }).then(function(resultado){
        
@@ -575,7 +572,8 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
             
-    }).then(function(resultado){
+    }).then(function(resultado){                              
+        
         
         console.log("resultado [transaccionGenerarFacturasAgrupadas]: ", resultado);
         

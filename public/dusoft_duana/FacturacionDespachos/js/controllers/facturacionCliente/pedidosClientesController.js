@@ -434,7 +434,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             }
                                             
                                         });
-                                        console.log(" $scope.root.documentosSeleccionadosFiltrados ",  $scope.root.documentosSeleccionadosFiltrados);
                                          
                                         var obj = {
                                             session: $scope.session,
@@ -453,15 +452,18 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         };
                                         
                                         facturacionClientesService.generarFacturaIndividual(obj, function (data) {
-                                             
-                                            if (data.status === 200) {                                     
-                                               
+                                            
+                                            /**
+                                             * +Descripcion si se genera la factura satisfacturiamente,
+                                             *              el sistema activara la vista que lista las facturas generadas
+                                             *              haciendo referencia a la factura reciente
+                                             */
+                                            if (data.status === 200) {                                                                                   
                                                 localStorageService.add("listaFacturaDespachoGenerada",
-                                                    data.obj.generar_factura_individual[0]
+                                                    {active:true, datos:data.obj.generar_factura_individual[0]}
                                                 );
-                                               $state.go('Despacho', data.obj.generar_factura_individual[0]);
-                                               //console.log("data ", data.obj.generar_factura_individual[0]);
-                                               AlertService.mostrarMensaje("warning", data.msj);
+                                                $state.go('Despacho');                                             
+                                                AlertService.mostrarMensaje("warning", data.msj);
                                             }
                                             if(data.status === 404){
                                                 AlertService.mostrarMensaje("warning", data.msj);
@@ -568,7 +570,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.$$watchers = null;
 
                         $scope.root = null;
-
+                        
                     });
 
                 }]);

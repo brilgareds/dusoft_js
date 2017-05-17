@@ -558,7 +558,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             
         }
          
-    })/*.then(function(resultado){
+    }).then(function(resultado){
        
         if(!resultado || resultado.length > 0){
             parametros.direccion_ip = ip;
@@ -572,7 +572,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
             
-    })*/.then(function(resultado){                              
+    }).then(function(resultado){                              
          
         return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_individual:documentoFacturacion}));
        

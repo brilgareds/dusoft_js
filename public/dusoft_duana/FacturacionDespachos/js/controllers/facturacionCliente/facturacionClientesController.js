@@ -39,8 +39,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 "btn btn-warning btn-xs"
             ],
             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
+            activarTabFacturasGeneradas: false
         };
-
+        $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
+        $scope.session = {
+            usuario_id: Usuario.getUsuarioActual().getId(),
+            auth_token: Usuario.getUsuarioActual().getToken()
+        };
         /*
          * Inicializacion de variables
          * @param {type} empresa
@@ -51,11 +56,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
             // that.cargar_permisos();
-            $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
-            $scope.session = {
-                usuario_id: Usuario.getUsuarioActual().getId(),
-                auth_token: Usuario.getUsuarioActual().getToken()
-            };
+           
+           
             $scope.documentosAprobados = [];
             that.centroUtilidad = [];
 
@@ -209,7 +211,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 03/05/2017 DD/MM/YYYY
          * @returns {undefined}
          */
-        that.listarFacturasGeneradas = function () {
+        that.listarFacturasGeneradas = function (numero, prefijo) {
              
             var obj = {
                 session: $scope.session,
@@ -219,8 +221,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         terminoBusqueda: $scope.root.termino_busqueda_fg.length > 0 ? $scope.root.termino_busqueda_fg : '', //$scope.root.termino_busqueda, //$scope.root.numero, 900766903
                         empresaId: $scope.root.empresaSeleccionada.getCodigo(),
                         paginaActual: $scope.paginaactualFacturasGeneradas,
-                        numero: $scope.root.termino_busqueda_prefijo.length > 0 ? $scope.root.termino_busqueda_prefijo: '', //52146
-                        prefijo: $scope.root.filtroPrefijo,
+                        numero: numero > 0 ? numero : $scope.root.termino_busqueda_prefijo.length > 0 ? $scope.root.termino_busqueda_prefijo: '', //52146
+                        prefijo: numero > 0 ? prefijo:$scope.root.filtroPrefijo,
                         tipoIdTercero: $scope.root.filtro,
                         pedidoClienteId: $scope.root.termino_busqueda_pedido.length > 0 ? $scope.root.termino_busqueda_pedido: '',
                         nombreTercero: $scope.root.termino_busqueda_nombre.length > 0 ? $scope.root.termino_busqueda_nombre: '',
@@ -228,7 +230,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 }
             };
-             
+             console.log("obj [listarFacturasGeneradas]: ", obj)
             facturacionClientesService.listarFacturasGeneradas(obj, function (data) {
                 $scope.root.facturas_generadas = [];
                 if (data.status === 200) {
@@ -335,12 +337,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             ]
         };
         
+        $scope.limpiarLocalStorageFacturaGenerada = function(){
+            console.log("ENTRO A QUI")
+            localStorageService.add('listaFacturaDespachoGenerada', null); 
+        };
+        
         if ($state.is("Despacho") === true) {
-              
-            var storageListaFacturaDespachoGenerada = localStorageService.get('listaFacturaDespachoGenerada');
             
-            console.log("storageListaFacturaDespachoGenerada ", storageListaFacturaDespachoGenerada);
-            
+            var storageListaFacturaDespachoGenerada = localStorageService.get('listaFacturaDespachoGenerada');     
+            if(storageListaFacturaDespachoGenerada){
+                console.log("storageListaFacturaDespachoGenerada ", storageListaFacturaDespachoGenerada);
+                $scope.root.activarTabFacturasGeneradas = storageListaFacturaDespachoGenerada.active;                
+                that.listarFacturasGeneradas(storageListaFacturaDespachoGenerada.datos.numeracion,{tipo: 'ME', descripcion: "ME"});
+            }
         };
         /**
          * @author Cristian Ardila
@@ -368,7 +377,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          */
         $scope.buscarFacturaGenerada = function (event) {
             if (event.which === 13 || event.which === 1) {
-                that.listarFacturasGeneradas();
+                that.listarFacturasGeneradas(0,{});
             } 
            
         };
@@ -415,7 +424,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          */
         $scope.paginaSiguienteFG = function () {
             $scope.paginaactualFacturasGeneradas++;
-            that.listarFacturasGeneradas();
+            that.listarFacturasGeneradas(0,{});
         };
 
         /**
@@ -453,7 +462,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             
             console.log("SALIO Y BORRO ")
             $scope.$$watchers = null;
-            
+            $scope.root.activarTabFacturasGeneradas = false;
+            localStorageService.add("listaFacturaDespachoGenerada",null);
             $scope.root = null;
 
         });

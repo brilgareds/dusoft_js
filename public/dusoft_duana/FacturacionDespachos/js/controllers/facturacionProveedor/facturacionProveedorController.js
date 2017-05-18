@@ -190,7 +190,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 18/05/2017
          * @returns {undefined}
          */
-        that.sincronizarFI = function(data) {
+        that.sincronizarFI = function(data,callback) {
 
             var obj = {
                 session: $scope.session,
@@ -207,8 +207,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                 if (data.status === 200) {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.obj.sincronizarFi.resultado.mensaje_ws + " \n " + data.obj.sincronizarFi.resultado.mensaje_bd);
+                    callback(true);
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    callback(false);
                 }
 
             });
@@ -336,11 +338,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             facturacionProveedoresService.listarFacturaProveedores(obj, function(data) {
                 $scope.root.clientes = [];
                 if (data.status === 200) {
-//                                console.log("Data ",data.obj.listarFacturaProveedor);
-//                                $scope.root.items = data.obj.listarOrdenesCompraProveedor.length;  
+                    $scope.root.items_factura = data.obj.listarFacturaProveedor.length; 
                     $scope.root.facturasProveedores = facturacionProveedoresService.renderFacturasProveedores(data.obj.listarFacturaProveedor);
-//                                $scope.ultima_busqueda_factura = $scope.termino_busqueda_factura;
-//                                $scope.root.ordenProveedores = facturacionProveedoresService.renderOrdenesComprasProveedores(data.obj.listarOrdenesCompraProveedor);
+                    $scope.ultima_busqueda_factura = $scope.termino_busqueda_factura;
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
@@ -363,20 +363,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
+            showFilter:true,
             columnDefs: [
-                {field: '#Factura', width: "10%", displayName: '#Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNumeroFactura()}}</p></div>'},
-                {field: 'Total', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 " style="text-align:right;" ><p class="text-uppercase">{{row.entity.getValorFactura() | currency:"$"}}</p></div>'},
-                {field: 'Descuento', width: "10%", displayName: 'Descuento', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 " style="text-align:right;"><p class="text-uppercase">{{row.entity.getValorDescuento() | currency:"$"}}</p></div>'},
-                {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
+                {field: '#Factura', width: "5%", displayName: '#Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNumeroFactura()}}</p></div>'},
+                {field: 'Total', width: "5%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 " style="text-align:right;" ><p class="text-uppercase">{{row.entity.getValorFactura() | currency:"$"}}</p></div>'},
+                {field: 'Descuento', width: "5%", displayName: 'Descuento', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 " style="text-align:right;"><p class="text-uppercase">{{row.entity.getValorDescuento() | currency:"$"}}</p></div>'},
+                {field: 'Usuario', width: "15%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
                 {field: 'Observaciones', width: "30%", displayName: 'Observaciones', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getObservacion()}}</p></div>'},
-                {displayName: "Detalle", cellClass: "txt-center dropdown-button", width: "10%",
+                {field: 'Observaciones WS', width: "24%", displayName: 'Observaciones WS', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getObservacionSincronizacion()}}</p></div>'},
+                {displayName: "Detalle", cellClass: "txt-center dropdown-button", width: "8%",
                     cellTemplate: ' <div class="row">\
                                                  <button class="btn btn-default btn-xs" ng-click="imprimirFactura(row.entity)">\
                                                      <span class="glyphicon glyphicon-print"> Imprimir</span>\
                                                  </button>\
                                                </div>'
                 },
-                {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
+                {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "8%",
                     cellTemplate: ' <div class="row">\
                                                   <div ng-if="validarSincronizacion(row.entity)" >\
                                                     <button class="btn btn-danger btn-xs " ng-click="sincronizar(row.entity)">\
@@ -384,7 +386,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                     </button>\
                                                   </div>\
                                                   <div ng-if="!validarSincronizacion(row.entity)" >\
-                                                    <button class="btn btn-success btn-xs disabled">\
+                                                    <button class="btn btn-success btn-xs  disabled">\
                                                         <span class="glyphicon glyphicon-saved"> Sincronizar</span>\
                                                     </button>\
                                                   </div>\
@@ -416,8 +418,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @returns {undefined}
          */
         $scope.sincronizar = function(data) {
-            that.sincronizarFI(data);
-            that.listarFacturasProveedores();
+            that.sincronizarFI(data,function(respuesta){
+                if(respuesta){
+                 that.listarFacturasProveedores();
+                }
+            });
         };
 
         /**
@@ -579,6 +584,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             enableRowSelection: false,
             enableCellSelection: true,
             showFooter: true,
+            showFilter:true,
             enableHighlighting: true,
             footerTemplate: '   <div class="row col-md-12">\
                                         <div class="">\
@@ -634,6 +640,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
+            showFilter:true,  
             columnDefs: [
                 {field: '#OC', width: "7%", displayName: '#OC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_numero_orden()}}</p></div>'},
                 {field: '#Recepcion', width: "7%", displayName: '#Recepcion', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_recepcion_parcial()}}</p></div>'},
@@ -693,6 +700,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 dialogFade: false,
                 windowClass: 'app-modal-window-xlg-ls',
                 keyboard: true,
+                showFilter:true,
                 cellClass: "ngCellText",
                 template: ' <div class="modal-header">\
                                                 <button type="button" class="close" ng-click="cerrar()">&times;</button>\
@@ -759,6 +767,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 dialogFade: false,
                 windowClass: 'app-modal-window-ls-ls',
                 keyboard: true,
+                showFilter:true,
                 template: ' <div class="modal-header">\
                                                 <button type="button" class="close" ng-click="cerrar()">&times;</button>\
                                                 <h4 class="modal-title"><b>RECEPCIONES PARCIALES</b></h4>\

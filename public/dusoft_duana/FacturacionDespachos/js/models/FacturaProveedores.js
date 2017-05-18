@@ -164,6 +164,15 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.porcentaje_reteiva;
             };
             
+            FacturaProveedores.prototype.setObservacionSincronizacion = function(observacionSincronizacion) {
+                this.observacionSincronizacion = observacionSincronizacion;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getObservacionSincronizacion = function() {
+                return this.observacionSincronizacion;
+            };
+            
             // Instancia
             this.get = function(numeroFactura, codigoProveedor,fechaRegistro,observacion) {
                 return new FacturaProveedores(numeroFactura, codigoProveedor,fechaRegistro,observacion);

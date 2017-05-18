@@ -172,6 +172,7 @@ define(["angular", "js/services"], function(angular, services) {
                             factura.setDescripcionEstado(data.descripcion_estado);
                             factura.setValorFactura(data.valor_factura);
                             factura.setValorDescuento(data.valor_descuento);
+                            factura.setObservacionSincronizacion(data.mensaje);
                             facturas.push(factura);
                         });
 

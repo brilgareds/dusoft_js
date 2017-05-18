@@ -46,16 +46,6 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         G.knex.raw("coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido"),
         G.knex.raw("coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado"),
         G.knex.raw("CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal"),
-        G.knex.raw("(SELECT count(bbb.item_id)\
-                    FROM compras_ordenes_pedidos_detalle aaa\
-                    INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
-                    WHERE aaa.orden_pedido_id = a.orden_pedido_id) as total_novedades"),
-        G.knex.raw("(SELECT count(ccc.id)\
-                    FROM compras_ordenes_pedidos_detalle aaa\
-                        INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
-                    INNER JOIN archivos_novedades_ordenes_compras ccc ON bbb.id = ccc.novedad_orden_compra_id\
-                    WHERE aaa.orden_pedido_id = a.orden_pedido_id\
-        ) as total_archivos"),
         G.knex.raw("COALESCE(CASE WHEN  (date_part('day',age(now(), a.fecha_orden)) > 5) AND (a.fecha_ingreso IS NULL) THEN '1' END , '0') as alerta_ingreso"),
         "h.descripcion as nombre_bodega", 
         "i.id as recepcion_id"
@@ -98,21 +88,26 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
 
     }).
     limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).as("a");
+    offset((pagina - 1) * G.settings.limit).
+    orderByRaw("1 DESC").as("a");
     
     var queryPrincipal = G.knex.column([
-        "a.*"
-       /* "g.empresa_id as despacho_empresa_id",
-        "g.prefijo as despacho_prefijo", 
-        "g.numero as despacho_numero", 
-        G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")*/
-    ]).from(query).orderByRaw("3 DESC");
-    //leftJoin("inv_bodegas_movimiento_despachos_farmacias as g", "a.numero_pedido", "g.solicitud_prod_a_bod_ppal_id ");
+        "a.*",
+         G.knex.raw("(SELECT count(bbb.item_id)\
+                    FROM compras_ordenes_pedidos_detalle aaa\
+                    INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
+                    WHERE aaa.orden_pedido_id = a.numero_orden) as total_novedades"),
+        G.knex.raw("(SELECT count(ccc.id)\
+                    FROM compras_ordenes_pedidos_detalle aaa\
+                        INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
+                    INNER JOIN archivos_novedades_ordenes_compras ccc ON bbb.id = ccc.novedad_orden_compra_id\
+                    WHERE aaa.orden_pedido_id = a.numero_orden\
+        ) as total_archivos"),
+    ]).from(query);
     
     /*callback(true, query.toSQL());
     return;*/
     queryPrincipal.then(function(rows){
-        console.log("offset >>>>>>>>>>>> ", (pagina - 1) * G.settings.limit)
         callback(false, rows);
     }).
     catch(function(err){

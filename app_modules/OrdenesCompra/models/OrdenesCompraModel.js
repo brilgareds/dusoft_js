@@ -98,12 +98,21 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
 
     }).
     limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).
-    orderByRaw("1 DESC").
+    offset((pagina - 1) * G.settings.limit).as("a");
+    
+    var queryPrincipal = G.knex.column([
+        "a.*"
+       /* "g.empresa_id as despacho_empresa_id",
+        "g.prefijo as despacho_prefijo", 
+        "g.numero as despacho_numero", 
+        G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")*/
+    ]).from(query).orderByRaw("3 DESC");
+    //leftJoin("inv_bodegas_movimiento_despachos_farmacias as g", "a.numero_pedido", "g.solicitud_prod_a_bod_ppal_id ");
     
     /*callback(true, query.toSQL());
     return;*/
-    then(function(rows){
+    queryPrincipal.then(function(rows){
+        console.log("offset >>>>>>>>>>>> ", (pagina - 1) * G.settings.limit)
         callback(false, rows);
     }).
     catch(function(err){

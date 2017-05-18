@@ -32,10 +32,14 @@ module.exports = function(app, di_container) {
     //Generar la facturacion agrupada
     app.post('/api/FacturacionClientes/generarFacturasAgrupadas', function(req, res) {       
         c_facturacion_clientes.generarFacturasAgrupadas(req, res);
-    });
-    
+    });   
     
     app.post('/api/FacturacionClientes/generarFacturaIndividual', function(req, res) {       
         c_facturacion_clientes.generarFacturaIndividual(req, res);
+    });
+    
+    app.post('/api/FacturacionClientes/consultaFacturaGeneradaDetalle', function(req, res) {     
+        console.log("c_facturacion_clientes.consultaFacturaGeneradaDetalle");
+        c_facturacion_clientes.consultaFacturaGeneradaDetalle(req, res);
     });
 };

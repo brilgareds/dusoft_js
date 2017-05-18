@@ -589,6 +589,81 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
     
 };
 
+
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de generar el informe detallado de la factura  
+ *              generada
+ * @fecha 18/05/2017
+ */
+FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function(req, res){
+   
+   console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
+   console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
+   console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
+   
+    var that = this;
+    var args = req.body.data;
+  
+    if (args.consulta_factura_generada_detalle === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_pendientes: []}));
+        return;
+    }
+   
+     
+    __generarPdf({productosPendientes:{}, 
+            serverUrl:req.protocol + '://' + req.get('host')+ "/", 
+            detalle: {}, 
+            profesional:{},
+            archivoHtml: 'facturaGeneradaDetalle.html',
+            reporte: "factura_generada_detalle_"}, function(nombre_pdf) {
+
+    res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200,{
+
+        consulta_factura_generada_detalle: {nombre_pdf: nombre_pdf, resultados: {}}
+    }));
+                
+      
+    });
+};
+
+
+function __generarPdf(datos, callback) {  
+   
+    console.log("*******__generarPdf************");
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/FacturacionClientes/reports/'+datos.archivoHtml, 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function(err, response) {
+        
+        response.body(function(body) {
+           var fecha = new Date();
+           var nombreTmp = datos.reporte + fecha.getTime() + ".html";
+             
+           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
+                if(err) {
+                     console.log("err [__generarPdf]: ", err)
+                } else {
+                     
+                    callback(nombreTmp);
+                }
+            });
+                
+            
+        });
+    });
+}           
+             
+             
 FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc", "m_e008"];
 //, "e_facturacion_clientes", "m_usuarios"
 module.exports = FacturacionClientes;

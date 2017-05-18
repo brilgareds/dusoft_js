@@ -337,6 +337,36 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             ]
         };
         
+        /*
+        * @author Cristian Manuel Ardila
+        * +Descripcion Metodo encargado generar el reporte
+        * para consultar los medicamentos pendientes           
+        * @fecha  2016-10-12
+        */
+        that.consultaFacturaGeneradaDetalle = function(parametro){
+            console.log("consultaFacturaGeneradaDetalle");
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                   consulta_factura_generada_detalle: {
+                       razon_social: parametro.razon_social,
+                       tipo_id_empresa: parametro.tipo_id_empresa,
+                       digito_verificacion: parametro.digito_verificacion,
+                       texto2: parametro.texto2,
+                       municipio_empresa: parametro.municipio_empresa,
+                   }
+                }    
+            };     
+
+            facturacionClientesService.consultaFacturaGeneradaDetalle(obj,function(data){
+
+                if (data.status === 200) {
+                    var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
+                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                }
+            });  
+        };
+        
         /**
          * +Descripcion Metodo encargado de generar el reporte con la factura
          *              generada
@@ -344,9 +374,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 18/05/2017
          */
         $scope.imprimirFacturaGenerada = function(entity){
-            
-            
+            //console.log("imprimirFacturaGenerada [entity]:: ", entity);
+            that.imprimirFacturaGeneradaLocalStorage(entity);
         };
+        
+        that.imprimirFacturaGeneradaLocalStorage = function(parametro){     
+            console.log("imprimirFacturaGeneradaLocalStorage");
+            that.consultaFacturaGeneradaDetalle(parametro);
+        };
+        
+        
         
         /**
          * +Descripcion Metodo encargado de limpiar el localstorage con los parametros

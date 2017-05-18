@@ -208,7 +208,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 _documento.setEstadoSincronizacion(datos[i].estado);
                                 _documento.setFechaFactura(datos[i].fecha_registro);
                                 _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
-                                
+                                _terceroDespacho.setUbicacion(datos[i].ubicacion);
                                 _pedido.agregarDocumentos(_documento);
                             } 
                                 

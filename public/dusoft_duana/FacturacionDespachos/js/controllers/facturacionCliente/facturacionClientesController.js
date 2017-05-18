@@ -378,6 +378,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             nombre:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getNombre(),
                             telefono : parametro.mostrarFacturasDespachadas()[0].getTelefono(),
                             direccion : parametro.mostrarFacturasDespachadas()[0].getDireccion(),
+                            ubicacion: parametro.mostrarFacturasDespachadas()[0].getUbicacion()
                         }
                     }
                 }    

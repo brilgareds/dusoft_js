@@ -139,7 +139,7 @@ define(["angular", "js/services"], function (angular, services) {
                     };
                     
                     self.renderDocumentosClientes = function (datos,estado) {
-                       
+                        console.log("datos[i].estado ****** ", datos)
                         var tercerosDespacho = [];
                         for (var i in datos) {
                            // console.log("A QUI ESTAN ", datos[i]);
@@ -177,7 +177,8 @@ define(["angular", "js/services"], function (angular, services) {
                                 _documento.setValor(datos[i].valor_total);
                                 _documento.setSaldo(datos[i].saldo);
                                 _documento.setDescripcionEstado(datos[i].descripcion_estado);
-                                _documento.setEstadoSincronizaciono(datos[i].estado);
+                               
+                                _documento.setEstadoSincronizacion(datos[i].estado);
                                 _documento.setFechaFactura(datos[i].fecha_registro);
                                 _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
                                 

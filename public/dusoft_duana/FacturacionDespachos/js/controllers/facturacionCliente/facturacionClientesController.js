@@ -320,16 +320,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Valor/saldo',  cellClass: "ngCellText",width: "12%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} / {{ row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
 
                 {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
-
+                 
                 {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
-                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getEstadoSincronizaciono() > 0">\n\
-                                   <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
+                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getEstadoSincronizacion() != 0">\n\
+                                   <a href="javascript:void(0);" ng-click="sincronizarFormula(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                   <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print">factura </a>\
+                                   <a href="javascript:void(0);" ng-click="imprimirFacturaGenerada(row.entity)" class = "glyphicon glyphicon-print"> factura </a>\
                                 </li>\
                            </ul>\
                       </div>'
@@ -337,11 +337,34 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             ]
         };
         
+        /**
+         * +Descripcion Metodo encargado de generar el reporte con la factura
+         *              generada
+         * @author Cristian Ardila
+         * @fecha 18/05/2017
+         */
+        $scope.imprimirFacturaGenerada = function(entity){
+            
+            
+        };
+        
+        /**
+         * +Descripcion Metodo encargado de limpiar el localstorage con los parametros
+         *              para filtrar la ultima factura generada
+         * @author Cristian Ardila
+         * @fecha 18/05/2017
+         */
         $scope.limpiarLocalStorageFacturaGenerada = function(){
-            console.log("ENTRO A QUI")
             localStorageService.add('listaFacturaDespachoGenerada', null); 
         };
         
+        /**
+         * +Descripcion Validacion esclusiva cuando se realiza una facturacion
+         *              y de inmediato se redirecciona la vista al tab de facturas 
+         *              generadas
+         * @author Cristian Ardila
+         * @fecha 18/05/2017
+         */
         if ($state.is("Despacho") === true) {
             
             var storageListaFacturaDespachoGenerada = localStorageService.get('listaFacturaDespachoGenerada');     
@@ -351,6 +374,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 that.listarFacturasGeneradas(storageListaFacturaDespachoGenerada.datos.numeracion,{tipo: 'ME', descripcion: "ME"});
             }
         };
+        
+        
         /**
          * @author Cristian Ardila
          * @fecha 04/02/2016

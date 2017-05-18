@@ -34,7 +34,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.descripcionEstado = descripcionEstado;
             };
             
-            DocumentoDespacho.prototype.setEstadoSincronizaciono = function(estadoSincronizacion){
+            DocumentoDespacho.prototype.setEstadoSincronizacion = function(estadoSincronizacion){
                 this.estadoSincronizacion = estadoSincronizacion;
             };
             
@@ -58,7 +58,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 return this.descripcionEstado;
             };
             
-            DocumentoDespacho.prototype.getEstadoSincronizaciono = function(){
+            DocumentoDespacho.prototype.getEstadoSincronizacion = function(){
                 return this.estadoSincronizacion;
             };
             

@@ -12,11 +12,32 @@ define(["angular", "js/models", "includes/classes/Empresa"], function (angular, 
                 this.id;
                 this.digitoVerificacion;
                 this.facturasDespachadas = [];
-            }
-            ;
+                this.pais;
+                this.departamento;
+                this.municipio;
+                this.direccionEmpresa;
+                this.telefonoEmpresa;
+            };
             
             
             EmpresaDespacho.prototype = Object.create(Empresa.getClass().prototype);
+            
+            EmpresaDespacho.prototype.setTelefonoEmpresa = function (telefonoEmpresa) {
+                this.telefonoEmpresa = telefonoEmpresa;
+            };
+            
+            EmpresaDespacho.prototype.getTelefonoEmpresa = function () {
+                return this.telefonoEmpresa;
+            };
+            
+            
+            EmpresaDespacho.prototype.setDireccionEmpresa = function (direccionEmpresa) {
+                this.direccionEmpresa = direccionEmpresa;
+            };
+            
+            EmpresaDespacho.prototype.getDireccionEmpresa = function () {
+                return this.direccionEmpresa;
+            };
             
             EmpresaDespacho.prototype.setTipoIdEmpresa = function (tipoIdEmpresa) {
                 this.tipoIdEmpresa = tipoIdEmpresa;
@@ -24,6 +45,30 @@ define(["angular", "js/models", "includes/classes/Empresa"], function (angular, 
             
             EmpresaDespacho.prototype.getTipoIdEmpresa = function () {
                 return this.tipoIdEmpresa;
+            };
+            
+            EmpresaDespacho.prototype.setPais = function (pais) {
+                this.pais = pais;
+            };
+            
+            EmpresaDespacho.prototype.getPais = function () {
+                return this.pais;
+            };
+            
+            EmpresaDespacho.prototype.setDepartamento = function (departamento) {
+                this.departamento = departamento;
+            };
+            
+            EmpresaDespacho.prototype.getDepartamento = function () {
+                return this.departamento;
+            };
+            
+            EmpresaDespacho.prototype.setMunicipio = function (municipio) {
+                this.municipio = municipio;
+            };
+            
+            EmpresaDespacho.prototype.getMunicipio = function () {
+                return this.municipio;
             };
             
             EmpresaDespacho.prototype.setId = function (id) {

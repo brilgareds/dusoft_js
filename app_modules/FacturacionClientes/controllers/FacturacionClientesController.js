@@ -612,7 +612,8 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function(req, res
     }
    
      
-    __generarPdf({productosPendientes:{}, 
+    __generarPdf({
+            cabecera:args.consulta_factura_generada_detalle.cabecera, 
             serverUrl:req.protocol + '://' + req.get('host')+ "/", 
             detalle: {}, 
             profesional:{},

@@ -153,15 +153,22 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     self.renderDocumentosClientes = function (datos,estado) {
                         
-                        console.log("datos [renderDocumentosClientes]:|||: ", datos);
                         var facturasDespachadas = [];
                         for (var i in datos) {
-                           
-                            var _empresaDespacho = EmpresaDespacho.get(datos[i].razon_social,datos[i].empresa_id);
-                             console.log("_empresaDespacho (((( ", _empresaDespacho);
-                                                    //_empresaDespacho.setTipoIdEmpresa(datos[i].tipo_id_empresa);
+                            
+                            var _empresaDespacho = EmpresaDespacho.get(datos[i].razon_social || '',datos[i].empresa_id);   
+                            if(estado === 0){
+                                                    
+                                                   _empresaDespacho.setTipoIdEmpresa(datos[i].tipo_id_empresa);
                                                     _empresaDespacho.setId(datos[i].id);
                                                     _empresaDespacho.setDigitoVerificacion(datos[i].digito_verificacion);
+                                                    _empresaDespacho.setPais(datos[i].pais_empresa);
+                                                    _empresaDespacho.setDepartamento(datos[i].departamento_empresa);
+                                                    _empresaDespacho.setMunicipio(datos[i].municipio_empresa);
+                                                    _empresaDespacho.setDireccionEmpresa(datos[i].direccion_empresa);
+                                                    _empresaDespacho.setTelefonoEmpresa(datos[i].telefono_empresa);
+                            }
+                            
                             var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
                                                     datos[i].tercero_id,
                                                     datos[i].direccion,
@@ -172,17 +179,18 @@ define(["angular", "js/services"], function (angular, services) {
                                                     "",
                                                     "");
                             
+                            
+                            
+                            var _documento = DocumentoDespacho.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal||'', datos[i].fecha_registro||'');
+                              
+                                        
                             if(estado === 0){                                 
                                 _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
                                 _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
                                 _terceroDespacho.setPais(datos[i].pais_empresa); 
+                                _documento.setMensaje2(datos[i].texto2);
+                                _documento.setMensaje3(datos[i].texto3);
                             }
-                            
-                            var _documento = DocumentoDespacho.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal||'', datos[i].fecha_registro||'');
-                            
-                            
-                                //            
-                            
                             
                             var _pedido = PedidoDespacho.get(datos[i].empresa_id, '','');
                                 _pedido.set_numero_cotizacion(datos[i].pedido_cliente_id);
@@ -207,9 +215,17 @@ define(["angular", "js/services"], function (angular, services) {
                             
                                 _pedido.agregarVendedor(_vendedorDespacho);
                                 _terceroDespacho.agregarPedidos(_pedido);
-                            
+                                
+                            if(estado === 0){
                                 _empresaDespacho.agregarFacturasDespachadas(_terceroDespacho);
-                            facturasDespachadas.push(_empresaDespacho);
+                                facturasDespachadas.push(_empresaDespacho);
+                            }
+
+                            if(estado === 1){
+
+                                facturasDespachadas.push(_terceroDespacho);
+                            }
+                            
                         }
                         return facturasDespachadas;
                     };

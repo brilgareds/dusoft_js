@@ -11,13 +11,13 @@
             <TD width='100%' align='center' valign='center'>
                <table width="70%" align="center"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-weight:bold;font-size:20pt" rules="all">
                   <tr class="label">
-                     <td align="center">DUANA & CIA LTDA.   NIT: 830080649-2</td>
+                     <td align="center">{{:cabecera.razon_social}}  {{:cabecera.tipo_id_empresa}}: {{:cabecera.id}}- {{:cabecera.digito_verificacion}}</td>
                   </tr>
                   <tr class="label">
-                     <td align="center">GRANDES CONTRIBUYENTES</td>
+                     <td align="center">{{:cabecera.texto2}} </td>
                   </tr>
                   <tr class="label">
-                     <td align="center">CALI</td>
+                     <td align="center">{{:cabecera.municipio_empresa}} </td>
                   </tr>
                </table>
             </TD>
@@ -30,19 +30,19 @@
       <table width="100%" align="center" style="border:1px solid #000000;" >
          <tr class="label" align="right">
             <td class="label" >
-               <h2>FACTURA DE VENTA ****** ME... 52167</h2>
+               <h2>FACTURA DE VENTA  {{:cabecera.prefijo}} {{:cabecera.factura_fiscal}}</h2>
             </td>
          </tr>
          <tr class="label" align="center">
             <td class="label" >
                <table width="100%" align="center" style="border:1px solid #000000;font-size:8.5px" >
                   <tr  align="center">
-                     <td>							<b>DIRECCION:</b> CLL 9A #42-115 CAMBULOS						</td>
-                     <td>							<b>TELEFONOS:</b> 4882020						</td>
-                     <td>							<b>UBICACION:</b> COLOMBIA-VALLE DEL CAUCA-CALI						</td>
+                     <td> <b>DIRECCION:</b> {{:cabecera.direccion_empresa}} </td>
+                     <td> <b>TELEFONOS:</b> {{:cabecera.telefono_empresa}} </td>
+                     <td> <b>UBICACION:</b> {{:cabecera.pais_empresa}} - {{:cabecera.departamento_empresa}} - {{:cabecera.municipio_empresa}}</td>
                   </tr>
                   <tr align="center">
-                     <td colspan="3">						<b>... NO SOMOS AUTORETENEDORES ...</b>						</td>
+                     <td colspan="3"> <b>{{:cabecera.texto3}}</b> </td>
                   </tr>
                </table>
             </td>
@@ -51,14 +51,14 @@
             <td >
                <table width="100%" align="center" style="border:1px solid #000000;font-size:8.5px" >
                   <tr align="center">
-                     <td >							<b>VENDEDOR:</b>GOMEZ ROSA YURANY						</td>
-                     <td >						</td>
-                     <td >						</td>
+                     <td ><b>VENDEDOR:</b>{{:cabecera.nombre}} </td>
+                     <td ></td>
+                     <td ></td>
                   </tr>
                   <tr align="center">
-                     <td >						<b>VENDIDO A:</b> NIT 900766903: CLIC MARKETING S.A.S.						</td>
-                     <td >						<b>DIRECCION:</b> CRA 40A 16-79  TELEFONO: 3845972						</td>
-                     <td >						<b>UBICACION:</b> COLOMBIA-VALLE DEL CAUCA-CALI						</td>
+                    <td ><b>VENDIDO A:</b> {{:cabecera.tipo_id_tercero}} {{:cabecera.tercero_id}} {{:cabecera.nombre_tercero}}</td>
+                     <td ><b>DIRECCION:</b> {{:cabecera.direccion}}  TELEFONO: {{:cabecera.telefono}}</td>
+                     <td ><b>UBICACION:</b> COLOMBIA-VALLE DEL CAUCA-CALI </td>
                   </tr>
                </table>
             </td>

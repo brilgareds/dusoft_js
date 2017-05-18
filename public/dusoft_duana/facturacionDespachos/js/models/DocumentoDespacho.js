@@ -13,10 +13,24 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.fechaFactura;
                 this.fechaVencimientoFactura;
                 this.prefijoNumero;
+                this.mensaje1;
+                this.mensaje2;
+                this.mensaje3;
             }
 
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
             
+            DocumentoDespacho.prototype.setMensaje1 = function(mensaje1){
+                this.mensaje1 = mensaje1;
+            };
+            
+            DocumentoDespacho.prototype.setMensaje2 = function(mensaje2){
+                this.mensaje2 = mensaje2;
+            };
+            
+            DocumentoDespacho.prototype.setMensaje3 = function(mensaje3){
+                this.mensaje3 = mensaje3;
+            };
             
             DocumentoDespacho.prototype.setPrefijoNumero = function(prefijoNumero){
                 this.prefijoNumero = prefijoNumero;
@@ -72,6 +86,18 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.getPrefijoNumero = function(){
                 return this.prefijoNumero;
+            };
+            
+            DocumentoDespacho.prototype.getMensaje1 = function(){
+                return this.mensaje1;
+            };
+            
+            DocumentoDespacho.prototype.getMensaje2 = function(){
+                return this.mensaje2;
+            };
+            
+            DocumentoDespacho.prototype.getMensaje3 = function(){
+                return this.mensaje3;
             };
             
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {

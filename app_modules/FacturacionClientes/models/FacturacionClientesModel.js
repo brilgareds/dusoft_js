@@ -453,7 +453,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
-       console.log("resultado [listarPedidosClientes] ", resultado);
+        
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarPedidosClientes] ", err);

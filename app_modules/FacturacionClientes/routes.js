@@ -39,7 +39,6 @@ module.exports = function(app, di_container) {
     });
     
     app.post('/api/FacturacionClientes/consultaFacturaGeneradaDetalle', function(req, res) {     
-        console.log("c_facturacion_clientes.consultaFacturaGeneradaDetalle");
         c_facturacion_clientes.consultaFacturaGeneradaDetalle(req, res);
     });
 };

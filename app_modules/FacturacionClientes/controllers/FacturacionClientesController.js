@@ -348,7 +348,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         direccion_ip: '',
         pedidos: args.generar_factura_agrupada.documentos
     };
-     
+    
     var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };
     
     var documentoFacturacion;

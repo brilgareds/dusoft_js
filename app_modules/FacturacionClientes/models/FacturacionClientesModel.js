@@ -825,6 +825,9 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
     });    
 };
 
+var parametrosActualizarEstadoFactura = [];
+var datosAdicionalesAgrupados = [];
+var parametrosInsertaFacturaAgrupadaDetalle = [];
 /**
  * +Descripcion Metodo encargado de generar las facturas agrupadas 
  *              mediante la transaccion la cual ejecuta varios querys
@@ -843,11 +846,12 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
     var porcentajeRtf = '0';
     var porcentajeIca = '0';
     var porcentajeReteiva = '0';
-    var porcentajeCree = obj.consultar_tercero_contrato[0].porcentaje_cree;
-    var parametrosInsertaFacturaAgrupadaDetalle = [];
+    var porcentajeCree = obj.consultar_tercero_contrato[0].porcentaje_cree;    
     var parametrosFacturasAgrupadas;
-    var parametrosActualizarEstadoFactura = [];
-    
+    datosAdicionalesAgrupados = [];
+    parametrosActualizarEstadoFactura = [];
+    parametrosInsertaFacturaAgrupadaDetalle = [];
+     
     if (obj.consultar_parametros_retencion.sw_rtf === '1' || obj.consultar_parametros_retencion.sw_rtf === '3')
         porcentajeRtf = obj.consultar_tercero_contrato[0].porcentaje_rtf;
     if (obj.consultar_parametros_retencion.sw_ica === '1' || obj.consultar_parametros_retencion.sw_ica === '3')
@@ -866,14 +870,16 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
          usuario: obj.parametros.usuario,
          tipoPago: obj.parametros.tipoPago
          
-        },transaccion).then(function(resultado){           
+        },transaccion).then(function(){           
             
             return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);    
             
         }).then(function(){
-            
+            /* console.log("A QUI ESTAN LOS PEDIDOS >>>>>>>>// 1 ", obj.parametros.pedidos[0].pedidos);
+             console.log("A QUI ESTAN LOS PEDIDOS >>>>>>>>// 2 ", obj.parametros.pedidos[0].pedidos);*/
+           
             return G.Q.nfcall(__detallePedidosClientes,that,0, obj.parametros.pedidos,transaccion);
-            
+                    
         }).then(function(){ 
             
             if(datosAdicionalesAgrupados.length > 0){
@@ -923,7 +929,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
             }
                                       
         }).then(function(){
-            //console.log("*******parametrosInsertaFacturaAgrupadaDetalle  ", parametrosInsertaFacturaAgrupadaDetalle);
+           
             return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,parametrosInsertaFacturaAgrupadaDetalle,transaccion);
            
         }).then(function(){
@@ -935,8 +941,9 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
             return G.Q.nfcall(__actualizarEstadoFacturaPedido,that,0,parametrosActualizarEstadoFactura, transaccion);
             
         }).then(function(){
-                                               
-           console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
+           /*console.log("*******parametrosInsertaFacturaAgrupadaDetalle*************");
+           console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)*/                                  
+           console.log("AQUI VA OK OKo OK [consultaCompleta]: "); 
            transaccion.commit(); 
         }).fail(function(err){
             console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
@@ -1047,7 +1054,7 @@ function __actualizarDespacho(obj,transaccion,callback) {
     });  
 };
 
-var datosAdicionalesAgrupados = [];
+
 /**
  * @author Cristian Manuel Ardila
  * +Descripcion Metodo encargado de registrar los despachos agrupados
@@ -1105,7 +1112,7 @@ function __detallePedidosClientes(that, index, pedidos,transaccion, callback) {
 function __guardarDespachoIndividual(that, index, documentos,consultaCompleta,transaccion,callback) {
    
    console.log("*****__guardarDespachoIndividual******** ");
-    var documento = documentos.documento === undefined ? documentos[index] : documentos.documento[index];   
+    var documento = documentos.documentoSeleccionado === undefined ? documentos[index] : documentos.documentoSeleccionado[index];   
     var def = G.Q.defer();
     var retorno = {cabecera:'',datos_adicionales:'', detalle:'', vendedor:''};
     if (!documento) {                                             
@@ -1123,7 +1130,7 @@ function __guardarDespachoIndividual(that, index, documentos,consultaCompleta,tr
              
             if(resultado.length > 0){
                retorno.cabecera = resultado;
-               retorno.vendedor = documentos.documento === undefined ? '' : documentos.vendedor[0];
+               retorno.vendedor = documentos.documentoSeleccionado === undefined ? '' : documentos.vendedor[0];
                return G.Q.ninvoke(that.m_e008,'consultarDatosAdicionales',parametros);
             }else{
                 throw {msj:'El documento no existe', state:404};

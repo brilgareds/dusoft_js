@@ -82,7 +82,8 @@ define(["angular", "js/controllers",
             $scope.filtros = [
                 {nombre : "Orden", numeroOrden:true},                
                 {nombre : "Proveedor", proveedor:true},
-                {nombre : "Empresa", empresa:true}
+                {nombre : "Empresa", empresa:true},
+                {nombre: "Sin ingreso", sin_ingreso : true}
             ];
             
             $scope.filtro  = $scope.filtros[0];
@@ -216,7 +217,7 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field:'', displayName:'', width:"60", 
+                    {field:'', displayName:'Nov', width:"60", 
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                             <span class="glyphicon glyphicon-exclamation-sign iconoOrdenCompra ordenNovedad" title="La orden tiene novedades" ng-if="row.entity.getTotalNovedades() > 0"></span>\
                                             <span class="glyphicon glyphicon-file iconoOrdenCompra ordenArchivos" title="La orden tiene novedades con archivos" ng-if="row.entity.getTotalArchivos() > 0"></span>\
@@ -788,6 +789,7 @@ define(["angular", "js/controllers",
             $scope.buscar_ordenes_compras();
             
             $scope.onSeleccionFiltro = function(filtro){
+                $scope.pagina_actual = 1;
                 $scope.filtro = filtro;
             };
 

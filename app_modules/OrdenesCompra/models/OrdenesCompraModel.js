@@ -74,17 +74,28 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
            "a.sw_unificada"  : '0'
     }).
     andWhere(function() {
-
-        if (filtro && filtro.proveedor){
-            this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-            orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%");
-    
-        } else if (filtro && filtro.empresa){
-            this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
-            
+        
+        if(filtro && filtro.sin_ingreso){
+            this.whereRaw("date_part('day',age(now(), a.fecha_orden)) > 5 AND a.fecha_ingreso IS NULL").
+            andWhere(function(){
+                this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            })
         } else {
-            this.where(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            if (filtro && filtro.proveedor){
+                this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%");
+    
+            } else if (filtro && filtro.empresa){
+                this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+
+            } else {
+                this.where(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            }
         }
+        
 
     }).
     limit(G.settings.limit).
@@ -105,6 +116,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         ) as total_archivos"),
     ]).from(query);
     
+    //console.log("query ", queryPrincipal.toSQL());
     /*callback(true, query.toSQL());
     return;*/
     queryPrincipal.then(function(rows){

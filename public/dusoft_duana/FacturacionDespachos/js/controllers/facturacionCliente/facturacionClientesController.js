@@ -230,14 +230,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 }
             };
-             console.log("obj [listarFacturasGeneradas]: ", obj)
+             //console.log("obj [listarFacturasGeneradas]: ", obj)
             facturacionClientesService.listarFacturasGeneradas(obj, function (data) {
+                //console.log("listarFacturasGeneradas =  ", data)
                 $scope.root.facturas_generadas = [];
                 if (data.status === 200) {
                   
                     $scope.root.items_facturas_generadas = data.obj.listar_facturas_generadas.length;
                     $scope.root.facturas_generadas = facturacionClientesService.renderDocumentosClientes(data.obj.listar_facturas_generadas,0);
-                      console.log("listarFacturasGeneradas =  ", $scope.root.facturas_generadas)
+                      
                 } else {
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
@@ -359,6 +360,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 data: {
                    consulta_factura_generada_detalle: {
                        cabecera:{
+                            empresa_id: parametro.getCodigo(),
                             pais_empresa: parametro.pais,
                             departamento_empresa: parametro.departamento,
                             municipio_empresa: parametro.municipio,
@@ -378,7 +380,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             nombre:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getNombre(),
                             telefono : parametro.mostrarFacturasDespachadas()[0].getTelefono(),
                             direccion : parametro.mostrarFacturasDespachadas()[0].getDireccion(),
-                            ubicacion: parametro.mostrarFacturasDespachadas()[0].getUbicacion()
+                            ubicacion: parametro.mostrarFacturasDespachadas()[0].getUbicacion(),
+                            fecha_registro: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaFactura(),
+                            fecha_vencimiento_factura: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaVencimientoFactura(),
+                            observaciones: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getObservacion(),
+                            pedido_cliente_id: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].get_numero_cotizacion(),
+                            factura_agrupada:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getTipoFactura()
                         }
                     }
                 }    

@@ -597,42 +597,121 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
  *              generada
  * @fecha 18/05/2017
  */
-FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function(req, res){
-   
-   console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
-   console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
-   console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
-   
+FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, res) {
+
+    console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
+    console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
+    console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
+
     var that = this;
     var args = req.body.data;
-  
+    var def = G.Q.defer(); 
     if (args.consulta_factura_generada_detalle === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_pendientes: []}));
         return;
     }
-   
-     
-    __generarPdf({
-            cabecera:args.consulta_factura_generada_detalle.cabecera, 
-            serverUrl:req.protocol + '://' + req.get('host')+ "/", 
-            detalle: {}, 
-            profesional:{},
+    
+    var parametros = {
+        empresa_id: args.consulta_factura_generada_detalle.cabecera.empresa_id,
+        factura_fiscal: args.consulta_factura_generada_detalle.cabecera.factura_fiscal,
+        prefijo: args.consulta_factura_generada_detalle.cabecera.prefijo
+    };
+    var parametrosReporte =  {
+            cabecera: args.consulta_factura_generada_detalle.cabecera,           
+            serverUrl: req.protocol + '://' + req.get('host') + "/",
+            detalle: {},
+            profesional: {},
             archivoHtml: 'facturaGeneradaDetalle.html',
-            reporte: "factura_generada_detalle_"}, function(nombre_pdf) {
+            reporte: "factura_generada_detalle_"
+    };
+    
+    //console.log("parametrosReporte ", parametrosReporte);
+    /*G.Q.ninvoke(that.m_facturacion_clientes, 'consultarPedidosFacturaAgrupada', parametros).then(function (resultado) {
+ 
+        var coma = ",";
+        var length = resultado.length-1;
+        if(resultado.length >0){
+            
+            resultado.forEach(function(row,index){
 
-    res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200,{
+                if(index === length ){
+                    coma = "";
+                }
+                parametrosReporte.cabecera.pedido_cliente_id += row.pedido_cliente_id +coma;
+ 
+            });
+            
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultaDetalleFacturaGenerada',parametros);
+            
+           }else{
+         throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
+        }
+         
+    })*/
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultaDetalleFacturaGenerada',parametros).then(function(resultado){
 
-        consulta_factura_generada_detalle: {nombre_pdf: nombre_pdf, resultados: {}}
-    }));
-                
-      
-    });
+        if(resultado.length >0){
+            parametrosReporte.detalle = resultado;
+            if(parametrosReporte.cabecera.factura_agrupada === '1'){
+                parametrosReporte.cabecera.pedido_cliente_id = '';
+                return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarPedidosFacturaAgrupada', parametros);
+            }else{
+                def.resolve();
+            }
+        
+        }else{
+            throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+        console.log("resultado [consultarPedidosFacturaAgrupada]: ",resultado)
+            if (resultado) {
+                if (resultado.length > 0) {
+                    var coma = ",";
+                    var length = resultado.length-1;    
+                    resultado.forEach(function (row, index) {
+
+                        if (index === length) {
+                            coma = "";
+                        }
+                        parametrosReporte.cabecera.pedido_cliente_id += row.pedido_cliente_id + coma;
+
+                    });
+ 
+                } else {
+                    throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
+                }
+            }else{
+                def.resolve();
+            }
+            
+    }).then(function(resultado){
+        
+        console.log("parametrosReporte ", parametrosReporte.cabecera)
+        //return G.Q.nfcall(__generarPdf,parametrosReporte);
+        
+    }).then(function(resultado){ 
+         
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
+                consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}
+        })); 
+            
+    }).fail(function(err){  
+         
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done(); 
 };
 
 
 function __generarPdf(datos, callback) {  
    
     console.log("*******__generarPdf************");
+    console.log("datos ", datos);
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/FacturacionClientes/reports/'+datos.archivoHtml, 'utf8'),
@@ -655,7 +734,7 @@ function __generarPdf(datos, callback) {
                      console.log("err [__generarPdf]: ", err)
                 } else {
                      
-                    callback(nombreTmp);
+                    callback(false,nombreTmp);
                 }
             });
                 

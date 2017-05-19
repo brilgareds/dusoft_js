@@ -16,9 +16,20 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.mensaje1;
                 this.mensaje2;
                 this.mensaje3;
+                this.observacion;
+                this.tipoFactura;
             }
 
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
+            
+            
+            DocumentoDespacho.prototype.setTipoFactura = function(tipoFactura){
+                this.tipoFactura = tipoFactura;
+            };
+            
+            DocumentoDespacho.prototype.setObservacion = function(observacion){
+                this.observacion = observacion;
+            };
             
             DocumentoDespacho.prototype.setMensaje1 = function(mensaje1){
                 this.mensaje1 = mensaje1;
@@ -98,6 +109,14 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.getMensaje3 = function(){
                 return this.mensaje3;
+            };
+            
+            DocumentoDespacho.prototype.getObservacion = function(){
+                return this.observacion;
+            };
+            
+            DocumentoDespacho.prototype.getTipoFactura = function(){
+                return this.tipoFactura;
             };
             
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {

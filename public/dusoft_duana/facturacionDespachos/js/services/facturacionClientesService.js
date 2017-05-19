@@ -182,15 +182,7 @@ define(["angular", "js/services"], function (angular, services) {
                             
                             
                             var _documento = DocumentoDespacho.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal||'', datos[i].fecha_registro||'');
-                              
-                                        
-                            if(estado === 0){                                 
-                                _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
-                                _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
-                                _terceroDespacho.setPais(datos[i].pais_empresa); 
-                                _documento.setMensaje2(datos[i].texto2);
-                                _documento.setMensaje3(datos[i].texto3);
-                            }
+                             
                             
                             var _pedido = PedidoDespacho.get(datos[i].empresa_id, '','');
                                 _pedido.set_numero_cotizacion(datos[i].pedido_cliente_id);
@@ -208,6 +200,13 @@ define(["angular", "js/services"], function (angular, services) {
                                 _documento.setEstadoSincronizacion(datos[i].estado);
                                 _documento.setFechaFactura(datos[i].fecha_registro);
                                 _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
+                                _documento.setMensaje2(datos[i].texto2);
+                                _documento.setMensaje3(datos[i].texto3);
+                                _documento.setObservacion(datos[i].observaciones);
+                                _documento.setTipoFactura(datos[i].factura_agrupada);
+                                _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
+                                _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
+                                _terceroDespacho.setPais(datos[i].pais_empresa); 
                                 _terceroDespacho.setUbicacion(datos[i].ubicacion);
                                 _pedido.agregarDocumentos(_documento);
                             } 

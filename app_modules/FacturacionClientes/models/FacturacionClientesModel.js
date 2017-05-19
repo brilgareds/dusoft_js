@@ -1,6 +1,99 @@
 var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };
+ 
+function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
+     
+    var columnas = [
+        "a.empresa_id",
+        "a.prefijo",
+        "a.factura_fiscal",
+        "a.codigo_producto",
+        G.knex.raw("(SELECT codigo_cum FROM inventarios_productos WHERE codigo_producto = a.codigo_producto) AS codigo_cum"),
+        G.knex.raw("(SELECT codigo_invima FROM inventarios_productos WHERE codigo_producto = a.codigo_producto) AS codigo_invima"),
+        G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
+        G.knex.raw("(a.cantidad) as cantidad"),
+        "a.fecha_vencimiento",
+        "a.lote",
+        G.knex.raw("(f.costo * a.cantidad ) as costo"),
+        "a.valor_unitario",
+        "a.porc_iva",
+        G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal"),
+        G.knex.raw("(a.valor_unitario*(a.porc_iva/100)) as iva"),
+        G.knex.raw("((a.valor_unitario * (a.porc_iva/100))* a.cantidad) as iva_total"),         
+        G.knex.raw("(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) as valor_unitario_iva"),
+        G.knex.raw("(((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))) as total"),
+        "c.observacion",
+        "e.sw_medicamento",
+        "e.sw_insumos",
+        G.knex.raw(campo)
+    ];
+   
+    var consulta = G.knex.select(columnas)
+            .from(tabla1)
+            .join(tabla2, function () {
+                this.on("b.factura_fiscal", "a.factura_fiscal")
+                        .on("b.prefijo", "a.prefijo")
+                        .on("b.empresa_id","a.empresa_id")
+            }).join('ventas_ordenes_pedidos as c', function () {
+        this.on("c.pedido_cliente_id", campo === "1" ? "b.pedido_cliente_id" : "a.pedido_cliente_id")
+                .on("c.empresa_id","b.empresa_id")
+
+    }).innerJoin('inventarios_productos as d', function () {
+        this.on("a.codigo_producto", "d.codigo_producto")
+
+    }).innerJoin('inv_grupos_inventarios as e', function () {
+        this.on("d.grupo_id","e.grupo_id")
+                 
+    }).innerJoin('inventarios as f', function () {
+        this.on("d.codigo_producto","f.codigo_producto")
+                .on("a.empresa_id","f.empresa_id")
+
+    }).where(function () {
+
+        this.andWhere('a.empresa_id', parametros.empresa_id)
+            .andWhere('a.factura_fiscal', parametros.factura_fiscal)
+            .andWhere('a.prefijo', parametros.prefijo) 
+         
+
+    });
+    if(campo === "1"){
+            consulta.as("a");
+    }
+    return consulta;
+
+};
+
+/**
+ * +Descripcion Modelo encargado de consultar el detalle de la factura generada
+ * @author Cristian Ardila
+ * @fecha 19/05/2017
+ */
+FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (obj,callback) {
+  
+    var colQuery = [G.knex.raw("a.*")];
+    
+    var queryA = __consultaDetalleFacturaGenerada(obj,
+                        "inv_facturas_despacho as b",
+                        'inv_facturas_despacho_d as a',
+                        "1")
+                        .unionAll(__consultaDetalleFacturaGenerada(obj,
+                        "inv_facturas_agrupadas_despacho as b",
+                        'inv_facturas_agrupadas_despacho_d as a',
+                        "2"));
+   
+
+    var query = G.knex.column(colQuery)
+            .from(queryA)
+ 
+    query.then(function(resultado){
+            
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [consultaDetalleFacturaGenerada]: ", err);     
+            callback({err:err, msj: "Error al consultar los productos de la factura generada]"});   
+    });  
+};
 
 /**
  * @author Cristian Ardila
@@ -22,6 +115,29 @@ FacturacionClientesModel.prototype.listarTiposTerceros = function (callback) {
         callback({err:err, msj: "Error al consultar la lista de los tipos de terceros"});   
     });
 
+};
+
+/**
+ * +Descripcion Metodo encargado de obtener los pedidos agrupados en una sola
+ *              factura
+ * @author Cristian Ardila
+ * @fecha 2017-15-05 YYYY-DD-MM
+ */
+FacturacionClientesModel.prototype.consultarPedidosFacturaAgrupada = function(parametros, callback){
+      
+ 
+    var query = G.knex.distinct('pedido_cliente_id')
+                .select()
+                .from('inv_facturas_agrupadas_despacho_d')
+                .where(parametros);     
+ 
+        query.then(function(resultado){
+            
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [consultarPedidosFacturaAgrupada]: ", err);     
+            callback({err:err, msj: "Error al consultar los pedidos de la factura agrupada]"});   
+    }); 
 };
 
 /**
@@ -159,7 +275,7 @@ function __camposListaFacturasGeneradas() {
         "c.direccion",
         "c.telefono",
         G.knex.raw("h.pais||'-'||g.departamento ||'-'||f.municipio as ubicacion"),
-        "a.fecha_registro",
+        G.knex.raw("TO_CHAR(a.fecha_registro,'yyyy-mm-dd hh:mm:ss') AS fecha_registro"),
         //G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD 00:00:00') AS fecha_registro"),
         "a.usuario_id",
         "a.valor_total",
@@ -184,8 +300,7 @@ function __camposListaFacturasGeneradas() {
     ];
 
     return colSubQuery2;
-}
-;
+};
 
 /**
  * +Descripcion Consulta que se reutilizara para una consulta mayor con dos
@@ -771,6 +886,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
             callback({err:err, msj: "Error al guardar la factura agrupada]"});   
     }); 
 };
+
 
 
 /**

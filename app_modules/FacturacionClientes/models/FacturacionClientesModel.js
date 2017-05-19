@@ -25,8 +25,7 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
         G.knex.raw("(((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))) as total"),
         "c.observacion",
         "e.sw_medicamento",
-        "e.sw_insumos",
-        
+        "e.sw_insumos", 
         G.knex.raw(campo)
     ];
    

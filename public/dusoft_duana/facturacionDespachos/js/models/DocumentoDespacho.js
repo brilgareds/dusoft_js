@@ -16,6 +16,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.mensaje1;
                 this.mensaje2;
                 this.mensaje3;
+                this.mensaje4;
                 this.observacion;
                 this.tipoFactura;
             }
@@ -41,6 +42,10 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.setMensaje3 = function(mensaje3){
                 this.mensaje3 = mensaje3;
+            };
+            
+            DocumentoDespacho.prototype.setMensaje4 = function(mensaje4){
+                this.mensaje4 = mensaje4;
             };
             
             DocumentoDespacho.prototype.setPrefijoNumero = function(prefijoNumero){
@@ -109,6 +114,10 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.getMensaje3 = function(){
                 return this.mensaje3;
+            };
+            
+            DocumentoDespacho.prototype.getMensaje4 = function(){
+                return this.mensaje4;
             };
             
             DocumentoDespacho.prototype.getObservacion = function(){

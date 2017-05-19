@@ -202,6 +202,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
                                 _documento.setMensaje2(datos[i].texto2);
                                 _documento.setMensaje3(datos[i].texto3);
+                                _documento.setMensaje4(datos[i].mensaje);
                                 _documento.setObservacion(datos[i].observaciones);
                                 _documento.setTipoFactura(datos[i].factura_agrupada);
                                 _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 

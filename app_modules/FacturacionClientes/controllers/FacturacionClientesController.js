@@ -590,7 +590,28 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
 };
 
 
+function number_format(amount, decimals) {
 
+    amount += ''; // por si pasan un numero en vez de un string
+    amount = parseFloat(amount.replace(/[^0-9\.]/g, '')); // elimino cualquier cosa que no sea numero o punto
+
+    decimals = decimals || 0; // por si la variable no fue fue pasada
+
+    // si no es un numero o es igual a cero retorno el mismo cero
+    if (isNaN(amount) || amount === 0) 
+        return parseFloat(0).toFixed(decimals);
+
+    // si es mayor o menor que cero retorno el valor formateado como numero
+    amount = '' + amount.toFixed(decimals);
+
+    var amount_parts = amount.split('.'),
+        regexp = /(\d+)(\d{3})/;
+
+    while (regexp.test(amount_parts[0]))
+        amount_parts[0] = amount_parts[0].replace(regexp, '$1' + ',' + '$2');
+
+    return amount_parts.join('.');
+}
 /**
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de generar el informe detallado de la factura  
@@ -616,11 +637,16 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
         factura_fiscal: args.consulta_factura_generada_detalle.cabecera.factura_fiscal,
         prefijo: args.consulta_factura_generada_detalle.cabecera.prefijo
     };
+    var usuario = req.session.user.usuario_id;
+    var today = new Date();   
+    var formato = 'YYYY-MM-DD hh:mm';
+    var fechaToday = G.moment(today).format(formato);
     var parametrosReporte =  {
             cabecera: args.consulta_factura_generada_detalle.cabecera,           
             serverUrl: req.protocol + '://' + req.get('host') + "/",
             detalle: {},
             valores: {},
+            imprimio:{usuario:'',fecha:fechaToday},
             archivoHtml: 'facturaGeneradaDetalle.html',
             reporte: "factura_generada_detalle_"
     };
@@ -673,9 +699,8 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
     }).then(function(resultado){                      
         
         return G.Q.ninvoke(that.m_facturacion_clientes,'consultarParametrosRetencion',{empresaId: parametros.empresa_id});  
-        
-       //return G.Q.nfcall(__generarPdf,parametrosReporte);
-        
+                                                     
+                                                     
     }).then(function(resultado){ 
          
         if (resultado.length > 0) {
@@ -686,45 +711,37 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
         }else{
              throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};  
         }
-        //console.log("parametrosReporte ", parametrosReporte.cabecera)
-        /*return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
-                consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}
-        })); */
-            
+        
     }).then(function(resultado){
         
         if(resultado[0] >= retenciones[0].base_rtf){
-            retencionFuente = (resultado[0] * ((parametrosReporte.cabecera.porcentaje_rtf) / 100))
+            retencionFuente = (resultado[0] * ((parametrosReporte.cabecera.porcentaje_rtf) / 100));
         }
         
         if(resultado[0] >= retenciones[0].base_ica){
-            retencionIca = (resultado[0]) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000)
+            retencionIca = (resultado[0]) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
         }
         
         if(resultado[0] >= retenciones[0].base_reteiva){
-            retencionIva = (resultado[1]) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100)
+            retencionIva = (resultado[1]) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
         }
         
         totalFactura = ((((parseFloat(resultado[1]) + parseFloat(resultado[0])) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
         
-        parametrosReporte.valores.retencionFuente = retencionFuente;
-       /* parametrosReporte.valores.retencionIca = retencionIca;
-        parametrosReporte.valores.retencionIva = retencionIva;
-        parametrosReporte.valores.ivaTotal = parseFloat(resultado[1]);
-        parametrosReporte.valores.subTotal = parseFloat(resultado[1]);
-        parametrosReporte.valores.totalFactura = totalFactura;*/
+        parametrosReporte.valores.retencionFuente = number_format(retencionFuente,2);
+        parametrosReporte.valores.retencionIca = number_format(retencionIca,2);
+        parametrosReporte.valores.retencionIva = number_format(retencionIva,2);
+        parametrosReporte.valores.ivaTotal = number_format(parseFloat(resultado[1]),2);
+        parametrosReporte.valores.subTotal = number_format(parseFloat(resultado[0]),2);
+        parametrosReporte.valores.totalFactura = number_format(totalFactura,2);
+         
+        return G.Q.nfcall(__generarPdf,parametrosReporte);
         
+    }).then(function(resultado){
         
-        console.log("parametrosReporte.valores ", parametrosReporte.valores)
-        
-        /*console.log("porcentaje_rtf: ", parametrosReporte.cabecera.porcentaje_rtf);
-        console.log("porcentaje_ica: ", parametrosReporte.cabecera.porcentaje_ica);
-        console.log("porcentaje_reteiva: ", parametrosReporte.cabecera.porcentaje_reteiva);
-        console.log("base_rtf ", retenciones[0].base_rtf);
-        console.log("base_ica ", retenciones[0].base_ica);
-        console.log("base_reteiva ", retenciones[0].base_reteiva);
-        console.log("subTotal ", );
-        console.log("totalIva ", resultado[1]);*/
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
+                consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}
+        }));
         
     }).fail(function(err){  
          

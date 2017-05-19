@@ -129,12 +129,13 @@
                             <td><B>VALOR TOTAL</B></td>
                         </tr>
                         <tr align="center">
-                            <td><B>$10.871.417,10</B></td>
-                            <td><B>$67.200,00</B></td>
-                            <td><B>$380.499,60</B></td>
-                            <td><B>$0,00</B></td><td><B>$0,00</B>
-                            </td>
-                            <td><B>$10.558.117,50</B></td>
+                            <td><B>${{:valores.subTotal}}</B></td>
+                            <td><B>${{:valores.ivaTotal}}</B></td>
+                            <td><B>${{:valores.retencionFuente}}</B></td>
+                            <td><B>${{:valores.retencionIca}}</B></td>
+                            <td><B>${{:valores.retencionIva}}</B></td>
+                            <td><B>${{:valores.totalFactura}}</B></td>
+                             
                         </tr>
                         <tr align="left">
                             <td colspan="6"><B>DIEZ MILLONES QUINIENTOS CINCUENTA Y OCHO MIL CIENTO DIECISIETE COMA CINCO CERO UN CINCO PESOS</B></td></tr>
@@ -144,8 +145,10 @@
 			<td > <B></B></td></tr>
 
                         <tr align="center">
-                            <td ><b>OBSERVACION PEDIDO : PENDIENTE O.C 2270-13, ENVIAR A LA CIUDAD DE NEIVA, PUEDEN UNIFICAR LA FACTURA SI HAY OTROS PEDIDOS QUE CORRESPONDAN A ESTA MISMA ORDEN DE COMPRA</b>			</td>	   	</tr>		<tr align="center">
-                            <td ><b>OBSERVACION DESPACHO : </b></td>	   	
+                            <td ><b>OBSERVACION PEDIDO : {{:detalle[0].observacion}}</b></td>	   	
+                        </tr>		
+                        <tr align="center">
+                            <td ><b>OBSERVACION DESPACHO : {{:detalle[0].obs_despacho}}</b></td>	   	
                         </tr>	
                         </table>  <br>	<table width="100%" align="center" style="border:0px solid #000000;font-size:7px" >
 
@@ -202,12 +205,12 @@
 		<tr>
 			<td align="justify" width="50%">
 				<font size='1' face='arial'>
-					Imprimió:&nbsp;MAURICIO BARRIOS
+					Imprimió:&nbsp;MAURICIO BARRIOS ------>>
 				</font>
 			</td>
 			<td align="right" width="50%">
 				<font size='1' face='arial'>
-					Fecha Impresión :&nbsp;&nbsp;19/05/2017 - 12:02 pm
+					Fecha Impresión : {{:imprimio.fecha}}
 				</font>
 
 			</td>

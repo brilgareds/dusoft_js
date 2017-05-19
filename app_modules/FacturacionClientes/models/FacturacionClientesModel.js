@@ -16,13 +16,13 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
          G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd hh:mm:ss') AS fecha_vencimiento"),
         "a.lote",                                      
         G.knex.raw("(f.costo * a.cantidad ) as costo"),
-        "a.valor_unitario",
+        G.knex.raw("to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario"),
         "a.porc_iva",
-        G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal"),
-        G.knex.raw("(a.valor_unitario*(a.porc_iva/100)) as iva"),
-        G.knex.raw("((a.valor_unitario * (a.porc_iva/100))* a.cantidad) as iva_total"),         
-        G.knex.raw("(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) as valor_unitario_iva"),
-        G.knex.raw("(((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))) as total"),
+        G.knex.raw("to_char((a.valor_unitario * a.cantidad),'LFM9,999,999.00') as subtotal"),
+        G.knex.raw("to_char((a.valor_unitario*(a.porc_iva/100)),'LFM9,999,999.00') as iva"),
+        G.knex.raw("to_char(((a.valor_unitario * (a.porc_iva/100))* a.cantidad),'LFM9,999,999.00') as iva_total"),         
+        G.knex.raw("to_char((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))),'LFM9,999,999.00') as valor_unitario_iva"),
+        G.knex.raw("to_char((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))),'LFM9,999,999.00') as total"),
         "c.observacion",
         "e.sw_medicamento",
         "e.sw_insumos", 
@@ -470,7 +470,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
-      // console.log("resultado [listarFacturasGeneradas]:  ",resultado);
+       console.log("resultado [listarFacturasGeneradas]:  ",resultado);
         callback(false, resultado)
     }).catch(function (err) {
         //console.log("err [listarFacturasGeneradas] ", err);

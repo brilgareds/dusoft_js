@@ -13,8 +13,8 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
         G.knex.raw("(SELECT codigo_invima FROM inventarios_productos WHERE codigo_producto = a.codigo_producto) AS codigo_invima"),
         G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
         G.knex.raw("(a.cantidad) as cantidad"),
-        "a.fecha_vencimiento",
-        "a.lote",
+         G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd hh:mm:ss') AS fecha_vencimiento"),
+        "a.lote",                                      
         G.knex.raw("(f.costo * a.cantidad ) as costo"),
         "a.valor_unitario",
         "a.porc_iva",
@@ -26,6 +26,7 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
         "c.observacion",
         "e.sw_medicamento",
         "e.sw_insumos",
+        
         G.knex.raw(campo)
     ];
    

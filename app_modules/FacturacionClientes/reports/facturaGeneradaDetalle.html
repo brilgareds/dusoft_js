@@ -99,18 +99,22 @@
             <td>VALOR TOTAL</td>
             <td>%IVA</td>
          </tr>
-         <tr>
-            <td>1101M0443248</td>
-            <td>METADOXIL 500MG TABLETA | CAJA X 10. LEGRAND</td>
-            <td>P49</td>
-            <td>2017-11-29</td>
-            <td>000017352-03</td>
-            <td>2006 M-005522 R1</td>
-            <td>10</td>
-            <td>$4.182,00</td>
-            <td>$41.820,00</td>
-            <td>%0,00</td>
-         </tr>
+         {{for detalle}}
+            <tr>
+              <!--  <td >{{:fecha_entrega}}</td> 
+                <td >{{:codigo_producto}}</td>//-->
+                <td  >{{:codigo_producto}}</td>
+                <td >{{:descripcion}}</td>
+                <td >{{:lote}}</td>
+                <td>{{:fecha_vencimiento}}</td>
+                <td>{{:codigo_cum}}</td>
+                <td>{{:codigo_invima}}</td>
+                <td>{{:cantidad}}</td>
+                <td>{{:valor_unitario}}</td>
+                <td>{{:subtotal}}</td>
+                <td>{{:porc_iva}}</td>
+            </tr>
+            {{/for}}
       </table>
       <br>
       <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >

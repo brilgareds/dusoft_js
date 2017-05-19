@@ -688,7 +688,7 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
     }).then(function(resultado){
         
         console.log("parametrosReporte ", parametrosReporte.cabecera)
-        //return G.Q.nfcall(__generarPdf,parametrosReporte);
+       return G.Q.nfcall(__generarPdf,parametrosReporte);
         
     }).then(function(resultado){ 
          

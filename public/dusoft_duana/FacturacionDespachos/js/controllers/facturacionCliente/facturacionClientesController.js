@@ -372,7 +372,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             digito_verificacion: parametro.digitoVerificacion,
                             texto2: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje2,
                             texto3: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje3, 
-                            mensaje: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje4, 
+                            texto1: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje1, 
                             prefijo: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
                             factura_fiscal: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
                             tipo_id_tercero: parametro.mostrarFacturasDespachadas()[0].getTipoId(),

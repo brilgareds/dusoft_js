@@ -152,7 +152,7 @@ define(["angular", "js/services"], function (angular, services) {
                     };
                     
                     self.renderDocumentosClientes = function (datos,estado) {
-                        
+                         
                         var facturasDespachadas = [];
                         for (var i in datos) {
                             
@@ -202,7 +202,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
                                 _documento.setMensaje2(datos[i].texto2);
                                 _documento.setMensaje3(datos[i].texto3);
-                                _documento.setMensaje4(datos[i].mensaje);
+                                _documento.setMensaje1(datos[i].texto1);
                                 _documento.setObservacion(datos[i].observaciones);
                                 _documento.setTipoFactura(datos[i].factura_agrupada);
                                 _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 

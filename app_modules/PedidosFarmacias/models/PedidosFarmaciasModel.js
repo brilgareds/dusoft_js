@@ -768,7 +768,8 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                     order by fecha_verificacion asc limit 1\
                 ) as descripcion_autorizacion,\
                 b.observacion_justificacion_separador,\
-                b.observacion_justificacion_auditor\
+                b.observacion_justificacion_auditor,\
+                COALESCE(j.torre, '1') AS torre\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
                 left join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
@@ -800,6 +801,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
                 left join existencias_bodegas_lote_fv h on h.empresa_id = b.empresa_id and h.centro_utilidad = b.centro_utilidad and h.codigo_producto = b.codigo_producto and h.lote = b.lote and h.fecha_vencimiento = b.fecha_vencimiento :: date and  h.bodega = b.bodega\
                 left join existencias_bodegas i on i.empresa_id = b.empresa_id and i.centro_utilidad = b.centro_utilidad and i.codigo_producto = b.codigo_producto and i.bodega = b.bodega\
+                LEFT JOIN param_torreproducto j ON j.codigo_producto = a.codigo_producto AND j.empresa_id = g.empresa_destino\
                 where a.solicitud_prod_a_bod_ppal_id= ? order by e.descripcion ; ";
 
    G.knex.raw(sql, [numero_pedido]).

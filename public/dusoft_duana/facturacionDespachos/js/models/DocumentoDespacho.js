@@ -19,10 +19,24 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.mensaje4;
                 this.observacion;
                 this.tipoFactura;
+                this.porcentajeRtf;
+                this.porcentajeReteIva;
+                this.porcentajeIca;
             }
 
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
             
+            DocumentoDespacho.prototype.setPorcentajeIca = function(porcentajeIca){
+                this.porcentajeIca = porcentajeIca;
+            };
+            
+            DocumentoDespacho.prototype.setPorcentajeReteIva = function(porcentajeReteIva){
+                this.porcentajeReteIva = porcentajeReteIva;
+            };
+    
+            DocumentoDespacho.prototype.setPorcentajeRtf = function(porcentajeRtf){
+                this.porcentajeRtf = porcentajeRtf;
+            };
             
             DocumentoDespacho.prototype.setTipoFactura = function(tipoFactura){
                 this.tipoFactura = tipoFactura;
@@ -126,6 +140,18 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.getTipoFactura = function(){
                 return this.tipoFactura;
+            };
+            
+            DocumentoDespacho.prototype.getPorcentajeIca = function(){
+                return this.porcentajeIca;
+            };
+            
+            DocumentoDespacho.prototype.getPorcentajeReteIva = function(){
+                return this.porcentajeReteIva;
+            };
+    
+            DocumentoDespacho.prototype.getPorcentajeRtf = function(){
+                return this.porcentajeRtf;
             };
             
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {

@@ -620,37 +620,22 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
             cabecera: args.consulta_factura_generada_detalle.cabecera,           
             serverUrl: req.protocol + '://' + req.get('host') + "/",
             detalle: {},
-            profesional: {},
+            valores: {},
             archivoHtml: 'facturaGeneradaDetalle.html',
             reporte: "factura_generada_detalle_"
     };
     
-    //console.log("parametrosReporte ", parametrosReporte);
-    /*G.Q.ninvoke(that.m_facturacion_clientes, 'consultarPedidosFacturaAgrupada', parametros).then(function (resultado) {
- 
-        var coma = ",";
-        var length = resultado.length-1;
-        if(resultado.length >0){
-            
-            resultado.forEach(function(row,index){
-
-                if(index === length ){
-                    coma = "";
-                }
-                parametrosReporte.cabecera.pedido_cliente_id += row.pedido_cliente_id +coma;
- 
-            });
-            
-            return G.Q.ninvoke(that.m_facturacion_clientes,'consultaDetalleFacturaGenerada',parametros);
-            
-           }else{
-         throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
-        }
-         
-    })*/
+    var retenciones;
+    var retencionFuente;
+    var retencionIca;
+    var retencionIva;
+    var totalFactura;
+        
+    
     G.Q.ninvoke(that.m_facturacion_clientes,'consultaDetalleFacturaGenerada',parametros).then(function(resultado){
-
-        if(resultado.length >0){
+                   
+                   
+        if(resultado.length >0){                        
             parametrosReporte.detalle = resultado;
             if(parametrosReporte.cabecera.factura_agrupada === '1'){
                 parametrosReporte.cabecera.pedido_cliente_id = '';
@@ -685,17 +670,62 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
                 def.resolve();
             }
             
-    }).then(function(resultado){
+    }).then(function(resultado){                      
         
-        console.log("parametrosReporte ", parametrosReporte.cabecera)
-       return G.Q.nfcall(__generarPdf,parametrosReporte);
+        return G.Q.ninvoke(that.m_facturacion_clientes,'consultarParametrosRetencion',{empresaId: parametros.empresa_id});  
+        
+       //return G.Q.nfcall(__generarPdf,parametrosReporte);
         
     }).then(function(resultado){ 
          
-        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
+        if (resultado.length > 0) {
+            retenciones = resultado;
+        
+            return G.Q.nfcall(__detalleFacturaGeneradaReporte,0,parametrosReporte.detalle,0,0);
+         
+        }else{
+             throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};  
+        }
+        //console.log("parametrosReporte ", parametrosReporte.cabecera)
+        /*return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
                 consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}
-        })); 
+        })); */
             
+    }).then(function(resultado){
+        
+        if(resultado[0] >= retenciones[0].base_rtf){
+            retencionFuente = (resultado[0] * ((parametrosReporte.cabecera.porcentaje_rtf) / 100))
+        }
+        
+        if(resultado[0] >= retenciones[0].base_ica){
+            retencionIca = (resultado[0]) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000)
+        }
+        
+        if(resultado[0] >= retenciones[0].base_reteiva){
+            retencionIva = (resultado[1]) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100)
+        }
+        
+        totalFactura = ((((parseFloat(resultado[1]) + parseFloat(resultado[0])) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
+        
+        parametrosReporte.valores.retencionFuente = retencionFuente;
+       /* parametrosReporte.valores.retencionIca = retencionIca;
+        parametrosReporte.valores.retencionIva = retencionIva;
+        parametrosReporte.valores.ivaTotal = parseFloat(resultado[1]);
+        parametrosReporte.valores.subTotal = parseFloat(resultado[1]);
+        parametrosReporte.valores.totalFactura = totalFactura;*/
+        
+        
+        console.log("parametrosReporte.valores ", parametrosReporte.valores)
+        
+        /*console.log("porcentaje_rtf: ", parametrosReporte.cabecera.porcentaje_rtf);
+        console.log("porcentaje_ica: ", parametrosReporte.cabecera.porcentaje_ica);
+        console.log("porcentaje_reteiva: ", parametrosReporte.cabecera.porcentaje_reteiva);
+        console.log("base_rtf ", retenciones[0].base_rtf);
+        console.log("base_ica ", retenciones[0].base_ica);
+        console.log("base_reteiva ", retenciones[0].base_reteiva);
+        console.log("subTotal ", );
+        console.log("totalIva ", resultado[1]);*/
+        
     }).fail(function(err){  
          
         if(!err.status){
@@ -707,6 +737,23 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
     }).done(); 
 };
 
+function __detalleFacturaGeneradaReporte(index,detalle,totalIva,subTotal,callback){
+    
+    var producto = detalle[index];
+        
+        
+    if(!producto){
+        callback(false,subTotal,totalIva);
+        return;
+    }
+    
+    index++;
+    subTotal += parseFloat(producto.subtotal);
+    totalIva += parseFloat(producto.iva_total);
+    setTimeout(function(){
+        __detalleFacturaGeneradaReporte(index,detalle,totalIva,subTotal,callback);
+    },300);
+}
 
 function __generarPdf(datos, callback) {  
    

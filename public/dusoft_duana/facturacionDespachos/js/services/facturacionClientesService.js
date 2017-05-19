@@ -195,16 +195,19 @@ define(["angular", "js/services"], function (angular, services) {
                             if(estado === 0){    
                                 _documento.setValor(datos[i].valor_total);
                                 _documento.setSaldo(datos[i].saldo);
-                                _documento.setDescripcionEstado(datos[i].descripcion_estado);
-                               
+                                _documento.setDescripcionEstado(datos[i].descripcion_estado);                              
                                 _documento.setEstadoSincronizacion(datos[i].estado);
                                 _documento.setFechaFactura(datos[i].fecha_registro);
                                 _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
                                 _documento.setMensaje2(datos[i].texto2);
                                 _documento.setMensaje3(datos[i].texto3);
                                 _documento.setMensaje1(datos[i].texto1);
+                                _documento.setMensaje4(datos[i].mensaje);
                                 _documento.setObservacion(datos[i].observaciones);
                                 _documento.setTipoFactura(datos[i].factura_agrupada);
+                                _documento.setPorcentajeRtf(datos[i].porcentaje_rtf);
+                                _documento.setPorcentajeReteIva(datos[i].porcentaje_reteiva);
+                                _documento.setPorcentajeIca(datos[i].porcentaje_ica);
                                 _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
                                 _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
                                 _terceroDespacho.setPais(datos[i].pais_empresa); 

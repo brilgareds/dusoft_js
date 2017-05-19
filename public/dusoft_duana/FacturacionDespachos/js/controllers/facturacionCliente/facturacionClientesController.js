@@ -373,6 +373,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             texto2: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje2,
                             texto3: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje3, 
                             texto1: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje1, 
+                            mensaje: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje4, 
                             prefijo: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
                             factura_fiscal: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
                             tipo_id_tercero: parametro.mostrarFacturasDespachadas()[0].getTipoId(),
@@ -386,7 +387,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             fecha_vencimiento_factura: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaVencimientoFactura(),
                             observaciones: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getObservacion(),
                             pedido_cliente_id: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].get_numero_cotizacion(),
-                            factura_agrupada:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getTipoFactura()
+                            factura_agrupada:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getTipoFactura(),
+                            porcentaje_rtf:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getPorcentajeRtf(),
+                            porcentaje_ica:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getPorcentajeReteIva(),
+                            porcentaje_reteiva:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getPorcentajeRtf(),
                         }
                     }
                 }    

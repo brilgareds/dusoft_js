@@ -38,7 +38,7 @@
             </span>
         </p>
     </div>
-
+    
     <div class="{{columnaSizeBusqueda}} pull-right">                                                                
 
         <div class="input-group">
@@ -56,14 +56,18 @@
                         </a>
                     </li>
                 </ul>                                         
-            </div> 
+            </div>            
             <input ng-show="root.visibleBuscador" 
                    type="text" 
                    class="form-control" 
                    ng-keypress="buscarClientesFactura($event);"  
                    ng-model="root.termino_busqueda" 
                    placeholder="Buscar" name="" id="" />
+            </div>
         </div>   
+    <div class="col-md-1 pull-right">
+     <label><input type="checkbox"  ng-click="expression($event.currentTarget.checked)"> Por Facturar</label>
+    </div>
     </div>
 </div>
 <br>

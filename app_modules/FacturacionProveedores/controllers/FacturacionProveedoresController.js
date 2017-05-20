@@ -43,6 +43,7 @@ FacturacionProveedores.prototype.listarOrdenesCompraProveedor = function(req, re
     var terminoBusqueda = args.listar_clientes.terminoBusqueda;
     var paginaActual = args.listar_clientes.paginaActual;
     var filtro = args.listar_clientes.filtro;
+    var porFacturar = args.listar_clientes.porFacturar;
     var usuario = req.session.user.usuario_id;
     fechaInicio = args.listar_clientes.fechaInicio;
     fechaFin = args.listar_clientes.fechaFin;
@@ -53,7 +54,9 @@ FacturacionProveedores.prototype.listarOrdenesCompraProveedor = function(req, re
         filtro: filtro,
         fechaInicio: fechaInicio,
         fechaFin: fechaFin,
-        usuarioId: usuario};
+        usuarioId: usuario,
+        porFacturar:porFacturar
+    };
 
     G.Q.ninvoke(that.m_facturacion_proveedores, 'consultarOrdenesCompraProveedor', parametros).then(function(resultado) {
 
@@ -270,45 +273,56 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         host: req.get('host')
 
     };
+ 
+        G.knex.transaction(function(transaccion) { 
+            
+            G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', parametros).then(function(resultado) {
 
-    G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', parametros).then(function(resultado) {
+                return G.Q.nfcall(__impuestoProveedor, resultado[0], args.facturaProveedor.parmetros.recepciones[0], {});
 
-        return G.Q.nfcall(__impuestoProveedor, resultado[0], args.facturaProveedor.parmetros.recepciones[0], {});
+            }).then(function(resultado) {
 
-    }).then(function(resultado) {
+                parametros.porc_ica = resultado.ica;
+                parametros.porc_rtf = resultado.rtf;
+                parametros.porc_rtiva = resultado.iva;
 
-        parametros.porc_ica = resultado.ica;
-        parametros.porc_rtf = resultado.rtf;
-        parametros.porc_rtiva = resultado.iva;
+                return G.Q.ninvoke(that.m_facturacion_proveedores, 'ingresarFacturaCabecera', parametros,transaccion);
 
-        return G.Q.ninvoke(that.m_facturacion_proveedores, 'ingresarFacturaCabecera', parametros);
+            }).then(function(resultado) {
 
-    }).then(function(resultado) {
+                return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones, parametros,transaccion);
 
-        return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones, parametros);
+            }).then(function(resultado) {
+                
+                transaccion.commit();
 
-    }).then(function(resultado) {
-
+            }).fail(function(err) {
+                
+                transaccion.rollback(err);
+               
+            }).done();
+            
+    }).then(function(){
         var paramt = [];
         paramt[0] = parametros.empresaId;
         paramt[1] = parametros.codigo_proveedor_id;
         paramt[2] = parametros.numero_factura;
         var param = {param: paramt};
         return G.Q.nfcall(__sincronizarCuentasXpagarFi, param);
-
+        
     }).then(function(resultado) {
+        
         respuestaFI = resultado;
         return G.Q.nfcall(__reporteFactura, parametros);
 
     }).then(function(resultado) {
-
-        res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: resultado, respuestaFI: respuestaFI}));
-
-    }).fail(function(err) {
-        console.log("Error ingresarFactura ", err);
-        G.Q.nfcall(__eliminarFactura, that, parametros);
-        res.send(G.utils.r(req.url, err, 500, {err: err}));
-    }).done();
+               
+        res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: resultado, respuestaFI: respuestaFI})); 
+        
+    }).catch(function(err){
+        console.log("ERROR",err);
+       res.send(G.utils.r(req.url, err, 500, {err: err}));
+    }).done();     
 
 };
 
@@ -557,7 +571,7 @@ function __generarReporteFactura(rows, callback) {
  * +Descripcion Metodo recursivo privado encargado de iterar la recepciones parciales                                                    
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */
-function __ingresarFacturaDetalle(that, index, detalle, parametros, callback) {
+function __ingresarFacturaDetalle(that, index, detalle, parametros,transaccion, callback) {
 
     var producto = detalle[index];
 
@@ -570,17 +584,17 @@ function __ingresarFacturaDetalle(that, index, detalle, parametros, callback) {
 
     G.Q.ninvoke(that.m_facturacion_proveedores, 'detalleRecepcionParcial', producto).then(function(resultado) {
 
-        return G.Q.nfcall(__insertarDetalle, that, 0, resultado, parametros);
+        return G.Q.nfcall(__insertarDetalle, that, 0, resultado, parametros,transaccion);
 
     }).then(function(resultado) {
 
-        return G.Q.ninvoke(that.m_facturacion_proveedores, 'updateEstadoRecepcionParcial', producto);
+        return G.Q.ninvoke(that.m_facturacion_proveedores, 'updateEstadoRecepcionParcial', producto,transaccion);
 
     }).then(function(resultado) {
 
         setTimeout(function() {
             index++;
-            __ingresarFacturaDetalle(that, index, detalle, parametros, callback);
+            __ingresarFacturaDetalle(that, index, detalle, parametros,transaccion, callback);
         }, 3);
 
     }).fail(function(err) {
@@ -616,7 +630,7 @@ function __eliminarFactura(that, parametros, callback) {
  * +Descripcion  Metodo recursivo privado encargado de iterar el detalle de una recepcion                                               
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */
-function __insertarDetalle(that, index, productos, parametros, callback) {
+function __insertarDetalle(that, index, productos, parametros,transaccion, callback) {
 
     var producto = productos[index];
 
@@ -627,11 +641,11 @@ function __insertarDetalle(that, index, productos, parametros, callback) {
     producto.numero_factura = parametros.numero_factura;
     producto.codigo_proveedor_id = parametros.codigo_proveedor_id;
 
-    G.Q.ninvoke(that.m_facturacion_proveedores, 'ingresarFacturaDetalle', producto).then(function(resultado) {
+    G.Q.ninvoke(that.m_facturacion_proveedores, 'ingresarFacturaDetalle', producto,transaccion).then(function(resultado) {
 
         setTimeout(function() {
             index++;
-            __insertarDetalle(that, index, productos, parametros, callback);
+            __insertarDetalle(that, index, productos, parametros,transaccion, callback);
         }, 3);
 
     }).fail(function(err) {

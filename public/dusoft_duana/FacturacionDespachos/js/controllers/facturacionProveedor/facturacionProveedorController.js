@@ -20,6 +20,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         that.total = 0;
         $scope.format = 'dd-MM-yyyy'
         $scope.root = {
+            porFactura:0,
             totalFactura: 0,
             totalDescuento: 0,
             fechaVencimiento: $filter('date')(fecha_actual, "yyyy-MM-dd"),
@@ -506,7 +507,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         empresaId: $scope.root.empresaSeleccionada.getCodigo(),
                         fechaInicio: inicioFecha,
                         fechaFin: finFecha,
-                        paginaActual: $scope.paginaactual
+                        paginaActual: $scope.paginaactual,
+                        porFacturar:$scope.root.porFactura
                     }
                 }
             };
@@ -657,11 +659,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                </div>'
                 },
                 {field: '', cellClass: "checkseleccion", width: "5%",
-                    cellTemplate: '<input ng-hide="validarFacturados(row.entity.getNumeroRecepciones())" type="checkbox" class="checkpedido" ng-click="onPedidoSeleccionado($event.currentTarget.checked,row)" ng-checked="buscarSeleccion(row)" ng-model="row.seleccionado" />'}
+                    cellTemplate: '<input ng-hide="validarFacturados(row.entity.getNumeroRecepciones())" type="checkbox" class="checkpedido" ng-click="onPedidoSeleccionado($event.currentTarget.checked,row)" ng-checked="buscarSeleccion(row)" ng-model="row.selected"  />'}//ng-model="row.seleccionado"
             ]
         };
-
-
+        
+                
         /**
          * +Descripcion funcion que valida el check de las recepciones a facturar
          * @author Andres Mauricio Gonzalez
@@ -1041,11 +1043,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @returns {undefined}
          */
         $scope.onPedidoSeleccionado = function(check, row) {
+            
+            
             row.selected = check;
+            
             if (check) {
-                that.agregarPedido(row.entity);
+                that.agregarPedido(row);
             } else {
-                that.eliminaPedido(row.entity);
+                that.eliminaPedido(row);
             }
         };
 
@@ -1055,7 +1060,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 08/05/2017 DD/MM/YYYY
          * @returns {undefined}
          */
-        that.eliminaPedido = function(pedido) {
+        that.eliminaPedido = function(row) {
+            var pedido = row.entity;
             for (var i in $scope.root.pedidosSeleccionados) {
                 var _pedido = $scope.root.pedidosSeleccionados[i];
                 if (_pedido.recepcion_parcial === pedido.recepcion_parcial) {//numero_orden_compra
@@ -1071,18 +1077,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 08/05/2017 DD/MM/YYYY
          * @returns {undefined}
          */
-        that.agregarPedido = function(pedido) {
+        that.agregarPedido = function(row) {
+            var pedido = row.entity;
+           
             for (var i in $scope.root.pedidosSeleccionados) {
                 var _pedido = $scope.root.pedidosSeleccionados[i];
-                if (_pedido.recepcion_parcial === pedido.recepcion_parcial || _pedido.prefijo !== pedido.prefijo) {
+                if (_pedido.recepcion_parcial === pedido.recepcion_parcial || _pedido.prefijo !== pedido.prefijo || _pedido.proveedor !== pedido.proveedor) {
                     if (_pedido.prefijo !== pedido.prefijo) {
+                        
                         AlertService.mostrarMensaje("warning", "Se deben Facturar Documentos con el mismo prefijo");
                     }
+                    if (_pedido.proveedor !== pedido.proveedor) {
+                        
+                        AlertService.mostrarMensaje("warning", "Se deben Facturar Documentos del mismo proveedor");
+                    }
+                    row.selected = false;
                     return false;
                 }
             }
             $scope.root.pedidosSeleccionados.push(pedido);
         };
+
 
         /**
          * +Descripcion funcion encargada de buscar la recepcion almacenada
@@ -1162,6 +1177,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             if (event.which === 13) {
 
                 that.listarProveedores();
+            }
+        };
+        /**
+         * @author Andres Mauricio Gonzalez
+         * @fecha 03/05/2017
+         * +Descripcion Metodo encargado de invocar el servicio que
+         *              listara los clientes para facturar
+         *  @parametros ($event = eventos del teclado)
+         *              (pendiente = 0 Formulas sin pendientes)
+         *              (pendiente = 1 Formulas con pendientes)
+         */
+        $scope.expression = function(check) {
+            if (check) {
+                $scope.root.porFactura=1;
+            } else {
+                $scope.root.porFactura=0;
             }
         };
 

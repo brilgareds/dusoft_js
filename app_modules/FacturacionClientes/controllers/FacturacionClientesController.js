@@ -590,7 +590,56 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
 };
 
 
-function number_format(amount, decimals) {
+ 
+function numeroLetra(valor)
+{    
+    var n = parseFloat(valor).toFixed(2); /*se limita a dos decimales, no sabía que existía toFixed() :)*/
+    var p = n.toString().substring(n.toString().indexOf(".") + 1); /*decimales*/
+    var t = "";
+    t = numeroDecimalLetra(n);
+    if(p){
+        t += " con " + numeroDecimalLetra(p) ;
+    }
+    /*correcciones*/
+    t = t.replace("  ", " ");
+    t = t.replace(" cero", "");
+  
+    return t;
+}
+
+function numeroDecimalLetra(n)
+{
+    var o=new Array("diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte", "veintiuno", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve");
+    var u=new Array("cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve");
+    var d=new Array("", "", "", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa");
+    var c=new Array("", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos");
+    var n = parseFloat(n).toFixed(2); /*se limita a dos decimales, no sabía que existía toFixed() :)*/
+    var m = n.toString().substring(0, n.toString().indexOf(".")); /*número sin decimales*/
+    var m = parseFloat(m).toString().split("").reverse(); /*tampoco que reverse() existía :D*/
+    var t = "";
+
+    /*Se analiza cada 3 dígitos*/
+    for (var i = 0; i < m.length; i += 3)
+    {
+        var x = t;
+        /*formamos un número de 2 dígitos*/
+        var b = m[i + 1] != undefined ? parseFloat(m[i + 1].toString() + m[i].toString()) : parseFloat(m[i].toString());
+        /*analizamos el 3 dígito*/
+        t = m[i + 2] != undefined ? (c[m[i + 2]] + " ") : "";
+        t += b < 10 ? u[b] : (b < 30 ? o[b - 10] : (d[m[i + 1]] + (m[i] == '0' ? "" : (" y " + u[m[i]]))));
+        t = t == "ciento cero" ? "cien" : t;
+        if (2 < i && i < 6)
+            t = t == "uno" ? "mil " : (t.replace("uno", "un") + " mil ");
+        if (5 < i && i < 9)
+            t = t == "uno" ? "un millón " : (t.replace("uno", "un") + " millones ");
+        t += x;
+        //t=i<3?t:(i<6?((t=="uno"?"mil ":(t+" mil "))+x):((t=="uno"?"un millón ":(t+" millones "))+x));
+    }
+  
+    return t;
+}
+
+function numberFormat(amount, decimals) {
 
     amount += ''; // por si pasan un numero en vez de un string
     amount = parseFloat(amount.replace(/[^0-9\.]/g, '')); // elimino cualquier cosa que no sea numero o punto
@@ -608,9 +657,9 @@ function number_format(amount, decimals) {
         regexp = /(\d+)(\d{3})/;
 
     while (regexp.test(amount_parts[0]))
-        amount_parts[0] = amount_parts[0].replace(regexp, '$1' + ',' + '$2');
+        amount_parts[0] = amount_parts[0].replace(regexp, '$1' + '.' + '$2');
 
-    return amount_parts.join('.');
+    return amount_parts.join(',');
 }
 /**
  * @author Cristian Ardila
@@ -656,7 +705,8 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
     var retencionIca;
     var retencionIva;
     var totalFactura;
-        
+    var subTotal = 0;
+    var totalIva = 0;    
     
     G.Q.ninvoke(that.m_facturacion_clientes,'consultaDetalleFacturaGenerada',parametros).then(function(resultado){
                    
@@ -675,7 +725,7 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
         }
         
     }).then(function(resultado){
-        console.log("resultado [consultarPedidosFacturaAgrupada]: ",resultado)
+        //console.log("resultado [consultarPedidosFacturaAgrupada]: ",resultado)
             if (resultado) {
                 if (resultado.length > 0) {
                     var coma = ",";
@@ -704,38 +754,40 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
     }).then(function(resultado){ 
          
         if (resultado.length > 0) {
-            retenciones = resultado;
+             
+           
+            parametrosReporte.detalle.forEach(function(row){              
+                subTotal += parseFloat(row.subtotal_factura);
+                totalIva += parseFloat(row.iva_total);
+            }); 
+             
+            if(subTotal >= resultado[0].base_rtf){
+                retencionFuente = (subTotal * ((parametrosReporte.cabecera.porcentaje_rtf) / 100));
+            }
         
-            return G.Q.nfcall(__detalleFacturaGeneradaReporte,0,parametrosReporte.detalle,0,0);
-         
+            if(subTotal >= resultado[0].base_ica){
+                retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
+            }
+
+            if(subTotal >= resultado[0].base_reteiva){
+                retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
+            }
+
+            totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
+
+            parametrosReporte.valores.retencionFuente = numberFormat(retencionFuente,2);
+            parametrosReporte.valores.retencionIca = numberFormat(retencionIca,2);
+            parametrosReporte.valores.retencionIva = numberFormat(retencionIva,2);
+            parametrosReporte.valores.ivaTotal = numberFormat(parseFloat(totalIva),2);
+            parametrosReporte.valores.subTotal = numberFormat(parseFloat(subTotal),2);
+            parametrosReporte.valores.totalFactura = numberFormat(totalFactura,2);
+            parametrosReporte.valores.totalFacturaLetra = numeroLetra(totalFactura);
+             
+            return G.Q.nfcall(__generarPdf,parametrosReporte);
+             
         }else{
              throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};  
         }
-        
-    }).then(function(resultado){
-        
-        if(resultado[0] >= retenciones[0].base_rtf){
-            retencionFuente = (resultado[0] * ((parametrosReporte.cabecera.porcentaje_rtf) / 100));
-        }
-        
-        if(resultado[0] >= retenciones[0].base_ica){
-            retencionIca = (resultado[0]) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
-        }
-        
-        if(resultado[0] >= retenciones[0].base_reteiva){
-            retencionIva = (resultado[1]) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
-        }
-        
-        totalFactura = ((((parseFloat(resultado[1]) + parseFloat(resultado[0])) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
-        
-        parametrosReporte.valores.retencionFuente = number_format(retencionFuente,2);
-        parametrosReporte.valores.retencionIca = number_format(retencionIca,2);
-        parametrosReporte.valores.retencionIva = number_format(retencionIva,2);
-        parametrosReporte.valores.ivaTotal = number_format(parseFloat(resultado[1]),2);
-        parametrosReporte.valores.subTotal = number_format(parseFloat(resultado[0]),2);
-        parametrosReporte.valores.totalFactura = number_format(totalFactura,2);
-         
-        return G.Q.nfcall(__generarPdf,parametrosReporte);
         
     }).then(function(resultado){
         
@@ -754,28 +806,14 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
     }).done(); 
 };
 
-function __detalleFacturaGeneradaReporte(index,detalle,totalIva,subTotal,callback){
-    
-    var producto = detalle[index];
-        
-        
-    if(!producto){
-        callback(false,subTotal,totalIva);
-        return;
-    }
-    
-    index++;
-    subTotal += parseFloat(producto.subtotal);
-    totalIva += parseFloat(producto.iva_total);
-    setTimeout(function(){
-        __detalleFacturaGeneradaReporte(index,detalle,totalIva,subTotal,callback);
-    },300);
-}
-
+/**
+ * +Descripcion Funcion encargada de generar el reporte pdf en una plantilla
+ *              html, procesando los datos enviados
+ */
 function __generarPdf(datos, callback) {  
    
     console.log("*******__generarPdf************");
-    console.log("datos ", datos);
+    //console.log("datos ", datos);
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/FacturacionClientes/reports/'+datos.archivoHtml, 'utf8'),

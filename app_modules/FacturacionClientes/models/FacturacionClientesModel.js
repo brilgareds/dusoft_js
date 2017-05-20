@@ -4,7 +4,7 @@ var FacturacionClientesModel = function (m_e008) {
  
 function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
      
-    var columnas = [
+  /*  var columnas = [
         "a.empresa_id",
         "a.prefijo",
         "a.factura_fiscal",
@@ -16,11 +16,37 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
          G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd hh:mm:ss') AS fecha_vencimiento"),
         "a.lote",                                      
         G.knex.raw("(f.costo * a.cantidad ) as costo"),
+        "a.valor_unitario",
+        "a.porc_iva",
+        G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal"),
+        G.knex.raw("(a.valor_unitario*(a.porc_iva/100)) as iva"),
+        G.knex.raw("((a.valor_unitario * (a.porc_iva/100))* a.cantidad) as iva_total"),         
+        G.knex.raw("(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) as valor_unitario_iva"),
+        G.knex.raw("(((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))) as total"),
+        "c.observacion",
+        "e.sw_medicamento",
+        "e.sw_insumos", 
+        G.knex.raw(campo)
+    ];*/
+   
+    var columnas = [
+        "a.empresa_id",
+        "a.prefijo",
+        "a.factura_fiscal",
+        "a.codigo_producto",
+        G.knex.raw("(SELECT codigo_cum FROM inventarios_productos WHERE codigo_producto = a.codigo_producto) AS codigo_cum"),
+        G.knex.raw("(SELECT codigo_invima FROM inventarios_productos WHERE codigo_producto = a.codigo_producto) AS codigo_invima"),
+        G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
+        G.knex.raw("(a.cantidad) as cantidad"),
+         G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') AS fecha_vencimiento"),
+        "a.lote",                                      
+        G.knex.raw("(f.costo * a.cantidad ) as costo"),
         G.knex.raw("to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario"),
         "a.porc_iva",
         G.knex.raw("to_char((a.valor_unitario * a.cantidad),'LFM9,999,999.00') as subtotal"),
+         G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal_factura"),
         G.knex.raw("to_char((a.valor_unitario*(a.porc_iva/100)),'LFM9,999,999.00') as iva"),
-        G.knex.raw("to_char(((a.valor_unitario * (a.porc_iva/100))* a.cantidad),'LFM9,999,999.00') as iva_total"),         
+        G.knex.raw("((a.valor_unitario * (a.porc_iva/100))* a.cantidad) as iva_total"),         
         G.knex.raw("to_char((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))),'LFM9,999,999.00') as valor_unitario_iva"),
         G.knex.raw("to_char((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))),'LFM9,999,999.00') as total"),
         "c.observacion",
@@ -28,7 +54,6 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
         "e.sw_insumos", 
         G.knex.raw(campo)
     ];
-   
     var consulta = G.knex.select(columnas)
             .from(tabla1)
             .join(tabla2, function () {

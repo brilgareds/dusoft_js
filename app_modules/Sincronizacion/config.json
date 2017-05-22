@@ -1,0 +1,21 @@
+{
+    "module": "Sincronizacion",
+    "dependency": {
+        "controllers": [{
+                "sincronizacion_controller": {
+                    "module": "Sincronizacion",
+                    "controller": "SincronizacionController",
+                    "alias": "c_sincronizacion"
+                }
+            }],
+        "models": [{
+                "sincronizacion_model": {
+                    "module": "Sincronizacion",
+                    "model": "SincronizacionModel",
+                    "alias": "m_sincronizacion"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

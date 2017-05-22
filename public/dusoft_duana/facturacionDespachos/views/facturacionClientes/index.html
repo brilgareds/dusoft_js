@@ -1,0 +1,36 @@
+
+ 
+        <div class="row">        
+            <div class="col-md-12">
+                <tabset>
+                    <tab  ng-click="limpiarLocalStorageFacturaGenerada()">
+                        <tab-heading >
+                            <i class=""></i>  Factura de despacho
+                        </tab-heading>
+                        <br> 
+                        <div ng-include="'views/facturacionClientes/listarClientes.html'"></div>
+                    </tab>  
+                    
+                      <tab  active="root.activarTabFacturasGeneradas" >
+                        <tab-heading >
+                            <i class=""></i>  Factura de despacho generada
+                        </tab-heading>
+                        <br> 
+                        <div ng-include="'views/facturacionClientes/listarFacturasGeneradas.html'"></div>  
+                    </tab>  
+                   <!-- <tab>
+                        <tab-heading ng-click="cargarListaPedidos('','')">
+                             Validacion despachos 
+                           
+                        </tab-heading>
+                        <br>                    
+                        
+                    </tab>   //-->
+                
+                    
+                </tabset>                                      
+            </div>
+        </div>    
+  
+     <visualizar-reporte></visualizar-reporte>
+

@@ -607,6 +607,23 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
     width:48%;
 }
 
+.app-modal-window-ls-ls .modal-dialog{
+    width:38%;
+    height:500px;
+}
+
+.app-modal-window-xlg-ls .modal-dialog{
+    width:70%;
+    height:100%;
+}
+
+.gridStylea {
+    border: 1px solid rgb(212,212,212);
+/*    width: 400px; 
+    height: 300px*/
+    width: 100%; 
+    height: 500px
+}
 
 .chatGrid, .panelConversacion{
     height: 263px;

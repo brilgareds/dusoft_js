@@ -1,0 +1,144 @@
+<div class ="row">  
+
+    <div class="col-md-3 pull-right">                                                                
+
+        <div class="input-group">
+
+            <div class="input-group-btn">                                                                      
+                <button type="button" class="btn btn-default dropdown-toggle" 
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><span class="caret"></span></button>
+
+            </div> 
+
+
+            <input ng-show="true" 
+                   type="text" 
+                   class="form-control" 
+                   ng-keypress="buscarFacturaGenerada($event);"  
+                   ng-model="root.termino_busqueda_nombre" 
+                   placeholder="Nombre cliente" name="" id="" />
+             <div class="input-group-btn" >
+ 
+            </div>
+
+
+
+        </div>   
+
+    </div>  
+
+   <div class="{{columnaSizeBusqueda}} pull-right">                                                                
+
+        <div class="input-group">
+
+
+
+
+            <div class="input-group-btn">                                                                      
+                <button type="button" class="btn btn-default dropdown-toggle" 
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtro.descripcion}} <span class="caret"></span></button>
+                <ul class="dropdown-menu" ng-selected="onColumnaSize(root.filtro.tipo)">
+                    <li ng-repeat="filtro in root.filtros">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.descripcion}}</a>
+                    </li>
+                    <li role="separator" class="divider"></li>
+
+                    <li ng-repeat="tipoTercero in tipoTercero">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(tipoTercero)">
+                            {{tipoTercero.descripcion}}
+                        </a>
+                    </li>
+                </ul>                                         
+            </div>  
+
+
+            <input ng-show="true" 
+                   type="text" 
+                   class="form-control" 
+                   ng-keypress="buscarFacturaGenerada($event);"  
+                   ng-model="root.termino_busqueda_fg" 
+                   placeholder="#Documento" name="" id="" />
+        </div>   
+
+    </div>  
+
+    <div class="{{columnaSizeBusqueda}} pull-right">                                                                
+
+        <div class="input-group">
+
+
+
+
+            <div class="input-group-btn">                                                                      
+                <button type="button" class="btn btn-default dropdown-toggle" 
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtroPrefijo.descripcion}} <span class="caret"></span></button>
+                <ul class="dropdown-menu" ng-selected="onColumnaSize(root.filtroPrefijo.tipo)">
+                    <li ng-repeat="filtro in root.filtrosPrefijos">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltroPrefijos(filtro)">{{filtro.descripcion}}</a>
+                    </li>
+                    <li role="separator" class="divider"></li>
+
+                    <li ng-repeat="tipoPrefijoFactura in tipoPrefijoFactura">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltroPrefijos(tipoPrefijoFactura)">
+                            {{tipoPrefijoFactura.descripcion}}
+                        </a>
+                    </li>
+                </ul>                                         
+            </div> 
+
+
+            <input ng-show="true" 
+                   type="text" 
+                   class="form-control" 
+                   ng-keypress="buscarFacturaGenerada($event);"  
+                   ng-model="root.termino_busqueda_prefijo" 
+                   placeholder="Prefijo" name="" id="" />
+           
+        </div>   
+
+    </div>
+
+    <div class="col-md-3 pull-right">                                                                
+
+        <div class="input-group">
+
+            <div class="input-group-btn">                                                                      
+                <button type="button" class="btn btn-default dropdown-toggle" 
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><span class="caret"></span></button>
+
+            </div> 
+
+
+            <input ng-show="true" 
+                   type="text" 
+                   class="form-control" 
+                   ng-keypress="buscarFacturaGenerada($event);"  
+                   ng-model="root.termino_busqueda_pedido" 
+                   placeholder="#Pedido" name="" id="" />
+        </div>   
+
+    </div>  
+
+
+
+
+</div>
+<br>
+
+<!-- <div ng-if="root.estadoFormula == 0"> //-->
+
+<div class="table-responsive" style="clear:both; ">
+    <div class="defaultGrid grid-responsive" ng-grid="listaFacturasGeneradas" ></div>
+</div>  
+
+<br>
+
+<div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactualFacturasGeneradas == 1" ng-click="paginaAnteriorFG()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="root.items_facturas_generadas < 25" ng-click="paginaSiguienteFG()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div>
+

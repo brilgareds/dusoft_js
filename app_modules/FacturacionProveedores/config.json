@@ -1,0 +1,26 @@
+{
+    "module": "FacturacionProveedores",
+    "dependency": {
+        "controllers": [{
+                "facturacion_proveedores_controller": {
+                    "module": "FacturacionProveedores",
+                    "controller": "FacturacionProveedoresController",
+                    "alias": "c_facturacion_proveedores"
+                }
+            }],
+        "models": [{
+                "facturacion_cliente_model": {
+                    "module": "FacturacionProveedores",
+                    "model": "FacturacionProveedoresModel",
+                    "alias": "m_facturacion_proveedores"
+                },
+                "sincronizacion_model": {
+                    "module": "Sincronizacion",
+                    "model": "SincronizacionModel",
+                    "alias": "m_sincronizacion"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

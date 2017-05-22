@@ -1,6 +1,6 @@
 define(["angular", "js/controllers"], function (angular, controllers) {
 
-    var fo = controllers.controller('facturacionProveedorController',
+    var fo = controllers.controller('FacturacionProveedorController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
 
                 "$timeout",

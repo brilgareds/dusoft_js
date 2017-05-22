@@ -119,7 +119,7 @@ define([
                     text: "Facturacion Proveedores", 
                     templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",
-                    controller: "facturacionProveedorController"
+                    controller: "FacturacionProveedorController"
                 }).state('DetalleRecepcionParcial', {
                     url: "/DetalleRecepcionParcial",
                     text: "Detalle Recepcion Parcial", 

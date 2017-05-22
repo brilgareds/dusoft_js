@@ -23,6 +23,11 @@
                     "module": "MovimientosBodega/E008",
                     "model": "DocBodegaE008",
                     "alias": "m_e008"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
                 }
             }],
         "events": [],

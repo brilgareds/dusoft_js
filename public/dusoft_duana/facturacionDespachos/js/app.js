@@ -54,14 +54,9 @@ define([
     "models/PedidoDespacho",
     "controllers/facturacionCliente/facturacionClientesController",
     "controllers/facturacionCliente/pedidosClientesController",
+    "controllers/facturacionCliente/ventanaMensajeSincronizacionController",
     "controllers/facturacionProveedor/facturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
-   /* "controllers/facturacionClientesDetalleController",
-    "controllers/dispensacionRealizarEntregaController",
-    "controllers/dispensacionAutorizarDispensacion",
-    "controllers/dispensacionRegistrarEventoController",
-    "controllers/descartarPendientesFormulaController",
-    "controllers/dispensacionMovimientoFormulasPacienteController",*/
     "services/facturacionClientesService",
     "services/facturacionProveedoresService",
     "webNotification"

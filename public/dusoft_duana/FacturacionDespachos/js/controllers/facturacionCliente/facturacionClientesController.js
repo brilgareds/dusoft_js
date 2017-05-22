@@ -434,6 +434,35 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
         
         /**
+         * +Descripcion Metodo encargado de mostrar el mensaje de respuesta de la sincronizacion
+         *              de la factura
+         * @author Cristian Ardila
+         * @fecha 2017/22/05
+         */
+        that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+                     
+            $scope.opts = {
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: true,
+                keyboard: true,
+                templateUrl: 'views/facturacionClientes/ventanaMensajeSincronizacion.html',
+                scope: $scope,                  
+                controller: "ventanaMensajeSincronizacionController",
+                resolve: {
+                    mensaje: function() {
+                        return {mensaje_bd:mensaje_bd, mensaje_ws:mensaje_ws};
+                    }
+                }
+
+            };
+            var modalInstance = $modal.open($scope.opts);   
+
+            modalInstance.result.then(function(){
+            },function(){}); 
+        };
+        
+        /**
          * +Descripcion Validacion esclusiva cuando se realiza una facturacion
          *              y de inmediato se redirecciona la vista al tab de facturas 
          *              generadas
@@ -446,10 +475,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             if(storageListaFacturaDespachoGenerada){
                 console.log("storageListaFacturaDespachoGenerada ", storageListaFacturaDespachoGenerada);
                 $scope.root.activarTabFacturasGeneradas = storageListaFacturaDespachoGenerada.active;                
-                that.listarFacturasGeneradas(storageListaFacturaDespachoGenerada.datos.numeracion,{tipo: 'ME', descripcion: "ME"});
+                that.listarFacturasGeneradas(storageListaFacturaDespachoGenerada.datos.numeracion,{tipo: 'ME', descripcion: "ME"});              
+                that.mensajeSincronizacion(storageListaFacturaDespachoGenerada.mensaje.mensaje_bd,storageListaFacturaDespachoGenerada.mensaje.mensaje_ws);
             }
         };
         
+       
         
         /**
          * @author Cristian Ardila

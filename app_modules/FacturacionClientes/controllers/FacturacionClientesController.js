@@ -348,7 +348,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         direccion_ip: '',
         pedidos: args.generar_factura_agrupada.documentos
     };
-     
+    
     var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };
     
     var documentoFacturacion;
@@ -421,10 +421,11 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
             
-    }).then(function(resultado){
+    }).then(function(){
         
-        console.log("resultado [transaccionGenerarFacturasAgrupadas]: ", resultado);
-        
+        console.log("resultado [transaccionGenerarFacturasAgrupadas]: ");
+        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_agrupada:documentoFacturacion}));
+       
     }).fail(function(err){  
         
         console.log("err ", err);
@@ -532,7 +533,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
         
         console.log("resultado [consultarTerceroContrato]: ", resultado);
         consultarTerceroContrato = resultado;
-        //console.log("resultado [consultarTerceroContrato]: ", resultado);
+        
         if(resultado.length >0){
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarParametrosRetencion',parametros);       
         }else{
@@ -567,19 +568,17 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
              consultar_tercero_contrato:consultarTerceroContrato,
              consultar_parametros_retencion:consultarParametrosRetencion,
              parametros:parametros
-             });
+             });                                                      
         }else{
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
             
     }).then(function(resultado){                              
-        
-        
-        console.log("resultado [transaccionGenerarFacturasAgrupadas]: ", resultado);
-        
+         
+        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_individual:documentoFacturacion}));
+       
     }).fail(function(err){  
-        
-        console.log("err ", err);
+         
         if(!err.status){
             err = {};
             err.status = 500;
@@ -588,7 +587,265 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done(); 
     
+};
+
+
+ 
+function numeroLetra(valor)
+{    
+    var n = parseFloat(valor).toFixed(2); /*se limita a dos decimales, no sabía que existía toFixed() :)*/
+    var p = n.toString().substring(n.toString().indexOf(".") + 1); /*decimales*/
+    var t = "";
+    t = numeroDecimalLetra(n);
+    if(p){
+        t += " con " + numeroDecimalLetra(p) ;
+    }
+    /*correcciones*/
+    t = t.replace("  ", " ");
+    t = t.replace(" cero", "");
+  
+    return t;
 }
+
+function numeroDecimalLetra(n)
+{
+    var o=new Array("diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte", "veintiuno", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve");
+    var u=new Array("cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve");
+    var d=new Array("", "", "", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa");
+    var c=new Array("", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos");
+    var n = parseFloat(n).toFixed(2); /*se limita a dos decimales, no sabía que existía toFixed() :)*/
+    var m = n.toString().substring(0, n.toString().indexOf(".")); /*número sin decimales*/
+    var m = parseFloat(m).toString().split("").reverse(); /*tampoco que reverse() existía :D*/
+    var t = "";
+
+    /*Se analiza cada 3 dígitos*/
+    for (var i = 0; i < m.length; i += 3)
+    {
+        var x = t;
+        /*formamos un número de 2 dígitos*/
+        var b = m[i + 1] != undefined ? parseFloat(m[i + 1].toString() + m[i].toString()) : parseFloat(m[i].toString());
+        /*analizamos el 3 dígito*/
+        t = m[i + 2] != undefined ? (c[m[i + 2]] + " ") : "";
+        t += b < 10 ? u[b] : (b < 30 ? o[b - 10] : (d[m[i + 1]] + (m[i] == '0' ? "" : (" y " + u[m[i]]))));
+        t = t == "ciento cero" ? "cien" : t;
+        if (2 < i && i < 6)
+            t = t == "uno" ? "mil " : (t.replace("uno", "un") + " mil ");
+        if (5 < i && i < 9)
+            t = t == "uno" ? "un millón " : (t.replace("uno", "un") + " millones ");
+        t += x;
+        //t=i<3?t:(i<6?((t=="uno"?"mil ":(t+" mil "))+x):((t=="uno"?"un millón ":(t+" millones "))+x));
+    }
+  
+    return t;
+}
+
+function numberFormat(amount, decimals) {
+
+    amount += ''; // por si pasan un numero en vez de un string
+    amount = parseFloat(amount.replace(/[^0-9\.]/g, '')); // elimino cualquier cosa que no sea numero o punto
+
+    decimals = decimals || 0; // por si la variable no fue fue pasada
+
+    // si no es un numero o es igual a cero retorno el mismo cero
+    if (isNaN(amount) || amount === 0) 
+        return parseFloat(0).toFixed(decimals);
+
+    // si es mayor o menor que cero retorno el valor formateado como numero
+    amount = '' + amount.toFixed(decimals);
+
+    var amount_parts = amount.split('.'),
+        regexp = /(\d+)(\d{3})/;
+
+    while (regexp.test(amount_parts[0]))
+        amount_parts[0] = amount_parts[0].replace(regexp, '$1' + '.' + '$2');
+
+    return amount_parts.join(',');
+}
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de generar el informe detallado de la factura  
+ *              generada
+ * @fecha 18/05/2017
+ */
+FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, res) {
+
+    console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
+    console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
+    console.log("************FacturacionClientesModel.prototype.consultaFacturaGeneradaDetalle *****************");
+
+    var that = this;
+    var args = req.body.data;
+    var def = G.Q.defer(); 
+    if (args.consulta_factura_generada_detalle === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_pendientes: []}));
+        return;
+    }
+    
+    var parametros = {
+        empresa_id: args.consulta_factura_generada_detalle.cabecera.empresa_id,
+        factura_fiscal: args.consulta_factura_generada_detalle.cabecera.factura_fiscal,
+        prefijo: args.consulta_factura_generada_detalle.cabecera.prefijo
+    };
+    var usuario = req.session.user.usuario_id;
+    var today = new Date();   
+    var formato = 'YYYY-MM-DD hh:mm';
+    var fechaToday = G.moment(today).format(formato);
+    var parametrosReporte =  {
+            cabecera: args.consulta_factura_generada_detalle.cabecera,           
+            serverUrl: req.protocol + '://' + req.get('host') + "/",
+            detalle: {},
+            valores: {},
+            imprimio:{usuario:'',fecha:fechaToday},
+            archivoHtml: 'facturaGeneradaDetalle.html',
+            reporte: "factura_generada_detalle_"
+    };
+    
+    var retenciones;
+    var retencionFuente;
+    var retencionIca;
+    var retencionIva;
+    var totalFactura;
+    var subTotal = 0;
+    var totalIva = 0;    
+    
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultaDetalleFacturaGenerada',parametros).then(function(resultado){
+                   
+                   
+        if(resultado.length >0){                        
+            parametrosReporte.detalle = resultado;
+            if(parametrosReporte.cabecera.factura_agrupada === '1'){
+                parametrosReporte.cabecera.pedido_cliente_id = '';
+                return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarPedidosFacturaAgrupada', parametros);
+            }else{
+                def.resolve();
+            }
+        
+        }else{
+            throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+        //console.log("resultado [consultarPedidosFacturaAgrupada]: ",resultado)
+            if (resultado) {
+                if (resultado.length > 0) {
+                    var coma = ",";
+                    var length = resultado.length-1;    
+                    resultado.forEach(function (row, index) {
+
+                        if (index === length) {
+                            coma = "";
+                        }
+                        parametrosReporte.cabecera.pedido_cliente_id += row.pedido_cliente_id + coma;
+
+                    });
+ 
+                } else {
+                    throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
+                }
+            }else{
+                def.resolve();
+            }
+            
+    }).then(function(resultado){                      
+        
+        return G.Q.ninvoke(that.m_facturacion_clientes,'consultarParametrosRetencion',{empresaId: parametros.empresa_id});  
+                                                     
+                                                     
+    }).then(function(resultado){ 
+         
+        if (resultado.length > 0) {
+             
+           
+            parametrosReporte.detalle.forEach(function(row){              
+                subTotal += parseFloat(row.subtotal_factura);
+                totalIva += parseFloat(row.iva_total);
+            }); 
+             
+            if(subTotal >= resultado[0].base_rtf){
+                retencionFuente = (subTotal * ((parametrosReporte.cabecera.porcentaje_rtf) / 100));
+            }
+        
+            if(subTotal >= resultado[0].base_ica){
+                retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
+            }
+
+            if(subTotal >= resultado[0].base_reteiva){
+                retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
+            }
+
+            totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
+
+            parametrosReporte.valores.retencionFuente = numberFormat(retencionFuente,2);
+            parametrosReporte.valores.retencionIca = numberFormat(retencionIca,2);
+            parametrosReporte.valores.retencionIva = numberFormat(retencionIva,2);
+            parametrosReporte.valores.ivaTotal = numberFormat(parseFloat(totalIva),2);
+            parametrosReporte.valores.subTotal = numberFormat(parseFloat(subTotal),2);
+            parametrosReporte.valores.totalFactura = numberFormat(totalFactura,2);
+            parametrosReporte.valores.totalFacturaLetra = numeroLetra(totalFactura);
+             
+            return G.Q.nfcall(__generarPdf,parametrosReporte);
+             
+        }else{
+             throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};  
+        }
+        
+    }).then(function(resultado){
+        
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
+                consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}
+        }));
+        
+    }).fail(function(err){  
+         
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done(); 
+};
+
+/**
+ * +Descripcion Funcion encargada de generar el reporte pdf en una plantilla
+ *              html, procesando los datos enviados
+ */
+function __generarPdf(datos, callback) {  
+   
+    console.log("*******__generarPdf************");
+    //console.log("datos ", datos);
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/FacturacionClientes/reports/'+datos.archivoHtml, 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function(err, response) {
+        
+        response.body(function(body) {
+           var fecha = new Date();
+           var nombreTmp = datos.reporte + fecha.getTime() + ".html";
+             
+           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
+                if(err) {
+                     console.log("err [__generarPdf]: ", err)
+                } else {
+                     
+                    callback(false,nombreTmp);
+                }
+            });
+                
+            
+        });
+    });
+}           
+             
+             
 FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc", "m_e008"];
 //, "e_facturacion_clientes", "m_usuarios"
 module.exports = FacturacionClientes;

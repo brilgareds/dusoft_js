@@ -121,6 +121,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 if (data.status === 200) {
 
                                     $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
+                                    console.log("data.obj.listar_pedidos_clientes ", data.obj.listar_pedidos_clientes)
                                     pedidoClientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
                                     
                                     /**
@@ -137,7 +138,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     }) 
                                     
                                     /**
-                                     * +Descripcion
+                                     * +Descripcion Lista de los pedidos que estan listos
+                                     *              para facturarse
                                      */
                                     prefijosDocumentos.forEach(function(resultado){
                                           
@@ -176,7 +178,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         enableHighlighting: true,
                         columnDefs: [
 
-                            {field: '#Pedido', cellClass: "ngCellText", width: "15%", displayName: '#Pedido', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
+                            {field: '#Pedido', cellClass: "ngCellText", width: "15%", displayName: '#Pedido', 
+                                cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
 
                             {field: 'Vendedor', cellClass: "ngCellText", width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 
@@ -215,7 +218,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                            
                             {field: '', cellClass: "checkseleccion", width: "3%",
                                 cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
-                                        " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+                                        " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}, 
                         ]
                     };
 
@@ -376,16 +379,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                 facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
                                      console.log("AQUI MIRA ", data)
-                                    if (data.status === 200) {
-                                         
-                                    }
-                                    if(data.status === 404){
+                                  /**
+                                    * +Descripcion si se genera la factura satisfacturiamente,
+                                    *              el sistema activara la vista que lista las facturas generadas
+                                    *              haciendo referencia a la factura reciente
+                                    */
+                                    if (data.status === 200) {                                                                                   
+                                        localStorageService.add("listaFacturaDespachoGenerada",
+                                           {active:true, datos:data.obj.generar_factura_agrupada[0]}
+                                        );
+                                        $state.go('Despacho');                                             
                                         AlertService.mostrarMensaje("warning", data.msj);
                                     }
-                                    if(data.status === 409){
-                                        AlertService.mostrarMensaje("danger", data.msj);
+                                    if(data.status === 404){
+                                       AlertService.mostrarMensaje("warning", data.msj);
                                     }
-
+                                    if(data.status === 409){
+                                       AlertService.mostrarMensaje("danger", data.msj);
+                                    }
+                                    if(data.status === 500){
+                                       AlertService.mostrarMensaje("danger", data.msj);
+                                    }
                                 }); 
 
                                 }
@@ -433,7 +447,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             }
                                             
                                         });
-                                        console.log(" $scope.root.documentosSeleccionadosFiltrados ",  $scope.root.documentosSeleccionadosFiltrados);
                                          
                                         var obj = {
                                             session: $scope.session,
@@ -452,14 +465,26 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         };
                                         
                                         facturacionClientesService.generarFacturaIndividual(obj, function (data) {
-                                             console.log("AQUI MIRA ", data)
-                                            if (data.status === 200) {
-                                               AlertService.mostrarMensaje("warning", data.msj);
+                                            
+                                            /**
+                                             * +Descripcion si se genera la factura satisfacturiamente,
+                                             *              el sistema activara la vista que lista las facturas generadas
+                                             *              haciendo referencia a la factura reciente
+                                             */
+                                            if (data.status === 200) {                                                                                   
+                                                localStorageService.add("listaFacturaDespachoGenerada",
+                                                    {active:true, datos:data.obj.generar_factura_individual[0]}
+                                                );
+                                                $state.go('Despacho');                                             
+                                                AlertService.mostrarMensaje("warning", data.msj);
                                             }
                                             if(data.status === 404){
                                                 AlertService.mostrarMensaje("warning", data.msj);
                                             }
                                             if(data.status === 409){
+                                                AlertService.mostrarMensaje("danger", data.msj);
+                                            }
+                                            if(data.status === 500){
                                                 AlertService.mostrarMensaje("danger", data.msj);
                                             }
                                         });                                            
@@ -468,7 +493,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             );
                         }                              
                     };
-                   
+                     
                     $scope.seleccionarTipoPago = function(tipoPago){
                         $scope.tipoPagoFactura = tipoPago;
                     };
@@ -549,7 +574,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.$$watchers = null;
 
                         $scope.root = null;
-
+                        
                     });
 
                 }]);

@@ -2,14 +2,27 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('facturacionClientesService',
-            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho","VendedorDespacho","PedidoDespacho",
+            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho","VendedorDespacho","PedidoDespacho","EmpresaDespacho",
 
-                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho,PedidoDespacho) {
+                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho,PedidoDespacho,EmpresaDespacho) {
 
                     var self = this;
 
 
-
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  18/05/2017 DD/MM/YYYYY
+                     * +Descripcion Servicio que generara el reporte con el detalle
+                     *              de la factura generada
+                     */
+                    self.consultaFacturaGeneradaDetalle = function (obj, callback) {
+                        console.log("self.consultaFacturaGeneradaDetalle");
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.REPORTE_FACTURA_GENERADA_DETALLE, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
                     /**
                      * @author Cristian Ardila
                      * @fecha  05/05/2017 DD/MM/YYYYY
@@ -139,10 +152,23 @@ define(["angular", "js/services"], function (angular, services) {
                     };
                     
                     self.renderDocumentosClientes = function (datos,estado) {
-                       
-                        var tercerosDespacho = [];
+                         
+                        var facturasDespachadas = [];
                         for (var i in datos) {
-                           // console.log("A QUI ESTAN ", datos[i]);
+                            
+                            var _empresaDespacho = EmpresaDespacho.get(datos[i].razon_social || '',datos[i].empresa_id);   
+                            if(estado === 0){
+                                                    
+                                                   _empresaDespacho.setTipoIdEmpresa(datos[i].tipo_id_empresa);
+                                                    _empresaDespacho.setId(datos[i].id);
+                                                    _empresaDespacho.setDigitoVerificacion(datos[i].digito_verificacion);
+                                                    _empresaDespacho.setPais(datos[i].pais_empresa);
+                                                    _empresaDespacho.setDepartamento(datos[i].departamento_empresa);
+                                                    _empresaDespacho.setMunicipio(datos[i].municipio_empresa);
+                                                    _empresaDespacho.setDireccionEmpresa(datos[i].direccion_empresa);
+                                                    _empresaDespacho.setTelefonoEmpresa(datos[i].telefono_empresa);
+                            }
+                            
                             var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
                                                     datos[i].tercero_id,
                                                     datos[i].direccion,
@@ -153,24 +179,10 @@ define(["angular", "js/services"], function (angular, services) {
                                                     "",
                                                     "");
                             
-                            if(estado === 0){                                 
-                                _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
-                                _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
-                                _terceroDespacho.setPais(datos[i].pais_empresa); 
-                            }
+                            
                             
                             var _documento = DocumentoDespacho.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal||'', datos[i].fecha_registro||'');
-                            
-                            if(estado === 0){    
-                                _documento.setValor(datos[i].valor_total);
-                                _documento.setSaldo(datos[i].saldo);
-                                _documento.setDescripcionEstado(datos[i].descripcion_estado);
-                                _documento.setEstadoSincronizaciono(datos[i].estado);
-                                _documento.setFechaFactura(datos[i].fecha_registro);
-                                _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
-                            }
-                                //
-                            
+                             
                             
                             var _pedido = PedidoDespacho.get(datos[i].empresa_id, '','');
                                 _pedido.set_numero_cotizacion(datos[i].pedido_cliente_id);
@@ -180,14 +192,45 @@ define(["angular", "js/services"], function (angular, services) {
                                 _pedido.setSeleccionado(datos[i].seleccionado);
                             }
                              
-                                //_pedido.agregarDocumentos(_documento);
+                            if(estado === 0){    
+                                _documento.setValor(datos[i].valor_total);
+                                _documento.setSaldo(datos[i].saldo);
+                                _documento.setDescripcionEstado(datos[i].descripcion_estado);                              
+                                _documento.setEstadoSincronizacion(datos[i].estado);
+                                _documento.setFechaFactura(datos[i].fecha_registro);
+                                _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
+                                _documento.setMensaje2(datos[i].texto2);
+                                _documento.setMensaje3(datos[i].texto3);
+                                _documento.setMensaje1(datos[i].texto1);
+                                _documento.setMensaje4(datos[i].mensaje);
+                                _documento.setObservacion(datos[i].observaciones);
+                                _documento.setTipoFactura(datos[i].factura_agrupada);
+                                _documento.setPorcentajeRtf(datos[i].porcentaje_rtf);
+                                _documento.setPorcentajeReteIva(datos[i].porcentaje_reteiva);
+                                _documento.setPorcentajeIca(datos[i].porcentaje_ica);
+                                _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
+                                _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
+                                _terceroDespacho.setPais(datos[i].pais_empresa); 
+                                _terceroDespacho.setUbicacion(datos[i].ubicacion);
+                                _pedido.agregarDocumentos(_documento);
+                            } 
+                                
                             
                                 _pedido.agregarVendedor(_vendedorDespacho);
                                 _terceroDespacho.agregarPedidos(_pedido);
                                 
-                            tercerosDespacho.push(_terceroDespacho);
+                            if(estado === 0){
+                                _empresaDespacho.agregarFacturasDespachadas(_terceroDespacho);
+                                facturasDespachadas.push(_empresaDespacho);
+                            }
+
+                            if(estado === 1){
+
+                                facturasDespachadas.push(_terceroDespacho);
+                            }
+                            
                         }
-                        return tercerosDespacho;
+                        return facturasDespachadas;
                     };
                     
                     

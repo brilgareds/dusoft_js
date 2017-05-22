@@ -402,7 +402,12 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
  * @fecha 2017-02-05 YYYY-DD-MM
  */
 FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, callback) {
-
+    
+    console.log("********FacturacionClientesModel.prototype.listarFacturasGeneradas ******************");
+    console.log("********FacturacionClientesModel.prototype.listarFacturasGeneradas ******************");
+    console.log("********FacturacionClientesModel.prototype.listarFacturasGeneradas ******************");
+    
+    console.log("filtro ", filtro);
     var colQuery = [G.knex.raw("a.*"),
         "b.estado",
         G.knex.raw("case when b.estado=0 then 'Sincronizado' else 'NO sincronizado' end as descripcion_estado"),

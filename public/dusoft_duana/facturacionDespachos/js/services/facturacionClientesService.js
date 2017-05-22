@@ -7,8 +7,18 @@ define(["angular", "js/services"], function (angular, services) {
                 function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho,PedidoDespacho,EmpresaDespacho) {
 
                     var self = this;
-
-
+ 
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  18/05/2017 DD/MM/YYYYY
+                     * +Descripcion Servicio que sincronizara una factura
+                     */
+                    self.sincronizarFactura = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.SINCRONIZAR_FI, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
                     
                     /**
                      * @author Cristian Ardila
@@ -17,7 +27,6 @@ define(["angular", "js/services"], function (angular, services) {
                      *              de la factura generada
                      */
                     self.consultaFacturaGeneradaDetalle = function (obj, callback) {
-                        console.log("self.consultaFacturaGeneradaDetalle");
                         Request.realizarRequest(API.FACTURACIONCLIENTES.REPORTE_FACTURA_GENERADA_DETALLE, "POST", obj, function (data) {
                             callback(data);
                         });

@@ -617,6 +617,98 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
     
 };
 
+FacturacionClientes.prototype.sincronizarFactura = function(req, res){
+    
+    console.log("**************FacturacionClientes.prototype.sincronizarFactura***********************");
+    console.log("**************FacturacionClientes.prototype.sincronizarFactura***********************");
+    console.log("**************FacturacionClientes.prototype.sincronizarFactura***********************");
+    
+    var that = this;
+    var args = req.body.data;
+    
+    /**
+    * +Descripcion Variable encargada de capturar la ip del cliente que se conecta
+    * @example '::ffff:10.0.2.158'
+    */
+    var ip = req.headers['x-forwarded-for'] || 
+     req.connection.remoteAddress || 
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress;
+   
+    //console.log("args ", args);
+    if (args.sincronizar_factura === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {sincronizar_factura: []}));
+        return;
+    }
+    
+    if (args.sincronizar_factura.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {sincronizar_factura: []}));
+        return;
+    }
+    
+    if (args.sincronizar_factura.factura_fiscal === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de factura', 404, {sincronizar_factura: []}));
+        return;
+    }
+    
+    var parametros = {
+        empresaId: args.sincronizar_factura.empresa_id,  
+        documentoId:''
+    };    
+    
+    var parametroBodegaDocId = {variable:"documento_factura_"+args.sincronizar_factura.empresa_id, tipoVariable:1, modulo:'FacturasDespacho' };    
+   
+    G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
+        
+        //console.log("resultado [estadoParametrizacionReformular]: ", resultado);
+        parametros.documentoId = resultado[0].valor;
+    
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros)
+        }else{
+            throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
+        }
+         
+        
+    }).then(function(resultado){
+        
+        //console.log("resultado [listarPrefijosFacturas]: ", resultado);
+        var parametrosSincronizar = [];
+        parametrosSincronizar[0] = resultado[0].empresa_id;
+        parametrosSincronizar[1] = resultado[0].id;
+        parametrosSincronizar[2] = args.sincronizar_factura.factura_fiscal ;
+        var param = {param: parametrosSincronizar,funcion:'facturas_venta_fi'};
+        
+        return G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);
+        
+    }).then(function(resultado){
+        console.log("resultado [sincronizarCuentasXpagarFi]::: ", resultado)
+        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {resultado_sincronizacion_ws: resultado}));
+        
+    }).fail(function(err){  
+         
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done();
+    /*
+    console.log("param >>>>>>>>>>> ", param)
+    G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param).then(function(resultado){
+        console.log("resultado ", resultado);
+        
+     }).fail(function(err){  
+         
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done(); */
+}
 
  
 function numeroLetra(valor)

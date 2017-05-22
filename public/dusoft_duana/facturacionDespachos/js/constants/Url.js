@@ -17,7 +17,8 @@ define(["angular"], function (angular) {
                  "LISTAR_PEDIDOS_CLIENTES": BASE_URL + "/FacturacionClientes/listarPedidosClientes", 
                  "GENERAR_FACTURA_AGRUPADA": BASE_URL + "/FacturacionClientes/generarFacturasAgrupadas",
                  "GENERAR_FACTURA_INDIVIDUAL": BASE_URL + "/FacturacionClientes/generarFacturaIndividual",
-                 "REPORTE_FACTURA_GENERADA_DETALLE": BASE_URL + "/FacturacionClientes/consultaFacturaGeneradaDetalle"
+                 "REPORTE_FACTURA_GENERADA_DETALLE": BASE_URL + "/FacturacionClientes/consultaFacturaGeneradaDetalle",
+                 "SINCRONIZAR_FI": BASE_URL + "/FacturacionClientes/sincronizarFactura"
                  
             },
             'FACTURACIONPROVEEDOR':{

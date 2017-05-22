@@ -41,4 +41,8 @@ module.exports = function(app, di_container) {
     app.post('/api/FacturacionClientes/consultaFacturaGeneradaDetalle', function(req, res) {     
         c_facturacion_clientes.consultaFacturaGeneradaDetalle(req, res);
     });
+     
+    app.post('/api/FacturacionClientes/sincronizarFactura', function(req, res) {     
+        c_facturacion_clientes.sincronizarFactura(req, res);
+    });
 };

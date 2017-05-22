@@ -335,7 +335,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getEstadoSincronizacion() != 0">\n\
-                                   <a href="javascript:void(0);" ng-click="sincronizarFormula(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
+                                   <a href="javascript:void(0);" ng-click="sincronizarFactura(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
                                    <a href="javascript:void(0);" ng-click="imprimirFacturaGenerada(row.entity)" class = "glyphicon glyphicon-print"> factura </a>\
@@ -346,6 +346,36 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             ]
         };
         
+        $scope.sincronizarFactura = function(entity){
+            
+            AlertService.mostrarVentanaAlerta("Sincronizar factura", "Confirma que sincronizara la factura? ",
+                function (estadoConfirm) {
+                    if (estadoConfirm) {
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                sincronizar_factura: {
+                                    empresa_id: entity.getCodigo(),
+                                    factura_fiscal: entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero()
+                                }
+                            }
+                        };
+
+                        facturacionClientesService.sincronizarFactura(obj, function (data) {
+
+                            if (data.status === 200) {
+                                that.mensajeSincronizacion(data.obj.resultado_sincronizacion_ws.resultado.mensaje_bd,
+                                        data.obj.resultado_sincronizacion_ws.resultado.mensaje_ws);
+                                that.listarFacturasGeneradas(entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(), {tipo: 'ME', descripcion: "ME"});
+                            }
+                            ;
+                        });
+
+                    }
+                }
+            );
+            
+        };
         /*
         * @author Cristian Manuel Ardila
         * +Descripcion Metodo encargado generar el reporte
@@ -353,7 +383,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         * @fecha  2016-10-12
         */
         that.consultaFacturaGeneradaDetalle = function(parametro){
-            console.log("consultaFacturaGeneradaDetalle");
           
             var obj = {                   
                 session: $scope.session,

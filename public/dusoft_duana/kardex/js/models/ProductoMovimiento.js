@@ -25,6 +25,9 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.codigoInvima = "";
                 this.existenciaMinima = 0;
                 this.existenciaMaxima = 0;
+                
+                this.codigoMedipol = "";
+                this.descripcionCodigoMedipol = "";
             }
 
             //herencia
@@ -131,8 +134,24 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 return this.descripcionMolecula = descripcionMolecula;
             };
                
+            ProductoMovimiento.prototype.getCodigoMedipol = function() {
+                return this.codigoMedipol;
+            };
             
-
+            ProductoMovimiento.prototype.setCodigoMedipol = function(codigoMedipol) {
+                this.codigoMedipol = codigoMedipol;
+                return this;
+            };   
+            
+            ProductoMovimiento.prototype.getDescripcionCodigoMedipol = function() {
+                return this.descripcionCodigoMedipol;
+            };
+            
+            ProductoMovimiento.prototype.setDescripcionCodigoMedipol = function(descripcionCodigoMedipol) {
+                this.descripcionCodigoMedipol = descripcionCodigoMedipol;
+                return this;
+            };  
+            
             this.get = function(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva) {
                 return new ProductoMovimiento(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva);
             };

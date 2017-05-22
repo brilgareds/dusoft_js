@@ -269,7 +269,12 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
 
     })
     query.limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).then(function(rows){
+    offset((pagina - 1) * G.settings.limit);
+    
+    console.log("query ", query.toSQL());
+    console.log("offset ",(pagina - 1) * G.settings.limit);
+    
+    query.then(function(rows){
       
         callback(false, rows);
     }).catch(function(err){

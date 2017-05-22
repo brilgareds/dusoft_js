@@ -309,7 +309,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         paramt[1] = parametros.codigo_proveedor_id;
         paramt[2] = parametros.numero_factura;
         var param = {param: paramt};
-        return  G.Q.ninvoke(that.m_facturacion_proveedores,"sincronizarCuentasXpagarFi", param);
+        return  G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);
         
     }).then(function(resultado) {
         
@@ -358,7 +358,7 @@ FacturacionProveedores.prototype.sincronizarFi = function(req, res) {
     parametros[2] = args.sincronizarFI.numeroFactura;
     
     var param = {param: parametros,funcion:'cuentas_x_pagar_fi'};
-    G.Q.ninvoke(that.m_facturacion_proveedores,"sincronizarCuentasXpagarFi", param).then(function(resultado) {
+    G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param).then(function(resultado) {
         
         res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {sincronizarFi: resultado}));
 
@@ -696,4 +696,5 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
 ;
 
 FacturacionProveedores.$inject = ["m_facturacion_proveedores", "m_sincronizacion"];
+
 module.exports = FacturacionProveedores;

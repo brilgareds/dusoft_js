@@ -1,8 +1,9 @@
-var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e008,m_usuarios) {
+var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e008,m_usuarios,m_sincronizacion) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
     this.m_usuarios = m_usuarios;
+    this.m_sincronizacion = m_sincronizacion;
 };
 
 /*
@@ -505,8 +506,8 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
     var consultarTerceroContrato;
     var consultarParametrosRetencion;
     var def = G.Q.defer(); 
-    
-    
+    var parametrosSincronizacion = [];
+   
     G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
         
         console.log("resultado [estadoParametrizacionReformular]: ", resultado);
@@ -575,9 +576,23 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
         }
             
     }).then(function(resultado){                              
+          
+        var parametros = [];
+            parametros[0] = resultado.empresa_id;
+            parametros[1] = resultado.prefijo;
+            parametros[2] = resultado.numeracion;
+    
+        var param = {param: parametros,funcion:'facturas_venta_fi'};
+        console.log("param >>>>>>>>>>> ", param)
+        return G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);       
          
-        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_individual:documentoFacturacion}));
-       
+    }).then(function(resultado){
+        
+        console.log("resultado ", resultado);
+        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, 
+        {generar_factura_individual:documentoFacturacion,
+        resultado_sincronizacion_ws: resultado}));
+        
     }).fail(function(err){  
          
         if(!err.status){
@@ -857,6 +872,6 @@ function __generarPdf(datos, callback) {
 }           
              
              
-FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc", "m_e008","m_usuarios"];
+FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc", "m_e008","m_usuarios","m_sincronizacion"];
 //, "e_facturacion_clientes", 
 module.exports = FacturacionClientes;

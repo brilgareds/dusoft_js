@@ -1304,7 +1304,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
     var porcentajeIca = '0';
     var porcentajeReteiva = '0';
     var porcentajeCree = obj.consultar_tercero_contrato[0].porcentaje_cree;
-    
+    var parametrosInsertarFacturaInvidual;
     
     if (obj.consultar_parametros_retencion.sw_rtf === '1' || obj.consultar_parametros_retencion.sw_rtf === '3')
         porcentajeRtf = obj.consultar_tercero_contrato[0].porcentaje_rtf;
@@ -1344,7 +1344,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
                             if(obj.consultar_tercero_contrato[0].facturar_iva === '0'){
                                 rowDetalle.porcentaje_gravamen = 0;
                             }
-                            var parametros = {empresa_id:documento.empresa_id, 
+                                parametrosInsertarFacturaInvidual = {empresa_id:documento.empresa_id, 
                                     numeracion:documento.numeracion,
                                     prefijo: documento.id,
                                     codigo_producto: rowDetalle.codigo_producto,
@@ -1354,8 +1354,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
                                     fecha_vencimiento: rowDetalle.fecha_vencimiento,
                                     porcentaje_gravamen: rowDetalle.porcentaje_gravamen
                                 };   
-                            console.log("parametros ", parametros)
-                            return G.Q.nfcall(__insertarFacturaIndividualDetalle,parametros,transaccion);
+                           
+                            return G.Q.nfcall(__insertarFacturaIndividualDetalle,parametrosInsertarFacturaInvidual,transaccion);
                         });    
                     });                 
                 });
@@ -1382,7 +1382,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
             return G.Q.ninvoke(that,'actualizarEstadoFacturaPedido',parametros, transaccion);
                                                                       
         }).then(function(){
-                                               
+           
+           //console.log("parametrosInsertarFacturaInvidual [[actualizarEstadoFacturaPedido]]] ", parametrosInsertarFacturaInvidual)
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");         
            transaccion.commit(); 
         }).fail(function(err){
@@ -1392,7 +1393,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
 
     }).then(function(){
         
-       callback(false);
+       callback(false,parametrosInsertarFacturaInvidual);
     }).catch(function(err){     
         
        callback(err);

@@ -410,8 +410,43 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         
                     };
                     
-                    
-                     
+                    /**
+                     * +Descripcion Ventana de alerta que visualizara el mensaje
+                     *              de respuesta del Ws de sincronizacion
+                     */
+                    that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+
+                        $scope.mensaje_bd = mensaje_bd;
+                        $scope.mensaje_ws = mensaje_ws;
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Resultado sincronizacion</h4>\
+                                        </div>\
+                                        <div class="modal-body">\
+                                            <h4>Respuesta WS</h4>\
+                                            <h5> {{ mensaje_ws }}</h5>\
+                                            <h4>Respuesta BD</h4>\
+                                            <h5> {{ mensaje_bd }} </h5>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+ 
+                                    $scope.close = function () {
+                                        $modalInstance.close();
+                                    };
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    };
+
                     /**
                      * @author Cristian Ardila
                      * +Descripcion Metodo encargado de generar una factura individual
@@ -422,7 +457,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         console.log("**********$scope.generarFacturasAgrupadas***************00");
                         console.log("**********$scope.generarFacturasAgrupadas***************00");
                         console.log("**********$scope.generarFacturasAgrupadas***************00");
-                        console.log("pedido ", pedido)
+                         
                         var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
                         
                         if(resultadoStorage){                           
@@ -471,11 +506,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                              *              el sistema activara la vista que lista las facturas generadas
                                              *              haciendo referencia a la factura reciente
                                              */
-                                            if (data.status === 200) {                                                                                   
+                                            if (data.status === 200) {  
+                                                console.log("resultado_sincronizacion_ws ", data.obj.resultado_sincronizacion_ws.resultado);
+                                                console.log("resultado_sincronizacion_ws.mensaje_bd ", data.obj.resultado_sincronizacion_ws.resultado.mensaje_bd);
+                                                console.log("resultado_sincronizacion_ws.mensaje_ws ", data.obj.resultado_sincronizacion_ws.resultado.mensaje_ws);
+                                                that.mensajeSincronizacion(data.obj.resultado_sincronizacion_ws.resultado.mensaje_bd,
+                                                data.obj.resultado_sincronizacion_ws.resultado.mensaje_ws);
                                                 localStorageService.add("listaFacturaDespachoGenerada",
                                                     {active:true, datos:data.obj.generar_factura_individual[0]}
                                                 );
-                                                $state.go('Despacho');                                             
+                                                $state.go('Despacho');                                          
                                                 AlertService.mostrarMensaje("warning", data.msj);
                                             }
                                             if(data.status === 404){

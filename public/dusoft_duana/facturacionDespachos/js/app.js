@@ -54,7 +54,7 @@ define([
     "models/PedidoDespacho",
     "controllers/facturacionCliente/facturacionClientesController",
     "controllers/facturacionCliente/pedidosClientesController",
-    "controllers/facturacionProveedor/facturacionProveedorController",
+    "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
    /* "controllers/facturacionClientesDetalleController",
     "controllers/dispensacionRealizarEntregaController",

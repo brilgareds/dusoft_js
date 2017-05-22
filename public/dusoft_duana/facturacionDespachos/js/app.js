@@ -41,7 +41,7 @@ define([
     "controllers/facturacionCliente/facturacionClientesController",
     "controllers/facturacionCliente/pedidosClientesController",
     "controllers/facturacionCliente/ventanaMensajeSincronizacionController",
-    "controllers/facturacionProveedor/facturacionProveedorController",
+    "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
     "services/facturacionClientesService",
     "services/facturacionProveedoresService",
@@ -100,7 +100,7 @@ define([
                     text: "Facturacion Proveedores", 
                     templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",
-                    controller: "facturacionProveedorController"
+                    controller: "FacturacionProveedorController"
                 }).state('DetalleRecepcionParcial', {
                     url: "/DetalleRecepcionParcial",
                     text: "Detalle Recepcion Parcial", 

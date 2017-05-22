@@ -12,8 +12,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
-         
-     
+          
         /*
          * Inicializacion de variables
          * @param {type} empresa

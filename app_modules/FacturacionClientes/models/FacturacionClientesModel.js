@@ -998,7 +998,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
         }).then(function(){ 
             
             if(datosAdicionalesAgrupados.length > 0){
-            
+                console.log("obj.documento_facturacion ", obj.documento_facturacion)
                 obj.documento_facturacion.forEach(function(documento){                
 
                     datosAdicionalesAgrupados.forEach(function(rowDatosAdicionalesAgrupados){                    
@@ -1066,7 +1066,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
         }).done();
 
     }).then(function(){
-       callback(false);
+       callback(false,obj.documento_facturacion[0]);
     }).catch(function(err){      
        callback(err);
     }).done(); 

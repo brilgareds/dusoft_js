@@ -423,11 +423,24 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
             
-    }).then(function(){
+    }).then(function(resultado){                              
+          
+        var parametros = [];
+            parametros[0] = resultado.empresa_id;
+            parametros[1] = resultado.id;
+            parametros[2] = resultado.numeracion;
+    
+        var param = {param: parametros,funcion:'facturas_venta_fi'};
+        console.log("param >>>>>>>>>>> ", param)
+        return G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);       
+         
+    }).then(function(resultado){
         
-        console.log("resultado [transaccionGenerarFacturasAgrupadas]: ");
-        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_agrupada:documentoFacturacion}));
-       
+        console.log("resultado ", resultado);
+        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, 
+        {generar_factura_agrupada:documentoFacturacion,
+        resultado_sincronizacion_ws: resultado}));
+        
     }).fail(function(err){  
         
         console.log("err ", err);
@@ -583,7 +596,6 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             parametros[2] = resultado.numeracion;
     
         var param = {param: parametros,funcion:'facturas_venta_fi'};
-        console.log("param >>>>>>>>>>> ", param)
         return G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);       
          
     }).then(function(resultado){

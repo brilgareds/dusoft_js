@@ -330,84 +330,88 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @fecha 2017-08-05
                      */
                     $scope.generarFacturasAgrupadas = function () {
-                          
-                        console.log("**********$scope.generarFacturasAgrupadas***************00");
-                        console.log("**********$scope.generarFacturasAgrupadas***************00");
-                        console.log("**********$scope.generarFacturasAgrupadas***************00");
-                        
-                        if($scope.root.pedidosSeleccionados.length > 1){
-                            
-                            var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
 
-                            if(resultadoStorage){
-                                $scope.root.documentosSeleccionadosFiltrados = [];
-                                    /**
-                                     * +Descripcion Se recorren los documentos checkeados en los pedidos
-                                     *              y se valida cual corresponde con cada pedido
-                                     *              para almacenarlos en un nuevo arreglo el cual sera
-                                     *              enviado al servidor para posteriormente ser
-                                     *              registrados
-                                     */
-                                    $scope.root.pedidosSeleccionados.forEach(function(row){
-                                    
-                                        row.pedidos[0].vaciarDocumentosSeleccionados();
-                                        $scope.root.documentoSeleccionados.forEach(function(documentos){
-                                            if(row.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id ){                                        
-                                                row.pedidos[0].agregarDocumentosSeleccionados(documentos);  
-                                            }
-                                        });
-                                        
-                                    });
-                                
-                                //console.log(" PEDIDOS SELECCIONADOS ",  $scope.root.pedidosSeleccionados);
-                                
-                                
-                                var obj = {
-                                    session: $scope.session,                          
-                                    data: {
-                                        generar_factura_agrupada: {
-                                            terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
-                                            empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-                                            paginaActual: $scope.paginaactual,
-                                            tipoIdTercero: resultadoStorage.tipoIdTercero,
-                                            terceroId: resultadoStorage.terceroId,
-                                            tipoPago: $scope.tipoPagoFactura,
-                                            documentos: $scope.root.pedidosSeleccionados
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+
+                        if ($scope.root.pedidosSeleccionados.length > 1) {
+
+                            var resultadoStorage = localStorageService.get("clientePedidoDespacho");
+
+                            if (resultadoStorage) {
+                                AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ",
+                                    function (estadoConfirm) {
+                                        if (estadoConfirm) {
+                                            $scope.root.documentosSeleccionadosFiltrados = [];
+                                            /**
+                                             * +Descripcion Se recorren los documentos checkeados en los pedidos
+                                             *              y se valida cual corresponde con cada pedido
+                                             *              para almacenarlos en un nuevo arreglo el cual sera
+                                             *              enviado al servidor para posteriormente ser
+                                             *              registrados
+                                             */
+                                            $scope.root.pedidosSeleccionados.forEach(function (row) {
+
+                                                row.pedidos[0].vaciarDocumentosSeleccionados();
+                                                $scope.root.documentoSeleccionados.forEach(function (documentos) {
+                                                    if (row.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id) {
+                                                        row.pedidos[0].agregarDocumentosSeleccionados(documentos);
+                                                    }
+                                                });
+
+                                            });
+
+                                            var obj = {
+                                                session: $scope.session,
+                                                data: {
+                                                    generar_factura_agrupada: {
+                                                        terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
+                                                        empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                                        paginaActual: $scope.paginaactual,
+                                                        tipoIdTercero: resultadoStorage.tipoIdTercero,
+                                                        terceroId: resultadoStorage.terceroId,
+                                                        tipoPago: $scope.tipoPagoFactura,
+                                                        documentos: $scope.root.pedidosSeleccionados
+                                                    }
+                                                }
+                                            };
+
+                                            facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
+                                                console.log("AQUI MIRA ", data)
+                                                /**
+                                                 * +Descripcion si se genera la factura satisfacturiamente,
+                                                 *              el sistema activara la vista que lista las facturas generadas
+                                                 *              haciendo referencia a la factura reciente
+                                                 */
+                                                if (data.status === 200) {
+                                                    localStorageService.add("listaFacturaDespachoGenerada",
+                                                            {active: true,
+                                                                datos: data.obj.generar_factura_agrupada[0],
+                                                                mensaje: data.obj.resultado_sincronizacion_ws.resultado}
+                                                    );
+                                                    $state.go('Despacho');
+                                                    AlertService.mostrarMensaje("warning", data.msj);
+                                                }
+                                                if (data.status === 404) {
+                                                    AlertService.mostrarMensaje("warning", data.msj);
+                                                }
+                                                if (data.status === 409) {
+                                                    AlertService.mostrarMensaje("danger", data.msj);
+                                                }
+                                                if (data.status === 500) {
+                                                    AlertService.mostrarMensaje("danger", data.msj);
+                                                }
+                                            });
                                         }
                                     }
-                                };
-
-                                facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
-                                     console.log("AQUI MIRA ", data)
-                                  /**
-                                    * +Descripcion si se genera la factura satisfacturiamente,
-                                    *              el sistema activara la vista que lista las facturas generadas
-                                    *              haciendo referencia a la factura reciente
-                                    */
-                                    if (data.status === 200) {                                                                                   
-                                        localStorageService.add("listaFacturaDespachoGenerada",
-                                           {active:true, datos:data.obj.generar_factura_agrupada[0]}
-                                        );
-                                        $state.go('Despacho');                                             
-                                        AlertService.mostrarMensaje("warning", data.msj);
-                                    }
-                                    if(data.status === 404){
-                                       AlertService.mostrarMensaje("warning", data.msj);
-                                    }
-                                    if(data.status === 409){
-                                       AlertService.mostrarMensaje("danger", data.msj);
-                                    }
-                                    if(data.status === 500){
-                                       AlertService.mostrarMensaje("danger", data.msj);
-                                    }
-                                }); 
-
-                                }
-                                
-                            }else{
-                                AlertService.mostrarMensaje("warning", "Debe seleccionar mas de dos pedidos");
+                                );
                             }
-                        
+
+                        } else {
+                            AlertService.mostrarMensaje("warning", "Debe seleccionar mas de dos pedidos");
+                        }
+
                     };
                     
                    
@@ -425,7 +429,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
                         
                         if(resultadoStorage){                           
-                            AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizar la facturacion ",
+                            AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizara la facturacion ",
                                 function(estadoConfirm){                
                                     if(estadoConfirm){
                                        

@@ -1,5 +1,6 @@
-var FacturacionProveedores = function(m_facturacion_proveedores) {
+var FacturacionProveedores = function(m_facturacion_proveedores,m_sincronizacion) {
     this.m_facturacion_proveedores = m_facturacion_proveedores;
+    this.m_sincronizacion = m_sincronizacion;
 };
 
 /**
@@ -694,5 +695,5 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
 }
 ;
 
-FacturacionProveedores.$inject = ["m_facturacion_proveedores"];
+FacturacionProveedores.$inject = ["m_facturacion_proveedores", "m_sincronizacion"];
 module.exports = FacturacionProveedores;

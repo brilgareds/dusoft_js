@@ -28,6 +28,11 @@
                     "module": "Usuarios",
                     "model": "UsuariosModel",
                     "alias": "m_usuarios"
+                },
+                "sincronizacion_model": {
+                    "module": "Sincronizacion",
+                    "model": "SincronizacionModel",
+                    "alias": "m_sincronizacion"
                 }
             }],
         "events": [],

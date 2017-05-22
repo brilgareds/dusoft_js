@@ -1,4 +1,4 @@
-//main app module 
+
 define([
     "angular",
     "socketservice",
@@ -28,20 +28,6 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/helpersdirectives/selectOnClick",
     "includes/validation/NgValidateEvents",
-    /*"models/EmpresaDispensacionHc",
-    "models/FormulaHc",
-    "models/PacienteHc",
-    "models/EpsAfiliadosHc",
-    "models/PlanesRangosHc",
-    "models/PlanesHc",
-   
-    "models/ProductosFOFO",
-    "models/LoteHc",
-    "models/ProductosHc",
-    "models/EntregaHc",
-    "models/UsuarioHc",
-    "models/ModuloHc",
-    "models/BodegaHc",*/
     "models/TipoTerceros",
     "models/OrdenesComprasProveedores",
     "models/Totales",
@@ -134,4 +120,5 @@ define([
 
     angular.bootstrap(document, ['Facturacion']);
     return facturacionClientes;
+    
 });

@@ -308,7 +308,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         paramt[1] = parametros.codigo_proveedor_id;
         paramt[2] = parametros.numero_factura;
         var param = {param: paramt};
-        return G.Q.nfcall(__sincronizarCuentasXpagarFi, param);
+        return  G.Q.ninvoke(that.m_facturacion_proveedores,"sincronizarCuentasXpagarFi", param);
         
     }).then(function(resultado) {
         
@@ -334,6 +334,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
 FacturacionProveedores.prototype.sincronizarFi = function(req, res) {
 
     var args = req.body.data;
+    var that=this;
 
     if (args.sincronizarFI.empresa === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere la Empresa', 404, {sincronizarFi: []}));
@@ -354,10 +355,10 @@ FacturacionProveedores.prototype.sincronizarFi = function(req, res) {
     parametros[0] = args.sincronizarFI.empresa;
     parametros[1] = args.sincronizarFI.codigoProveedor;
     parametros[2] = args.sincronizarFI.numeroFactura;
-
-    var param = {param: parametros};
-    G.Q.nfcall(__sincronizarCuentasXpagarFi, param).then(function(resultado) {
-
+    
+    var param = {param: parametros,funcion:'cuentas_x_pagar_fi'};
+    G.Q.ninvoke(that.m_facturacion_proveedores,"sincronizarCuentasXpagarFi", param).then(function(resultado) {
+        
         res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {sincronizarFi: resultado}));
 
     }).fail(function(err) {
@@ -366,47 +367,6 @@ FacturacionProveedores.prototype.sincronizarFi = function(req, res) {
     }).done();
 
 };
-
-/**
- * @author Andres Mauricio Gonzalez
- * +Descripcion  funcion privada de crear realizar la sincronizacion con la funcion sincronizarFi                               
- * @fecha 2017-05-08 (YYYY-MM-DD)
- */
-function __sincronizarCuentasXpagarFi(obj, callback) {
-
-    var url = G.constants.WS().FI.DUSOFT_FI;
-
-    obj.parametros = {
-        function: 'cuentas_x_pagar_fi',
-        parametros: obj.param
-    };
-
-    obj.error = false;
-
-    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
-
-        return G.Q.ninvoke(client, "sincronizarFi", obj.parametros);
-
-    }).spread(function(result, raw, soapHeader) {
-
-        if (!result.return.msj["$value"]) {
-            throw {msj: "Se ha generado un error", status: 403, obj: {}};
-        } else {
-            obj.resultado = JSON.parse(result.return.msj["$value"]);
-        }
-
-    }).then(function() {
-        callback(false, obj);
-
-    }).fail(function(err) {
-        console.log("Error __sincronizarCuentasXpagarFi ", err);
-        obj.error = true;
-        obj.tipo = '0';
-        callback(err);
-
-    }).done();
-}
-;
 
 /**
  * @author Andres Mauricio Gonzalez

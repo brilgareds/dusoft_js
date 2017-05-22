@@ -77,7 +77,13 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
         if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
             this.andWhere(G.knex.raw("t.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
         }
-        if ((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !== "") {
+        if ((obj.filtro.tipo === 'Orden') && obj.terminoBusqueda !== "") {
+            this.andWhere(G.knex.raw("c.orden_pedido_id = " + obj.terminoBusqueda))
+        }
+        if ((obj.filtro.tipo === 'Recepcion') && obj.terminoBusqueda !== "") {
+            this.andWhere(G.knex.raw("a.recepcion_parcial_id = " + obj.terminoBusqueda ))
+        }
+        if ((obj.filtro.tipo !== 'Nombre' && obj.filtro.tipo !== 'Orden'  && obj.filtro.tipo !== 'Recepcion') && obj.terminoBusqueda !== "") {
             this.andWhere(G.knex.raw("t.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
                 .andWhere(G.knex.raw("t.tipo_id_tercero = '"+obj.filtro.tipo+"'"))
         }
@@ -86,7 +92,6 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function(resultado) {
-
         callback(false, resultado)
     }). catch (function(err) {
         console.log("err [consultarOrdenesCompraProveedor]:", err);
@@ -162,8 +167,11 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
         }
         if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
             this.andWhere(G.knex.raw("f.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
-        }
-        if ((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !== "") {
+        }        
+        if ((obj.filtro.tipo === 'Factura') && obj.terminoBusqueda !== "") {
+            this.andWhere(G.knex.raw("a.numero_factura = " + obj.terminoBusqueda))
+        }        
+        if ((obj.filtro.tipo !== 'Nombre' && obj.filtro.tipo !== 'Factura') && obj.terminoBusqueda !== "") {
             this.andWhere(G.knex.raw("f.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
                 .andWhere(G.knex.raw("f.tipo_id_tercero = '"+obj.filtro.tipo+"'"))
         }
@@ -465,6 +473,50 @@ FacturacionProveedoresModel.prototype.updateEstadoRecepcionParcial = function(ob
         callback(err);
     });
 };
+
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion  funcion privada de crear realizar la sincronizacion con la funcion sincronizarFi                               
+ * @fecha 2017-05-08 (YYYY-MM-DD)
+ */
+FacturacionProveedoresModel.prototype.sincronizarCuentasXpagarFi=function(obj, callback) {
+
+    var url = G.constants.WS().FI.DUSOFT_FI;
+
+    obj.parametros = {
+        function: obj.funcion,
+        parametros: obj.param
+    };
+
+    obj.error = false;
+
+    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
+
+        return G.Q.ninvoke(client, "sincronizarFi", obj.parametros);
+
+    }).spread(function(result, raw, soapHeader) {
+
+        if (!result.return.msj["$value"]) {
+            throw {msj: "Se ha generado un error", status: 403, obj: {}};
+        } else {
+            obj.resultado = JSON.parse(result.return.msj["$value"]);
+        }
+
+    }).then(function() {
+        callback(false, obj);
+
+    }).fail(function(err) {
+        console.log("Error __sincronizarCuentasXpagarFi ", err);
+        obj.error = true;
+        obj.tipo = '0';
+        callback(err);
+
+    }).done();
+};
+
+                
+                
+  
 
 FacturacionProveedoresModel.$inject = [];
 

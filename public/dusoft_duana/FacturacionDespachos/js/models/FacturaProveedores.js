@@ -71,6 +71,14 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.nombreUsuario;
             };
             
+            FacturaProveedores.prototype.setNombreProveedor = function(nombreProveedor) {
+                this.nombreProveedor = nombreProveedor;
+            };
+
+            FacturaProveedores.prototype.getNombreProveedor= function() {
+                return this.nombreProveedor;
+            };
+            
             FacturaProveedores.prototype.setEstado = function(estado) {
                 this.estado = estado;
             };

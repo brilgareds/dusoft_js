@@ -46,7 +46,7 @@
                 <button type="button" class="btn btn-default dropdown-toggle" 
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtro.descripcion}} <span class="caret"></span></button>
                 <ul class="dropdown-menu" ng-selected="onColumnaSize(root.filtro.tipo)">
-                    <li ng-repeat="filtro in root.filtros">
+                    <li ng-repeat="filtro in root.filtros" ng-if="!(filtro.tipo==='Factura')">
                         <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.descripcion}}</a>
                     </li>
                     <li role="separator" class="divider"></li>

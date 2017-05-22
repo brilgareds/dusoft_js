@@ -85,9 +85,30 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         $scope.columnaSizeBusqueda = "col-md-3";
                     
         $scope.root.filtros = [
-            {tipo: 'Nombre', descripcion: "Nombre"}
-
+            {tipo: 'Nombre', descripcion: "Nombre"},
+            {tipo: 'Orden', descripcion: "# Orden"},
+            {tipo: 'Recepcion', descripcion: "# Recepcion"},
+            {tipo: 'Factura', descripcion: "# Factura"}
         ];
+        
+        $scope.cargarRecepcion=function(){
+            console.log("cargarRecepcion");
+           $scope.root.filtros = [
+            {tipo: 'Nombre', descripcion: "Nombre"},
+            {tipo: 'Orden', descripcion: "# Orden"},
+            {tipo: 'Recepcion', descripcion: "# Recepcion"}
+          ]; 
+           $scope.onSeleccionFiltro({tipo: 'Nombre', descripcion: "Nombre"});
+        };
+        
+        $scope.cargarFactura=function(){
+            console.log("cargarFactura");
+           $scope.root.filtros = [
+            {tipo: 'Nombre', descripcion: "Nombre"},
+            {tipo: 'Factura', descripcion: "# Factura"}
+          ]; 
+          $scope.onSeleccionFiltro({tipo: 'Nombre', descripcion: "Nombre"});
+        };
 
         $scope.root.filtro = $scope.root.filtros[0];
 
@@ -365,13 +386,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             enableCellSelection: true,
             enableHighlighting: true,
             showFilter:true,
-            columnDefs: [
+            columnDefs: [ 
                 {field: '#Factura', width: "5%", displayName: '#Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNumeroFactura()}}</p></div>'},
+                {field: 'Proveedor', width: "12%", displayName: 'Proveedor', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
                 {field: 'Total', width: "5%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 " style="text-align:right;" ><p class="text-uppercase">{{row.entity.getValorFactura() | currency:"$"}}</p></div>'},
                 {field: 'Descuento', width: "5%", displayName: 'Descuento', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 " style="text-align:right;"><p class="text-uppercase">{{row.entity.getValorDescuento() | currency:"$"}}</p></div>'},
-                {field: 'Usuario', width: "15%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
-                {field: 'Observaciones', width: "30%", displayName: 'Observaciones', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getObservacion()}}</p></div>'},
-                {field: 'Observaciones WS', width: "24%", displayName: 'Observaciones WS', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getObservacionSincronizacion()}}</p></div>'},
+                {field: 'Usuario', width: "13%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
+                {field: 'Observaciones', width: "24%", displayName: 'Observaciones', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getObservacion()}}</p></div>'},
+                {field: 'Observaciones WS', width: "20%", displayName: 'Observaciones WS', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getObservacionSincronizacion()}}</p></div>'},
                 {displayName: "Detalle", cellClass: "txt-center dropdown-button", width: "8%",
                     cellTemplate: ' <div class="row">\
                                                  <button class="btn btn-default btn-xs" ng-click="imprimirFactura(row.entity)">\
@@ -1097,6 +1119,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             }
             $scope.root.pedidosSeleccionados.push(pedido);
         };
+        
+        $scope.validarSelect=function(select){
+            var estado=false;
+            console.log("select",select);
+            if(select === 'Nombre'){
+                estado=true;
+            }
+            return estado;
+        }
 
 
         /**

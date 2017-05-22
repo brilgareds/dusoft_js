@@ -228,7 +228,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             facturacionProveedoresService.sincronizarFi(obj, function(data) {
 
                 if (data.status === 200) {
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.obj.sincronizarFi.resultado.mensaje_ws + " \n " + data.obj.sincronizarFi.resultado.mensaje_bd);
+                    that.mensajeSincronizacion(data.obj.sincronizarFi.resultado.mensaje_bd,data.obj.sincronizarFi.resultado.mensaje_ws);
                     callback(true);
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -804,13 +804,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                              </div>\
                                                         </div>\
                                                         <div class="form-group">\
-                                                             <div class="col-sm-12">\
-                                                              <b>Recepción: </b> ' + that.recepcionesId + '\
-                                                             </div>\
+                                                             <p class="col-sm-12">\
+                                                                <b>Recepción: </b> ' + that.recepcionesId + '\
+                                                             </p>\
                                                         </div>\
+                                                </div>\
+                                                <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <label>Fecha Factura:</label>\
+                                                              <h4><b><p>Fecha Factura:</p></b></h4>\
                                                              </div>\
                                                              <div class="col-sm-8">\
                                                                 <p class="input-group">\
@@ -832,9 +834,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                                 </p>\
                                                              </div>\
                                                         </div>\
+                                                </div>\
+                                                <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <label>Fecha de Radicación:</label>\
+                                                              <h4><b>Fecha Radicación:</b></h4>\
                                                              </div>\
                                                              <div class="col-sm-8">\
                                                                 <p class="input-group">\
@@ -856,41 +860,49 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                                 </p>\
                                                              </div>\
                                                         </div>\
+                                                </div>\
+                                                <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <label>Numero Factura:</label>\
+                                                              <h4><b>Numero Factura:</b></h4>\
                                                              </div>\
-                                                             <div class="col-sm-8">\
-                                                                    <input type="text" validacion-numero-entero ng-model="root.numeroFactura"  class="form-control grid-inline-input" required="required" >\
-                                                                </div>\
+                                                             <p class="col-sm-8">\
+                                                                    <input type="text" validacion-numero-entero ng-model="root.numeroFactura"  class="form-control" required="required" >\
+                                                              </p>\
                                                         </div>\
+                                               </div>\
+                                               <div class="row">\
                                                         <div class="form-group">\
                                                             <div class="col-sm-4">\
-                                                              <label>Valor Total Factura:</label>\
+                                                              <h4><b>Valor Total Factura:</b></h4>\
                                                              </div>\
-                                                             <div class="col-sm-8">\
-                                                              <input type="text" ng-model="root.totalFactura" validacion-numero-decimal class="form-control grid-inline-input" required="required" >\
-                                                             </div>\
+                                                             <p class="col-sm-8">\
+                                                                <input type="text" ng-model="root.totalFactura" validacion-numero-decimal class="form-control" required="required" >\
+                                                             </p>\
                                                         </div>\
+                                              </div>\
+                                              <div class="row">\
                                                        <div class="form-group">\
-                                                            <div class="col-sm-4">\
-                                                               <label>Total de Descuento:</label>\
+                                                            <div class="col-sm-4" >\
+                                                               <h4><b>Total de Descuento:</b></h4>\
                                                             </div>\
-                                                            <div class="col-sm-8">\
-                                                              <input type="text" ng-model="root.totalDescuento" validacion-numero-decimal class="form-control grid-inline-input">\
-                                                            </div>\
+                                                            <p class="col-sm-8">\
+                                                              <input type="text" ng-model="root.totalDescuento" validacion-numero-decimal class="form-control">\
+                                                            </p>\
                                                        </div>\
+                                              </div>\
+                                              <div class="row">\
                                                        <div class="form-group">\
-                                                            <div class="col-sm-4">\
-                                                              <label>Observacion:</label>\
-                                                            </div>\
-                                                            <div class="col-sm-8">\
-                                                              <textarea class="form-control" ng-model="root.descripcionFija"  col-xs-6" rows="4" ></textarea>\
-                                                              <textarea class="form-control" ng-model="root.descripcionFactura"  col-xs-6" rows="4" ></textarea>\
-                                                           </div>\
-                                                       </div>\
+                                                             <p class="col-sm-12">\
+                                                                <textarea class="form-control col-xs-12" ng-model="root.descripcionFija"   rows="4" disabled ></textarea>\
+                                                             </p>\
+                                                             <p class="col-sm-12">\
+                                                                <textarea placeholder="Observacion" class="form-control col-xs-12" ng-model="root.descripcionFactura"  rows="4" ></textarea>\
+                                                              </p>\
+                                                      </div>\
                                                </div>\
                                               </div>\
+                                             </div>\
                                             </div>\
                                             <div class="modal-footer">\
                                                 <button class="btn btn-primary" ng-disabled="{{root.pedidosSeleccionados.length}}==0" ng-click="facturar()">Facturar</button>\
@@ -1000,7 +1012,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                 if (data.status === 200) {
                     that.listarProveedores();
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Factura Creada Correctamente \n" + data.obj.respuestaFI.resultado.mensaje_ws + " \n " + data.obj.respuestaFI.resultado.mensaje_bd);
+                    that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd,data.obj.respuestaFI.resultado.mensaje_ws);
                     var nombre = data.obj.ingresarFactura;
                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                 } else {
@@ -1009,6 +1021,40 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             });
         };
+        
+        
+        that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+
+                       $scope.mensaje_bd = mensaje_bd;
+                       $scope.mensaje_ws = mensaje_ws;
+                       $scope.opts = {
+                           backdrop: true,
+                           backdropClick: true,
+                           dialogFade: false,
+                           keyboard: true,
+                           template: ' <div class="modal-header">\
+                                           <button type="button" class="close" ng-click="close()">&times;</button>\
+                                           <h4 class="modal-title">Resultado sincronizacion</h4>\
+                                       </div>\
+                                       <div class="modal-body">\
+                                           <h4>Respuesta WS</h4>\
+                                           <h5> {{ mensaje_ws }}</h5>\
+                                           <h4>Respuesta BD</h4>\
+                                           <h5> {{ mensaje_bd }} </h5>\
+                                       </div>\
+                                       <div class="modal-footer">\
+                                           <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                       </div>',
+                           scope: $scope,
+                           controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+
+                                   $scope.close = function () {
+                                       $modalInstance.close();
+                                   };
+                               }]
+                       };
+                       var modalInstance = $modal.open($scope.opts);
+                   };
 
         /**
          * +Descripcion Metodo encargado de cargar loa seleccion de las recepciones

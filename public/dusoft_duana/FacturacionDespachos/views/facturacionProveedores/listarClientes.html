@@ -38,7 +38,7 @@
             </span>
         </p>
     </div>
-
+    
     <div class="{{columnaSizeBusqueda}} pull-right">                                                                
 
         <div class="input-group">
@@ -56,18 +56,18 @@
                         </a>
                     </li>
                 </ul>                                         
-            </div> 
+            </div>            
             <input ng-show="root.visibleBuscador" 
                    type="text" 
                    class="form-control" 
                    ng-keypress="buscarClientesFactura($event);"  
                    ng-model="root.termino_busqueda" 
                    placeholder="Buscar" name="" id="" />
-            <div class="input-group-btn" ng-show="root.visibleBotonBuscador" >
-                <button class="btn btn-default pull-right" type="submit" ng-click ="buscarClientesFactura($event)">
-                    <i class="glyphicon glyphicon-search"></i></button>
             </div>
         </div>   
+    <div class="col-md-1 pull-right">
+     <label><input type="checkbox"  ng-click="expression($event.currentTarget.checked)"> Por Facturar</label>
+    </div>
     </div>
 </div>
 <br>
@@ -83,8 +83,8 @@
         <span class="glyphicon glyphicon-chevron-right" ></span>
     </button>
 </div>
-  <div class="input-group-btn" >
-                <button class="btn btn-default pull-right" type="submit" ng-click ="onFacturas()">
-                    Facturar <i class="glyphicon glyphicon-floppy-disk"></i></button>
- </div>
+<div class="input-group-btn" >
+    <button class="btn btn-default pull-right" type="submit" ng-click ="onFacturas()">
+        Facturar <i class="glyphicon glyphicon-floppy-disk"></i></button>
+</div>
 <visualizar-reporte></visualizar-reporte>

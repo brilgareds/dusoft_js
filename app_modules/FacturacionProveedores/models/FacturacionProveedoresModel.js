@@ -27,6 +27,8 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
         "a.recepcion_parcial_id",
         "a.prefijo",
         "a.numero",
+        "a.fecha_registro",
+        "a.recepcion_parcial_id",
         "tp.porcentaje_cree",
         "tp.porcentaje_rtf",
         "tp.porcentaje_ica",
@@ -54,18 +56,22 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
     })
             .innerJoin('inv_recepciones_parciales as a', function() { 
         this.on("a.orden_pedido_id", "c.orden_pedido_id")
-                .on("a.empresa_id", "c.empresa_id")
+            .on("a.empresa_id", "c.empresa_id")
     })
-            .orderBy("c.orden_pedido_id", "desc")
+            .orderBy("c.orden_pedido_id", "desc")            
             .orderBy("c.fecha_orden", "desc")            
             .where(function() {
 
+        if (obj.porFacturar === 1) {
+            
+            this.andWhere(G.knex.raw("a.sw_facturado = '0'"))
+        }
         if (obj.fechaInicio !== '') {
-            console.log("obj.filtro.fechaInicio",obj.fechaInicio);
+            
             this.andWhere(G.knex.raw("c.fecha_orden >= '" + obj.fechaInicio + "' "))
         }
         if (obj.fechaFin !== '') {
-            console.log("obj.filtro.fechaFin",obj.fechaFin);
+            
             this.andWhere(G.knex.raw("c.fecha_orden <= '" + obj.fechaFin + "' "))
         }
         if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
@@ -86,7 +92,7 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
         console.log("err [consultarOrdenesCompraProveedor]:", err);
         callback(err);
     });
-}  
+};  
 /**
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de consultar facturas Proveedor
@@ -342,10 +348,10 @@ FacturacionProveedoresModel.prototype.listarParametrosRetencion = function(param
  *              inv_facturas_proveedores                                                    
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */
-FacturacionProveedoresModel.prototype.ingresarFacturaCabecera = function(obj, callback) {
+FacturacionProveedoresModel.prototype.ingresarFacturaCabecera = function(obj,transaccion, callback) {
 
-    G.knex("inv_facturas_proveedores").
-            insert({
+    var query=G.knex("inv_facturas_proveedores").insert({
+        
         numero_factura: obj.numero_factura,
         empresa_id: obj.empresa_id,
         centro_utilidad: obj.centro_utilidad,
@@ -360,7 +366,9 @@ FacturacionProveedoresModel.prototype.ingresarFacturaCabecera = function(obj, ca
         fecha_radicacion_factura: obj.fecha_radicacion_factura,
         usuario_id: obj.usuario_id
 
-    }).then(function(resultado) {
+    });
+    if(transaccion) query.transacting(transaccion); 
+    query.then(function(resultado) {
 
         callback(false, resultado[0]);
 
@@ -375,10 +383,10 @@ FacturacionProveedoresModel.prototype.ingresarFacturaCabecera = function(obj, ca
  *              inv_facturas_proveedores                                                    
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */
-FacturacionProveedoresModel.prototype.ingresarFacturaDetalle = function(obj, callback) {
+FacturacionProveedoresModel.prototype.ingresarFacturaDetalle = function(obj,transaccion, callback) {
 
-    G.knex("inv_facturas_proveedores_d").
-            insert({
+   var query= G.knex("inv_facturas_proveedores_d").insert({
+        
         codigo_producto: obj.codigo_producto,
         porc_iva: obj.porc_iva,
         recepcion_parcial_id: obj.recepcion_parcial_id,
@@ -387,10 +395,12 @@ FacturacionProveedoresModel.prototype.ingresarFacturaDetalle = function(obj, cal
         lote: obj.lote,
         fecha_vencimiento: obj.fecha_vencimiento,
         numero_factura: obj.numero_factura,
-        item_id: obj.item_id,
+//        item_id: obj.item_id,
         codigo_proveedor_id: obj.codigo_proveedor_id
 
-    }).then(function(resultado) {
+    });
+    if(transaccion) query.transacting(transaccion); 
+    query.then(function(resultado) {
         callback(false, resultado[0]);
     }). catch (function(err) {
         console.log("ERROR:::ingresarFacturaDetalle ", err);
@@ -439,13 +449,16 @@ FacturacionProveedoresModel.prototype.eliminarFacturaDetalle = function(obj, cal
  *              inv_recepciones_parciales                                                    
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */
-FacturacionProveedoresModel.prototype.updateEstadoRecepcionParcial = function(obj, callback) {
+FacturacionProveedoresModel.prototype.updateEstadoRecepcionParcial = function(obj,transaccion, callback) {
 
-    G.knex("inv_recepciones_parciales").
+    var query=G.knex("inv_recepciones_parciales").
             where('recepcion_parcial_id', obj.recepcion_parcial_id).
             update({
         sw_facturado: '1'
-    }).then(function(resultado) {
+    });
+    
+    if(transaccion) query.transacting(transaccion);  
+    query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [updateEstadoRecepcionParcial]: ", err);

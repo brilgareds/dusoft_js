@@ -13,6 +13,11 @@
                     "module": "FacturacionProveedores",
                     "model": "FacturacionProveedoresModel",
                     "alias": "m_facturacion_proveedores"
+                },
+                "sincronizacion_model": {
+                    "module": "Sincronizacion",
+                    "model": "SincronizacionModel",
+                    "alias": "m_sincronizacion"
                 }
             }],
         "events": [],

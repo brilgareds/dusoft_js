@@ -1,6 +1,6 @@
 define(["angular", "js/controllers"], function(angular, controllers) {
 
- var fo = controllers.controller('ventanaMensajeSincronizacionController',
+ var fo = controllers.controller('VentanaMensajeSincronizacionController',
         ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',    
             "$timeout", 
             "$filter",

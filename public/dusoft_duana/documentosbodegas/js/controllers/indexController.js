@@ -152,7 +152,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             if ($event.which === 13 || $event.which === 1) {
                 $scope.termino_busquedaTmp = terminoBusqueda;
                 $scope.terminoTmp = terminoBusqueda;
-                if ($scope.tipoDocumento.tipo.tipo !== undefined) {
+                if ($scope.tipoDocumento.tipo !== undefined) {
                     that.listarDocumetosTemporales(true);
                 }
             }
@@ -171,7 +171,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 if ($event.which === 13 || $event.which === 1) {
                  $scope.terminoBusqueda=terminoBusqueda;
                  $scope.termino = terminoBusqueda;
-                    if($scope.tipoDocumento.tipo.tipo !== undefined){
+                    if($scope.tipoDocumento.tipo === undefined){
+                    }else{
                     that.listarDocumentosBodegaUsuario(true);
                    }
                 }                

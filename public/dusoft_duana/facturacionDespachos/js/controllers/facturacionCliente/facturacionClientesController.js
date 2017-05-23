@@ -477,7 +477,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 keyboard: true,
                 templateUrl: 'views/facturacionClientes/ventanaMensajeSincronizacion.html',
                 scope: $scope,                  
-                controller: "ventanaMensajeSincronizacionController",
+                controller: "VentanaMensajeSincronizacionController",
                 resolve: {
                     mensaje: function() {
                         return {mensaje_bd:mensaje_bd, mensaje_ws:mensaje_ws};

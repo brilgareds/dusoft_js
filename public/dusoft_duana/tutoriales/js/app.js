@@ -16,6 +16,10 @@ define([
     'storage',
     "httpinterceptor",
     "dragndropfile",
+    //Nuevas dependencias
+    "sanitize",
+    "videogular",
+        "vgcontrols",
     "includes/validation/ValidacionNumero",
     "includes/validation/ValidacionNumeroEntero",
     "includes/validation/ValidacionNumeroDecimal",
@@ -31,6 +35,7 @@ define([
     "webNotification",
     "models/TutorialH",
     "controllers/tutorialesController",
+    "controllers/tutorialesVideoController",
     "services/tutorialesService",
 ], function(angular) { 
 
@@ -47,7 +52,10 @@ define([
         'ui.select',
         'LocalStorageModule',
         'flow',
-        'angular-web-notification'
+        'angular-web-notification',
+        "ngSanitize",
+        "com.2fdevs.videogular",
+        "com.2fdevs.videogular.plugins.controls"
     ]);
 
     tutoriales.urlRouterProvider;
@@ -79,7 +87,7 @@ define([
                     text: "lista de los tutoriales",
                     templateUrl: "views/tutoriales/listarvideos.html",
                     parent_name : "Tutoriales"
-                });
+                })
                     
 
                 if ($location.path() === "")

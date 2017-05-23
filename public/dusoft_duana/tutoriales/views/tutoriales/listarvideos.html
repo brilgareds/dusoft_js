@@ -1,39 +1,52 @@
 
-<div class="input-group col-sm-12 col-md-12 col-lg-12">                       
-                     
-</div>
-
-
-<br>
 
 <div class ="row">
-     
+    
       
-     
+    
     
         
-         
+         <div class="col-md-3 pull-right">                                                                
+                                                     
+            
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        
+                        
+                        
+                        <button type="button" class="btn btn-default dropdown-toggle" 
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtro.descripcion}} <span class="caret"></span></button>
+                      <ul class="dropdown-menu" >
+                            <li ng-repeat="filtro in root.filtros">
+                                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.descripcion}}</a>
+                            </li>
+                            
+                        </ul>                                         
+                    </div> 
+                    
+                            
+                    
+                    <input type="text" 
+                           class="form-control" 
+                           ng-keypress="buscarVideo($event);"  
+                           ng-model="root.termino_busqueda" 
+                           placeholder="Buscar" name="" id="" />
+                    <div class="input-group-btn" ng-show="true" >
+                       
+                       <button class="btn btn-default pull-right" type="submit" ng-click ="buscarVideo($event)">
+                           <i class="glyphicon glyphicon-search"></i></button>
+                       
+                    </div>                                        
+                </div>     
+            </div>          
         </div>
      <br>
+
+         
+    <div class="table-responsive" style="clear:both; ">
+        <div class="defaultGrid grid-responsive" ng-grid="listaTutoriales" ></div>
+    </div>
    
-    <!-- <div ng-if="root.estadoFormula == 0"> //-->
-         
-         <div class="table-responsive" style="clear:both; height: 1024px;">
-            <div class="defaultGrid grid-responsive" ng-grid="listaTutoriales" ></div>
-        </div>
-       
-   <!--  </div> 
-   
-     <div ng-if="root.estadoFormula == 1">
-         
-         <div class="table-responsive" style="clear:both; width: 768; height: 1024px;">
-            <div class="defaultGrid grid-responsive" ng-grid="listaFormulasPendientes" ></div>
-        </div>
-         
-     </div> //-->
-     
-     
-     
     </br>
     <div class="row text-center">
         <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
@@ -43,18 +56,5 @@
             <span class="glyphicon glyphicon-chevron-right" ></span>
         </button>
     </div>
- 
- 
-  
-                     <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                          {{tipoDocumento.nombre}} <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li ng-repeat="tipoDocumento in filtrosTipoDocumento">
-                                <a href="javascript:void(0)" ng-click="onSeleccionTipoDocumento(tipoDocumento)">
-                                    {{tipoDocumento.nombre}}
-                                </a>
-                            </li>
-                        </ul>   //-->
  
  

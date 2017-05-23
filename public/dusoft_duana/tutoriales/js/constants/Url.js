@@ -2,7 +2,7 @@ define(["angular"], function (angular) {
     var Url = angular.module('Url', []);
 
     var BASE_URL = "/api";
-    var PATH_URL_VIDEO = "http://localhost:3000/Tutoriales/Videos/";
+    var PATH_URL_VIDEO = "/Tutoriales/Videos/";
 
     var data = {
         'API': {

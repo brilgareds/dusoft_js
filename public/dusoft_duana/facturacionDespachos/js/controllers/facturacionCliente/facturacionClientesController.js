@@ -27,6 +27,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             estadoSesion: true,
             items: 0,
             items_facturas_generadas: 0,
+            pedidos_cosmitet:[],
             clientes: [],
             facturas_generadas: [],
             estadoBotones: [
@@ -586,7 +587,137 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.paginaactualFacturasGeneradas++;
             that.listarFacturasGeneradas(0,{});
         };
+        
+        that.listarPedidosCosmitet = function(){
+            
+                     console.log("************that.listarPedidosCosmitet********************");   
+                     console.log("************that.listarPedidosCosmitet********************");   
+                     console.log("************that.listarPedidosCosmitet********************");   
+                     console.log("************that.listarPedidosCosmitet********************");
+                     
+            var obj = {
+                session: $scope.session,
+                data: {                               
+                    listar_pedidos_clientes: {
+                        terminoBusqueda: '', //$scope.root.numero,57760
+                        empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                        paginaActual: $scope.paginaactual,
+                        tipoIdTercero: '',
+                        terceroId: '',
+                        pedidoMultipleFarmacia: '1'
+                    }
+                }
+            };
 
+            facturacionClientesService.listarPedidosClientes(obj, function (data) {
+                $scope.root.pedidos_cosmitet = [];
+                var prefijosDocumentos = [];
+                var pedidoClientes = [];
+                var prefijo = [{pedido:57751,prefijo:'EFC',numeracion:145706},{pedido:57751,prefijo:'EFC',numeracion:145707}]
+                if (data.status === 200) {
+
+                    $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
+                    console.log("data.obj.listar_pedidos_clientes ", data.obj.listar_pedidos_clientes)
+                    pedidoClientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
+
+                    /**
+                     * +Descripcion Se recorren los prefijos y se
+                     *              almacenan en un arreglo
+                     */
+                    data.obj.lista_prefijos.forEach(function(rowPrefijos){
+
+                        rowPrefijos.forEach(function(rowPrefijosB){
+                            prefijosDocumentos.push(rowPrefijosB)
+
+                        });
+
+                    }) 
+
+                    /**
+                     * +Descripcion Lista de los pedidos que estan listos
+                     *              para facturarse
+                     */
+                    prefijosDocumentos.forEach(function(resultado){
+
+                        pedidoClientes.forEach(function(row){
+                            
+                            if(resultado.pedido_cliente_id === row.pedidos[0].numero_cotizacion){
+                                //console.log("row ", row.pedidos[0]);
+                                row.pedidos[0].prefijoNumero += " ( " + resultado.prefijo+" - "+ resultado.numero +")";
+                                 row.pedidos[0].agregarDocumentos(facturacionClientesService.renderDocumentosPrefijosClientes(
+                                    row.pedidos[0].numero_cotizacion, 
+                                    resultado.prefijo,
+                                    resultado.numero,
+                                    row.pedidos[0].fechaRegistro,
+                                    resultado.empresa_id));
+                            }                                             
+                        });    
+                        
+                    });
+
+                    $scope.root.pedidos_cosmitet = pedidoClientes;
+                    console.log("$scope.pedidos_clientes ", $scope.root.pedidos_cosmitet);
+                } else {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }
+
+            });
+
+        };
+        
+        
+        $scope.listaPedidosCosmitet = {
+            
+                data: 'root.pedidos_cosmitet',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
+                columnDefs: [
+
+                    {field: '#Pedido', cellClass: "ngCellText", width: "15%", displayName: '#Pedido', 
+                        cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
+
+                    {field: 'Vendedor', cellClass: "ngCellText", width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
+
+                    {field: '#Fecha', cellClass: "ngCellText", width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
+
+                    //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getPrefijoNumero()}}</p></div>'},
+                    //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()}}</p></div>'},
+
+
+                    {filed: 'PRUEBA', 
+                        cellClass: "ngCellText", 
+                        width: "25%", 
+                        displayName: '#Factura',
+                        cellTemplate: '<ul >\
+                            <li class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
+                              <input type="checkbox"\n\
+                               ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} <br> \
+                            </li>\
+                          </ul>'},
+                    {displayName: "Opc", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                   <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                   <ul class="dropdown-menu dropdown-options">\
+                        <li>\n\
+                           <a href="javascript:void(0);" ng-click="generarFacturaIndividual(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
+                        </li>\
+                        <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                           <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
+                        </li>\
+                        <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                           <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir documento </a>\
+                        </li>\
+                   </ul>\
+              </div>'
+                    },
+
+                    {field: '', cellClass: "checkseleccion", width: "3%",
+                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
+                                " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}, 
+                ]
+            };
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones
@@ -610,7 +741,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         that.listarTiposTerceros();
                         that.listarPrefijosFacturas();
                         that.listarClientes();
-                        
+                        that.listarPedidosCosmitet();
                     }
                 }
             }

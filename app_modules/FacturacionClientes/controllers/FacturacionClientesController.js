@@ -220,7 +220,9 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         return;
     }
     
+    
     var terminoBusqueda = args.listar_pedidos_clientes.terminoBusqueda;
+    var pedidoMultipleFarmacia = args.listar_pedidos_clientes.pedidoMultipleFarmacia;
     var tipoIdTercero = args.listar_pedidos_clientes.tipoIdTercero;
     var terceroId = args.listar_pedidos_clientes.terceroId;
     var paginaActual = args.listar_pedidos_clientes.paginaActual;
@@ -229,11 +231,12 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         tipoIdTercero:tipoIdTercero,
         terceroId:terceroId,
         pedidoClienteId: terminoBusqueda,
-        paginaActual: paginaActual
+        paginaActual: paginaActual,
+        pedidoMultipleFarmacia: pedidoMultipleFarmacia
     };
     
     var listaPedidosClientes;
-    var listaPrefijos;
+ 
     G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros).then(function(resultado){
        
        

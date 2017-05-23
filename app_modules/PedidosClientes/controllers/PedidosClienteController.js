@@ -4873,7 +4873,7 @@ console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia***
         "tercero_id": cotizacion.cliente.id
     };
     var def = G.Q.defer();
-
+    var generarPedidoCliente;
 
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function (tercero) {
 
@@ -4956,9 +4956,23 @@ console.log("resultado ",resultado);
         cotizacion.bodega_id = '03';
         return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
 
+    }).then(function(resultado){
+        console.log("resultado>>>>>>>>>>>>>> [generar_pedido_cliente] pedido_multiple_farmacia::::", resultado);
+        //console.log("cotizacion.pedido_multiple_farmacia ", cotizacion.pedido_multiple_farmacia)
+        generarPedidoCliente = resultado;
+        if (!cotizacion.pedido_multiple_farmacia || cotizacion.pedido_multiple_farmacia === undefined) {
+            console.log("RESOLVE IMPORTANTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", resultado);
+            def.resolve();
+        }else{
+            console.log("resultado>>>>>>>>>>>>>> [actualizarEstadoPedidoMultipleFarmacia] actualizarEstadoPedidoMultipleFarmacia::::", resultado);
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstadoPedidoMultipleFarmacia', 
+            {numero_pedido:resultado.numero_pedido,
+            pedido_multiple_farmacia:cotizacion.pedido_multiple_farmacia}); 
+        }        
+    
     }).then(function (resultado) {
-
-        return G.Q.ninvoke(that, "__asignarResponsablesPedidos", cotizacion, resultado);
+        console.log("__asignarResponsablesPedidos__asignarResponsablesPedidos__asignarResponsablesPedidos__asignarResponsablesPedidos")
+        return G.Q.ninvoke(that, "__asignarResponsablesPedidos", cotizacion, generarPedidoCliente);
 
     }).then(function (resultado) {
 

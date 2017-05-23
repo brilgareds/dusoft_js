@@ -108,7 +108,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         empresaId: $scope.root.empresaSeleccionada.getCodigo(),
                                         paginaActual: $scope.paginaactual,
                                         tipoIdTercero: resultadoStorage.tipoIdTercero,
-                                        terceroId: resultadoStorage.terceroId
+                                        terceroId: resultadoStorage.terceroId,
+                                        pedidoMultipleFarmacia: '0'
                                     }
                                 }
                             };
@@ -541,9 +542,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
 
-
-
-
+                    
                     /**
                      * +Descripcion Metodo principal, el cual cargara el modulo
                      *              siempre y cuando se cumplan las restricciones
@@ -566,7 +565,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 } else {
 
                                     that.listarPedidosClientes();
-
+                                     
                                 }
                             }
                         }

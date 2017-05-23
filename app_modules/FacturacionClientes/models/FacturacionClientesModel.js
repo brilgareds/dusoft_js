@@ -523,6 +523,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
    console.log("************FacturacionClientesModel.prototype.listarPedidosClientes****************");
    console.log("************FacturacionClientesModel.prototype.listarPedidosClientes****************");
 
+    console.log("obj ", obj);
     var columnQuery = [
         "a.tipo_id_tercero",
 	"a.tercero_id",
@@ -539,8 +540,6 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
         G.knex.raw("b.numero as factura_fiscal"),*/
         G.knex.raw("true as seleccionado")
    ];
-   
-   
    
     var subQuery1 = G.knex.column([G.knex.raw("DISTINCT x.pedido_cliente_id")/*,  "x.numero", "x.prefijo"*/ ])
            .select().from("inv_bodegas_movimiento_despachos_clientes as x")
@@ -560,19 +559,24 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                 this.on("a.tipo_id_vendedor","d.tipo_id_vendedor")
                     .on("a.vendedor_id","d.vendedor_id")
             }).where(function () {
-
-                this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)//obj.tipoIdTercero
-                    .andWhere('a.tercero_id',obj.terceroId);//obj.terceroId
+                
+                if(obj.tipoIdTercero !== ""){
+                    this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)
+                        .andWhere('a.tercero_id',obj.terceroId); 
+                }
                 if (obj.pedidoClienteId !== "") {
                     this.andWhere('a.pedido_cliente_id', obj.pedidoClienteId);
                 }
+                
+                    this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
+                 
                 
             });
     
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
-        
+        console.log("resultado [listarPedidosClientes] ", resultado);
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarPedidosClientes] ", err);

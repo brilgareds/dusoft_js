@@ -865,7 +865,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                               <h4><b>Numero Factura:</b></h4>\
                                                              </div>\
                                                              <p class="col-sm-8">\
-                                                                    <input type="text" validacion-numero-entero ng-model="root.numeroFactura"  class="form-control" required="required" >\
+                                                                    <input type="text"  ng-model="root.numeroFactura"  class="form-control" required="required" >\
                                                               </p>\
                                                         </div>\
                                                </div>\

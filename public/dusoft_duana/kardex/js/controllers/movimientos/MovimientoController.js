@@ -88,6 +88,8 @@ function(angular, controllers) {
                     {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Farmacia destino'},
                     {field: 'pedido.farmacia.fechaRegistro', displayName: 'Fecha pedido'},
                     {field: 'pedido.usuario', displayName: 'Usuario'},
+                    {field: 'pedido.getNombreSeparador()', displayName: 'Separador'},
+                    {field: 'pedido.getNombreAuditor()', displayName: 'Auditor'},
                     {field: 'pedido.justificacionSeparador', displayName: 'Justificación separador'},
                     {field: 'pedido.justificacionAuditor', displayName: 'Justificación auditor'}
                 ]
@@ -105,8 +107,10 @@ function(angular, controllers) {
                     {field: 'pedido.cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'fecha_registro', displayName: 'Fecha'},
                     {field: 'pedido.usuario', displayName: 'Usuario'},
+                    {field: 'pedido.getNombreSeparador()', displayName: 'Separador'},
+                    {field: 'pedido.getNombreAuditor()', displayName: 'Auditor'},
                     {field: 'pedido.justificacionSeparador', displayName: 'Justificación separador'},
-                    {field: 'pedido.justificacionAuditor', displayName: 'Justificación auditor'}
+                    {field: 'pedido.justificacionAuditor', displayName: 'Justificación auditor'},
                 ]
             };
 
@@ -198,6 +202,8 @@ function(angular, controllers) {
 
                     pedido.justificacionSeparador= obj.justificacion_separador;
                     pedido.justificacionAuditor  = obj.justificacion_auditor;
+                    
+                    pedido.setNombreAuditor(obj.nombre_auditor).setNombreSeparador(obj.nombre_separador);
 
                     var farmacia = FarmaciaKardex.get(
                             obj.farmacia_id,
@@ -230,6 +236,7 @@ function(angular, controllers) {
 
                     pedido.justificacionSeparador = obj.justificacion_separador;
                     pedido.justificacionAuditor  = obj.justificacion_auditor;
+                    pedido.setNombreAuditor(obj.nombre_auditor).setNombreSeparador(obj.nombre_separador);
 
                     var cliente = ClienteKardex.get(
                             obj.nombre_tercero,

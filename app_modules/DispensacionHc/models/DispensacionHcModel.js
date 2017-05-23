@@ -211,7 +211,10 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                     WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
                                 ) \
-                        END ) ELSE 'Proceso' END )\n\
+                        END ) ELSE (SELECT nombre FROM system_usuarios WHERE usuario_id = (\
+                                                SELECT distinct(usuario_id) as usuario_id \
+                                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                                WHERE evolucion_id = a.evolucion_id )) END )\n\
                          WHEN (\
                                 SELECT count(distinct(usuario_id)) as usuario_id \
                                 FROM hc_dispensacion_medicamentos_tmp \n\

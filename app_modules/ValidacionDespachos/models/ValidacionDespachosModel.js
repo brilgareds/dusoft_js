@@ -134,7 +134,7 @@ ValidacionDespachosModel.prototype.registrarAprobacion = function(obj, callback)
      then(function(resultado){
        callback(false, resultado.rows[0]);
     }).catch(function(err){
-        
+        console.log("err ", err);
        callback(err);
     });
 };

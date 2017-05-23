@@ -40,6 +40,20 @@ define([
             $scope.totalPorAutorizar;
             $scope.validarDesdeLink = false;            
             var datos_documento = localStorageService.get("documento_bodega_I002");
+            var fecha_actual = new Date();
+            
+            $scope.format = 'dd-MM-yyyy'
+            $scope.root = {
+                porFactura:0,
+                totalFactura: 0,
+                totalDescuento: 0,
+                fechaVencimiento: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+                fechaFactura: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+                numeroFactura: "",
+                descripcionFija: "",
+                descripcionFactura: "",
+                pedidosSeleccionados: [],
+            };
             
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
@@ -203,6 +217,7 @@ define([
                 ordenes_compras.forEach(function(orden) {
 
                     var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
+                    $scope.root.descripcionFija=orden.observacion;
                     $scope.DocumentoIngreso.get_proveedor().set_ordenes_compras(orden_compra);
                     if(datos_documento.datosAdicionales !== undefined)
                     if(datos_documento.datosAdicionales.orden === orden.numero_orden){                       
@@ -312,6 +327,7 @@ define([
                     $scope.cantidadTotal += parseFloat(data.cantidad);
                     $scope.valorSubtotal += parseFloat(data.valor_total);
                     $scope.valorTotal += parseFloat(data.total_costo);
+                    $scope.root.totalFactura=$scope.valorTotal;
                 });
 
                 callback(true);
@@ -536,7 +552,7 @@ define([
              * @fecha 25/03/2017
              * +Descripcion Metodo encargado crear el documento
              */
-            that.crearDocumento = function() {
+            that.crearDocumento = function(datos) {
 
                 var obj = {
                     session: $scope.session,
@@ -554,6 +570,9 @@ define([
                     if (data.status === 200) {
                         
                         AlertService.mostrarMensaje("warning", data.msj);
+                        that.recorreProductos(datos,data.obj.recepcion_parcial_id,function(parametros){
+                          that.insertarFacturaProveedor(parametros);      
+                        });                                                   
                         that.buscar_ordenes_compra();
                         that.refrescarVista();
                         $scope.DocumentoIngreso.orden_compra="";
@@ -567,6 +586,329 @@ define([
                     }
                 });
             };
+            
+         that.recorreProductos=function(datos,recepcion_parcial_id,callback){
+             var i=0;
+             datos.recepciones.forEach(function(data) {
+               datos.recepciones[i].recepcion_parcial=recepcion_parcial_id;
+               i++;
+             });
+             callback(datos);             
+         };
+            
+        /**
+         * +Descripcion Metodo encargado de invocar el servicio
+         *           guarda la factura de proveedores
+         * @author Andres Mauricio Gonzalez
+         * @fecha 08/05/2017 DD/MM/YYYY
+         * @returns {undefined}
+         */
+        that.insertarFacturaProveedor = function(parametros) {
+            var empresa = Sesion.getUsuarioActual().getEmpresa().getCodigo();
+            var centroUtilidad = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
+            var bodega = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
+            var obj = {
+                session: $scope.session,
+                data: {
+                    facturaProveedor: {
+                        empresaId: empresa,
+                        centroUtilidad: centroUtilidad,
+                        bodega: bodega,
+                        parmetros: parametros
+                    }
+                }
+            };
+
+            Request.realizarRequest(API.FACTURACIONPROVEEDOR.INSERTAR_FACTURA, "POST", obj, function(data) {
+
+                if (data.status === 200) {
+                    that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd,data.obj.respuestaFI.resultado.mensaje_ws);
+                    var nombre = data.obj.ingresarFactura;
+                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                } else {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al Insertar la Factura");
+                }
+
+            });
+        };  
+        
+         that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+
+                       $scope.mensaje_bd = mensaje_bd;
+                       $scope.mensaje_ws = mensaje_ws;
+                       $scope.opts = {
+                           backdrop: true,
+                           backdropClick: true,
+                           dialogFade: false,
+                           keyboard: true,
+                           template: ' <div class="modal-header">\
+                                           <button type="button" class="close" ng-click="close()">&times;</button>\
+                                           <h4 class="modal-title">Resultado sincronizacion</h4>\
+                                       </div>\
+                                       <div class="modal-body">\
+                                           <h4>Respuesta WS</h4>\
+                                           <h5> {{ mensaje_ws }}</h5>\
+                                           <h4>Respuesta BD</h4>\
+                                           <h5> {{ mensaje_bd }} </h5>\
+                                       </div>\
+                                       <div class="modal-footer">\
+                                           <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                       </div>',
+                           scope: $scope,
+                           controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+
+                                   $scope.close = function () {
+                                       $modalInstance.close();
+                                   };
+                               }]
+                       };
+                       var modalInstance = $modal.open($scope.opts);
+                   };
+            
+       /**
+         * +Descripcion scope del grid para visualizar el detalle de la recepcion
+         * @author Andres Mauricio Gonzalez
+         * @fecha 18/05/2017
+         * @returns {undefined}
+         */
+        that.facturasRecepciones = function() {
+            $scope.opts = {
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: false,
+                windowClass: 'app-modal-window-ls-ls',
+                keyboard: true,
+                showFilter:true,
+                template: ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="cerrar()">&times;</button>\
+                                                <h4 class="modal-title"><b>FACTURACION PROVEEDORES</b></h4>\
+                                            </div>\
+                                            <div class="modal-body">\
+                                                <div class="row">\
+                                                        <div class="form-group">\
+                                                             <div class="col-sm-4">\
+                                                              <h4><b><p>Fecha Factura:</p></b></h4>\
+                                                             </div>\
+                                                             <div class="col-sm-8">\
+                                                                <p class="input-group">\
+                                                                    <input type="text" class="form-control readonlyinput" \
+                                                                     datepicker-popup="{{format}}" \
+                                                                     ng-model="root.fechaFactura"\ is-open="root.datepicker_fechaFactura" \
+                                                                     min="minDate"   \
+                                                                     readonly  close-text="Cerrar" \
+                                                                     ng-change="" \
+                                                                     clear-text="Borrar" \
+                                                                     current-text="Hoy" \
+                                                                     placeholder="Fecha Factura" \
+                                                                     show-weeks="false" \
+                                                                     toggle-weeks-text="#"  />\
+                                                                        <span class="input-group-btn">\
+                                                                               <button class="btn btn-default" ng-click="abrir_fechaFactura($event);"> \
+                                                                               <i class="glyphicon glyphicon-calendar"></i></button>\
+                                                                        </span>\
+                                                                </p>\
+                                                             </div>\
+                                                        </div>\
+                                                </div>\
+                                                <div class="row">\
+                                                        <div class="form-group">\
+                                                             <div class="col-sm-4">\
+                                                              <h4><b>Fecha Radicación:</b></h4>\
+                                                             </div>\
+                                                             <div class="col-sm-8">\
+                                                                <p class="input-group">\
+                                                                    <input type="text" class="form-control readonlyinput" \
+                                                                     datepicker-popup="{{format}}" \
+                                                                     ng-model="root.fechaVencimiento"\ is-open="root.datepicker_fechaVencimiento" \
+                                                                     min="minDate"   \
+                                                                     readonly  close-text="Cerrar" \
+                                                                     ng-change="" \
+                                                                     clear-text="Borrar" \
+                                                                     current-text="Hoy" \
+                                                                     placeholder="Fecha Vencimiento" \
+                                                                     show-weeks="false" \
+                                                                     toggle-weeks-text="#"  />\
+                                                                        <span class="input-group-btn">\
+                                                                               <button class="btn btn-default" ng-click="abrir_fechaVencimiento($event);"> \
+                                                                               <i class="glyphicon glyphicon-calendar"></i></button>\
+                                                                        </span>\
+                                                                </p>\
+                                                             </div>\
+                                                        </div>\
+                                                </div>\
+                                                <div class="row">\
+                                                        <div class="form-group">\
+                                                             <div class="col-sm-4">\
+                                                              <h4><b>Numero Factura:</b></h4>\
+                                                             </div>\
+                                                             <p class="col-sm-8">\
+                                                                    <input type="text" validacion-numero-entero ng-model="root.numeroFactura"  class="form-control" required="required" >\
+                                                              </p>\
+                                                        </div>\
+                                               </div>\
+                                               <div class="row">\
+                                                        <div class="form-group">\
+                                                            <div class="col-sm-4">\
+                                                              <h4><b>Valor Total Factura:</b></h4>\
+                                                             </div>\
+                                                             <p class="col-sm-8">\
+                                                                <input type="text" ng-model="root.totalFactura" validacion-numero-decimal class="form-control" required="required" >\
+                                                             </p>\
+                                                        </div>\
+                                              </div>\
+                                              <div class="row">\
+                                                       <div class="form-group">\
+                                                            <div class="col-sm-4" >\
+                                                               <h4><b>Total de Descuento:</b></h4>\
+                                                            </div>\
+                                                            <p class="col-sm-8">\
+                                                              <input type="text" ng-model="root.totalDescuento" validacion-numero-decimal class="form-control">\
+                                                            </p>\
+                                                       </div>\
+                                              </div>\
+                                              <div class="row">\
+                                                       <div class="form-group">\
+                                                             <p class="col-sm-12">\
+                                                                <textarea class="form-control col-xs-12" ng-model="DocumentoIngreso.orden_compra.observacion"   rows="4" disabled ></textarea>\
+                                                             </p>\
+                                                             <p class="col-sm-12">\
+                                                                <textarea placeholder="Observacion" class="form-control col-xs-12" ng-model="root.descripcionFactura"  rows="4" ></textarea>\
+                                                              </p>\
+                                                      </div>\
+                                               </div>\
+                                              </div>\
+                                             </div>\
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-primary" ng-click="facturar()">Facturar</button>\
+                                                <button class="btn btn-warning" ng-click="cerrar()">Cerrar</button>\
+                                            </div>',
+                scope: $scope,
+                controller: function($scope, $modalInstance) {
+
+                    $scope.facturar = function() {
+
+                        var fechaFactura = new Date($scope.root.fechaFactura);
+                        var fechaVencimiento = new Date($scope.root.fechaVencimiento);
+
+                        var fFactura = new Date(fechaFactura.getFullYear() + 0, fechaFactura.getMonth() + 1, fechaFactura.getDate() + 1); //31 de diciembre de 2015
+                        var fVencimiento = new Date(fechaVencimiento.getFullYear() + 0, fechaVencimiento.getMonth() + 1, fechaVencimiento.getDate() + 1); //30 de noviembre de 2014
+
+                        if (fFactura > fVencimiento) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Fecha de Radicacion no puede ser menor a la Fecha Factura");
+                            return;
+                        }
+
+                        if ($scope.root.numeroFactura.trim() === "") {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el Numero de Factura");
+                            return;
+                        }
+
+                        if (parseInt($scope.root.totalDescuento) < 0) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No es posible valores negativos en el Descuento");
+                            return;
+                        }
+
+                        if ($scope.root.totalDescuento === "") {
+                            $scope.root.totalDescuento = 0;
+                        }
+
+                        if (parseInt($scope.root.totalFactura) < 0 || $scope.root.totalFactura === "") {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El valor de la factura minimo debe ser 0");
+                            return;
+                        }
+
+                        if (parseInt($scope.root.totalDescuento) > parseInt($scope.root.totalFactura)) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El Descuento no debe superar el valor de la Factura");
+                            return;
+                        }
+
+                        if (($scope.root.descripcionFactura).trim() === "") {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe Ingresar una Observacion");
+                            return;
+                        }
+
+                        if (($scope.root.descripcionFactura).length <= 6) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Observacion debe contener mas de 6 caracteres");
+                            return;
+                        }
+                        var productos=$scope.DocumentoIngreso.get_orden_compra().get_productos_ingresados();
+                        productos[0].proveedor= $scope.DocumentoIngreso.get_proveedor().get_codigo();
+                        
+                      
+                        var parametros = {
+                            recepciones:productos,
+                            fechaFactura: $scope.root.fechaFactura,
+                            fechaVencimiento: $scope.root.fechaVencimiento,
+                            totalFactura: $scope.root.totalFactura,
+                            numeroFactura: $scope.root.numeroFactura,
+                            totalDescuento: $scope.root.totalDescuento,
+                            descripcionFactura: $scope.root.descripcionFactura,
+                            descripcionFija: $scope.root.descripcionFija
+                        };
+                        that.crearDocumento(parametros);
+                        that.borrarVariables();
+                        $modalInstance.close();
+                    };
+
+                    $scope.cerrar = function() {
+                        $modalInstance.close();
+                    };
+                }
+            };
+            var modalInstance = $modal.open($scope.opts);
+        };
+        
+        /**
+         * +Descripcion funcion encargado de borrar las variables del sistema
+         * @author Andres Mauricio Gonzalez
+         * @fecha 08/05/2017 DD/MM/YYYY
+         * @returns {undefined}
+         */
+        that.borrarVariables = function() {
+            $scope.root.fechaFactura = $filter('date')(fecha_actual, "yyyy-MM-dd");
+            $scope.root.fechaVencimiento = $filter('date')(fecha_actual, "yyyy-MM-dd");
+            $scope.root.totalFactura = "";
+            $scope.root.numeroFactura = "";
+            $scope.root.totalDescuento = 0;
+            $scope.root.descripcionFactura = "";
+            $scope.root.descripcionFija = "";
+        };
+        
+        /**
+         * @author Andres Mauricio Gonzalez
+         * @fecha  17/05/2017
+         * +Descripcion Funcion que permitira desplegar el popup datePicker
+         *               de la fecha final
+         * @param {type} $event
+         */
+        $scope.abrir_fechaVencimiento = function($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.root.datepicker_fecha_inicial = false;
+            $scope.root.datepicker_fecha_final = false;
+            $scope.root.datepicker_fechaFactura = false;
+            $scope.root.datepicker_fechaVencimiento = true;
+
+        };
+        
+        /**
+         * @author Andres Mauricio Gonzalez
+         * @fecha  17/05/2017
+         * +Descripcion Funcion que permitira desplegar el popup datePicker
+         *               de la fecha final
+         * @param {type} $event
+         */
+        $scope.abrir_fechaFactura = function($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.root.datepicker_fecha_inicial = false;
+            $scope.root.datepicker_fecha_final = false;
+            $scope.root.datepicker_fechaFactura = true;
+            $scope.root.datepicker_fechaVencimiento = false;
+
+        };
+
 
             /**
              * @author Andres M. Gonzalez
@@ -766,8 +1108,12 @@ define([
                 $state.go('DocumentosBodegas');
             };
 
-            $scope.generar_documento = function() {
+            $scope.generar_documento = function(dato) {
+                if(dato===0){
                 that.crearDocumento();
+                }else{
+                that.facturasRecepciones();    
+                }                        
             };
 
             $scope.grabar_documento = function() {

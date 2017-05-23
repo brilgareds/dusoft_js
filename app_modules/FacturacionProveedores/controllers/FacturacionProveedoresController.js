@@ -309,7 +309,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         paramt[1] = parametros.codigo_proveedor_id;
         paramt[2] = parametros.numero_factura;
         var param = {param: paramt,funcion:'cuentas_x_pagar_fi'};
-        console.log("param1 ",param);
+      
         return  G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);
     }).then(function(resultado) {
         respuestaFI = resultado;
@@ -357,7 +357,7 @@ FacturacionProveedores.prototype.sincronizarFi = function(req, res) {
     parametros[2] = args.sincronizarFI.numeroFactura;
     
     var param = {param: parametros,funcion:'cuentas_x_pagar_fi'};
-    console.log("param12 ",param);
+ 
     G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param).then(function(resultado) {
         
         res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {sincronizarFi: resultado}));

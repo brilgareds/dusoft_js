@@ -92,7 +92,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         ];
         
         $scope.cargarRecepcion=function(){
-            console.log("cargarRecepcion");
            $scope.root.filtros = [
             {tipo: 'Nombre', descripcion: "Nombre"},
             {tipo: 'Orden', descripcion: "# Orden"},
@@ -102,7 +101,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
         
         $scope.cargarFactura=function(){
-            console.log("cargarFactura");
            $scope.root.filtros = [
             {tipo: 'Nombre', descripcion: "Nombre"},
             {tipo: 'Factura', descripcion: "# Factura"}
@@ -1168,7 +1166,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
         $scope.validarSelect=function(select){
             var estado=false;
-            console.log("select",select);
             if(select === 'Nombre'){
                 estado=true;
             }

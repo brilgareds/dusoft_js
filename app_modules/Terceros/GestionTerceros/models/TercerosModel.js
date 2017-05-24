@@ -139,7 +139,7 @@ TercerosModel.prototype.guardarTercero = function(parametros, callback){
         razon_social : tercero.razonSocial,
         nombre_comercial : tercero.nombreComercial,
         descripcion : tercero.descripcion,
-        tipo_organizacion_id : (tercero.tipoOrganizacion) ? tercero.tipoOrganizacion.id : null,
+        tipo_organizacion_id : (tercero.tipoOrganizacion && tercero.tipoOrganizacion.id.length > 0) ? tercero.tipoOrganizacion.id : null,
         nomenclatura_direccion1 : tercero.nomenclaturaDireccion1.id,
         nomenclatura_descripcion1 : tercero.nomenclaturaDescripcion1,
         nomenclatura_direccion2 : (tercero.nomenclaturaDireccion2) ? tercero.nomenclaturaDireccion2.id : null,
@@ -154,6 +154,8 @@ TercerosModel.prototype.guardarTercero = function(parametros, callback){
     };
         
     var query = G.knex("terceros");
+    
+    console.log("data ", tercero.tipoOrganizacion);
     
     if(parametros.transaccion) query.transacting(parametros.transaccion);
     

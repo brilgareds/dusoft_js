@@ -82,6 +82,10 @@ div{
     background-color: #e7f2fa;
 }
 
+.contenedormenu {
+    z-index: 100!important;
+}
+
 
 .contenedorArbol{
     height: 100%;
@@ -483,6 +487,38 @@ div.selectgeneral{
     box-shadow: none;
 }
 
+.ui-select-container{
+    z-index: 10!important;
+}
+
+.ui-select-z-index-11{
+    z-index: 11!important;
+}
+.ui-select-z-index-12{
+    z-index: 12!important;
+}
+.ui-select-z-index-13{
+    z-index: 13!important;
+}
+.ui-select-z-index-14{
+    z-index: 14!important;
+}
+.ui-select-z-index-15{
+    z-index: 15!important;
+}
+
+.ui-select-z-index-16{
+    z-index: 16!important;
+}
+
+.ui-select-z-index-17{
+    z-index: 17!important;
+}
+
+.ui-select-z-index-18{
+    z-index: 18!important;
+}
+
 .slide{
     width: 100%;
     top: 0px;
@@ -853,6 +889,12 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
     position: absolute
 }
 
+p.controlCompuesto, div.controlCompuesto{
+    border: 0px;
+    box-shadow: none;
+    padding-left: 0px;
+}
+
 /*
 ::-webkit-scrollbar
 {
@@ -869,3 +911,32 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 {
   background: rgba(0, 0, 0, 0.5);
 }*/
+
+
+/*input.ng-pristine {
+    border:1px solid #ccc!important;
+}
+
+input.ng-invalid {
+    border:1px solid red;
+}*/
+
+
+input.submitedWithError, div.submitedWithError .select2-choice { 
+    background: #fff url(../images/warning-icon.png) no-repeat 98% center;
+    box-shadow: 0 0 5px #d45252;
+    border-color: #b03535
+}
+
+div.submitedWithError .select2-choice {
+    background: #fff url(../images/warning-icon.png) no-repeat 95% center;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance:textfield;
+}

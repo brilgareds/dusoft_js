@@ -13,6 +13,7 @@ define([
     "uiselect2",
     "loader",
     "includes/menu/menucontroller",
+    "includes/validation/FormValidation",
     "url",
     "controllers/OperariosBodega/OperariosBodegaController",
     "controllers/AdministracionModulos/Modulos/AdministracionModulosController",
@@ -20,6 +21,7 @@ define([
     "controllers/AdministracionPerfiles/Roles/ListarRolesController",
     "controllers/AdministracionPerfiles/Usuarios/ListarUsuariosController",
     "controllers/AdministracionPerfiles/Usuarios/AdministracionUsuariosController",
+    "controllers/GestionTerceros/Terceros/TercerosController",
     "models/OperariosBodegaModel/Operario",
     "includes/alert/Alert",
     "includes/header/HeaderController",
@@ -74,7 +76,7 @@ define([
             Parametrizacion.urlRouterProvider.otherwise(vistaDefecto);
 
             Parametrizacion.stateProvider
-                .state('OperariosBodega', {
+            .state('OperariosBodega', {
                 url: "/OperariosBodega",
                 text:"Operarios Bodega",
                 templateUrl: "views/OperariosBodega/listaOperarios.html",
@@ -113,7 +115,35 @@ define([
                 controller: "ListarUsuariosController",
                 parent_name:"ListarRoles"
                 
+            })
+            .state('Terceros', {
+                url: "/Terceros",
+                text:"Administración de terceros",
+                templateUrl: "views/GestionTerceros/Terceros/Terceros.html",
+                controller: "TercerosController"
+            }).
+            state('GuardarTercero', {
+                url: "/GuardarTercero",
+                text:"Guardar tercero",
+                templateUrl: "views/GestionTerceros/Terceros/GuardarTercero.html",
+                controller: "TercerosController",
+                parent_name:"Terceros"
+            })
+            .state('GuardarProveedor', {
+                url: "/GuardarProveedor",
+                text:"Guardar proveedor",
+                templateUrl: "views/GestionTerceros/Proveedores/GuardarProveedor.html",
+                controller: "GuardarProveedorController",
+                parent_name:"Terceros"
+            })
+            .state('GuardarCliente', {
+                url: "/GuardarCliente",
+                text:"Guardar cliente",
+                templateUrl: "views/GestionTerceros/Clientes/GuardarCliente.html",
+                controller: "GuardarClienteController",
+                parent_name:"Terceros"
             });
+            
             
             if($location.path() === ""){
                 $state.go(vistaDefecto);

@@ -8,10 +8,20 @@
 
     var data = {
 	  'API': {
+            'UBICACION' :{
+                'LISTAR_PAISES' : BASE_URL+"/Paises/listarPaises",
+                'LISTAR_DEPARTAMENTOS_POR_PAIS': BASE_URL+"/Departamentos/listarDepartamentosPais",
+                'LISTAR_CIUDADES_POR_DEPARTAMENTO': BASE_URL+"/Ciudades/obtenerCiudadesPorDepartamento"
+            }, 
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",
 	    	'CREAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/crear",
-	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar"
+	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar",
+                'OBTENER_PARAMETRIZACION_FORMULARIO': BASE_URL+"/Terceros/GestionTerceros/obtenerParametrizacionFormularioTerceros",
+                'GUARDAR_FORMULARIO_TERCERO' : BASE_URL + "/Terceros/GestionTerceros/guardarFormularioTerceros",
+                'OBTENER_TERCERO' : BASE_URL + "/Terceros/GestionTerceros/obtenerTercero",
+                'LISTAR_TERCEROS' : BASE_URL + "/Terceros/GestionTerceros/listarTerceros",
+                'LISTAR_TIPOS_DOCUMENTOS' : BASE_URL + "/Terceros/GestionTerceros/obtenerTiposDocumentos"
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar",

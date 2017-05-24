@@ -27,27 +27,29 @@ CiudadesModel.prototype.listar_ciudades = function(termino_busqueda, callback) {
 };
 
 
-CiudadesModel.prototype.listar_ciudades_departamento = function(termino_busqueda, departamento_id, callback) {
+CiudadesModel.prototype.listar_ciudades_departamento = function(departamento_id, callback) {
 
-
-    var sql = " select \
-                c.tipo_pais_id as pais_id,\
-                c.pais as nombre_pais,\
-                b.tipo_dpto_id as departamento_id,\
-                b.departamento as nombre_departamento,\
-                a.tipo_mpio_id as id,\
-                a.municipio as nombre_ciudad\
-                from tipo_mpios a \
-                inner join tipo_dptos b on a.tipo_pais_id = b.tipo_pais_id and a.tipo_dpto_id = b.tipo_dpto_id\
-                inner join tipo_pais c on b.tipo_pais_id = c.tipo_pais_id \
-                where b.tipo_dpto_id = :1 ";
+    var columns = [
+        "c.tipo_pais_id as pais_id",
+        "c.pais as nombre_pais",
+        "b.tipo_dpto_id as departamento_id",
+        "b.departamento as nombre_departamento",
+        "a.tipo_mpio_id as id",
+        "a.municipio as nombre_ciudad"
+    ];
     
-    G.knex.raw(sql, {1:departamento_id}).
-    then(function(resultado){
-       callback(false, resultado.rows, resultado);
-    }).catch(function(err){
-       callback(err);
-    });
+    G.knex.column(columns).
+    from("tipo_mpios as a").
+    innerJoin("tipo_dptos as b", function(){
+        this.on("a.tipo_pais_id", "b.tipo_pais_id").
+        on("a.tipo_dpto_id" , "b.tipo_dpto_id");
+    }).
+    innerJoin("tipo_pais as c", "b.tipo_pais_id", "c.tipo_pais_id").
+    where("b.tipo_dpto_id", departamento_id).then(function(listaCiudades){
+        callback(false, listaCiudades);
+    }).catch(function(error){
+        callback(error);
+    }).done();
 };
 
 CiudadesModel.prototype.listar_ciudades_pais = function(termino_busqueda, pais_id, callback) {

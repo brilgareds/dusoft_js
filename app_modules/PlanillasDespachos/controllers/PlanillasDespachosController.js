@@ -950,12 +950,11 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
          res.send(G.utils.r(req.url, status.mensaje, status.codigo, {planillas_despachos: resultado}));
          
      }).fail(function(err){ 
-<<<<<<< HEAD
-        console.log("error generado ", err);
-=======
+
         console.log("err ", err);
->>>>>>> d92af34b557fd74693a5cc2c6546dd02e6becd6a
-         res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
+
+
+        res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
        
     }).done();
    

@@ -155,7 +155,6 @@ TercerosModel.prototype.guardarTercero = function(parametros, callback){
         
     var query = G.knex("terceros");
     
-    console.log("data ", tercero.tipoOrganizacion);
     
     if(parametros.transaccion) query.transacting(parametros.transaccion);
     

@@ -26,23 +26,33 @@
 
     <div class="panel panel-info panelCaja">
         <div class="panel-heading">
-            <h3 class="panel-title">Información Caja / Lios</h3>
+            <h3 class="panel-title">Cantidad total de:  Cajas / Neveras / Lios</h3>
         </div>
         <div class="panel-body">
             <div class="row">
 
 
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     
                     <div class="input-group input-group">
-                        <label class="lbl_editar_producto lbl_caja" for="numerocaja">Total cajas </label>
+                        <label class="lbl_editar_producto lbl_caja" for="numerocaja">Cajas </label>
                         <input type="text" role="group" ng-model="root.cantidadCajas" class="form-control"   validacion-numero />
 
                     </div>
                      
                 </div>
                 
-                <div class="col-lg-6">
+                <div class="col-lg-4">
+                    
+                    <div class="input-group input-group">
+                        <label class="lbl_editar_producto lbl_caja" for="numerocaja">Neveras </label>
+                        <input type="text" role="group" ng-model="root.cantidadNeveras" class="form-control"   validacion-numero />
+
+                    </div>
+                     
+                </div>
+                
+                <div class="col-lg-4">
                     
                     <div class="input-group input-group">
                         <label class="lbl_editar_producto lbl_caja" for="numerocaja">Lios </label>

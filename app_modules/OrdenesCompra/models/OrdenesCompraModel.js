@@ -46,11 +46,9 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         G.knex.raw("coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido"),
         G.knex.raw("coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado"),
         G.knex.raw("CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal"),
-        G.knex.raw("(SELECT count(bbb.item_id)\
-                    FROM compras_ordenes_pedidos_detalle aaa\
-                    INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
-                    WHERE aaa.orden_pedido_id = a.orden_pedido_id) as total_novedades"),
-        "h.descripcion as nombre_bodega"
+        G.knex.raw("COALESCE(CASE WHEN  (date_part('day',age(now(), a.fecha_orden)) > 5) AND (a.fecha_ingreso IS NULL) THEN '1' END , '0') as alerta_ingreso"),
+        "h.descripcion as nombre_bodega", 
+        "i.id as recepcion_id"
     ];
     
     var query = G.knex.column(columns).
@@ -70,31 +68,58 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         on("h.centro_utilidad", "a.centro_utilidad_pedido").
         on("h.bodega", "a.bodega_pedido");
     }).
+    leftJoin("recepcion_mercancia as i", "i.orden_pedido_id", "a.orden_pedido_id").
     whereBetween('a.fecha_orden', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")]).
     where({
            "a.sw_unificada"  : '0'
     }).
     andWhere(function() {
-
-        if (filtro && filtro.proveedor){
-            this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-            orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%");
-    
-        } else if (filtro && filtro.empresa){
-            this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
-            
+        
+        if(filtro && filtro.sin_ingreso){
+            this.whereRaw("date_part('day',age(now(), a.fecha_orden)) > 5 AND a.fecha_ingreso IS NULL").
+            andWhere(function(){
+                this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            })
         } else {
-            this.where(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            if (filtro && filtro.proveedor){
+                this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%");
+    
+            } else if (filtro && filtro.empresa){
+                this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+
+            } else {
+                this.where(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            }
         }
+        
 
     }).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
-    orderByRaw("1 DESC").
+    orderByRaw("1 DESC").as("a");
     
+    var queryPrincipal = G.knex.column([
+        "a.*",
+         G.knex.raw("(SELECT count(bbb.item_id)\
+                    FROM compras_ordenes_pedidos_detalle aaa\
+                    INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
+                    WHERE aaa.orden_pedido_id = a.numero_orden) as total_novedades"),
+        G.knex.raw("(SELECT count(ccc.id)\
+                    FROM compras_ordenes_pedidos_detalle aaa\
+                        INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
+                    INNER JOIN archivos_novedades_ordenes_compras ccc ON bbb.id = ccc.novedad_orden_compra_id\
+                    WHERE aaa.orden_pedido_id = a.numero_orden\
+        ) as total_archivos"),
+    ]).from(query);
+    
+    //console.log("query ", queryPrincipal.toSQL());
     /*callback(true, query.toSQL());
     return;*/
-    then(function(rows){
+    queryPrincipal.then(function(rows){
         callback(false, rows);
     }).
     catch(function(err){
@@ -801,6 +826,44 @@ OrdenesCompraModel.prototype.eliminarArchivosNovedad = function(archivos, callba
 };
 
 
+OrdenesCompraModel.prototype.guardarNovedades = function(productos, novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, novedadesGuardadas, callback){
+    var that = this;
+    
+    var producto = productos[0];
+    var that = this;
+    
+    if(!producto){
+        callback(false, novedadesGuardadas);
+        return;
+    }
+    
+    G.Q.ninvoke(that, "consultarNovedadPorObservacion", novedad_id, observacion_id).
+    spread(function(novedades){
+
+        if (novedades.length === 0) {
+            return G.Q.ninvoke(that, "insertar_novedad_producto", producto.id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada);
+        } else {
+            return G.Q.ninvoke(that, "modificar_novedad_producto", novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada);
+        }
+
+    }).spread(function(rows, result){
+        if (result.rowCount === 0) {
+            throw {msj:"Error guardando la novedad", status:500};
+        } else {
+            novedadesGuardadas.push(rows[0]);
+            productos.splice(0, 1);
+            var timer = setTimeout(function(){
+                G.Q.ninvoke(that, "guardarNovedades", productos, novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, novedadesGuardadas, callback);
+                clearTimeout(timer);
+            }, 0);
+        }
+    }).fail(function(err){
+        callback(err)
+    }).done();
+    
+};
+
+
 // Registrar Novedad Producto Orden de Compra
 OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, callback) {
 
@@ -818,7 +881,7 @@ OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, obser
 // Modificar Novedad Producto Orden de Compra 
 OrdenesCompraModel.prototype.modificar_novedad_producto = function(novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, callback) {
 
-    var sql = " UPDATE novedades_ordenes_compras SET  observacion_orden_compra_id = :2 , descripcion = :3 , usuario_id = :4 , descripcion_entrada = :5  WHERE id = :1 ; ";
+    var sql = " UPDATE novedades_ordenes_compras SET  observacion_orden_compra_id = :2 , descripcion = :3 , usuario_id = :4 , descripcion_entrada = :5  WHERE id = :1 returning id as novedad_id; ";
     
     G.knex.raw(sql, {1:novedad_id, 2:observacion_id, 3:descripcion_novedad, 4:usuario_id, 5:descripcionEntrada}).then(function(resultado){
        callback(false, resultado.rows, resultado);
@@ -910,6 +973,30 @@ OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(noved
     
 };
 
+OrdenesCompraModel.prototype.obtenerArchivosNovedades = function(parametros, callback) {
+    
+    
+    var columnas = [
+        "d.id as archivo_id",
+        "a.codigo_producto",
+        G.knex.raw("fc_descripcion_producto(a.codigo_producto) as nombre_producto"),
+        "d.nombre_archivo",
+        "c.descripcion as descripcion_novedad"
+    ];
+    
+    G.knex.column(columnas).
+    from("compras_ordenes_pedidos_detalle as a").
+    innerJoin("novedades_ordenes_compras as b", "a.item_id", "b.item_id").
+    innerJoin("observaciones_ordenes_compras as c", "b.observacion_orden_compra_id", "c.id").
+    innerJoin("archivos_novedades_ordenes_compras as d", "b.id", "d.novedad_orden_compra_id").
+    where("a.orden_pedido_id", parametros.numeroOrden).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    }).done();
+    
+};
 
 // Listado de recepciones de mercancia. pendiente
 OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {

@@ -859,12 +859,12 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.ordenes_compras === undefined || args.ordenes_compras.novedad_id === undefined || args.ordenes_compras.item_id === undefined || args.ordenes_compras.observacion_id === undefined || args.ordenes_compras.descripcion === undefined) {
-        res.send(G.utils.r(req.url, 'novedad_id, item_id, observacion_id no esta definidas', 404, {}));
+    if (args.ordenes_compras === undefined || args.ordenes_compras.novedad_id === undefined || args.ordenes_compras.productos === undefined || args.ordenes_compras.observacion_id === undefined || args.ordenes_compras.descripcion === undefined) {
+        res.send(G.utils.r(req.url, 'novedad_id, productos, observacion_id no esta definidas', 404, {}));
         return;
     }
 
-    if (args.ordenes_compras.item_id === '' || args.ordenes_compras.item_id === 0 || args.ordenes_compras.item_id === '0') {
+    if (args.ordenes_compras.productos.length === 0 ) {
         res.send(G.utils.r(req.url, 'Se requiere el item_id', 404, {}));
         return;
     }
@@ -879,40 +879,47 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
     var descripcion_novedad = args.ordenes_compras.descripcion;
     var usuario_id = req.session.user.usuario_id;
     var descripcionEntrada = args.ordenes_compras.descripcionEntrada || "";
+    var productos = args.ordenes_compras.productos;
+    
+    
+    G.Q.ninvoke(that.m_ordenes_compra, "guardarNovedades", productos, novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, []).
+    then(function(resultado){
+        res.send(G.utils.r(req.url, 'Novedad guardada correctamente', 200, {ordenes_compras: resultado}));
+    }).fail(function(err){
+        var msj = err.msj || "Ha ocurrido un error...";
+        var status = err.status || 500;
 
+        res.send(G.utils.r(req.url, msj, status, {ordenes_compras: []}));
+    }).done();
+   
+    /*G.Q.ninvoke(that.m_ordenes_compra, "consultarNovedadPorObservacion", novedad_id, observacion_id).
+    spread(function(novedades){
 
-    that.m_ordenes_compra.consultarNovedadPorObservacion(novedad_id, observacion_id, function(err, novedades) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error consultando la novedad', 500, {ordenes_compras: []}));
-            return;
-        } else {
+        if(!args.ordenes_compras.todosLosProductos){
 
             if (novedades.length === 0) {
-                that.m_ordenes_compra.insertar_novedad_producto(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, function(err, rows, result) {
-
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'Error registrando la novedad', 500, {ordenes_compras: []}));
-                        return;
-                    } else {
-                        res.send(G.utils.r(req.url, 'Novedad registrada correctamente', 200, {ordenes_compras: rows}));
-                        return;
-                    }
-                });
+                return G.Q.ninvoke(that.m_ordenes_compra, "insertar_novedad_producto", item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada);
             } else {
-                that.m_ordenes_compra.modificar_novedad_producto(novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, function(err, rows, result) {
-
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'Error modificando la novedad', 500, {ordenes_compras: []}));
-                        return;
-                    } else {
-                        res.send(G.utils.r(req.url, 'Novedad modificada correctamente', 200, {ordenes_compras: []}));
-                        return;
-                    }
-                });
+                return G.Q.ninvoke(that.m_ordenes_compra, "modificar_novedad_producto", novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada);
             }
+        } else {
+            
+            return G.Q.ninvoke(that.m_ordenes_compra, "agregarMultiplesNovedades", productos, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada);
         }
-    });
+
+    }).spread(function(rows, result){
+        if (result.rowCount === 0) {
+            throw {msj:"Error guardando la novedad", status:500};
+        } else {
+            res.send(G.utils.r(req.url, 'Novedad guardada correctamente', 200, {ordenes_compras: rows}));
+        }
+    }).fail(function(err){
+        var msj = err.msj || "Ha ocurrido un error...";
+        var status = err.status || 500;
+
+        res.send(G.utils.r(req.url, msj, status, {ordenes_compras: []}));
+    }).done();*/
+        
 };
 
 
@@ -1041,6 +1048,31 @@ OrdenesCompra.prototype.consultarArchivosNovedades = function(req, res) {
         }
     });
 };
+
+OrdenesCompra.prototype.obtenerArchivosNovedades = function(req, res) {
+
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'La orden no esta definida', 404, {}));
+        return;
+    }
+
+    var numeroOrden = args.ordenes_compras.numero_orden;
+    
+    G.Q.ninvoke(that.m_ordenes_compra, "obtenerArchivosNovedades",{numeroOrden: numeroOrden}).
+    then(function(listaArchivos){
+        res.send(G.utils.r(req.url, 'Lista Archivos Novedad', 200, {lista_archivos: listaArchivos}));
+    }).fail(function(err){
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, 'Error consultando los archivos de novedad', 500, {lista_archivos: []}));
+    }).done();
+    
+};
+
 
 // Generar Reporte Orden Compra
 OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {

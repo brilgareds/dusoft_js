@@ -80,9 +80,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 showFilter: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'getCodigoMedipol()', displayName: 'Código Medipol'},
+                    //{field: 'getCodigoMedipol()', displayName: 'Código Medipol'},
                     {field: 'getDescripcionCodigoMedipol()', displayName: 'Producto Medipol'},
-                    {field: 'getCodigoProducto()', displayName: 'Código Duana'},
+                    //{field: 'getCodigoProducto()', displayName: 'Código Duana'},
                     {field: 'getDescripcion()', displayName: 'Producto Duana'},
                     {field: 'getUbicacion()', displayName: 'Ubicación', width:"100"}
                 ]

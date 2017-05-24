@@ -1065,10 +1065,10 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
             return G.Q.nfcall(__actualizarEstadoFacturaPedido,that,0,parametrosActualizarEstadoFactura, transaccion);
             
         }).then(function(){
-           /*console.log("*******parametrosInsertaFacturaAgrupadaDetalle*************");
-           console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)*/                                  
+           console.log("*******parametrosInsertaFacturaAgrupadaDetalle*************");
+           console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
            console.log("AQUI VA OK OKo OK [consultaCompleta]: "); 
-           transaccion.commit(); 
+           //transaccion.commit(); 
         }).fail(function(err){
             console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
             transaccion.rollback(err);

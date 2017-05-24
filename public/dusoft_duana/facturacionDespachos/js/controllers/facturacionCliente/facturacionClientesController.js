@@ -694,9 +694,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         cellClass: "ngCellText", 
                         width: "25%", 
                         displayName: '#Factura',
-                        cellTemplate: '<ul> <button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 3"  \n\
-                            ng-click="listaPedidoPrefijos(row.entity.mostrarPedidos()[0].mostrarFacturas())" class="btn btn-default btn-xs" >Accion</button>\
-                            <li class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
+                        cellTemplate: '<ul><button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 3"  \n\
+                            ng-click="listaPedidoPrefijos(row.entity.mostrarPedidos()[0].mostrarFacturas())" \n\
+                            class="btn btn-default btn-xs" >{{row.entity.mostrarPedidos()[0].mostrarFacturas().length}} Documentos</button>\
+                            <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 4" \n\
+                                class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
                               <input type="checkbox"\n\
                                ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}  <br> \
                             </li>\
@@ -858,6 +860,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             }
 
         }; 
+        
+        $scope.seleccionarTipoPago = function(tipoPago){
+            $scope.tipoPagoFactura = tipoPago;
+        };
                     
         $scope.generarFacturasCosmitetAgrupadas = function () {
 
@@ -897,24 +903,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
                                             empresaId: $scope.root.empresaSeleccionada.getCodigo(),
                                             paginaActual: $scope.paginaactual,
-                                            tipoIdTercero: '',
-                                            terceroId: '',
+                                            tipoIdTercero: 'NIT',
+                                            terceroId: '800023202',
                                             tipoPago: $scope.tipoPagoFactura,
                                             documentos: $scope.root.pedidosCosmitetSeleccionados
                                         }
                                     }
                                 };
                                  
-                                console.log("obj [generar_factura_agrupada]::: 1 ", obj.data.generar_factura_agrupada.documentos[0].pedidos[0])
-                                console.log("obj [generar_factura_agrupada]::: 2 ", obj.data.generar_factura_agrupada.documentos[1].pedidos[0])
-                                /*facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
+                                //console.log("obj [generar_factura_agrupada]::: 1 ", obj.data.generar_factura_agrupada.documentos[0].pedidos[0])
+                                //console.log("obj [generar_factura_agrupada]::: 2 ", obj.data.generar_factura_agrupada.documentos[1].pedidos[0])
+                                facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
                                     console.log("AQUI MIRA ", data)
                                     /**
                                      * +Descripcion si se genera la factura satisfacturiamente,
                                      *              el sistema activara la vista que lista las facturas generadas
                                      *              haciendo referencia a la factura reciente
                                      */
-                                   /* if (data.status === 200) {
+                                    if (data.status === 200) {
                                         localStorageService.add("listaFacturaDespachoGenerada",
                                                 {active: true,
                                                     datos: data.obj.generar_factura_agrupada[0],
@@ -932,7 +938,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     if (data.status === 500) {
                                         AlertService.mostrarMensaje("danger", data.msj);
                                     }
-                                });*/
+                                });
                             }
                         }
                     );

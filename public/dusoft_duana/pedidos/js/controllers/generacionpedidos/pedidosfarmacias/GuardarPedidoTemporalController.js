@@ -274,7 +274,8 @@ define(["angular", "js/controllers",
                         id: clienteFarmacia,
                     },
                     fecha_registro: fecha,
-                    usuario_id: $scope.root.session.usuario_id
+                    usuario_id: $scope.root.session.usuario_id,
+                    pedido_multiple_farmacia:1
                 };
 
 

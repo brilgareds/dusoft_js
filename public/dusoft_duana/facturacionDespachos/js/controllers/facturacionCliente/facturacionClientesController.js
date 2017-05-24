@@ -24,9 +24,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             empresaSeleccionada: '',
             termino_busqueda: '',
             termino_busqueda_fg: '',
+            pedidosCosmitetSeleccionados: [],
+            documentosCosmitetSeleccionadosFiltrados: [],
             estadoSesion: true,
             items: 0,
             items_facturas_generadas: 0,
+            pedidos_cosmitet:[],
             clientes: [],
             facturas_generadas: [],
             estadoBotones: [
@@ -586,7 +589,366 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.paginaactualFacturasGeneradas++;
             that.listarFacturasGeneradas(0,{});
         };
+        
+        that.listarPedidosCosmitet = function(){
+            
+                     console.log("************that.listarPedidosCosmitet********************");   
+                     console.log("************that.listarPedidosCosmitet********************");   
+                     console.log("************that.listarPedidosCosmitet********************");   
+                     console.log("************that.listarPedidosCosmitet********************");
+                     
+            var obj = {
+                session: $scope.session,
+                data: {                               
+                    listar_pedidos_clientes: {
+                        terminoBusqueda: '', //$scope.root.numero,57760
+                        empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                        paginaActual: $scope.paginaactual,
+                        tipoIdTercero: '',
+                        terceroId: '',
+                        pedidoMultipleFarmacia: '1'
+                    }
+                }
+            };
 
+            facturacionClientesService.listarPedidosClientes(obj, function (data) {
+                $scope.root.pedidos_cosmitet = [];
+                var prefijosDocumentos = [];
+                var pedidoClientes = [];
+                var prefijo = [{pedido:57751,prefijo:'EFC',numeracion:145706},{pedido:57751,prefijo:'EFC',numeracion:145707}]
+                if (data.status === 200) {
+
+                    $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
+                    console.log("data.obj.listar_pedidos_clientes ", data.obj.listar_pedidos_clientes)
+                    pedidoClientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
+
+                    /**
+                     * +Descripcion Se recorren los prefijos y se
+                     *              almacenan en un arreglo
+                     */
+                    data.obj.lista_prefijos.forEach(function(rowPrefijos){
+
+                        rowPrefijos.forEach(function(rowPrefijosB){
+                            prefijosDocumentos.push(rowPrefijosB)
+
+                        });
+
+                    }) 
+
+                    /**
+                     * +Descripcion Lista de los pedidos que estan listos
+                     *              para facturarse
+                     */
+                    prefijosDocumentos.forEach(function(resultado){
+                        
+                        //for(var i=0; i<20; i++){ 
+                        pedidoClientes.forEach(function(row){
+                            
+                            if(resultado.pedido_cliente_id === row.pedidos[0].numero_cotizacion){
+                                //console.log("row ", row.pedidos[0]);
+                                row.pedidos[0].prefijoNumero += " ( " + resultado.prefijo+" - "+ resultado.numero +")";
+                                 row.pedidos[0].agregarDocumentos(facturacionClientesService.renderDocumentosPrefijosClientes(
+                                    row.pedidos[0].numero_cotizacion, 
+                                    resultado.prefijo,
+                                    resultado.numero,
+                                    row.pedidos[0].fechaRegistro,
+                                    resultado.empresa_id));
+                            }                                             
+                        });   
+                    
+                        //}
+                    });
+
+                    $scope.root.pedidos_cosmitet = pedidoClientes;
+                    console.log("$scope.pedidos_clientes ", $scope.root.pedidos_cosmitet);
+                } else {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }
+
+            });
+
+        };
+        
+        
+        $scope.listaPedidosCosmitet = {
+            
+                data: 'root.pedidos_cosmitet',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
+                columnDefs: [
+
+                    {field: '#Pedido', cellClass: "ngCellText", width: "15%", displayName: '#Pedido', 
+                        cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
+
+                    {field: 'Vendedor', cellClass: "ngCellText", width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
+
+                    {field: '#Fecha', cellClass: "ngCellText", width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
+
+                    //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getPrefijoNumero()}}</p></div>'},
+                    //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()}}</p></div>'},
+
+
+                    {field: '#Factura', 
+                        cellClass: "ngCellText", 
+                        width: "25%", 
+                        displayName: '#Factura',
+                        cellTemplate: '<ul><button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 3"  \n\
+                            ng-click="listaPedidoPrefijos(row.entity.mostrarPedidos()[0].mostrarFacturas())" \n\
+                            class="btn btn-default btn-xs" >{{row.entity.mostrarPedidos()[0].mostrarFacturas().length}} Documentos</button>\
+                            <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 4" \n\
+                                class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
+                              <input type="checkbox"\n\
+                               ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}  <br> \
+                            </li>\
+                          </ul>'},
+                   
+                    {displayName: "Opc", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                   <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                   <ul class="dropdown-menu dropdown-options">\
+                        <li>\n\
+                           <a href="javascript:void(0);" ng-click="generarFacturasAgrupadas(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
+                        </li>\
+                        <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                           <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
+                        </li>\
+                        <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                           <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir documento </a>\
+                        </li>\
+                   </ul>\
+              </div>'
+                    },
+
+                    {field: '', cellClass: "checkseleccion", width: "3%",
+                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
+                                " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}, 
+                ]
+            };
+            
+            
+        $scope.listaPedidoPrefijos = function(prefijos){
+
+            $scope.listaPedidosPrefijos = prefijos;
+            $scope.opts = {
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: false,
+                keyboard: true,
+                template: ' <div class="modal-header">\
+                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                <h4 class="modal-title">Seleccionar documentos</h4>\
+                            </div>\
+                            <div class="modal-body">\
+                                <ul>\
+                                    <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
+                                      <input type="checkbox" ng-model="item.documentoSeleccionado" \
+                                        ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"\
+                                       >\n\
+                                        {{item.prefijo}} - {{item.numero}}  <br> \
+                                    </li>\
+                                </ul>\
+                            </div>\
+                            <div class="modal-footer">\
+                                <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
+                            </div>',
+                scope: $scope,
+                controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                        $scope.close = function () {
+                            $modalInstance.close();
+                        };
+                    }]
+            };
+            var modalInstance = $modal.open($scope.opts);
+            console.log("prefijos ", prefijos);
+        };
+        
+        
+        /**
+         * +Descripion Funciones encargadas de procesar los pedidos seleccionados
+         */
+        that.quitarPedido = function (pedido) {
+
+            for (var i in $scope.root.pedidosCosmitetSeleccionados) {
+                var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
+                if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
+                    $scope.root.pedidosCosmitetSeleccionados.splice(i, true);
+                    break;
+                }
+            }
+        };
+
+        that.agregarPedido = function (pedido) {
+            //valida que no exista el pedido en el array
+            for (var i in $scope.root.pedidosCosmitetSeleccionados) {
+                var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
+                if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
+                    return false;
+                }
+            }
+            $scope.root.pedidosCosmitetSeleccionados.push(pedido);
+        };
+
+
+        $scope.onPedidoSeleccionado = function (check, row) {
+
+            row.selected = check;
+            if (check) {
+                that.agregarPedido(row.entity);
+            } else {
+
+                that.quitarPedido(row.entity);
+            }
+
+        };
+
+        $scope.buscarSeleccion = function (row) {
+            var pedido = row.entity;
+
+            for (var i in $scope.root.pedidosCosmitetSeleccionados) {
+                var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
+                if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
+                    row.selected = true;
+                    return true;
+                }
+            }
+
+            row.selected = false;
+            return false;
+        };
+        
+        
+        
+        /**
+         * +Descripcion Funciones encargadas de procesar los documentos seleccionados
+         */
+         that.quitarDocumento = function (documento) {
+                        
+            for(var i in $scope.root.documentosCosmitetSeleccionadosFiltrados) {
+                var _documento = $scope.root.documentosCosmitetSeleccionadosFiltrados[i];
+                if (_documento.prefijo === documento.prefijo && _documento.numero === documento.numero) {
+                    $scope.root.documentosCosmitetSeleccionadosFiltrados.splice(i, true);
+                    break;
+                }  
+            }
+
+        }; 
+
+        that.agregarDocumento = function (documento) {
+
+            for(var i in $scope.root.documentosCosmitetSeleccionadosFiltrados) {
+                var _documento = $scope.root.documentosCosmitetSeleccionadosFiltrados[i];
+                if(_documento.prefijo === documento.prefijo && _documento.numero === documento.numero) {
+                    return false;
+                }  
+            }
+            $scope.root.documentosCosmitetSeleccionadosFiltrados.push(documento);
+
+        }; 
+
+
+        $scope.onDocumentoSeleccionado = function (check, row) {
+           // console.log("row ", row)
+            row.selected = check;
+
+            if (check) {
+                that.agregarDocumento(row.item);
+            }else {
+
+                that.quitarDocumento(row.item);
+            }
+
+        }; 
+        
+        $scope.seleccionarTipoPago = function(tipoPago){
+            $scope.tipoPagoFactura = tipoPago;
+        };
+                    
+        $scope.generarFacturasCosmitetAgrupadas = function () {
+
+            console.log("**********$scope.generarFacturasAgrupadas***************00");
+            console.log("**********$scope.generarFacturasAgrupadas***************00");
+            console.log("**********$scope.generarFacturasAgrupadas***************00");
+             
+           if ($scope.root.pedidosCosmitetSeleccionados.length > 1) {
+ 
+                    AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ",
+                        function (estadoConfirm) {
+                            if (estadoConfirm) {
+
+                                /**
+                                 * +Descripcion Se recorren los documentos checkeados en los pedidos
+                                 *              y se valida cual corresponde con cada pedido
+                                 *              para almacenarlos en un nuevo arreglo el cual sera
+                                 *              enviado al servidor para posteriormente ser
+                                 *              registrados
+                                 */
+                                $scope.root.pedidosCosmitetSeleccionados.forEach(function (row) {
+
+                                    row.pedidos[0].vaciarDocumentosSeleccionados();
+                                    $scope.root.documentosCosmitetSeleccionadosFiltrados.forEach(function (documentos) {
+
+                                        if (row.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id) {
+                                            row.pedidos[0].agregarDocumentosSeleccionados(documentos);
+                                        }
+                                    });
+
+                                });
+
+                                var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        generar_factura_agrupada: {
+                                            terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
+                                            empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                            paginaActual: $scope.paginaactual,
+                                            tipoIdTercero: 'NIT',
+                                            terceroId: '800023202',
+                                            tipoPago: $scope.tipoPagoFactura,
+                                            documentos: $scope.root.pedidosCosmitetSeleccionados
+                                        }
+                                    }
+                                };
+                                 
+                                //console.log("obj [generar_factura_agrupada]::: 1 ", obj.data.generar_factura_agrupada.documentos[0].pedidos[0])
+                                //console.log("obj [generar_factura_agrupada]::: 2 ", obj.data.generar_factura_agrupada.documentos[1].pedidos[0])
+                                facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
+                                    console.log("AQUI MIRA ", data)
+                                    /**
+                                     * +Descripcion si se genera la factura satisfacturiamente,
+                                     *              el sistema activara la vista que lista las facturas generadas
+                                     *              haciendo referencia a la factura reciente
+                                     */
+                                    if (data.status === 200) {
+                                        localStorageService.add("listaFacturaDespachoGenerada",
+                                                {active: true,
+                                                    datos: data.obj.generar_factura_agrupada[0],
+                                                    mensaje: data.obj.resultado_sincronizacion_ws.resultado}
+                                        );
+                                        $state.go('Despacho');
+                                        AlertService.mostrarMensaje("warning", data.msj);
+                                    }
+                                    if (data.status === 404) {
+                                        AlertService.mostrarMensaje("warning", data.msj);
+                                    }
+                                    if (data.status === 409) {
+                                        AlertService.mostrarMensaje("danger", data.msj);
+                                    }
+                                    if (data.status === 500) {
+                                        AlertService.mostrarMensaje("danger", data.msj);
+                                    }
+                                });
+                            }
+                        }
+                    );
+                
+
+            } else {
+                AlertService.mostrarMensaje("warning", "Debe seleccionar mas de dos pedidos");
+            }
+
+        };
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones
@@ -610,7 +972,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         that.listarTiposTerceros();
                         that.listarPrefijosFacturas();
                         that.listarClientes();
-                        
+                        that.listarPedidosCosmitet();
                     }
                 }
             }

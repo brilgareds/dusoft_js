@@ -2100,7 +2100,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 id: $scope.Pedido.getCliente().getId(),
                             },
                             fecha_registro: fecha,
-                            usuario_id: $scope.session.usuario_id
+                            usuario_id: $scope.session.usuario_id,
+                            //pedido_multiple_farmacia:0
                         };
 
                         var obj = {

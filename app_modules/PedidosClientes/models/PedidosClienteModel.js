@@ -7,6 +7,26 @@ var PedidosClienteModel = function(productos, m_pedidos_logs) {
 };
 
 
+PedidosClienteModel.prototype.actualizarEstadoPedidoMultipleFarmacia = function(obj, callback) {
+    
+    console.log("*************PedidosClienteModel.prototype.actualizarEstadoPedidoMultipleFarmacia***************************");
+    console.log("*************PedidosClienteModel.prototype.actualizarEstadoPedidoMultipleFarmacia***************************");
+    console.log("*************PedidosClienteModel.prototype.actualizarEstadoPedidoMultipleFarmacia***************************");
+    console.log("*************PedidosClienteModel.prototype.actualizarEstadoPedidoMultipleFarmacia***************************");
+    
+    
+    G.knex("ventas_ordenes_pedidos").
+            where("pedido_cliente_id", obj.numero_pedido).
+            update({pedido_multiple_farmacia: obj.pedido_multiple_farmacia}).then(function(resultado) {
+
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err [actualizar_estado_actual_pedido]: ", err);
+        callback(err);
+    });
+
+};
+
 /*
  * @Autor : Cristian Ardila
  * +Descripcion : Metodo encargado de actualizar el estado de un producto en la cotizacion

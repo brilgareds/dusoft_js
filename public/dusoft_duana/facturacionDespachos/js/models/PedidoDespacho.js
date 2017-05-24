@@ -389,25 +389,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             };
             
             
-            PedidoDespacho.prototype.agregarDocumentosSeleccionados = function (documentoSeleccionado) {
-                //console.log("this.documentoSeleccionado.length ", this.documentoSeleccionado.length)
-                 
-                if(this.documentoSeleccionado.length === 0){
-                    this.documentoSeleccionado.push(documentoSeleccionado);
-                } 
-                for(var i=0; i<this.documentoSeleccionado.length; i++){
-                    if(!(this.documentoSeleccionado[i].bodegas_doc_id === documentoSeleccionado.bodegas_doc_id
-                            && this.documentoSeleccionado[i].prefijo === documentoSeleccionado.prefijo
-                            && this.documentoSeleccionado[i].numero === documentoSeleccionado.numero)){
-
-                       
-                       this.documentoSeleccionado.push(documentoSeleccionado);
-                    }
-
-                };
-                //console.log("EL ARREGLO ", this.documentoSeleccionado);
-                
-                
+            PedidoDespacho.prototype.agregarDocumentosSeleccionados = function (documentoSeleccionado) {                
+                this.documentoSeleccionado.push(documentoSeleccionado);               
             };
 
             PedidoDespacho.prototype.vaciarDocumentosSeleccionados = function () {

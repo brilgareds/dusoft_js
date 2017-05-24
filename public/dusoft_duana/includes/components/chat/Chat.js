@@ -19,6 +19,8 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
         //cuando la etiqueta esta cargada en el dom
         directive.link = function(scope, element, attrs, ngModel){
             
+            $("body").removeClass("modal-open");
+            
             $(document).on("click",".indicadorScrollChat",function(){
                 self.realizarScrollInferior();
             });
@@ -77,16 +79,25 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
                 
                 if(!contenedorChat.hasClass("chatClosed") && !data.forzarAbrir){
                     
-                    contenedorChat.removeClass("chatOpened");
-                    icono.removeClass(iconoCerrar);
-                    contenedorChat.addClass("chatClosed");
-                    icono.addClass(iconoAbrir);
+                    var timer = setTimeout(function(){
+                        
+                        contenedorChat.removeClass("chatOpened");
+                        icono.removeClass(iconoCerrar);
+                        contenedorChat.addClass("chatClosed");
+                        icono.addClass(iconoAbrir);
+                        
+                        clearTimeout(timer);
+                    }, 0);
                     
                 } else {
-                    contenedorChat.removeClass("chatClosed");
-                    icono.removeClass(iconoAbrir);
-                    contenedorChat.addClass("chatOpened");
-                    icono.addClass(iconoCerrar);
+                    
+                    var timer = setTimeout(function(){
+                        contenedorChat.removeClass("chatClosed");
+                        icono.removeClass(iconoAbrir);
+                        contenedorChat.addClass("chatOpened");
+                        icono.addClass(iconoCerrar);
+                        clearTimeout(timer);
+                    }, 0);
                 }
             };
                  

@@ -504,3 +504,29 @@ button.btnTipo{
 .contenedorRecepcion .margin-top{
     margin-top: 25px;
 }
+
+
+
+.cellOrdenConNovedad {
+    background-color: #f0ad4e;
+    border-color: #eea236;
+    color:white;
+    height:30px;
+}
+
+.iconoOrdenCompra{
+    padding-top: 3px;
+}
+
+.ordenNovedad{
+    color:#f0ad4e;
+}
+
+.ordenSinIngresar{
+    color:red;
+}
+
+.ordenArchivos{
+    
+}
+

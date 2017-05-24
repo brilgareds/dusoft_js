@@ -1,0 +1,280 @@
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4" >
+        <label class="control-label">Buscar tercero</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Nombre" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+   
+ 
+</div>
+
+<hr />
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <label class="control-label">Gran contribuyente</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Gran contribuyente"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Regimen comun</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Regimen comun"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Excluir fletes</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Excluir fletes"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    
+    
+</div>
+
+
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <label class="control-label">Retefuente</label>
+        <p class="input-group contenedorDropdown form-control controlCompuesto">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="selectgeneral  ui-select-z-index-11 col-md-5 col-xs-12 " 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Retefuente"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+            <input class="col-md-5 col-xs-12  txtValorTerceros" />
+        </p>
+         
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Rete ica</label>
+        <p class="input-group contenedorDropdown form-control controlCompuesto">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="selectgeneral  ui-select-z-index-11 col-md-5 col-xs-12 " 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Rete ica"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+            <input class="col-md-5 col-xs-12  txtValorTerceros" />
+        </p>
+         
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Rete iva</label>
+        <p class="input-group contenedorDropdown form-control controlCompuesto">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="selectgeneral  ui-select-z-index-11 col-md-5 col-xs-12 " 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Rete iva"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+            <input class="col-md-5 col-xs-12  txtValorTerceros" />
+        </p>
+         
+    </div>
+</div>
+
+<div class="row contenedorCamposTercero">
+   
+ 
+    <div class="col-md-4">
+        <label class="control-label">Impuesto cree</label>
+        <p class="input-group contenedorDropdown form-control controlCompuesto">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="selectgeneral  ui-select-z-index-11 col-md-5 col-xs-12 " 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Impuesto cree"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+            <input class="col-md-5 col-xs-12  txtValorTerceros" />
+        </p>
+         
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Divisa pago</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Divisa pago"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Divisa fact</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Divisa fact"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+</div>
+
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <label class="control-label">Tipo pago</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select multiple ng-model="root.tipoPgo"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-12 multiSelectTerceros" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo pago"><span ng-bind="$item.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoPago in  root.tiposPago | filter:$select.search">
+                    <span ng-bind="tipoPago.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Codigo ciuu</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo cliente"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Actividad</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Actividad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    
+    
+</div>
+
+<div class="row contenedorCamposTercero" >
+    
+    <div class="col-md-4" >
+        <label class="control-label">Cuenta contable</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Cuenta contable" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Estado</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Estado"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+   
+</div>
+
+
+<div class="row text-center">
+    <button type="button" class="btn btn-warning btn-medium"  ng-click="onBtnCancelar()">
+        Cancelar <span class="glyphicon glyphicon-remove"></span>
+    </button>
+    <button type="button" class="btn btn-success btn-medium"   ng-click="paginaSiguiente()">
+        Guardar <span class="glyphicon glyphicon glyphicon-floppy-save" ></span>
+    </button>
+</div>

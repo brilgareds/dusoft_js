@@ -79,35 +79,49 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
     var device = (args.login.device === undefined) ? '' : args.login.device;
     var appId = (args.login.appId === undefined) ? 'dusoft-web' : args.login.appId;
     var socket = args.login.socket;
-
-
-    G.auth.login(nombre_usuario, contrasenia, admin, function(err, usuario) {
-        if (err){
-            console.log("error interno ", err);
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {}));
+    
+    
+    var ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress).replace(/^.*:/, '');
+    var usuario;
+    var sesion_usuario;
+   
+    G.Q.ninvoke(G.auth, "login", nombre_usuario, contrasenia, admin).
+    spread(function(_usuario){
+        
+        if (_usuario.length === 0) {
+            throw {msj:'Usuario o Contraseña Invalidos', status : 404};
         } else {
-            if (usuario.length === 0) {
-                res.send(G.utils.r(req.url, 'Usuario o Contraseña Invalidos', 404, {}));
-            } else {
 
-                usuario = usuario[0];
-                usuario.socket = socket;
-                usuario.device = device;
-                usuario.appId = appId;
-                
-
-                G.auth.set(usuario, function(err, sesion_usuario) {
-                    if (err) {
-                        console.log("error generado ", err);
-                        res.send(G.utils.r(req.url, 'No se ha podido Autenticar el Usuario', 500, {sesion: {}}));
-                    } else {
-                        sesion_usuario.admin = usuario.sw_admin;
-                        res.send(G.utils.r(req.url, 'Usuario Autenticado Correctamente', 200, {sesion: sesion_usuario}));
-                    }
-                });
-            }
+            usuario = _usuario[0];
+            usuario.socket = socket;
+            usuario.device = device;
+            usuario.appId = appId;
+            
+            return G.Q.ninvoke(G.auth, "set", usuario);
         }
-    });
+        
+    }).then(function(_sesion_usuario){
+        sesion_usuario = _sesion_usuario;
+        sesion_usuario.admin = usuario.sw_admin;
+        usuario.ip = ip;
+        return G.Q.ninvoke(G.auth,"guardarRegistroConexion",usuario);
+        
+    }).then(function(){
+        res.send(G.utils.r(req.url, 'Usuario Autenticado Correctamente', 200, {sesion: sesion_usuario}));
+        
+    }).fail(function(err){
+        var msj = "Ha ocurrido un error...";
+        var status  = 500;
+        
+        if(err.status){
+            msj = err.msj;
+            status = err.status;
+        }
+           
+        res.send(G.utils.r(req.url, msj, status, {sesion: {}}));
+        
+    }).done();
+   
 };
 
 Autenticacion.prototype.guardarTokenPush = function(req, res) {

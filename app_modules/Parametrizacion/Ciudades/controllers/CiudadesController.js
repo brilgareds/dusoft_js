@@ -58,6 +58,32 @@ Ciudades.prototype.seleccionarCiudad = function(req, res) {
     });
 };
 
+Ciudades.prototype.obtenerCiudadesPorDepartamento = function(req, res) {
+
+    var that = this;
+
+
+    var args = req.body.data;
+
+    if (args.ciudades === undefined || args.ciudades.departamento_id === undefined) {
+        res.send(G.utils.r(req.url, 'departamento_id  no esta definido', 404, {}));
+        return;
+    }
+    
+    var departamento_id = args.ciudades.departamento_id;
+
+    that.m_ciudades.listar_ciudades_departamento(departamento_id, function(err, lista_ciudades) {
+
+        if (err) {
+            console.log("error generaod ", err);
+            res.send(G.utils.r(req.url, 'Error al consultar las ciudades', 500, {ciudades: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Consulta de ciudades exitosa', 200, {ciudades: lista_ciudades}));
+        }
+        
+    });
+};
+
 Ciudades.$inject = ["m_ciudades"];
 
 module.exports = Ciudades;

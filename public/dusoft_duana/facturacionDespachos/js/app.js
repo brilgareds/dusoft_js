@@ -40,7 +40,7 @@ define([
     "models/PedidoDespacho",
     "controllers/facturacionCliente/facturacionClientesController",
     "controllers/facturacionCliente/pedidosClientesController",
-    "controllers/facturacionCliente/ventanaMensajeSincronizacionController",
+    "controllers/facturacionCliente/VentanaMensajeSincronizacionController",
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
     "services/facturacionClientesService",

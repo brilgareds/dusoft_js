@@ -3,9 +3,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('GestionarNovedadProductoController', [
         '$scope', '$rootScope', 'API',
         '$modalInstance', 'AlertService', 'Request', 'ObservacionOrdenCompra', 'NovedadOrdenCompra',
-        'ArchivoNovedadOrdenCompra','$filter','producto','nuevaNovedad',
+        'ArchivoNovedadOrdenCompra','$filter','producto','nuevaNovedad','todosLosProductos', 'productos',
         function($scope, $rootScope, API, $modalInstance, AlertService, Request, Observacion, Novedad,
-                 Archivo, $filter, producto, nuevaNovedad) {
+                 Archivo, $filter, producto, nuevaNovedad, todosLosProductos, productos) {
 
             var that = this;
 
@@ -14,10 +14,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.flow.target = API.ORDENES_COMPRA.SUBIR_ARCHIVO_NOVEDAD;
             $scope.flow.testChunks = false;
             $scope.flow.singleFile = true;
+            $scope.todosLosProductos = todosLosProductos;
             $scope.producto = producto;
             
             //Si la novedad es nueva se setea un objeto novedad vacio 
-            if(nuevaNovedad){
+            if(nuevaNovedad && !todosLosProductos){
                 var novedad = Novedad.get();
                 producto.set_novedad(novedad);
             } 
@@ -72,14 +73,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     entrada =  $filter('date')($scope.producto.get_novedad().getDescripcionEntrada(), "yyyy-MM-dd");
                 }
                                
-                var obj = {session: $scope.session,
+                var obj = {
+                    session: $scope.session,
                     data: {
                         ordenes_compras: {                            
                             novedad_id: $scope.producto.get_novedad().get_id() || 0,
-                            item_id: $scope.producto.get_id(),
+                           // item_id: $scope.producto.get_id(),
                             observacion_id: $scope.producto.get_novedad().get_observacion().get_id(),
                             descripcion: $scope.producto.get_novedad().get_descripcion(),
-                            descripcionEntrada:entrada
+                            descripcionEntrada:entrada,
+                            todosLosProductos: $scope.todosLosProductos,
+                            productos:($scope.todosLosProductos) ? productos : [$scope.producto]
                         }
                     }
                 };
@@ -90,20 +94,28 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200) {
-
-                        var novedad_id = (data.obj.ordenes_compras.length === 0) ? $scope.producto.get_novedad().get_id() : data.obj.ordenes_compras[0].novedad_id;
-                        $scope.producto.get_novedad().set_id(novedad_id);
-                        $scope.producto.set_novedad($scope.producto.get_novedad());
-
+                        
                         //Subir Archivo
-                        if ($scope.flow.files.length > 0) {
-                            that.subir_archivo_novedad();
-                        } else {
+                        if(!$scope.todosLosProductos){
+                            var novedad_id = (data.obj.ordenes_compras.length === 0) ? $scope.producto.get_novedad().get_id() : data.obj.ordenes_compras[0].novedad_id;
+                            $scope.producto.get_novedad().set_id(novedad_id);
+                            $scope.producto.set_novedad($scope.producto.get_novedad());
+                            
+                            if ($scope.flow.files.length > 0) {
+                                that.subir_archivo_novedad();
+                            } else {
 
+                                $modalInstance.close();
+                            }
+                        } else {
                             $modalInstance.close();
                         }
                     }
                 });
+            };
+            
+            that.agregarNovedadAProductos = function(){
+                
             };
 
             that.subir_archivo_novedad = function() {
@@ -123,7 +135,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.flow.cancel();
 
                 if (data.status === 200) {
-                    $scope.buscar_detalle_orden_compra();
+                   // $scope.buscar_detalle_orden_compra();
 
                     $modalInstance.close();
                 } else {
@@ -197,7 +209,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             that.buscar_observaciones();
-            that.buscar_archivos_novedad();
+            
+            if(!$scope.todosLosProductos){
+                that.buscar_archivos_novedad();
+            }
+            
 
         }]);
 });

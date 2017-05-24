@@ -71,26 +71,26 @@
                     <div class="row">  
                         <div class="col-md-12">
 
-                            <tabset>
+                            <tabset ng-app="!todosLosProductos">
                                 <tab>
                                     <tab-heading>
                                         <i class="glyphicon glyphicon-folder-open"></i> Novedades
                                     </tab-heading>
                                     <br>
                                     <div class="row">  
-                                        <div class="">
-                                            <div class="col-md-3 pull-right">
-                                                <p class="input-group">
-
-                                                    <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                                                    </span>
-                                                </p>
+                                        <div class="col-md-4 pull-right">
+                                            <div class="input-group">
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-default" ng-click="onCrearNovedadGeneral()">Crear novedad para todos los productos</button>
+                                                </div>
+                                                <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                                </span>
                                             </div>
                                         </div>
-
                                     </div>
+                                    <br />
                                     <div class="table-responsive">
                                         <div class="grid-responsive" style="height: 240px" ng-grid="lista_productos" > </div>
                                     </div>

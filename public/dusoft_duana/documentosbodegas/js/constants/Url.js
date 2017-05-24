@@ -45,7 +45,10 @@ define(["angular"], function(angular) {
             },
             'ORDENES_COMPRA': {
                 'LISTAR_PRODUCTOS': BASE_URL + '/OrdenesCompra/listarProductos',
-            }    
+            },
+            'FACTURACIONPROVEEDOR':{
+                'INSERTAR_FACTURA': BASE_URL + "/FacturacionProveedores/ingresarFactura"
+            }
         }
     };
 

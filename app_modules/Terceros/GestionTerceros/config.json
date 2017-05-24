@@ -1,0 +1,21 @@
+{
+    "module": "GestionTerceros",
+    "dependency": {
+        "controllers": [{
+                "clientes_controller": {
+                    "module": "Terceros/GestionTerceros",
+                    "controller": "TercerosController",
+                    "alias": "c_terceros"
+                }
+            }],
+        "models": [{                
+                "terceros_model": {
+                    "module": "Terceros/GestionTerceros",
+                    "model": "TercerosModel",
+                    "alias": "m_gestion_terceros"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

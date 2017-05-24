@@ -14,7 +14,8 @@
                 'CENTROS_UTILIDAD_EMPRESAS':BASE_URL+'/CentrosUtilidad/listarCentrosUtilidadEmpresa',
                 'BODEGAS_EMPRESA':BASE_URL+'/Bodegas/listarBodegasEmpresas',
                 'CONSULTAR_EXISTENCIAS':BASE_URL+'/Kardex/consultarExistenciasProducto',
-                'LISTAR_EMPRESAS_FARMACIAS':BASE_URL+'/Empresas/listarEmpresasFarmacias'
+                'LISTAR_EMPRESAS_FARMACIAS':BASE_URL+'/Empresas/listarEmpresasFarmacias',
+                'LISTAR_HOMOLOGACION_PRODUCTOS':BASE_URL+'/Productos/listarHomologacionProductos'
 	    }
 	  }
 	};

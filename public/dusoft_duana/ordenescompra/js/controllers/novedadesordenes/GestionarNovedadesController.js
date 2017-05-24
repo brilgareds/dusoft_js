@@ -330,15 +330,38 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
                 
             };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton para crear una novedad en toda la orden, se toma el primer producto como referencia
+             */
+            $scope.onCrearNovedadGeneral = function(){
+                
+                var producto = angular.copy($scope.orden_compra.get_productos()[0]);
+                
+                if(!producto){
+                    return;
+                }
+                
+                producto.set_novedad(Novedad.get());
+                var productos = $scope.orden_compra.get_productos();
+                
+                var row = {
+                    entity : producto,
+                    rowIndex : 0
+                };
+                  
+                $scope.novedades_producto_orden_compra(row, true, true, productos);
+                
+            };
            
-            $scope.novedades_producto_orden_compra = function(row, nuevaNovedad) {
+            $scope.novedades_producto_orden_compra = function(row, nuevaNovedad, todosLosProductos, productos) {
                 
                 var producto = row.entity;
                 var index = row.rowIndex;
-                producto.set_cantidad_seleccionada(producto.cantidad);
-
-                $scope.producto_seleccionado = producto;
                 
+                producto.set_cantidad_seleccionada(producto.cantidad);
+                $scope.producto_seleccionado = producto;
 
                 $scope.opts = {
                     backdropClick: true,
@@ -353,10 +376,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             return index;
                         }, 
                         producto: function(){
-                            return producto
+                            return producto;
                         },
                         nuevaNovedad:function(){
-                            return nuevaNovedad
+                            return nuevaNovedad;
+                        },
+                        todosLosProductos:function(){
+                            return todosLosProductos;
+                        },
+                        productos:function(){
+                            return productos
                         }
                     }
                 };
@@ -367,7 +396,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 }, function() {
                 });
-                };
+            };
 
             $scope.pagina_anterior = function() {
                 $scope.pagina_actual--;

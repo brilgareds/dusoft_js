@@ -38,5 +38,10 @@ module.exports = function(app, di_container) {
         c_productos.actualizarExistenciasProducto(req, res);
     });
     
+    app.post('/api/Productos/listarHomologacionProductos', function(req, res) {
+        c_productos.listarHomologacionProductos(req, res);
+    });
+    
+    
     
 };

@@ -12,24 +12,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         "AlertService",
         "localStorageService",
         "$state",
-        "Usuario", "$sce","$modalInstance",
+        "Usuario", "$sce","$modalInstance","productos",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,
-                 Sesion, $sce,$modalInstance) {
+                 Sesion, $sce,$modalInstance, productos) {
 
             var that = this;
-
+                        
+            $scope.root = {
+                productos : productos
+            };
                 
-            $scope.listaFacturasPedido = {
-                data: 'facturas',
+            $scope.listaProductosPendiente = {
+                data: 'root.productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
                 
-                    {field: 'pedido_cliente_id', displayName: 'No. Pedido', width: "30%"},
-                    {field: 'factura_fiscal', displayName: 'No. Factura', width: "35%"},
-                    {field: 'fecha_registro', displayName: 'F. Factura', width: "35%"}
+                    {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width:"15%"},
+                    {field: 'getDescripcion()', displayName: 'Descripcion', width: "55%"},
+                    {field: 'get_cantidad_seleccionada()', displayName: 'Cnt.', width:"10%"},
+                    {field: 'getCantidadPendiente()', displayName: 'Pendiente', width:"10%"},
+                    {field: 'get_cantidad_recibida()', displayName: 'Rec.', width:"10%"}
                    
                     
                 ]

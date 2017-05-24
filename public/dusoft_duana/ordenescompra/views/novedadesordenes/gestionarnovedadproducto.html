@@ -1,10 +1,11 @@
 <div class="modal-header">
     <button type="button" class="close" ng-click="close()">&times;</button>
-    <h4 class="modal-title">Novedades Productos</h4>
+    <h4 class="modal-title" ng-if="!todosLosProductos">Novedades Productos</h4>
+    <h4 class="modal-title" ng-if="todosLosProductos">Novedad para todos los productos de la orden</h4>
 </div>
 <div class="modal-body">
 
-    <div class="row">  
+    <div class="row" ng-if="!todosLosProductos">  
         <div class="col-md-12">
 
             <fieldset>
@@ -59,7 +60,7 @@
         </div>
     </div> 
 
-    <div class="row" style="padding-top: 15px;">
+    <div class="row" style="padding-top: 15px;" ng-if="!todosLosProductos">
         <tabset>
             <tab>
                 <tab-heading>
@@ -91,7 +92,7 @@
                                 <img ng-show="$flow.files.length" src="../../../images/attachment_yellow.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
                             </div>
                             <div ng-hide="$flow.files.length">
-                                <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
+                              Arrastrar y Soltar el archivo AQUI!!..                                                    
                             </div>
                             <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
                                 Nombre Archivo : <label>{{file.name}}</label>                                                                                                                                                       

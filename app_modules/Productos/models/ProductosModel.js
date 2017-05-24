@@ -283,6 +283,33 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
 
 /*
 * @Author: Eduar
+* @param {obj} 
+* +Descripcion: Permite listar homologacion de productos
+*/
+ProductosModel.prototype.listarHomologacionProductos = function(params, callback){
+    G.knex.column(["a.*", "b.torre"]).from("homologacion_medipol as a").
+    innerJoin("param_torreproducto as b", function(){
+        this.on("b.codigo_producto", "a.codigo_duana");
+    }).
+    where("b.empresa_id", params.empresa_id).
+    andWhere(function(){
+        this.where("a.codigo_medipol", G.constants.db().LIKE, "%" + params.termino_busqueda + "%").
+        orWhere("a.descripcion_medipol",  G.constants.db().LIKE, "%" + params.termino_busqueda + "%").
+        orWhere("a.codigo_duana", G.constants.db().LIKE, "%" + params.termino_busqueda + "%").
+        orWhere(G.knex.raw("a.descripcion_duana"), G.constants.db().LIKE, "%" + params.termino_busqueda + "%"); 
+    }).
+    limit(G.settings.limit).
+    offset((params.pagina - 1) * G.settings.limit).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    }).done();
+};
+
+
+/*
+* @Author: Eduar
 * @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, fechaVencimiento, codigoLote}
 * +Descripcion: Permite gestionar una existencia para determinado producto
 */

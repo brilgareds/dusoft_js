@@ -1,0 +1,38 @@
+<div>
+
+
+    <div class="row">
+
+
+
+        <div class="col-lg-3 pull-right">
+            <p class="input-group">
+
+                <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </p>
+        </div>
+
+
+
+    </div>
+
+    <div class="table-responsive" >
+        <div class="defaultGrid grid-responsive" ng-grid="listaProductos">
+        </div>
+    </div>
+    </br>
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="EmpresasProductos.length == 0" ng-click="paginaSiguiente()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+
+
+</div>

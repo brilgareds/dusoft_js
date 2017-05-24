@@ -10,7 +10,8 @@ define(["angular", "js/controllers",
     "models/ArchivoNovedadOrdenCompra",
     "models/UsuarioOrdenCompra",
     "controllers/genererarordenes/VentanaArchivoOrdenesController",
-    "controllers/genererarordenes/ListaPendientesController"
+    "controllers/genererarordenes/ListaPendientesController",
+    "controllers/genererarordenes/ListaArchivosController"
 ], function(angular, controllers) {
 
     controllers.controller('ListarOrdenesController', [
@@ -24,7 +25,9 @@ define(["angular", "js/controllers",
         "ProductoOrdenCompra",
         "UsuarioOrdenCompra",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Producto, Usuario, Sesion) {
+        "ArchivoNovedadOrdenCompra",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, 
+                 $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Producto, Usuario, Sesion, ArchivoNovedadOrdenCompra) {
 
             var that = this;
 
@@ -79,7 +82,8 @@ define(["angular", "js/controllers",
             $scope.filtros = [
                 {nombre : "Orden", numeroOrden:true},                
                 {nombre : "Proveedor", proveedor:true},
-                {nombre : "Empresa", empresa:true}
+                {nombre : "Empresa", empresa:true},
+                {nombre: "Sin ingreso", sin_ingreso : true}
             ];
             
             $scope.filtro  = $scope.filtros[0];
@@ -184,6 +188,18 @@ define(["angular", "js/controllers",
                 orden_compra.set_estado_digitacion(orden.sw_orden_compra_finalizada, orden.estado_digitacion);
 
                 orden_compra.set_fechas_recepcion(orden.fecha_recibido, orden.fecha_verificado);
+                
+                orden_compra.setFechaIngreso(orden.fecha_ingreso);
+                
+                orden_compra.setNombreBodega(orden.nombre_bodega);
+                
+                orden_compra.setRecepcionId(orden.recepcion_id);
+                
+                orden_compra.setTotalNovedades(orden.total_novedades);
+                
+                orden_compra.setTotalArchivos(orden.total_archivos);
+                
+                orden_compra.setAlertaIngreso(Boolean(parseInt(orden.alerta_ingreso)));
 
                 return orden_compra;
             };
@@ -201,18 +217,26 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'numero_orden_compra', displayName: '# Orden', width: "60"},
-                    {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "300"},
+                    {field:'', displayName:'Nov', width:"60", 
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span class="glyphicon glyphicon-exclamation-sign iconoOrdenCompra ordenNovedad" title="La orden tiene novedades" ng-if="row.entity.getTotalNovedades() > 0"></span>\
+                                            <span class="glyphicon glyphicon-file iconoOrdenCompra ordenArchivos" title="La orden tiene novedades con archivos" ng-if="row.entity.getTotalArchivos() > 0"></span>\
+                                            <span class="glyphicon glyphicon-time iconoOrdenCompra ordenSinIngresar" title="La orden no ha sido ingresada" ng-if="row.entity.getAlertaIngreso()"></span>\
+                                        </div>'
+                    },
+                    {field: 'numero_orden_compra', displayName: 'Orden', width: "60"},
+                    {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "235"},
                     {field: 'descripcion_estado', displayName: "Estado", cellClass: "txt-center", width:200,
                         cellTemplate: "<button type='button' ng-class='agregar_clase_btn(row.entity.estado)'>{{row.entity.descripcion_estado}} </button>"},
                     {field: 'observacion', displayName:"Observacion"},
-                    {field: 'estado_digitacion', displayName: "Digitacion", width:100},
+                    {field: 'getNombreBodega()', displayName:"Bodega"},
+                    {field: 'estado_digitacion', displayName: "Digitacion", width:85},
                     {field: 'fecha_registro', displayName: "F. Registro", width: "80"},
                     {field: 'fecha_recibido', displayName: "F. Recibida", width: "7%",
                         cellTemplate: '<div class="ngCellText {{ agregar_indicador_fechas(row.entity) }}" ng-class="col.colIndex()">{{row.entity.fecha_recibido}}</div>'},
                     {field: 'fecha_verificacion', displayName: "F. Verificacion", width: "7%",
                         cellTemplate: '<div class="ngCellText {{ agregar_indicador_fechas(row.entity) }}" ng-class="col.colIndex()">{{row.entity.fecha_verificacion}}</div>'},
-                    {field: 'fecha_ingreso', displayName: "F. Ingreso", width: "7%"},
+                    {field: 'fechaIngreso', displayName: "F. Ingreso", width: "7%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button", width:80,
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
@@ -223,6 +247,7 @@ define(["angular", "js/controllers",
                                                 <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
                                                 <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity,0)" >Enviar por Email</a></li>\
                                                 <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
+                                                <li ng-if="row.entity.getTotalArchivos() > 0"><a href="javascript:void(0);" ng-click="onMostrarArchivosAdjuntos(row.entity)" >Archivos adjuntos</a></li>\
                                                     <li ng-if="opciones.sw_bloquear_orden && row.entity.estado != 5"><a href="javascript:void(0);" \
                                                         ng-click="onCambiarEstadoOrden(row.entity, 5)">Bloquear OC</a></li>\
                                                 <li ng-if="opciones.sw_bloquear_orden && row.entity.estado == 5"><a href="javascript:void(0);" \
@@ -248,7 +273,7 @@ define(["angular", "js/controllers",
                 var ONE_DAY = 1000 * 60 * 60 * 24;
 
                 // Convert both dates to milliseconds
-                var date1_ms = (orden.fecha_recibido === "") ? new Date().getTime() : new Date(orden.fecha_recibido.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")).getTime();
+                var date1_ms = (orden.fecha_recibido === "" || !orden.fecha_recibido) ? new Date().getTime() : new Date(orden.fecha_recibido.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")).getTime();
                 var date2_ms = new Date(orden.fecha_registro.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")).getTime();
 
                 // Calculate the difference in milliseconds
@@ -262,25 +287,157 @@ define(["angular", "js/controllers",
                 else
                     return "ng-cell-green";
             };
-
-            $scope.onMostrarPendientes = function(ordenCompra){
-                console.log("compra ", ordenCompra);
-                
-                that.mostrarVentanaPendientes(ordenCompra);
+            
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de archivos 
+            * @params ordenCompra<OrdenCompra> 
+            * @fecha 2017-05-05
+            */
+            $scope.onMostrarArchivosAdjuntos = function(ordenCompra){
+                that.obtenterArchivosNovedades(ordenCompra,function(archivos){
+                    that.mostrarVentanaArchivos(archivos);
+                });
             };
             
-            that.mostrarVentanaPendientes = function(ordenCompra){
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de mostrar pendientes
+            * @params ordenCompra<OrdenCompra> 
+            * @fecha 2017-05-05
+            */
+            $scope.onMostrarPendientes = function(ordenCompra){
+                that.listarProductosRecepcion(ordenCompra,function(productos){
+                    that.mostrarVentanaPendientes(productos);
+                });
+            };
+            
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Realiza peticion al API para traer todos archivos adjuntos en una orden
+            * @params ordenCompra<OrdenCompra>, callback<function> 
+            * @fecha 2017-05-05
+            */
+            that.obtenterArchivosNovedades = function(ordenCompra, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            numero_orden:  ordenCompra.get_numero_orden()
+                        }
+                    }
+                };
+                             
+                Request.realizarRequest(API.ORDENES_COMPRA.OBTENER_ARCHIVOS_NOVEDADES, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        
+                        var archivos = that.serializarArchivos(data.obj.lista_archivos);
+                        callback(archivos);
+                        
+                    }
+                });
+            };
+            
+
+            that.listarProductosRecepcion = function(ordenCompra, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            recepcion_id: ordenCompra.getRecepcionId(),
+                            orden_compra:  ordenCompra
+                        }
+                    }
+                };
+                             
+                             
+                Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_PRODUCTOS_RECEPCION_MERCANCIA, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        
+                        var productos = that.serializarProductos(data.obj.ordenes_compras.recepcion_mercancia);
+                        callback(productos);
+                    }
+                });
+            };
+            
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Permita serializar la respuesta del API 
+            * @params archivos<Object> 
+            * @fecha 2017-05-05
+            */
+            that.serializarArchivos = function(archivos) {
+                var listaArchivos = [];
+                archivos.forEach(function(data) {
+
+                    var archivo = ArchivoNovedadOrdenCompra.get(data.archivo_id, data.nombre_archivo);
+                    archivo.setNombreProducto(data.nombre_producto).setDescripcionNovedad(data.descripcion_novedad);
+
+                    listaArchivos.push(archivo);
+                   
+                });
+                
+                return listaArchivos;
+            };
+            
+            that.serializarProductos = function(lista_productos) {
+                var productos = [];
+                lista_productos.forEach(function(data) {
+
+                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto);
+                    producto.set_cantidad_seleccionada(data.cantidad_solicitada);
+                    producto.set_cantidad_recibida(data.cantidad_recibida);
+                    producto.setCantidadPendiente(data.cantidad_pendiente);
+                    productos.push(producto);
+                   
+                });
+                
+                return productos;
+            };
+            
+            that.mostrarVentanaPendientes = function(productos){
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
                     keyboard: true,
+                    size: 'lg',
                     templateUrl: 'views/genererarordenes/listarPendientes.html',
                     scope: $scope,                  
                     controller: "ListaPendientesController",
                     resolve: {
-                        ordenCompra: function() {
-                            return ordenCompra;
+                        productos: function() {
+                            return productos;
+                        }
+                    }           
+                };
+                var modalInstance = $modal.open($scope.opts);   
+
+                modalInstance.result.then(function(){ 
+                },function(){});
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler que permite abrir la ventana con los archivos de la orden
+            * @params archivos[<ArchivoNovedadOrdenCompra>] 
+            * @fecha 2017-05-05
+            */
+            that.mostrarVentanaArchivos = function(archivos){
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    size: 'lg',
+                    templateUrl: 'views/genererarordenes/listaArchivos.html',
+                    scope: $scope,                  
+                    controller: "ListaArchivosController",
+                    resolve: {
+                        archivos: function() {
+                            return archivos;
                         }
                     }           
                 };
@@ -632,6 +789,7 @@ define(["angular", "js/controllers",
             $scope.buscar_ordenes_compras();
             
             $scope.onSeleccionFiltro = function(filtro){
+                $scope.pagina_actual = 1;
                 $scope.filtro = filtro;
             };
 

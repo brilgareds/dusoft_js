@@ -118,7 +118,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 $scope.root.pedidos_clientes = [];
                                 var prefijosDocumentos = [];
                                 var pedidoClientes = [];
-                                var prefijo = [{pedido:57751,prefijo:'EFC',numeracion:145706},{pedido:57751,prefijo:'EFC',numeracion:145707}]
+                                 
                                 if (data.status === 200) {
 
                                     $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;

@@ -1,3 +1,16 @@
+<div class="row" >
+                                <div class="col-md-2">
+                                   
+                                    <button ng-click="seleccionarTipoPago('1')"  class="btn btn-xxs btn-success" style="position: relative;">Efectivo</button>
+                                    <button ng-click="seleccionarTipoPago('2')"  class="btn btn-xxs btn-warning" style="position: relative;">Cheque</button>
+                                    <button ng-click="seleccionarTipoPago('3')"  class="btn btn-xxs btn-danger" style="position: relative;">Credito</button>                                                                          
+
+                                </div>
+                                <div class="col-md-2">
+                                    
+                                    <button ng-click="generarFacturasCosmitetAgrupadas()" ng-disabled='root.pedidosCosmitetSeleccionados.length < 2' class="btn btn-xxs btn-info" style="position: relative;">Generar factura agrupada</button>  
+                                </div>                              
+                            </div>
 <div class ="row">
          <div class="{{columnaSizeBusqueda}} pull-right">                                                                
                                                                  

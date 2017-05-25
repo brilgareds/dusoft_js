@@ -53,8 +53,7 @@ define(["angular", "js/controllers",
                 $scope.root.ultimaBusqueda = "";
                 $scope.root.ultimofiltro = "";
                 $scope.root.ultimaempresa = "";                
-                that.buscarAutorizacionesCompras(function() {
-                });  
+                that.buscarAutorizacionesCompras();  
             };
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
 
@@ -166,10 +165,11 @@ define(["angular", "js/controllers",
                 };
                 var modalInstance = $modal.open($scope.opts);
 
-                modalInstance.result.then(function() {
-                    that.buscarAutorizacionesCompras(function() {
-                    });
-                }, function() {
+                modalInstance.result.then(function(result) {
+                    console.log("OK0",result);
+                    that.buscarAutorizacionesCompras();
+                }, function(result) {
+                    console.log("OK1",result);
                 });
             };
 
@@ -178,8 +178,7 @@ define(["angular", "js/controllers",
              * +Descripcion: lista las autorizaciones cuando se realiza una accion en la vista
              */
             $scope.listarAutorizaciones = function() {
-                that.buscarAutorizacionesCompras(function() {
-                });
+                that.buscarAutorizacionesCompras();
             };
 
             /*
@@ -188,8 +187,7 @@ define(["angular", "js/controllers",
              */
             $scope.listarAutorizacionesEvent = function($event) {
                 if ($event.which === 13) {
-                    that.buscarAutorizacionesCompras(function() {
-                    });
+                    that.buscarAutorizacionesCompras();
                 }
             };
 
@@ -239,7 +237,8 @@ define(["angular", "js/controllers",
                         $scope.ultima_busqueda = {
                             termino_busqueda: $scope.termino_busqueda,
                             seleccion: $scope.seleccion
-                        };
+                        }; 
+                  
                         that.renderAutorizacionCompras(data.obj.ordenes_compras, $scope.root.paginas);
                     }
 

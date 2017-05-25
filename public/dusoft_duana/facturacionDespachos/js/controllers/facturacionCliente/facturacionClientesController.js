@@ -973,7 +973,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         that.listarTiposTerceros();
                         that.listarPrefijosFacturas();
                         that.listarClientes();
-                        that.listarPedidosCosmitet();
+                        //that.listarPedidosCosmitet();
                     }
                 }
             }

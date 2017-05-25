@@ -904,9 +904,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             empresaId: $scope.root.empresaSeleccionada.getCodigo(),
                                             paginaActual: $scope.paginaactual,
                                             tipoIdTercero: 'NIT',
-                                            terceroId: '800023202',
+                                            terceroId: '830023202',
                                             tipoPago: $scope.tipoPagoFactura,
-                                            documentos: $scope.root.pedidosCosmitetSeleccionados
+                                            documentos: $scope.root.pedidosCosmitetSeleccionados,
+                                            facturacionCosmitet: '1'
                                         }
                                     }
                                 };

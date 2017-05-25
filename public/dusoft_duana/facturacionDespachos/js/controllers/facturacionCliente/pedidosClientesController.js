@@ -373,7 +373,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                         tipoIdTercero: resultadoStorage.tipoIdTercero,
                                                         terceroId: resultadoStorage.terceroId,
                                                         tipoPago: $scope.tipoPagoFactura,
-                                                        documentos: $scope.root.pedidosSeleccionados
+                                                        documentos: $scope.root.pedidosSeleccionados,
+                                                        facturacionCosmitet: 0
                                                     }
                                                 }
                                             };
@@ -528,7 +529,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         if ($scope.paginaactual === 1)
                             return;
                         $scope.paginaactual--;
-                        that.listarClientes();
+                        that.listarPedidosClientes();
                     };
 
 
@@ -538,7 +539,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
                     $scope.paginaSiguiente = function () {
                         $scope.paginaactual++;
-                        that.listarClientes();
+                        that.listarPedidosClientes();
                     };
 
 

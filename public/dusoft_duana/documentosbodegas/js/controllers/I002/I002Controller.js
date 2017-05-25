@@ -1792,8 +1792,8 @@ define([
                     totalCosto: total_costo,
                     localProd: producto.localizacion,
                     itemId: producto.item_id,
-                    valorUnitarioCompra: producto.valor_unit,
-                    valorUnitarioFactura: producto.valor_unitario,
+                    valorUnitarioCompra: producto.valor_unitario,
+                    valorUnitarioFactura: producto.valor_unit,
                     session: $scope.session
                 };     
                 GeneralService.insertarProductosFoc(parametro,function(respuesta){

@@ -538,7 +538,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
 	"a.observacion",
         /*"b.prefijo",
         G.knex.raw("b.numero as factura_fiscal"),*/
-        G.knex.raw("true as seleccionado")
+        "a.seleccionado"
    ];
    
     var subQuery1 = G.knex.column([G.knex.raw("DISTINCT x.pedido_cliente_id")/*,  "x.numero", "x.prefijo"*/ ])

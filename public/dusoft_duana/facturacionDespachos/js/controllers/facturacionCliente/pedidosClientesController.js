@@ -96,6 +96,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @returns {undefined}
                      */
                     that.listarPedidosClientes = function () {
+                       /* console.log("******listarPedidosClientes*********");
+                        console.log("******listarPedidosClientes*********");
+                        console.log("******listarPedidosClientes*********");*/
                         
                         var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
                          

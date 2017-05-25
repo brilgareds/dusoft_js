@@ -261,12 +261,7 @@ define(["angular", "js/services"], function (angular, services) {
                      * @fecha 2017/25/05
                      */
                     self.generarFacturaIndividualCompleta = function (parametros,callback) {
-                          
-                        console.log("**********$scope.generarFacturasAgrupadas***************00");
-                        console.log("**********$scope.generarFacturasAgrupadas***************00");
-                        console.log("**********$scope.generarFacturasAgrupadas***************00");
-                        console.log("parametros ",parametros)
-                                              
+                     
                         parametros.AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizara la facturacion ",
                             function(estadoConfirm){                
                                 if(estadoConfirm){

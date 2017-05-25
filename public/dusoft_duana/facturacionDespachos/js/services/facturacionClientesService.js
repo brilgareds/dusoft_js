@@ -315,7 +315,11 @@ define(["angular", "js/services"], function (angular, services) {
                     };
                     
                     
-                    
+                    /**
+                     * @author Cristian Ardila
+                     * +Descripcion Metodo encargado de generar la factura agrupada 
+                     * @fecha 2017/25/05
+                     */
                     self.generarFacturasAgrupadasCompleta = function (parametros, callback) {
 
                         parametros.AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ",
@@ -357,7 +361,6 @@ define(["angular", "js/services"], function (angular, services) {
                                         }
                                     };
 
-                                    console.log("obj [generarFacturaAgrupada]::: ", obj)
                                     self.generarFacturaAgrupada(obj, function (data) {
                                         callback(data);
                                     });

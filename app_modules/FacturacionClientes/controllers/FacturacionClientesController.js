@@ -240,7 +240,7 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
     G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros).then(function(resultado){
        
        
-      //console.log("resultado [listarPedidosClientes]: ", resultado.length)
+      console.log("resultado [listarPedidosClientes]: ", resultado.length)
         if(resultado.length >0){
             listaPedidosClientes = resultado;
             return G.Q.nfcall(__listarDocumentosPedidos,that,0, resultado,parametros.empresaId,[]);

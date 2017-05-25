@@ -1075,7 +1075,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
  
             return G.Q.nfcall(__actualizarEstadoFacturaPedido,that,0,parametrosActualizarEstadoFactura, transaccion);
             
-        }).then(function(){
+        })/*.then(function(){
             
            if(obj.parametros.facturacionCosmitet === '1'){
                console.log("ENTRO POR A QUI OK");
@@ -1084,13 +1084,13 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
                def.resolve();
            }
            
-        }).then(function(){
+        })*/.then(function(){
             
             console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
            console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
            
-           //transaccion.commit(); 
+           transaccion.commit(); 
         }).fail(function(err){
             console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
             transaccion.rollback(err);

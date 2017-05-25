@@ -240,7 +240,7 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
     G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros).then(function(resultado){
        
        
-      console.log("resultado [listarPedidosClientes]: ", resultado.length)
+      //console.log("resultado [listarPedidosClientes]: ", resultado.length)
         if(resultado.length >0){
             listaPedidosClientes = resultado;
             return G.Q.nfcall(__listarDocumentosPedidos,that,0, resultado,parametros.empresaId,[]);
@@ -351,7 +351,8 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         tipoPago: args.generar_factura_agrupada.tipoPago,
         usuario:usuario,
         direccion_ip: '',
-        pedidos: args.generar_factura_agrupada.documentos
+        pedidos: args.generar_factura_agrupada.documentos,
+        facturacionCosmitet: args.generar_factura_agrupada.facturacionCosmitet
     };
     
     var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };
@@ -697,20 +698,7 @@ FacturacionClientes.prototype.sincronizarFactura = function(req, res){
         }
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
-    /*
-    console.log("param >>>>>>>>>>> ", param)
-    G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param).then(function(resultado){
-        console.log("resultado ", resultado);
-        
-     }).fail(function(err){  
-         
-        if(!err.status){
-            err = {};
-            err.status = 500;
-            err.msj = "Se ha generado un error..";
-        }
-       res.send(G.utils.r(req.url, err.msj, err.status, {}));
-    }).done(); */
+   
 }
 
  

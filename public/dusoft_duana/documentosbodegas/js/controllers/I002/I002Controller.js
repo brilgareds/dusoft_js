@@ -1311,7 +1311,7 @@ define([
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Desea eliminar el documento?</h4>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
                                 </div>\
                                 <div class="modal-body">\
                                     <h4>Desea eliminar el documento?</h4>\
@@ -1793,7 +1793,7 @@ define([
                     localProd: producto.localizacion,
                     itemId: producto.item_id,
                     valorUnitarioCompra: producto.valor_unit,
-                    valorUnitarioFactura: producto.valor_unit,
+                    valorUnitarioFactura: producto.valor_unitario,
                     session: $scope.session
                 };     
                 GeneralService.insertarProductosFoc(parametro,function(respuesta){

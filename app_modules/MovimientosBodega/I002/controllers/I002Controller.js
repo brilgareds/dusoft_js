@@ -128,15 +128,15 @@ I002Controller.prototype.agregarItemFOC = function(req, res) {
         res.send(G.utils.r(req.url, 'El totalCosto no esta definida', 404, {}));
         return;
     }
-    if (args.totalCosto === undefined) {
+    if (args.localProd === undefined) {
         res.send(G.utils.r(req.url, 'El localProd no esta definida', 404, {}));
         return;
     }
-    if (args.totalCosto === undefined) {
+    if (args.valorUnitarioCompra === undefined) {
         res.send(G.utils.r(req.url, 'El valorUnitarioCompra no esta definida', 404, {}));
         return;
     }
-    if (args.totalCosto === undefined) {
+    if (args.valorUnitarioFactura === undefined) {
         res.send(G.utils.r(req.url, 'El valorUnitarioFactura no esta definida', 404, {}));
         return;
     }

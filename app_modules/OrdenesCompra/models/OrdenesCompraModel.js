@@ -1366,6 +1366,7 @@ OrdenesCompraModel.prototype.listarAutorizacionCompras = function(autorizacion, 
     .offset((autorizacion.paginaActual - 1) * G.settings.limit).then(function(rows) {
         callback(false, rows);
      }).catch (function(error) {
+         console.log("ERROR listarAutorizacionCompras ",error);
         callback(error);
      }).done();
 };

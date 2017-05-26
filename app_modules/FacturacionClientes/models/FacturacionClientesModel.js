@@ -543,9 +543,22 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
    
     var subQuery1 = G.knex.column([G.knex.raw("DISTINCT x.pedido_cliente_id")/*,  "x.numero", "x.prefijo"*/ ])
            .select().from("inv_bodegas_movimiento_despachos_clientes as x")
-           .where("x.factura_gener",'0')
-           .andWhere("x.empresa_id",obj.empresaId).as("b"); //obj.empresaId
-    
+           .where(function(){
+               console.log("obj.empresaId --->>>>", obj.empresaId);
+               this.andWhere("x.factura_gener",'0')
+                    .andWhere("x.empresa_id",obj.empresaId)
+            
+                if(obj.pedidoClienteId !== "") {
+                       this.andWhere('x.pedido_cliente_id', obj.pedidoClienteId);
+                }
+                  
+           }).as("b"); //obj.empresaId
+    /*  this.andWhere("x.factura_gener",'0')
+                    .andWhere("x.pedido_cliente_id",obj.empresaId)
+            
+                /*if(obj.pedidoClienteId !== "") {
+                       this.andWhere('x.pedido_cliente_id', obj.pedidoClienteId);
+                }*/
     var query = G.knex.select(columnQuery)
             .from("ventas_ordenes_pedidos as a")
             .join(subQuery1, function () {
@@ -564,19 +577,17 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                     this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)
                         .andWhere('a.tercero_id',obj.terceroId); 
                 }
-                if (obj.pedidoClienteId !== "") {
-                    this.andWhere('a.pedido_cliente_id', obj.pedidoClienteId);
-                }
+               
                 
-                    this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
+                this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
                  
                 
-            });
+            }).orderBy("a.fecha_registro",'desc')
     
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
-        console.log("resultado [listarPedidosClientes] ", resultado);
+        //console.log("resultado [listarPedidosClientes] ", resultado);
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarPedidosClientes] ", err);
@@ -768,7 +779,9 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(obj,transa
             porcentaje_ica: obj.porcentaje_ica,
             porcentaje_reteiva: obj.porcentaje_reteiva,
             porcentaje_cree: obj.porcentaje_cree,
-            tipo_pago_id: obj.tipoPago};
+            tipo_pago_id: obj.tipoPago,
+            facturacion_cosmitet: obj.facturacion_cosmitet
+        };
          
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
     
@@ -806,7 +819,8 @@ FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,tran
             porcentaje_ica: obj.porcentaje_ica,
             porcentaje_reteiva: obj.porcentaje_reteiva,
             porcentaje_cree: obj.porcentaje_cree,
-            tipo_pago_id: obj.tipoPago};
+            tipo_pago_id: obj.tipoPago,
+            facturacion_cosmitet: obj.facturacion_cosmitet};
     
      //console.log("parametros [insertarFacturaIndividual]: ", parametros)
     
@@ -865,7 +879,7 @@ function __insertarFacturaIndividualDetalle(obj,transaccion, callback){
  * @author Cristian Ardila
  * @fecha 2017-15-05 YYYY-DD-MM
  */
-FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj,transaccion, callback){
+FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj,tabla,transaccion, callback){
        
      var parametros = {
             item_id: G.knex.raw('DEFAULT'),
@@ -883,11 +897,11 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
             porc_iva: obj.porc_iva
         }; 
        
-    var query = G.knex('inv_facturas_agrupadas_despacho_d').insert(parametros);     
+    var query = G.knex(tabla).insert(parametros);     
      
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){
-            console.log("resultado [__insertarFacturaAgrupadaDetalle]", resultado);
+            console.log("resultado [__insertarFacturaAgrupadaDetalle]-->", resultado);
             callback(false, resultado);
     }).catch(function(err){
             console.log("err (/catch) [insertarFacturaAgrupadaDetalle]: ", err);     
@@ -992,7 +1006,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
          porcentaje_reteiva: porcentajeReteiva,
          porcentaje_cree: porcentajeCree,
          usuario: obj.parametros.usuario,
-         tipoPago: obj.parametros.tipoPago
+         tipoPago: obj.parametros.tipoPago,
+         facturacion_cosmitet:obj.parametros.facturacionCosmitet
          
         },transaccion).then(function(){           
             
@@ -1054,7 +1069,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
                                       
         }).then(function(){
            
-            return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,parametrosInsertaFacturaAgrupadaDetalle,transaccion);
+            return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,parametrosInsertaFacturaAgrupadaDetalle,"inv_facturas_agrupadas_despacho_d",transaccion);
            
         }).then(function(){
             
@@ -1064,10 +1079,21 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
  
             return G.Q.nfcall(__actualizarEstadoFacturaPedido,that,0,parametrosActualizarEstadoFactura, transaccion);
             
-        }).then(function(){
-           /*console.log("*******parametrosInsertaFacturaAgrupadaDetalle*************");
-           console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)*/                                  
-           console.log("AQUI VA OK OKo OK [consultaCompleta]: "); 
+        })/*.then(function(){
+            
+           if(obj.parametros.facturacionCosmitet === '1'){
+               console.log("ENTRO POR A QUI OK");
+               return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,parametrosInsertaFacturaAgrupadaDetalle,"inv_facturas_agrupadas_despacho_d_tmp",transaccion);           
+           }else{               
+               def.resolve();
+           }
+           
+        })*/.then(function(){
+            
+            //console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
+           //console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
+           console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
+           
            transaccion.commit(); 
         }).fail(function(err){
             console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
@@ -1120,7 +1146,7 @@ function __actualizarEstadoFacturaPedido(that,index,datos,transaccion, callback)
  *              registrara el detalle de las facturas agrupadas
  * @fecha 2017-05-17
  */
-function __insertarFacturaAgrupadaDetalle(that,index,datos,transaccion, callback){
+function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback){
     
     var dato = datos[index];
     if(!dato){
@@ -1131,7 +1157,7 @@ function __insertarFacturaAgrupadaDetalle(that,index,datos,transaccion, callback
     
     index++;
     
-    G.Q.ninvoke(that,'insertarFacturaAgrupadaDetalle',dato,transaccion).then(function(resultado){
+    G.Q.ninvoke(that,'insertarFacturaAgrupadaDetalle',dato,tabla,transaccion).then(function(resultado){
         
         //console.log("datos [codigo_producto]:: ", resultado);
         
@@ -1142,7 +1168,7 @@ function __insertarFacturaAgrupadaDetalle(that,index,datos,transaccion, callback
     
      setTimeout(function() {
          
-            __insertarFacturaAgrupadaDetalle(that,index,datos,transaccion, callback)
+            __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback)
     
     }, 300);
     
@@ -1306,6 +1332,9 @@ function __guardarDespachoIndividual(that, index, documentos,consultaCompleta,tr
  */
 FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = function(obj, callback)
 {   
+  console.log("**********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*****************");
+  console.log("**********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*****************");
+  console.log("**********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*****************");
   
     var that = this;
     var def = G.Q.defer();
@@ -1331,17 +1360,17 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
          porcentaje_reteiva: porcentajeReteiva,
          porcentaje_cree: porcentajeCree,
          usuario: obj.parametros.usuario,
-         tipoPago: obj.parametros.tipoPago
-         
+         tipoPago: obj.parametros.tipoPago,
+         facturacion_cosmitet:obj.parametros.facturacionCosmitet
         },transaccion).then(function(resultado){   
-             
+             //console.log("resultado [insertarPcFactura]:: ", resultado)
             return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);                                  
         }).then(function(){
                                 
             return G.Q.nfcall(__guardarDespachoIndividual,that,0, obj.parametros.documentos,[],transaccion);
             
         }).then(function(consultaCompleta){
-            
+            //console.log("consultaCompleta [__guardarDespachoIndividual]:: ", consultaCompleta)
             if(consultaCompleta.length > 0){
                 
                 obj.documento_facturacion.forEach(function(documento){
@@ -1392,7 +1421,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
                                                                       
         }).then(function(){
            
-           //console.log("parametrosInsertarFacturaInvidual [[actualizarEstadoFacturaPedido]]] ", parametrosInsertarFacturaInvidual)
+           console.log("parametrosInsertarFacturaInvidual [[actualizarEstadoFacturaPedido]]] ", parametrosInsertarFacturaInvidual)
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");         
            transaccion.commit(); 
         }).fail(function(err){

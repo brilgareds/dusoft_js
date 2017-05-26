@@ -22,9 +22,16 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.porcentajeRtf;
                 this.porcentajeReteIva;
                 this.porcentajeIca;
+                this.documentoSeleccionado;
             }
 
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
+            
+            
+            
+            DocumentoDespacho.prototype.setDocumentoSeleccionado = function(documentoSeleccionado){
+                this.documentoSeleccionado = documentoSeleccionado;
+            };
             
             DocumentoDespacho.prototype.setPorcentajeIca = function(porcentajeIca){
                 this.porcentajeIca = porcentajeIca;
@@ -152,6 +159,10 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
     
             DocumentoDespacho.prototype.getPorcentajeRtf = function(){
                 return this.porcentajeRtf;
+            };
+            
+            DocumentoDespacho.prototype.getDocumentoSeleccionado = function(){
+                return this.documentoSeleccionado;
             };
             
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {

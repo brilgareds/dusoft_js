@@ -34,11 +34,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var autorizador1 = "";
                 var autorizador2 = "";
                 var swAutorizado = "";
-                var swNoAutoriza = "";
-
-                if ($scope.root.observacion.trim().length >= 7) {
-                    $scope.cerrarModal();
-                } else {
+                var swNoAutoriza = null;
+                var modificar=false;
+                if ($scope.root.observacion.trim().length < 7) {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe Digitar una Observación con Minimo 7 Caracteres");
                     return false;
                 }
@@ -47,32 +45,37 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     autorizador1 = Usuario.getUsuarioActual().id;
                     autorizador2 = null;
                     if (banderaautorizacionOrdenCompra === 0)
-                    {
+                    {                       
                         swNoAutoriza = '0';
-                        observacion = "EL Autorizador 1 No Aprueba: " + $scope.root.observacion;
+                        observacion = "EL Autorizador 1 NO Aprueba: " + $scope.root.observacion;
                     } else {
+                        swAutorizado = '0';
                         observacion = "EL Autorizador 1 Aprueba: " + $scope.root.observacion;
                     }
-                    swAutorizado = '0';
-
                 } else {
                     autorizador1 = modeloAutorizacionOrdenCompra.getUsuarioIdAutorizador();
                     autorizador2 = Usuario.getUsuarioActual().id;
-                    swAutorizado = '1';
+                    
                     if (banderaautorizacionOrdenCompra === 0)
-                    {
+                    {                        
                         swNoAutoriza = '1';
+                        swAutorizado = '2';
                         if (modeloAutorizacionOrdenCompra.getSwNoAutorizado() === '0') {
-                            swNoAutoriza = '2';
+                           swNoAutoriza = '2';                           
                         }
-                        observacion = modeloAutorizacionOrdenCompra.getJustificacion() + "\n EL Autorizador 2 No Aprueba: " + $scope.root.observacion;
+                        observacion = modeloAutorizacionOrdenCompra.getJustificacion() + "\n EL Autorizador 2 NO Aprueba: " + $scope.root.observacion;
                     } else {
+                        swAutorizado = '1';
                         observacion = modeloAutorizacionOrdenCompra.getJustificacion() + "\n EL Autorizador 2 Aprueba: " + $scope.root.observacion;
-                    }
-
-                    that.ingresarBodegaMovimientoTmpOrden(modeloAutorizacionOrdenCompra, autorizador2);
+                        that.ingresarBodegaMovimientoTmpOrden(modeloAutorizacionOrdenCompra, autorizador2,function(resultado){                     
+                       
+                         });
+                    }  
                 }
-                that.modificarAutorizacionesComprasOrdenes(modeloAutorizacionOrdenCompra, autorizador1, swAutorizado, observacion, autorizador2, swNoAutoriza);
+                 that.modificarAutorizacionesComprasOrdenes(modeloAutorizacionOrdenCompra, autorizador1, swAutorizado, observacion, autorizador2, swNoAutoriza,function(){
+                    $scope.cerrarModal(); 
+                    });
+                return true;
             };
 
 
@@ -97,7 +100,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              * @param autorizador2 
              * @return inserta en inv_bodegas_movimiento_tmp_d
              */
-            that.ingresarBodegaMovimientoTmpOrden = function(modeloAutorizacionOrdenCompra, autorizador2)
+            that.ingresarBodegaMovimientoTmpOrden = function(modeloAutorizacionOrdenCompra, autorizador2,callback)
             {
                 var usuarioId = autorizador2;
                 var docTmpId = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.getDocTmpId();
@@ -112,6 +115,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var codigoLote = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.getCodigo();
                 var localProd = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.getLocalProd();
                 var numeroOrdenCompra = modeloAutorizacionOrdenCompra.ordenSeleccionada.get_numero_orden();
+                var itemIdCompras = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.getItemId();
 
                 var obj = {
                     session: $scope.session,
@@ -129,14 +133,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             fechaVencimiento: fechaVencimiento,
                             lote: codigoLote,
                             localProd: localProd,
-                            orden: numeroOrdenCompra
+                            orden: numeroOrdenCompra,
+                            itemIdCompras:itemIdCompras,
+                            valorUnitario:0,
+                            totalCostoPed:0
                         }
                     }
                 };
 
                 that.insertarBodegaMovimientoTmp(obj, function(data) {
+                    if (data.status === 200) {
+                        callback(true);
+                    }
                     if (data.status !== 200) {
                         AlertService.mostrarVentanaAlerta("Ha Ocurrido un Error", data.msj);
+                        callback(false);
                     }
                 });
             };
@@ -168,7 +179,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              * @param swNoAutorizado del autorizador1 0- no autoriza primer autorizador 1- no autoriza segundo autorizador 2- no autoriza los autorizadores 
              * @return inserta en inv_bodegas_movimiento_tmp_d
              */
-            that.modificarAutorizacionesComprasOrdenes = function(modeloAutorizacionOrdenCompra, autorizador1, swAutorizado, observacion, autorizador2, swNoAutoriza)
+            that.modificarAutorizacionesComprasOrdenes = function(modeloAutorizacionOrdenCompra, autorizador1, swAutorizado, observacion, autorizador2, swNoAutoriza,callback)
             {
                 var empresa = modeloAutorizacionOrdenCompra.getEmpresa();
                 var bodega = modeloAutorizacionOrdenCompra.getBodega();
@@ -199,8 +210,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 that.modificarAutorizacionCompras(obj, function(data) {
                     if (data.status === 200) {
                         AlertService.mostrarVentanaAlerta("Mensaje del Sistema", data.msj);
-
+                        callback(true);
                     }
+                    callback(false);
                 });
             };
             /*

@@ -516,6 +516,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
         direccion_ip: '',
         pedido: args.generar_factura_individual.pedido,
         documentos: args.generar_factura_individual.documentos,
+        facturacionCosmitet: args.generar_factura_individual.facturacionCosmitet
         
     };    
     var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };    
@@ -523,8 +524,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
     var consultarTerceroContrato;
     var consultarParametrosRetencion;
     var def = G.Q.defer(); 
-    var parametrosSincronizacion = [];
-   
+    
     G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
         
         console.log("resultado [estadoParametrizacionReformular]: ", resultado);
@@ -535,8 +535,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
         }else{
             throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
         }
-         
-        
+          
     }).then(function(resultado){
         
         console.log("resultado [listarPrefijosFacturas]: ", resultado);
@@ -711,7 +710,7 @@ function numeroLetra(valor)
    
     if(p){
          console.log("p [numeroLetra]::: ", p);
-        t += " con " + (p == 00 ? 'cero ' : numeroDecimalLetra(p)) ;
+        t += " coma " + (p == 00 ? 'cero ' : numeroDecimalLetra(p)) ;
         console.log("t ", t)
     }
     /*correcciones*/

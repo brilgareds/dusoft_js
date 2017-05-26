@@ -254,6 +254,122 @@ define(["angular", "js/services"], function (angular, services) {
                        
                     };
                     
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * +Descripcion Metodo encargado de generar la factura individual 
+                     * @fecha 2017/25/05
+                     */
+                    self.generarFacturaIndividualCompleta = function (parametros,callback) {
+                          
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        console.log("parametros ",parametros)
+                                              
+                        parametros.AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizara la facturacion ",
+                            function(estadoConfirm){                
+                                if(estadoConfirm){
+
+                                    var documentosSeleccionadosFiltrados = [];
+                                    /**
+                                     * +Descripcion Se recorren los documentos checkeados en los pedidos
+                                     *              y se valida cual corresponde con cada pedido
+                                     *              para almacenarlos en un nuevo arreglo el cual sera
+                                     *              enviado al servidor para posteriormente ser
+                                     *              registrados
+                                     */
+                                    parametros.documentoSeleccionados.forEach(function(documentos){
+
+                                        if(parametros.pedido.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id ){
+
+                                          documentosSeleccionadosFiltrados.push(documentos);
+
+                                        }
+
+                                    });
+
+                                    var obj = {
+                                        session: parametros.session,
+                                        data: {
+                                            generar_factura_individual: {
+                                                terminoBusqueda: parametros.termino_busqueda, //$scope.root.numero,
+                                                empresaId: parametros.empresaSeleccionada.getCodigo(),
+                                                paginaActual: parametros.paginaactual,
+                                                tipoIdTercero: parametros.tipoIdTercero,
+                                                terceroId: parametros.terceroId,
+                                                tipoPago: parametros.tipoPagoFactura,  
+                                                pedido: parametros.pedido,
+                                                documentos: documentosSeleccionadosFiltrados,
+                                                facturacionCosmitet:parametros.facturacionCosmitet
+                                            }
+                                        }
+                                    };
+
+                                    self.generarFacturaIndividual(obj, function (data) {
+                                        callback(data);
+                                    });                                            
+                                }
+                            }
+                        );                            
+                    };
+                    
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * +Descripcion Metodo encargado de generar la factura agrupada 
+                     * @fecha 2017/25/05
+                     */
+                    self.generarFacturasAgrupadasCompleta = function (parametros, callback) {
+
+                        parametros.AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ",
+                            function (estadoConfirm) {
+                                if (estadoConfirm) {
+
+                                    /**
+                                     * +Descripcion Se recorren los documentos checkeados en los pedidos
+                                     *              y se valida cual corresponde con cada pedido
+                                     *              para almacenarlos en un nuevo arreglo el cual sera
+                                     *              enviado al servidor para posteriormente ser
+                                     *              registrados
+                                     */
+                                    parametros.pedidosSeleccionados.forEach(function (row) {
+
+                                        row.pedidos[0].vaciarDocumentosSeleccionados();
+                                        parametros.documentoSeleccionados.forEach(function (documentos) {
+
+                                            if (row.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id) {
+                                                row.pedidos[0].agregarDocumentosSeleccionados(documentos);
+                                            }
+                                        });
+
+                                    });
+
+                                    var obj = {
+                                        session: parametros.session,
+                                        data: {
+                                            generar_factura_agrupada: {
+                                                terminoBusqueda: parametros.terminoBusqueda, //$scope.root.numero,
+                                                empresaId: parametros.empresaSeleccionada.getCodigo(),
+                                                paginaActual: parametros.paginaactual,
+                                                tipoIdTercero: parametros.tipoIdTercero,
+                                                terceroId: parametros.terceroId,
+                                                tipoPago: parametros.tipoPagoFactura,
+                                                documentos: parametros.pedidosSeleccionados,
+                                                facturacionCosmitet: parametros.facturacionCosmitet
+                                            }
+                                        }
+                                    };
+
+                                    self.generarFacturaAgrupada(obj, function (data) {
+                                        callback(data);
+                                    });
+                                }
+                            }
+                        );
+                    };
+                    
+                    
                     return this;
                 }]);
             

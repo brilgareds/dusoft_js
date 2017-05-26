@@ -779,7 +779,9 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(obj,transa
             porcentaje_ica: obj.porcentaje_ica,
             porcentaje_reteiva: obj.porcentaje_reteiva,
             porcentaje_cree: obj.porcentaje_cree,
-            tipo_pago_id: obj.tipoPago};
+            tipo_pago_id: obj.tipoPago,
+            facturacion_cosmitet: obj.facturacion_cosmitet
+        };
          
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
     
@@ -817,7 +819,8 @@ FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,tran
             porcentaje_ica: obj.porcentaje_ica,
             porcentaje_reteiva: obj.porcentaje_reteiva,
             porcentaje_cree: obj.porcentaje_cree,
-            tipo_pago_id: obj.tipoPago};
+            tipo_pago_id: obj.tipoPago,
+            facturacion_cosmitet: obj.facturacion_cosmitet};
     
      //console.log("parametros [insertarFacturaIndividual]: ", parametros)
     
@@ -1003,7 +1006,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
          porcentaje_reteiva: porcentajeReteiva,
          porcentaje_cree: porcentajeCree,
          usuario: obj.parametros.usuario,
-         tipoPago: obj.parametros.tipoPago
+         tipoPago: obj.parametros.tipoPago,
+         facturacion_cosmitet:obj.parametros.facturacionCosmitet
          
         },transaccion).then(function(){           
             
@@ -1086,8 +1090,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
            
         })*/.then(function(){
             
-            console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
-           console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
+            //console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
+           //console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
            
            transaccion.commit(); 
@@ -1328,6 +1332,9 @@ function __guardarDespachoIndividual(that, index, documentos,consultaCompleta,tr
  */
 FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = function(obj, callback)
 {   
+  console.log("**********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*****************");
+  console.log("**********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*****************");
+  console.log("**********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*****************");
   
     var that = this;
     var def = G.Q.defer();
@@ -1353,17 +1360,17 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
          porcentaje_reteiva: porcentajeReteiva,
          porcentaje_cree: porcentajeCree,
          usuario: obj.parametros.usuario,
-         tipoPago: obj.parametros.tipoPago
-         
+         tipoPago: obj.parametros.tipoPago,
+         facturacion_cosmitet:obj.parametros.facturacionCosmitet
         },transaccion).then(function(resultado){   
-             
+             //console.log("resultado [insertarPcFactura]:: ", resultado)
             return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);                                  
         }).then(function(){
                                 
             return G.Q.nfcall(__guardarDespachoIndividual,that,0, obj.parametros.documentos,[],transaccion);
             
         }).then(function(consultaCompleta){
-            
+            //console.log("consultaCompleta [__guardarDespachoIndividual]:: ", consultaCompleta)
             if(consultaCompleta.length > 0){
                 
                 obj.documento_facturacion.forEach(function(documento){
@@ -1414,7 +1421,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
                                                                       
         }).then(function(){
            
-           //console.log("parametrosInsertarFacturaInvidual [[actualizarEstadoFacturaPedido]]] ", parametrosInsertarFacturaInvidual)
+           console.log("parametrosInsertarFacturaInvidual [[actualizarEstadoFacturaPedido]]] ", parametrosInsertarFacturaInvidual)
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");         
            transaccion.commit(); 
         }).fail(function(err){

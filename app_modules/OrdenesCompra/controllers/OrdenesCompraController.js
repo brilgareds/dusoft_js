@@ -43,26 +43,15 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
     var pagina_actual = args.ordenes_compras.pagina_actual;
     var filtro = args.ordenes_compras.filtro || undefined;
     
-    var parametros = { usuario_id:req.session.user.usuario_id, empresa_id:req.session.user.empresa, modulos:[req.session.user.moduloActual], convertirJSON:true };
     
-    G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametros).
-    then(function(parametrizacion){
+    G.Q.ninvoke(that.m_ordenes_compra, "listar_ordenes_compra",fecha_inicial, fecha_final, termino_busqueda, pagina_actual, filtro).
+    then(function(resultado){
         
-        console.log("parametrizacion ", parametrizacion.modulos);
-                
-        that.m_ordenes_compra.listar_ordenes_compra(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, filtro, function(err, lista_ordenes_compras) {
-
-            if (err) {
-                res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-                return;
-            } else {
-                res.send(G.utils.r(req.url, 'Lista Ordenes Compras', 200, {ordenes_compras: lista_ordenes_compras}));
-                return;
-            }
-        }); 
+        res.send(G.utils.r(req.url, 'Lista Ordenes Compras', 200, {ordenes_compras: resultado}));
     }).fail(function(err){
         
-        console.log("eror generando >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", err);
+        res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+        
     }).done();
 
 };

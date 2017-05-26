@@ -177,8 +177,7 @@ function(angular, controllers) {
                     movimiento.setDatos(movimientos.movimientos_producto[i]);
 
                     $scope.producto.agregarMovimiento(movimiento);
-
-                    if (movimiento.tipo_movimiento === "E") {
+                    if (movimiento.tipo_movimiento === "E" || movimiento.tipo_movimiento === "T") {
                         $scope.cantidad_salidas = $scope.cantidad_salidas + movimiento.cantidad_salidas;
                     } else {
                         $scope.cantidad_entradas = $scope.cantidad_entradas + movimiento.cantidad_entradas;

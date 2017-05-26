@@ -54,6 +54,31 @@ Productos.prototype.listar_productos = function(req, res) {
     });
 };
 
+/*
+* @Author: Eduar
+* @param {Object} req
+* @param {Object} res
+* +Descripcion: Permite consultar la homologacion de productos de medipol
+*/
+Productos.prototype.listarHomologacionProductos = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;
+        
+    if (!args.productos || (!args.productos.empresa_id || args.productos.empresa_id.length === 0) || 
+        (!args.productos.pagina || args.productos.pagina.length === 0)) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    G.Q.ninvoke(that.m_productos,"listarHomologacionProductos", args.productos).then(function(existencias){
+        res.send(G.utils.r(req.url, 'Lista Productos', 200, {lista_productos: existencias}));
+    }).fail(function(err){
+        console.log("A>>>>>>>>>>>>>>>>> ", err);
+       res.send(G.utils.r(req.url, 'Error consultando los productos', 500, {lista_productos: {}}));
+    });
+};
+
 
 /*
 * @Author: Eduar

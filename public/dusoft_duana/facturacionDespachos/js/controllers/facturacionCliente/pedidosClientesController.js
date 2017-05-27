@@ -75,7 +75,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.onColumnaSize = function (tipo) {
 
                     };
-
+                    
+                    
                     /**
                      * +Descripcion Metodo encargado de visualizar en el boton del dropdwn
                      *              el tipo de documento seleccionado
@@ -259,7 +260,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     $scope.buscarSeleccion = function (row) {
                         var pedido = row.entity;
-                        
+                                     
                         for (var i in $scope.root.pedidosSeleccionados) {
                             var _pedido = $scope.root.pedidosSeleccionados[i];
                             if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
@@ -497,16 +498,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     that.init(empresa, function () {
 
                         if (!Usuario.getUsuarioActual().getEmpresa()) {
-                            $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo: "warning"});
+                            $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para ingresar a la aplicacion", tipo: "warning"});
                             AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
                         } else {
                             if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
                                     Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
-                                $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo: "warning"});
+                                $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene un centro de utilidad valido para ingresar a la aplicacion", tipo: "warning"});
                                 AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
                             } else {
                                 if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
-                                    $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para dispensar formulas.", tipo: "warning"});
+                                    $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para ingresar a la aplicacion", tipo: "warning"});
                                     AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                                 } else {
 
@@ -522,8 +523,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 
                         $scope.$$watchers = null;
-
-                        $scope.root = null;
+                        //$scope.root = null;
+                        
                         
                     });
 

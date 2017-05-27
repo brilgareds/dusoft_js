@@ -221,6 +221,8 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
     }
     
     
+    /*    var fechaInicial = args.listar_formulas.fechaInicial;
+    var fechaFinal = args.listar_formulas.fechaFinal;*/
     var terminoBusqueda = args.listar_pedidos_clientes.terminoBusqueda;
     var pedidoMultipleFarmacia = args.listar_pedidos_clientes.pedidoMultipleFarmacia;
     var tipoIdTercero = args.listar_pedidos_clientes.tipoIdTercero;
@@ -235,6 +237,13 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         pedidoMultipleFarmacia: pedidoMultipleFarmacia
     };
     
+    if(pedidoMultipleFarmacia === '1'){
+        
+        parametros['fechaInicial'] = args.listar_pedidos_clientes.fechaInicial;
+        parametros['fechaFinal'] = args.listar_pedidos_clientes.fechaFinal;
+        
+    }
+    console.log("pedidoMultipleFarmacia ", pedidoMultipleFarmacia);
     var listaPedidosClientes;
  
     G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros).then(function(resultado){

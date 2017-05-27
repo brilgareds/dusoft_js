@@ -1,20 +1,62 @@
 <div class="row" >
-                                <div class="col-md-2">
-                                   
-                                    <button ng-click="seleccionarTipoPago('1')"  class="btn btn-xxs btn-success" style="position: relative;">Efectivo</button>
-                                    <button ng-click="seleccionarTipoPago('2')"  class="btn btn-xxs btn-warning" style="position: relative;">Cheque</button>
-                                    <button ng-click="seleccionarTipoPago('3')"  class="btn btn-xxs btn-danger" style="position: relative;">Credito</button>                                                                          
+    <div class="col-md-2">
 
-                                </div>
-                                <div class="col-md-2">
-                                    
-                                    <button ng-click="generarFacturasCosmitetAgrupadas()" ng-disabled='root.pedidosCosmitetSeleccionados.length < 2' class="btn btn-xxs btn-info" style="position: relative;">Generar factura agrupada</button>  
-                                </div>                              
-                            </div>
+        <button ng-click="seleccionarTipoPago('1')"  class="btn btn-xxs btn-success" style="position: relative;">Efectivo</button>
+        <button ng-click="seleccionarTipoPago('2')"  class="btn btn-xxs btn-warning" style="position: relative;">Cheque</button>
+        <button ng-click="seleccionarTipoPago('3')"  class="btn btn-xxs btn-danger" style="position: relative;">Credito</button>                                                                          
+
+    </div>
+    <div class="col-md-2">
+
+        <button ng-click="generarFacturasCosmitetAgrupadas()" ng-disabled='root.pedidosCosmitetSeleccionados.length < 2' class="btn btn-xxs btn-info" style="position: relative;">Generar factura agrupada</button>  
+    </div>                              
+</div>
+<br>
 <div class ="row">
+    
+           <div class="col-md-2">
+            <p class="input-group">
+                <input type="text" class="form-control readonlyinput" 
+                       datepicker-popup="{{format}}" 
+                       ng-model="root.fechaInicialPedidosCosmitet" 
+                       is-open="root.datepicker_fecha_inicial" 
+                       min="minDate"   
+                       readonly  close-text="Cerrar" 
+                       ng-change="" 
+                       clear-text="Borrar" 
+                       current-text="Hoy" 
+                       placeholder="Fecha Inicial" 
+                       show-weeks="false" 
+                       toggle-weeks-text="#"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+        </div>
+    
+        <div class="col-md-2">
+            <p class="input-group">
+                <input type="text" class="form-control readonlyinput" 
+                       datepicker-popup="{{format}}" 
+                       ng-model="root.fechaFinalPedidosCosmitet" 
+                       is-open="root.datepicker_fecha_final" 
+                       min="root.fecha_inicial"  
+                       readonly  close-text="Cerrar"
+                       clear-text="Borrar"  
+                       placeholder="Fecha Final" 
+                       current-text="Hoy" 
+                       show-weeks="false" 
+                       toggle-weeks-text="#" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default"  ng-click="abrir_fecha_final($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+        </div>
+    
          <div class="{{columnaSizeBusqueda}} pull-right">                                                                
-                                                                 
-             <!--   <div class="input-group">
+            
+          
+            <div class="input-group">
                     <div class="input-group-btn">                                                                      
                         <button type="button" class="btn btn-default dropdown-toggle" 
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtro.descripcion}} <span class="caret"></span></button>
@@ -33,20 +75,14 @@
                     </div> 
                     
                             
-                   <input ng-show="root.visibleBuscador" 
+                   <input  
                            type="text" 
                            class="form-control" 
-                           ng-keypress="buscarClientesFactura($event);"  
-                           ng-model="root.termino_busqueda" 
+                           ng-keypress="buscarPedidosCosmitet($event);"  
+                           ng-model="root.termino_busqueda_cosmitet" 
                            placeholder="Buscar" name="" id="" />
-                    <div class="input-group-btn" ng-show="root.visibleBotonBuscador" >
-                       
-                       
-                    </div>
-                    
-                   
-                   
-                </div>  //--> 
+                     
+                </div> 
      
             </div>
           

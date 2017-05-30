@@ -538,7 +538,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
 	"a.observacion",
         /*"b.prefijo",
         G.knex.raw("b.numero as factura_fiscal"),*/
-        G.knex.raw("true as seleccionado")
+        "a.seleccionado"
    ];
    
     var subQuery1 = G.knex.column([G.knex.raw("DISTINCT x.pedido_cliente_id")/*,  "x.numero", "x.prefijo"*/ ])
@@ -580,7 +580,12 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                
                 
                 this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
-                 
+                
+                if(obj.pedidoMultipleFarmacia === '1'){
+                    
+                    this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
+        
+                }
                 
             }).orderBy("a.fecha_registro",'desc')
     

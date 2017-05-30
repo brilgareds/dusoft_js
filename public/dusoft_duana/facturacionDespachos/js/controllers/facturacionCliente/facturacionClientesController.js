@@ -15,12 +15,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         $scope.paginaactual = 1;
         $scope.paginaactualFacturasGeneradas = 1;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-
+        var fecha_actual = new Date();
+        
         $scope.root = {
+            fechaInicialPedidosCosmitet: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
+            fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),            
             termino_busqueda_proveedores: "",
             termino_busqueda_pedido: "",
             termino_busqueda_nombre: "",
             termino_busqueda_prefijo: "",
+            termino_busqueda_cosmitet: "",
             empresaSeleccionada: '',
             termino_busqueda: '',
             termino_busqueda_fg: '',
@@ -71,7 +75,38 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             callback();
         };
+        
+      /**
+        * @author Cristian Ardila
+        * @fecha 04/02/2016
+        * +Descripcion Funcion que permitira desplegar el popup datePicker
+        *               de la fecha iniciañ
+        * @param {type} $event
+        */   
+       $scope.abrir_fecha_inicial = function($event) {
 
+           $event.preventDefault();
+           $event.stopPropagation();
+           $scope.root.datepicker_fecha_inicial = true;
+           $scope.root.datepicker_fecha_final = false;
+
+       };
+
+       /**
+       * @author Cristian Ardila
+       * @fecha 04/02/2016
+       * +Descripcion Funcion que permitira desplegar el popup datePicker
+       *               de la fecha final
+       * @param {type} $event
+       */  
+       $scope.abrir_fecha_final = function($event) {
+           $event.preventDefault();
+           $event.stopPropagation();
+           $scope.root.datepicker_fecha_inicial = false;
+           $scope.root.datepicker_fecha_final = true;
+
+       };
+                
         $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
         $scope.columnaSizeBusqueda = "col-md-3";
         $scope.root.filtros = [
@@ -601,12 +636,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 session: $scope.session,
                 data: {                               
                     listar_pedidos_clientes: {
-                        terminoBusqueda: '', //$scope.root.numero,57760
+                        terminoBusqueda: $scope.root.termino_busqueda_cosmitet, //57760
                         empresaId: $scope.root.empresaSeleccionada.getCodigo(),
                         paginaActual: $scope.paginaactual,
                         tipoIdTercero: '',
                         terceroId: '',
-                        pedidoMultipleFarmacia: '1'
+                        pedidoMultipleFarmacia: '1',
+                        fechaInicial: $scope.root.fechaInicialPedidosCosmitet,
+                        fechaFinal: $scope.root.fechaFinalPedidosCosmitet
                     }
                 }
             };
@@ -719,7 +756,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     },
 
                     {field: '', cellClass: "checkseleccion", width: "3%",
-                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
+                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccionCosmitet(row)'" +
                                 " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}, 
                 ]
             };
@@ -847,7 +884,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
         };
 
-        $scope.buscarSeleccion = function (row) {
+        $scope.buscarSeleccionCosmitet = function (row) {
             var pedido = row.entity;
 
             for (var i in $scope.root.pedidosCosmitetSeleccionados) {
@@ -963,6 +1000,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             }
 
         };
+        
+        /**
+        * @author Cristian Ardila
+        * @fecha 04/02/2016
+        * +Descripcion Metodo encargado de invocar el servicio que
+        *              listara los clientes para facturar
+        *  @parametros ($event = eventos del teclado)
+        */
+       $scope.buscarPedidosCosmitet = function (event) {
+
+           if (event.which === 13 || event.which === 1) {
+
+               $scope.listarPedidosCosmitet();
+           }
+
+       };
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones
@@ -971,16 +1024,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         that.init(empresa, function () {
 
             if (!Usuario.getUsuarioActual().getEmpresa()) {
-                $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo: "warning"});
+                $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para ingresar a la aplicacion", tipo: "warning"});
                 AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
             } else {
                 if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
                         Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
-                    $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo: "warning"});
+                    $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene un centro de utilidad valido para ingresar a la aplicacion", tipo: "warning"});
                     AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
                 } else {
                     if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
-                        $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para dispensar formulas.", tipo: "warning"});
+                        $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para ingresar a la aplicacion", tipo: "warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
                         that.listarTiposTerceros();

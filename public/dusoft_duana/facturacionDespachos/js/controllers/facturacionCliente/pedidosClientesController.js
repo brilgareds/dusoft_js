@@ -75,7 +75,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.onColumnaSize = function (tipo) {
 
                     };
-
+                    
+                    
                     /**
                      * +Descripcion Metodo encargado de visualizar en el boton del dropdwn
                      *              el tipo de documento seleccionado
@@ -118,11 +119,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 $scope.root.pedidos_clientes = [];
                                 var prefijosDocumentos = [];
                                 var pedidoClientes = [];
-                                var prefijo = [{pedido:57751,prefijo:'EFC',numeracion:145706},{pedido:57751,prefijo:'EFC',numeracion:145707}]
+                                
                                 if (data.status === 200) {
 
                                     $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
-                                    console.log("data.obj.listar_pedidos_clientes ", data.obj.listar_pedidos_clientes)
+                                    
                                     pedidoClientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
                                     
                                     /**
@@ -136,7 +137,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         
                                         });
                                       
-                                    }) 
+                                    });
                                     
                                     /**
                                      * +Descripcion Lista de los pedidos que estan listos
@@ -160,10 +161,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     
                                     $scope.root.pedidos_clientes = pedidoClientes;
                                     
-                                } else {
+                                }else{
                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                                 }
-
                             });
                         }
                     };
@@ -201,20 +201,21 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     </li>\
                                   </ul>'},
                             {displayName: "Opc", cellClass: "txt-center dropdown-button",
-                                cellTemplate: '<div class="btn-group">\
-                           <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
-                           <ul class="dropdown-menu dropdown-options">\
-                                <li>\n\
-                                   <a href="javascript:void(0);" ng-click="generarFacturaIndividual(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
-                                </li>\
-                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                   <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
-                                </li>\
-                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                   <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir documento </a>\
-                                </li>\
-                           </ul>\
-                      </div>'
+                                cellTemplate: '\
+                            <div class="btn-group">\
+                                <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                                <ul class="dropdown-menu dropdown-options">\
+                                    <li>\n\
+                                        <a href="javascript:void(0);" ng-click="generarFacturaIndividual(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
+                                    </li>\
+                                    <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                                        <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
+                                    </li>\
+                                    <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                                        <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir documento </a>\
+                                    </li>\
+                                </ul>\
+                            </div>'
                             },
                            
                             {field: '', cellClass: "checkseleccion", width: "3%",
@@ -222,7 +223,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}, 
                         ]
                     };
+                    
+                    $scope.onPedidoSeleccionado = function (check, row) {
+                        
+                        row.selected = check;
+                        if (check) {
+                            that.agregarPedido(row.entity);
+                        } else {
 
+                            that.quitarPedido(row.entity);
+                        }
+ 
+                    };
+                    
                     that.quitarPedido = function (pedido) {
                         
                         for (var i in $scope.root.pedidosSeleccionados) {
@@ -236,7 +249,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     that.agregarPedido = function (pedido) {
                         //valida que no exista el pedido en el array
-                        for (var i in $scope.root.pedidosSeleccionados) {
+                        for(var i in $scope.root.pedidosSeleccionados) {
                             var _pedido = $scope.root.pedidosSeleccionados[i];
                             if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
                                 return false;
@@ -245,26 +258,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.pedidosSeleccionados.push(pedido);
                     };
 
-
-                    $scope.onPedidoSeleccionado = function (check, row) {
-                        
-                        row.selected = check;
-                        if (check) {
-                            that.agregarPedido(row.entity);
-                        } else {
-
-                            that.quitarPedido(row.entity);
-                        }
- 
-                    };
-
-
-                    
                     $scope.buscarSeleccion = function (row) {
                         var pedido = row.entity;
-                        
-                        for (var i in $scope.pedidosSeleccionados) {
-                            var _pedido = $scope.pedidosSeleccionados[i];
+                                     
+                        for (var i in $scope.root.pedidosSeleccionados) {
+                            var _pedido = $scope.root.pedidosSeleccionados[i];
                             if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
                                 row.selected = true;
                                 return true;
@@ -459,6 +457,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
                        
                     };
+                    
+                    /**
+                     * +Descripcion Metodo encargado de llevar al usuario 
+                     *              a la lista de clientes 
+                     */
+                    $scope.volverListaClientes = function(){
+                        $state.go('Despacho');
+                    };
 
 
                     /*
@@ -492,16 +498,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     that.init(empresa, function () {
 
                         if (!Usuario.getUsuarioActual().getEmpresa()) {
-                            $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo: "warning"});
+                            $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para ingresar a la aplicacion", tipo: "warning"});
                             AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
                         } else {
                             if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
                                     Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
-                                $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo: "warning"});
+                                $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene un centro de utilidad valido para ingresar a la aplicacion", tipo: "warning"});
                                 AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
                             } else {
                                 if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
-                                    $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para dispensar formulas.", tipo: "warning"});
+                                    $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para ingresar a la aplicacion", tipo: "warning"});
                                     AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                                 } else {
 
@@ -517,8 +523,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 
                         $scope.$$watchers = null;
-
-                        $scope.root = null;
+                        //$scope.root = null;
+                        
                         
                     });
 

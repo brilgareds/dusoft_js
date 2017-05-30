@@ -22,3 +22,17 @@ IS 'Fecha final del rango de busqueda de documentos';
 
 COMMENT ON COLUMN "public"."proceso_facturacion"."estado"
 IS '{1 : "En proceso", 2: "Con error", 3:"Terminado"}';
+
+
+
+
+CREATE TABLE "public"."proceso_facturacion_detalle" (
+  "id" SERIAL, 
+  "id_proceso" INTEGER, 
+  "pedido" INTEGER, 
+  "tercero_id" VARCHAR(32), 
+  "tipo_id_tercero" VARCHAR(3)
+) WITH OIDS;
+
+ALTER TABLE "public"."proceso_facturacion_detalle"
+  ALTER COLUMN "id" SET STATISTICS 0;

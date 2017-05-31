@@ -538,7 +538,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
 	"a.observacion",
         /*"b.prefijo",
         G.knex.raw("b.numero as factura_fiscal"),*/
-        G.knex.raw("true as seleccionado")
+        "a.seleccionado"
    ];
    
     var subQuery1 = G.knex.column([G.knex.raw("DISTINCT x.pedido_cliente_id")/*,  "x.numero", "x.prefijo"*/ ])
@@ -580,7 +580,12 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                
                 
                 this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
-                 
+                
+                if(obj.pedidoMultipleFarmacia === '1'){
+                    
+                    this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
+        
+                }
                 
             }).orderBy("a.fecha_registro",'desc')
     
@@ -1079,24 +1084,15 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
  
             return G.Q.nfcall(__actualizarEstadoFacturaPedido,that,0,parametrosActualizarEstadoFactura, transaccion);
             
-        })/*.then(function(){
+        }).then(function(){
             
-           if(obj.parametros.facturacionCosmitet === '1'){
-               console.log("ENTRO POR A QUI OK");
-               return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,parametrosInsertaFacturaAgrupadaDetalle,"inv_facturas_agrupadas_despacho_d_tmp",transaccion);           
-           }else{               
-               def.resolve();
-           }
-           
-        })*/.then(function(){
-            
-            //console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
-           //console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
+            console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
+           console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
            
-           transaccion.commit(); 
+           //transaccion.commit(); 
         }).fail(function(err){
-            console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
+            console.log("err (/fail) [GenerarFacturasAgrupadas]: ", err);
             transaccion.rollback(err);
         }).done();
 

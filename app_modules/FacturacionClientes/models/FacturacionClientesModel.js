@@ -1,7 +1,55 @@
 var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };
- 
+
+/**
+ * @author Cristian Ardila
+ * @fecha 31/05/2016
+ * +Descripcion Modelo encargado consultar la factura en estado de proceso
+ * @controller FacturacionClientes.prototype.generarFacturasAgrupadas
+ */
+FacturacionClientesModel.prototype.procesosFacturacion = function (callback) {
+
+    var query = G.knex.select('*')
+        .from('proceso_facturacion')
+        .where(function(){
+            this.andWhere("estado",'1')      
+        });
+        
+        query.limit(1).then(function (resultado) {
+
+            callback(false, resultado)
+        }).catch(function (err) {
+        console.log("err [consultarParametrosRetencion]:", err);
+        callback({err:err, msj: "Error al consultar los parametros de retencion"});   
+    });
+
+};
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de consultar el detalle de lo que se facturara
+ * @controller FacturacionClientes.prototype.generarFacturasAgrupadas
+ */
+FacturacionClientesModel.prototype.procesosDetalleFacturacion = function (obj,callback) {
+
+    var query = G.knex.select('*')
+        .from('proceso_facturacion_detalle')
+        .where(function(){
+            this.andWhere("id_proceso",obj.id)
+        });
+        
+        query.then(function (resultado) {
+
+            callback(false, resultado)
+        }).catch(function (err) {
+        console.log("err [consultarParametrosRetencion]:", err);
+        callback({err:err, msj: "Error al consultar los parametros de retencion"});   
+    });
+
+};
+
 function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
     
     var columnas = [
@@ -491,8 +539,13 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
  * @controller FacturacionClientes.prototype.listarTiposTerceros
  */
 FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,callback) {
-
-    var query = G.knex.column([G.knex.raw(" x.pedido_cliente_id"),  "x.numero", "x.prefijo", "x.empresa_id"])
+    
+    var campos = [G.knex.raw(" x.pedido_cliente_id"),  "x.numero", "x.prefijo", "x.empresa_id"];
+    if(obj.estado ===1){
+        campos = [G.knex.raw(" x.pedido_cliente_id as bodegas_doc_id"),  "x.numero", "x.prefijo", G.knex.raw("x.empresa_id as empresa")];
+    }
+    
+    var query = G.knex.column(campos)
            .select().from("inv_bodegas_movimiento_despachos_clientes as x")
            .where("x.factura_gener",'0')
            .andWhere("x.empresa_id",obj.empresaId)
@@ -604,7 +657,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
 
 
 FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, callback) {
-   
+  
    var columnQuery = [
         "a.tipo_id_tercero",
         "a.tercero_id",
@@ -1168,7 +1221,7 @@ function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, ca
     
     }, 300);
     
-}
+};
 /**
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de actualizar el movimiento de despacho

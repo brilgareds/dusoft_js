@@ -284,7 +284,7 @@ function __listarDocumentosPedidos(that, index, pedidos,empresaId,documentos, ca
     }  
     // console.log("pedido ", pedido)
     index++;
-     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDocumentosPedidos', {empresaId:empresaId,pedidoClienteId:pedido.pedido_cliente_id})
+     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDocumentosPedidos', {empresaId:empresaId,pedidoClienteId:pedido.pedido_cliente_id, estado:0})
             .then(function(resultado){ 
                 if(resultado.length > 0){
                     documentos.push(resultado);
@@ -302,18 +302,146 @@ function __listarDocumentosPedidos(that, index, pedidos,empresaId,documentos, ca
    
 };
 
+
+
+
+/**
+ * +Descripcion Metodo encargado de reccorrer el arreglo de pedidos listos para
+ *              facturar sus despachos
+ * @fecha 2017-05-31
+ * @author Cristian Ardila
+ */
+function __recorrerPedidos(that,index,pedidos,empresa,consultaDocumentos,callback){
+    
+    var pedido = pedidos[index];
+     
+    if(!pedido){
+        
+        callback(false,consultaDocumentos);
+        return;
+    }
+    
+    index++;
+    
+    consultaDocumentos.vendedor.push({tipo_id_tercero: pedido.tipo_id_tercero, id:pedido.tercero_id})
+     
+     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDocumentosPedidos', {empresaId:empresa,pedidoClienteId:pedido.pedido, estado:1}).then(function(resultado){ 
+       
+        if(resultado.length > 0){
+           return G.Q.nfcall(__agregarDocumentosPedido,0,resultado,consultaDocumentos.documentoSeleccionado);
+        }
+               
+    }).then(function(resultado){
+        
+        setTimeout(function() {    
+            __recorrerPedidos(that,index,pedidos,empresa,consultaDocumentos,callback);   
+        }, 300);   
+        
+    }).fail(function(err){ 
+        console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
+        callback(err);            
+    }).done(); 
+         
+    setTimeout(function() {    
+        __recorrerPedidos(that,index,pedidos,empresa,consultaDocumentos,callback);   
+    }, 300);    
+};
+
+function __agregarDocumentosPedido(index,documentos,documentoSeleccionado,callback){
+     
+    var documento = documentos[index];
+     
+    if(!documento){
+        
+        callback(false,documentoSeleccionado);
+        return;
+    }
+    index++;
+    documentoSeleccionado.push(documento);
+     
+       __agregarDocumentosPedido(index,documentos,documentoSeleccionado,callback);
+     
+};
+
+
+FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;    
+    
+    var usuario = req.session.user.usuario_id;
+    var parametros = {
+        empresaId: '',
+        tipoIdTercero: '',
+        terceroId: '',
+        documentoId: '',
+        estado: 1,
+        tipoPago: '',
+        usuario:usuario,
+        direccion_ip: '',
+        pedidos: [],
+        facturacionCosmitet:1
+    };
+    var parametroBodegaDocId = {variable:'', tipoVariable:1, modulo:'FacturasDespacho'};
+     
+    var consultaDocumentos = {vendedor:[], documentoSeleccionado:[]};
+        
+    var documentosSeleccionados = {pedidos:[]};
+         
+         
+    G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion').then(function(resultado){
+       
+        if(resultado.length > 0){
+            
+            parametros.empresaId = resultado[0].empresa_id;
+            parametros.tipoIdTercero =resultado[0].tipo_id_cliente;
+            parametros.terceroId = resultado[0].cliente_id;
+            parametros.tipoPago=resultado[0].tipo_pago_id;
+            parametros.direccion_ip = resultado[0].ip;
+            parametroBodegaDocId.variable="documento_factura_"+resultado[0].empresa_id;
+             
+            return G.Q.ninvoke(that.m_facturacion_clientes, "procesosDetalleFacturacion", resultado[0]);
+        }else{
+            throw {msj:'[procesosFacturacion]: Consulta sin resultados', status: 404}; 
+        }
+            
+    }).then(function(resultado){
+        
+        if(resultado.length > 0){
+         
+            return G.Q.nfcall(__recorrerPedidos,that,0,resultado,parametros.empresaId,consultaDocumentos);
+            
+        }else{
+            throw {msj:'[procesosDetalleFacturacion]: Consulta sin resultados', status: 404}; 
+        }
+       
+    }) .then(function(resultado){
+        //APENAS SE GUARDE EL PRIMER PEDIDO ALMACENAR A QUIU documentosSeleccionados
+        console.log("resultado [__agregarDocumentosPedido]:: ", consultaDocumentos);
+        /*documentosSeleccionados.pedidos.push(consultaDocumentos);                   
+        parametros.pedidos.push(documentosSeleccionados);
+        
+        return G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, parametros.direccion_ip);*/
+        
+    }).then(function(resultado){
+ 
+        //console.log("resultado [[__generarFacturasAgrupadas]]::: ", resultado)
+        res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
+
+    }).fail(function (err) {
+        console.log("err [generarPedidoBodegaFarmacia]: ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+    });
+    
+};
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017
  * +Descripcion Controlador encargado de listar los terceros
  *              
  */
-FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
-   
-   console.log("************FacturacionClientes.prototype.generarFacturasAgrupadas***************");
-   console.log("************FacturacionClientes.prototype.generarFacturasAgrupadas***************");
-   console.log("************FacturacionClientes.prototype.generarFacturasAgrupadas***************");
-   
+FacturacionClientes.prototype.generarFacturasAgrupadasOriginal = function(req, res){
+    
     var that = this;
     var args = req.body.data;    
     /**
@@ -367,85 +495,8 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
     
     var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho'};
     
-    var parametrosQuemados = {
-        empresaId: '03',
-        tipoIdTercero: 'NIT',
-        terceroId: '830023202',
-        documentoId: '',
-        estado: 1,
-        tipoPago: '3',
-        usuario:usuario,
-        direccion_ip: '',
-        pedidos: [
-            /*{               
-                pedidos: [                    
-                    {                        
-                        vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
-                        documentoSeleccionado:[
-                            {bodegas_doc_id: 57760,prefijo: 'EFC', numero: 145715, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
-                            {bodegas_doc_id: 57760,prefijo: 'EFM', numero: 16451, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
-                            {bodegas_doc_id: 57760,prefijo: 'DTM', numero: 2, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
-                            {bodegas_doc_id: 57760,prefijo: 'EDFM', numero: 8131, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'}
-                        ]
-                        
-                    }                   
-                ]
-            },
-            {               
-                pedidos: [                    
-                    {                        
-                        vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
-                        documentoSeleccionado:[
-                            {bodegas_doc_id: 57747,prefijo: 'EFC', numero: 145698, fecha_registro: '2017-04-28T19:19:44.800Z', empresa: '03'},
-                            
-                        ]                       
-                    }                   
-                ]
-            }*/
-        ],
-        facturacionCosmitet:1
-    };
      
-    var documentosSeleccionados = {pedidos:[]};
-        documentosSeleccionados.pedidos.push({
-                                vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
-                                documentoSeleccionado:[
-                                    {bodegas_doc_id: 57760,prefijo: 'EFC', numero: 145715, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
-                                    {bodegas_doc_id: 57760,prefijo: 'EFM', numero: 16451, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
-                                    {bodegas_doc_id: 57760,prefijo: 'DTM', numero: 2, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
-                                    {bodegas_doc_id: 57760,prefijo: 'EDFM', numero: 8131, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'}
-                                ]
-                            })
-    parametrosQuemados.pedidos.push(documentosSeleccionados);
-    
-    
-    var documentosSeleccionados2 = { pedidos:[]};
-        documentosSeleccionados2.pedidos.push({
-                                vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
-                                documentoSeleccionado:[
-                                    {bodegas_doc_id: 57747,prefijo: 'EFC', numero: 145698, fecha_registro: '2017-04-28T19:19:44.800Z', empresa: '03'}
-                                ]
-                            })
-    parametrosQuemados.pedidos.push(documentosSeleccionados2);
-    
-    /*parametrosQuemados.pedidos.push(
-                    {
-                        pedidos:[
-                            {
-                                vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
-                                documentoSeleccionado:[
-                                   {bodegas_doc_id: 57747,prefijo: 'EFC', numero: 145698, fecha_registro: '2017-04-28T19:19:44.800Z', empresa: '03'}
-                                ]
-                            }
-                        ]
-                    }
-                );*/
-
-    /*console.log("parametros Original", parametros);
-    console.log("parametrosQuemados Copia ", parametrosQuemados);*/
-    var parametroBodegaDocIdQuemado = {variable:"documento_factura_"+parametrosQuemados.empresaId, tipoVariable:1, modulo:'FacturasDespacho'};
-    
-    G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametrosQuemados, parametroBodegaDocIdQuemado, ip).then(function(resultado){
+    G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, ip).then(function(resultado){
  
         console.log("resultado [[__generarFacturasAgrupadas]]::: ", resultado)
         res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
@@ -453,7 +504,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
     }).fail(function (err) {
         console.log("err [generarPedidoBodegaFarmacia]: ", err);
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
-    });
+    }); 
   /*  var documentoFacturacion;
     var consultarTerceroContrato;
     var consultarParametrosRetencion;
@@ -580,10 +631,9 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
     var def = G.Q.defer(); 
     
     G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
-        
-        parametros.documentoId = resultado[0].valor;
-    
+         
         if(resultado.length >0){
+            parametros.documentoId = resultado[0].valor;
             return G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros)
         }else{
             throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 

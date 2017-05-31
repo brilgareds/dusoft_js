@@ -1,0 +1,1288 @@
+<XMLDiagram version="1.0">
+<TDBADiagramController Locked="0">
+<Elements>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.bodegas">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="4579" top="10" width="200" height="363"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_documentos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="2755" top="421" width="200" height="167"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_documentos.inv_bodegas_documentos_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="48" top="48" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2860" y="500"/>
+<Point x="4680" y="190"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="2189" top="637" width="200" height="293"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento.inv_bodegas_movimiento_documento_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="80" top="80" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2290" y="780"/>
+<Point x="2860" y="500"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_ajustes">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="2300" top="1080" width="200" height="223"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_ajustes.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="112" top="112" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2399" y="1196"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_aprovechamientos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="4450" top="950" width="255" height="93"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_aprovechamientos.inv_bodegas_movimiento_aprovechamientos_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="144" top="144" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4582" y="1000"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_autorizaciones_despachos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="10" top="440" width="280" height="265"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_autorizaciones_despachos.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="176" top="176" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="150" y="577"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_autorizaciones_despachos.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="192" top="192" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="150" y="577"/>
+<Point x="4680" y="190"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_compras_directas">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="2060" top="430" width="250" height="139"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_compras_directas.inv_bodegas_movimiento_compras_directas_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="240" top="240" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2181" y="503"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_conceptos_egresos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="3298" top="1070" width="262" height="152"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_conceptos_egresos.inv_bodegas_movimiento_conceptos_egresos_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="272" top="272" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3431" y="1151"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_d">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="10" top="720" width="200" height="321"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_d.inv_bodegas_movimiento_d_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="304" top="304" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="106" y="885"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_despachos_clientes">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="530" top="1090" width="260" height="181"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_despachos_clientes.inv_bodegas_movimiento_despachos_clientes_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="336" top="336" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="657" y="1185"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_despachos_farmacias">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="1950" top="1170" width="260" height="195"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_despachos_farmacias.inv_bodegas_movimiento_despachos_farmacias_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="368" top="368" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2083" y="1271"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_despachos_farmacias.inv_bodegas_movimiento_despachos_farmacias_empresa_id_fkey1">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="384" top="384" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2080" y="1267"/>
+<Point x="2289" y="787"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_despachos_farmacias.inv_bodegas_movimiento_despachos_farmacias_empresa_id_fkey2">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="400" top="400" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2080" y="1267"/>
+<Point x="2289" y="787"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_devolucion_cliente">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="530" top="940" width="260" height="136"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_devolucion_cliente.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="432" top="432" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="663" y="1012"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_devolucion_farmacia">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="530" top="1280" width="260" height="122"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_devolucion_farmacia.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="464" top="464" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="659" y="1345"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_devolucion_farmacia.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="480" top="480" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="660" y="1341"/>
+<Point x="2289" y="787"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_devolucion_proveedor">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="520" top="1410" width="270" height="108"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_devolucion_proveedor.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="512" top="512" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="660" y="1469"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_devoluciones">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="800" top="1420" width="230" height="167"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_devoluciones.inv_bodegas_movimiento_devoluciones_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="544" top="544" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="916" y="1508"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_devoluciones_formula_medica">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="1620" top="1210" width="300" height="110"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_devoluciones_formula_medica.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="576" top="576" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="1767" y="1270"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_eg_dev_prestamos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="2600" top="1340" width="273" height="137"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_eg_dev_prestamos.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="608" top="608" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2733" y="1409"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_ing_dev_prestamos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="3390" top="1440" width="263" height="137"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_ing_dev_prestamos.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="640" top="640" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3518" y="1509"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_ingreso_farmacia">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="2140" top="1390" width="259" height="131"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_ingresos_traslados_farmacia">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="3860" top="1300" width="200" height="122"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_ingresos_traslados_farmacia.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="688" top="688" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3957" y="1363"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_ingresosdespachos_farmacias">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="730" top="1620" width="301" height="129"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_ingresosdespachos_farmacias.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="720" top="720" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="881" y="1686"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_ingresosdespachos_farmacias.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="736" top="736" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="881" y="1686"/>
+<Point x="2083" y="1271"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_justificaciones_pendientes">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="2410" top="410" width="290" height="139"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_justificaciones_pendientes.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="768" top="768" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2560" y="483"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_ordenes_compra">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="220" top="890" width="240" height="94"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_ordenes_compra.inv_bodegas_movimiento_ordenes_compra_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="800" top="800" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="342" y="941"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_ordenes_compra_prod_autorizados">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="180" top="1100" width="332" height="300"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_ordenes_compra_prod_autorizados.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="832" top="832" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="348" y="1252"/>
+<Point x="342" y="941"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_prestamos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="3780" top="1070" width="220" height="167"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_prestamos.inv_bodegas_movimiento_prestamos_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="864" top="864" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3893" y="1158"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_eg_dev_prestamos.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="880" top="880" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="2733" y="1409"/>
+<Point x="3893" y="1158"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_ing_dev_prestamos.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="896" top="896" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3518" y="1509"/>
+<Point x="3893" y="1158"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="6517" top="693" width="200" height="181"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_ajustes">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7500" top="470" width="231" height="152"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_ajustes.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="944" top="944" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7616" y="551"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_aprovechamientos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="4800" top="940" width="270" height="80"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_aprovechamientos.inv_bodegas_movimiento_tmp_aprovechamientos_usuario_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="976" top="976" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4938" y="984"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_autorizaciones_despachos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="5130" top="1010" width="200" height="265"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_autorizaciones_despachos.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1008" top="1008" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="5229" y="1147"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_autorizaciones_despachos.foreign_key04">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1024" top="1024" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="5229" y="1147"/>
+<Point x="4680" y="190"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_compras_directas">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7500" top="330" width="297" height="128"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_compras_directas.inv_bodegas_movimiento_tmp_compras_directas_usuario_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1056" top="1056" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7645" y="399"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_conceptos_egresos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="6060" top="1190" width="280" height="139"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_conceptos_egresos.inv_bodegas_movimiento_tmp_conceptos_egresos_usuario_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1088" top="1088" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="6197" y="1263"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_consumo">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="6280" top="1400" width="230" height="80"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_consumo.inv_bodegas_movimiento_tmp_consumo_usuario_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1120" top="1120" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="6398" y="1444"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_d">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="6590" top="1160" width="200" height="335"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_d.inv_bodegas_movimiento_tmp_d_usuario_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1152" top="1152" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="6689" y="1332"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_despacho_campania">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7460" top="1550" width="274" height="169"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_despacho_campania.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1184" top="1184" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7601" y="1639"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_despachos_clientes">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7500" top="1410" width="280" height="128"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_despachos_clientes.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1216" top="1216" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7640" y="1479"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_despachos_farmacias">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7500" top="1270" width="286" height="128"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_despachos_farmacias.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1248" top="1248" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7639" y="1339"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_devolucion_cliente">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7500" top="1110" width="272" height="144"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_devolucion_cliente.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1280" top="1280" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7638" y="1186"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_devolucion_farmacia">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="4540" top="570" width="290" height="108"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_devolucion_farmacia.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1312" top="1312" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4686" y="629"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_devolucion_farmacia.foreign_key03">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1328" top="1328" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4686" y="629"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_devolucion_proveedor">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7500" top="1000" width="288" height="93"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_devolucion_proveedor.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1360" top="1360" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7642" y="1050"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_devoluciones">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="5346" top="1411" width="200" height="195"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_devoluciones.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1392" top="1392" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="5450" y="1510"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_devoluciones.foreign_key03">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1408" top="1408" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="5450" y="1510"/>
+<Point x="3893" y="1158"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_ingresos_traslados_farmacia">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7020" top="1670" width="320" height="108"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_ingresos_traslados_farmacia.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1440" top="1440" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7177" y="1726"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_ingresosdespachos_farmacia">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="3740" top="1580" width="320" height="108"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_ingresosdespachos_farmacia.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1472" top="1472" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3905" y="1636"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_ingresosdespachos_farmacia.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1488" top="1488" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3905" y="1636"/>
+<Point x="2083" y="1271"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_justificaciones_pendientes">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7500" top="850" width="310" height="125"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_justificaciones_pendientes.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1520" top="1520" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7658" y="917"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_ordenes_compra">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7500" top="750" width="269" height="86"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_ordenes_compra.inv_bodegas_movimiento_tmp_ordenes_compra_usuario_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1552" top="1552" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7633" y="797"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_prestamo">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="4770" top="1080" width="257" height="109"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_prestamo.inv_bodegas_movimiento_tmp_prestamo_usuario_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1584" top="1584" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4895" y="1139"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_traslados">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="5130" top="830" width="230" height="136"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_traslados.inv_bodegas_movimiento_tmp_traslados_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1616" top="1616" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="5250" y="902"/>
+<Point x="4680" y="190"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_traslados.inv_bodegas_movimiento_tmp_traslados_empresa_id_fkey1">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1632" top="1632" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="5245" y="898"/>
+<Point x="4679" y="190"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_traslados.inv_bodegas_movimiento_tmp_traslados_usuario_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1648" top="1648" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="5250" y="902"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_tmp_traslados_farmacia">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="5600" top="1130" width="280" height="108"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_traslados_farmacia.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1680" top="1680" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="5741" y="1189"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_traslados_farmacia.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1696" top="1696" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="5741" y="1189"/>
+<Point x="4680" y="190"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_traslados">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="3510" top="720" width="220" height="153"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_traslados.inv_bodegas_movimiento_traslados_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1728" top="1728" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3617" y="801"/>
+<Point x="4680" y="190"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_traslados.inv_bodegas_movimiento_traslados_empresa_id_fkey1">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1744" top="1744" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3617" y="801"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimiento_traslados_farmacia">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="4180" top="1020" width="259" height="146"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_traslados_farmacia.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1776" top="1776" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4308" y="1097"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_traslados_farmacia.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1792" top="1792" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4308" y="1097"/>
+<Point x="4680" y="190"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_ingresos_traslados_farmacia.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1808" top="1808" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3957" y="1363"/>
+<Point x="4308" y="1097"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_ingresos_traslados_farmacia.foreign_key02">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1824" top="1824" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7177" y="1726"/>
+<Point x="4308" y="1097"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimientos_devolucion_prestamo">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="1770" top="540" width="270" height="111"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimientos_devolucion_prestamo.inv_bodegas_movimientos_devolucion_prestamo_empresa_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1856" top="1856" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="1905" y="600"/>
+<Point x="2290" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_movimientos_tmp_devoluciones_formula_medica">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="7500" top="630" width="325" height="104"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimientos_tmp_devoluciones_formula_medica.foreign_key01">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1888" top="1888" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="7667" y="687"/>
+<Point x="6620" y="780"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_tipos_aprovechamiento">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="4770" top="750" width="220" height="83"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_aprovechamientos.inv_bodegas_movimiento_aprovechami_tipo_aprovechamiento_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1920" top="1920" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4582" y="1000"/>
+<Point x="4883" y="788"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_aprovechamientos.inv_bodegas_movimiento_tmp_aprovec_tipo_aprovechamiento_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1936" top="1936" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4938" y="984"/>
+<Point x="4883" y="788"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramMetaTableProperties" objectname="public.inv_bodegas_tipos_prestamos">
+<TDiagramMetaTableProperties>
+<Glyph>
+<Geometry left="4480" top="700" width="200" height="97"/>
+</Glyph>
+</TDiagramMetaTableProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_prestamos.inv_bodegas_movimiento_prestamos_tipo_prestamo_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1968" top="1968" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="3893" y="1158"/>
+<Point x="4581" y="746"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+<TDBADiagramObject propertiesclass="TDiagramForeignKeyProperties" objectname="public.inv_bodegas_movimiento_tmp_prestamo.inv_bodegas_movimiento_tmp_prestamo_tipo_prestamo_id_fkey">
+<TDiagramForeignKeyProperties>
+<Relation>
+<Geometry left="1984" top="1984" width="200" height="100"/>
+<Glyph>
+<Geometry>
+<Point x="4895" y="1139"/>
+<Point x="4581" y="746"/>
+</Geometry>
+</Glyph>
+</Relation>
+</TDiagramForeignKeyProperties>
+</TDBADiagramObject>
+</Elements>
+<Surface zoom="123" scrollx="3928" scrolly="1511"/>
+</TDBADiagramController>
+</XMLDiagram>

@@ -1,0 +1,178 @@
+<html>
+    <head>
+        <title>&nbsp;</title>
+        
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style.css" rel=stylesheet type=text/css >
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style-print.css" rel=stylesheet type=text/css media="print">
+        
+        <script>
+            
+          
+           var imprimir = function(){
+               
+               document.getElementById("btnImprimir").style.display = 'none';
+               window.print();
+              
+           }
+        </script>
+    </head>
+    <body>
+        <br>
+        <p class="normal_10AN">DATOS FORMULA -- ENTREGA DE MEDICAMENTOS  </p>
+
+        <table width="100%" border ='0' >
+            <tr>
+                <td align="center">
+                    <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8px">
+                        <tr >
+                            <td>FECHA DE REGISTRO:</td>
+                            <td>{{:detalle.fecha_registro}}</td>
+                            
+                            <td>FECHA DE FORMULA:</td>
+                            <td>{{:detalle.fecha_formulacion}}</td>
+                            
+                            <td>NUMERO DE DESPACHO:</td>
+                            <td>{{:detalle.numero_formula }}</td>
+                        </tr>
+                        <tr>
+                            <td>IDENTIFICACION:</td>
+                            <td> {{:detalle.tipo_id_paciente}}  {{:detalle.paciente_id}} </td>
+
+                            <td>NOMBRE COMPLETO: </td>
+                            <td>{{:detalle.nombres}} {{:detalle.apellidos}}</td>
+                        </tr>
+                     <!--   <tr>
+                            <td  align="left">EDAD:</td>
+                            <td  align="left" >{{:detalle.edad}} &nbsp; A&Ntilde;OS </td>
+
+                            <td  colspan="1" align="left">SEXO: </td>
+                            <td  colspan="1" align="left">{{:detalle.sexo}}
+                            </td>
+                        </tr> //-->
+                    <!--   <tr>
+                            <td  align="left">TELEFONO:</td>
+                            <td  align="left" > {{:detalle.residencia_telefono}} </td>
+
+                            <td  colspan="1" align="left">DIRECCION: </td>
+                            <td  colspan="1" align="left">{{:detalle.residencia_direccion}}</td>
+                        </tr> //-->
+                     <!--   <tr>
+                            <td  align="left">PROFESIONAL:</td>
+                            <td  align="left"  colspan="3" >  {{:profesional.tipo_id_tercero}} {{:profesional.tercero_id}}  &nbsp; - {{:profesional.nombre}} {{:profesional.descripcion}}
+                        </tr> //-->
+
+                        <tr>
+                            <td  align="left">TIPO FORMULA:</td>
+                            <td  align="left"  colspan="3" >{{:detalle.descripcion_tipo_formula}}</td> 
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+    <center><h3>- Medicamento Entregados </h3>
+    
+    {{for productosDispensados}}
+    
+    
+     {{for productos[0]}}
+        </center><p class="normal_10AN">MEDICAMENTOS DISPENSADOS FECHA. {{:fecha_entrega}} -ENTREGA No. {{:entrega}} </p>
+    
+     {{/for}}
+    <table width="100%" cellspacing="2">
+      <tr>
+          <td align="center">
+              <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8px">
+                  <tr >
+                     <td width="13%" ><U>FECHA ENTREGA</U></td>
+
+                      <td width="13%" ><U>CODIGO</U></td>
+                      <td width="35%" ><U>MEDICAMENTO</U></td>
+                      <td width="13%" ><U>CANTIDAD</U></td>
+                      <td width="13%" ><U>FECHA VENC</U></td>
+                      <td width="13%" ><U>LOTE</U></td>
+                  </tr>
+                    
+                            {{for productos}}
+                            <tr>
+                                  
+                               <td >{{:fecha_entrega}}</td> 
+                                <td >{{:codigo_producto}}</td>
+                                <td >{{:descripcion_prod}}</td>
+                                <td >{{:numero_unidades}}</td>
+                            
+                                <td >{{:fecha_vencimiento}}</td>
+                                 <td >{{:lote}}</td>
+                                
+                                 
+                            </tr>
+                            {{/for}}
+              </table>
+          </td>
+      </tr>
+  </table>
+{{/for}}
+
+
+
+  <center><h3>- Medicamentos Pendientes Dispensados -</h3></center><p class="normal_10AN">MEDICAMENTOS PENDIENTES DISPENSADOS</p>
+    
+  <table width="100%" cellspacing="2">
+      <tr>
+          <td align="center">
+              <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8px">
+                  <tr >
+                      <!--<td width="13%" ><U>FECHA ENTREGA</U></td>//-->
+                      <td width="13%" ><U>FECHA ENTREGA</U></td>
+                      <td width="13%" ><U>CODIGO</U></td>
+                      <td width="35%" ><U>MEDICAMENTO</U></td>
+                      <td width="13%" ><U>CANTIDAD</U></td>
+                      <td width="13%" ><U>FECHA VENC</U></td>
+                      <td width="13%" ><U>LOTE</U></td>
+                  </tr>
+                    
+                            {{for productosDispensadosPendientes}}
+                            <tr>
+                                  
+                                <td >{{:fecha_entrega}}</td> 
+                                <td >{{:codigo_producto}}</td>
+                                <td >{{:descripcion_prod}}</td>
+                                <td >{{:numero_unidades}}</td>                            
+                                <td >{{:fecha_vencimiento}}</td>
+                                 <td >{{:lote}}</td>
+                                
+                                 
+                            </tr>
+                            {{/for}}
+              </table>
+          </td>
+      </tr>
+  </table>
+
+
+        <div align='right'>Digitado por: {{:detalle.nombre}} </div><table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+            <tr class="label"  valign="bottom" >
+                <td align="LEFT" height="50">________________________________________</td>
+            </tr>
+            <tr class="label" >
+                <td align="LEFT">FIRMA PACIENTE</td>
+
+            </tr>
+            <tr class="label" >
+                <td align="LEFT"></td>
+            </tr>
+        </table>
+        <br>
+        <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8px">
+            <tr align='right'>
+                <td align="rigth" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8px"></td>
+            </tr>
+
+        </table>
+        <div id = "btnImprimir"><input type="button" name="imprimir" value="Imprimir" onclick="imprimir()" ></div>
+    </BODY>
+</HTML>
+
+
+
+

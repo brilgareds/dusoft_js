@@ -31,7 +31,7 @@ define(["angular", "js/models", "js/models/Detalle"], function(angular, models) 
                 this.detalle = (datos.detalle) ? Detalle.get(datos.detalle) : Detalle.get().setDetalle(this.observacion);
                 this.stock_actual = datos.stock_actual;
 
-                if (this.tipo_movimiento === "E") {
+                if (this.tipo_movimiento === "E" || this.tipo_movimiento === "T") {
                     this.cantidad_salidas = datos.cantidad;
                 } else {
                     this.cantidad_entradas = datos.cantidad;

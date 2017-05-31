@@ -6,7 +6,7 @@
   "loader","models/ProductoMovimiento",  "includes/alert/Alert", "i18n", "httpinterceptor", "storage",
   "includes/classes/Usuario", "socketservice", "includes/http/Request","uiselect2",
   "includes/classes/CentroUtilidad","includes/classes/Bodega", "controllers/consultar_existencias/ConsultarExistenciaCcontroller",
-  "webNotification"
+  "webNotification", "controllers/homologacionProductos/HomologacionProductosController"
   ], function(angular,Agencia){
   /* App Module and its dependencies */
       var Kardex = angular.module('Kardex', [
@@ -63,6 +63,12 @@
                   text:"Consultar Existencias",
                   templateUrl: "views/consultar_existencias/listarproductos.html",
                   controller:"ConsultarExistenciaCcontroller"
+              }).
+              state('HomologacionProductos', {
+                  url: "/HomologacionProductos",
+                  text:"Consultar Productos",
+                  templateUrl: "views/homologacionProductos/listarproductos.html",
+                  controller:"HomologacionProductosController"
               });
               
             if($location.path() === ""){

@@ -487,7 +487,7 @@ div.selectgeneral{
     box-shadow: none;
 }
 
-.ui-select-container{
+/*.ui-select-container{
     z-index: 10!important;
 }
 
@@ -517,7 +517,7 @@ div.selectgeneral{
 
 .ui-select-z-index-18{
     z-index: 18!important;
-}
+}*/
 
 .slide{
     width: 100%;

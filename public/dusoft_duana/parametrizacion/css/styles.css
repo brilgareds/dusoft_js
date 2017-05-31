@@ -107,3 +107,8 @@ textarea.observacion_modulo{
 .multiSelectTerceros.select2-container-multi .select2-choices .select2-search-field input{
     padding:0px 5px 0px 5px;
 }
+
+
+#GuardarTerceroController .select2-container{
+     z-index: inherit;
+}

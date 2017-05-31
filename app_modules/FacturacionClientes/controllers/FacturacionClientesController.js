@@ -301,6 +301,7 @@ function __listarDocumentosPedidos(that, index, pedidos,empresaId,documentos, ca
     }, 300);
    
 };
+
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017
@@ -364,12 +365,100 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         facturacionCosmitet: args.generar_factura_agrupada.facturacionCosmitet
     };
     
-    var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };
+    var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho'};
     
-    var documentoFacturacion;
+    var parametrosQuemados = {
+        empresaId: '03',
+        tipoIdTercero: 'NIT',
+        terceroId: '830023202',
+        documentoId: '',
+        estado: 1,
+        tipoPago: '3',
+        usuario:usuario,
+        direccion_ip: '',
+        pedidos: [
+            /*{               
+                pedidos: [                    
+                    {                        
+                        vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
+                        documentoSeleccionado:[
+                            {bodegas_doc_id: 57760,prefijo: 'EFC', numero: 145715, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
+                            {bodegas_doc_id: 57760,prefijo: 'EFM', numero: 16451, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
+                            {bodegas_doc_id: 57760,prefijo: 'DTM', numero: 2, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
+                            {bodegas_doc_id: 57760,prefijo: 'EDFM', numero: 8131, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'}
+                        ]
+                        
+                    }                   
+                ]
+            },
+            {               
+                pedidos: [                    
+                    {                        
+                        vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
+                        documentoSeleccionado:[
+                            {bodegas_doc_id: 57747,prefijo: 'EFC', numero: 145698, fecha_registro: '2017-04-28T19:19:44.800Z', empresa: '03'},
+                            
+                        ]                       
+                    }                   
+                ]
+            }*/
+        ],
+        facturacionCosmitet:1
+    };
+     
+    var documentosSeleccionados = {pedidos:[]};
+        documentosSeleccionados.pedidos.push({
+                                vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
+                                documentoSeleccionado:[
+                                    {bodegas_doc_id: 57760,prefijo: 'EFC', numero: 145715, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
+                                    {bodegas_doc_id: 57760,prefijo: 'EFM', numero: 16451, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
+                                    {bodegas_doc_id: 57760,prefijo: 'DTM', numero: 2, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'},
+                                    {bodegas_doc_id: 57760,prefijo: 'EDFM', numero: 8131, fecha_registro: '2017-05-23T15:11:35.300Z', empresa: '03'}
+                                ]
+                            })
+    parametrosQuemados.pedidos.push(documentosSeleccionados);
+    
+    
+    var documentosSeleccionados2 = { pedidos:[]};
+        documentosSeleccionados2.pedidos.push({
+                                vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
+                                documentoSeleccionado:[
+                                    {bodegas_doc_id: 57747,prefijo: 'EFC', numero: 145698, fecha_registro: '2017-04-28T19:19:44.800Z', empresa: '03'}
+                                ]
+                            })
+    parametrosQuemados.pedidos.push(documentosSeleccionados2);
+    
+    /*parametrosQuemados.pedidos.push(
+                    {
+                        pedidos:[
+                            {
+                                vendedor:[{nombre_tercero: 'CAICEDO CASTAÑO TATIANA', tipo_id_tercero: 'CC', id:67039648}],
+                                documentoSeleccionado:[
+                                   {bodegas_doc_id: 57747,prefijo: 'EFC', numero: 145698, fecha_registro: '2017-04-28T19:19:44.800Z', empresa: '03'}
+                                ]
+                            }
+                        ]
+                    }
+                );*/
+
+    /*console.log("parametros Original", parametros);
+    console.log("parametrosQuemados Copia ", parametrosQuemados);*/
+    var parametroBodegaDocIdQuemado = {variable:"documento_factura_"+parametrosQuemados.empresaId, tipoVariable:1, modulo:'FacturasDespacho'};
+    
+    G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametrosQuemados, parametroBodegaDocIdQuemado, ip).then(function(resultado){
+ 
+        console.log("resultado [[__generarFacturasAgrupadas]]::: ", resultado)
+        res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
+
+    }).fail(function (err) {
+        console.log("err [generarPedidoBodegaFarmacia]: ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+    });
+  /*  var documentoFacturacion;
     var consultarTerceroContrato;
     var consultarParametrosRetencion;
     var def = G.Q.defer(); 
+    
     G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
         
         parametros.documentoId = resultado[0].valor;
@@ -463,10 +552,166 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
             err.msj = "Se ha generado un error..";
         }
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
-    }).done();
+    }).done();*/
 };
 
 
+
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de asignar el responsable del pedido, actualizar
+ *              el estado terminado del pedido, y si es el caso almacenar los productos
+ *              proximos a autorizar
+ * @fecha 03/02/2017 (DD/MM/YYYY)
+ */
+FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros, parametroBodegaDocId,ip, callback) {
+
+
+    console.log("*************FacturacionClientes.prototype.__generarFacturasAgrupadas*******************");
+    console.log("*************FacturacionClientes.prototype.__generarFacturasAgrupadas*******************");
+    console.log("*************FacturacionClientes.prototype.__generarFacturasAgrupadas*******************");
+    console.log("*************FacturacionClientes.prototype.__generarFacturasAgrupadas*******************");
+    
+
+    var that = this;   
+    var documentoFacturacion;
+    var consultarTerceroContrato;
+    var consultarParametrosRetencion;
+    var def = G.Q.defer(); 
+    
+    G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
+        
+        parametros.documentoId = resultado[0].valor;
+    
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros)
+        }else{
+            throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
+        }
+         
+        
+    }).then(function(resultado){
+        documentoFacturacion = resultado;
+        //console.log("resultado [listarPrefijosFacturas]: ", resultado);
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTerceroContrato',parametros);
+        }else{
+            throw {msj:'[listarPrefijosFacturas]: Consulta sin resultados', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+        consultarTerceroContrato = resultado;
+        //console.log("resultado [consultarTerceroContrato]: ", resultado);
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarParametrosRetencion',parametros);       
+        }else{
+            throw {msj:'[consultarTerceroContrato]: Consulta sin resultados', status: 404}; 
+        }
+
+    }).then(function(resultado){
+        consultarParametrosRetencion = resultado;   
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarFacturaAgrupada',documentoFacturacion[0]);       
+        }else{
+            throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404}; 
+        }
+
+    }).then(function(resultado){  
+        console.log("resultado [consultarParametrosRetencion]: ",resultado)
+        if(resultado.length > 0){
+            
+            throw {msj:'Se ha generado un error (Duplicate-key) Al crear la factura ['+ documentoFacturacion[0].id +"-" + documentoFacturacion[0].numeracion+"]", status: 409};   
+
+        }else{           
+            console.log("ip ", ip)
+            if(ip.substr(0, 6) === '::ffff'){               
+                return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
+            }else{                
+                def.resolve();                
+            }              
+        }
+         
+    }).then(function(resultado){
+       
+        if(!resultado || resultado.length > 0){
+            parametros.direccion_ip = ip;
+            return G.Q.ninvoke(that.m_facturacion_clientes,'transaccionGenerarFacturasAgrupadas',
+            {documento_facturacion:documentoFacturacion,
+             consultar_tercero_contrato:consultarTerceroContrato,
+             consultar_parametros_retencion:consultarParametrosRetencion,
+             parametros:parametros
+             });
+        }else{
+            throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
+        }
+            
+    }).then(function(resultado){                              
+          
+        var parametros = [];
+            parametros[0] = resultado.empresa_id;
+            parametros[1] = resultado.id;
+            parametros[2] = resultado.numeracion;
+    
+        var param = {param: parametros,funcion:'facturas_venta_fi'};
+        console.log("param >>>>>>>>>>> ", param)
+        return G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);       
+         
+    }).then(function(resultado){
+        
+        console.log("resultado ", resultado);
+         callback(false, {status: 200, msj: 'Se genera la factura satisfactoriamente', 
+             data: {generar_factura_agrupada:documentoFacturacion,
+                    resultado_sincronizacion_ws: resultado
+                }});
+ 
+        
+    }).fail(function(err){  
+        
+        var msj = "Erro Interno";
+        var status = 500;
+
+        if (err.status) {
+            msj = err.msj;
+            status = err.status;
+        }
+ 
+        callback(err, {status: status, msj: msj});
+    }).done();        
+            
+            
+            
+            
+            /*.then(function (resultado) {
+        console.log("resultado ", resultado)
+        var notificacion = {
+            aliasModulo: 'productos_en_pedidos',
+            opcionModulo: "sw_ver_notificaciones",
+            titulo: "Autorizaciones Pedidos Clientes",
+            mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
+        };
+
+        if (resultado) {
+            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
+            G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);
+        }
+
+        that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
+        callback(false, {status: 200, msj: 'Pedido Generado Correctamente No . ' + that.pedidoGenerado.numero_pedido, data: {pedidos_clientes: that.pedidoGenerado}});
+
+    }).fail(function (err) {
+        var msj = "Erro Interno";
+        var status = 500;
+
+        if (err.status) {
+            msj = err.msj;
+            status = err.status;
+        }
+
+        callback(err, {status: status, msj: msj});
+
+    }).done();*/
+
+};
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017

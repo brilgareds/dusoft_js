@@ -1084,24 +1084,15 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
  
             return G.Q.nfcall(__actualizarEstadoFacturaPedido,that,0,parametrosActualizarEstadoFactura, transaccion);
             
-        })/*.then(function(){
+        }).then(function(){
             
-           if(obj.parametros.facturacionCosmitet === '1'){
-               console.log("ENTRO POR A QUI OK");
-               return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,parametrosInsertaFacturaAgrupadaDetalle,"inv_facturas_agrupadas_despacho_d_tmp",transaccion);           
-           }else{               
-               def.resolve();
-           }
-           
-        })*/.then(function(){
-            
-            //console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
-           //console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
+            console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
+           console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
            
-           transaccion.commit(); 
+           //transaccion.commit(); 
         }).fail(function(err){
-            console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
+            console.log("err (/fail) [GenerarFacturasAgrupadas]: ", err);
             transaccion.rollback(err);
         }).done();
 

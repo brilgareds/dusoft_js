@@ -3,6 +3,27 @@ var FacturacionClientesModel = function (m_e008) {
 };
 
 /**
+ * @fecha 2017/06/01
+ * +Descripcion Metodo encargado de actualizar el estado de proceso de la factura
+ *              cuando el contrab ya se ha ejecutado
+ * @author Cristian Ardila
+ */
+FacturacionClientesModel.prototype.actualizarEstadoProcesoFacturacion = function(obj, callback){
+     
+    var query = G.knex("proceso_facturacion")
+                .where(function(){
+                    this.andWhere("id",obj.id)
+                }).update({estado: '3'});
+             
+        query.then(function(resultado){        
+            console.log("resultado [actualizarEstadoProcesoFacturacion]: ", resultado); 
+            callback(false, resultado);
+    }).catch(function(err){   
+            console.log("err (/catch) [actualizarEstadoProcesoFacturacion]: ", err);        
+            callback({err:err, msj: "Error al actualizar el estado de proceso de la factura"});
+    });    
+};
+/**
  * @author Cristian Ardila
  * @fecha 31/05/2016
  * +Descripcion Modelo encargado consultar la factura en estado de proceso
@@ -1140,10 +1161,10 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
         }).then(function(){
             
             console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
-           console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
-           console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
+            console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
+            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
            
-           //transaccion.commit(); 
+           transaccion.commit(); 
         }).fail(function(err){
             console.log("err (/fail) [GenerarFacturasAgrupadas]: ", err);
             transaccion.rollback(err);

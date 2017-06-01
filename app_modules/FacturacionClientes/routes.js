@@ -45,4 +45,8 @@ module.exports = function(app, di_container) {
     app.post('/api/FacturacionClientes/sincronizarFactura', function(req, res) {     
         c_facturacion_clientes.sincronizarFactura(req, res);
     });
+    
+    app.post('/api/FacturacionClientes/procesarDespachos', function(req, res) {     
+        c_facturacion_clientes.procesarDespachos(req, res);
+    });
 };

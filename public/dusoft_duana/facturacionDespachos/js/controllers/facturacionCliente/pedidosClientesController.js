@@ -523,6 +523,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 
                         $scope.$$watchers = null;
+                        //socket.remove(['onNotificarFacturacionTerminada']);  
                         //$scope.root = null;
                         
                         

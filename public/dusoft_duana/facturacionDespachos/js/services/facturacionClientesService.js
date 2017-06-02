@@ -272,7 +272,7 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.generarFacturaIndividualCompleta = function (parametros,callback) {
                      
-                        parametros.AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizara la facturacion ",
+                        parametros.AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizara la facturacion ?",
                             function(estadoConfirm){                
                                 if(estadoConfirm){
 
@@ -327,7 +327,7 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.generarFacturasAgrupadasCompleta = function (parametros, callback) {
 
-                        parametros.AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ",
+                        parametros.AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ? ",
                             function (estadoConfirm) {
                                 if (estadoConfirm) {
 

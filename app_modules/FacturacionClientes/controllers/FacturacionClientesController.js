@@ -435,14 +435,9 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
     
     that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Facturando...', 201,usuario); 
     res.send(G.utils.r(req.url, 'Generando facturacion...', 201, {generar_factura_agrupada: ''}));     
-    
-    
-     //if(ip.substr(0, 6) === '::ffff'){               
+                  
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)}).then(function(resultado){
-       
-       console.log("resultado [consultarDireccionIp]: ", resultado);
-       console.log("ip.substr(0, 6) ", ip.substr(0, 6));
-       
+        
         if(ip.substr(0, 6) === '::1' || resultado.length > 0){
             parametros.direccion_ip = ip;  
             return G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaEnProceso',parametros);
@@ -467,7 +462,7 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
         }
        
     }).then(function(resultado){
-        that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada:{factura:155663}},'Facturacion en proceso, tardara unos minutos',200,usuario); 
+        that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada:''},'Facturacion en proceso, tardara unos minutos',201,usuario); 
     }).fail(function(err){
         that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Se ha presentado errores en el proceso', 500,usuario); 
     });
@@ -506,7 +501,7 @@ function __insertarFacturaEnProcesoDetalle(that,index,datos,procesoId, callback)
  * @author Cristian Manuel Ardila
  * +Descripcion controlador el cual sera invocado desde un CronTab para generar
  *              la facturacion de los despachos ya en estado de proceso
- * @fecha 01/06/2017 DD/MM/YYYY 
+ * @fecha 01/06/2017 DD/MM/YYYY generarFacturasAgrupadasEnProceso
  */
 FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(req, res){
     
@@ -521,7 +516,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(req, 
         documentoId: '',
         estado: 1,
         tipoPago: '',
-        usuario:usuario,
+        usuario:'',
         direccion_ip: '',
         pedidos: [],
         facturacionCosmitet:1
@@ -531,15 +526,18 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(req, 
     var consultaDocumentos = {vendedor:[], documentoSeleccionado:[]};
         
     var documentosSeleccionados = {pedidos:[]};
-       
-     that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Facturando...', 201,usuario); 
-     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {generar_factura_agrupada: ''})); 
-     that.e_facturacion_clientes.onNotificarFacturacionTerminada({factura:155663},'Se ha realizado la facturacion de cosmitet con exito',200,usuario); 
-    /*G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion').then(function(resultado){
+    
+    var resultadoFacturacionAgrupada;
+   
+    that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Facturando...', 201,usuario); 
+    res.send(G.utils.r(req.url, 'Generando factura...', 201, {generar_factura_agrupada: ''})); 
+     
+    G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion').then(function(resultado){
        
         if(resultado.length > 0){
             
             parametros.empresaId = resultado[0].empresa_id;
+            parametros.usuario = resultado[0].usuario_id;
             parametros.tipoIdTercero =resultado[0].tipo_id_cliente;
             parametros.terceroId = resultado[0].cliente_id;
             parametros.tipoPago=resultado[0].tipo_pago_id;
@@ -562,21 +560,26 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(req, 
         }
        
     }) .then(function(){
-     
+        
         return G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, parametros.direccion_ip);
         
     }).then(function(resultado){
         
-        console.log("resultado [__generarFacturasAgrupadas]:: ", resultado)
-        
+        resultadoFacturacionAgrupada = resultado;  
         return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", idProceso);
         
     }).then(function(resultado){
-        res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
+      
+        that.e_facturacion_clientes.onNotificarFacturacionTerminada(
+                resultadoFacturacionAgrupada.data,
+                resultadoFacturacionAgrupada.msj,
+                200,
+                parametros.usuario); 
     }).fail(function (err) {
         console.log("err [generarPedidoBodegaFarmacia]: ", err);
-        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
-    });*/
+       that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Se ha presentado errores en el proceso', 500,usuario); 
+       
+    });
     
 };
 /*

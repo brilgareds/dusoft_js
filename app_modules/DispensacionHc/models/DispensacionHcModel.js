@@ -2641,9 +2641,9 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
          */       
         if(obj.actualizarFechaUltimaEntrega === 1){
             parametros = {sw_pendiente : obj.conPendientes,
-                         evolucion_id: obj.evolucion,
-                         fecha_ultima_entrega: obj.fecha_ultima_entrega
-                        };
+                evolucion_id: obj.evolucion,
+                fecha_ultima_entrega: obj.fecha_ultima_entrega
+            };
             
             sql = "UPDATE dispensacion_estados \
                     set fecha_entrega = now(),\
@@ -2654,12 +2654,12 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
             
         }else{        
             parametros = {fecha_entrega: obj.fechaEntrega,
-                    fecha_minima_entrega: obj.fechaMinima,
-                    fecha_maxima_entrega: obj.fechaMaxima,
-                    sw_pendiente : obj.conPendientes,
-                    evolucion_id: obj.evolucion,
-                    fecha_ultima_entrega: obj.fecha_ultima_entrega
-                    };
+                fecha_minima_entrega: obj.fechaMinima,
+                fecha_maxima_entrega: obj.fechaMaxima,
+                sw_pendiente : obj.conPendientes,
+                evolucion_id: obj.evolucion,
+                fecha_ultima_entrega: obj.fecha_ultima_entrega
+            };
                 
             sql = "UPDATE  dispensacion_estados \
                 set numero_entrega_actual= numero_entrega_actual+1,\

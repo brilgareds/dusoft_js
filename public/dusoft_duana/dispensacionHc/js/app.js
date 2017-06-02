@@ -42,12 +42,12 @@ define([
     "models/UsuarioHc",
     "models/ModuloHc",
     "models/BodegaHc",
-    "controllers/dispensacionHcController",
-    "controllers/dispensacionHcDetalleController",
+    "controllers/DispensacionHcController",
+    "controllers/DispensacionHcDetalleController",
     "controllers/dispensacionRealizarEntregaController",
-    "controllers/dispensacionAutorizarDispensacion",
+    "controllers/DispensacionAutorizarDispensacion",
     "controllers/dispensacionRegistrarEventoController",
-    "controllers/descartarPendientesFormulaController",
+    "controllers/DescartarPendientesFormulaController",
     "controllers/dispensacionMovimientoFormulasPacienteController",
     "services/dispensacionHcService",
     "webNotification"
@@ -92,7 +92,7 @@ define([
                     url: "/DispensacionHc",
                     text: "DispensacionHc", 
                     templateUrl: "views/dispensacionHc/index.html",
-                    controller: "dispensacionHcController"
+                    controller: "DispensacionHcController"
                 }).state('DispensarFormulaDetalle', {
                     url: "/DispensarFormulaDetalle",
                     text: "Detalle de formula para dispensar",

@@ -1,27 +1,25 @@
+<div class="row">        
+    <div class="col-md-12">
+        <tabset>
+            <tab  ng-click="cargarListaNotificacionCotizacion('')">
+                <tab-heading >
+                    <i class=""></i>  Dispensacion formula
+                </tab-heading>
+                <br> 
+                <div ng-include="'views/dispensacionHc/listarFormulas.html'"></div>
+            </tab>  
 
- 
-        <div class="row">        
-            <div class="col-md-12">
-                <tabset>
-                    <tab  ng-click="cargarListaNotificacionCotizacion('')">
-                        <tab-heading >
-                            <i class=""></i>  Dispensacion formula
-                        </tab-heading>
-                        <br> 
-                        <div ng-include="'views/dispensacionHc/listarFormulas.html'"></div>
-                    </tab>  
-                    
-                     <tab  ng-click="cargarListaNotificacionCotizacion('')">
-                        <tab-heading >
-                            <i class=""></i>  Descartar pendientes
-                        </tab-heading>
-                        <br> 
-                        <div ng-include="'views/dispensacionHc/listarFormulasPendientes.html'"></div>
-                    </tab>  
-                  
-                </tabset>                                      
-            </div>
-        </div>    
+             <tab  ng-click="cargarListaNotificacionCotizacion('')">
+                <tab-heading >
+                    <i class=""></i>  Descartar pendientes
+                </tab-heading>
+                <br> 
+                <div ng-include="'views/dispensacionHc/listarFormulasPendientes.html'"></div>
+            </tab>  
+
+        </tabset>                                      
+    </div>
+</div>    
   
-     <visualizar-reporte></visualizar-reporte>
+<visualizar-reporte></visualizar-reporte>
 

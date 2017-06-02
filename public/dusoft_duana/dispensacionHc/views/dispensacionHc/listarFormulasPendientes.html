@@ -1,31 +1,8 @@
-
-<div class="input-group col-sm-12 col-md-12 col-lg-12">                       
-               <!--     <div class="row" >
-                        <div class="col-md-4">
-                            <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4> 
-
-                            <div class="btn-group">                             
-                                
-                                 <label class="btn btn-default">
-                                    <input type="radio" name="estadoFormula" ng-model="root.estadoFormula" value="1"/>
-                                    <span class="label label-default">Pendientes</span>
-                                </label>
-                               
-
-                            </div>                               
-                              <span class="label label-default" ng-show="root.estadoFormula == 1" >Pendientes</span>                                                           
-                        </div>    
-                        
-                    </div> //-->
+<div class="input-group col-sm-12 col-md-12 col-lg-12">                                      
 </div>
-
-
 <br>
-
-<div class ="row">
-   
-    
-     <div class="col-md-2">
+<div class ="row">     
+    <div class="col-md-2">
             <p class="input-group">
                 <input type="text" class="form-control readonlyinput" 
                        datepicker-popup="{{format}}" 
@@ -43,8 +20,7 @@
                     <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
             </p>
-        </div>
-    
+        </div>    
         <div class="col-md-2">
             <p class="input-group">
                 <input type="text" class="form-control readonlyinput" 
@@ -63,12 +39,7 @@
                 </span>
             </p>
         </div>
-    
-    
-        
-         <div class="col-md-3 pull-right">                                                                
-                                                     
-            
+        <div class="col-md-3 pull-right">                                                                                      
                 <div class="input-group">
                     <div class="input-group-btn">
                         
@@ -113,25 +84,11 @@
           
         </div>
      <br>
-   
-    <!-- <div ng-if="root.estadoFormula == 0"> //-->
-         
-         <div class="table-responsive" style="clear:both; width: 768; height: 1024px;">
+    
+        <div class="table-responsive" style="clear:both; width: 768; height: 1024px;">
             <div class="defaultGrid grid-responsive" ng-grid="listaFormulasPendientes" ></div>
         </div>
-         
-   <!--  </div> 
-   
-     <div ng-if="root.estadoFormula == 1">
-         
-         <div class="table-responsive" style="clear:both; width: 768; height: 1024px;">
-            <div class="defaultGrid grid-responsive" ng-grid="" ></div>
-        </div>
-         
-     </div> //-->
-     
-     
-     
+       
     </br>
     <div class="row text-center">
         <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
@@ -141,16 +98,3 @@
             <span class="glyphicon glyphicon-chevron-right" ></span>
         </button>
     </div>
- 
- 
-  
-                     <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                          {{tipoDocumento.nombre}} <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li ng-repeat="tipoDocumento in filtrosTipoDocumento">
-                                <a href="javascript:void(0)" ng-click="onSeleccionTipoDocumento(tipoDocumento)">
-                                    {{tipoDocumento.nombre}}
-                                </a>
-                            </li>
-                        </ul>   //-->

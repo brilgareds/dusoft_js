@@ -1,0 +1,31 @@
+{
+    "module": "CajaGeneral",
+    "dependency": {
+        "controllers": [{
+                "caja_general_controller": {
+                    "module": "CajaGeneral",
+                    "controller": "CajaGeneralController",
+                    "alias": "c_caja_general"
+                }
+            }],
+        "models": [{
+                "caja_general_model": {
+                    "module": "CajaGeneral",
+                    "model": "CajaGeneralModel",
+                    "alias": "m_caja_general"
+                },
+                "sincronizacion_model": {
+                    "module": "Sincronizacion",
+                    "model": "SincronizacionModel",
+                    "alias": "m_sincronizacion"
+                },
+                "terceros_model": {
+                    "module": "Terceros/GestionTerceros",
+                    "model": "TercerosModel",
+                    "alias": "m_gestion_terceros"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

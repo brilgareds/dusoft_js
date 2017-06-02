@@ -19,10 +19,10 @@ define([
     "includes/validation/ValidacionNumero",
     "includes/validation/ValidacionNumeroEntero",
     "includes/validation/ValidacionNumeroDecimal",
-    "includes/widgets/InputCheck",     
-    "includes/menu/menucontroller",   
+    "includes/widgets/InputCheck",
+    "includes/menu/menucontroller",
     "includes/alert/Alert",
-    "includes/header/HeaderController",           
+    "includes/header/HeaderController",
     "includes/classes/Usuario",
     "includes/http/Request",
     "includes/helpersdirectives/visualizarReporte",
@@ -31,6 +31,7 @@ define([
     "models/TipoTerceros",
     "models/OrdenesComprasProveedores",
     "models/Totales",
+    "models/Grupos",
     "models/TerceroDespacho",
     "models/EmpresaDespacho",
     "models/FacturaProveedores",
@@ -38,17 +39,20 @@ define([
     "models/DocumentoDespacho",
     "models/VendedorDespacho",
     "models/PedidoDespacho",
+    "models/CajaGeneral",
     "controllers/facturacionCliente/facturacionClientesController",
     "controllers/facturacionCliente/pedidosClientesController",
     "controllers/facturacionCliente/VentanaMensajeSincronizacionController",
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
+    "controllers/cajaGeneral/CajaGeneralController",
     "services/facturacionClientesService",
     "services/facturacionProveedoresService",
+    "services/cajaGeneralService",
     "webNotification"
-], function(angular) { 
+], function(angular) {
 
-        /* App Module and its dependencies */
+    /* App Module and its dependencies */
     var facturacionClientes = angular.module('Facturacion', [
         'ui.router',
         'controllers',
@@ -76,17 +80,17 @@ define([
         }]).run(["$rootScope", "localStorageService", "Usuario", "$state", "$location", function($rootScope, localStorageService, Usuario, $state, $location) {
 
             $rootScope.name = "Bienvenido";
-            
+
 
             $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion) {
-                
+
                 var vista_predeterminada = "Despacho";
 
                 facturacionClientes.urlRouterProvider.otherwise(vista_predeterminada);
 
                 facturacionClientes.stateProvider.state('Despacho', {
                     url: "/Despacho",
-                    text: "Facturacion Despacho", 
+                    text: "Facturacion Despacho",
                     templateUrl: "views/facturacionClientes/index.html",
                     controller: "facturacionClientesController"
                 }).state('PedidosClientesDespacho', {
@@ -94,21 +98,27 @@ define([
                     text: "Listado de los productos listos para facturar",
                     templateUrl: "views/facturacionClientes/listarPedidos.html",
                     controller: "pedidosClientesController",
-                    parent_name : "Despacho"
+                    parent_name: "Despacho"
                 }).state('FacturacionProveedores', {
                     url: "/FacturacionProveedores",
-                    text: "Facturacion Proveedores", 
+                    text: "Facturacion Proveedores",
                     templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",
                     controller: "FacturacionProveedorController"
                 }).state('DetalleRecepcionParcial', {
                     url: "/DetalleRecepcionParcial",
-                    text: "Detalle Recepcion Parcial", 
+                    text: "Detalle Recepcion Parcial",
                     parent_name: "Despacho",
                     templateUrl: "views/facturacionProveedores/detallePedidos.html",
-                    controller: "DetalleRecepcionParcialController"                        
+                    controller: "DetalleRecepcionParcialController"
+                }).state('CajaGeneral', {
+                    url: "/CajaGeneral",
+                    text: "Caja General",
+                    parent_name: "Despacho",
+                    templateUrl: "views/cajaGeneral/index.html",
+                    controller: "CajaGeneralController"
                 });
-                    
+
 
                 if ($location.path() === "")
                     $state.go(vista_predeterminada);
@@ -120,5 +130,5 @@ define([
 
     angular.bootstrap(document, ['Facturacion']);
     return facturacionClientes;
-    
+
 });

@@ -1,0 +1,111 @@
+<div class="row">
+    <div class="col-md-6">
+        <fieldset>
+            <div class="col-md-5 pull-left">
+                <legend>Cajas</legend>
+                <ui-select ng-model="root.cajas"
+                           theme="select2"
+                           class="form-control selectgeneral pull-left col-md-4"
+                           ng-change="onSeleccionFiltro()">
+                    <ui-select-match   placeholder="Seleccionar Caja">{{ $select.selected.getDescripcionCaja()}}</ui-select-match>
+                    <ui-select-choices repeat="filtro in root.caja | filter:$select.search">
+                        {{ filtro.getDescripcionCaja() }}
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-md-6">
+        <div class="col-md-5 pull-right">
+            <legend>&nbsp;</legend>
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtro.descripcion}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu" ng-selected="onColumnaSize(root.filtro.tipo)">
+                        <li ng-repeat="filtro in root.filtros">
+                            <a  href="javascript:void(0)" ng-click="onSeleccionTipoTercero(filtro)">{{filtro.descripcion}}</a>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li ng-repeat="tipoTercero in root.tipoTerceros">
+                            <a  href="javascript:void(0)" ng-click="onSeleccionTipoTercero(tipoTercero)">
+                                {{tipoTercero.descripcion}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <input ng-show="root.visibleBuscador"
+                       type="text"
+                       class="form-control"
+                       ng-keypress="buscarTercero($event);"
+                       ng-model="root.termino_busqueda_tercero"
+                       placeholder="Buscar" name="" id="" />
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<legend></legend>
+<br />
+<div class="row">
+    <div class="col-md-3">
+        Identificación:  <b> {{root.terceros[0].getTipoId()}} {{root.terceros[0].getId()}}</b>
+    </div>
+    <div class="col-md-3">
+        Responsable :<b> {{root.terceros[0].getNombre()}}</b>
+    </div>
+    <div class="col-md-2">
+        Dirección :<b> {{root.terceros[0].getDireccion()}}</b>
+    </div>
+    <div class="col-md-2">
+        Telefono :<b> {{root.terceros[0].getTelefono()}}</b>
+    </div>
+    <div class="col-md-2">
+        Email : <b>{{root.terceros[0].getCorreo()}}</b>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <tabset>
+            <tab  >
+                <tab-heading ng-click="tipoFactura(1)">
+                    <i class=""></i> Facturas Credito
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+            </tab>
+            <tab >
+                <tab-heading ng-click="tipoFactura(0)">
+                    <i class=""></i> Facturas Contado
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+            </tab>
+            <tab >
+                <tab-heading >
+                    <i class=""></i> Notas Facturas
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+            </tab>
+            <tab  >
+                <tab-heading >
+                    <i class=""></i> Manejo Facturas
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+            </tab>
+            <tab  >
+                <tab-heading >
+                    <i class=""></i> Cuadre Facturas
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+            </tab>
+        </tabset>
+    </div>
+</div>
+
+<visualizar-reporte></visualizar-reporte>
+

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <div class="modal-header">
+            <button type="button" class="close" ng-click="cerrar()">&times;</button>
+            <h4 class="modal-title"><b>Conceptos Facturas</b></h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="col-md-12 pull-left">
+                            <label class="control-label" for="IsSmallBusiness">Grupo</label>
+                            <legend></legend>
+                            <ui-select ng-model="root.grupo"
+                                       theme="select2"
+                                       class="form-control selectgeneral pull-left col-md-4"
+                                       ng-change="onSeleccionFiltroGrupo()">
+                                <ui-select-match  placeholder="Seleccionar Grupo">{{ $select.selected.getConceptoId()}} - {{ $select.selected.getDescripcion()}}</ui-select-match>
+                                <ui-select-choices repeat="filtro in root.grupos | filter:$select.search">
+                                    {{ filtro.getConceptoId()}} - {{ filtro.getDescripcion()}}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="col-md-12 pull-left">
+                            <label class="control-label" for="IsSmallBusiness">Conceptos</label>
+                            <legend></legend>
+                            <ui-select ng-model="root.cajas"
+                                       theme="select2"
+                                       class="form-control selectgeneral pull-left col-md-4"
+                                       ng-change="onSeleccionFiltro()">
+                                <ui-select-match  placeholder="Seleccionar transportadora">{{ $select.selected.getDescripcionCaja()}}</ui-select-match>
+                                <ui-select-choices repeat="filtro in root.caja | filter:$select.search">
+                                    {{ filtro.getDescripcionCaja() }}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="row">
+                    <label class="col-md-3 control-label" for="IsSmallBusiness">Tipo de Pago:</label>
+                    <div class="col-md-9">
+                        <div class="btn-group">
+                            <label class="btn btn-default">
+                                <input type="radio" name="tipoProducto"  value="0" /><span class="label label-primary">Efectivo</span>
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name ="tipoProducto" value="1" /><span class="label label-success">Credito</span>
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" name ="tipoProducto"  value="2" /><span class="label label-danger">Cheque</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="control-label" for="IsSmallBusiness">Precio:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input
+                            type="text"
+                            class="form-control"
+                            validacion-numero-decimal
+                            ng-model="root.precio"
+                            name="" id="" />
+                    </div>
+                    <br />
+                    <br />
+                    <br />
+                    <div class="col-md-4">
+                        <label class="control-label" for="IsSmallBusiness">Gravamen:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input
+                            type="text"
+                            class="form-control"
+                            validacion-numero-decimal
+                            ng-model="root.gravamen"
+                            name="" id="" />
+                    </div>
+                    <br />
+                    <br />
+                    <br />
+                    <div class="col-md-12">
+                        <input
+                            type="text"
+                            class="form-control"
+                            ng-model="root.descripcion"
+                            name="" id="" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-warning" ng-click="cerrar()">Cerrar</button>
+            <button class="btn btn-primary" ng-click="guardar()">Guardar</button>
+        </div>
+    </body>
+</html>

@@ -9,24 +9,19 @@ var DispensacionHcModel = function() {};
 DispensacionHcModel.prototype.consultarEvolucionFormula = function(obj,callback){
    
     var query = G.knex.distinct('evolucion_id')
-          .select()   
-          .from('hc_formulacion_antecedentes')
-          .where(function() {
-                   
-                    if((obj.filtro.tipo === '0'  ||
-                       obj.filtro.tipo === '1'  ||
-                       obj.filtro.tipo === '2'  ||
-                       obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
-                      
+            .select()   
+            .from('hc_formulacion_antecedentes')
+            .where(function() {                   
+                if((obj.filtro.tipo === '0'  ||
+                    obj.filtro.tipo === '1'  ||
+                    obj.filtro.tipo === '2'  ||
+                    obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
                         this.where(G.knex.raw("transcripcion_medica = " + obj.filtro.tipo))
-                            .andWhere(G.knex.raw("numero_formula::varchar = " + obj.terminoBusqueda));
-                       
-                   }
-                    
-          });
+                        .andWhere(G.knex.raw("numero_formula::varchar = " + obj.terminoBusqueda));
+                }                    
+            });
            
-          query.then(function(resultado){ 
-             
+    query.then(function(resultado){              
         callback(false, resultado)
     }).catch(function(err){    
         console.log("err [consultarEvolucionFormula]:", err);
@@ -52,22 +47,27 @@ DispensacionHcModel.prototype.consultarNumeroFormula = function(obj,callback){
         .innerJoin("hc_evoluciones AS b", 
             function() {
                 this.on("a.evolucion_id", "b.evolucion_id")
-        }).where("a.evolucion_id", obj.evolucionId)
-  
-    .then(function(resultado) {
-        callback(false, resultado);
-    }). catch (function(error) {
-        console.log("err[consultarNumeroFormula]: ", error);
-        callback(error);
-    });
+        })
+        .where("a.evolucion_id", obj.evolucionId) 
+        .then(function(resultado) {
+            callback(false, resultado);
+        }). catch (function(error) {
+            console.log("err[consultarNumeroFormula]: ", error);
+            callback(error);
+        });
     
 }; 
   
- 
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Metodo que calcula el intervalo de fecha para calcular las entregas 
+ *              de una formula
+ */
 DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
 {
     var sql = "select to_char(fecha, 'yyyy-mm-dd')as fecha\
-				from \
+               from \
 	       (SELECT CAST('"+parametros.fecha+"' AS DATE) "+parametros.operacion+" CAST('"+parametros.dias+" days' AS INTERVAL) as fecha)as d;";
  
     G.knex.raw(sql).then(function(resultado){
@@ -89,158 +89,156 @@ DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
 DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
      
     var colSubQuery = [G.knex.raw(" DISTINCT '0' AS tipo_formula"),
-                        "a.tipo_formula as transcripcion_medica",
-                        G.knex.raw("CASE WHEN (a.tipo_formula='0' or a.tipo_formula ='2') THEN 'FORMULACION' ELSE 'TRANSCRIPCION' END AS descripcion_tipo_formula"),
-                        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS fecha_registro"),
-                        "a.tipo_id_paciente",
-                        "a.paciente_id",
-                        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS registro"),
-                        G.knex.raw("CURRENT_DATE as hoy"),
-                        "a.sw_refrendar as refrendar",
-                        "a.evolucion_id",
-                        G.knex.raw("coalesce(a.formula_id, 0) AS numero_formula"),
-                        G.knex.raw("edad(b.fecha_nacimiento) as edad"),
-                        "b.sexo_id",
-                        G.knex.raw("b.primer_apellido ||' '||b.segundo_apellido AS apellidos"),
-                        G.knex.raw("b.primer_nombre||' '||b.segundo_nombre AS nombres"),
-                        "b.residencia_telefono",
-                        "b.residencia_direccion",
-                        G.knex.raw("'1' as sw_entrega_med"),
-                        G.knex.raw("TO_CHAR(a.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion"),
-                        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') as fecha_formulacion"),
-                        "e.nombre_medico as nombre",
-                        "a.numero_entrega_actual",
-                        "a.numero_total_entregas",
-                        G.knex.raw("TO_CHAR(a.fecha_entrega,'YYYY-MM-DD') as fecha_entrega"),
-                        "f.tipo_bloqueo_id",
-                        "f.descripcion AS bloqueo",
-                        G.knex.raw("COALESCE(i.plan_id,0) as plan_id"),
-                        "i.plan_descripcion",
-                        "a.sw_finalizado",
-                        "a.numero_total_entregas",
-                        "a.numero_entrega_actual",
-                        G.knex.raw("CASE WHEN (\
-                                                SELECT count(distinct(usuario_id)) as usuario_id \
-                                                FROM hc_dispensacion_medicamentos_tmp \
-                                                WHERE evolucion_id = a.evolucion_id) = 1 THEN (\n\
-                                            CASE WHEN (\
-                                                SELECT count(distinct(usuario_id)) as usuario_id \
-                                                FROM hc_dispensacion_medicamentos_tmp \n\
-                                                WHERE evolucion_id = a.evolucion_id and usuario_id = "+ obj.usuarioId +") = 1 THEN '0' \n\
-                                                ELSE '1' END ) \n\
-                                        WHEN (\
-                                                SELECT count(distinct(usuario_id)) as usuario_id \
-                                                FROM hc_dispensacion_medicamentos_tmp \
-                                                WHERE evolucion_id = a.evolucion_id) = 0 THEN '0' END AS formula_en_proceso"),
-                        G.knex.raw("CASE WHEN (\
-                                                SELECT count(distinct(usuario_id)) as usuario_id \
-                                                FROM hc_dispensacion_medicamentos_tmp \
-                                                WHERE evolucion_id = a.evolucion_id) = 1 THEN (\
-                                    CASE WHEN (\
-                                                SELECT count(distinct(usuario_id)) as usuario_id \
-                                                FROM hc_dispensacion_medicamentos_tmp \n\
-                                                WHERE evolucion_id = a.evolucion_id and usuario_id = "+ obj.usuarioId +") = 1 THEN (\
-                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
-                            THEN (\
-                                CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL OR a.sw_pendiente = '1' THEN(\
-                                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
-                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '0'\
-                                             WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '1'\
-                                             ELSE '2' END\
-                                        )\
-                                    WHEN a.sw_pendiente = '2' THEN '4' END\
-                                )\
-                        WHEN a.sw_finalizado = '1'\
-                            THEN (\
-                                 CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN '3' \
-                                    WHEN a.sw_pendiente = '1' THEN '3' \
-                                    WHEN a.sw_pendiente = '2' THEN '4' END\
-                                ) \
-                         END ) ELSE '5' END ) \n\
+        "a.tipo_formula as transcripcion_medica",
+        G.knex.raw("CASE WHEN (a.tipo_formula='0' or a.tipo_formula ='2') THEN 'FORMULACION' ELSE 'TRANSCRIPCION' END AS descripcion_tipo_formula"),
+        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS fecha_registro"),
+        "a.tipo_id_paciente",
+        "a.paciente_id",
+        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS registro"),
+        G.knex.raw("CURRENT_DATE as hoy"),
+        "a.sw_refrendar as refrendar",
+        "a.evolucion_id",
+        G.knex.raw("coalesce(a.formula_id, 0) AS numero_formula"),
+        G.knex.raw("edad(b.fecha_nacimiento) as edad"),
+        "b.sexo_id",
+        G.knex.raw("b.primer_apellido ||' '||b.segundo_apellido AS apellidos"),
+        G.knex.raw("b.primer_nombre||' '||b.segundo_nombre AS nombres"),
+        "b.residencia_telefono",
+        "b.residencia_direccion",
+        G.knex.raw("'1' as sw_entrega_med"),
+        G.knex.raw("TO_CHAR(a.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion"),
+        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') as fecha_formulacion"),
+        "e.nombre_medico as nombre",
+        "a.numero_entrega_actual",
+        "a.numero_total_entregas",
+        G.knex.raw("TO_CHAR(a.fecha_entrega,'YYYY-MM-DD') as fecha_entrega"),
+        "f.tipo_bloqueo_id",
+        "f.descripcion AS bloqueo",
+        G.knex.raw("COALESCE(i.plan_id,0) as plan_id"),
+        "i.plan_descripcion",
+        "a.sw_finalizado",
+        "a.numero_total_entregas",
+        "a.numero_entrega_actual",
+        G.knex.raw("CASE WHEN (\
+                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                FROM hc_dispensacion_medicamentos_tmp \
+                                WHERE evolucion_id = a.evolucion_id) = 1 THEN (\n\
+                            CASE WHEN (\
+                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                WHERE evolucion_id = a.evolucion_id and usuario_id = "+ obj.usuarioId +") = 1 THEN '0' \n\
+                                ELSE '1' END ) \n\
                         WHEN (\
                                 SELECT count(distinct(usuario_id)) as usuario_id \
-                                FROM hc_dispensacion_medicamentos_tmp \n\
-                                WHERE evolucion_id = a.evolucion_id) = 0 THEN (\
-                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
-                            THEN (\
-                                CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL OR a.sw_pendiente = '1' THEN(\
-                                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
-                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '0'\
-                                             WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '1'\
-                                             ELSE '2' END\
-                                        )\
-                                    WHEN a.sw_pendiente = '2' THEN '4' END\
-                                )\
-                        WHEN a.sw_finalizado = '1'\
-                            THEN (\
-                                 CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN '3' \
-                                    WHEN a.sw_pendiente = '1' THEN '3' \
-                                    WHEN a.sw_pendiente = '2' THEN '4' END\
-                                ) \
-                         END ) END  AS estado_entrega"),
-        
-        
-        
-                        G.knex.raw("CASE WHEN (\
-                                                SELECT count(distinct(usuario_id)) as usuario_id \
-                                                FROM hc_dispensacion_medicamentos_tmp \
-                                                WHERE evolucion_id = a.evolucion_id) = 1 THEN ( \n\
-                                    CASE WHEN (\
-                                                SELECT count(distinct(usuario_id)) as usuario_id \
-                                                FROM hc_dispensacion_medicamentos_tmp \n\
-                                                WHERE evolucion_id = a.evolucion_id and usuario_id = "+obj.usuarioId +") = 1 THEN (\
-                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
-                            THEN (\
-                                CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
-                                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
-                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Activa'\
-                                        WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Refrendar'\
-                                        ELSE 'Falta ' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' END\
-                                        )\
-                                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
-                                ) \
-                        WHEN a.sw_finalizado = '1'\
-                            THEN (\
-                                 CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tto finalizo' \
-                                    WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
-                                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
-                                ) \
-                        END ) ELSE (SELECT nombre FROM system_usuarios WHERE usuario_id = (\
-                                                SELECT distinct(usuario_id) as usuario_id \
-                                                FROM hc_dispensacion_medicamentos_tmp \n\
-                                                WHERE evolucion_id = a.evolucion_id )) END )\n\
-                         WHEN (\
+                                FROM hc_dispensacion_medicamentos_tmp \
+                                WHERE evolucion_id = a.evolucion_id) = 0 THEN '0' END AS formula_en_proceso"),
+        G.knex.raw("CASE WHEN (\
+                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                FROM hc_dispensacion_medicamentos_tmp \
+                                WHERE evolucion_id = a.evolucion_id) = 1 THEN (\
+                    CASE WHEN (\
                                 SELECT count(distinct(usuario_id)) as usuario_id \
                                 FROM hc_dispensacion_medicamentos_tmp \n\
-                                WHERE evolucion_id = a.evolucion_id) = 0 THEN (\n\
-                            CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
-                            THEN (\
-                                CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
-                                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
-                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Activa'\
-                                        WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Refrendar'\
-                                        ELSE 'Falta ' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' END\
-                                        )\
-                                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
-                                ) \
-                        WHEN a.sw_finalizado = '1'\
-                            THEN (\
-                                 CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tto finalizo' \
-                                    WHEN a.sw_pendiente = '1' THEN 'Tto finalizo' \
-                                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
-                                ) \
-                        END ) END  AS descripcion_estado_entrega"),
-        
-                        "a.sw_pendiente as sw_estado"
-                        ];
+                                WHERE evolucion_id = a.evolucion_id and usuario_id = "+ obj.usuarioId +") = 1 THEN (\
+        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
+            THEN (\
+                CASE \
+                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL OR a.sw_pendiente = '1' THEN(\
+                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
+                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '0'\
+                             WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '1'\
+                             ELSE '2' END\
+                        )\
+                    WHEN a.sw_pendiente = '2' THEN '4' END\
+                )\
+        WHEN a.sw_finalizado = '1'\
+            THEN (\
+                 CASE \
+                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN '3' \
+                    WHEN a.sw_pendiente = '1' THEN '3' \
+                    WHEN a.sw_pendiente = '2' THEN '4' END\
+                ) \
+         END ) ELSE '5' END ) \n\
+        WHEN (\
+                SELECT count(distinct(usuario_id)) as usuario_id \
+                FROM hc_dispensacion_medicamentos_tmp \n\
+                WHERE evolucion_id = a.evolucion_id) = 0 THEN (\
+        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
+            THEN (\
+                CASE \
+                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL OR a.sw_pendiente = '1' THEN(\
+                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
+                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '0'\
+                             WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '1'\
+                             ELSE '2' END\
+                        )\
+                    WHEN a.sw_pendiente = '2' THEN '4' END\
+                )\
+        WHEN a.sw_finalizado = '1'\
+            THEN (\
+                 CASE \
+                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN '3' \
+                    WHEN a.sw_pendiente = '1' THEN '3' \
+                    WHEN a.sw_pendiente = '2' THEN '4' END\
+                ) \
+        END ) END  AS estado_entrega"),
+         
+        G.knex.raw("CASE WHEN (\
+                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                FROM hc_dispensacion_medicamentos_tmp \
+                                WHERE evolucion_id = a.evolucion_id) = 1 THEN ( \n\
+                    CASE WHEN (\
+                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                WHERE evolucion_id = a.evolucion_id and usuario_id = "+obj.usuarioId +") = 1 THEN (\
+        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
+            THEN (\
+                CASE \
+                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
+                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
+                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Activa'\
+                        WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Refrendar'\
+                        ELSE 'Falta ' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' END\
+                        )\
+                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
+                ) \
+        WHEN a.sw_finalizado = '1'\
+            THEN (\
+                 CASE \
+                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tto finalizo' \
+                    WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
+                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
+                ) \
+        END ) ELSE (SELECT nombre FROM system_usuarios WHERE usuario_id = (\
+                                SELECT distinct(usuario_id) as usuario_id \
+                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                WHERE evolucion_id = a.evolucion_id )) END )\n\
+         WHEN (\
+                SELECT count(distinct(usuario_id)) as usuario_id \
+                FROM hc_dispensacion_medicamentos_tmp \n\
+                WHERE evolucion_id = a.evolucion_id) = 0 THEN (\n\
+            CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
+            THEN (\
+                CASE \
+                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
+                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
+                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Activa'\
+                        WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Refrendar'\
+                        ELSE 'Falta ' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' END\
+                        )\
+                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
+                ) \
+        WHEN a.sw_finalizado = '1'\
+            THEN (\
+                 CASE \
+                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tto finalizo' \
+                    WHEN a.sw_pendiente = '1' THEN 'Tto finalizo' \
+                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
+                ) \
+        END ) END  AS descripcion_estado_entrega"),
+
+        "a.sw_pendiente as sw_estado"
+    ];
     var subQuery = G.knex.select(colSubQuery)
                 .from("dispensacion_estados AS a")
                 .innerJoin("pacientes AS b", 
@@ -271,49 +269,40 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                             this.on("h.plan_id","i.plan_id")
                 }).as("a")
                         
-     var query =  G.knex(subQuery)
-                    .where(function() {
-                  
-                    if(obj.fechaInicial !=="" && obj.fechaFinal !=="" && obj.terminoBusqueda ==="" || obj.terminoBusqueda ===""){
-                        this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
-                    }
-                    
-                   /* if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
-                        this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
-                            .andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda));
-                       
-                   }*/
-                    if((obj.filtro.tipo === '0'  ||
-                       obj.filtro.tipo === '1'  ||
-                       obj.filtro.tipo === '2'  ||
-                       obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
-                       
-                        //this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
-                        this.andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda))
-                            .andWhere(G.knex.raw("a.transcripcion_medica = " + obj.filtro.tipo));
-                       
-                   }
-                    
-                   if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
-                        this.andWhere("a.evolucion_id",obj.terminoBusqueda)
-                       
-                   }
+    var query =  G.knex(subQuery)
+        .where(function() {
+
+            if(obj.fechaInicial !=="" && obj.fechaFinal !=="" && obj.terminoBusqueda ==="" || obj.terminoBusqueda ===""){
+                this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
+            }
+
+            if((obj.filtro.tipo === '0'  ||
+                obj.filtro.tipo === '1'  ||
+                obj.filtro.tipo === '2'  ||
+                obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
+
+                    this.andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda))
+                    .andWhere(G.knex.raw("a.transcripcion_medica = " + obj.filtro.tipo));                       
+           }
+
+           if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
+                this.andWhere("a.evolucion_id",obj.terminoBusqueda)
+
+           }
                    
-                   if(obj.filtro.tipo !== 'EV' && !(obj.filtro.tipo === '0'  ||
-                       obj.filtro.tipo === '1'  ||
-                       obj.filtro.tipo === '2'  ||
-                       obj.filtro.tipo === '3')//obj.filtro.tipo !== 'FO' 
-                           ){
-                        this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
-                            .andWhere("a.tipo_id_paciente ",obj.filtro.tipo)
-                            .andWhere(G.knex.raw("a.paciente_id::varchar = " + obj.terminoBusqueda));
-                    
-                  }
-                });
+            if(obj.filtro.tipo !== 'EV' && !(obj.filtro.tipo === '0'  ||
+                obj.filtro.tipo === '1'  ||
+                obj.filtro.tipo === '2'  ||
+                obj.filtro.tipo === '3') 
+                    ){
+                    this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
+                        .andWhere("a.tipo_id_paciente ",obj.filtro.tipo)
+                        .andWhere(G.knex.raw("a.paciente_id::varchar = " + obj.terminoBusqueda));
+            }
+        });
                 
     query.limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){   
-        // console.log("resultado [listarFormulas]: ", resultado);
         callback(false, resultado);
     }).catch(function(err){    
         console.log("err [listarFormulas]: ", err);
@@ -500,92 +489,88 @@ DispensacionHcModel.prototype.listarUltimaDispensacionFormula = function(obj,cal
     ];
     
     var subQueryD = G.knex.select(colSubQueryD)
-                           .from("hc_formulacion_despachos_medicamentos_pendientes as tmp")                 
-                           .innerJoin("bodegas_documentos AS d", function(){
-                               this.on("tmp.bodegas_doc_id", "d.bodegas_doc_id")
-                               .on("tmp.numeracion","d.numeracion")
-                           })
-                            .innerJoin("bodegas_documentos_d AS dd", function(){
-                                this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
-                                .on("d.numeracion","dd.numeracion")
-                            })                           
-                            .innerJoin("system_usuarios AS sys", function(){
-                                this.on("d.usuario_id","sys.usuario_id")
-                            })
-                            .innerJoin("inventarios_productos AS inv", function(){
-                                this.on("dd.codigo_producto","inv.codigo_producto")   
-                            })
-                           
-                            .where(function(){
-                                this.where("tmp.evolucion_id",obj.evolucionId)
-                                .andWhere(G.knex.raw("d.todo_pendiente != 1"))
-                                
-                            }).as("a");
+        .from("hc_formulacion_despachos_medicamentos_pendientes as tmp")                 
+        .innerJoin("bodegas_documentos AS d", function(){
+            this.on("tmp.bodegas_doc_id", "d.bodegas_doc_id")
+            .on("tmp.numeracion","d.numeracion")
+        })
+         .innerJoin("bodegas_documentos_d AS dd", function(){
+             this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
+             .on("d.numeracion","dd.numeracion")
+        })                           
+        .innerJoin("system_usuarios AS sys", function(){
+             this.on("d.usuario_id","sys.usuario_id")
+        })
+        .innerJoin("inventarios_productos AS inv", function(){
+             this.on("dd.codigo_producto","inv.codigo_producto")   
+        })
+        .where(function(){
+             this.where("tmp.evolucion_id",obj.evolucionId)
+             .andWhere(G.knex.raw("d.todo_pendiente != 1"))
+
+        }).as("a");
    
     
     var subQueryAUnionB = G.knex.select(colSubQueryA)
-                           .from("hc_formulacion_despachos_medicamentos_pendientes as hc")                 
-                           .innerJoin("bodegas_documentos AS d", function(){
-                               this.on("hc.bodegas_doc_id", "d.bodegas_doc_id")
-                               .on("hc.numeracion","d.numeracion")
-                           })
-                            .innerJoin("bodegas_documentos_d AS dd", function(){
-                                this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
-                                .on("d.numeracion","dd.numeracion")
-                            })                           
-                            .innerJoin("system_usuarios AS sys", function(){
-                                this.on("d.usuario_id","sys.usuario_id")
-                            })
-                            .innerJoin("inventarios_productos AS inv", function(){
-                                this.on("dd.codigo_producto","inv.codigo_producto")   
-                            })
-                           
-                            .where(function(){
-                                this.where("hc.evolucion_id",obj.evolucionId)
-                                .andWhere("d.todo_pendiente", '1')
-                                
-                            })
-                            .union(function(){
-                                 this.select(colSubQueryB)
-                           .from("hc_formulacion_despachos_medicamentos as hc")                 
-                           .innerJoin("bodegas_documentos AS d", function(){
-                               this.on("hc.bodegas_doc_id", "d.bodegas_doc_id")
-                               .on("hc.numeracion","d.numeracion")
-                           })
-                            .innerJoin("bodegas_documentos_d AS dd", function(){
-                                this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
-                                .on("d.numeracion","dd.numeracion")
-                            })                           
-                            .innerJoin("system_usuarios AS sys", function(){
-                                this.on("d.usuario_id","sys.usuario_id")
-                            })
-                            .innerJoin("inventarios_productos AS inv", function(){
-                                this.on("dd.codigo_producto","inv.codigo_producto")   
-                            })
-                           
-                            .where(function(){
-                                this.where("hc.evolucion_id",obj.evolucionId)                              
-                            });
-                        }).as("k") 
+        .from("hc_formulacion_despachos_medicamentos_pendientes as hc")                 
+        .innerJoin("bodegas_documentos AS d", function(){
+            this.on("hc.bodegas_doc_id", "d.bodegas_doc_id")
+            .on("hc.numeracion","d.numeracion")
+        })
+         .innerJoin("bodegas_documentos_d AS dd", function(){
+             this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
+             .on("d.numeracion","dd.numeracion")
+         })                           
+         .innerJoin("system_usuarios AS sys", function(){
+             this.on("d.usuario_id","sys.usuario_id")
+         })
+         .innerJoin("inventarios_productos AS inv", function(){
+             this.on("dd.codigo_producto","inv.codigo_producto")   
+         })
+         .where(function(){
+             this.where("hc.evolucion_id",obj.evolucionId)
+             .andWhere("d.todo_pendiente", '1')
+         })
+         .union(function(){
+              this.select(colSubQueryB)
+            .from("hc_formulacion_despachos_medicamentos as hc")                 
+            .innerJoin("bodegas_documentos AS d", function(){
+                this.on("hc.bodegas_doc_id", "d.bodegas_doc_id")
+                .on("hc.numeracion","d.numeracion")
+            })
+             .innerJoin("bodegas_documentos_d AS dd", function(){
+                 this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
+                 .on("d.numeracion","dd.numeracion")
+            })                           
+             .innerJoin("system_usuarios AS sys", function(){
+                 this.on("d.usuario_id","sys.usuario_id")
+            })
+             .innerJoin("inventarios_productos AS inv", function(){
+                 this.on("dd.codigo_producto","inv.codigo_producto")   
+            })
+            .where(function(){
+                this.where("hc.evolucion_id",obj.evolucionId)                              
+            });
+        }).as("k") 
          
     var subQueryB = G.knex.column(colSubQuery).from(subQueryAUnionB).as("todo")
     
     var subQuery = G.knex.column(colQueryTodo)
-                         .from(subQueryB)
-                         .where(G.knex.raw("todo.entrega = (SELECT max(numero_entrega_actual) from dispensacion_estados where evolucion_id = "+obj.evolucionId+" )"))
-                         .union(function(){
-                             this.select(colSubQueryC)
-                              .from(subQueryD)
-                              .where("a.fecha_entrega",G.knex.select(G.knex.raw("distinct(max(d2.fecha_registro))"))                               
-                                        .from("hc_formulacion_despachos_medicamentos_pendientes AS tmp2")
-                                        .innerJoin("bodegas_documentos AS d2", function(){
-                                            this.on("tmp2.bodegas_doc_id","d2.bodegas_doc_id")
-                                            .on("tmp2.numeracion","d2.numeracion")
-                                        })
-                                        .where("tmp2.evolucion_id",obj.evolucionId)
-                                        .andWhere(G.knex.raw("d2.todo_pendiente != 1"))
-                                )
-                         }).as("entrega")    
+        .from(subQueryB)
+        .where(G.knex.raw("todo.entrega = (SELECT max(numero_entrega_actual) from dispensacion_estados where evolucion_id = "+obj.evolucionId+" )"))
+        .union(function(){
+            this.select(colSubQueryC)
+            .from(subQueryD)
+            .where("a.fecha_entrega",G.knex.select(G.knex.raw("distinct(max(d2.fecha_registro))"))                               
+            .from("hc_formulacion_despachos_medicamentos_pendientes AS tmp2")
+            .innerJoin("bodegas_documentos AS d2", function(){
+                this.on("tmp2.bodegas_doc_id","d2.bodegas_doc_id")
+                .on("tmp2.numeracion","d2.numeracion")
+            })
+            .where("tmp2.evolucion_id",obj.evolucionId)
+            .andWhere(G.knex.raw("d2.todo_pendiente != 1"))
+               )
+        }).as("entrega")    
   
     var colQuery = ["entrega.codigo_producto",    
        G.knex.raw("round(entrega.numero_unidades)as numero_unidades"),   
@@ -609,13 +594,11 @@ DispensacionHcModel.prototype.listarUltimaDispensacionFormula = function(obj,cal
         "entrega.tipo_entrega"
     ]
     var query = G.knex.column(colQuery)
-                      .from(subQuery)
-                     .where(G.knex.raw("entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = "+obj.evolucionId+")||'%'"));
+        .from(subQuery)
+        .where(G.knex.raw("entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = "+obj.evolucionId+")||'%'"));
                         
-        query.then(function(resultado){    
-             
-        callback(false, resultado);
-     
+        query.then(function(resultado){           
+            callback(false, resultado);     
         }).catch(function(err){        
             console.log(" err [listarUltimaDispensacionFormula]: ", err);
             callback(err);
@@ -644,43 +627,42 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
        "k.fecha_entrega as fecha_entrega" ];
     
     var colSubQueryB =["dd.codigo_producto",  
-                    "dd.cantidad as numero_unidades",  
-                    "dd.fecha_vencimiento",  
-                    "dd.lote",  
-                    G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod"),  
-                    "d.usuario_id",  
-                    G.knex.raw("'dispensacion_hc' as sistema"),  
-                    G.knex.raw("to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega"),  
-                    G.knex.raw("to_char(now()- d.fecha_registro,'dd') as dias_de_entregado"),
-                   G.knex.raw("(\
-                    SELECT min(fecha_formulacion) \
-                    FROM hc_formulacion_antecedentes \
-                    WHERE evolucion_id ="+obj.evolucionId+" \
-                    )as fecha"),
-                    "d.fecha_registro",
-                    "d.numero_entrega_actual"]
+        "dd.cantidad as numero_unidades",  
+        "dd.fecha_vencimiento",  
+        "dd.lote",  
+        G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod"),  
+        "d.usuario_id",  
+        G.knex.raw("'dispensacion_hc' as sistema"),  
+        G.knex.raw("to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega"),  
+        G.knex.raw("to_char(now()- d.fecha_registro,'dd') as dias_de_entregado"),
+       G.knex.raw("(\
+        SELECT min(fecha_formulacion) \
+        FROM hc_formulacion_antecedentes \
+        WHERE evolucion_id ="+obj.evolucionId+" \
+        )as fecha"),
+        "d.fecha_registro",
+        "d.numero_entrega_actual"]
     
      var subQueryB = G.knex.select(colSubQueryB).from("hc_formulacion_despachos_medicamentos_pendientes AS hc")
-                        .innerJoin("bodegas_documentos AS d", function(){
-                            this.on("hc.bodegas_doc_id","d.bodegas_doc_id")
-                            this.on("hc.numeracion","d.numeracion")
-                        }).innerJoin("bodegas_documentos_d AS dd", function(){
-                            this.on("dd.bodegas_doc_id","d.bodegas_doc_id")
-                            this.on("dd.numeracion","d.numeracion")
-                        }).where("hc.evolucion_id", obj.evolucionId)
-                          .andWhere("d.todo_pendiente",'1')
-                          .union(function(){
-                      
-                            this.select(colSubQueryB).from("hc_formulacion_despachos_medicamentos AS hc")
-                                .innerJoin("bodegas_documentos AS d", function(){
-                                    this.on("hc.bodegas_doc_id","d.bodegas_doc_id")
-                                    this.on("hc.numeracion","d.numeracion")
-                              }).innerJoin("bodegas_documentos_d AS dd", function(){
-                                    this.on("dd.bodegas_doc_id","d.bodegas_doc_id")
-                                    this.on("dd.numeracion","d.numeracion")
-                              }).where("hc.evolucion_id", obj.evolucionId)
-                              
-                          }).as("k").orderBy("fecha_entrega","asc")
+        .innerJoin("bodegas_documentos AS d", function(){
+            this.on("hc.bodegas_doc_id","d.bodegas_doc_id")
+            this.on("hc.numeracion","d.numeracion")
+        }).innerJoin("bodegas_documentos_d AS dd", function(){
+            this.on("dd.bodegas_doc_id","d.bodegas_doc_id")
+            this.on("dd.numeracion","d.numeracion")
+        }).where("hc.evolucion_id", obj.evolucionId)
+          .andWhere("d.todo_pendiente",'1')
+          .union(function(){
+            this.select(colSubQueryB).from("hc_formulacion_despachos_medicamentos AS hc")
+                .innerJoin("bodegas_documentos AS d", function(){
+                    this.on("hc.bodegas_doc_id","d.bodegas_doc_id")
+                    this.on("hc.numeracion","d.numeracion")
+              }).innerJoin("bodegas_documentos_d AS dd", function(){
+                    this.on("dd.bodegas_doc_id","d.bodegas_doc_id")
+                    this.on("dd.numeracion","d.numeracion")
+              }).where("hc.evolucion_id", obj.evolucionId)
+
+        }).as("k").orderBy("fecha_entrega","asc")
     
     var query = G.knex.select(colQuery).from(subQueryB);
         query.then(function(resultado){    
@@ -690,7 +672,7 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
             console.log("err [listarTodoMedicamentosDispensados] ", err);
             callback(err);
         });
-}
+};
 
 
 /**
@@ -725,85 +707,67 @@ DispensacionHcModel.prototype.listarTipoDocumento = function(callback){
 DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
   
     var colQuery = [G.knex.raw("DISTINCT hp.CODIGO_MEDICAMENTO"),
-                  "hf.numero_formula",
-                    "hp.evolucion_id",
-                 G.knex.raw("(p.primer_apellido||' '||p.segundo_apellido) AS NOMBRES"),
-                 G.knex.raw("(p.primer_nombre||' '||p.segundo_nombre) AS  APELLIDOS"),
-                 "p.tipo_id_paciente",
-                 "p.paciente_id",
-                 G.knex.raw("edad(p.fecha_nacimiento) AS EDAD"),
-                 G.knex.raw("(CASE WHEN p.sexo_id='F' THEN 'FEMENINO' WHEN p.sexo_id='M' THEN 'MASCULINO' END)AS  SEXO"),
-                 "p.residencia_direccion",
-                 "p.residencia_telefono",
-                 "hp.codigo_medicamento",
-                 G.knex.raw("FC_DESCRIPCION_PRODUCTO_ALTERNO(hp.codigo_medicamento) AS DESCRIPCION"),
-                 "hp.cantidad",
-                 "hp.hc_pendiente_dispensacion_id"
-    ]
-       
+        "hf.numero_formula",
+            "hp.evolucion_id",
+        G.knex.raw("(p.primer_apellido||' '||p.segundo_apellido) AS NOMBRES"),
+        G.knex.raw("(p.primer_nombre||' '||p.segundo_nombre) AS  APELLIDOS"),
+        "p.tipo_id_paciente",
+        "p.paciente_id",
+        G.knex.raw("edad(p.fecha_nacimiento) AS EDAD"),
+        G.knex.raw("(CASE WHEN p.sexo_id='F' THEN 'FEMENINO' WHEN p.sexo_id='M' THEN 'MASCULINO' END)AS  SEXO"),
+        "p.residencia_direccion",
+        "p.residencia_telefono",
+        "hp.codigo_medicamento",
+        G.knex.raw("FC_DESCRIPCION_PRODUCTO_ALTERNO(hp.codigo_medicamento) AS DESCRIPCION"),
+        "hp.cantidad",
+        "hp.hc_pendiente_dispensacion_id"
+    ];
+      
+    var query = G.knex.select(colQuery)
+        .from("hc_pendientes_por_dispensar AS hp")
+        .innerJoin("hc_formulacion_antecedentes AS hf", 
+            function() {
+                this.on("hf.evolucion_id", "hp.evolucion_id")
+                    .on(G.knex.raw("hp.sw_estado = '0'"))
+        })
+        .innerJoin("pacientes AS p", 
+            function() {
+                this.on("p.tipo_id_paciente", "hf.tipo_id_paciente")
+                    .on("p.paciente_id", "hf.paciente_id")
+
+        })
+        .where(function() {
+            this.where("hp.sw_estado", '0');
+
+            if(obj.fechaInicial !=="" && obj.fechaFinal !=="" && obj.terminoBusqueda ==="" || obj.terminoBusqueda ===""){
+                this.andWhere(G.knex.raw("hp.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
+            }
+
+            if((obj.filtro.tipo === '0'  ||
+               obj.filtro.tipo === '1'  ||
+               obj.filtro.tipo === '2'  ||
+               obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
  
-  var query = G.knex.select(colQuery)
-                .from("hc_pendientes_por_dispensar AS hp")
-                .innerJoin("hc_formulacion_antecedentes AS hf", 
-                    function() {
-                        this.on("hf.evolucion_id", "hp.evolucion_id")
-                            .on(G.knex.raw("hp.sw_estado = '0'"))
+                this.andWhere(G.knex.raw("hf.numero_formula::varchar = " + obj.terminoBusqueda))
+                    .andWhere(G.knex.raw("hf.transcripcion_medica = " + obj.filtro.tipo));
 
-                }).innerJoin("pacientes AS p", 
-                    function() {
-                        this.on("p.tipo_id_paciente", "hf.tipo_id_paciente")
-                            .on("p.paciente_id", "hf.paciente_id")
+            }
 
-                }).where(function() {
-                    this.where("hp.sw_estado", '0');
+            if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
+                this.andWhere("hf.evolucion_id",obj.terminoBusqueda)
+            }
+                   
+            if(obj.filtro.tipo !== 'EV' && !(obj.filtro.tipo === '0'  ||
+                obj.filtro.tipo === '1'  ||
+                obj.filtro.tipo === '2'  ||
+                obj.filtro.tipo === '3')//obj.filtro.tipo !== 'FO' 
+                    ){
+                    this.andWhere("hf.tipo_id_paciente ",obj.filtro.tipo)
+                        .andWhere(G.knex.raw("hf.paciente_id::varchar = " + obj.terminoBusqueda));
 
-                    if(obj.fechaInicial !=="" && obj.fechaFinal !=="" && obj.terminoBusqueda ==="" || obj.terminoBusqueda ===""){
-                        this.andWhere(G.knex.raw("hp.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
-                    }
-                    
-                    if((obj.filtro.tipo === '0'  ||
-                       obj.filtro.tipo === '1'  ||
-                       obj.filtro.tipo === '2'  ||
-                       obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
-                       
-                        //this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
-                        this.andWhere(G.knex.raw("hf.numero_formula::varchar = " + obj.terminoBusqueda))
-                            .andWhere(G.knex.raw("hf.transcripcion_medica = " + obj.filtro.tipo));
-                       
-                    }
-                    
-                    if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
-                         this.andWhere("hf.evolucion_id",obj.terminoBusqueda)
-                       
-                    }
-                   
-                   if(obj.filtro.tipo !== 'EV' && !(obj.filtro.tipo === '0'  ||
-                       obj.filtro.tipo === '1'  ||
-                       obj.filtro.tipo === '2'  ||
-                       obj.filtro.tipo === '3')//obj.filtro.tipo !== 'FO' 
-                           ){
-                         this.andWhere("hf.tipo_id_paciente ",obj.filtro.tipo)
-                            .andWhere(G.knex.raw("hf.paciente_id::varchar = " + obj.terminoBusqueda));
-                    
-                  }
-                   /* if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
-                        this.andWhere(G.knex.raw("hp.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
-                            .andWhere(G.knex.raw("hf.numero_formula::varchar = " + obj.terminoBusqueda));
-                       
-                   }
-                   
-                   if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
-                        this.andWhere("hf.evolucion_id",obj.terminoBusqueda)
-                       
-                   }
-                   
-                   if(obj.filtro.tipo !== 'EV' && obj.filtro.tipo !== 'FO'){
-                        this.andWhere(G.knex.raw("hp.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
-                            .andWhere("hf.tipo_id_paciente ",obj.filtro.tipo)
-                            .andWhere(G.knex.raw("hf.paciente_id::varchar = " + obj.terminoBusqueda));
-                    
-                  }*/
-                });
+            }
+                  
+        });
                
             
     query.limit(G.settings.limit).

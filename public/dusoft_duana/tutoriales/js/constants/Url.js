@@ -10,12 +10,13 @@ define(["angular"], function (angular) {
             'PATH_URL_VIDEO': PATH_URL_VIDEO,
             'TUTORIALES':{
                 
-                "LISTAR_VIDEOS": BASE_URL + "/Tutoriales/listarVideos"
+                "LISTAR_VIDEOS": BASE_URL + "/Tutoriales/listarVideos",
+                "GUARDAR_TUTORIAL": BASE_URL + "/Tutoriales/guardarTutorial",
+                "SUBIR_ARCHIVO_TUTORIAL" : BASE_URL + "/Tutoriales/subirArchivoTutorial"
                 
             }
-        },
+        }
          
-
     };
 
     angular.forEach(data, function (key, value) {

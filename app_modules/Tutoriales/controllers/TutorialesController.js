@@ -28,7 +28,7 @@ Tutoriales.prototype.listarVideos = function(req, res){
     }
     
     if (args.lista_video_tutoriales.paginaActual === '') {
-        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {pedidos_clientes: []}));
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {lista_video_tutoriales: []}));
         return;
     }
     
@@ -60,7 +60,68 @@ Tutoriales.prototype.listarVideos = function(req, res){
     }).done();
     
            
-}
+};
+
+/**
+ * @author Eduar Garcia
+ * +Descripcion Metodo que permite guardar un tutorial
+ * @fecha 2017/31/05
+ */
+Tutoriales.prototype.guardarTutorial = function(req, res){
+
+    var that = this;
+    var args = req.body.data;
+     
+    if(!args.tutoriales){
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {tutorial: []}));
+        return;
+    }
+    
+    G.Q.ninvoke(that.m_tutoriales, "guardarTutorial", {tutorial : args.tutoriales.tutorial}).
+    then(function(resultado){
+        console.log("resultado de guardar ", resultado)
+        res.send(G.utils.r(req.url,"Lista de video tutoriales", 200,{tutorial:resultado}));
+ 
+    }).fail(function(err){
+        console.log("err [guardarTutorial]:", err);
+        res.send(G.utils.r(req.url,err.msj,err.status,{tutorial:{}}));
+    }).done();
+    
+};
+
+
+Tutoriales.prototype.subirArchivoTutorial = function(req, res){
+    
+    console.log("subirArchivoTutorial code 1");
+    var that = this;
+    var args = req.body.data;
+    
+    if(!args.tutoriales || !req.files.file || !args.tutoriales.tutorial.tipo || !args.tutoriales.tutorial.id  ){
+        
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {tutorial: []}));
+        return;
+    }
+    
+    if (args.tutoriales.tutorial.id.length === 0 || !args.tutoriales.tutorial.tipo.id.length === 0) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {tutorial: []}));
+        return;
+    }
+    
+    req.files.file.customPath = G.settings.carpetaTutoriales  + ((args.tutoriales.tutorial.tipo.id === "0") ? "Videos/" : "Archivos/") + args.tutoriales.tutorial.id + "/" ;
+    
+    G.Q.ninvoke(G.utils, "subirArchivo", req.files, true).then(function(rutaArchivo){
+        args.tutoriales.tutorial.path = args.tutoriales.tutorial.id + "/" + req.files.file.name;
+        return G.Q.ninvoke(that.m_tutoriales, "guardarTutorial", {tutorial : args.tutoriales.tutorial});
+        
+    }).then(function(resultado){
+        console.log("subirArchivoTutorial code 2");
+        res.send(G.utils.r(req.url,"Lista de video tutoriales", 200,{tutorial:resultado}));
+ 
+    }).fail(function(err){
+        console.log("err [subirArchivoTutorial]:", err);
+        res.send(G.utils.r(req.url,err.msj || "Ha ocurrido un error" ,err.status || 500,{tutorial:{}}));
+    }).done();
+};
 
 
 Tutoriales.$inject = ["m_tutoriales", "e_tutoriales", "m_usuarios", "e_tutoriales"];

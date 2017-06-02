@@ -1,0 +1,83 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()">&times;</button>
+    <h4 class="modal-title">Guardar tutorial</h4>
+</div>
+<div class="modal-body">
+    
+    <div class="row">
+        
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="input-group form-group">
+
+                    <div class="input-group-btn" ng-show="true" >
+                        <button class="btn btn-default pull-right" type="submit" ng-click ="buscarVideo($event)">
+                            <i class="glyphicon glyphicon-tags"></i>
+                        </button>
+                    </div>  
+
+                    <input type="text" 
+                           class="form-control" 
+                           ng-keypress="buscarVideo($event);"  
+                           ng-model="root.tutorial.tag" 
+                           placeholder="Hash tag" />                                      
+                </div> 
+            </div>
+
+            <div class="col-md-12">
+                <div class="input-group form-group">
+
+                    <div class="input-group-btn" ng-show="true" >
+                        <button class="btn btn-default pull-right" type="submit" ng-click ="buscarVideo($event)">
+                            <i class="glyphicon glyphicon-film"></i>
+                        </button>
+                    </div>  
+
+                    <input type="text" 
+                           class="form-control" 
+                           ng-keypress="buscarVideo($event);"  
+                           ng-model="root.tutorial.titulo" 
+                           placeholder="Titulo" />                                      
+                </div> 
+            </div>
+
+            <div class="col-md-12 form-group">
+                <ui-select ng-change="onEmpresaOrigenSeleccionada()" ng-model="root.tutorial.tipo" theme="select2" class="form-control selectgeneral pull-left">
+                    <ui-select-match  placeholder="Tipo de tutorial"><span ng-bind="$select.selected.getDescripcion()"></span></ui-select-match>
+                    <ui-select-choices repeat="tipoTutorial in root.tiposTutoriales | filter:$select.search">
+                        <span ng-bind="tipoTutorial.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+                        <div class="col-md-12">
+                <div class="input-group form-group">
+                    <input title="Adjuntar archivo" type="file"  class="uploadChat" onchange="angular.element(this).scope().onArchivoSeleccionado(this.files)" />
+                </div>
+            </div>
+            
+            <div class="col-md-12">
+                <textarea style="width:100%; padding: 10px;" ng-model="root.tutorial.descripcion" rows="8" placeholder="Descripción"></textarea>
+            </div>
+            
+
+
+
+        </div>
+        
+        
+        <!--div class="col-md-6" style="padding-top: 15px;">
+            <input title="Adjuntar archivo" type="file"  class="uploadChat" onchange="angular.element(this).scope().onArchivoSeleccionado(this.files)" />
+
+        </div-->
+    </div>
+
+
+
+
+    <div class="modal-footer">
+        <button class="btn btn-warning" ng-click="close()">Cancelar</button>
+        <button class="btn btn-primary" ng-click="onGuardarTutorial()" ng-disabled="!root.tutorial.esTutorialValido() && root.files.length === 0"  >Subir</button>
+    </div>
+
+</div>
+

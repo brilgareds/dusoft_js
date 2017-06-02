@@ -373,8 +373,9 @@ function __agregarDocumentosPedido(index,documentos,documentoSeleccionado,callba
 
 /*
  * @author Cristian Ardila
- * @fecha 02/05/2017
- * +Descripcion Controlador encargado de listar los terceros
+ * @fecha 02/06/2017
+ * +Descripcion Controlador encargado de almacenar los pedidos que quedaran en
+ *              proceso de facturacion
  *              
  */
 FacturacionClientes.prototype.procesarDespachos = function(req, res){
@@ -390,7 +391,7 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
      req.socket.remoteAddress ||
      req.connection.socket.remoteAddress;
    
-    console.log("ip [connection]: ", args.procesar_factura_cosmitet)
+   
     if (args.procesar_factura_cosmitet === undefined ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {procesar_factura_cosmitet: []}));
         return;
@@ -414,8 +415,8 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
     var usuario = req.session.user.usuario_id;
     var parametros = {
         empresaId: args.procesar_factura_cosmitet.empresaId,
-        tipoIdTercero: '',//args.procesar_factura_cosmitet.tipoIdTercero,
-        terceroId: '',//args.procesar_factura_cosmitet.terceroId,
+        tipoIdTercero: '',
+        terceroId: '',
         documentoId:'',
         estado:1,
         tipoPago: args.procesar_factura_cosmitet.tipoPago,
@@ -426,23 +427,81 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
         fechaFinal:  args.procesar_factura_cosmitet.fechaFinal,
         pedidoMultipleFarmacia: args.procesar_factura_cosmitet.pedidoMultipleFarmacia,
         paginaActual: 1,
-        pedidoClienteId: ''
-    };
-   
+        pedidoClienteId: '',
+        idProceso: ''
+    };   
+    parametros.tipoIdTercero = args.procesar_factura_cosmitet.tipoIdTercero;
+    parametros.terceroId = args.procesar_factura_cosmitet.terceroId;
     
-      
     that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Facturando...', 201,usuario); 
-    res.send(G.utils.r(req.url, 'Generando reportes...', 201, {generar_factura_agrupada: ''})); 
-    //listarPedidosClientes
-    console.log("parametros ", parametros);
+    res.send(G.utils.r(req.url, 'Generando facturacion...', 201, {generar_factura_agrupada: ''}));     
+    
+    
+     //if(ip.substr(0, 6) === '::ffff'){               
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)}).then(function(resultado){
+       
+       console.log("resultado [consultarDireccionIp]: ", resultado);
+       console.log("ip.substr(0, 6) ", ip.substr(0, 6));
+       
+        if(ip.substr(0, 6) === '::1' || resultado.length > 0){
+            parametros.direccion_ip = ip;  
+            return G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaEnProceso',parametros);
+        }else{
+            throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
+        }
      
-    G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros).then(function(resultado){
+    }).then(function(resultado){
+
+        parametros.tipoIdTercero = '';
+        parametros.terceroId = '';
+        parametros.idProceso = resultado[0].id;
         
-        console.log("resultado [listarPedidosClientes]:: ", resultado)
+        return G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros)
+            
+    }).then(function(resultado){
+        
+        if(resultado.length > 0){
+            G.Q.nfcall(__insertarFacturaEnProcesoDetalle,that,0,resultado,parametros.idProceso)
+        }else{
+             throw {msj:'[listarPedidosClientes]: Consulta sin resultados', status: 404}; 
+        }
+       
+    }).then(function(resultado){
+        that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada:{factura:155663}},'Facturacion en proceso, tardara unos minutos',200,usuario); 
     }).fail(function(err){
+        that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Se ha presentado errores en el proceso', 500,usuario); 
+    });
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion recursiva encargada de almacenar los pedidos que quedaran en proceso
+ *              de facturacion
+ * @fecha 2017/06/02 YYYY/MM/DD
+ */
+function __insertarFacturaEnProcesoDetalle(that,index,datos,procesoId, callback){
+    
+    var dato = datos[index];
+    if(!dato){
         
-    })
-}
+        callback(false);
+        return;
+    }
+    
+    index++;     
+    dato.idProceso = procesoId;
+    
+    G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaEnProcesoDetalle',dato).then(function(resultado){
+         
+    }).fail(function(err){
+        console.log("err (/fail) [insertarFacturaEnProcesoDetalle]: ", err);
+       
+    }).done();
+    
+     setTimeout(function() {         
+            __insertarFacturaEnProcesoDetalle(that,index,datos,procesoId,callback)    
+    }, 300);    
+};
 /**
  * @author Cristian Manuel Ardila
  * +Descripcion controlador el cual sera invocado desde un CronTab para generar

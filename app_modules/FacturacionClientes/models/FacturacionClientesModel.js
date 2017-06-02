@@ -916,6 +916,63 @@ FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,tran
 };
 
 /**
+ * @author Cristian Ardila
+ * +Descripcion Modelo encargado de almacenar los pedidos en proceso de
+ *              facturacion
+ * @fecha 2017/06/02
+ */
+FacturacionClientesModel.prototype.insertarFacturaEnProceso = function(obj, callback){
+       
+     var parametros = {
+            id: G.knex.raw('DEFAULT'),
+            usuario_id: obj.usuario,
+            fecha_inicial: obj.fechaInicial,
+            fecha_final: obj.fechaFinal,                       
+            estado: '1',
+            empresa_id: obj.empresaId,
+            tipo_id_cliente:obj.tipoIdTercero,
+            cliente_id: obj.terceroId,
+            tipo_pago_id:obj.tipoPago,
+            ip:obj.direccion_ip
+        }; 
+       
+    var query = G.knex("proceso_facturacion").returning(['id']).insert(parametros);     
+      
+        query.then(function(resultado){
+            console.log("resultado [insertarFacturaEnProceso]-->", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [insertarFacturaEnProceso]: ", err);     
+            callback({err:err, msj: "Error al guardar la factura en proceso]"});   
+    }); 
+};
+/**
+ * @author Cristian Ardila
+ * +Descripcion Modelo encargado de almacenar los pedidos en proceso de
+ *              facturacion
+ * @fecha 2017/06/02
+ */
+FacturacionClientesModel.prototype.insertarFacturaEnProcesoDetalle = function(obj, callback){
+       
+     var parametros = {
+            id: G.knex.raw('DEFAULT'),
+            id_proceso: obj.idProceso,
+            pedido: obj.pedido_cliente_id,
+            tercero_id: obj.vendedor_id,                       
+            tipo_id_tercero: obj.tipo_id_vendedor
+        }; 
+      console.log("obj [insertarFacturaEnProcesoDetalle]:::  ", obj); 
+    var query = G.knex("proceso_facturacion_detalle").insert(parametros);     
+      
+        query.then(function(resultado){
+            console.log("resultado [insertarFacturaEnProcesoDetalle]-->", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [insertarFacturaEnProcesoDetalle]: ", err);     
+            callback({err:err, msj: "Error al guardar el detalle de la factura en proceso]"});   
+    }); 
+};
+/**
  * +Descripcion Metodo encargado de insertar el detalle de la factura 
  *              individual
  * @author Cristian Ardila

@@ -72,19 +72,40 @@ Tutoriales.prototype.guardarTutorial = function(req, res){
     var that = this;
     var args = req.body.data;
      
-    if(!args.tutoriales){
+    if(!args.tutoriales && !args.tutoriales.empresa_id){
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {tutorial: []}));
         return;
     }
     
-    G.Q.ninvoke(that.m_tutoriales, "guardarTutorial", {tutorial : args.tutoriales.tutorial}).
-    then(function(resultado){
+    var parametrosPermisos = { 
+        usuario_id:req.session.user.usuario_id, 
+        empresa_id:args.tutoriales.empresa_id,
+        modulos:['videotutoriales'], 
+        convertirJSON:true,
+        limpiarCache:true,
+        guardarResultadoEnCache:false
+    };
+    
+    G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametrosPermisos).then(function(parametrizacion){
+        
+        var opciones = (parametrizacion.modulosJson && parametrizacion.modulosJson.videotutoriales) ? parametrizacion.modulosJson.videotutoriales.opciones : undefined;
+       
+        if(opciones && opciones.sw_crear_tutorial){
+            
+            return G.Q.ninvoke(that.m_tutoriales, "guardarTutorial", {tutorial : args.tutoriales.tutorial});
+            
+        } else {
+            
+            throw {status:403, msj:"El usuario no puede crear tutoriales"};
+        }
+      
+   }).then(function(resultado){
         console.log("resultado de guardar ", resultado)
         res.send(G.utils.r(req.url,"Lista de video tutoriales", 200,{tutorial:resultado}));
  
     }).fail(function(err){
         console.log("err [guardarTutorial]:", err);
-        res.send(G.utils.r(req.url,err.msj,err.status,{tutorial:{}}));
+        res.send(G.utils.r(req.url,err.msj || "Ha ocurrido un error...",err.status || 500,{tutorial:{}}));
     }).done();
     
 };

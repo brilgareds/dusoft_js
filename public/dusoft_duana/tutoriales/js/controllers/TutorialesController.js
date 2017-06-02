@@ -8,7 +8,10 @@ define(["angular", "js/controllers", "controllers/GuardarTutorialController"], f
 
         var that = this;
         $scope.paginaactual = 1;
-        var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());       
+        var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());    
+        
+                    
+        that.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
         
         $scope.root = {
             termino_busqueda:'',          
@@ -32,11 +35,18 @@ define(["angular", "js/controllers", "controllers/GuardarTutorialController"], f
 
         that.cargar_permisos = function() {
         // Permisos               
-            $scope.root.permisos_ajustes = {
+           /* $scope.root.permisos_ajustes = {
                 btn_permisos_reproduccion_videos: {
                     'click': ''//$scope.root.opciones.sw_ajustar_entrega_formula
                 }
-            };                
+            };         */
+            $scope.opcionesModulo = {
+                btnCrearTutorial:{
+                    'click': that.opciones.sw_crear_tutorial
+                }
+            };
+            
+            console.log("opcionesModulo.btnModificarCantidad} ", $scope.opcionesModulo.btnCrearTutorial)
         };
         
         $scope.buscarVideo = function(event){

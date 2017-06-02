@@ -34,6 +34,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 };
             };
             
+           /**
+            * @author Eduar Garcia
+            * +Metodo que consume el api para subir el archivo
+            * @fecha 02-06-2017
+            */
             self.subirArchivo = function(){
                 var fd = new FormData();
                 fd.append("file", $scope.root.files[0]);
@@ -41,7 +46,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 fd.append("data", JSON.stringify( 
                     {
                         tutoriales: {
-                            tutorial : $scope.root.tutorial
+                            tutorial : $scope.root.tutorial,
+                            empresa_id : Usuario.getUsuarioActual().getEmpresa().getCodigo()
                         }
                     }
                 ));
@@ -51,6 +57,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 });
             };
            
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de guardar tutorial
+            * @fecha 02-06-2017
+            */
             $scope.onGuardarTutorial = function() {
                 
                 var tag = $scope.root.tutorial.getTag();
@@ -63,7 +74,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     session: $scope.root.session,
                     data:{
                         tutoriales: {
-                            tutorial : $scope.root.tutorial
+                            tutorial : $scope.root.tutorial,
+                            empresa_id : Usuario.getUsuarioActual().getEmpresa().getCodigo()
                         }
                     }
                 };
@@ -74,8 +86,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.tutorial.setId(data.obj.tutorial[0]);
                         $scope.root.tutorial.setUsuarioId(Usuario.getUsuarioActual().getId());
                         self.subirArchivo();
+                    } else if(data.status !== 500) {
+                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     } else {
-                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error...");
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error...");
                     }
                     
                 });
@@ -85,7 +99,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             /**
             * @author Eduar Garcia
             * +Descripcion Handler del boton de subir archivo
-            * @fecha 2016-09-13
+            * @fecha 02-06-2017
             */
             $scope.onArchivoSeleccionado = function(files) {
                 

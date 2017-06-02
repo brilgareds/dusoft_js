@@ -14,7 +14,7 @@ TutorialesModel.prototype.listarVideos = function(obj, callback){
         if (obj.filtro.tipo === '1') {
             this.where(G.knex.raw("descripcion"), G.constants.db().LIKE, "%" + obj.termino_busqueda + "%")
         }      
-    }).orderBy("fecha_registro", "desc").limit(G.settings.limit).
+    }).orderBy("id", "desc").limit(G.settings.limit).
     offset((obj.pagina_actual - 1) * G.settings.limit).then(function(resultado){ 
               
         callback(false, resultado)

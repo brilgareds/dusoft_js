@@ -110,7 +110,11 @@ Tutoriales.prototype.guardarTutorial = function(req, res){
     
 };
 
-
+/**
+ * @author Eduar Garcia
+ * +Descripcion Metodo que permite guardar un tutorial
+ * @fecha 2017/31/05
+ */
 Tutoriales.prototype.subirArchivoTutorial = function(req, res){
     
     console.log("subirArchivoTutorial code 1");

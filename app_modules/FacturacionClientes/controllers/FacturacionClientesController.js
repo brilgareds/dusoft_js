@@ -456,7 +456,7 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
         return G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros)
             
     }).then(function(resultado){
-       
+       console.log("resultado[listarPedidosClientes]:: ", resultado);
         if(resultado.length > 0){
             G.Q.nfcall(__insertarFacturaEnProcesoDetalle,that,0,resultado,parametros.idProceso)
         }else{

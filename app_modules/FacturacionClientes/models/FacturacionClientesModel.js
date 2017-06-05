@@ -1,7 +1,76 @@
 var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };
- 
+
+/**
+ * @fecha 2017/06/01
+ * +Descripcion Metodo encargado de actualizar el estado de proceso de la factura
+ *              cuando el contrab ya se ha ejecutado
+ * @author Cristian Ardila
+ */
+FacturacionClientesModel.prototype.actualizarEstadoProcesoFacturacion = function(obj, callback){
+     
+    var query = G.knex("proceso_facturacion")
+                .where(function(){
+                    this.andWhere("id",obj.id)
+                }).update({estado: '3', fecha_creacion: 'now()'});
+             
+        query.then(function(resultado){        
+            console.log("resultado [actualizarEstadoProcesoFacturacion]: ", resultado); 
+            callback(false, resultado);
+    }).catch(function(err){   
+            console.log("err (/catch) [actualizarEstadoProcesoFacturacion]: ", err);        
+            callback({err:err, msj: "Error al actualizar el estado de proceso de la factura"});
+    });    
+};
+/**
+ * @author Cristian Ardila
+ * @fecha 31/05/2016
+ * +Descripcion Modelo encargado consultar la factura en estado de proceso
+ * @controller FacturacionClientes.prototype.generarFacturasAgrupadas
+ */
+FacturacionClientesModel.prototype.procesosFacturacion = function (callback) {
+
+    var query = G.knex.select('*')
+        .from('proceso_facturacion')
+        .where(function(){
+            this.andWhere("estado",'1')      
+        });
+        
+        query.limit(1).then(function (resultado) {
+
+            callback(false, resultado)
+        }).catch(function (err) {
+        console.log("err [consultarParametrosRetencion]:", err);
+        callback({err:err, msj: "Error al consultar los parametros de retencion"});   
+    });
+
+};
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de consultar el detalle de lo que se facturara
+ * @controller FacturacionClientes.prototype.generarFacturasAgrupadas
+ */
+FacturacionClientesModel.prototype.procesosDetalleFacturacion = function (obj,callback) {
+
+    var query = G.knex.select('*')
+        .from('proceso_facturacion_detalle')
+        .where(function(){
+            this.andWhere("id_proceso",obj.id)
+        });
+        
+        query.then(function (resultado) {
+
+            callback(false, resultado)
+        }).catch(function (err) {
+        console.log("err [consultarParametrosRetencion]:", err);
+        callback({err:err, msj: "Error al consultar los parametros de retencion"});   
+    });
+
+};
+
 function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
     
     var columnas = [
@@ -491,8 +560,13 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
  * @controller FacturacionClientes.prototype.listarTiposTerceros
  */
 FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,callback) {
-
-    var query = G.knex.column([G.knex.raw(" x.pedido_cliente_id"),  "x.numero", "x.prefijo", "x.empresa_id"])
+    
+    var campos = [G.knex.raw(" x.pedido_cliente_id"),  "x.numero", "x.prefijo", "x.empresa_id"];
+    if(obj.estado ===1){
+        campos = [G.knex.raw(" x.pedido_cliente_id as bodegas_doc_id"),  "x.numero", "x.prefijo", G.knex.raw("x.empresa_id as empresa")];
+    }
+    
+    var query = G.knex.column(campos)
            .select().from("inv_bodegas_movimiento_despachos_clientes as x")
            .where("x.factura_gener",'0')
            .andWhere("x.empresa_id",obj.empresaId)
@@ -604,7 +678,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
 
 
 FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, callback) {
-   
+  
    var columnQuery = [
         "a.tipo_id_tercero",
         "a.tercero_id",
@@ -841,6 +915,63 @@ FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,tran
     });
 };
 
+/**
+ * @author Cristian Ardila
+ * +Descripcion Modelo encargado de almacenar los pedidos en proceso de
+ *              facturacion
+ * @fecha 2017/06/02
+ */
+FacturacionClientesModel.prototype.insertarFacturaEnProceso = function(obj, callback){
+       
+     var parametros = {
+            id: G.knex.raw('DEFAULT'),
+            usuario_id: obj.usuario,
+            fecha_inicial: obj.fechaInicial,
+            fecha_final: obj.fechaFinal,                       
+            estado: '1',
+            empresa_id: obj.empresaId,
+            tipo_id_cliente:obj.tipoIdTercero,
+            cliente_id: obj.terceroId,
+            tipo_pago_id:obj.tipoPago,
+            ip:obj.direccion_ip
+        }; 
+       
+    var query = G.knex("proceso_facturacion").returning(['id']).insert(parametros);     
+      
+        query.then(function(resultado){
+            console.log("resultado [insertarFacturaEnProceso]-->", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [insertarFacturaEnProceso]: ", err);     
+            callback({err:err, msj: "Error al guardar la factura en proceso]"});   
+    }); 
+};
+/**
+ * @author Cristian Ardila
+ * +Descripcion Modelo encargado de almacenar los pedidos en proceso de
+ *              facturacion
+ * @fecha 2017/06/02
+ */
+FacturacionClientesModel.prototype.insertarFacturaEnProcesoDetalle = function(obj, callback){
+       
+     var parametros = {
+            id: G.knex.raw('DEFAULT'),
+            id_proceso: obj.idProceso,
+            pedido: obj.pedido_cliente_id,
+            tercero_id: obj.vendedor_id,                       
+            tipo_id_tercero: obj.tipo_id_vendedor
+        }; 
+      console.log("obj [insertarFacturaEnProcesoDetalle]:::  ", obj); 
+    var query = G.knex("proceso_facturacion_detalle").insert(parametros);     
+      
+        query.then(function(resultado){
+            console.log("resultado [insertarFacturaEnProcesoDetalle]-->", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [insertarFacturaEnProcesoDetalle]: ", err);     
+            callback({err:err, msj: "Error al guardar el detalle de la factura en proceso]"});   
+    }); 
+};
 /**
  * +Descripcion Metodo encargado de insertar el detalle de la factura 
  *              individual
@@ -1087,10 +1218,10 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
         }).then(function(){
             
             console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
-           console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
-           console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
+            console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
+            console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
            
-           //transaccion.commit(); 
+           transaccion.commit(); 
         }).fail(function(err){
             console.log("err (/fail) [GenerarFacturasAgrupadas]: ", err);
             transaccion.rollback(err);
@@ -1168,7 +1299,7 @@ function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, ca
     
     }, 300);
     
-}
+};
 /**
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de actualizar el movimiento de despacho

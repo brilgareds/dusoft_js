@@ -35,7 +35,13 @@
                     "alias": "m_sincronizacion"
                 }
             }],
-        "events": [],
+        "events": [{
+                "facturacion_cliente_events": {
+                    "module": "FacturacionClientes",
+                    "event": "FacturacionClientesEvents",
+                    "alias": "e_facturacion_clientes"
+                }
+            }],
         "cronJobs": []
     }
 }

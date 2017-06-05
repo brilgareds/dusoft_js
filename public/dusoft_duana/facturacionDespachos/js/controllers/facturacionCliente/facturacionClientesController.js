@@ -6,9 +6,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 "$timeout",
                 "$filter",
                 "localStorageService",
-                "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho",
+                "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho","webNotification",
     function ($scope, $rootScope, Request, API, AlertService, Usuario,
-            $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho) {
+            $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho,webNotification) {
 
         console.log("facturacionClientesController");
         var that = this;
@@ -652,7 +652,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 $scope.root.pedidos_cosmitet = [];
                 var prefijosDocumentos = [];
                 var pedidoClientes = [];
-                var prefijo = [{pedido:57751,prefijo:'EFC',numeracion:145706},{pedido:57751,prefijo:'EFC',numeracion:145707}]
+                
                 if (data.status === 200) {
 
                     $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
@@ -744,12 +744,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         <ul class="dropdown-menu dropdown-options">\
                              <li>\n\
                                 <a href="javascript:void(0);" ng-click="generarFacturaIndividualCosmitet(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
-                             </li>\
-                             <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
-                             </li>\
-                             <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir documento </a>\
                              </li>\
                         </ul>\
                     </div>'
@@ -945,7 +939,50 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         $scope.seleccionarTipoPago = function(tipoPago){
             $scope.tipoPagoFactura = tipoPago;
         };
-              
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de invocar el servicio que pondra en estado
+         *              de proceso los pedidos segun el rango de fecha de consulta
+         * @fecha 02/06/2016 DD/MM/YYYY
+         */
+        $scope.procesaFacturasCosmitet = function () {
+
+            AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ?",
+                function (estadoConfirm) {
+                    if (estadoConfirm) {
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                procesar_factura_cosmitet: {
+                                    empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                    tipoIdTercero: 'NIT',
+                                    terceroId: '830023202',
+                                    tipoPago: $scope.tipoPagoFactura,
+                                    pedidoMultipleFarmacia: '1',
+                                    fechaInicial: $scope.root.fechaInicialPedidosCosmitet,
+                                    fechaFinal: $scope.root.fechaFinalPedidosCosmitet
+                                }
+                            }
+                        };
+                        facturacionClientesService.procesarDespachos(obj, function (data) {
+
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            if (data.status === 404) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                            if (data.status === 409) {
+                                AlertService.mostrarMensaje("danger", data.msj);
+                            }
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("danger", data.msj);
+                            }
+                        });
+
+                    }
+                }
+            );            
+        };
         /**
         * +Descripcion Metodo encargado de invocar el servicio
         *              que generara las facturas agrupadas
@@ -953,7 +990,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         * @fecha 2017-08-05
         */
         $scope.generarFacturasCosmitetAgrupadas = function () {
- 
+            
+             console.log("datos [generarFacturasCosmitetAgrupadas]::")
            if ($scope.root.pedidosCosmitetSeleccionados.length > 1) {
   
                 var parametros = {
@@ -971,36 +1009,86 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 };
 
                 facturacionClientesService.generarFacturasAgrupadasCompleta(parametros, function (data) {
-                    /**
-                     * +Descripcion si se genera la factura satisfacturiamente,
-                     *              el sistema activara la vista que lista las facturas generadas
-                     *              haciendo referencia a la factura reciente
-                     */
-                    if (data.status === 200) {
+                    
+                    
+                    AlertService.mostrarMensaje("warning", data.msj);
+                        /**
+                         * +Descripcion si se genera la factura satisfacturiamente,
+                         *              el sistema activara la vista que lista las facturas generadas
+                         *              haciendo referencia a la factura reciente
+                         */            
+                        if (data.status === 200) {
 
-                        $scope.root.activarTabFacturasGeneradas = true;       
-                        that.listarFacturasGeneradas(data.obj.generar_factura_agrupada[0].numeracion,{tipo: 'ME', descripcion: "ME"});              
-                        that.mensajeSincronizacion(data.obj.resultado_sincronizacion_ws.resultado.mensaje_bd,
-                        data.obj.resultado_sincronizacion_ws.resultado.mensaje_ws);
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }
-                    if (data.status === 404) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }
-                    if (data.status === 409) {
-                        AlertService.mostrarMensaje("danger", data.msj);
-                    }
-                    if (data.status === 500) {
-                        AlertService.mostrarMensaje("danger", data.msj);
-                    }
-                });                     
-
+                            $scope.root.activarTabFacturasGeneradas = true;       
+                            that.listarFacturasGeneradas(data.obj.generar_factura_agrupada[0].numeracion,{tipo: 'ME', descripcion: "ME"});              
+                            that.mensajeSincronizacion(data.obj.resultado_sincronizacion_ws.resultado.mensaje_bd,
+                            data.obj.resultado_sincronizacion_ws.resultado.mensaje_ws);
+                            AlertService.mostrarMensaje("warning", data.msj);
+                        }
+                        if (data.status === 404) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                        }
+                        if (data.status === 409) {
+                            AlertService.mostrarMensaje("danger", data.msj);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("danger", data.msj);
+                        } 
+                    
+                    //});
+                });   
+                 
             } else {
                 AlertService.mostrarMensaje("warning", "Debe seleccionar mas de dos pedidos");
             }
 
         };
         
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Funcion encargada de crear una ventana de notificaciones
+         *              cuando la factura de cosmitet ya esta lista, al presionar click
+         *              sobre la notificacion se abrira en una nueva pestaña el
+         *              reporte de la factura
+         * @fecha 2017-02-28
+         */        
+        that.notificarSolicitud = function(title, body, parametros) {
+             
+            webNotification.showNotification(title, {
+                body: body,
+                icon: '/images/logo.png',
+                onClick: function onNotificationClicked() {},
+                autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+            }, function onShow(error, hide) {
+                if (error) {
+                    window.alert('Error interno: ' + error.message);
+                } else {
+
+                    setTimeout(function hideNotification() {
+
+                        hide(); //manually close the notification (you can skip this if you use the autoClose option)
+                    }, 90000);
+                }
+            });
+        };
+        
+        socket.on("onNotificarFacturacionTerminada", function(datos) {
+             
+             console.log("AQUI SALE ASI ", datos)
+            if(datos.status === 200){
+                var resultado = datos.obj.generar_factura_agrupada[0];
+                that.notificarSolicitud(datos.msj, "Factura " + resultado.id+" - " +resultado.numeracion, 
+                {
+                 factura:resultado.numeracion,
+                 prefijo:resultado.id}
+                )}
+            if(datos.status === 201){
+                 AlertService.mostrarMensaje("success", datos.msj); 
+            }
+            if(datos.status === 500){                       
+                AlertService.mostrarMensaje("danger", datos.msj); 
+            }
+        });
         /**
         * @author Cristian Ardila
         * @fecha 04/02/2016
@@ -1046,8 +1134,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         });
  
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-            
-            console.log("SALIO Y BORRO ")
+             
+            socket.remove(['onNotificarFacturacionTerminada']);  
             $scope.$$watchers = null;
             $scope.root.activarTabFacturasGeneradas = false;
             localStorageService.add("listaFacturaDespachoGenerada",null);

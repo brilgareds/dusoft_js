@@ -1,22 +1,21 @@
 define(["angular", "js/controllers"], function(angular, controllers) {
 
- var fo = controllers.controller('dispensacionAutorizarDispensacion',
+ var fo = controllers.controller('DescartarPendientesFormulaController',
         ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',    
             "$timeout", 
             "$filter",
             "localStorageService",
             "$state",
-            "dispensacionHcService","$modalInstance","socket","detalleRegistroDispensacion","detalleFormula",
+            "dispensacionHcService","$modalInstance","socket","identificadorProductoPendiente","evolucion",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,detalleRegistroDispensacion, detalleFormula) {
+                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,identificadorProductoPendiente,evolucion) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
-        var seleccionTipoObservacion;
+        var seleccionTipoJustificacion;
         $scope.root = { observacion:''}; 
         
-       
-        $scope.detalleRegistroDispensacion = detalleRegistroDispensacion.msj[0];
+     
         /*
          * Inicializacion de variables
          * @param {type} empresa
@@ -35,28 +34,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         };
                   
         
-        that.tipoObservacionConfrontado = function(){
-            
-              var tipoObservacion = [];                
-              var data = [ {descripcion: "Entrega tarde"},
-                           {descripcion: "Aumento de dosis"},
-                           {descripcion: "No cumple el tiempo de tratamiento"}];
-                     
-              for(var i in data){                
-                  tipoObservacion.push(data[i]);
-                }                  
-                return tipoObservacion;
-        };
+        var justificacion = [{descripcion: 'Error de formulacion ', id:'0'},
+                            {descripcion: 'Error de digitacion', id:'1'},
+                            {descripcion: 'Confrontado', id:'2'}]
       /**
         * @author Cristian Ardila
         * @fecha 09/06/2016 (MM/DD/YYYY)
         * +Descripcion Metodo el cual invocara el servicio que consulta
         *              todos los tipos de formulas
-        * */
-        that.listarTipoObservacion = function(){
+        **/
+        that.listarTiposJustificaciones = function(){
 
-           $scope.tipoObservacion =  that.tipoObservacionConfrontado();
-          
+            var obj = {
+                session: $scope.session,
+                data: {
+                    listar_tipo_formula:{
+
+                    }
+                }
+            };
+            dispensacionHcService.listarTipoFormula(obj,function(data){
+                                      
+                   $scope.tipoJustificacion =  dispensacionHcService.renderListarTipoDocumento(justificacion);                                              
+            });
         };
         
         /**
@@ -64,15 +64,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          * +Descripcion Se visualiza la tabla con los tipos de formulas
          * @fecha 25/05/2016
          */
-        $scope.listaTipoObservacion = {
-            data: 'tipoObservacion',
+        $scope.listarTiposJustificaciones = {
+            data: 'tipoJustificacion',
             afterSelectionChange: function(rowItem) {
-               
                     if (rowItem.selected) {
-                        
-                        that.onSeleccionTipoObservacion(rowItem.entity);
+                       
+                        that.onSeleccionTipoFormula(rowItem.entity);
                     }else{
-                        that.onSeleccionTipoObservacion(undefined);
+                        that.onSeleccionTipoFormula(undefined);
                     }
                 },
             enableColumnResize: true,
@@ -80,70 +79,60 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             keepLastSelected: false,
             multiSelect: false,
             columnDefs: [
-                {field: 'descripcion', displayName: 'Descripcion'},              
-            ],
+                {field: 'descripcion', displayName: 'Descripcion'}
+            ]
             
         };
          
-        that.onSeleccionTipoObservacion = function(entity){
-            seleccionTipoObservacion = entity;
-            
+        that.onSeleccionTipoFormula = function(entity){
+            seleccionTipoJustificacion = entity;          
         };
         
-        /*
-         * +Descripcion Metodo encargado de realizar la autorizacion del producto
-         *              confrontado y emitir un evento para que se desplegue la ventana
-         *              con los lotes
-         * @fecha 2016-10-13 YYYY-MM-DD
+         /**
+         * +Descripcion metodo encargado de invcar el servicio que descartara 
+         *              el producto de los pendientes
          */
-        that.realizarEntregaFormula = function(){
+        that.descartarProductoPendiente = function(){
             
-            
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
+            if(!seleccionTipoJustificacion){
+                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar la justificacion");
+                 return;
+            }
             var obj = {                   
                 session: $scope.session,
                 data: {
-                   autorizar_dispensacion: {
-                        evolucion: resultadoStorage.evolucionId,                    
-                        observacion: seleccionTipoObservacion.descripcion,
-                        producto: detalleFormula.codigo_producto
-                        
+                   realizar_descarate_producto: {
+                        evolucion: evolucion,
+                        identificadorProductoPendiente: identificadorProductoPendiente,
+                        tipoJustificacion: seleccionTipoJustificacion.tipo
+                       
                    }
                }    
-            };  
-          
-            
-            dispensacionHcService.autorizarDispensacionMedicamento(obj,function(data){
-                var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");            
-                if(data.status === 200){
+            };   
+           
+            dispensacionHcService.descartarProductoPendiente(obj,function(data){
                      
+                if(data.status === 200) {       
                     AlertService.mostrarMensaje("success", data.msj);
-                 
-                    $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: data.obj.autorizar_dispensacion.evolucion_id, 
-                                                                      pendientes: resultadoStorage.pendientes});
-                    
-                    that.cerrarVentana(data);
-                    //$state.go('DispensacionHc');
+                    $scope.cerrarVentana();
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
-            }); 
+            });                           
+            
         };
         
-        
-         
-        $scope.realizarAutorizacionDispensacion = function(){
+        /**
+         * +Descripcion metodo ejecutado desde la vista para confirmar si
+         *              desea descartar el pendiente o no
+         */
+        $scope.descartarProductoPendiente = function(){
             
-            if(!seleccionTipoObservacion){
-                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el tipo de observacion");
-                return;
-            }
-            
-            AlertService.mostrarVentanaAlerta("Mensaje del sistema",  "Desea autorizar la dispensacion del medicamento?",
+            AlertService.mostrarVentanaAlerta("Confirmar",  "Desea descartar el pendiente",
                 function(estado){               
-                    if(estado){                    
-                       that.realizarEntregaFormula();
-                    }
+                    if(estado){
+                      that.descartarProductoPendiente();
+                    } 
                 }
             ); 
         };
@@ -156,19 +145,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         $scope.cerrarVentana = function(){
             
             $modalInstance.close();
-            
         };
-        
-        that.cerrarVentana = function(data){
-          
-            if(data.status === 200){              
-                    
-                if($modalInstance.close() === undefined){
-                   $scope.$emit('emitLotesProductosFormula', {entity: detalleFormula});
-                }
-            }
-        };
-        
         that.init(empresa, function() {
 
             if(!Usuario.getUsuarioActual().getEmpresa()) {
@@ -190,7 +167,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             }
         });
         
-        that.listarTipoObservacion();
+        that.listarTiposJustificaciones();
         
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 

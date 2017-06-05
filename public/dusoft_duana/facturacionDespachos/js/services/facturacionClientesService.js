@@ -14,6 +14,16 @@ define(["angular", "js/services"], function (angular, services) {
                      * @fecha  18/05/2017 DD/MM/YYYYY
                      * +Descripcion Servicio que sincronizara una factura
                      */
+                    self.procesarDespachos = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.PROCESAR_DESPACHOS, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  18/05/2017 DD/MM/YYYYY
+                     * +Descripcion Servicio que sincronizara una factura
+                     */
                     self.sincronizarFactura = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.SINCRONIZAR_FI, "POST", obj, function (data) {
                             callback(data);
@@ -262,7 +272,7 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.generarFacturaIndividualCompleta = function (parametros,callback) {
                      
-                        parametros.AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizara la facturacion ",
+                        parametros.AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizara la facturacion ?",
                             function(estadoConfirm){                
                                 if(estadoConfirm){
 
@@ -317,7 +327,7 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.generarFacturasAgrupadasCompleta = function (parametros, callback) {
 
-                        parametros.AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ",
+                        parametros.AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ? ",
                             function (estadoConfirm) {
                                 if (estadoConfirm) {
 

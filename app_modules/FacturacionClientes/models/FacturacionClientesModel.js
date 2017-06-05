@@ -4,6 +4,33 @@ var FacturacionClientesModel = function (m_e008) {
 
 /**
  * @fecha 2017/06/01
+ * +Descripcion Metodo encargado de actualizar el estado de proceso de un pedido
+ *              para que este no se tenga en cuenta cuando se desee facturar de nuevo
+ *              por rango de fechas los pedidos de cosmitet
+ * @author Cristian Ardila
+ */
+FacturacionClientesModel.prototype.actualizarEstadoProcesoPedido = function(obj, callback){
+    
+    console.log("*****FacturacionClientesModel.prototype.actualizarEstadoProcesoPedido***********");
+    console.log("*****FacturacionClientesModel.prototype.actualizarEstadoProcesoPedido***********");
+    console.log("*****FacturacionClientesModel.prototype.actualizarEstadoProcesoPedido***********");
+    
+    var query = G.knex("ventas_ordenes_pedidos")
+                .where(function(){
+                    this.andWhere("pedido_cliente_id",obj.pedido_cliente_id)
+                }).update({estado_proceso: '1'});
+             
+        query.then(function(resultado){        
+            console.log("resultado [actualizarEstadoProcesoPedido]: ", resultado); 
+            callback(false, resultado);
+    }).catch(function(err){   
+            console.log("err (/catch) [actualizarEstadoProcesoPedido]: ", err);        
+            callback({err:err, msj: "Error al actualizar el estado de proceso del pedido"});
+    });    
+};
+
+/**
+ * @fecha 2017/06/01
  * +Descripcion Metodo encargado de actualizar el estado de proceso de la factura
  *              cuando el contrab ya se ha ejecutado
  * @author Cristian Ardila
@@ -657,8 +684,8 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                 
                 if(obj.pedidoMultipleFarmacia === '1'){
                     
-                    this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
-        
+                    this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
+                        .andWhere("estado_proceso",obj.estadoProcesoPedido)
                 }
                 
             }).orderBy("a.fecha_registro",'desc')
@@ -961,7 +988,7 @@ FacturacionClientesModel.prototype.insertarFacturaEnProcesoDetalle = function(ob
             tercero_id: obj.vendedor_id,                       
             tipo_id_tercero: obj.tipo_id_vendedor
         }; 
-      console.log("obj [insertarFacturaEnProcesoDetalle]:::  ", obj); 
+    
     var query = G.knex("proceso_facturacion_detalle").insert(parametros);     
       
         query.then(function(resultado){

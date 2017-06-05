@@ -27,7 +27,7 @@ FacturacionClientesEvents.prototype.onNotificarFacturacionTerminada = function(r
  * @fecha 2017/01/03
  */
 function __enviarNotificacion(that,usuario,response,socket){
-   
+   console.log("usuario ", usuario)
     G.auth.getSessionsUser(usuario, function(err, sessions) {          
          //Se recorre cada una de las sesiones abiertas por el usuario
         sessions.forEach(function(session) {

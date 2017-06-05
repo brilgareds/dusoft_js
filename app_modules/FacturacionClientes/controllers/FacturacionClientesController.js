@@ -226,6 +226,7 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
     var fechaFinal = args.listar_formulas.fechaFinal;*/
     var terminoBusqueda = args.listar_pedidos_clientes.terminoBusqueda;
     var pedidoMultipleFarmacia = args.listar_pedidos_clientes.pedidoMultipleFarmacia;
+    var estadoProcesoPedido = args.listar_pedidos_clientes.estadoProcesoPedido;
     var tipoIdTercero = args.listar_pedidos_clientes.tipoIdTercero;
     var terceroId = args.listar_pedidos_clientes.terceroId;
     var paginaActual = args.listar_pedidos_clientes.paginaActual;
@@ -235,7 +236,8 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         terceroId:terceroId,
         pedidoClienteId: terminoBusqueda,
         paginaActual: paginaActual,
-        pedidoMultipleFarmacia: pedidoMultipleFarmacia
+        pedidoMultipleFarmacia: pedidoMultipleFarmacia,
+        estadoProcesoPedido: estadoProcesoPedido
     };
     
     if(pedidoMultipleFarmacia === '1'){
@@ -450,18 +452,19 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
         parametros.tipoIdTercero = '';
         parametros.terceroId = '';
         parametros.idProceso = resultado[0].id;
-        
+        parametros.estadoProcesoPedido = 0;
         return G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros)
             
     }).then(function(resultado){
-        
+       
         if(resultado.length > 0){
             G.Q.nfcall(__insertarFacturaEnProcesoDetalle,that,0,resultado,parametros.idProceso)
         }else{
-             throw {msj:'[listarPedidosClientes]: Consulta sin resultados', status: 404}; 
+            throw {msj:'[__insertarFacturaEnProcesoDetalle]: No se almacenaron los pedidos en proceso de facturacion', status: 404}; 
         }
        
-    }).then(function(resultado){
+    }) .then(function(resultado){
+        console.log("resultado [__actualizarEstadoProcesoPedido]:::  ", resultado);
         that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada:''},'Facturacion en proceso, tardara unos minutos',201,usuario); 
     }).fail(function(err){
         that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Se ha presentado errores en el proceso', 500,usuario); 
@@ -470,7 +473,7 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
 
 /**
  * @author Cristian Ardila
- * +Descripcion Funcion recursiva encargada de almacenar los pedidos que quedaran en proceso
+ * +Descripcion Funcion recursiva encargada de actualizar los pedidos que quedaran en proceso
  *              de facturacion
  * @fecha 2017/06/02 YYYY/MM/DD
  */
@@ -487,7 +490,11 @@ function __insertarFacturaEnProcesoDetalle(that,index,datos,procesoId, callback)
     dato.idProceso = procesoId;
     
     G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaEnProcesoDetalle',dato).then(function(resultado){
+        
+        return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarEstadoProcesoPedido',dato);
          
+    }).then(function(resultado){
+       
     }).fail(function(err){
         console.log("err (/fail) [insertarFacturaEnProcesoDetalle]: ", err);
        
@@ -503,11 +510,14 @@ function __insertarFacturaEnProcesoDetalle(that,index,datos,procesoId, callback)
  *              la facturacion de los despachos ya en estado de proceso
  * @fecha 01/06/2017 DD/MM/YYYY generarFacturasAgrupadasEnProceso
  */
-FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(req, res){
+FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
     
+    console.log("*******FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso*************");
+    console.log("*******FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso*************");
+    console.log("*******FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso*************");
+    console.log("CADA MINUTO Y Dios sigue siendo Bueno")
     var that = this;
-   
-    var usuario = req.session.user.usuario_id;
+    //var usuario = req.session.user.usuario_id;
     var idProceso;
     var parametros = {
         empresaId: '',
@@ -528,12 +538,11 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(req, 
     var documentosSeleccionados = {pedidos:[]};
     
     var resultadoFacturacionAgrupada;
-   
-    that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Facturando...', 201,usuario); 
-    res.send(G.utils.r(req.url, 'Generando factura...', 201, {generar_factura_agrupada: ''})); 
-     
+    
+    
     G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion').then(function(resultado){
-       
+        
+        console.log("resultado [procesosFacturacion]::: ", resultado);
         if(resultado.length > 0){
             
             parametros.empresaId = resultado[0].empresa_id;
@@ -561,9 +570,10 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(req, 
        
     }) .then(function(){
         
-        return G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, parametros.direccion_ip);
+        console.log("parametros [[procesosDetalleFacturacion]]] ", parametros);
+        //return G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, parametros.direccion_ip);
         
-    }).then(function(resultado){
+    })/*.then(function(resultado){
         
         resultadoFacturacionAgrupada = resultado;  
         return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", idProceso);
@@ -575,9 +585,9 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(req, 
                 resultadoFacturacionAgrupada.msj,
                 200,
                 parametros.usuario); 
-    }).fail(function (err) {
+    })*/.fail(function (err) {
         console.log("err [generarPedidoBodegaFarmacia]: ", err);
-       that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Se ha presentado errores en el proceso', 500,usuario); 
+        //that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Se ha presentado errores en el proceso', 500,parametros.usuario); 
        
     });
     

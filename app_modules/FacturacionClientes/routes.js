@@ -1,6 +1,10 @@
 module.exports = function(app, di_container) {
  
   var c_facturacion_clientes = di_container.get("c_facturacion_clientes");
+  var j_facturacion_clientes = di_container.get("j_facturacion_clientes");
+  
+  
+  j_facturacion_clientes.ejecutarJobProcesarDespachos();
   //var io = di_container.get("socket");
 
     // Listar los tipos terceros

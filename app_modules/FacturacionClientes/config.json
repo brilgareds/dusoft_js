@@ -42,6 +42,12 @@
                     "alias": "e_facturacion_clientes"
                 }
             }],
-        "cronJobs": []
+        "cronJobs": [{
+            "facturacion_cliente_crontab": {
+                "module": "FacturacionClientes",
+                "cronjob": "FacturacionClientesJobs",
+                "alias": "j_facturacion_clientes"
+            }
+        }]
     }
 }

@@ -643,7 +643,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         terceroId: '',
                         pedidoMultipleFarmacia: '1',
                         fechaInicial: $scope.root.fechaInicialPedidosCosmitet,
-                        fechaFinal: $scope.root.fechaFinalPedidosCosmitet
+                        fechaFinal: $scope.root.fechaFinalPedidosCosmitet,
+                        estadoProcesoPedido: '0'
                     }
                 }
             };

@@ -110,7 +110,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         paginaActual: $scope.paginaactual,
                                         tipoIdTercero: resultadoStorage.tipoIdTercero,
                                         terceroId: resultadoStorage.terceroId,
-                                        pedidoMultipleFarmacia: '0'
+                                        pedidoMultipleFarmacia: '0',
+                                        estadoProcesoPedido: '0'
                                     }
                                 }
                             };

@@ -2,7 +2,6 @@
 define([
     "angular",
     "js/controllers",
-    
 ], function(angular, controllers) {
 
     controllers.controller('I002Controller', [
@@ -38,13 +37,13 @@ define([
             $scope.entrar = "";
             $scope.listarParametrosRetencion;
             $scope.totalPorAutorizar;
-            $scope.validarDesdeLink = false;            
+            $scope.validarDesdeLink = false;
             var datos_documento = localStorageService.get("documento_bodega_I002");
             var fecha_actual = new Date();
-            
+
             $scope.format = 'dd-MM-yyyy'
             $scope.root = {
-                porFactura:0,
+                porFactura: 0,
                 totalFactura: 0,
                 totalDescuento: 0,
                 fechaVencimiento: $filter('date')(fecha_actual, "yyyy-MM-dd"),
@@ -54,7 +53,7 @@ define([
                 descripcionFactura: "",
                 pedidosSeleccionados: [],
             };
-            
+
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
 
@@ -64,7 +63,7 @@ define([
                 auth_token: Sesion.getUsuarioActual().getToken()
             };
 
-            // Variables 
+            // Variables
             $scope.datos_view = {
                 listado: [],
                 termino_busqueda_proveedores: "",
@@ -72,35 +71,35 @@ define([
             };
 
             /****************************proverdores**********************************/
-            
-           // 
-                        
-                       
+
+            //
+
+
             /**
              * @author Andres M. Gonzalez
              * @fecha 25/03/2017
              * +Descripcion Metodo encargado listar todos los proveedores
              */
-            $scope.listar_proveedores = function(termino_busqueda,termino) {
+            $scope.listar_proveedores = function(termino_busqueda, termino) {
                 if (termino_busqueda.length < 3) {
                     return;
                 }
 
                 $scope.datos_view.termino_busqueda_proveedores = termino_busqueda;
 
-                if(termino){
-                that.buscar_proveedores(function(proveedores) {
+                if (termino) {
+                    that.buscar_proveedores(function(proveedores) {
 
-                    that.render_proveedores(proveedores,false);
-                });
-                }else{
+                        that.render_proveedores(proveedores, false);
+                    });
+                } else {
                     that.buscarProveedoresPorCodigo(function(proveedores) {
 
-                    that.render_proveedores(proveedores,true);
-                 });
+                        that.render_proveedores(proveedores, true);
+                    });
                 }
             };
-          
+
 
             /**
              * @author Andres M. Gonzalez
@@ -154,7 +153,7 @@ define([
              * @fecha 25/03/2017
              * +Descripcion Metodo encargado realizar el render de proveedores
              */
-            that.render_proveedores = function(proveedores,porDefecto) {
+            that.render_proveedores = function(proveedores, porDefecto) {
 
                 $scope.Empresa.limpiar_proveedores();
 
@@ -163,13 +162,13 @@ define([
                     var proveedor = Proveedor.get(data.tipo_id_tercero, data.tercero_id, data.codigo_proveedor_id, data.nombre_proveedor, data.direccion, data.telefono);
 
                     $scope.Empresa.set_proveedores(proveedor);
-                    if(porDefecto){
-                     $scope.DocumentoIngreso.set_proveedor(proveedor);
-                     that.buscar_ordenes_compra();
+                    if (porDefecto) {
+                        $scope.DocumentoIngreso.set_proveedor(proveedor);
+                        that.buscar_ordenes_compra();
                     }
                 });
             };
-            
+
             $scope.seleccionar_proveedor = function() {
                 // Buscar Ordenes Compra del Proveedor Seleccionado
                 that.buscar_ordenes_compra();
@@ -192,7 +191,7 @@ define([
                             centroUtilidad: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.codigo,
                             bodega: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo,
                             codigo_proveedor_id: $scope.DocumentoIngreso.get_proveedor().get_codigo(),
-                            bloquearEstados:true
+                            bloquearEstados: true
                         }
                     }
                 };
@@ -217,13 +216,13 @@ define([
                 ordenes_compras.forEach(function(orden) {
 
                     var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
-                    $scope.root.descripcionFija=orden.observacion;
+                    $scope.root.descripcionFija = orden.observacion;
                     $scope.DocumentoIngreso.get_proveedor().set_ordenes_compras(orden_compra);
-                    if(datos_documento.datosAdicionales !== undefined)
-                    if(datos_documento.datosAdicionales.orden === orden.numero_orden){                       
-                      $scope.DocumentoIngreso.orden_compra=orden_compra;
-                      $scope.seleccionar_orden_compra();
-                    }
+                    if (datos_documento.datosAdicionales !== undefined)
+                        if (datos_documento.datosAdicionales.orden === orden.numero_orden) {
+                            $scope.DocumentoIngreso.orden_compra = orden_compra;
+                            $scope.seleccionar_orden_compra();
+                        }
                 });
             };
 
@@ -327,7 +326,7 @@ define([
                     $scope.cantidadTotal += parseFloat(data.cantidad);
                     $scope.valorSubtotal += parseFloat(data.valor_total);
                     $scope.valorTotal += parseFloat(data.total_costo);
-                    $scope.root.totalFactura=$scope.valorTotal;
+                    $scope.root.totalFactura = $scope.valorTotal;
                 });
 
                 callback(true);
@@ -339,11 +338,11 @@ define([
              * +Descripcion Metodo encargado listar ProductosPorAutorizar
              */
             that.listarProductosPorAutorizar = function(callback) {
-                
-                if($scope.doc_tmp_id ===  "00000"){
+
+                if ($scope.doc_tmp_id === "00000") {
                     return;
                 }
-                
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -351,11 +350,11 @@ define([
                         empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo()
                     }
                 };
-                 
+
                 Request.realizarRequest(API.I002.LISTAR_PRODUCTOS_POR_AUTORIZAR, "POST", obj, function(data) {
                     if (data.status === 200) {
                         that.renderListarProductosPorAutorizar(data.obj.listarProductosPorAutorizar, function(respuesta) {
-                        //    callback(respuesta);
+                            //    callback(respuesta);
                         });
                     }
                     if (data.status === 500) {
@@ -372,7 +371,7 @@ define([
              */
             that.renderListarProductosPorAutorizar = function(docItemTemporal, callback) {
                 $scope.DocumentoIngreso.get_orden_compra().limpiar_productos_seleccionados();
-                $scope.totalPorAutorizar=docItemTemporal.length;
+                $scope.totalPorAutorizar = docItemTemporal.length;
                 docItemTemporal.forEach(function(data) {
 
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.iva).toFixed(2), data.valor_unit, data.lote, data.fecha_vencimiento);
@@ -421,32 +420,32 @@ define([
              * +Descripcion Metodo encargado realizar el render de los datos de ListarParametros
              */
             that.renderListarParametros = function(parametros) {
-                
+
                 if (parametros[0].sw_rtf === '2' || parametros[0].sw_rtf === '3')
-                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_rtf)){
+                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_rtf)) {
                         $scope.valorRetFte = $scope.valorSubtotal * ($scope.valorRetFte / 100);
-                    }else{
-                      $scope.valorRetFte =0;  
+                    } else {
+                        $scope.valorRetFte = 0;
                     }
                 if (parametros[0].sw_ica === '2' || parametros[0].sw_ica === '3')
-                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_ica)){
+                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_ica)) {
                         $scope.valorRetIca = $scope.valorSubtotal * ($scope.valorRetIca / 1000);
-                    }else{
-                      $scope.valorRetIca =0;
+                    } else {
+                        $scope.valorRetIca = 0;
                     }
                 if (parametros[0].sw_reteiva === '2' || parametros[0].sw_reteiva === '3')
-                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_reteiva)){
-                       $scope.valorRetIva = $scope.gravamen * ($scope.valorRetIva / 100);
-                    }else{
-                       $scope.valorRetIva =0;
+                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_reteiva)) {
+                        $scope.valorRetIva = $scope.gravamen * ($scope.valorRetIva / 100);
+                    } else {
+                        $scope.valorRetIva = 0;
                     }
-                
+
                 if ($scope.imptoCree != null && $scope.imptoCree !== undefined)
                 {
                     $scope.imptoCree = (($scope.imptoCree / 100) * $scope.valorSubtotal);
-                }else{
+                } else {
                     $scope.imptoCree = 0;
-                }    
+                }
                 $scope.total = ((((($scope.valorSubtotal + $scope.gravamen) - $scope.valorRetFte) - $scope.valorRetIca) - $scope.valorRetIva) - $scope.imptoCree);
 
             };
@@ -455,7 +454,7 @@ define([
              * @author Andres M. Gonzalez
              * @fecha 25/03/2017
              * +Descripcion Metodo encargado de realizar el update y el insert  del detalle de la orden de Compra
-             * parametros: variables 
+             * parametros: variables
              * createUpdate 0-crear, 1-Modificar
              */
             that.guardarModificarDetalleOrdenCompra = function(parametros, createUpdate, cantidadIngresada) {
@@ -495,7 +494,7 @@ define([
              * @author Andres M. Gonzalez
              * @fecha 25/03/2017
              * +Descripcion Metodo encargado de realizar buscar productos_orden_compra
-             * parametros: variables 
+             * parametros: variables
              */
             $scope.buscar_productos_orden_compra = function() {
 
@@ -505,7 +504,7 @@ define([
                         ordenes_compras: {
                             numero_orden: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
                             termino_busqueda: '',
-                            filtro:'1',
+                            filtro: '1',
                             pagina_actual: 1
                         }
                     }
@@ -517,7 +516,7 @@ define([
                         that.render_productos(data.obj.lista_productos);
 
                     }
-                    
+
                 });
             };
 
@@ -529,13 +528,13 @@ define([
             that.render_productos = function(productos) {
 
                 $scope.Empresa.limpiar_productos();
-                
+
                 productos.forEach(function(data) {
-                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, parseFloat(data.porc_iva).toFixed(2), data.valor, data.lote_temp,data.fecha_vencimiento_temp);
-                    if(data.cantidadpendiente > 0){
-                    producto.set_cantidad_solicitada(data.cantidadpendiente);
-                    }else{
-                    producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, parseFloat(data.porc_iva).toFixed(2), data.valor, data.lote_temp, data.fecha_vencimiento_temp);
+                    if (data.cantidadpendiente > 0) {
+                        producto.set_cantidad_solicitada(data.cantidadpendiente);
+                    } else {
+                        producto.set_cantidad_solicitada(data.cantidad_solicitada);
                     }
                     producto.set_is_tmp(data.tmp);
                     producto.set_item_id(data.item_id);
@@ -566,82 +565,84 @@ define([
                 };
 
                 Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
-                    
                     if (data.status === 200) {
-                        
+
                         AlertService.mostrarMensaje("warning", data.msj);
-                        that.recorreProductos(datos,data.obj.recepcion_parcial_id,function(parametros){
-                          that.insertarFacturaProveedor(parametros);      
-                        });                                                   
+                        if (datos !== undefined) {
+                            that.recorreProductos(datos, data.obj.recepcion_parcial_id, function(parametros) {
+                                that.insertarFacturaProveedor(parametros);
+                            });
+                        }
                         that.buscar_ordenes_compra();
                         that.refrescarVista();
-                        $scope.DocumentoIngreso.orden_compra="";
-                        var nombre = data.obj.nomb_pdf;                        
-                        setTimeout(function(){
+                        $scope.DocumentoIngreso.orden_compra = "";
+                        var nombre = data.obj.nomb_pdf;
+                        setTimeout(function() {
                             $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                        },4000);
+                        }, 4000);
                     }
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
             };
-            
-         that.recorreProductos=function(datos,recepcion_parcial_id,callback){
-             var i=0;
-             datos.recepciones.forEach(function(data) {
-               datos.recepciones[i].recepcion_parcial=recepcion_parcial_id;
-               i++;
-             });
-             callback(datos);             
-         };
-            
-        /**
-         * +Descripcion Metodo encargado de invocar el servicio
-         *           guarda la factura de proveedores
-         * @author Andres Mauricio Gonzalez
-         * @fecha 08/05/2017 DD/MM/YYYY
-         * @returns {undefined}
-         */
-        that.insertarFacturaProveedor = function(parametros) {
-            var empresa = Sesion.getUsuarioActual().getEmpresa().getCodigo();
-            var centroUtilidad = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
-            var bodega = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
-            var obj = {
-                session: $scope.session,
-                data: {
-                    facturaProveedor: {
-                        empresaId: empresa,
-                        centroUtilidad: centroUtilidad,
-                        bodega: bodega,
-                        parmetros: parametros
-                    }
-                }
+
+            that.recorreProductos = function(datos, recepcion_parcial_id, callback) {
+                var i = 0;
+
+                datos.recepciones.forEach(function(data) {
+                    datos.recepciones[i].recepcion_parcial = recepcion_parcial_id;
+                    i++;
+                });
+                callback(datos);
             };
 
-            Request.realizarRequest(API.FACTURACIONPROVEEDOR.INSERTAR_FACTURA, "POST", obj, function(data) {
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio
+             *           guarda la factura de proveedores
+             * @author Andres Mauricio Gonzalez
+             * @fecha 08/05/2017 DD/MM/YYYY
+             * @returns {undefined}
+             */
+            that.insertarFacturaProveedor = function(parametros) {
+                var empresa = Sesion.getUsuarioActual().getEmpresa().getCodigo();
+                var centroUtilidad = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
+                var bodega = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        facturaProveedor: {
+                            empresaId: empresa,
+                            centroUtilidad: centroUtilidad,
+                            bodega: bodega,
+                            parmetros: parametros
+                        }
+                    }
+                };
 
-                if (data.status === 200) {
-                    that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd,data.obj.respuestaFI.resultado.mensaje_ws);
-                    var nombre = data.obj.ingresarFactura;
-                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                } else {
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al Insertar la Factura");
-                }
+                Request.realizarRequest(API.FACTURACIONPROVEEDOR.INSERTAR_FACTURA, "POST", obj, function(data) {
 
-            });
-        };  
-        
-         that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+                    if (data.status === 200) {
+                        that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd, data.obj.respuestaFI.resultado.mensaje_ws);
+                        var nombre = data.obj.ingresarFactura;
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al Insertar la Factura");
+                    }
 
-                       $scope.mensaje_bd = mensaje_bd;
-                       $scope.mensaje_ws = mensaje_ws;
-                       $scope.opts = {
-                           backdrop: true,
-                           backdropClick: true,
-                           dialogFade: false,
-                           keyboard: true,
-                           template: ' <div class="modal-header">\
+                });
+            };
+
+            that.mensajeSincronizacion = function(mensaje_bd, mensaje_ws) {
+
+                $scope.mensaje_bd = mensaje_bd;
+                $scope.mensaje_ws = mensaje_ws;
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
                                            <button type="button" class="close" ng-click="close()">&times;</button>\
                                            <h4 class="modal-title">Resultado sincronizacion</h4>\
                                        </div>\
@@ -654,32 +655,32 @@ define([
                                        <div class="modal-footer">\
                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                        </div>',
-                           scope: $scope,
-                           controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                    scope: $scope,
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
-                                   $scope.close = function () {
-                                       $modalInstance.close();
-                                   };
-                               }]
-                       };
-                       var modalInstance = $modal.open($scope.opts);
-                   };
-            
-       /**
-         * +Descripcion scope del grid para visualizar el detalle de la recepcion
-         * @author Andres Mauricio Gonzalez
-         * @fecha 18/05/2017
-         * @returns {undefined}
-         */
-        that.facturasRecepciones = function() {
-            $scope.opts = {
-                backdrop: true,
-                backdropClick: true,
-                dialogFade: false,
-                windowClass: 'app-modal-window-ls-ls',
-                keyboard: true,
-                showFilter:true,
-                template: ' <div class="modal-header">\
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
+            /**
+             * +Descripcion scope del grid para visualizar el detalle de la recepcion
+             * @author Andres Mauricio Gonzalez
+             * @fecha 18/05/2017
+             * @returns {undefined}
+             */
+            that.facturasRecepciones = function() {
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    windowClass: 'app-modal-window-ls-ls',
+                    keyboard: true,
+                    showFilter: true,
+                    template: ' <div class="modal-header">\
                                                 <button type="button" class="close" ng-click="cerrar()">&times;</button>\
                                                 <h4 class="modal-title"><b>FACTURACION PROVEEDORES</b></h4>\
                                             </div>\
@@ -783,131 +784,131 @@ define([
                                                 <button class="btn btn-primary" ng-click="facturar()">Facturar</button>\
                                                 <button class="btn btn-warning" ng-click="cerrar()">Cerrar</button>\
                                             </div>',
-                scope: $scope,
-                controller: function($scope, $modalInstance) {
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
 
-                    $scope.facturar = function() {
+                        $scope.facturar = function() {
 
-                        var fechaFactura = new Date($scope.root.fechaFactura);
-                        var fechaVencimiento = new Date($scope.root.fechaVencimiento);
+                            var fechaFactura = new Date($scope.root.fechaFactura);
+                            var fechaVencimiento = new Date($scope.root.fechaVencimiento);
 
-                        var fFactura = new Date(fechaFactura.getFullYear() + 0, fechaFactura.getMonth() + 1, fechaFactura.getDate() + 1); //31 de diciembre de 2015
-                        var fVencimiento = new Date(fechaVencimiento.getFullYear() + 0, fechaVencimiento.getMonth() + 1, fechaVencimiento.getDate() + 1); //30 de noviembre de 2014
+                            var fFactura = new Date(fechaFactura.getFullYear() + 0, fechaFactura.getMonth() + 1, fechaFactura.getDate() + 1); //31 de diciembre de 2015
+                            var fVencimiento = new Date(fechaVencimiento.getFullYear() + 0, fechaVencimiento.getMonth() + 1, fechaVencimiento.getDate() + 1); //30 de noviembre de 2014
 
-                        if (fFactura > fVencimiento) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Fecha de Radicacion no puede ser menor a la Fecha Factura");
-                            return;
-                        }
+                            if (fFactura > fVencimiento) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Fecha de Radicacion no puede ser menor a la Fecha Factura");
+                                return;
+                            }
 
-                        if ($scope.root.numeroFactura.trim() === "") {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el Numero de Factura");
-                            return;
-                        }
+                            if ($scope.root.numeroFactura.trim() === "") {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el Numero de Factura");
+                                return;
+                            }
 
-                        if (parseInt($scope.root.totalDescuento) < 0) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No es posible valores negativos en el Descuento");
-                            return;
-                        }
+                            if (parseInt($scope.root.totalDescuento) < 0) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No es posible valores negativos en el Descuento");
+                                return;
+                            }
 
-                        if ($scope.root.totalDescuento === "") {
-                            $scope.root.totalDescuento = 0;
-                        }
+                            if ($scope.root.totalDescuento === "") {
+                                $scope.root.totalDescuento = 0;
+                            }
 
-                        if (parseInt($scope.root.totalFactura) < 0 || $scope.root.totalFactura === "") {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El valor de la factura minimo debe ser 0");
-                            return;
-                        }
+                            if (parseInt($scope.root.totalFactura) < 0 || $scope.root.totalFactura === "") {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El valor de la factura minimo debe ser 0");
+                                return;
+                            }
 
-                        if (parseInt($scope.root.totalDescuento) > parseInt($scope.root.totalFactura)) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El Descuento no debe superar el valor de la Factura");
-                            return;
-                        }
+                            if (parseInt($scope.root.totalDescuento) > parseInt($scope.root.totalFactura)) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El Descuento no debe superar el valor de la Factura");
+                                return;
+                            }
 
-                        if (($scope.root.descripcionFactura).trim() === "") {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe Ingresar una Observacion");
-                            return;
-                        }
+                            if (($scope.root.descripcionFactura).trim() === "") {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe Ingresar una Observacion");
+                                return;
+                            }
 
-                        if (($scope.root.descripcionFactura).length <= 6) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Observacion debe contener mas de 6 caracteres");
-                            return;
-                        }
-                        var productos=$scope.DocumentoIngreso.get_orden_compra().get_productos_ingresados();
-                        productos[0].proveedor= $scope.DocumentoIngreso.get_proveedor().get_codigo();
-                        
-                      
-                        var parametros = {
-                            recepciones:productos,
-                            fechaFactura: $scope.root.fechaFactura,
-                            fechaVencimiento: $scope.root.fechaVencimiento,
-                            totalFactura: $scope.root.totalFactura,
-                            numeroFactura: $scope.root.numeroFactura,
-                            totalDescuento: $scope.root.totalDescuento,
-                            descripcionFactura: $scope.root.descripcionFactura,
-                            descripcionFija: $scope.root.descripcionFija
+                            if (($scope.root.descripcionFactura).length <= 6) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Observacion debe contener mas de 6 caracteres");
+                                return;
+                            }
+                            var productos = $scope.DocumentoIngreso.get_orden_compra().get_productos_ingresados();
+                            productos[0].proveedor = $scope.DocumentoIngreso.get_proveedor().get_codigo();
+
+
+                            var parametros = {
+                                recepciones: productos,
+                                fechaFactura: $scope.root.fechaFactura,
+                                fechaVencimiento: $scope.root.fechaVencimiento,
+                                totalFactura: $scope.root.totalFactura,
+                                numeroFactura: $scope.root.numeroFactura,
+                                totalDescuento: $scope.root.totalDescuento,
+                                descripcionFactura: $scope.root.descripcionFactura,
+                                descripcionFija: $scope.root.descripcionFija
+                            };
+                            that.crearDocumento(parametros);
+                            that.borrarVariables();
+                            $modalInstance.close();
                         };
-                        that.crearDocumento(parametros);
-                        that.borrarVariables();
-                        $modalInstance.close();
-                    };
 
-                    $scope.cerrar = function() {
-                        $modalInstance.close();
-                    };
-                }
+                        $scope.cerrar = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
             };
-            var modalInstance = $modal.open($scope.opts);
-        };
-        
-        /**
-         * +Descripcion funcion encargado de borrar las variables del sistema
-         * @author Andres Mauricio Gonzalez
-         * @fecha 08/05/2017 DD/MM/YYYY
-         * @returns {undefined}
-         */
-        that.borrarVariables = function() {
-            $scope.root.fechaFactura = $filter('date')(fecha_actual, "yyyy-MM-dd");
-            $scope.root.fechaVencimiento = $filter('date')(fecha_actual, "yyyy-MM-dd");
-            $scope.root.totalFactura = "";
-            $scope.root.numeroFactura = "";
-            $scope.root.totalDescuento = 0;
-            $scope.root.descripcionFactura = "";
-            $scope.root.descripcionFija = "";
-        };
-        
-        /**
-         * @author Andres Mauricio Gonzalez
-         * @fecha  17/05/2017
-         * +Descripcion Funcion que permitira desplegar el popup datePicker
-         *               de la fecha final
-         * @param {type} $event
-         */
-        $scope.abrir_fechaVencimiento = function($event) {
-            $event.preventDefault();
-            $event.stopPropagation();
-            $scope.root.datepicker_fecha_inicial = false;
-            $scope.root.datepicker_fecha_final = false;
-            $scope.root.datepicker_fechaFactura = false;
-            $scope.root.datepicker_fechaVencimiento = true;
 
-        };
-        
-        /**
-         * @author Andres Mauricio Gonzalez
-         * @fecha  17/05/2017
-         * +Descripcion Funcion que permitira desplegar el popup datePicker
-         *               de la fecha final
-         * @param {type} $event
-         */
-        $scope.abrir_fechaFactura = function($event) {
-            $event.preventDefault();
-            $event.stopPropagation();
-            $scope.root.datepicker_fecha_inicial = false;
-            $scope.root.datepicker_fecha_final = false;
-            $scope.root.datepicker_fechaFactura = true;
-            $scope.root.datepicker_fechaVencimiento = false;
+            /**
+             * +Descripcion funcion encargado de borrar las variables del sistema
+             * @author Andres Mauricio Gonzalez
+             * @fecha 08/05/2017 DD/MM/YYYY
+             * @returns {undefined}
+             */
+            that.borrarVariables = function() {
+                $scope.root.fechaFactura = $filter('date')(fecha_actual, "yyyy-MM-dd");
+                $scope.root.fechaVencimiento = $filter('date')(fecha_actual, "yyyy-MM-dd");
+                $scope.root.totalFactura = "";
+                $scope.root.numeroFactura = "";
+                $scope.root.totalDescuento = 0;
+                $scope.root.descripcionFactura = "";
+                $scope.root.descripcionFija = "";
+            };
 
-        };
+            /**
+             * @author Andres Mauricio Gonzalez
+             * @fecha  17/05/2017
+             * +Descripcion Funcion que permitira desplegar el popup datePicker
+             *               de la fecha final
+             * @param {type} $event
+             */
+            $scope.abrir_fechaVencimiento = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.root.datepicker_fecha_inicial = false;
+                $scope.root.datepicker_fecha_final = false;
+                $scope.root.datepicker_fechaFactura = false;
+                $scope.root.datepicker_fechaVencimiento = true;
+
+            };
+
+            /**
+             * @author Andres Mauricio Gonzalez
+             * @fecha  17/05/2017
+             * +Descripcion Funcion que permitira desplegar el popup datePicker
+             *               de la fecha final
+             * @param {type} $event
+             */
+            $scope.abrir_fechaFactura = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.root.datepicker_fecha_inicial = false;
+                $scope.root.datepicker_fecha_final = false;
+                $scope.root.datepicker_fechaFactura = true;
+                $scope.root.datepicker_fechaVencimiento = false;
+
+            };
 
 
             /**
@@ -964,37 +965,37 @@ define([
                     }
                 });
             };
-            
+
             /**
              * @author Andres M. Gonzalez
              * @fecha 25/03/2017
              * +Descripcion Metodo encargado de guardar NewDocTmp
              */
             that.guardarNewDocTmp = function() {
-              
-                if($scope.DocumentoIngreso.get_orden_compra().fecha_registro ===  undefined){
+
+                if ($scope.DocumentoIngreso.get_orden_compra().fecha_registro === undefined) {
                     return;
                 }
-                  
+
                 var obj = {
                     session: $scope.session,
                     data: {
-                            orden_pedido_id:$scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
-                            bodegas_doc_id:datos_documento.bodegas_doc_id,
-                            observacion: $scope.DocumentoIngreso.get_proveedor().get_ordenes_compras()[0].observacion
+                        orden_pedido_id: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
+                        bodegas_doc_id: datos_documento.bodegas_doc_id,
+                        observacion: $scope.DocumentoIngreso.get_proveedor().get_ordenes_compras()[0].observacion
                     }
                 };
 
                 Request.realizarRequest(API.I002.CREAR_NEW_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
-                    if (data.status === 200) {         
+                    if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
-                        $scope.doc_tmp_id =data.obj.movimiento_temporal_id;
+                        $scope.doc_tmp_id = data.obj.movimiento_temporal_id;
                         $scope.isTmp();
                     }
-                    if (data.status === 500) {     
+                    if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
-                    if (data.status === 404) {     
+                    if (data.status === 404) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
@@ -1040,7 +1041,7 @@ define([
                     }
                 };
                 GeneralService.eliminarGetDocTemporal(obj, function(data) {
-                     if (data.status === 200) {
+                    if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
                         that.buscar_ordenes_compra();
                         that.refrescarVista();
@@ -1090,15 +1091,15 @@ define([
                 $scope.total = 0;
                 $scope.valorIvaTotal = 0;
                 $scope.gravamen = 0;
-                $scope.totalPorAutorizar="";
+                $scope.totalPorAutorizar = "";
             };
 
             /*******************************************************************/
-            
-            $scope.tabProductosOrden=function(){
+
+            $scope.tabProductosOrden = function() {
                 that.refrescarVista();
             };
-            
+
             $scope.tabProductosPorAutorizar = function() {
                 that.listarProductosPorAutorizar(function(respuesta) {
                 });
@@ -1109,20 +1110,15 @@ define([
             };
 
             $scope.generar_documento = function(dato) {
-                if(dato===0){
-                that.crearDocumento();
-                }else{
-                that.facturasRecepciones();    
-                }                        
+                if (dato === 0) {
+                    that.crearDocumento();
+                } else {
+                    that.facturasRecepciones();
+                }
             };
 
             $scope.grabar_documento = function() {
-                that.guardarNewDocTmp(); //ok
-                //that.listarBodegasMovimientoTemporal(); //ok
-//              that.listarParametros(); //ok
-//              that.listarGetItemsDocTemporal(); //OK
-//              that.listarGetDocTemporal();
-                //    that.crearDocumento(); ok
+                that.guardarNewDocTmp();
             };
 
             $scope.seleccionar_orden_compra = function() {
@@ -1207,7 +1203,7 @@ define([
                 if ($scope.DocumentoIngreso.get_orden_compra() === undefined || $scope.DocumentoIngreso.get_orden_compra() === "") {
                     disabled = true;
                 }
-                
+
                 return disabled;
             };
 
@@ -1222,7 +1218,7 @@ define([
 
                 if ($scope.datos_view.btn_buscar_productos === 1)
                     $scope.$emit('cerrar_gestion_productos', {animado: true});
-                
+
                 that.refrescarVista();
             };
 
@@ -1260,7 +1256,7 @@ define([
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-            
+
             $scope.solicitar_aprobacion = function(fila) {
                 $scope.opts = {
                     backdrop: true,
@@ -1272,11 +1268,11 @@ define([
                                     <h4 class="modal-title">MENSAJE DEL SISTEMA</h4>\
                                 </div>\
                                     <div class="modal-body">\
-                                     <div ng-if="'+fila.validacionprecio+'">\
-                                        <h4>El Precio Unitario $'+fila.valor_unitario_ingresado+' es Mayor al de la Orden de Compra $'+fila.valor_unitario+'</h4>\
+                                     <div ng-if="' + fila.validacionprecio + '">\
+                                        <h4>El Precio Unitario $' + fila.valor_unitario_ingresado + ' es Mayor al de la Orden de Compra $' + fila.valor_unitario + '</h4>\
                                     </div>\
-                                     <div ng-if="'+fila.validacionfecha+'">\
-                                        <h4>El Producto esta Proximo a Vencer '+fila.fecha_vencimiento_formato+'</h4>\
+                                     <div ng-if="' + fila.validacionfecha + '">\
+                                        <h4>El Producto esta Proximo a Vencer ' + fila.fecha_vencimiento_formato + '</h4>\
                                     </div>\
                                       <h4>Desea solicitar Autorizacion?</h4>\
                                 </div>\
@@ -1288,7 +1284,7 @@ define([
                     controller: function($scope, $modalInstance) {
 
                         $scope.confirmar_guardar_producto = function() {
-                            fila.valor_unit=fila.valor_unitario_ingresado;                           
+                            fila.valor_unit = fila.valor_unitario_ingresado;
                             $scope.guardarProducto(fila);
                             $modalInstance.close();
                         };
@@ -1452,7 +1448,7 @@ define([
                     {field: 'getDescripcion()', displayName: 'Descripcion'},
                     {field: 'get_lote()', displayName: 'Lote', width: "5%"},
                     {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
-                    {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad",cellFilter: "number"},
+                    {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad", cellFilter: "number"},
                     {field: 'get_iva()', displayName: "Valor IVA", width: "5%"},
                     {field: 'get_porcentaje_gravamen()', displayName: '% Gravament', width: "5%"},
                     {field: 'get_valor_total()', displayName: 'Valor Total', width: "10%", cellFilter: 'currency'},
@@ -1474,7 +1470,7 @@ define([
                     {field: 'getDescripcion()', displayName: 'Descripcion'},
                     {field: 'get_lote()', displayName: 'Lote', width: "5%"},
                     {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
-                    {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad" },
+                    {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad"},
                     {field: 'get_iva()', displayName: "I.V.A (%)", width: "5%"},
                     {field: 'get_porcentaje_gravamen()', displayName: '% Gravament', width: "5%"},
                     {field: 'get_valor_total()', displayName: 'Valor Total', width: "10%", cellFilter: 'currency'},
@@ -1486,7 +1482,7 @@ define([
             };
 
             $scope.ingresar_producto = function(productos) {
-                
+
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
                 var fecha_vencimiento = $filter('date')(new Date(productos.fecha_vencimiento), "dd/MM/yyyy");
@@ -1497,7 +1493,7 @@ define([
                     AlertService.mostrarMensaje("warning", "La cantidad debe ser mayor 0");
                     return;
                 }
-                
+
                 if (parseInt(productos.cantidadActual) > parseInt(productos.cantidad_solicitada)) {
                     AlertService.mostrarMensaje("warning", "La Cantidad Ingresada debe ser menor o igual a la Cantidad de la Orden");
                     return;
@@ -1517,31 +1513,31 @@ define([
                     AlertService.mostrarMensaje("warning", "Debe ingresar la Localizacion");
                     return;
                 }
-                
+
                 if (diferencia < 0) {
                     AlertService.mostrarMensaje("warning", "Producto vencido");
                     return;
                 }
-                
-                
-                if (productos.valor_unitario_ingresado > (productos.valor_unitario+0.999) || diferencia >= 0 && diferencia <= 45) {
-                    var mensaje="";
-                    var validacionprecio=false;
-                    var validacionfecha=false;
-                    if (productos.valor_unitario_ingresado > productos.valor_unitario){
-                      mensaje = " - El Precio Unitario es Mayor al de la Orden de Compra";
-                      validacionprecio=true;
+
+
+                if (productos.valor_unitario_ingresado > (productos.valor_unitario + 0.999) || diferencia >= 0 && diferencia <= 45) {
+                    var mensaje = "";
+                    var validacionprecio = false;
+                    var validacionfecha = false;
+                    if (productos.valor_unitario_ingresado > productos.valor_unitario) {
+                        mensaje = " - El Precio Unitario es Mayor al de la Orden de Compra";
+                        validacionprecio = true;
                     }
                     if (diferencia >= 0 && diferencia <= 45) {
-                     mensaje += " - Producto Proximo a Vencer";    
-                     validacionfecha=true;
+                        mensaje += " - Producto Proximo a Vencer";
+                        validacionfecha = true;
                     }
-                    
-                    //AlertService.mostrarMensaje("warning",mensaje); 
-                    productos.validacionfecha=validacionfecha;
-                    productos.validacionprecio=validacionprecio;
-                    productos.justificacionIngreso=mensaje;
-                    productos.fecha_vencimiento_formato=fecha_vencimiento;
+
+                    //AlertService.mostrarMensaje("warning",mensaje);
+                    productos.validacionfecha = validacionfecha;
+                    productos.validacionprecio = validacionprecio;
+                    productos.justificacionIngreso = mensaje;
+                    productos.fecha_vencimiento_formato = fecha_vencimiento;
                     $scope.solicitar_aprobacion(productos);
                     return;
                 }
@@ -1562,7 +1558,7 @@ define([
                     usuario_id: $scope.session.usuario_id,
                     item_id_compras: productos.item_id,
                 };
-               
+
                 that.additemDocTemporal(movimientos_bodegas);
             };
 
@@ -1631,13 +1627,13 @@ define([
             };
 
             $scope.isNoTmp = function() {
-                var disabled = false;       
+                var disabled = false;
                 if ($scope.doc_tmp_id === "00000" && $scope.DocumentoIngreso.get_orden_compra() === undefined) {
                     disabled = true;
                 }
                 return disabled;
             };
-            
+
             $scope.isTmp = function() {
                 var disabled = false;
 
@@ -1646,13 +1642,13 @@ define([
                 }
                 return disabled;
             };
-            
-            $scope.isGenerarDocumento=function(){
-               var disabled = false;
-               if ($scope.DocumentoIngreso.get_orden_compra().get_productos_ingresados().length > 0) {
+
+            $scope.isGenerarDocumento = function() {
+                var disabled = false;
+                if ($scope.DocumentoIngreso.get_orden_compra().get_productos_ingresados().length > 0) {
                     disabled = true;
                 }
-               return disabled;
+                return disabled;
             };
 
             $scope.habilitar_ingreso_lote = function(producto) {
@@ -1693,15 +1689,15 @@ define([
 
                 return disabled;
             };
-            
+
             $scope.validarEstado = function(producto) {
-               var disabled = false;
-               if(producto.get_sw_estado() === false){
-                  disabled = true;
-               } 
-               return disabled;
+                var disabled = false;
+                if (producto.get_sw_estado() === false) {
+                    disabled = true;
+                }
+                return disabled;
             };
-            
+
             $scope.validarTmp = function(producto) {
 
                 var disabled = false;
@@ -1713,14 +1709,14 @@ define([
                 if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
                     disabled = true;
                 }
-                
+
 //                if(producto.get_sw_estado() === false){
 //                  disabled = true;
-//                } 
+//                }
 
                 return disabled;
             };
-            
+
             $scope.validarAutorz = function(producto) {
 
                 var disabled = true;
@@ -1728,7 +1724,7 @@ define([
                 if (producto.get_sw_autorizado() === '0') {
                     disabled = false;
                 }
-                
+
                 return disabled;
             };
 
@@ -1766,22 +1762,22 @@ define([
 
                 return disabled;
             };
-            
+
             $scope.guardarProducto = function(producto) {
-                
+
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-                var valor=parseInt(producto.valor_unit);
-                var porcentaje=((valor * producto.iva) / 100);
-                var valorMasPorcentaje=valor+porcentaje;                
+                var valor = parseInt(producto.valor_unit);
+                var porcentaje = ((valor * producto.iva) / 100);
+                var valorMasPorcentaje = valor + porcentaje;
                 var total_costo = valorMasPorcentaje * producto.cantidad_solicitada;
-                
-                var parametro={//Usuario.getUsuarioActual().getEmpresa()
+
+                var parametro = {//Usuario.getUsuarioActual().getEmpresa()
                     empresaId: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                     centroUtilidad: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.codigo,
                     bodega: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo,
-                    codigoProducto : producto.codigo_producto,
-                    cantidad : producto.cantidad_solicitada,
+                    codigoProducto: producto.codigo_producto,
+                    cantidad: producto.cantidad_solicitada,
                     lote: producto.lote,
                     fechaVencimiento: producto.fecha_vencimiento,
                     docTmpId: $scope.doc_tmp_id,
@@ -1795,24 +1791,24 @@ define([
                     valorUnitarioCompra: producto.valor_unitario,
                     valorUnitarioFactura: producto.valor_unit,
                     session: $scope.session
-                };     
-                GeneralService.insertarProductosFoc(parametro,function(respuesta){
-                   that.refrescarVista();
-                 });
-             };
-                          
-            $scope.Empresa.limpiar_productos();       
+                };
+                GeneralService.insertarProductosFoc(parametro, function(respuesta) {
+                    that.refrescarVista();
+                });
+            };
+
+            $scope.Empresa.limpiar_productos();
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-                
+
             });
-            
-            if(datos_documento.datosAdicionales !== undefined){
-                $scope.listar_proveedores(datos_documento.datosAdicionales.codigo_proveedor_id,false); 
-                $scope.validarDesdeLink=true;
-            }else{
-                $scope.validarDesdeLink=false;
+
+            if (datos_documento.datosAdicionales !== undefined) {
+                $scope.listar_proveedores(datos_documento.datosAdicionales.codigo_proveedor_id, false);
+                $scope.validarDesdeLink = true;
+            } else {
+                $scope.validarDesdeLink = false;
             }
-            
-        }]); 
+
+        }]);
 });

@@ -40,7 +40,7 @@ FacturacionClientesModel.prototype.actualizarEstadoProcesoFacturacion = function
     var query = G.knex("proceso_facturacion")
                 .where(function(){
                     this.andWhere("id",obj.id)
-                }).update({estado: '3', fecha_creacion: 'now()'});
+                }).update({estado: obj.estado, fecha_creacion: 'now()'});
              
         query.then(function(resultado){        
             console.log("resultado [actualizarEstadoProcesoFacturacion]: ", resultado); 

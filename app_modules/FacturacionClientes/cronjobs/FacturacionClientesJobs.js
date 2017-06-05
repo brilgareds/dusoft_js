@@ -29,9 +29,7 @@ FacturacionClientesJobs.prototype.ejecutarJobProcesarDespachos = function() {
         
         onTick: function() {
             that.c_facturacion_clientes.generarFacturasAgrupadasEnProceso();
-            /*G.auth.closeInactiveSessions(function(sesiones_cerradas){
-                //that.e_auth.onCerrarSesion(sesiones_cerradas);
-            });*/
+            
             console.log("CADA MINUTO Y Dios sigue siendo Bueno")
         },
         start: false

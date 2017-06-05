@@ -568,15 +568,19 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
             throw {msj:'[procesosDetalleFacturacion]: Consulta sin resultados', status: 404}; 
         }
        
-    }) .then(function(){
+    }) .then(function(resultado){
+        
+        return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {id:idProceso.id,estado:'4'});
+        
+    }).then(function(){
         
         console.log("parametros [[procesosDetalleFacturacion]]] ", parametros);
-        //return G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, parametros.direccion_ip);
+        return G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, parametros.direccion_ip);
         
-    })/*.then(function(resultado){
+    }).then(function(resultado){
         
         resultadoFacturacionAgrupada = resultado;  
-        return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", idProceso);
+        return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {id:idProceso.id,estado:'3'});
         
     }).then(function(resultado){
       
@@ -585,7 +589,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
                 resultadoFacturacionAgrupada.msj,
                 200,
                 parametros.usuario); 
-    })*/.fail(function (err) {
+    }).fail(function (err) {
         console.log("err [generarPedidoBodegaFarmacia]: ", err);
         //that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''},'Se ha presentado errores en el proceso', 500,parametros.usuario); 
        

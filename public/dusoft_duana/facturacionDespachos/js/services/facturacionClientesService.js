@@ -44,6 +44,18 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     /**
                      * @author Cristian Ardila
+                     * @fecha  18/05/2017 DD/MM/YYYYY
+                     * +Descripcion Servicio que generara el reporte con el detalle
+                     *              de la factura generada
+                     */
+                    self.imprimirReportePedido = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.IMPRIMIR_REPORTE_PEDIDO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Cristian Ardila
                      * @fecha  05/05/2017 DD/MM/YYYYY
                      * +Descripcion Consulta todos los tipos de documentos
                      */
@@ -178,25 +190,25 @@ define(["angular", "js/services"], function (angular, services) {
                             var _empresaDespacho = EmpresaDespacho.get(datos[i].razon_social || '',datos[i].empresa_id);   
                             if(estado === 0){
                                                     
-                                                   _empresaDespacho.setTipoIdEmpresa(datos[i].tipo_id_empresa);
-                                                    _empresaDespacho.setId(datos[i].id);
-                                                    _empresaDespacho.setDigitoVerificacion(datos[i].digito_verificacion);
-                                                    _empresaDespacho.setPais(datos[i].pais_empresa);
-                                                    _empresaDespacho.setDepartamento(datos[i].departamento_empresa);
-                                                    _empresaDespacho.setMunicipio(datos[i].municipio_empresa);
-                                                    _empresaDespacho.setDireccionEmpresa(datos[i].direccion_empresa);
-                                                    _empresaDespacho.setTelefonoEmpresa(datos[i].telefono_empresa);
+                                _empresaDespacho.setTipoIdEmpresa(datos[i].tipo_id_empresa);
+                                _empresaDespacho.setId(datos[i].id);
+                                _empresaDespacho.setDigitoVerificacion(datos[i].digito_verificacion);
+                                _empresaDespacho.setPais(datos[i].pais_empresa);
+                                _empresaDespacho.setDepartamento(datos[i].departamento_empresa);
+                                _empresaDespacho.setMunicipio(datos[i].municipio_empresa);
+                                _empresaDespacho.setDireccionEmpresa(datos[i].direccion_empresa);
+                                _empresaDespacho.setTelefonoEmpresa(datos[i].telefono_empresa);
                             }
                             
                             var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
-                                                    datos[i].tercero_id,
-                                                    datos[i].direccion,
-                                                    datos[i].telefono||'');
+                                datos[i].tercero_id,
+                                datos[i].direccion,
+                                datos[i].telefono||'');
                             
                             var _vendedorDespacho = VendedorDespacho.get(datos[i].nombre, datos[i].tipo_id_vendedor, 
-                                                    datos[i].vendedor_id,
-                                                    "",
-                                                    "");
+                                datos[i].vendedor_id,
+                                "",
+                                "");
                             
                             
                             
@@ -209,6 +221,7 @@ define(["angular", "js/services"], function (angular, services) {
                             if(estado === 1){
                                 _pedido.setFechaRegistro(datos[i].fecha_registro);
                                 _pedido.setSeleccionado(datos[i].seleccionado);
+                                _vendedorDespacho.setNumeroTelefonico(datos[i].telefono);
                             }
                              
                             if(estado === 0){    

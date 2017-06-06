@@ -210,7 +210,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         <a href="javascript:void(0);" ng-click="generarFacturaIndividual(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
                                     </li>\
                                     <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                        <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
+                                        <a href="javascript:void(0);" ng-click="imprimirReportePedido(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
                                     </li>\
                                     <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
                                         <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir documento </a>\
@@ -223,6 +223,35 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
                                         " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}, 
                         ]
+                    };
+                    
+                    $scope.imprimirReportePedido = function(entity){
+                        
+                        console.log("DATOS DEL PEDIDO AMEN telefono ", entity.telefono);
+                        console.log("DATOS DEL PEDIDO AMEN direccion ", entity.direccion);
+                        console.log("DATOS DEL PEDIDO AMEN tipo_id_tercero ", entity.tipo_id_tercero);
+                        console.log("DATOS DEL PEDIDO AMEN id ", entity.id);
+                        console.log("DATOS DEL PEDIDO AMEN nombre_tercero ", entity.nombre_tercero);
+                        console.log("DATOS DEL PEDIDO AMEN id ", entity.pedidos[0].vendedor[0].id);
+                        console.log("DATOS DEL PEDIDO AMEN nombre_tercero ", entity.pedidos[0].vendedor[0].nombre_tercero);
+                        var obj = {                   
+                            session: $scope.session,
+                            data: {
+                                consulta_factura_generada_detalle: {
+                                   cabecera:{
+
+                                   }
+                                }
+                             }
+                        };
+                        
+                       /* facturacionClientesService.imprimirReportePedido(obj,function(data){
+
+                            if (data.status === 200) {
+                                var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                            }
+                        });  */
                     };
                     
                     $scope.onPedidoSeleccionado = function (check, row) {

@@ -18,6 +18,7 @@ define(["angular"], function (angular) {
                  "GENERAR_FACTURA_AGRUPADA": BASE_URL + "/FacturacionClientes/generarFacturasAgrupadas",
                  "GENERAR_FACTURA_INDIVIDUAL": BASE_URL + "/FacturacionClientes/generarFacturaIndividual",
                  "REPORTE_FACTURA_GENERADA_DETALLE": BASE_URL + "/FacturacionClientes/consultaFacturaGeneradaDetalle",
+                 "IMPRIMIR_REPORTE_PEDIDO": BASE_URL + "/FacturacionClientes/generarReportePedido",
                  "SINCRONIZAR_FI": BASE_URL + "/FacturacionClientes/sincronizarFactura",
                  "PROCESAR_DESPACHOS": BASE_URL + "/FacturacionClientes/procesarDespachos"
                  

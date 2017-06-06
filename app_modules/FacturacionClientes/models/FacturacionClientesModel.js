@@ -652,6 +652,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
 	"a.empresa_id",
 	"d.nombre",
 	"a.observacion",
+        "c.telefono",
         /*"b.prefijo",
         G.knex.raw("b.numero as factura_fiscal"),*/
         "a.seleccionado"
@@ -701,6 +702,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
+        console.log("resultado [listarPedidosClientes] ", resultado);
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarPedidosClientes] ", err);

@@ -9,15 +9,26 @@ define(["angular", "js/models", "includes/classes/Vendedor"], function (angular,
                 this.email;
                 this.tipoBloqueoId;
                 this.documento = [];
+                this.telefono;
             }
 
             VendedorDespacho.prototype = Object.create(Vendedor.getClass().prototype);
 
-           
+            
+            VendedorDespacho.prototype.setNumeroTelefonico = function(telefono) {
+                this.telefono = telefono;
+            };
+            
+            VendedorDespacho.prototype.getNumeroTelefonico = function() {
+                return this.telefono;
+            };
 
             this.get = function (nombre, tipo_id_tercero, id, direccion, telefono) {
                 return new VendedorDespacho(nombre, tipo_id_tercero, id, direccion, telefono);
             };
+            
+            
+            
 
             return this;
 

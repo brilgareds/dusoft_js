@@ -13,7 +13,6 @@ var FacturacionClientesEvents = function(socket, m_facturacion_clientes) {
  */
 FacturacionClientesEvents.prototype.onNotificarFacturacionTerminada = function(result,msj, status,usuario) {
     
-    console.log("*******************onNotificarFacturacionTerminada************");
     var that = this;
     var response = G.utils.r('onNotificarFacturacionTerminada', msj, status, result);   
     __enviarNotificacion(that,usuario,response,"onNotificarFacturacionTerminada");
@@ -27,11 +26,10 @@ FacturacionClientesEvents.prototype.onNotificarFacturacionTerminada = function(r
  * @fecha 2017/01/03
  */
 function __enviarNotificacion(that,usuario,response,socket){
-   console.log("usuario ", usuario)
     G.auth.getSessionsUser(usuario, function(err, sessions) {          
          //Se recorre cada una de las sesiones abiertas por el usuario
         sessions.forEach(function(session) {
-            console.log("emitir evento reportes ___________________________________________________");
+            console.log("emitir evento Factura en proceso generada ___________________________________________________");
              //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
             that.io.to(session.socket_id).emit(socket,response);
         });

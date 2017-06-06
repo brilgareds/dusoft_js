@@ -16,8 +16,6 @@ var FacturacionClientesJobs = function(c_facturacion_clientes) {
      
 };
 
-
-
 FacturacionClientesJobs.prototype.ejecutarJobProcesarDespachos = function() {
  
 
@@ -25,10 +23,9 @@ FacturacionClientesJobs.prototype.ejecutarJobProcesarDespachos = function() {
     
     var cron = new this.cronJob({
         cronTime: '*/1 * * * *',
-        //cronTime: '*/5 * * * * *',
         
         onTick: function() {
-            that.c_facturacion_clientes.generarFacturasAgrupadasEnProceso();
+           // that.c_facturacion_clientes.generarFacturasAgrupadasEnProceso();
             
             console.log("CADA MINUTO Y Dios sigue siendo Bueno")
         },

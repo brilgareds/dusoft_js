@@ -11,21 +11,17 @@ var FacturacionClientesModel = function (m_e008) {
  */
 FacturacionClientesModel.prototype.actualizarEstadoProcesoPedido = function(obj, callback){
     
-    console.log("*****FacturacionClientesModel.prototype.actualizarEstadoProcesoPedido***********");
-    console.log("*****FacturacionClientesModel.prototype.actualizarEstadoProcesoPedido***********");
-    console.log("*****FacturacionClientesModel.prototype.actualizarEstadoProcesoPedido***********");
-    
     var query = G.knex("ventas_ordenes_pedidos")
-                .where(function(){
-                    this.andWhere("pedido_cliente_id",obj.pedido_cliente_id)
-                }).update({estado_proceso: '1'});
+        .where(function(){
+            this.andWhere("pedido_cliente_id",obj.pedido_cliente_id)
+        }).update({estado_proceso: '1'});
              
-        query.then(function(resultado){        
-            console.log("resultado [actualizarEstadoProcesoPedido]: ", resultado); 
-            callback(false, resultado);
+    query.then(function(resultado){        
+        console.log("resultado [actualizarEstadoProcesoPedido]: ", resultado); 
+        callback(false, resultado);
     }).catch(function(err){   
-            console.log("err (/catch) [actualizarEstadoProcesoPedido]: ", err);        
-            callback({err:err, msj: "Error al actualizar el estado de proceso del pedido"});
+        console.log("err (/catch) [actualizarEstadoProcesoPedido]: ", err);        
+        callback({err:err, msj: "Error al actualizar el estado de proceso del pedido"});
     });    
 };
 
@@ -36,11 +32,19 @@ FacturacionClientesModel.prototype.actualizarEstadoProcesoPedido = function(obj,
  * @author Cristian Ardila
  */
 FacturacionClientesModel.prototype.actualizarEstadoProcesoFacturacion = function(obj, callback){
-     
+    
+    var parametros = {estado: obj.estado, fecha_creacion: 'now()'};
+        
+    if(obj.estado === '3'){
+        parametros = {estado: obj.estado, 
+                    fecha_creacion: 'now()', 
+                    factura_fiscal: obj.factura_fiscal,
+                    prefijo: obj.prefijo};
+    }
     var query = G.knex("proceso_facturacion")
-                .where(function(){
-                    this.andWhere("id",obj.id)
-                }).update({estado: obj.estado, fecha_creacion: 'now()'});
+        .where(function(){
+            this.andWhere("id",obj.id)
+        }).update(parametros);
              
         query.then(function(resultado){        
             console.log("resultado [actualizarEstadoProcesoFacturacion]: ", resultado); 
@@ -56,12 +60,17 @@ FacturacionClientesModel.prototype.actualizarEstadoProcesoFacturacion = function
  * +Descripcion Modelo encargado consultar la factura en estado de proceso
  * @controller FacturacionClientes.prototype.generarFacturasAgrupadas
  */
-FacturacionClientesModel.prototype.procesosFacturacion = function (callback) {
+FacturacionClientesModel.prototype.procesosFacturacion = function (obj,callback) {
 
     var query = G.knex.select('*')
         .from('proceso_facturacion')
         .where(function(){
-            this.andWhere("estado",'1')      
+            if(obj.filtro === '0'){
+                this.andWhere("estado",'1')      
+            }else{
+                this.andWhere("factura_fiscal",obj.factura_fiscal)  
+                    .andWhere("prefijo",obj.prefijo)
+            }
         });
         
         query.limit(1).then(function (resultado) {
@@ -109,13 +118,15 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
         G.knex.raw("(SELECT codigo_invima FROM inventarios_productos WHERE codigo_producto = a.codigo_producto) AS codigo_invima"),
         G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
         G.knex.raw("(a.cantidad) as cantidad"),
-         G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') AS fecha_vencimiento"),
+        G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') AS fecha_vencimiento"),
         "a.lote",                                      
         G.knex.raw("(f.costo * a.cantidad ) as costo"),
-        G.knex.raw("to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario"),
+        //G.knex.raw("to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario"),
+        "a.valor_unitario",
         "a.porc_iva",
-        G.knex.raw("to_char((a.valor_unitario * a.cantidad),'LFM9,999,999.00') as subtotal"),
-         G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal_factura"),
+        //G.knex.raw("to_char((a.valor_unitario * a.cantidad),'LFM9,999,999.00') as subtotal"),
+        G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal"),
+        G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal_factura"),
         G.knex.raw("to_char((a.valor_unitario*(a.porc_iva/100)),'LFM9,999,999.00') as iva"),
         G.knex.raw("((a.valor_unitario * (a.porc_iva/100))* a.cantidad) as iva_total"),         
         G.knex.raw("to_char((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))),'LFM9,999,999.00') as valor_unitario_iva"),
@@ -165,29 +176,53 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
  * @author Cristian Ardila
  * @fecha 19/05/2017
  */
-FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (obj,callback) {
-  
-    var colQuery = [G.knex.raw("a.*")];
+FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (obj,totalizar,callback) {
     
+    var colQuery = [G.knex.raw("a.*")];   
+    
+    if(totalizar === 1){
+        
+        colQuery = [
+            "codigo_producto", 
+            "descripcion", 
+            "lote",  
+            "fecha_vencimiento",
+            "codigo_cum",
+            "codigo_invima",       
+            G.knex.raw("sum(cantidad) as cantidad"),                                           
+            G.knex.raw("sum(valor_unitario) as valor_unitario"),
+            G.knex.raw("sum(subtotal) as subtotal"),
+            G.knex.raw("sum(porc_iva) as porc_iva")
+        ]; 
+        
+    }
     var queryA = __consultaDetalleFacturaGenerada(obj,
-                        "inv_facturas_despacho as b",
-                        'inv_facturas_despacho_d as a',
-                        "1")
-                        .unionAll(__consultaDetalleFacturaGenerada(obj,
-                        "inv_facturas_agrupadas_despacho as b",
-                        'inv_facturas_agrupadas_despacho_d as a',
-                        "2"));
+        "inv_facturas_despacho as b",
+        'inv_facturas_despacho_d as a',
+        "1")
+        .unionAll(__consultaDetalleFacturaGenerada(obj,
+        "inv_facturas_agrupadas_despacho as b",
+        'inv_facturas_agrupadas_despacho_d as a',
+        "2")
+    );
    
-
+  
     var query = G.knex.column(colQuery)
-            .from(queryA)
- 
-    query.then(function(resultado){
-            
-            callback(false, resultado);
+        .from(queryA) 
+        if(totalizar === 1){
+            query.groupBy("codigo_producto", 
+                "descripcion", 
+                "lote",  
+                "fecha_vencimiento",
+                "codigo_cum",
+                "codigo_invima")
+        }
+    console.log("query >>>> ", query.toSQL().sql);
+    query.then(function(resultado){           
+        callback(false, resultado);
     }).catch(function(err){
-            console.log("err (/catch) [consultaDetalleFacturaGenerada]: ", err);     
-            callback({err:err, msj: "Error al consultar los productos de la factura generada]"});   
+        console.log("err (/catch) [consultaDetalleFacturaGenerada]: ", err);     
+        callback({err:err, msj: "Error al consultar los productos de la factura generada]"});   
     });  
 };
 
@@ -872,7 +907,7 @@ FacturacionClientesModel.prototype.insertarPcFactura = function(obj,transaccion,
  * @fecha  2017-05-08
  */
 FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(obj,transaccion, callback){
-      
+    console.log("ES AQUI QUE LLEGA MUCHO [insertarFacturaAgrupadaDetalle]:: ");
     var parametros = {empresa_id: obj.parametros.documento_facturacion[0].empresa_id,
             tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
             tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
@@ -1043,7 +1078,8 @@ function __insertarFacturaIndividualDetalle(obj,transaccion, callback){
  * @fecha 2017-15-05 YYYY-DD-MM
  */
 FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj,tabla,transaccion, callback){
-       
+     
+  
      var parametros = {
             item_id: G.knex.raw('DEFAULT'),
             tipo_id_vendedor: obj.tipo_id_vendedor,
@@ -1139,9 +1175,7 @@ var parametrosInsertaFacturaAgrupadaDetalle = [];
 FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = function(obj, callback)
 {   
     console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas*************************");
-    console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas*************************");
-    console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas*************************");
-    
+     
     var that = this;
     var def = G.Q.defer();
     var porcentajeRtf = '0';
@@ -1177,15 +1211,13 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
             return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);    
             
         }).then(function(){
-            /* console.log("A QUI ESTAN LOS PEDIDOS >>>>>>>>// 1 ", obj.parametros.pedidos[0].pedidos);
-             console.log("A QUI ESTAN LOS PEDIDOS >>>>>>>>// 2 ", obj.parametros.pedidos[0].pedidos);*/
-           
+            
             return G.Q.nfcall(__detallePedidosClientes,that,0, obj.parametros.pedidos,transaccion);
                     
         }).then(function(){ 
             
             if(datosAdicionalesAgrupados.length > 0){
-                console.log("obj.documento_facturacion ", obj.documento_facturacion)
+                //console.log("obj.documento_facturacion ", obj.documento_facturacion)
                 obj.documento_facturacion.forEach(function(documento){                
 
                     datosAdicionalesAgrupados.forEach(function(rowDatosAdicionalesAgrupados){                    
@@ -1244,8 +1276,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
             
         }).then(function(){
             
-            console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
-            console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
+            //console.log("*******parametrosInsertaFacturaAgrupadaDetalle************* ", obj.parametros.facturacionCosmitet);
+            //console.log(" [parametrosInsertaFacturaAgrupadaDetalle]:: ", parametrosInsertaFacturaAgrupadaDetalle)                               
             console.log("AQUI VA OK OKo OK [consultaCompleta]: ");
            
            transaccion.commit(); 

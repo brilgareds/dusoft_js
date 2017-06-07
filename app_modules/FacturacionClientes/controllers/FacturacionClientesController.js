@@ -1,10 +1,11 @@
-var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e008,m_usuarios,m_sincronizacion,e_facturacion_clientes) {
+var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e008,m_usuarios,m_sincronizacion,e_facturacion_clientes,m_pedidos_clientes) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
     this.m_usuarios = m_usuarios;
     this.m_sincronizacion = m_sincronizacion;
     this.e_facturacion_clientes = e_facturacion_clientes;
+    this.m_pedidos_clientes = m_pedidos_clientes;
 };
 
 /*
@@ -1253,11 +1254,32 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
  */
 FacturacionClientes.prototype.generarReportePedido = function (req, res) {
     
+    var that = this;
+    var args = req.body.data;
+    var def = G.Q.defer();
+    
+    if (args.imprimir_reporte_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {imprimir_reporte_pedido: []}));
+        return;
+    }
+    
+    if (args.imprimir_reporte_pedido.cabecera === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {imprimir_reporte_pedido: []}));
+        return;
+    }
+    
+    if (args.imprimir_reporte_pedido.cabecera.numeroPedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero de pedido no esta definido', 404, {imprimir_reporte_pedido: []}));
+        return;
+    }
+    
+    var numeroPedido = args.imprimir_reporte_pedido.cabecera.numeroPedido;
     var today = new Date();   
     var formato = 'YYYY-MM-DD hh:mm';
     var fechaToday = G.moment(today).format(formato);
+    
     var parametrosReporte =  {
-        cabecera: '', //args.consulta_factura_generada_detalle.cabecera,           
+        cabecera: args.imprimir_reporte_pedido.cabecera,         
         serverUrl: req.protocol + '://' + req.get('host') + "/",
         detalle: {},
         valores: {},
@@ -1267,9 +1289,12 @@ FacturacionClientes.prototype.generarReportePedido = function (req, res) {
         reporte: "reporte_detalle_pedido_"
     };
     
-    
-     G.Q.nfcall(__generarPdf,parametrosReporte).then(function(resultado){
-         
+    G.Q.ninvoke(that.m_pedidos_clientes,'consultar_detalle_pedido',numeroPedido).then(function(resultado){
+        parametrosReporte.detalle = resultado;
+        return G.Q.nfcall(__generarPdf,parametrosReporte);
+    }).then(function(resultado){
+        
+        console.log("parametrosReporte.detalle ", parametrosReporte.detalle);
         return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
             consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}
         }));
@@ -1322,6 +1347,6 @@ function __generarPdf(datos, callback){
 }           
              
              
-FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc", "m_e008","m_usuarios","m_sincronizacion","e_facturacion_clientes"];
+FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc", "m_e008","m_usuarios","m_sincronizacion","e_facturacion_clientes","m_pedidos_clientes"];
 //, "e_facturacion_clientes", 
 module.exports = FacturacionClientes;

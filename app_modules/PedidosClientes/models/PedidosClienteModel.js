@@ -690,6 +690,8 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                     a.valor_unitario,\
                     a.porc_iva as porcentaje_iva,\
                     (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\
+                    (a.numero_unidades*a.valor_unitario) as valor_total_sin_iva,\
+                    (a.numero_unidades*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))) as valor_total_con_iva,\
                     (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva,\
                     COALESCE(b.justificacion, '') as justificacion, \
                     COALESCE(b.justificacion_auditor, '') as justificacion_auditor, \
@@ -712,7 +714,8 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                     ) as descripcion_autorizacion,\
                     b.observacion_justificacion_separador,\
                     b.observacion_justificacion_auditor,\
-                    COALESCE(i.torre, '') AS torre\
+                    COALESCE(i.torre, '') AS torre,\
+                    c.sw_requiereautorizacion_despachospedidos\
                     from ventas_ordenes_pedidos_d a \
                     inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
                     inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \

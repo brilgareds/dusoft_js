@@ -221,6 +221,7 @@ define(["angular", "js/services"], function (angular, services) {
                             if(estado === 1){
                                 _pedido.setFechaRegistro(datos[i].fecha_registro);
                                 _pedido.setSeleccionado(datos[i].seleccionado);
+                                _pedido.set_observacion(datos[i].observacion);
                                 _vendedorDespacho.setNumeroTelefonico(datos[i].telefono);
                             }
                              

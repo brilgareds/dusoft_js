@@ -33,6 +33,11 @@
                     "module": "Sincronizacion",
                     "model": "SincronizacionModel",
                     "alias": "m_sincronizacion"
+                },
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
                 }
             }],
         "events": [{

@@ -226,32 +226,45 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
                     
                     $scope.imprimirReportePedido = function(entity){
-                        
-                        console.log("DATOS DEL PEDIDO AMEN telefono ", entity.telefono);
-                        console.log("DATOS DEL PEDIDO AMEN direccion ", entity.direccion);
-                        console.log("DATOS DEL PEDIDO AMEN tipo_id_tercero ", entity.tipo_id_tercero);
-                        console.log("DATOS DEL PEDIDO AMEN id ", entity.id);
-                        console.log("DATOS DEL PEDIDO AMEN nombre_tercero ", entity.nombre_tercero);
-                        console.log("DATOS DEL PEDIDO AMEN id ", entity.pedidos[0].vendedor[0].id);
-                        console.log("DATOS DEL PEDIDO AMEN nombre_tercero ", entity.pedidos[0].vendedor[0].nombre_tercero);
+                        console.log("entity ", entity)
+                        console.log("telefono ", entity.telefono);
+                        console.log("direccion ", entity.direccion);
+                        console.log("tipo_id_tercero ", entity.tipo_id_tercero);
+                        console.log("id ", entity.id);
+                        console.log("fechaRegistro ", entity.pedidos[0].fechaRegistro);
+                        console.log("observacion ", entity.pedidos[0].observacion);
+                        console.log("numero_cotizacion ", entity.pedidos[0].numero_cotizacion);
+                        console.log("nombre_tercero ", entity.nombre_tercero);
+                        console.log("id ", entity.pedidos[0].vendedor[0].id);
+                        console.log("nombre_tercero ", entity.pedidos[0].vendedor[0].nombre_tercero);
                         var obj = {                   
                             session: $scope.session,
                             data: {
-                                consulta_factura_generada_detalle: {
-                                   cabecera:{
-
-                                   }
+                                imprimir_reporte_pedido: {
+                                    cabecera:{
+                                       telefono:entity.telefono,
+                                       direccion:entity.direccion,
+                                       tipoIdTercero:entity.tipo_id_tercero,
+                                       terceroId:entity.id,
+                                       terceroNombre: entity.nombre_tercero,
+                                       fechaRegistro: entity.pedidos[0].fechaRegistro,
+                                       observacion: entity.pedidos[0].observacion,
+                                       numeroPedido: entity.pedidos[0].numero_cotizacion,
+                                       vendedorId: entity.pedidos[0].vendedor[0].id,
+                                       tipoIdVendedor: entity.pedidos[0].vendedor[0].tipo_id_tercero,
+                                       vendedorNombre: entity.pedidos[0].vendedor[0].nombre_tercero
+                                    }
                                 }
-                             }
+                            }
                         };
                         
-                       /* facturacionClientesService.imprimirReportePedido(obj,function(data){
+                        facturacionClientesService.imprimirReportePedido(obj,function(data){
 
                             if (data.status === 200) {
                                 var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
                                 $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                             }
-                        });  */
+                        }); 
                     };
                     
                     $scope.onPedidoSeleccionado = function (check, row) {

@@ -688,10 +688,12 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                     (a.numero_unidades - ABS( a.cantidad_despachada +  COALESCE(b.cantidad_temporalmente_separada,0) ) )::integer as cantidad_pendiente,\
                     /*a.cantidad_facturada::integer,*/ \
                     a.valor_unitario,\
+                    to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario_format,\
                     a.porc_iva as porcentaje_iva,\
                     (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\
+                    to_char((a.numero_unidades*a.valor_unitario),'LFM9,999,999.00') as valor_total_sin_iva_format,\
                     (a.numero_unidades*a.valor_unitario) as valor_total_sin_iva,\
-                    (a.numero_unidades*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))) as valor_total_con_iva,\
+                    to_char((round((a.numero_unidades*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))), 2)),'LFM9,999,999.00')as valor_total_con_iva,\
                     (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva,\
                     COALESCE(b.justificacion, '') as justificacion, \
                     COALESCE(b.justificacion_auditor, '') as justificacion_auditor, \

@@ -1277,24 +1277,52 @@ FacturacionClientes.prototype.generarReportePedido = function (req, res) {
     var today = new Date();   
     var formato = 'YYYY-MM-DD hh:mm';
     var fechaToday = G.moment(today).format(formato);
-    
+    var subTotal = 0;
+    var valorIvaTotal = 0;
+    var total =0;
+    var usuario_id = req.session.user.usuario_id;
     var parametrosReporte =  {
         cabecera: args.imprimir_reporte_pedido.cabecera,         
         serverUrl: req.protocol + '://' + req.get('host') + "/",
-        detalle: {},
         valores: {},
         productos: {},
+        subTotal: 0,
+        valorIvaTotal: 0,
+        total: 0,
+        pedido: args.imprimir_reporte_pedido.cabecera.numeroPedido,
         imprimio:{usuario:'',fecha:fechaToday},
         archivoHtml: 'reporteDetallePedido.html',
         reporte: "reporte_detalle_pedido_"
     };
     
-    G.Q.ninvoke(that.m_pedidos_clientes,'consultar_detalle_pedido',numeroPedido).then(function(resultado){
-        parametrosReporte.detalle = resultado;
+     G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id).then(function(resultado){
+        
+        if(resultado){ 
+            parametrosReporte.imprimio.usuario = resultado.nombre;          
+            return G.Q.ninvoke(that.m_pedidos_clientes,'consultar_detalle_pedido',numeroPedido)
+        }else{
+            throw {msj:'[obtenerUsuarioPorId]: Consulta sin resultados', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+        parametrosReporte.productos = resultado;
+        
+        parametrosReporte.productos.forEach(function(row){  
+           // console.log("row ", row)
+            subTotal += parseFloat(row.valor_total_sin_iva);
+            valorIvaTotal += parseFloat(row.valor_iva);
+            
+        });  
+       
+        total = parseFloat(subTotal) + parseFloat(valorIvaTotal);
+        parametrosReporte.subTotal = numberFormat(subTotal,2);
+        parametrosReporte.valorIvaTotal = numberFormat(valorIvaTotal,2);
+        parametrosReporte.total = numberFormat(total,2);
+        
         return G.Q.nfcall(__generarPdf,parametrosReporte);
     }).then(function(resultado){
         
-        console.log("parametrosReporte.detalle ", parametrosReporte.detalle);
+        //console.log("parametrosReporte.detalle ", parametrosReporte.productos);
         return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
             consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}
         }));

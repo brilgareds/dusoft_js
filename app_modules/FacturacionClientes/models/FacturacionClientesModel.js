@@ -634,64 +634,58 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
  * @fecha 2017-10-05
  */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
-   
+     
     var columnQuery = [
         "a.tipo_id_tercero",
 	"a.tercero_id",
 	"c.nombre_tercero",
 	"c.direccion",
 	"a.pedido_cliente_id",
-	"a.fecha_registro",
+        "a.fecha_registro",
+        //G.knex.raw("TO_CHAR(a.fecha_registro,'yyyy-mm-dd hh:mm:ss') AS fecha_registro"),
+	//G.knex.raw("TO_CHAR(a.fecha_registro,'yyyy-mm-dd hh:mm:ss') AS fecha_registro"),
 	"a.tipo_id_vendedor",
 	"a.vendedor_id",
 	"a.empresa_id",
 	"d.nombre",
 	"a.observacion",
         "c.telefono",
-        /*"b.prefijo",
-        G.knex.raw("b.numero as factura_fiscal"),*/
         "a.seleccionado"
    ];
    
     var subQuery1 = G.knex.column([G.knex.raw("DISTINCT x.pedido_cliente_id")/*,  "x.numero", "x.prefijo"*/ ])
         .select().from("inv_bodegas_movimiento_despachos_clientes as x")
         .where(function(){
-            console.log("obj.empresaId --->>>>", obj.empresaId);
             this.andWhere("x.factura_gener",'0')
-                 .andWhere("x.empresa_id",obj.empresaId)
-
-             if(obj.pedidoClienteId !== "") {
-                    this.andWhere('x.pedido_cliente_id', obj.pedidoClienteId);
-             }
-
+            .andWhere("x.empresa_id",obj.empresaId)
+            if(obj.pedidoClienteId !== "") {
+                this.andWhere('x.pedido_cliente_id', obj.pedidoClienteId);
+            }
         }).as("b"); 
            
     var query = G.knex.select(columnQuery)
         .from("ventas_ordenes_pedidos as a")
         .join(subQuery1, function () {
-
             this.on("a.pedido_cliente_id","b.pedido_cliente_id")
-
-        }).join("terceros as c", function(){      
+        })
+        .join("terceros as c", function(){      
             this.on("a.tipo_id_tercero","c.tipo_id_tercero")
                 .on("a.tercero_id","c.tercero_id")
-        }).join("vnts_vendedores as d", function(){
+        })
+        .join("vnts_vendedores as d", function(){
             this.on("a.tipo_id_vendedor","d.tipo_id_vendedor")
                 .on("a.vendedor_id","d.vendedor_id")
-        }).where(function () {
-
+        })
+        .where(function () {
             if(obj.tipoIdTercero !== ""){
                 this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)
-                    .andWhere('a.tercero_id',obj.terceroId); 
+                .andWhere('a.tercero_id',obj.terceroId); 
             }
             this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
-
             if(obj.pedidoMultipleFarmacia === '1'){
-
                 this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
-                    .andWhere("estado_proceso",obj.estadoProcesoPedido)
+                .andWhere("estado_proceso",obj.estadoProcesoPedido)
             }
-
         }).orderBy("a.fecha_registro",'desc')
     
     query.limit(G.settings.limit).

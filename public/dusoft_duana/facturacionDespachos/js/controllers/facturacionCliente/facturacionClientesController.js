@@ -741,16 +741,18 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                    
                     {displayName: "Opc", cellClass: "txt-center dropdown-button",
                         cellTemplate: '\
-                    <div class="btn-group">\
-                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
-                        <ul class="dropdown-menu dropdown-options">\
-                             <li>\n\
-                                <a href="javascript:void(0);" ng-click="generarFacturaIndividualCosmitet(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
-                             </li>\
-                        </ul>\
-                    </div>'
+                        <div class="btn-group">\
+                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                            <ul class="dropdown-menu dropdown-options">\
+                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                                    <a href="javascript:void(0);" ng-click="imprimirReportePedido(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
+                                </li>\
+                            </ul>\
+                        </div>'
                     },
-
+                    /*<li>\n\
+                                <a href="javascript:void(0);" ng-click="generarFacturaIndividualCosmitet(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
+                             </li>\\n\*/
                     {field: '', cellClass: "checkseleccion", width: "3%",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccionCosmitet(row)'" +
                                 " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}, 
@@ -823,6 +825,44 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                 }
             });  
+        };
+        
+        /**
+        * @author Cristian Ardila
+        * +Descripcion Metodo encargado de imprimir el detalle del
+        *              reporte de un pedido             
+        *  @fecha 12/06/2017 DD/MM/YYYY            
+        */
+        $scope.imprimirReportePedido = function(entity){
+
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_pedido: {
+                        cabecera:{
+                           telefono:entity.telefono,
+                           direccion:entity.direccion,
+                           tipoIdTercero:entity.tipo_id_tercero,
+                           terceroId:entity.id,
+                           terceroNombre: entity.nombre_tercero,
+                           fechaRegistro: entity.pedidos[0].fechaRegistro,
+                           observacion: entity.pedidos[0].observacion,
+                           numeroPedido: entity.pedidos[0].numero_cotizacion,
+                           vendedorId: entity.pedidos[0].vendedor[0].id,
+                           tipoIdVendedor: entity.pedidos[0].vendedor[0].tipo_id_tercero,
+                           vendedorNombre: entity.pedidos[0].vendedor[0].nombre_tercero
+                        }
+                    }
+                }
+            };
+
+            facturacionClientesService.imprimirReportePedido(obj,function(data){
+
+                if (data.status === 200) {
+                    var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
+                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                }
+            });
         };
         /**
          * @author Cristian Ardila

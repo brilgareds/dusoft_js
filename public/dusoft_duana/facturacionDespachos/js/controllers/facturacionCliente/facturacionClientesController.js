@@ -733,6 +733,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             class="btn btn-default btn-xs" >{{row.entity.mostrarPedidos()[0].mostrarFacturas().length}} Documentos</button>\
                             <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 4" \n\
                                 class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
+                              <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
                               <input type="checkbox"\n\
                                ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}  <br> \
                             </li>\
@@ -798,7 +799,31 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             });
         };
         
-        
+        /**
+        * @author Cristian Ardila
+        * +Descripcion Metodo encargado de imprimir el reporte
+        *              de un despacho
+        * @fecha 12/06/2017 DD/MM/YYYY
+        */
+        $scope.imprimirReporteDocumento = function(entity, documento){
+
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_despacho: { 
+                        documento: documento
+                    }
+                }
+            };
+            console.log("obj [imprimirReporteDocumento]:: ", obj);
+            facturacionClientesService.imprimirReporteDespacho(obj,function(data){
+
+                if (data.status === 200) {
+                    var nombre = data.obj.consulta_despacho_generado_detalle.nombre_pdf;                    
+                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                }
+            });  
+        };
         /**
          * @author Cristian Ardila
          * +Descripcion Ventana modal que se desplegara a traves de un boton
@@ -821,7 +846,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             <div class="modal-body">\
                                 <ul>\
                                     <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
-                                      <input type="checkbox" ng-model="item.documentoSeleccionado" \
+                                      <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
+                                        <input type="checkbox" ng-model="item.documentoSeleccionado" \
                                         ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"\
                                        >\n\
                                         {{item.prefijo}} - {{item.numero}}  <br> \

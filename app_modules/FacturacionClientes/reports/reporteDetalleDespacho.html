@@ -38,9 +38,9 @@
         <table width="100%" border='1' align="center" class="normal_10" rules="all">
             <tr>
                 <td class="label" align="center">TIPO MOVIMIENTO</td>
-                <td align="left">E</td>
+                <td align="left">{{:cabecera.tipo_movimiento}}</td>
                 <td class="label" width="25%">DOCUMENTO ID</td>
-                <td align="left">E008</td>
+                <td align="left">{{:cabecera.tipo_doc_bodega_id}}</td>
             </tr>
 
             <tr>
@@ -111,7 +111,7 @@
         </table><br>
         <table width="100%" border='1' align="center" class="normal_10" rules="all">
             <tr class="label" align="center">
-                <td colspan='9'>PRODUCTOS QUE CONTIENE ESTE DOCUMENTO</td>
+                <td colspan='12'>PRODUCTOS QUE CONTIENE ESTE DOCUMENTO</td>
             </tr>
             <tr class="label" align="center">
 
@@ -124,7 +124,7 @@
                 <td WIDTH='2%' >% GRAV</td>
                 <td WIDTH='5%' >V/U</td>
                 <td WIDTH='5%' >V/U+IVA</td>
-                <td >TOTAL</td>
+                <td WIDTH='5%' >TOTAL</td>
             </tr>
             {{for productos }}
             <tr>

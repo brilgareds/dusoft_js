@@ -169,21 +169,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
                     };
                     
+                    /**
+                     * @author Cristian Ardila
+                     * +Descripcion Metodo encargado de imprimir el reporte
+                     *              de un despacho
+                     * @fecha 12/06/2017 DD/MM/YYYY
+                     */
                     $scope.imprimirReporteDocumento = function(entity, documento){
-                        
-                        console.log("Entity ", entity);
-                        console.log("documento ", documento);
-                        console.log("entity ", entity)
-                        console.log("telefono ", entity.telefono);
-                        console.log("direccion ", entity.direccion);
-                        console.log("tipo_id_tercero ", entity.tipo_id_tercero);
-                        console.log("id ", entity.id);
-                        console.log("fechaRegistro ", entity.pedidos[0].fechaRegistro);
-                        console.log("observacion ", entity.pedidos[0].observacion);
-                        console.log("numero_cotizacion ", entity.pedidos[0].numero_cotizacion);
-                        console.log("nombre_tercero ", entity.nombre_tercero);
-                        console.log("id ", entity.pedidos[0].vendedor[0].id);
-                        console.log("nombre_tercero ", entity.pedidos[0].vendedor[0].nombre_tercero);
+                         
                         var obj = {                   
                             session: $scope.session,
                             data: {

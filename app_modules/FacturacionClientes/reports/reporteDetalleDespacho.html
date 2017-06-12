@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <title>DETALLE DEL DOCUMENTO</title>
+        <meta http-equiv='Content-Type' content='text/html; charset=ISO-8859-1'>
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style.css" rel=stylesheet type=text/css >
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style-print.css" rel=stylesheet type=text/css media="print">
+    
+
+    </head>
+    <body >
+        <table width="100%" align="center">
+            <tr>
+                <td align="right" class="label">		<h2>EFC-145716</h2>		</td>  </tr>
+
+        </table>  <table width="100%" border='1' align="center" class="normal_10" rules="all">
+            <tr>
+                <td width="35%" class="label">EMPRESA</td>
+                <td width="65%" align="left">DUANA & CIA LTDA.</td>
+            </tr>
+            <tr>
+                <td class="label">CENTRO DE UTULIDAD</td>
+
+                <td align="left"></td>
+            </tr>
+            <tr>
+                <td class="label">BODEGA</td>
+                <td align="left">BODEGA DUANA</td>
+            </tr>
+        </table>
+        <br>
+
+        <table width="100%" border='1' align="center" class="normal_10" rules="all">
+            <tr>
+                <td class="label" align="center">TIPO MOVIMIENTO</td>
+                <td align="left">E</td>
+                <td class="label" width="25%">DOCUMENTO ID</td>
+                <td align="left">E008</td>
+            </tr>
+
+            <tr>
+                <td class="label" >DESCRIPCION **</td>
+                <td COLSPAN='3' align="left">{{:cabecera.descripcion}}</td>
+            </tr>
+            <tr>
+                <td class="label" >NUMERO</td>
+                <td align="left">{{:cabecera.prefijo}}-{{:cabecera.numero}}</td>
+
+                <td class="label">FECHA</td>
+                <td align="left">{{:cabecera.fecha_registro}}</td>
+            </tr>
+            <tr>
+                <td class="label">USUARIO</td>
+                <td COLSPAN='3'>
+                    {{:imprimio.usuario_id}}-{{:imprimio.usuario}}      </td>
+
+            </tr>
+            <tr>
+                <td class="label"></B>OBSERVACION GENERAL<B></td>
+                </td>
+                <td COLSPAN='3'>
+                    {{:cabecera.observacion}}      </td>
+            </tr>
+            <tr>
+
+                <td class="label"></B>OBSERVACION PEDIDO<B></td>
+                </td>
+                <td COLSPAN='3'>
+                    Prueba de cotizacion A QUI AMEN      </td>
+            </tr>
+        </table>
+        <br>
+        <table BORDER='1' width="100%" align="center" class="normal_10" rules="all">
+
+            <tr>
+                <td COLSPAN='7' align="center"><b>DATOS ADICIONALES</b></td>
+            </tr>
+            <tr>
+                <td WIDTH='35%' align="left">TIPO DE DESPACHO :</td>
+                <td WIDTH='65%' align="left">{{:datos_adicionales.tipo_despacho}}</td>
+            </tr>
+
+            <tr>
+                <td WIDTH='35%' align="left">FARMACIA/CLIENTE :</td>
+                <td WIDTH='65%' align="left">{{:datos_adicionales.farmacia_cliente}} </td>
+            </tr>
+            <tr>
+                <td WIDTH='35%' align="left">NUMERO PEDIDO: </td>
+                <td WIDTH='65%' align="left">{{:datos_adicionales.numero_pedido}}</td>
+
+            </tr>
+            <tr>
+                <td WIDTH='35%' align="left">DIRECCION: </td>
+                <td WIDTH='65%' align="left">{{:datos_adicionales.direccion}}</td>
+            </tr>
+            <tr>
+                <td WIDTH='35%' align="left">TELEFONO: </td>
+
+                <td WIDTH='65%' align="left">{{:datos_adicionales.telefono}}</td>
+            </tr>
+        </table><br>
+        <table width="100%" border='1' align="center" class="normal_10" rules="all">
+            <tr class="label" align="center">
+                <td colspan='9'>PRODUCTOS QUE CONTIENE ESTE DOCUMENTO</td>
+            </tr>
+            <tr class="label" align="center">
+
+                <td >CODIGO</td>
+                <td >DESCRIPCION</td>
+                <td >REG. INVIMA</td>
+                <td WIDTH='5%'>CANT</td>
+                <td >LOTE</td>
+                <td >FECHA VENC.</td>
+                <td WIDTH='2%' >% GRAV</td>
+                <td WIDTH='5%' >V/U</td>
+                <td WIDTH='5%' >V/U+IVA</td>
+                <td >TOTAL</td>
+            </tr>
+            {{for productos }}
+            <tr>
+                <td>{{:codigo_producto}}</td>
+                <td>{{:nombre}}</td>
+                <td>{{:codigo_invima}}</td>
+                <td>{{:cantidad}}</td>
+                <td>{{:lote}}</td>
+                <td>{{:fecha_vencimiento}}</td>
+                <td>{{:cantidad}}</td>
+                <td>{{:valor_unitario_2}}</td>
+                <td>{{:valor_unitario_iva_2}}</td>
+                <td>{{:valor_total_iva_2}}</td>               
+            </tr>
+            {{/for}}
+
+
+            <tr class="label" align="center">
+                <td >OBSERVACION</td>
+                <td colspan="7"></td>
+            </tr>
+            <tr>
+                <td colspan='7' align="right">&nbsp;</td>
+                <td align="right">
+                    <label class='label_error'>SUBTOTAL</label>                      </td>
+
+                <td align="left">
+                    $535.158                      </td>
+            </tr>
+            <tr>
+                <td colspan='7' align="right">&nbsp;</td>
+                <td align="right">
+                    <label class='label_error'>IVA</label>                      </td>
+
+                <td align="left">
+                    $0                      </td>
+            </tr>
+            <tr>
+                <td colspan='7' align="right">&nbsp;</td>
+                <td align="right">
+                    <label class='label_error'>TOTAL</label>                      </td>
+
+                <td align="left">
+                    $535.157,50                      </td>
+            </tr>
+        </table>
+        <table width="100%" border='1' align="center" class="normal_10" rules="all">
+            <tr class="label" align="center">
+                <td colspan="4">				<b>JUSTIFICACIONES PENDIENTES</b>			</td>		</tr>    	<tr class="label" align="center">
+
+                <td>				<b>COD.PRODUCTO</b>			</td>			<td>				<b>PRODUCTO</b>			</td>			<td>				<b>PENDIENTE</b>			</td>			<td>				<b>JUSTIFICACION</b>			</td>		</tr>    	<tr class="label" align="center">
+
+                <td>				1101M0443248			</td>			<td>				METADOXIL 500MG TABLETA | CAJA X 10. LEGRAND			</td>			<td>				900			</td>			<td>				No hay fisico			</td>		</tr>    	<tr class="label" align="center">
+                <td>				1115A1710540			</td>			<td>				ACETAMINOFEN+CODEINA F 500mg+30mg TABLETA | CAJA X 300. NOVAMED			</td>			<td>				1800			</td>			<td>				No hay fisico			</td>		</tr>    	<tr class="label" align="center">
+
+                <td>				1168A0160174			</td>			<td>				ACETATO DE ALUMINIO Ph4.2MG SOBRE | CAJA X 25 SOBRES. WINTHROOP			</td>			<td>				2700			</td>			<td>				No hay fisico			</td>		</tr>    	<tr class="label" align="center">
+                <td>				199L0162820			</td>			<td>				LORATADINA 10mg TABLETA | CAJA X 300. LAPROFF			</td>			<td>				350			</td>			<td>				No hay fisico			</td>		</tr>	</table>	<br><table border='0' width="100%">
+
+            <tr>
+                <td align="justify" width="50%">
+                    <font size='1' face='arial'>
+                        Imprimió:&nbsp;MAURICIO BARRIOS
+                    </font>
+                </td>
+                <td align="right" width="50%">
+                    <font size='1' face='arial'>
+                        Fecha Impresión :&nbsp;&nbsp;12/06/2017 - 08:28 am
+                    </font>
+
+                </td>
+            </tr>
+        </table>
+
+    </body>
+</html>

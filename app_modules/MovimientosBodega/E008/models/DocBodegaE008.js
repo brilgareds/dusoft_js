@@ -1416,13 +1416,17 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
 		    b.codigo_invima,\
                     c.descripcion as descripcion_unidad,\
                     fc_descripcion_producto(b.codigo_producto) as nombre,\
-					(a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
-					(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
-					((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
-					(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit_1,\
-					((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)) as iva_1,\
-					((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total_1,\
-					(((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total_1\
+                    (a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
+                    (a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
+                    ((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
+                    (((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit_1,\
+                    ((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)) as iva_1,\
+                    ((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total_1,\
+                    (((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total_1,\
+                    to_char(((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))),'LFM9,999,999.00') as valor_total_iva_2,\
+                    to_char((a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))),'LFM9,999,999.00') as valor_unitario_iva_2,\
+                    to_char((a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))),'LFM9,999,999.00') as valor_unitario_iva_2,\
+                    to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario_2\
                 FROM\
                     inv_bodegas_movimiento_d as a,\
                     inventarios_productos as b,\

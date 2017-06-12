@@ -1340,6 +1340,141 @@ FacturacionClientes.prototype.generarReportePedido = function (req, res) {
     
        
 };
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de generar el informe detallado de la factura  
+ *              generada
+ * @fecha 18/05/2017
+ */
+FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
+    
+    var that = this;
+    var args = req.body.data;
+    var def = G.Q.defer();
+    
+    if (args.imprimir_reporte_despacho === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {imprimir_reporte_despacho: []}));
+        return;
+    }
+    
+    if (args.imprimir_reporte_despacho.documento === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {imprimir_reporte_despacho: []}));
+        return;
+    }
+     
+   
+    var today = new Date();   
+    var formato = 'YYYY-MM-DD hh:mm';
+    var fechaToday = G.moment(today).format(formato);
+    var subTotal = 0;
+    var valorIvaTotal = 0;
+    var total =0;
+    var usuario_id = req.session.user.usuario_id;
+    
+    var consultaCompleta = [];
+    var parametrosDocumento = {empresa_id: args.imprimir_reporte_despacho.documento.empresa,
+        prefijo: args.imprimir_reporte_despacho.documento.prefijo,
+        numero: args.imprimir_reporte_despacho.documento.numero};
+    var parametrosReporte =  {
+        cabecera: '', 
+        datos_adicionales :'',
+        serverUrl: req.protocol + '://' + req.get('host') + "/",
+        valores: {},
+        productos: {},
+        subTotal: 0,
+        valorIvaTotal: 0,
+        total: 0,
+        imprimio:{usuario:'',fecha:fechaToday, usuario_id: usuario_id},
+        archivoHtml: 'reporteDetalleDespacho.html',
+        reporte: "reporte_detalle_despacho_"
+    };
+    
+    G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id).then(function(resultado){
+        
+        if(resultado){ 
+            parametrosReporte.imprimio.usuario = resultado.nombre;          
+            return G.Q.ninvoke(that.m_e008,'obtenerDocumentoBodega', parametrosDocumento)
+        }else{
+            throw {msj:'[obtenerUsuarioPorId]: Consulta sin resultados', status: 404}; 
+        } 
+       
+    })
+    .then(function(resultado){     
+        
+        if(resultado.length > 0){
+           parametrosReporte.cabecera = resultado[0];
+           
+           return G.Q.ninvoke(that.m_e008,'consultarDatosAdicionales',parametrosDocumento);
+        }else{
+            throw {msj:'El documento no existe', state:404};
+        }
+        
+    }).then(function(resultado){
+        
+        if(resultado.length > 0){
+            parametrosReporte.datos_adicionales = resultado[0];           
+            return G.Q.ninvoke(that.m_e008,'obtenerTotalDetalleDespacho',{
+                empresa:parametrosDocumento.empresa_id,
+                prefijoDocumento:parametrosDocumento.prefijo,
+                numeroDocumento: parametrosDocumento.numero
+            });
+        }else{
+            throw {msj:'El documento no tiene datos adicionales', state:404};
+        }
+        
+    }).then(function(resultado){
+        
+        if(resultado.length > 0){
+            parametrosReporte.productos = resultado; 
+            console.log("parametrosReporte ", parametrosReporte);
+            return G.Q.nfcall(__generarPdf,parametrosReporte);
+        }else{
+            throw {msj:'El documento no tiene detalle', state:404};
+        }
+        
+         
+    })
+    /*.then(function(resultado){
+        parametrosReporte.productos = resultado;
+        
+        parametrosReporte.productos.forEach(function(row){  
+           // console.log("row ", row)
+            subTotal += parseFloat(row.valor_total_sin_iva);
+            valorIvaTotal += parseFloat(row.valor_iva);
+            
+        });  
+       
+        total = parseFloat(subTotal) + parseFloat(valorIvaTotal);
+        parametrosReporte.subTotal = numberFormat(subTotal,2);
+        parametrosReporte.valorIvaTotal = numberFormat(valorIvaTotal,2);
+        parametrosReporte.total = numberFormat(total,2);
+        
+        return G.Q.nfcall(__generarPdf,parametrosReporte);
+    })*/.then(function(resultado){
+        
+        //console.log("parametrosReporte.detalle ", parametrosReporte.productos);
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
+            consulta_despacho_generado_detalle: {nombre_pdf: resultado, resultados: {}}
+        }));
+         
+     }).fail(function(err){  
+         
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done(); 
+    
+    
+       
+};
+
 /**
  * +Descripcion Funcion encargada de generar el reporte pdf en una plantilla
  *              html, procesando los datos enviados

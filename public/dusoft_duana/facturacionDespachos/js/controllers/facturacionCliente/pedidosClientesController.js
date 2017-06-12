@@ -168,7 +168,81 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             });
                         }
                     };
- 
+                    
+                    $scope.imprimirReporteDocumento = function(entity, documento){
+                        
+                        console.log("Entity ", entity);
+                        console.log("documento ", documento);
+                        console.log("entity ", entity)
+                        console.log("telefono ", entity.telefono);
+                        console.log("direccion ", entity.direccion);
+                        console.log("tipo_id_tercero ", entity.tipo_id_tercero);
+                        console.log("id ", entity.id);
+                        console.log("fechaRegistro ", entity.pedidos[0].fechaRegistro);
+                        console.log("observacion ", entity.pedidos[0].observacion);
+                        console.log("numero_cotizacion ", entity.pedidos[0].numero_cotizacion);
+                        console.log("nombre_tercero ", entity.nombre_tercero);
+                        console.log("id ", entity.pedidos[0].vendedor[0].id);
+                        console.log("nombre_tercero ", entity.pedidos[0].vendedor[0].nombre_tercero);
+                        var obj = {                   
+                            session: $scope.session,
+                            data: {
+                                imprimir_reporte_despacho: { 
+                                    documento: documento
+                                }
+                            }
+                        };
+                        console.log("obj [imprimirReporteDocumento]:: ", obj);
+                        facturacionClientesService.imprimirReporteDespacho(obj,function(data){
+
+                            if (data.status === 200) {
+                                var nombre = data.obj.consulta_despacho_generado_detalle.nombre_pdf;                    
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                            }
+                        });  
+                    };
+                    
+                    /**
+                    * @author Cristian Ardila
+                    * +Descripcion Ventana modal que se desplegara a traves de un boton
+                    *              que se activara cuando la cantidad de documentos excedan
+                    *              los 10
+                    * @fecha 2017/05/25
+                    */
+                   $scope.listaPedidoPrefijos = function(entity,prefijos){
+                        $scope.entity = entity;
+                        $scope.listaPedidosPrefijos = prefijos;
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                <h4 class="modal-title">Seleccionar documentos</h4>\
+                            </div>\
+                            <div class="modal-body">\
+                                <ul>\
+                                    <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
+                                      <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
+                                        <input type="checkbox" ng-model="item.documentoSeleccionado" ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)">\
+                                        {{item.prefijo}} - {{item.numero}}  <br> \
+                                    </li>\
+                                </ul>\
+                            </div>\
+                            <div class="modal-footer">\
+                                <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
+                            </div>',
+                            scope: $scope,
+                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                                    $scope.close = function () {
+                                        $modalInstance.close();
+                                    };
+                                }]
+                        };
+                       var modalInstance = $modal.open($scope.opts);
+                       console.log("prefijos ", prefijos);
+                    };
                     /**
                      * +Descripcion Se visualiza la tabla con todos los clientes
                      */
@@ -186,19 +260,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Vendedor', cellClass: "ngCellText", width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 
                             {field: '#Fecha', cellClass: "ngCellText", width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
-
-                            //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getPrefijoNumero()}}</p></div>'},
-                            //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()}}</p></div>'},
-                            
-                            
+   
                             {filed: 'PRUEBA', 
                                 cellClass: "ngCellText", 
                                 width: "25%", 
                                 displayName: '#Factura',
-                                cellTemplate: '<ul >\
-                                    <li class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
-                                      <input type="checkbox"\n\
-                                       ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} <br> \
+                                cellTemplate: '<ul ><button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 1"  \n\
+                                                    ng-click="listaPedidoPrefijos(row.entity,row.entity.mostrarPedidos()[0].mostrarFacturas())" \n\
+                                                    class="btn btn-default btn-xs" >{{row.entity.mostrarPedidos()[0].mostrarFacturas().length}} Documentos</button>\
+                                    <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 2"\
+                                        class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
+                                        <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(row.entity, item)" class = "glyphicon glyphicon-print"></a>\
+                                        <input type="checkbox"\n\
+                                        ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} <br> \
                                     </li>\
                                   </ul>'},
                             {displayName: "Opc", cellClass: "txt-center dropdown-button",
@@ -211,9 +285,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     </li>\
                                     <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
                                         <a href="javascript:void(0);" ng-click="imprimirReportePedido(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
-                                    </li>\
-                                    <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                        <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir documento </a>\
                                     </li>\
                                 </ul>\
                             </div>'

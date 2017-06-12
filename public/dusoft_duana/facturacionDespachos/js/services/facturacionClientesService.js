@@ -46,10 +46,22 @@ define(["angular", "js/services"], function (angular, services) {
                      * @author Cristian Ardila
                      * @fecha  18/05/2017 DD/MM/YYYYY
                      * +Descripcion Servicio que generara el reporte con el detalle
-                     *              de la factura generada
+                     *              del pedido
                      */
                     self.imprimirReportePedido = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.IMPRIMIR_REPORTE_PEDIDO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  18/05/2017 DD/MM/YYYYY
+                     * +Descripcion Servicio que generara el reporte con el detalle
+                     *              del despacho
+                     */
+                    self.imprimirReporteDespacho = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.IMPRIMIR_REPORTE_DESPACHO, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

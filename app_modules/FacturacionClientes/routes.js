@@ -49,6 +49,10 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.generarReportePedido(req, res);
     });
     
+    app.post('/api/FacturacionClientes/generarReporteDespacho', function(req, res) {     
+        c_facturacion_clientes.generarReporteDespacho(req, res);
+    });
+    
     app.post('/api/FacturacionClientes/sincronizarFactura', function(req, res) {     
         c_facturacion_clientes.sincronizarFactura(req, res);
     });

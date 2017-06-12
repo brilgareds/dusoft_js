@@ -797,6 +797,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             });
         };
+        
+        
         /**
          * @author Cristian Ardila
          * +Descripcion Ventana modal que se desplegara a traves de un boton

@@ -11,21 +11,22 @@
     <body >
         <table width="100%" align="center">
             <tr>
-                <td align="right" class="label">		<h2>EFC-145716</h2>		</td>  </tr>
+                <td align="right" class="label">		<h2>{{:prefijo}}-{{:numero}}</h2>		</td>  </tr>
 
         </table>  <table width="100%" border='1' align="center" class="normal_10" rules="all">
             <tr>
                 <td width="35%" class="label">EMPRESA</td>
-                <td width="65%" align="left">DUANA & CIA LTDA.</td>
+                <td width="65%" align="left">{{:cabecera.nombre_empresa}}</td>
             </tr>
             <tr>
-                <td class="label">CENTRO DE UTULIDAD</td>
+                <td class="label">CENTRO DE UTILIDAD</td>
+                <td width="65%" align="left">{{:cabecera.nombre_centro_utilidad}}</td>
 
                 <td align="left"></td>
             </tr>
             <tr>
                 <td class="label">BODEGA</td>
-                <td align="left">BODEGA DUANA</td>
+                <td align="left">{{:cabecera.nombre_bodega}}</td>
             </tr>
         </table>
         <br>
@@ -52,7 +53,7 @@
             <tr>
                 <td class="label">USUARIO</td>
                 <td COLSPAN='3'>
-                    {{:imprimio.usuario_id}}-{{:imprimio.usuario}}      </td>
+                    {{:cabecera.usuario_id}}-{{:cabecera.nombre_usuario}}      </td>
 
             </tr>
             <tr>
@@ -163,25 +164,34 @@
         </table>
         <table width="100%" border='1' align="center" class="normal_10" rules="all">
             <tr class="label" align="center">
-                <td colspan="4">				<b>JUSTIFICACIONES PENDIENTES</b>			</td>		</tr>    	<tr class="label" align="center">
-
-                <td>				<b>COD.PRODUCTO</b>			</td>			<td>				<b>PRODUCTO</b>			</td>			<td>				<b>PENDIENTE</b>			</td>			<td>				<b>JUSTIFICACION</b>			</td>		</tr>    	<tr class="label" align="center">
-
-                <td>				1101M0443248			</td>			<td>				METADOXIL 500MG TABLETA | CAJA X 10. LEGRAND			</td>			<td>				900			</td>			<td>				No hay fisico			</td>		</tr>    	<tr class="label" align="center">
-                <td>				1115A1710540			</td>			<td>				ACETAMINOFEN+CODEINA F 500mg+30mg TABLETA | CAJA X 300. NOVAMED			</td>			<td>				1800			</td>			<td>				No hay fisico			</td>		</tr>    	<tr class="label" align="center">
-
-                <td>				1168A0160174			</td>			<td>				ACETATO DE ALUMINIO Ph4.2MG SOBRE | CAJA X 25 SOBRES. WINTHROOP			</td>			<td>				2700			</td>			<td>				No hay fisico			</td>		</tr>    	<tr class="label" align="center">
-                <td>				199L0162820			</td>			<td>				LORATADINA 10mg TABLETA | CAJA X 300. LAPROFF			</td>			<td>				350			</td>			<td>				No hay fisico			</td>		</tr>	</table>	<br><table border='0' width="100%">
+                <td colspan="4"><b>JUSTIFICACIONES PENDIENTES</b></td>
+            </tr>
+            <tr class="label" align="center">
+                <td><b>COD.PRODUCTO</b></td>
+                <td><b>PRODUCTO</b></td>			
+                <td><b>PENDIENTE</b></td>			
+                <td><b>JUSTIFICACION</b></td>		
+            </tr>    	           	
+            {{for productosPendientesJustificados }}
+            <tr>
+                <td><b>{{:codigo_producto}}</b>	</td>
+                <td><b>{{:descripcion}}</b></td>
+                <td><b>{{:cantidad_pendiente}}</b></td>
+                <td><b>{{:observacion}}</b></td>           
+            </tr>
+            {{/for}}
+        </table>	
+        <br><table border='0' width="100%">
 
             <tr>
                 <td align="justify" width="50%">
                     <font size='1' face='arial'>
-                        Imprimió:&nbsp;MAURICIO BARRIOS
+                        Imprimió: {{:imprimio.usuario}}
                     </font>
                 </td>
                 <td align="right" width="50%">
                     <font size='1' face='arial'>
-                        Fecha Impresión :&nbsp;&nbsp;12/06/2017 - 08:28 am
+                        Fecha Impresión : {{:imprimio.fecha}}
                     </font>
 
                 </td>

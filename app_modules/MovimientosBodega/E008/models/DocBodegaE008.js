@@ -137,26 +137,31 @@ DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
     console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
     */
     var column = ["y.documento_id",
+                "y.empresa_id",  
+                G.knex.raw("(SELECT e.razon_social FROM empresas as e WHERE e.empresa_id = y.empresa_id) as nombre_empresa"),
                 "y.centro_utilidad",	
-                 "y.bodega",	
-                 "y.prefijo",
-                 "y.numero",
-                 "y.observacion",	
-                 "y.sw_estado",	
-                 "y.usuario_id",
-                 "y.fecha_registro",
-                 "y.total_costo", 
-                 "y.abreviatura",
-                 "y.empresa_destino",
-                 "y.sw_verificado",
-                 "y.porcentaje_rtf",
-                 "y.porcentaje_ica",
-                 "y.porcentaje_reteiva",
-                 "y.tipo_movimiento",	
-                 "y.tipo_doc_bodega_id",
-                 "y.tipo_clase_documento",
-                 "y.descripcion",
-                 G.knex.raw("list(y.obs_pedido) as obs_pedido")
+                G.knex.raw("(SELECT c.descripcion FROM centros_utilidad as c WHERE c.centro_utilidad = y.centro_utilidad) as nombre_centro_utilidad"),
+                "y.bodega",
+                 G.knex.raw("(SELECT b.descripcion FROM bodegas as b WHERE b.bodega = y.bodega) as nombre_bodega"),
+                "y.prefijo",
+                "y.numero",
+                "y.observacion",	
+                "y.sw_estado",	
+                "y.usuario_id",
+                G.knex.raw("(SELECT u.nombre FROM system_usuarios as u WHERE u.usuario_id = y.usuario_id) as nombre_usuario"),
+                "y.fecha_registro",
+                "y.total_costo", 
+                "y.abreviatura",
+                "y.empresa_destino",
+                "y.sw_verificado",
+                "y.porcentaje_rtf",
+                "y.porcentaje_ica",
+                "y.porcentaje_reteiva",
+                "y.tipo_movimiento",	
+                "y.tipo_doc_bodega_id",
+                "y.tipo_clase_documento",
+                "y.descripcion",
+                G.knex.raw("list(y.obs_pedido) as obs_pedido")
 ];                                     
 
     //obtenerTotalDetalleDespacho
@@ -193,10 +198,10 @@ DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
     var query =  G.knex.column(column)
             .select()
             .from(queryUnion)
-            .groupBy(G.knex.raw("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21"));
+            .groupBy(G.knex.raw("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25"));
     
-    queryA.then(function(resultado) {
-        //console.log("resultado [obtenerDocumentoBodega]: ", resultado);
+    query.then(function(resultado) {
+       console.log("resultado [obtenerDocumentoBodega]: ", resultado);
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [obtenerDocumentoBodega] ", err);
@@ -1453,7 +1458,34 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
     });        
 };
 
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de consultar la factura agrupada
+ * @controller FacturacionClientes.prototype.generarFacturaAgrupada
+ */
+DocumentoBodegaE008.prototype.consultarJustificacionDespachos = function (obj,callback) {
+    
+    var campos = ['codigo_producto', 
+        G.knex.raw('fc_descripcion_producto(codigo_producto) as descripcion'),
+        "cantidad_pendiente",
+        "observacion"
+    ];
+    G.knex.column(campos)
+        .select()
+        .from('inv_bodegas_movimiento_justificaciones_pendientes')
+        .where(function(){
+            this.andWhere("empresa_id",obj.empresa_id)
+            .andWhere("prefijo", obj.prefijo)
+            .andWhere("numero", obj.numero)
+        }).then(function (resultado) {
+            callback(false, resultado)
+        }).catch(function (err) {
+        console.log("err [consultarJustificacionDespachos]:", err);
+        callback({err:err, msj: "Error al consultar la justificacion de despachos"});   
+    });
 
+};
 /**
  * @author Cristian Ardila 
  * @fecha  18/002/2016

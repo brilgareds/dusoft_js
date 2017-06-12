@@ -1385,6 +1385,9 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
         serverUrl: req.protocol + '://' + req.get('host') + "/",
         valores: {},
         productos: {},
+        productosPendientesJustificados: {},
+        prefijo: args.imprimir_reporte_despacho.documento.prefijo,
+        numero: args.imprimir_reporte_despacho.documento.numero,
         subTotal: 0,
         valorIvaTotal: 0,
         total: 0,
@@ -1392,7 +1395,7 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
         archivoHtml: 'reporteDetalleDespacho.html',
         reporte: "reporte_detalle_despacho_"
     };
-    
+     
     G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id).then(function(resultado){
         
         if(resultado){ 
@@ -1430,13 +1433,23 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
         
         if(resultado.length > 0){
             parametrosReporte.productos = resultado; 
-            console.log("parametrosReporte ", parametrosReporte);
-            return G.Q.nfcall(__generarPdf,parametrosReporte);
+            //console.log("parametrosReporte ", parametrosReporte);
+            return G.Q.ninvoke(that.m_e008,'consultarJustificacionDespachos',parametrosDocumento);
         }else{
             throw {msj:'El documento no tiene detalle', state:404};
         }
         
          
+    }).then(function(resultado){
+       
+        if(resultado.length > 0){
+            parametrosReporte.productosPendientesJustificados = resultado; 
+             
+            return G.Q.nfcall(__generarPdf,parametrosReporte);
+        }else{
+            throw {msj:'El documento no tiene detalle', state:404};
+        }
+       
     })
     /*.then(function(resultado){
         parametrosReporte.productos = resultado;

@@ -11,9 +11,13 @@
     <body >
         <table width="100%" align="center">
             <tr>
-                <td align="right" class="label">		<h2>{{:prefijo}}-{{:numero}}</h2>		</td>  </tr>
+                <td align="right" class="label">		
+                    <h2>{{:prefijo}}-{{:numero}}</h2>		
+                </td>  
+            </tr>
 
-        </table>  <table width="100%" border='1' align="center" class="normal_10" rules="all">
+        </table>  
+        <table width="100%" border='1' align="center" class="normal_10" rules="all">
             <tr>
                 <td width="35%" class="label">EMPRESA</td>
                 <td width="65%" align="left">{{:cabecera.nombre_empresa}}</td>
@@ -40,7 +44,7 @@
             </tr>
 
             <tr>
-                <td class="label" >DESCRIPCION **</td>
+                <td class="label" >DESCRIPCION</td>
                 <td COLSPAN='3' align="left">{{:cabecera.descripcion}}</td>
             </tr>
             <tr>
@@ -57,17 +61,22 @@
 
             </tr>
             <tr>
-                <td class="label"></B>OBSERVACION GENERAL<B></td>
+                <td class="label">
+                <B>OBSERVACION GENERAL</B>
                 </td>
+                
                 <td COLSPAN='3'>
-                    {{:cabecera.observacion}}      </td>
+                    {{:cabecera.observacion}}      
+                </td>
             </tr>
             <tr>
-
-                <td class="label"></B>OBSERVACION PEDIDO<B></td>
+                <td class="label">
+                    <B>OBSERVACION PEDIDO</B>
                 </td>
+                
                 <td COLSPAN='3'>
-                    Prueba de cotizacion A QUI AMEN      </td>
+                    {{:cabecera.obs_pedido}}
+                </td>
             </tr>
         </table>
         <br>
@@ -140,26 +149,31 @@
             <tr>
                 <td colspan='7' align="right">&nbsp;</td>
                 <td align="right">
-                    <label class='label_error'>SUBTOTAL</label>                      </td>
-
+                    <label style="color: #FF0000"><b>SUBTOTAL</b></label>
+                </td>
                 <td align="left">
-                    $535.158                      </td>
+                    ${{:subTotal}}                      
+                </td>
             </tr>
             <tr>
                 <td colspan='7' align="right">&nbsp;</td>
                 <td align="right">
-                    <label class='label_error'>IVA</label>                      </td>
+                    <label style="color: #FF0000"><b>IVA</b></label>                      
+                </td>
 
                 <td align="left">
-                    $0                      </td>
+                    $0                      
+                </td>
             </tr>
             <tr>
                 <td colspan='7' align="right">&nbsp;</td>
                 <td align="right">
-                    <label class='label_error'>TOTAL</label>                      </td>
+                    <label style="color: #FF0000"><b>TOTAL</b></label>                      
+                </td>
 
                 <td align="left">
-                    $535.157,50                      </td>
+                    ${{:total}}                 
+                </td>
             </tr>
         </table>
         <table width="100%" border='1' align="center" class="normal_10" rules="all">
@@ -182,7 +196,6 @@
             {{/for}}
         </table>	
         <br><table border='0' width="100%">
-
             <tr>
                 <td align="justify" width="50%">
                     <font size='1' face='arial'>
@@ -193,10 +206,8 @@
                     <font size='1' face='arial'>
                         Fecha Impresión : {{:imprimio.fecha}}
                     </font>
-
                 </td>
             </tr>
         </table>
-
     </body>
 </html>

@@ -1395,7 +1395,7 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
         archivoHtml: 'reporteDetalleDespacho.html',
         reporte: "reporte_detalle_despacho_"
     };
-     
+    console.log("parametrosReporte ", parametrosReporte)
     G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id).then(function(resultado){
         
         if(resultado){ 
@@ -1433,6 +1433,14 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
         
         if(resultado.length > 0){
             parametrosReporte.productos = resultado; 
+            resultado.forEach(function(row){  
+                valorIvaTotal += parseFloat(row.iva)*parseFloat(row.cantidad);
+                subTotal += parseFloat(row.valor_unitario)*parseFloat(row.cantidad);            
+            }); 
+            parametrosReporte.subTotal =  numberFormat(Math.round(parseFloat(subTotal)),0);
+            parametrosReporte.valorIvaTotal = numberFormat(parseFloat(valorIvaTotal),2);
+            parametrosReporte.total = numberFormat(parseFloat(valorIvaTotal)+parseFloat(subTotal),2);
+           
             //console.log("parametrosReporte ", parametrosReporte);
             return G.Q.ninvoke(that.m_e008,'consultarJustificacionDespachos',parametrosDocumento);
         }else{

@@ -46,36 +46,39 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.notificacionPedidoAutorizar = 0;
             that.consultarEstadoPedidoCotizacion = function(tipo, numero) {
-
+                console.log("***that.consultarEstadoPedidoCotizacion*******");
                 var url = '';
                 var obj = {};
+                
+                if(!numero || numero.length === 0 ){
+                    if (tipo === 1) {
 
-                if (tipo === 1) {
-
-                    url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_PEDIDO;
-                    obj = {
-                        session: $scope.session,
-                        data: {pedidos_clientes: {pedido: numero}}
-                    };
-
-                }
-
-                if (tipo === 2) {
-
-                    url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
-                    obj = {
-                        session: $scope.session,
-                        data: {pedidos_clientes: {cotizacion: numero}}
-                    };
-
-                }
-                Request.realizarRequest(url, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        $scope.Pedido.setEstado(data.obj.pedidos_clientes);
+                        url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_PEDIDO;
+                        obj = {
+                            session: $scope.session,
+                            data: {pedidos_clientes: {pedido: numero}}
+                        };
 
                     }
-                });
+
+                    if (tipo === 2) {
+
+                        url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
+                        obj = {
+                            session: $scope.session,
+                            data: {pedidos_clientes: {cotizacion: numero}}
+                        };
+
+                    }
+                    Request.realizarRequest(url, "POST", obj, function(data) {
+                        console.log("data [consultarEstadoPedidoCotizacion]::: ", data)
+                        if (data.status === 200) {
+                            $scope.Pedido.setEstado(data.obj.pedidos_clientes);
+
+                        }
+                    });
+                
+                }
             };
             $scope.items = null;
             $scope.pedidoCotizacion = 8;

@@ -1309,7 +1309,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     }
 
     var cotizacion = args.pedidos_clientes.cotizacion;
-
+    console.log("cotizacion >>>>> ", cotizacion);
     // Empresa, Centro Utilidad,  Bodega
     if (cotizacion.empresa_id === undefined || cotizacion.centro_utilidad_id === undefined || cotizacion.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
@@ -1395,28 +1395,32 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                        
                         __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
-                              
+                            //console.log("productos_validos ", productos_validos);
+                            //console.log("productos_invalidos ", productos_invalidos);
+                            
                             cantidad_productos = productos_validos.length;
-                             
+                            //console.log("cantidad_productos ", cantidad_productos);
                             if (cantidad_productos > limite_productos) {
-
+                                    
                                 res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
                                 return;
                             }
                               
                             __validar_datos_productos_archivo_plano(that, cotizacion, productos_validos, [], [], 0, function(_productos_validos, _productos_invalidos) {
                                  
-                                 
+                                //console.log("_productos_validos ", _productos_validos);
+                                //console.log("_productos_invalidos ", _productos_invalidos);
                                 if (_productos_validos.length === 0) {
                                     res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedidos_clientes: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
                                     return;
                                 }
 
-
+                                
                                 // Validar que si suben varios archivos, siempre se limite la cantidad de productos a ingresar ala cotizacion
                                 that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, '', function(err, lista_productos) {
 
-
+                                    //console.log("err ", err);
+                                    //console.log("lista_productos ", lista_productos);
                                     if (lista_productos.length > limite_productos) {
 
 
@@ -1425,7 +1429,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                                     }
 
                                     __agrupar_productos_por_tipo(that, _productos_validos, function(productos_agrupados) {
-
+                                        //console.log("productos_agrupados [__agrupar_productos_por_tipo]:: ", productos_agrupados)
                                         cotizacion.tipo_producto = (cotizacion.tipo_producto === '' || cotizacion.tipo_producto === undefined) ? Object.keys(productos_agrupados)[0] : cotizacion.tipo_producto;
 
                                         _productos_validos = productos_agrupados[cotizacion.tipo_producto];
@@ -2600,9 +2604,15 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
     var args = req.body.data;
 
     var numeroCotizacion = args.pedidos_clientes.cotizacion;
-
+        
+    if (numeroCotizacion === '' || !numeroCotizacion) {
+        res.send(G.utils.r(req.url, 'Los parametros obligatorios no estan definidos', 500, {}));
+        return;
+    }
+    
     that.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows) {
-
+        
+        console.log("rows ----->>>> ", rows);
         if (!err) {
             res.send(G.utils.r(req.url, 'Consultando estado de la cotizacion', 200, {pedidos_clientes: rows[0].estado}));
             return;
@@ -3502,7 +3512,8 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
         var cantidad_solicitada = row.cantidad || 0;
 
         that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
-
+            //console.log("err ", err);
+            //console.log("existe_producto ", existe_producto);
             var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
 
             if (existe_producto.length > 0 && cantidad_solicitada > 0) {
@@ -3525,8 +3536,7 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
         });
     });
 
-}
-;
+};
 
 
 

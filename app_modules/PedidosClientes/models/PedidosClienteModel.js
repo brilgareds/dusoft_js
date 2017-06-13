@@ -1391,11 +1391,13 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
                  " + filtroProducto;
-
-    var query = G.knex.select(G.knex.raw(sql, parametros)).
-            limit(G.settings.limit).
-            offset((pagina - 1) * G.settings.limit).then(function(resultado) {
-            //console.log("resultado [listar_productos]: >> ", resultado);
+                 
+    var query = G.knex.select(G.knex.raw(sql, parametros));
+        
+        query.limit(G.settings.limit). offset((pagina - 1) * G.settings.limit);
+        //console.log("query >>>>> ", query.toSQL())
+        query.then(function(resultado) {
+          //console.log("resultado [listar_productos]: >> ", resultado);
         callback(false, resultado);
     }). catch (function(err) {
             console.log("err [listar_productos]: ", err);

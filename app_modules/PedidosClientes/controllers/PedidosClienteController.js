@@ -3546,7 +3546,7 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
  */
 function __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback) {
 
-     
+     console.log("cantidad de productos ", productos.length, index)
     var producto = productos[index];
     var productoUnidadMedida = "";
     var def = G.Q.defer();
@@ -3597,11 +3597,18 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
         cotizacion.cliente.contrato_id,
         filtro,
         1, filtros, filtroAvanzado).then(function(lista_productos){
-    
-        //index++;
+            
+        
       
         if (lista_productos.length === 0) {
+            index++;
+            
+            producto.mensajeError = "No se encontro el producto";
+            producto.cantidadValida = false;
             productos_invalidos.push(producto);
+            
+            console.log("error code 1", producto.codigo_producto);
+            
             __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
             return;
         } else {
@@ -3626,16 +3633,18 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
         if(precioVenta.valido){
             productoUnidadMedida = producto;
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
-
+            
         }else{
+            
+            producto.mensajeError = "El precio venta no es valido";
+            producto.cantidadValida = false;
             productoUnidadMedida = producto;
             productos_invalidos.push(producto);
-            def.resolve();
+            console.log("error code 2", producto.codigo_producto);
         }
-       
-            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-                return;
-            
+        
+        def.resolve();
+
     }) .then(function(resultado) {
         index++;
          
@@ -3648,7 +3657,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
         } else if (resultado.length > 0 && resultado[0].valido === '1') {
              
             productos_validos.push(productoUnidadMedida);
-
+            
             setTimeout(function() {
                  __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
             }, 0);
@@ -3658,7 +3667,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             producto.mensajeError = "La cantidad ingresada no es valida para el producto";
             producto.cantidadValida = false;
             productos_invalidos.push(productoUnidadMedida);
-
+            console.log("error code 3", producto.codigo_producto);
             setTimeout(function() {
                  __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
             }, 0);

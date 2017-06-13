@@ -121,10 +121,10 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
         "a.lote",                                      
         G.knex.raw("(f.costo * a.cantidad ) as costo"),
         //G.knex.raw("to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario"),
-        "a.valor_unitario",
-        "a.porc_iva",
+        G.knex.raw("to_char(round(a.valor_unitario,2),'LFM9,999,999.00') as valor_unitario"),
+        G.knex.raw("round(a.porc_iva,2) as porc_iva"),
         //G.knex.raw("to_char((a.valor_unitario * a.cantidad),'LFM9,999,999.00') as subtotal"),
-        G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal"),
+        G.knex.raw("to_char(round((a.valor_unitario * a.cantidad),2),'LFM9,999,999.00') as subtotal"),
         G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal_factura"),
         G.knex.raw("to_char((a.valor_unitario*(a.porc_iva/100)),'LFM9,999,999.00') as iva"),
         G.knex.raw("((a.valor_unitario * (a.porc_iva/100))* a.cantidad) as iva_total"),         
@@ -218,7 +218,9 @@ FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (ob
             )
         }
     
-    query.then(function(resultado){           
+    
+    query.then(function(resultado){       
+        //console.log("resultado [consultaDetalleFacturaGenerada]: ", resultado);     
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [consultaDetalleFacturaGenerada]: ", err);     

@@ -1368,7 +1368,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
 
 
         console.log("rows ", rows);
-        console.log("cotizacion.numero_cotizacion ", cotizacion.numero_cotizacion);
+        //console.log("cotizacion.numero_cotizacion ", cotizacion.numero_cotizacion);
         console.log("err ", err);
         /**
          * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
@@ -1385,13 +1385,10 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
              */
              
             if (rows.length === 0 || rows[0].estado === '1' || rows[0].estado === '4') {
-
                  
                 __subir_archivo_plano(req.files, function(error, contenido) {
-
                       
                     if (!error) {
-                        console.log("__validar_productos_archivo_plano");
                        
                         __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
@@ -1431,9 +1428,16 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                                     __agrupar_productos_por_tipo(that, _productos_validos, function(productos_agrupados) {
                                         //console.log("productos_agrupados [__agrupar_productos_por_tipo]:: ", productos_agrupados)
                                         cotizacion.tipo_producto = (cotizacion.tipo_producto === '' || cotizacion.tipo_producto === undefined) ? Object.keys(productos_agrupados)[0] : cotizacion.tipo_producto;
-
+                                        _productos_validos.forEach(function(row){
+                                            //console.log("LOS PRODUCTOS ", row);
+                                            if(cotizacion.tipo_producto !== row.tipoProductoId){
+                                                 row.mensajeError = 'El tipo del producto no corresponde al tipo de la cotizacion ';
+                                                _productos_invalidos.push(row);
+                                            }
+                                           
+                                        });
                                         _productos_validos = productos_agrupados[cotizacion.tipo_producto];
-
+                                        //console.log("_productos_invalidos ", _productos_invalidos);
                                         if (_productos_validos === undefined || _productos_validos.length === 0) {
                                             res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedidos_clientes: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
                                             return;
@@ -3618,7 +3622,8 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             producto.iva = _producto.iva;
             producto.precio_venta = _producto.precio_producto;
             producto.tipo_producto = _producto.tipo_producto_id;
-             
+            producto.mensajeError = "";
+            producto.cantidadValida = true; 
             
             return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros)
         
@@ -3632,6 +3637,8 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
 
         if(precioVenta.valido){
             productoUnidadMedida = producto;
+            producto.mensajeError = "";
+            producto.cantidadValida = true;
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
             
         }else{
@@ -3655,7 +3662,8 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             }, 0);
             
         } else if (resultado.length > 0 && resultado[0].valido === '1') {
-             
+            producto.mensajeError = "";
+            producto.cantidadValida = true;  
             productos_validos.push(productoUnidadMedida);
             
             setTimeout(function() {

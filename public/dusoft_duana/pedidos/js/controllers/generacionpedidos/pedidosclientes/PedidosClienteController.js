@@ -1029,6 +1029,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.datos_view.activar_tab.tab_productos = true;
                     $scope.datos_view.productos_validos = data.obj.pedidos_clientes.productos_validos;
                     $scope.datos_view.productos_invalidos = data.obj.pedidos_clientes.productos_invalidos;
+                    
                     $scope.opciones_archivo.cancel();
                     if ($scope.datos_view.productos_invalidos.length > 0) {
 
@@ -1047,7 +1048,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                                 <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
                                                     <div class="list-group">\
                                                         <a ng-repeat="producto in datos_view.productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                            {{ producto.codigo_producto}}\
+                                                            {{ producto.codigo_producto }} - {{ producto.mensajeError }}\
                                                         </a>\
                                                     </div>\
                                                 </div>\

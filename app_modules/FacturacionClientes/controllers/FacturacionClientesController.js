@@ -7,6 +7,30 @@ var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e0
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
 };
+ 
+     
+ /*
+ * @author Cristian Ardila
+ * @fecha 02/05/2017
+ * +Descripcion Controlador encargado de listar los tipos de terceros
+ *              
+ */
+FacturacionClientes.prototype.procesosFacturacion = function(req, res){
+   
+    var that = this;
+                               
+    G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion',{filtro:'3'}).then(function(resultado){
+        
+    if(resultado.length >0){
+        res.send(G.utils.r(req.url, 'Consulta lista de facturas en proceso', 200, {lista_facturas_proceso:resultado}));
+    }else{
+        throw 'Consulta sin resultados';
+    }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 
 /*
  * @author Cristian Ardila
@@ -1335,10 +1359,7 @@ FacturacionClientes.prototype.generarReportePedido = function (req, res) {
             err.msj = "Se ha generado un error..";
         }
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
-    }).done(); 
-    
-    
-       
+    }).done();          
 };
 
 
@@ -1372,10 +1393,8 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
     var fechaToday = G.moment(today).format(formato);
     var subTotal = 0;
     var valorIvaTotal = 0;
-    var total =0;
     var usuario_id = req.session.user.usuario_id;
-    
-    var consultaCompleta = [];
+   
     var parametrosDocumento = {empresa_id: args.imprimir_reporte_despacho.documento.empresa,
         prefijo: args.imprimir_reporte_despacho.documento.prefijo,
         numero: args.imprimir_reporte_despacho.documento.numero};
@@ -1454,24 +1473,7 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
 
         return G.Q.nfcall(__generarPdf,parametrosReporte);
        
-    })
-    /*.then(function(resultado){
-        parametrosReporte.productos = resultado;
-        
-        parametrosReporte.productos.forEach(function(row){  
-           // console.log("row ", row)
-            subTotal += parseFloat(row.valor_total_sin_iva);
-            valorIvaTotal += parseFloat(row.valor_iva);
-            
-        });  
-       
-        total = parseFloat(subTotal) + parseFloat(valorIvaTotal);
-        parametrosReporte.subTotal = numberFormat(subTotal,2);
-        parametrosReporte.valorIvaTotal = numberFormat(valorIvaTotal,2);
-        parametrosReporte.total = numberFormat(total,2);
-        
-        return G.Q.nfcall(__generarPdf,parametrosReporte);
-    })*/.then(function(resultado){
+    }).then(function(resultado){
         
         //console.log("parametrosReporte.detalle ", parametrosReporte.productos);
         return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {

@@ -21,7 +21,8 @@ define(["angular"], function (angular) {
                  "IMPRIMIR_REPORTE_PEDIDO": BASE_URL + "/FacturacionClientes/generarReportePedido",
                  "IMPRIMIR_REPORTE_DESPACHO": BASE_URL + "/FacturacionClientes/generarReporteDespacho",
                  "SINCRONIZAR_FI": BASE_URL + "/FacturacionClientes/sincronizarFactura",
-                 "PROCESAR_DESPACHOS": BASE_URL + "/FacturacionClientes/procesarDespachos"
+                 "PROCESAR_DESPACHOS": BASE_URL + "/FacturacionClientes/procesarDespachos",
+                 "FACTURAS_EN_PROCESO": BASE_URL + "/FacturacionClientes/procesosFacturacion"
                  
             },
             'FACTURACIONPROVEEDOR':{

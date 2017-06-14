@@ -13,7 +13,7 @@
                     
                     <tab  active="root.activarTabFacturasGeneradas" >
                         <tab-heading >
-                            <i class=""></i>  Factura de despacho generada
+                            <i class=""></i>  Factura de despacho generada  
                         </tab-heading>
                         <br> 
                         <div ng-include="'views/facturacionClientes/listarFacturasGeneradas.html'"></div>  
@@ -26,14 +26,14 @@
                         <br> 
                         <div ng-include="'views/facturacionClientes/listarPedidosCosmitet.html'"></div>  
                     </tab> 
-                   <!-- <tab>
-                        <tab-heading ng-click="cargarListaPedidos('','')">
-                             Validacion despachos 
-                           
+                   <tab  ng-click="facturasProceso()">
+                        <tab-heading >
+                            <i class=""></i>  Facturas en proceso
+                             <span ng-show = "notificarFacturaGeneradaCosmitet >0" class="badge">{{notificarFacturaGeneradaCosmitet}}</span>
                         </tab-heading>
-                        <br>                    
-                        
-                    </tab>   //-->
+                        <br> 
+                        <div ng-include="'views/facturacionClientes/listarFacturasEnProceso.html'"></div>  
+                    </tab> 
                 
                     
                 </tabset>                                      

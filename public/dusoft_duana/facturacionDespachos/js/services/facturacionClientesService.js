@@ -19,6 +19,18 @@ define(["angular", "js/services"], function (angular, services) {
                             callback(data);
                         });
                     };
+                    
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  18/05/2017 DD/MM/YYYYY
+                     * +Descripcion Servicio que consulta los procesos de facturacion cosmitet
+                     */
+                    self.facturasEnProceso = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.FACTURAS_EN_PROCESO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
                     /**
                      * @author Cristian Ardila
                      * @fecha  18/05/2017 DD/MM/YYYYY
@@ -253,6 +265,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 _documento.setPorcentajeRtf(datos[i].porcentaje_rtf);
                                 _documento.setPorcentajeReteIva(datos[i].porcentaje_reteiva);
                                 _documento.setPorcentajeIca(datos[i].porcentaje_ica);
+                                // _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
                                 _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
                                 _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
                                 _terceroDespacho.setPais(datos[i].pais_empresa); 
@@ -400,6 +413,24 @@ define(["angular", "js/services"], function (angular, services) {
                         );
                     };
                     
+                    self.renderFacturasEnProceso = function (datos) {      
+                            
+                        var facturaProceso = [];
+                        for (var i in datos) {
+
+                            var _documento = DocumentoDespacho.get(datos[i].empresa_id, 
+                            datos[i].prefijo, 
+                            datos[i].factura_fiscal||'', 
+                            datos[i].fecha_creacion||'');
+                            _documento.set_empresa(datos[i].nombre_empresa);
+                            _documento.setFechaInicial(datos[i].fecha_inicial);
+                            _documento.setFechaFinal(datos[i].fecha_final);
+                            _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
+                          
+                            facturaProceso.push(_documento);
+                        }
+                        return facturaProceso;
+                    };
                     
                     return this;
                 }]);

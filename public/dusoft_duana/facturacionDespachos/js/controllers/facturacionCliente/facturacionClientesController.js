@@ -16,7 +16,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         $scope.paginaactualFacturasGeneradas = 1;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
         var fecha_actual = new Date();
-        
+        $scope.notificarFacturaGeneradaCosmitet = 0;
         $scope.root = {
             fechaInicialPedidosCosmitet: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
             fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),            
@@ -35,6 +35,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             items_facturas_generadas: 0,
             pedidos_cosmitet:[],
             clientes: [],
+            facturas_proceso: [],
             facturas_generadas: [],
             estadoBotones: [
                 "btn btn-danger btn-xs",
@@ -307,7 +308,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             enableHighlighting: true,
             columnDefs: [
 
-                {field: 'Identificacion',  cellClass: "ngCellText", width: "15%", displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
+                {field: 'Identificacion',  cellClass: "ngCellText", width: "15%", displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
 
                 {field: 'Cliente', cellClass: "ngCellText", displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
 
@@ -342,7 +343,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                 {field: '#Factura', cellClass: "ngCellText", width: "5%", displayName: '#Factura', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()}}- {{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero()}}</p></div>'},
-
+                
                 {field: 'Identificacion', cellClass: "ngCellText", width: "8%", displayName: 'Identificacion', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].getTipoId()}}- {{row.entity.mostrarFacturasDespachadas()[0].getId()}}</p></div>'},
 
@@ -367,7 +368,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Valor/saldo',  cellClass: "ngCellText",width: "12%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} / {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
 
                 {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
-                 
+                
+                 /*{field: '#Estado facturacion', cellClass: "ngCellText", width: "5%", displayName: '#Estado facturacion', 
+                    cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstadoFacturacion()}}</p></div>'},
+                */
+                
                 {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
@@ -497,6 +502,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 18/05/2017
          */
         $scope.limpiarLocalStorageFacturaGenerada = function(){
+            $scope.notificarFacturaGeneradaCosmitet = 0;
             localStorageService.add('listaFacturaDespachoGenerada', null); 
         };
         
@@ -625,13 +631,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             that.listarFacturasGeneradas(0,{});
         };
         
+        /**
+         * +Descripcion Metodo que se invoca cuando el tab de listar pedidos
+         *              de cosmitet esta activo o tiene el foco
+         */
         $scope.listarPedidosCosmitet = function(){
             
-            console.log("************that.listarPedidosCosmitet********************");   
-            console.log("************that.listarPedidosCosmitet********************");   
-            console.log("************that.listarPedidosCosmitet********************");   
-            console.log("************that.listarPedidosCosmitet********************");
-                     
+            $scope.notificarFacturaGeneradaCosmitet = 0;   
+            
             var obj = {
                 session: $scope.session,
                 data: {                               
@@ -648,7 +655,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 }
             };
-
+            
             facturacionClientesService.listarPedidosClientes(obj, function (data) {
                 $scope.root.pedidos_cosmitet = [];
                 var prefijosDocumentos = [];
@@ -678,14 +685,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      *              para facturarse
                      */
                     prefijosDocumentos.forEach(function(resultado){
-                        
-                        //for(var i=0; i<20; i++){ 
+
                         pedidoClientes.forEach(function(row){
                             
                             if(resultado.pedido_cliente_id === row.pedidos[0].numero_cotizacion){
-                                //console.log("row ", row.pedidos[0]);
+
                                 row.pedidos[0].prefijoNumero += " ( " + resultado.prefijo+" - "+ resultado.numero +")";
-                                 row.pedidos[0].agregarDocumentos(facturacionClientesService.renderDocumentosPrefijosClientes(
+                                row.pedidos[0].agregarDocumentos(facturacionClientesService.renderDocumentosPrefijosClientes(
                                     row.pedidos[0].numero_cotizacion, 
                                     resultado.prefijo,
                                     resultado.numero,
@@ -693,18 +699,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     resultado.empresa_id));
                             }                                             
                         });   
-                    
-                        //}
                     });
-
                     $scope.root.pedidos_cosmitet = pedidoClientes;
-                    console.log("$scope.pedidos_clientes ", $scope.root.pedidos_cosmitet);
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
-
             });
-
         };
         
         
@@ -817,7 +817,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 }
             };
-            console.log("obj [imprimirReporteDocumento]:: ", obj);
+
             facturacionClientesService.imprimirReporteDespacho(obj,function(data){
 
                 if (data.status === 200) {
@@ -905,7 +905,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }]
             };
             var modalInstance = $modal.open($scope.opts);
-            console.log("prefijos ", prefijos);
         };
         
         
@@ -993,7 +992,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
         $scope.onDocumentoSeleccionado = function (check, row) {
-           // console.log("row ", row)
+
             row.selected = check;
 
             if (check) {
@@ -1037,6 +1036,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         facturacionClientesService.procesarDespachos(obj, function (data) {
 
                             AlertService.mostrarMensaje("warning", data.msj);
+                             that.facturasEnProceso();
                             if (data.status === 404) {
                                 AlertService.mostrarMensaje("warning", data.msj);
                             }
@@ -1059,8 +1059,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         * @fecha 2017-08-05
         */
         $scope.generarFacturasCosmitetAgrupadas = function () {
-            
-             console.log("datos [generarFacturasCosmitetAgrupadas]::")
+             
            if ($scope.root.pedidosCosmitetSeleccionados.length > 1) {
   
                 var parametros = {
@@ -1113,13 +1112,58 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
         };
         
+        
+        $scope.listarFacturasProceso = {
+            data: 'root.facturas_proceso',
+            enableColumnResize: true,
+            enableRowSelection: false,
+            enableCellSelection: true,
+            enableHighlighting: true,
+            columnDefs: [
+
+                {field: 'Factura',  cellClass: "ngCellText", width: "15%", displayName: 'Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_prefijo()}}- {{row.entity.get_numero()}}</p></div>'},
+                {field: 'Empresa',  cellClass: "ngCellText", width: "15%", displayName: 'Empresa', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_empresa()}}</p></div>'},
+                {field: 'Fecha creacion',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha creacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_fecha_registro()}}</p></div>'},
+                {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha Inicial', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
+                {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha final', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},               
+                {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}</p></div>'},
+                
+               
+            ]
+        };
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Funcion encargada de consultar las facturas en proceso
+         * @fecha 2017-14-06
+         */
+        that.facturasEnProceso = function(){
+            
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    
+                }
+            };
+
+            facturacionClientesService.facturasEnProceso(obj,function(data){
+                $scope.root.facturas_proceso = [];
+                if (data.status === 200) {
+                    $scope.root.facturas_proceso = facturacionClientesService.renderFacturasEnProceso(data.obj.lista_facturas_proceso);                      
+                }
+            });
+        };
+        
+        $scope.facturasProceso = function(){
+            that.facturasEnProceso();
+        };
         /**
          * @author Cristian Ardila
          * +Descripcion Funcion encargada de crear una ventana de notificaciones
          *              cuando la factura de cosmitet ya esta lista, al presionar click
          *              sobre la notificacion se abrira en una nueva pestaña el
          *              reporte de la factura
-         * @fecha 2017-02-28
+         * @fecha 2017-14-16
          */        
         that.notificarSolicitud = function(title, body, parametros) {
              
@@ -1151,6 +1195,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                  factura:resultado.numeracion,
                  prefijo:resultado.id}
                 )}
+                console.log("onNotificarFacturacionTerminada {[[[[[]]]]]} ", resultado);
+                $scope.notificarFacturaGeneradaCosmitet++;    
+            
+                that.listarFacturasGeneradas(resultado.numeracion,{tipo: resultado.id, descripcion: resultado.id});   
+                
             if(datos.status === 201){
                  AlertService.mostrarMensaje("success", datos.msj); 
             }
@@ -1165,14 +1214,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         *              listara los clientes para facturar
         *  @parametros ($event = eventos del teclado)
         */
-       $scope.buscarPedidosCosmitet = function (event) {
+        $scope.buscarPedidosCosmitet = function (event) {
 
-           if (event.which === 13 || event.which === 1) {
+            if (event.which === 13 || event.which === 1) {
 
                $scope.listarPedidosCosmitet();
-           }
+            }
 
-       };
+        };
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones
@@ -1194,9 +1243,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
                         that.listarTiposTerceros();
-                        that.listarPrefijosFacturas();
-                        //that.listarClientes();
-                       
+                        that.listarPrefijosFacturas();    
+                        
                     }
                 }
             }

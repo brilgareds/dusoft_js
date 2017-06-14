@@ -23,11 +23,32 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.porcentajeReteIva;
                 this.porcentajeIca;
                 this.documentoSeleccionado;
+                this.descripcionEstadoFacturacion;
+                this.fechaInicial;
+                this.fechaFinal;
             }
 
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
             
+            DocumentoDespacho.prototype.setFechaInicial = function(fechaInicial){
+                this.fechaInicial = fechaInicial;
+            };
             
+            DocumentoDespacho.prototype.getFechaInicial = function(){
+                return this.fechaInicial;
+            };
+            
+            DocumentoDespacho.prototype.setFechaFinal = function(fechaFinal){
+                this.fechaFinal = fechaFinal;
+            };
+            
+            DocumentoDespacho.prototype.getFechaFinal = function(){
+                return this.fechaFinal;
+            };
+            
+            DocumentoDespacho.prototype.setDescripcionEstadoFacturacion = function(descripcionEstadoFacturacion){
+                this.descripcionEstadoFacturacion = descripcionEstadoFacturacion;
+            };
             
             DocumentoDespacho.prototype.setDocumentoSeleccionado = function(documentoSeleccionado){
                 this.documentoSeleccionado = documentoSeleccionado;
@@ -95,6 +116,10 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.setFechaVencimientoFactura = function(fechaVencimientoFactura){
                 this.fechaVencimientoFactura = fechaVencimientoFactura;
+            };
+            
+            DocumentoDespacho.prototype.getDescripcionEstadoFacturacion = function(){
+                return this.descripcionEstadoFacturacion;
             };
             
             DocumentoDespacho.prototype.getValor = function(){

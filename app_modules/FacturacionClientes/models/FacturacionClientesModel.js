@@ -62,13 +62,22 @@ FacturacionClientesModel.prototype.actualizarEstadoProcesoFacturacion = function
  * @controller FacturacionClientes.prototype.generarFacturasAgrupadas
  */
 FacturacionClientesModel.prototype.procesosFacturacion = function (obj,callback) {
-
-    var query = G.knex.select('*')
-        .from('proceso_facturacion')
+    
+    var columnas = [G.knex.raw("a.*"),
+        G.knex.raw("case when a.estado=1 then 'Procesando' \
+        when a.estado=3 then 'Terminado'  \
+        when a.estado=3 then 'Facturando' end as descripcion_estado_facturacion"),
+        G.knex.raw("(SELECT e.razon_social FROM empresas as e WHERE e.empresa_id = a.empresa_id) as nombre_empresa"),
+        G.knex.raw("(SELECT s.nombre FROM system_usuarios as s WHERE s.usuario_id = a.usuario_id) as nombre_usuario")
+        
+    ];
+    var query = G.knex.select(columnas)
+        .from('proceso_facturacion as a')
         .where(function(){
             if(obj.filtro === '0'){
                 this.andWhere("estado",'1')      
-            }else{
+            }
+            if(obj.filtro === '1'){
                 this.andWhere("factura_fiscal",obj.factura_fiscal)  
                     .andWhere("prefijo",obj.prefijo)
             }
@@ -77,7 +86,7 @@ FacturacionClientesModel.prototype.procesosFacturacion = function (obj,callback)
         query.limit(1).then(function (resultado) {
             callback(false, resultado)
         }).catch(function (err) {
-        console.log("err [consultarParametrosRetencion]:", err);
+        console.log("err [procesosFacturacion]:", err);
         callback({err:err, msj: "Error al consultar los parametros de retencion"});   
     });
 
@@ -122,9 +131,11 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
         G.knex.raw("(f.costo * a.cantidad ) as costo"),
         //G.knex.raw("to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario"),
         G.knex.raw("to_char(round(a.valor_unitario,2),'LFM9,999,999.00') as valor_unitario"),
+        G.knex.raw("a.valor_unitario as valor_unitario2"),
         G.knex.raw("round(a.porc_iva,2) as porc_iva"),
         //G.knex.raw("to_char((a.valor_unitario * a.cantidad),'LFM9,999,999.00') as subtotal"),
         G.knex.raw("to_char(round((a.valor_unitario * a.cantidad),2),'LFM9,999,999.00') as subtotal"),
+        G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal2"),
         G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal_factura"),
         G.knex.raw("to_char((a.valor_unitario*(a.porc_iva/100)),'LFM9,999,999.00') as iva"),
         G.knex.raw("((a.valor_unitario * (a.porc_iva/100))* a.cantidad) as iva_total"),         
@@ -177,8 +188,14 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
  */
 FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (obj,totalizar,callback) {
     
+    console.log("********FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada ***************");
+    console.log("********FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada ***************");
+    console.log("********FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada ***************");
+    
     var colQuery = [G.knex.raw("a.*")];   
     //G.knex.raw("to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario"),
+    
+    console.log("totalizar ", totalizar);
     if(totalizar === 1){
         
         colQuery = [
@@ -189,8 +206,8 @@ FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (ob
             "codigo_cum",
             "codigo_invima",       
             G.knex.raw("sum(cantidad) as cantidad"),                                           
-            G.knex.raw("sum(valor_unitario) as valor_unitario"),
-            G.knex.raw("sum(subtotal) as subtotal"),
+            G.knex.raw("to_char(round(sum(valor_unitario2),2),'LFM9,999,999.00') as valor_unitario"),
+            G.knex.raw("to_char(round(sum(subtotal2),2),'LFM9,999,999.00') as subtotal"),
             G.knex.raw("sum(porc_iva) as porc_iva")
         ]; 
         
@@ -204,7 +221,6 @@ FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (ob
         'inv_facturas_agrupadas_despacho_d as a',
         "2")
     );
-   
   
     var query = G.knex.column(colQuery)
         .from(queryA) 

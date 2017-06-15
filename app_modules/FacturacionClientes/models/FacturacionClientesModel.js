@@ -66,8 +66,9 @@ FacturacionClientesModel.prototype.procesosFacturacion = function (obj,callback)
     
     var columnas = [G.knex.raw("a.*"),
         G.knex.raw("case when a.estado=1 then 'Procesando' \
+        when a.estado=2 then 'Error'\
         when a.estado=3 then 'Terminado'  \
-        when a.estado=3 then 'Facturando' end as descripcion_estado_facturacion"),
+        when a.estado=4 then 'Facturando' end as descripcion_estado_facturacion"),
         G.knex.raw("(SELECT e.razon_social FROM empresas as e WHERE e.empresa_id = a.empresa_id) as nombre_empresa"),
         G.knex.raw("(SELECT s.nombre FROM system_usuarios as s WHERE s.usuario_id = a.usuario_id) as nombre_usuario")
         

@@ -633,6 +633,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          */
         $scope.listarPedidosCosmitet = function(){
             
+            localStorageService.add('listaFacturaDespachoGenerada', null); 
             $scope.notificarFacturaGeneradaCosmitet = 0;   
             
             var obj = {
@@ -660,7 +661,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 if (data.status === 200) {
 
                     $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
-                    console.log("data.obj.listar_pedidos_clientes ", data.obj.listar_pedidos_clientes)
+                    
                     pedidoClientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
 
                     /**
@@ -1189,6 +1190,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
         
         $scope.facturasProceso = function(){
+            localStorageService.add('listaFacturaDespachoGenerada', null); 
             that.facturasEnProceso();
         };
         /**
@@ -1231,7 +1233,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 )}
                 console.log("onNotificarFacturacionTerminada {[[[[[]]]]]} ", resultado);
                 $scope.notificarFacturaGeneradaCosmitet++;    
-            
+                that.facturasEnProceso();
                 that.listarFacturasGeneradas(resultado.numeracion,{tipo: resultado.id, descripcion: resultado.id});   
                 
             if(datos.status === 201){

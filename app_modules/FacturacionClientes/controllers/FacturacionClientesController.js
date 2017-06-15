@@ -601,6 +601,12 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
             parametros.usuario
         ); 
     }).fail(function (err) {
+        
+        G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {id:idProceso.id,estado:'2'}).then(function(resultado){
+             
+        }).fail(function (err) {
+            console.log("Error Inesperado, consulte con el admin [generarPedidoBodegaFarmacia]: ", err);     
+        })
         console.log("err [generarPedidoBodegaFarmacia]: ", err);        
     });
     

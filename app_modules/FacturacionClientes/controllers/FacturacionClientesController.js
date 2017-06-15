@@ -1031,80 +1031,6 @@ FacturacionClientes.prototype.sincronizarFactura = function(req, res){
    
 }
 
- 
-function numeroLetra(valor)
-{    
-    var n = parseFloat(valor).toFixed(2); /*se limita a dos decimales, no sabía que existía toFixed() :)*/
-    var p = n.toString().substring(n.toString().indexOf(".") + 1); /*decimales*/
-    var t = "";
-    t = numeroDecimalLetra(n);
-   
-    if(p){
-         console.log("p [numeroLetra]::: ", p);
-        t += " coma " + (p == 00 ? 'cero ' : numeroDecimalLetra(p)) ;
-        console.log("t ", t)
-    }
-    /*correcciones*/
-    t = t.replace("  ", " ");
-    //t = t.replace(" cero", "");
-  
-    return t;
-}
-
-function numeroDecimalLetra(n)
-{
-    var o=new Array("diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte", "veintiuno", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve");
-    var u=new Array("cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve");
-    var d=new Array("", "", "", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa");
-    var c=new Array("", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos");
-    var n = parseFloat(n).toFixed(2); /*se limita a dos decimales, no sabía que existía toFixed() :)*/
-    var m = n.toString().substring(0, n.toString().indexOf(".")); /*número sin decimales*/
-    var m = parseFloat(m).toString().split("").reverse(); /*tampoco que reverse() existía :D*/
-    var t = "";
-
-    /*Se analiza cada 3 dígitos*/
-    for (var i = 0; i < m.length; i += 3)
-    {
-        var x = t;
-        /*formamos un número de 2 dígitos*/
-        var b = m[i + 1] != undefined ? parseFloat(m[i + 1].toString() + m[i].toString()) : parseFloat(m[i].toString());
-        /*analizamos el 3 dígito*/
-        t = m[i + 2] != undefined ? (c[m[i + 2]] + " ") : "";
-        t += b < 10 ? u[b] : (b < 30 ? o[b - 10] : (d[m[i + 1]] + (m[i] == '0' ? "" : (" y " + u[m[i]]))));
-        t = t == "ciento cero" ? "cien" : t;
-        if (2 < i && i < 6)
-            t = t == "uno" ? "mil " : (t.replace("uno", "un") + " mil ");
-        if (5 < i && i < 9)
-            t = t == "uno" ? "un millón " : (t.replace("uno", "un") + " millones ");
-        t += x;
-         
-    }
-  
-    return t;
-}
-
-function numberFormat(amount, decimals) {
-
-    amount += ''; // por si pasan un numero en vez de un string
-    amount = parseFloat(amount.replace(/[^0-9\.]/g, '')); // elimino cualquier cosa que no sea numero o punto
-
-    decimals = decimals || 0; // por si la variable no fue fue pasada
-
-    // si no es un numero o es igual a cero retorno el mismo cero
-    if (isNaN(amount) || amount === 0) 
-        return parseFloat(0).toFixed(decimals);
-
-    // si es mayor o menor que cero retorno el valor formateado como numero
-    amount = '' + amount.toFixed(decimals);
-
-    var amount_parts = amount.split('.'),
-        regexp = /(\d+)(\d{3})/;
-
-    while (regexp.test(amount_parts[0]))
-        amount_parts[0] = amount_parts[0].replace(regexp, '$1' + '.' + '$2');
-
-    return amount_parts.join(',');
-}
 
 /**
  * @author Cristian Ardila
@@ -1440,14 +1366,14 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function(req, res)
             totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
           
              
-            parametrosReporte.valores.retencionFuente = numberFormat(retencionFuente,2);
-            parametrosReporte.valores.retencionIca = numberFormat(retencionIca,2);
-            parametrosReporte.valores.retencionIva = numberFormat(retencionIva,2);
-            parametrosReporte.valores.ivaTotal = numberFormat(parseFloat(totalIva),2);
-            parametrosReporte.valores.subTotal = numberFormat(parseFloat(subTotal),2);
-            parametrosReporte.valores.totalFactura = numberFormat(parseFloat(totalFactura),2);
-            parametrosReporte.valores.totalFacturaLetra = numeroLetra(totalFactura);
-             
+            parametrosReporte.valores.retencionFuente = G.utils.numberFormat(retencionFuente,2);
+            parametrosReporte.valores.retencionIca = G.utils.numberFormat(retencionIca,2);
+            parametrosReporte.valores.retencionIva = G.utils.numberFormat(retencionIva,2);
+            parametrosReporte.valores.ivaTotal = G.utils.numberFormat(parseFloat(totalIva),2);
+            parametrosReporte.valores.subTotal = G.utils.numberFormat(parseFloat(subTotal),2);
+            parametrosReporte.valores.totalFactura = G.utils.numberFormat(parseFloat(totalFactura),2);
+            parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
+             //
             return G.Q.nfcall(__generarPdf,parametrosReporte);
              
         }else{
@@ -1539,9 +1465,9 @@ FacturacionClientes.prototype.generarReportePedido = function (req, res) {
         });  
        
         total = parseFloat(subTotal) + parseFloat(valorIvaTotal);
-        parametrosReporte.subTotal = numberFormat(subTotal,2);
-        parametrosReporte.valorIvaTotal = numberFormat(valorIvaTotal,2);
-        parametrosReporte.total = numberFormat(total,2);
+        parametrosReporte.subTotal = G.utils.numberFormat(subTotal,2);
+        parametrosReporte.valorIvaTotal = G.utils.numberFormat(valorIvaTotal,2);
+        parametrosReporte.total = G.utils.numberFormat(total,2);
         
         return G.Q.nfcall(__generarPdf,parametrosReporte);
     }).then(function(resultado){
@@ -1656,9 +1582,9 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
                 valorIvaTotal += parseFloat(row.iva)*parseFloat(row.cantidad);
                 subTotal += parseFloat(row.valor_unitario)*parseFloat(row.cantidad);            
             }); 
-            parametrosReporte.subTotal =  numberFormat(Math.round(parseFloat(subTotal)),0);
-            parametrosReporte.valorIvaTotal = numberFormat(parseFloat(valorIvaTotal),2);
-            parametrosReporte.total = numberFormat(parseFloat(valorIvaTotal)+parseFloat(subTotal),2);
+            parametrosReporte.subTotal =  G.utils.numberFormat(Math.round(parseFloat(subTotal)),0);
+            parametrosReporte.valorIvaTotal = G.utils.numberFormat(parseFloat(valorIvaTotal),2);
+            parametrosReporte.total = G.utils.numberFormat(parseFloat(valorIvaTotal)+parseFloat(subTotal),2);
            
             //console.log("parametrosReporte ", parametrosReporte);
             return G.Q.ninvoke(that.m_e008,'consultarJustificacionDespachos',parametrosDocumento);

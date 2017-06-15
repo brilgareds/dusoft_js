@@ -26,6 +26,14 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.descripcion;
             };
 
+            Grupos.prototype.setDescripcionConcepto = function(descripcionConcepto) {
+                this.descripcionConcepto = descripcionConcepto;
+            };
+
+            Grupos.prototype.getDescripcionConcepto = function() {
+                return this.descripcionConcepto;
+            };
+
             Grupos.prototype.setPrecio = function(precio) {
                 this.precio = precio;
             };

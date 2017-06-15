@@ -23,6 +23,16 @@
                     "module": "Terceros/GestionTerceros",
                     "model": "TercerosModel",
                     "alias": "m_gestion_terceros"
+                },
+                "facturacion_cliente_model": {
+                    "module": "FacturacionClientes",
+                    "model": "FacturacionClientesModel",
+                    "alias": "m_facturacion_clientes"
+                },
+		"facturacion_proveedor_model": {
+                    "module": "FacturacionProveedores",
+                    "model": "FacturacionProveedoresModel",
+                    "alias": "m_facturacion_proveedores"
                 }
             }],
         "events": [],

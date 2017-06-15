@@ -2,8 +2,8 @@ define(["angular", "js/services"], function(angular, services) {
 
 
     services.factory('cajaGeneralService',
-            ['Request', 'API', 'CajaGeneral', 'Grupos',
-                function(Request, API, CajaGeneral, Grupos) {
+            ['Request', 'API', 'CajaGeneral', 'Grupos', 'ConceptoCaja',
+                function(Request, API, CajaGeneral, Grupos, ConceptoCaja) {
 
                     var self = this;
 
@@ -13,8 +13,28 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
+                    self.listarConceptosDetalle = function(obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CONCEPTOS_DETALLE, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
                     self.listarCajaGeneral = function(obj, callback) {
                         Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CAJA_GENERAL, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.insertarTmpDetalleConceptos = function(obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_TMP_DETALLE_CONCEPTOS, "POST", obj, function(data) {
                             callback(data);
                         });
                     };
@@ -31,13 +51,38 @@ define(["angular", "js/services"], function(angular, services) {
 
                     /**
                      * @author Andres Mauricio Gonzalez
+                     * @fecha  08/06/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.eliminarTmpDetalleConceptos = function(parametros, callback) {
+
+                        Request.realizarRequest(API.CAJA_GENERAL.ELIMINAR_TMP_DETALLE_CONCEPTOS, "POST", parametros, function(data) {
+                            console.log("data:::", data);
+                            callback(data);
+
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  10/06/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.guardarFacturaCajaGeneral = function(parametros, callback) {
+
+                        Request.realizarRequest(API.CAJA_GENERAL.GUARDAR_FACTURA_CAJA_GENERAL, "POST", parametros, function(data) {
+                            callback(data);
+
+                        });
+                    };
+
+                    /**
+                     * @author Andres Mauricio Gonzalez
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
                     self.listarTerceros = function(parametros, callback) {
 
                         Request.realizarRequest(API.TERCEROS.LISTAR_TERCEROS, "POST", parametros, function(data) {
-                            console.log("data:::", data);
                             callback(data);
 
                         });
@@ -64,9 +109,42 @@ define(["angular", "js/services"], function(angular, services) {
                             _cajaGeneral.setConceptoCaja(dato.concepto_caja);
                             cajaGeneral.push(_cajaGeneral);
                         });
-                        console.log("cajaGeneral", cajaGeneral);
                         return cajaGeneral;
                     };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * +Descripcion Funcion encargada de serializar el resultado de la
+                     *              consulta que obtiene las conceptos
+                     * @fecha 08/06/2017 DD/MM/YYYYY
+                     */
+                    self.renderConcepto = function(conceptos) {
+
+                        var concepto = [];
+
+                        conceptos.forEach(function(dato) {
+                            var _concepto = ConceptoCaja.get(dato.concepto_id);
+                            _concepto.setCantidad(dato.cantidad);
+                            _concepto.setPrecio(dato.precio);
+                            _concepto.setDescripcion(dato.descripcion);
+                            _concepto.setPorcentajeGravamen(dato.porcentaje_gravamen);
+                            _concepto.setGrupoConcepto(dato.grupo_concepto);
+                            _concepto.setDescripcionConcepto(dato.desconcepto);
+                            _concepto.setDescripcionGrupo(dato.desgrupo);
+                            _concepto.setTipoIdTercero(dato.tipo_id_tercero);
+                            _concepto.setRcConceptoId(dato.rc_concepto_id);
+                            _concepto.setEmpresa(dato.empresa_id);
+                            _concepto.setCentroUtilidad(dato.centro_utilidad);
+                            _concepto.setSwTipo(dato.sw_tipo);
+                            _concepto.setValorTotal(dato.valor_total);
+                            _concepto.setValorGravamen(dato.valor_gravamen);
+                            _concepto.setTipoPagoId(dato.tipo_pago_id);
+                            concepto.push(_concepto);
+                        });
+                        console.log("concepto", concepto);
+                        return concepto;
+                    };
+
+
                     /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Funcion encargada de serializar el resultado de la
@@ -84,6 +162,7 @@ define(["angular", "js/services"], function(angular, services) {
                             _grupo.setSwPrecioManual(dato.sw_precio_manual);
                             _grupo.setSwCantidad(dato.sw_cantidad);
                             _grupo.setConceptoId(dato.concepto_id);
+                            _grupo.setDescripcionConcepto(dato.descripcion_concepto);
                             grupos.push(_grupo);
                         });
                         console.log("grupo", grupos);

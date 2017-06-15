@@ -30,6 +30,10 @@ define(["angular"], function(angular) {
             'CAJA_GENERAL': {
                 "LISTAR_CAJA_GENERAL": BASE_URL + "/CajaGeneral/listarCajaGeneral",
                 "LISTAR_GRUPOS": BASE_URL + "/CajaGeneral/listarGrupos",
+                "INSERTAR_TMP_DETALLE_CONCEPTOS": BASE_URL + "/CajaGeneral/insertarTmpDetalleConceptos",
+                "LISTAR_CONCEPTOS_DETALLE": BASE_URL + "/CajaGeneral/listarConceptosDetalle",
+                "ELIMINAR_TMP_DETALLE_CONCEPTOS": BASE_URL + "/CajaGeneral/eliminarTmpDetalleConceptos",
+                "GUARDAR_FACTURA_CAJA_GENERAL": BASE_URL + "/CajaGeneral/guardarFacturaCajaGenral",
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",

@@ -9,8 +9,19 @@ and open the template in the editor.
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        <button type="button" class="btn btn-default dropdown-toggle"
+        <button type="button" class="btn btn-default dropdown-toggle" ng-disabled="validarCaja()"
                 aria-haspopup="true" aria-expanded="false" ng-click="onConcepto()" > Concepto
+        </button>
+        <br />
+        <br />
+        <br />
+        <div class="table-responsive" style="clear:both; ">
+            <div class="defaultGrid grid-responsive" ng-grid="listaConceptosTmp" ></div>
+        </div>
+	<br />
+        <br />
+	<button type="button" class="btn btn-default dropdown-toggle" ng-disabled="validarCaja()"
+                aria-haspopup="true" aria-expanded="false" ng-click="guardarFacturaCajaGeneral()" > Guardar
         </button>
     </body>
 </html>

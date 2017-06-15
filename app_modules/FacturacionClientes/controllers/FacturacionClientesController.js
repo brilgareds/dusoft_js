@@ -19,7 +19,7 @@ FacturacionClientes.prototype.procesosFacturacion = function(req, res){
    
     var that = this;
                                
-    G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion',{filtro:'3'}).then(function(resultado){
+    G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion',{filtro:'2'}).then(function(resultado){
         
     if(resultado.length >0){
         res.send(G.utils.r(req.url, 'Consulta lista de facturas en proceso', 200, {lista_facturas_proceso:resultado}));
@@ -135,8 +135,8 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function(req, res){
     
    
     var parametros = {
-        empresaId:empresaId,
-        numero:numero,
+        empresa_id:empresaId,
+        factura_fiscal:numero,
         prefijo:prefijo.tipo,
         tipoIdTercero:filtro.tipo,
         pedidoClienteId:'',
@@ -1112,7 +1112,7 @@ function numberFormat(amount, decimals) {
  *              generada
  * @fecha 18/05/2017
  */
-FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, res) {
+/*FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, res) {
  
     var that = this;
     var args = req.body.data;
@@ -1267,9 +1267,209 @@ FacturacionClientes.prototype.consultaFacturaGeneradaDetalle = function (req, re
         }
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done(); 
+};*/
+
+
+FacturacionClientes.prototype.generarReporteFacturaGenerada = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;
+    var def = G.Q.defer();
+    
+    var that = this;
+    var args = req.body.data;
+    
+    if (args.imprimir_reporte_factura === undefined || args.imprimir_reporte_factura.paginaActual === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {imprimir_reporte_factura: []}));
+        return;
+    }
+     
+    if (args.imprimir_reporte_factura.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {imprimir_reporte_factura: []}));
+        return;
+    }
+
+    if (args.imprimir_reporte_factura.paginaActual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {imprimir_reporte_factura: []}));
+        return;
+    }
+     
+     
+    var empresaId = args.imprimir_reporte_factura.empresaId;
+    var paginaActual = args.imprimir_reporte_factura.paginaActual;
+    var prefijo = args.imprimir_reporte_factura.prefijo;
+    var numero = args.imprimir_reporte_factura.numero;
+    var usuario = req.session.user.usuario_id;
+    
+   
+    var parametros = {
+        empresa_id:empresaId,
+        factura_fiscal:numero,
+        prefijo:prefijo,
+        tipoIdTercero: '',
+        pedidoClienteId:'',
+        terceroId: '',
+        nombreTercero: '',
+        paginaActual:paginaActual
+    };       
+     var parametrosFacturaGenerada = {
+        empresa_id: empresaId,
+        factura_fiscal: numero,
+        prefijo: prefijo,       
+    };
+    var usuario_id = req.session.user.usuario_id;
+    var today = new Date();   
+    var formato = 'YYYY-MM-DD hh:mm';
+    var fechaToday = G.moment(today).format(formato);
+    var parametrosReporte =  {
+        cabecera: '',           
+        serverUrl: req.protocol + '://' + req.get('host') + "/",
+        detalle: {},
+        valores: {},
+        productos: {},
+        imprimio:{usuario:'',fecha:fechaToday},
+        archivoHtml: 'facturaGeneradaDetalle.html',
+        reporte: "factura_generada_detalle_"
+    };
+    
+    var retencionFuente = 0;
+    var retencionIca = 0;
+    var retencionIva = 0;
+    var totalFactura = 0;
+    var subTotal = 0;
+    var totalIva = 0;   
+    
+    G.Q.ninvoke(that.m_facturacion_clientes, 'listarFacturasGeneradas', parametros).then(function(resultado){
+        
+       //console.log("resultado ", resultado);
+        if(resultado){   
+            parametrosReporte.cabecera = resultado[0];
+            return G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id)
+        }else{
+            throw {msj:'[listarFacturasGeneradas]: Consulta sin resultados', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+        
+        if(resultado){ 
+            parametrosReporte.imprimio.usuario = resultado.nombre;          
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultaDetalleFacturaGenerada',parametros,0);
+        }else{
+            throw {msj:'[obtenerUsuarioPorId]: Consulta sin resultados', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+                     
+        if(resultado.length >0){                        
+            parametrosReporte.detalle = resultado;
+            parametrosReporte.productos = resultado;
+            if(parametrosReporte.cabecera.factura_agrupada === '1'){
+                parametrosReporte.cabecera.pedido_cliente_id = '';
+                return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarPedidosFacturaAgrupada', parametrosFacturaGenerada);
+            }else{
+                def.resolve();
+            }        
+        }else{
+            throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+         
+        if (resultado) {
+            if (resultado.length > 0) {
+                var coma = ",";
+                var length = resultado.length-1;                    
+                resultado.forEach(function (row, index) {
+                    if (index === length) {
+                        coma = "";
+                    }
+                    parametrosReporte.cabecera.pedido_cliente_id += row.pedido_cliente_id + coma;
+                });
+
+            } else {
+                throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
+            }
+        }else{
+            def.resolve();
+        }
+            
+    }).then(function(resultado){   
+        
+        return G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion',{filtro:'1', 
+           factura_fiscal: parametros.factura_fiscal, 
+           prefijo: parametros.prefijo
+        });         
+                                                  
+    }).then(function(resultado){
+        
+        if(resultado.length > 0){           
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultaDetalleFacturaGenerada',parametros,1);
+        }else{
+            def.resolve();
+        }
+         
+    }).then(function(resultado){
+        
+        if(resultado){
+           parametrosReporte.productos = resultado;
+        }        
+        return G.Q.ninvoke(that.m_facturacion_clientes,'consultarParametrosRetencion',{empresaId: parametros.empresa_id});  
+         
+    }).then(function(resultado){ 
+       
+        if (resultado.length > 0) {
+              
+            parametrosReporte.detalle.forEach(function(row){   
+               // console.log("row ", row);
+                subTotal += parseFloat(row.subtotal_factura);
+                totalIva += parseFloat(row.iva_total);
+            });              
+             
+            if(subTotal >= resultado[0].base_rtf){
+                retencionFuente = (subTotal * ((parametrosReporte.cabecera.porcentaje_rtf) / 100));
+            }
+        
+            if(subTotal >= resultado[0].base_ica){
+                retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
+            }
+
+            if(subTotal >= resultado[0].base_reteiva){
+                retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
+            }
+
+            totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
+          
+             
+            parametrosReporte.valores.retencionFuente = numberFormat(retencionFuente,2);
+            parametrosReporte.valores.retencionIca = numberFormat(retencionIca,2);
+            parametrosReporte.valores.retencionIva = numberFormat(retencionIva,2);
+            parametrosReporte.valores.ivaTotal = numberFormat(parseFloat(totalIva),2);
+            parametrosReporte.valores.subTotal = numberFormat(parseFloat(subTotal),2);
+            parametrosReporte.valores.totalFactura = numberFormat(parseFloat(totalFactura),2);
+            parametrosReporte.valores.totalFacturaLetra = numeroLetra(totalFactura);
+             
+            return G.Q.nfcall(__generarPdf,parametrosReporte);
+             
+        }else{
+             throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};  
+        }
+        
+    }).then(function(resultado){
+        
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
+                consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}
+        }));
+        
+    }).fail(function(err){  
+         
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done(); 
 };
-
-
 /**
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de generar el informe detallado de la factura  
@@ -1319,7 +1519,7 @@ FacturacionClientes.prototype.generarReportePedido = function (req, res) {
         reporte: "reporte_detalle_pedido_"
     };
     
-     G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id).then(function(resultado){
+    G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id).then(function(resultado){
         
         if(resultado){ 
             parametrosReporte.imprimio.usuario = resultado.nombre;          

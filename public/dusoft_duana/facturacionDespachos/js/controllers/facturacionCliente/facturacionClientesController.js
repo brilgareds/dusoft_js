@@ -369,10 +369,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                 {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
                 
-                 /*{field: '#Estado facturacion', cellClass: "ngCellText", width: "5%", displayName: '#Estado facturacion', 
-                    cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstadoFacturacion()}}</p></div>'},
-                */
-                
                 {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
@@ -381,7 +377,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                    <a href="javascript:void(0);" ng-click="sincronizarFactura(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                   <a href="javascript:void(0);" ng-click="imprimirFacturaGenerada(row.entity)" class = "glyphicon glyphicon-print"> factura </a>\
+                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,0)" class = "glyphicon glyphicon-print"> factura </a>\
                                 </li>\
                            </ul>\
                       </div>'
@@ -425,7 +421,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         * para consultar los medicamentos pendientes           
         * @fecha  2016-10-12
         */
-        that.consultaFacturaGeneradaDetalle = function(parametro){
+        /*that.consultaFacturaGeneradaDetalle = function(parametro){
           
             var obj = {                   
                 session: $scope.session,
@@ -475,7 +471,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                 }
             });  
-        };
+        };*/
         
         /**
          * +Descripcion Metodo encargado de generar el reporte con la factura
@@ -483,7 +479,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @author Cristian Ardila
          * @fecha 18/05/2017
          */
-        $scope.imprimirFacturaGenerada = function(entity){
+        /*$scope.imprimirFacturaGenerada = function(entity){
             console.log("imprimirFacturaGenerada [entity]:: ", entity);
             that.imprimirFacturaGeneradaLocalStorage(entity);
         };
@@ -491,7 +487,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         that.imprimirFacturaGeneradaLocalStorage = function(parametro){     
             console.log("imprimirFacturaGeneradaLocalStorage");
             that.consultaFacturaGeneradaDetalle(parametro);
-        };
+        };*/
         
         
         
@@ -1127,11 +1123,49 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha Inicial', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
                 {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha final', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},               
                 {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}</p></div>'},
-                
+                {displayName: "Opc", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '\
+                        <div class="btn-group">\
+                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                            <ul class="dropdown-menu dropdown-options">\
+                                <li ng-if="row.entity.get_numero() > 0 ">\
+                                    <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,1)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
+                                </li>\
+                            </ul>\
+                        </div>'
+                    },
                
             ]
         };
-        
+          
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Funcion encargada de generar el reporte de la factura
+         * @fecha 15/06/2017
+         * 
+         */
+        $scope.imprimirReporteFactura = function(entity, estado){
+            
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_factura:{
+                        empresaId: (estado > 0) ? entity.bodegas_doc_id : entity.codigo,
+                        prefijo:   (estado > 0) ? entity.prefijo        : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
+                        numero:    (estado > 0) ? entity.numero         : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
+                        paginaActual: 1
+                    }
+                }
+            };
+                                   
+            facturacionClientesService.imprimirReporteFactura(obj,function(data){
+             
+                if (data.status === 200) {
+                    var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
+                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");          
+                }
+            });          
+        };
         /**
          * @author Cristian Ardila
          * +Descripcion Funcion encargada de consultar las facturas en proceso

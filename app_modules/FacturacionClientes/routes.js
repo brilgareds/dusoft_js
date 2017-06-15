@@ -45,6 +45,10 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.consultaFacturaGeneradaDetalle(req, res);
     });
      
+    app.post('/api/FacturacionClientes/generarReporteFacturaGenerada', function(req, res) {     
+        c_facturacion_clientes.generarReporteFacturaGenerada(req, res);
+    });
+    
     app.post('/api/FacturacionClientes/generarReportePedido', function(req, res) {     
         c_facturacion_clientes.generarReportePedido(req, res);
     });

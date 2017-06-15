@@ -55,6 +55,7 @@ FacturacionClientesModel.prototype.actualizarEstadoProcesoFacturacion = function
             callback({err:err, msj: "Error al actualizar el estado de proceso de la factura"});
     });    
 };
+
 /**
  * @author Cristian Ardila
  * @fecha 31/05/2016
@@ -81,6 +82,10 @@ FacturacionClientesModel.prototype.procesosFacturacion = function (obj,callback)
                 this.andWhere("factura_fiscal",obj.factura_fiscal)  
                     .andWhere("prefijo",obj.prefijo)
             }
+           /* if(obj.filtro === '2'){
+                this.andWhere(G.knex.raw("a.fecha_final between now() and now()"));
+                    //.andWhere("prefijo",obj.prefijo)
+            }*/
         });
         
         query.limit(1).then(function (resultado) {
@@ -489,11 +494,11 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
             this.on("a.empresa_id", "i.empresa_id")
             .on("a.documento_id", "i.documento_id")
         }).where(function () {
-            this.andWhere('a.empresa_id', filtro.empresaId)
+            this.andWhere('a.empresa_id', filtro.empresa_id)
             .andWhere('c.nombre_tercero', G.constants.db().LIKE, "%" + filtro.nombreTercero + "%")
             .andWhere('a.tercero_id', G.constants.db().LIKE, "%" + filtro.terceroId + "%");//
             if (filtro.numero !== "") {
-                this.andWhere('a.factura_fiscal', filtro.numero);
+                this.andWhere('a.factura_fiscal', filtro.factura_fiscal);
             }
             if (filtro.prefijo !== "") {
                 this.andWhere('a.prefijo', filtro.prefijo);
@@ -604,6 +609,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
+        //console.log("resultado [listarFacturasGeneradas] ", resultado);
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarFacturasGeneradas] ", err);

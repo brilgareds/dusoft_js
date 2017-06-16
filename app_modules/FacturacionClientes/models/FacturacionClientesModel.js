@@ -83,13 +83,15 @@ FacturacionClientesModel.prototype.procesosFacturacion = function (obj,callback)
                 this.andWhere("factura_fiscal",obj.factura_fiscal)  
                     .andWhere("prefijo",obj.prefijo)
             }
-           /* if(obj.filtro === '2'){
-                this.andWhere(G.knex.raw("a.fecha_final between now() and now()"));
-                    //.andWhere("prefijo",obj.prefijo)
-            }*/
+            if(obj.filtro === '2'){
+                this.andWhere(G.knex.raw("a.fecha_creacion >= TO_CHAR(now(),'yyyy-mm-dd') or a.fecha_creacion is null"));
+
+            }
         });
-        
-        query.limit(1).then(function (resultado) {
+        if(obj.filtro !== '2'){
+             query.limit(1)
+        }
+        query.then(function (resultado) {
             callback(false, resultado)
         }).catch(function (err) {
         console.log("err [procesosFacturacion]:", err);

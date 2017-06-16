@@ -439,7 +439,8 @@ define(["angular", "js/services"], function (angular, services) {
                             _documento.setFechaInicial(datos[i].fecha_inicial);
                             _documento.setFechaFinal(datos[i].fecha_final);
                             _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
-                          
+                            _documento.setEstadoFacturacion(datos[i].estado);
+                           
                             facturaProceso.push(_documento);
                         }
                         return facturaProceso;

@@ -37,14 +37,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             clientes: [],
             facturas_proceso: [],
             facturas_generadas: [],
-            estadoBotones: [
-                "btn btn-danger btn-xs",
-                "btn btn-primary btn-xs",
-                "btn btn-danger btn-xs",
-                "btn btn-info btn-xs",
-                "btn btn-warning btn-xs",
-                "btn btn-success btn-xs",
-                "btn btn-warning btn-xs"
+            estadoBotones: ["",
+                "fa fa-spinner fa-spin",
+                "glyphicon glyphicon-remove",
+                "glyphicon glyphicon-ok",
+                "fa fa-gear fa-spin"
             ],
             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
             activarTabFacturasGeneradas: false
@@ -1135,10 +1132,18 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             </ul>\
                         </div>'
                     },
-               
+               /*{field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
+                    cellTemplate: '<div class="col-xs-16 ">\n\
+                                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
+                                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'},*/
             ]
         };
           
+          
+        $scope.agregar_clase_formula = function(index) {
+            return $scope.root.estadoBotones[index];
+        };
+         
         /**
          * @author Cristian Ardila
          * +Descripcion Funcion encargada de generar el reporte de la factura

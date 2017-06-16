@@ -24,6 +24,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.porcentajeIca;
                 this.documentoSeleccionado;
                 this.descripcionEstadoFacturacion;
+                this.estadoFacturacion;
                 this.fechaInicial;
                 this.fechaFinal;
             }
@@ -48,6 +49,10 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.setDescripcionEstadoFacturacion = function(descripcionEstadoFacturacion){
                 this.descripcionEstadoFacturacion = descripcionEstadoFacturacion;
+            };
+    
+            DocumentoDespacho.prototype.setEstadoFacturacion = function(estadoFacturacion){
+                this.estadoFacturacion = estadoFacturacion;
             };
             
             DocumentoDespacho.prototype.setDocumentoSeleccionado = function(documentoSeleccionado){
@@ -120,6 +125,10 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.getDescripcionEstadoFacturacion = function(){
                 return this.descripcionEstadoFacturacion;
+            };
+            
+            DocumentoDespacho.prototype.getEstadoFacturacion = function(){
+                return this.estadoFacturacion;
             };
             
             DocumentoDespacho.prototype.getValor = function(){

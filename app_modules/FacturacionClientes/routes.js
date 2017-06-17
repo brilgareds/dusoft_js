@@ -4,7 +4,7 @@ module.exports = function(app, di_container) {
     var j_facturacion_clientes = di_container.get("j_facturacion_clientes");
   
   
-   // j_facturacion_clientes.ejecutarJobProcesarDespachos();
+    j_facturacion_clientes.ejecutarJobProcesarDespachos();
   
     // Listar los tipos terceros
     app.post('/api/FacturacionClientes/listarTiposTerceros', function(req, res) {

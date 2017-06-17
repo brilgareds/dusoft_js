@@ -1120,7 +1120,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Fecha creacion',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha creacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_fecha_registro()}}</p></div>'},
                 {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha Inicial', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
                 {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha final', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},               
-                {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}</p></div>'},
+                //{field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}</p></div>'},
                 {displayName: "Opc", cellClass: "txt-center dropdown-button",
                         cellTemplate: '\
                         <div class="btn-group">\
@@ -1132,10 +1132,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             </ul>\
                         </div>'
                     },
-               /*{field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
+                {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
                     cellTemplate: '<div class="col-xs-16 ">\n\
                                     <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
-                                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'},*/
+                                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
             ]
         };
           

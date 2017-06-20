@@ -331,7 +331,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             backdrop: true,
                             backdropClick: true,
                             dialogFade: false,
-                            windowClass: 'app-modal-window-smlg',
+                           // windowClass: 'app-modal-window-smlg',
                             keyboard: true,
                             showFilter: true,
                             cellClass: "ngCellText",
@@ -457,7 +457,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             tercero_id: $scope.root.terceros[0].getId(),
                             sw_tipo: '0',
                             cantidad: '1',
-                            precio: $scope.root.precio,
+                            precio: parseInt($scope.root.precio)+parseInt($scope.root.gravamen),
                             valor_total: $scope.root.precio,
                             porcentaje_gravamen: $scope.root.gravamen,
                             valor_gravamen: $scope.root.gravamen,
@@ -482,7 +482,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         };
                         cajaGeneralService.insertarTmpDetalleConceptos(parametro, function(respuesta) {
                             if (respuesta.status === 200) {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.obj.insertarTmpDetalleConceptos);
+                               // AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.obj.insertarTmpDetalleConceptos);
                                 callback(true);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.msj);

@@ -121,7 +121,7 @@ define(["angular", "js/services"], function(angular, services) {
 
                         var concepto = [];
 
-                        conceptos.forEach(function(dato) {
+                        conceptos.detalle.forEach(function(dato) {
                             var _concepto = ConceptoCaja.get(dato.concepto_id);
                             _concepto.setCantidad(dato.cantidad);
                             _concepto.setPrecio(dato.precio);

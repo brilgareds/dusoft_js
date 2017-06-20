@@ -76,6 +76,11 @@
 		</td>
 	    </tr>
 	    <tr>
+		<td colspan='4' align='right'  >
+		     <h3>No. {{:parametros.prefijo}} - {{:parametros.factura}}</h3>
+		</td>
+	    </tr>
+	    <tr>
 		<td colspan='2' ><h2> {{:empresa.razon_social}} </h2></td>
 		<td colspan='2'>{{:empresa.tipo_id_tercero}} {{:empresa.id}} </td>
 	    </tr>
@@ -115,9 +120,65 @@
 	    <tr>
 		<td>{{:desconcepto}} -- {{:concepto}} </td>
 		<td>{{:descripcion}}</td>
-		<td>{{:valorTotal}}</td>
+		<td>{{:~formatMoney(valorTotal)}}</td>
 	    </tr>
 	    {{/for}}
+	</table>
+	<hr noshade="noshade"  />
+	<br />
+	<table class="table table-striped" width='100%' style="font-size: 10px; line-height: 1;" align="center" >
+	    <tr>
+		<td  align="center"><b>SUBTOTAL</b></td>
+		<td  align="center"><b>IVA</b></td>
+		<td  align="center"><b>RETEFUENTE</b></td>
+		<td  align="center"><b>RETEICA</b></td>
+		<td  align="center"><b>TOTAL FACTURA</b></td>
+	    </tr>
+	    <tr>
+		<td align="center"><b>{{:~formatMoney(impuesto.valorSubtotal)}}</b></td>
+		<td align="center"><b>{{:~formatMoney(impuesto.iva)}}</b></td>
+		<td align="center"><b>{{:~formatMoney(impuesto.retencionFuente)}}</b></td>
+		<td align="center"><b>{{:~formatMoney(impuesto.retencionIca)}}</b></td>
+		<td align="center"><b>{{:~formatMoney(impuesto.totalGeneral)}}</b></td>
+	    </tr>
+	</table>
+	<br />
+	<br />
+	<table class="table table-striped" width='100%' style="font-size: 10px; line-height: 1;" align="center" >
+	    <tr>
+		<td ><b>{{:informacion.linea1}}</b></td>
+	    </tr>
+	    <tr>
+		<td ><b>{{:informacion.linea2}}</b></td>
+	    </tr>
+	    <tr>
+		<td ><b>{{:informacion.linea3}}</b></td>
+	    </tr>
+	    <tr>
+		<td ><b>{{:informacion.consignacion}}</b></td>
+	    </tr>
+	    <tr>
+		<td ><b>{{:informacion.bancos}}</b></td>
+	    </tr>
+	</table>
+	<br />
+	<br />
+	<table class="table table-striped" width='80%' border='0' style="font-size: 10px; line-height: 1;" align="center" >
+	    <tr>
+		<td width='40%' ><b><hr noshade="noshade" width='100%' align="bottom" /></b></td>
+		<td width='20%' align="middle,left"><b>Nombre Cliente</b></td>
+		<td width='40%' align="bottom,right"><b><hr noshade="noshade" width='80%' /></b></td>
+	    </tr>
+	    <tr>
+		<td align="middle" ><b>Elaborado Por: {{:usuario}}</b></td>
+		<td align="middle,left" ><b>Documento</b></td>
+		<td align="bottom,right" ><b><hr noshade="noshade" align="bottom"  width='80%' /></b></td>
+	    </tr>
+	    <tr>
+		<td><b></b></td>
+		<td  align="middle,left"><b>Fecha Recibido</b></td>
+		<td  align="bottom,right"><b> <hr noshade="noshade" align="bottom"  width='80%' /></b></td>
+	    </tr>
 	</table>
     </body>
 </html>

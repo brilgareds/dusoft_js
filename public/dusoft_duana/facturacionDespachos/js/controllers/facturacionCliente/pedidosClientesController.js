@@ -258,10 +258,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 cellClass: "ngCellText", 
                                 width: "25%", 
                                 displayName: '#Factura',
-                                cellTemplate: '<ul ><button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 1"  \n\
+                                cellTemplate: '<ul ><button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 4"  \n\
                                                     ng-click="listaPedidoPrefijos(row.entity,row.entity.mostrarPedidos()[0].mostrarFacturas())" \n\
                                                     class="btn btn-default btn-xs" >{{row.entity.mostrarPedidos()[0].mostrarFacturas().length}} Documentos</button>\
-                                    <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 2"\
+                                    <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 5"\
                                         class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
                                         <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(row.entity, item)" class = "glyphicon glyphicon-print"></a>\
                                         <input type="checkbox"\n\

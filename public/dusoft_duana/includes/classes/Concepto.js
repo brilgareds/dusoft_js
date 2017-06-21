@@ -5,6 +5,7 @@ define(["angular", "js/models"], function(angular, models) {
 
         function Concepto(conceptoId) {
             this.conceptoId = conceptoId;
+	    this.valorUnitario = 0;
         }
         ;
 
@@ -126,6 +127,19 @@ define(["angular", "js/models"], function(angular, models) {
 
         Concepto.prototype.getValorTotal = function() {
             return this.valorTotal;
+        };
+	
+        Concepto.prototype.setValorUnitario = function(valorUnitario) {
+            this.valorUnitario = valorUnitario;
+        };
+
+        Concepto.prototype.getValorUnitario = function() {
+	    if(this.valorUnitario > 0){
+	       return this.valorUnitario;
+	    }else{
+		return this.valorTotal-this.valorGravamen;
+	    }
+            
         };
 
         Concepto.prototype.setValorGravamen = function(valorGravamen) {

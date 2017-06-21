@@ -721,7 +721,7 @@ FacturacionClientesModel.prototype.consultarFacturaAgrupada = function (obj,call
  * @author Cristian Ardila
  */
 FacturacionClientesModel.prototype.consultarDireccionIp = function(obj, callback){
- 
+ console.log("obj.direccionIp",obj.direccionIp);
     G.knex.select('*')
     .from('pc_crea_facturacion')
     .where("ip", obj.direccionIp)

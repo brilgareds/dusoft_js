@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <fieldset>
             <div class="col-md-5 pull-left">
                 <legend>Cajas</legend>
@@ -15,7 +15,35 @@
             </div>
         </fieldset>
     </div>
-    <div class="col-md-6">
+    
+    <div class="col-md-4">
+        <fieldset>
+            <div class="col-md-5 pull-center">
+		         <legend>Tipo de Pago</legend>
+                        <!--<label class="col-md-2 control-label" for="IsSmallBusiness">Tipo de Pago:</label>-->
+                        <div class="col-md-10">
+                            <div class="btn-group">
+                                <label class="btn btn-{{root.pagoEfectivo}}">
+                                    <input type="radio"
+                                           name="tipoProducto"
+                                           ng-model="root.pagoEfectivoModel"
+                                           ng-click="tipoFactura(0)"
+                                           /><span class="label label-primary">Contado</span>
+                                </label>
+                                <label class="btn btn-{{root.pagoCredito}}">
+                                    <input type="radio"
+                                           name ="tipoProducto"
+                                           ng-model="root.pagoCreditoModel"
+                                           ng-click="tipoFactura(1)"
+                                           /><span class="label label-success">Credito</span>
+                                </label>
+                            </div>
+                        </div>		
+            </div>
+        </fieldset>
+    </div>
+    
+    <div class="col-md-4">
         <div class="col-md-5 pull-right">
             <legend>&nbsp;</legend>
             <div class="input-group">
@@ -70,31 +98,31 @@
         <tabset>
             <tab  >
                 <tab-heading ng-click="tipoFactura(1)">
-                    <i class=""></i> Facturas Credito
+                    <i class=""></i> Facturas
                 </tab-heading>
                 <br>
                 <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
             </tab>
-            <tab >
+<!--            <tab >
                 <tab-heading ng-click="tipoFactura(0)">
                     <i class=""></i> Facturas Contado
                 </tab-heading>
                 <br>
                 <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
-            </tab>
+            </tab>-->
             <tab >
                 <tab-heading >
                     <i class=""></i> Notas Facturas
                 </tab-heading>
                 <br>
-                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+                <div ng-include="'views/cajaGeneral/vistaNotas.html'"></div>
             </tab>
             <tab  >
                 <tab-heading >
                     <i class=""></i> Manejo Facturas
                 </tab-heading>
                 <br>
-                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+                <div ng-include="'views/cajaGeneral/vistaManejoFactura.html'"></div>
             </tab>
             <tab  >
                 <tab-heading >

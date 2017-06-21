@@ -2,8 +2,8 @@ define(["angular", "js/services"], function(angular, services) {
 
 
     services.factory('cajaGeneralService',
-            ['Request', 'API', 'CajaGeneral', 'Grupos', 'ConceptoCaja',
-                function(Request, API, CajaGeneral, Grupos, ConceptoCaja) {
+            ['Request', 'API', 'CajaGeneral', 'Grupos', 'ConceptoCaja','Totales',
+                function(Request, API, CajaGeneral, Grupos, ConceptoCaja,Totales) {
 
                     var self = this;
 
@@ -120,7 +120,14 @@ define(["angular", "js/services"], function(angular, services) {
                     self.renderConcepto = function(conceptos) {
 
                         var concepto = [];
+			var total = [];
 
+                        var totales = Totales.get();
+			totales.setValorRetFte(conceptos.impuestos.retencionFuente);
+			totales.setValorRetIca(conceptos.impuestos.retencionIca);
+			totales.setIva(conceptos.impuestos.iva);
+			totales.setSubTotal(conceptos.impuestos.valorSubtotal);
+			totales.setTotal(conceptos.impuestos.totalGeneral);
                         conceptos.detalle.forEach(function(dato) {
                             var _concepto = ConceptoCaja.get(dato.concepto_id);
                             _concepto.setCantidad(dato.cantidad);
@@ -138,6 +145,7 @@ define(["angular", "js/services"], function(angular, services) {
                             _concepto.setValorTotal(dato.valor_total);
                             _concepto.setValorGravamen(dato.valor_gravamen);
                             _concepto.setTipoPagoId(dato.tipo_pago_id);
+                            _concepto.agregarToltales(totales);
                             concepto.push(_concepto);
                         });
                         console.log("concepto", concepto);

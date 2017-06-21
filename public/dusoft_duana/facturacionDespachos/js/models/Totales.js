@@ -24,7 +24,7 @@ define(["angular", "js/models"], function (angular, models) {
             };
             
             Totales.prototype.setTotal = function (total) {
-                this.subtotal = total;
+                this.total = total;
             };
 
             Totales.prototype.getTotal = function () {

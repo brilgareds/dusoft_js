@@ -21,6 +21,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         efectivo: 'default',
                         credito: 'default'
                     };
+		    $scope.root.pagoEfectivo = 'default';
+                    $scope.root.pagoCredito = 'default';
                     $scope.root.grupo.gruposConcepto = '';
                     $scope.root.filtros = [
                         {tipo: '', descripcion: "Nombre"}
@@ -186,6 +188,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         if ($scope.root.terceros === undefined || $scope.root.terceros[0] === undefined) {
                             return;
                         }
+                        if ($scope.root.cajas === undefined) {
+			     AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe seleccionar la Caja");
+                            return;
+                        }
 
                         var parametros = {
                             session: $scope.session,
@@ -205,7 +211,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 $scope.root.conceptoTmp = cajaGeneralService.renderConcepto(data.obj.listarConceptosDetalle);
                                 console.log("$scope.root.conceptoTmp::: ", $scope.root.conceptoTmp);
                             } else {
+				if(data.obj.listarConceptosDetalle !== '0'){
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+				}
                             }
                         });
                     };
@@ -217,16 +225,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @fecha 2017-06-10
                      */
                     $scope.guardarFacturaCajaGeneral = function() {
-                        console.log("guardar ",$scope.root.empresaSeleccionada); 
 			//sw_clase_factura 0=>contado 1=>credito
                         //tipo_factura 5 porque es conceptos
+			var tipoPago=($scope.root.pagoCreditoModel === true)?1:0; 
+			var prefijo=($scope.root.pagoCreditoModel === true)?$scope.root.cajas.prefijoFacCredito:$scope.root.cajas.prefijoFacContado;
 			var claseFactura=($scope.root.cajas.prefijoFacCredito === undefined ? 0: 1);
 			var tipoFactura='5';
 			var estado='0';
                         var parametros = {
                             session: $scope.session,
                             data: {
-			        prefijoFac:$scope.root.cajas.prefijoFacCredito,
+			        prefijoFac:prefijo,
 				empresaId: $scope.root.empresaSeleccionada.getCodigo(),
 				centroUtilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
 				tipoIdTercero: $scope.root.terceros[0].getTipoId(),
@@ -235,17 +244,28 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			        swClaseFactura: claseFactura,
 			        tipoFactura : tipoFactura,
 			        estado : estado,
-				cajaId :$scope.root.cajas.cajaId
+				cajaId :$scope.root.cajas.cajaId,
+				tipoPago: tipoPago
                             }
                         };
-
                         cajaGeneralService.guardarFacturaCajaGeneral(parametros, function(data) {
 
                             if (data.status === 200) {
-                                
-                                console.log("$scope.root.conceptoTmp::: ",data);
+				var nombre = data.obj.guardarFacturaCajaGeneral;
+				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+				
+				that.listarTerceros(function(respuesta) {
+                                console.log("buscarTercero:: ", respuesta);
+                                if (respuesta) {
+                                    that.listarConceptosDetalle();
+                                }
+				});
+				
                             } else {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+				var mensaje = data.obj.guardarFacturaCajaGeneral;
+				if(mensaje===""){
+                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+				}
                             }
                         });
                     };
@@ -263,13 +283,35 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableCellSelection: true,
                         enableHighlighting: true,
                         showFilter: true,
+			footerTemplate: '   <div class="row col-md-12">\
+                                        <div class="">\
+                                            <table class="table table-clear text-center">\
+                                                <thead>\
+                                                    <tr>\
+                                                        <th class="text-center">SUBTOTAL</th>\
+                                                        <th class="text-center">RET-FTE</th>\
+							<th class="text-center">RETE-ICA</th>\
+                                                        <th class="text-center">VALOR TOTAL</th>\
+                                                    </tr>\
+                                                </thead>\
+                                                <tbody>\
+                                                    <tr>\
+                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getSubTotal()| currency:"$"}}</td> \
+                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getValorRetFte() | currency:"$"}}</td> \
+                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getValorRetIca() | currency:"$"}}</td> \
+                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getTotal()| currency:"$"}}</td> \
+                                                    </tr>\
+                                                </tbody>\
+                                            </table>\
+                                        </div>\
+                                    </div>',
                         columnDefs: [
                             {field: 'Grupo', width: "15%", displayName: 'Grupo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionGrupo()}}</p></div>'}, //
                             {field: 'Concepto', width: "15%", displayName: 'Concepto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionConcepto()}}</p></div>'},
                             {field: 'Tipo Pago', width: "5%", displayName: 'Tipo Pago', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoPagoDescripcion()}}</p></div>'},
                             {field: 'Descripcion', width: "44%", displayName: 'Descripcion', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcion()}}</p></div>'},
-                            {field: 'Valor Unitario', width: "8%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrecio()}}</p></div>'},
-                            {field: 'Valor Gravamen', width: "8%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getValorGravamen()}}</p></div>'},
+                            {field: 'Valor Unitario', width: "8%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()| currency:"$"}}</p></div>'},
+                            {field: 'Valor Gravamen', width: "8%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getValorGravamen() | currency:"$"}}</p></div>'},
                             {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
                                 cellTemplate: ' <div class="row">\
                                                  <button class="btn btn-default btn-xs" ng-click="eliminarTmp(row.entity)">\
@@ -388,7 +430,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.validarCaja = function() {
                         var validar = false;
-                        if ($scope.root.cajas === undefined || $scope.root.terceros === undefined) {
+                        if ($scope.root.cajas === undefined || $scope.root.terceros === undefined) {//|| (!($scope.root.pagoEfectivoModel) && !($scope.root.pagoEfectivoModel)
+                            validar = true;
+                        }
+                        return validar;
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 04/02/2016
+                     * +Descripcion scope selector del filtro
+                     * @param {type} $event
+                     */
+                    $scope.validarConcepto = function() {
+                        var validar = false;
+                        if ($scope.root.cajas === undefined || $scope.root.terceros === undefined || 
+			    $scope.root.conceptoTmp.length === 0 || ($scope.root.pagoEfectivoModel === $scope.root.pagoCreditoModel && 
+			    ($scope.root.pagoCreditoModel === undefined) && ($scope.root.pagoCreditoModel === undefined))) {
                             validar = true;
                         }
                         return validar;
@@ -410,7 +467,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     that.guardarConcepto = function(callback) {
                         var mensaje = '';
-                        console.log("$scope.root.grupo", $scope.root.grupo);
                         if ($scope.root.grupo.gruposConcepto === "") {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Grupo');
                             return;
@@ -458,7 +514,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             sw_tipo: '0',
                             cantidad: '1',
                             precio: parseInt($scope.root.precio)+parseInt($scope.root.gravamen),
-                            valor_total: $scope.root.precio,
+                            valor_total: parseInt($scope.root.precio)+parseInt($scope.root.gravamen),
                             porcentaje_gravamen: $scope.root.gravamen,
                             valor_gravamen: $scope.root.gravamen,
                             descripcion: $scope.root.descripcion,
@@ -527,12 +583,24 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.tipoFactura = function(tipo) {
-                        $scope.root.credito = false;
-                        $scope.root.contado = false;
-                        if (tipo === 1) {
-                            $scope.root.credito = true;
-                        } else {
-                            $scope.root.contado = true;
+                        $scope.root.pagoCreditoModel = false;
+                        $scope.root.pagoEfectivoModel = false;
+			
+			$scope.root.pago = tipo;
+                        switch (tipo) {
+                            case 0:
+                                $scope.root.pagoEfectivo = 'primary';
+                                $scope.root.pagoCredito = 'default';
+				$scope.root.pagoEfectivoModel = true;
+                                break;
+                            case 1:
+                                $scope.root.pagoEfectivo = 'default';
+                                $scope.root.pagoCredito = 'success';
+				 $scope.root.pagoCreditoModel = true;
+                                break;
+                            default:
+                                $scope.root.pagoEfectivo = 'default';
+                                $scope.root.pagoCredito = 'default';
                         }
                     };
                     /**

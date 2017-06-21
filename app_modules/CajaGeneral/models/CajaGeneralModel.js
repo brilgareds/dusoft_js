@@ -400,7 +400,7 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptos = function(parametro,tra
 		    valor_total : parametro.valorTotal,
 		    porcentaje_gravamen : parametro.porcentajeGravamen,
 		    valor_gravamen : parametro.valorGravamen,
-		    concepto : parametro.concepto,
+		    concepto : parametro.descripcion,
 		    caja_id :  parametro.cajaId
     };
 
@@ -417,6 +417,36 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptos = function(parametro,tra
         console.log("err (/catch) [insertarFacFacturasConceptos]: ", err);
         callback({err: err, msj: "Error al guardar la factura conceptos]"});
     });
+};
+
+/**
+ * +Descripcion Metodo encargado de registrar la direccion ip en el 
+ * @param {type} obj
+ * @param {type} transaccion
+ * @param {type} callback
+ * @returns {undefined}
+ */
+CajaGeneralModel.prototype.insertarPcFactura = function(parametro,transaccion, callback){
+   
+    var parametros = {ip: parametro.direccionIp,
+            prefijo: parametro.prefijo,
+            factura_fiscal: parametro.factura,
+            sw_tipo_factura : parametro.swTipoFactura,
+            fecha_registro: G.knex.raw('now()'),
+            empresa_id: parametro.empresaId
+            };
+        
+    var query = G.knex('pc_factura_clientes').insert(parametros);
+    
+    if(transaccion)
+        query.transacting(transaccion);     
+        query.then(function(resultado){   
+            console.log("resultado [insertarPcFactura]", resultado);
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [insertarPcFactura]: ", err);     
+            callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+        });
 };
 
 /**
@@ -446,6 +476,46 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptosDc = function(parametro,t
     }). catch (function(err) {
         console.log("err (/catch) [insertarFacFacturasConceptosDc]: ", err);
         callback({err: err, msj: "Error al guardar la factura conceptos dc]"});
+    });
+};
+/**
+ * +Descripcion Metodo encargado de registrar en la tabla tmp_detalle_conceptos
+ * @param {type} obj
+ * @param {type} transaccion
+ * @param {type} callback
+ * @returns {undefined}
+ */
+CajaGeneralModel.prototype.insertarFacturasContado = function(parametro,transaccion,callback) {
+
+    var parametros = {
+		    empresa_id : parametro.empresaId,
+		    factura_fiscal: parametro.factura,	    
+		    centro_utilidad : parametro.centroUtilidad,
+		    prefijo : parametro.prefijo,
+		    total_abono : parametro.totalAbono,
+		    total_efectivo : parametro.totalEfectivo,
+		    total_cheques : parametro.totalCheque,
+		    total_tarjetas : parametro.totalTarjeta,
+		    total_bonos : parametro.totalAbonos,
+		    estado : '0',
+		    tipo_id_tercero : parametro.tipoIdTercero,
+		    tercero_id : parametro.terceroId,
+		    fecha_registro : G.knex.raw('now()'),
+		    usuario_id : parametro.usuarioId,
+		    caja_id : parametro.cajaId
+    };
+   
+    var query = G.knex('fac_facturas_contado')
+	        .insert(parametros);
+     if (transaccion)
+        query.transacting(transaccion); 
+    
+    query.then(function(resultado) {
+       
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err (/catch) [insertarFacturasContado]: ", err);
+        callback({err: err, msj: "Error al guardar Facturas Contado]"});
     });
 };
 

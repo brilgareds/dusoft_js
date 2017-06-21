@@ -20,7 +20,6 @@ CajaGeneral.prototype.listarCajaGeneral = function(req, res) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
-    console.log("args::: ", args);
     var parametros = {
         usuario_id: args.usuario_id,
         empresa_id: args.empresa_id,
@@ -164,6 +163,7 @@ CajaGeneral.prototype.listarConceptosDetalle = function(req, res) {
     var that = this;
     var args = req.body.data.datos;
     var conceptos={};
+    var mensaje="";
     if (args.empresa_id === undefined) {
         res.send(G.utils.r(req.url, 'No Estan Definido empresa_id', 404, {}));
         return;
@@ -188,37 +188,31 @@ CajaGeneral.prototype.listarConceptosDetalle = function(req, res) {
     G.Q.ninvoke(that.m_caja_general, 'listarConceptosDetalle', parametros).then(function(resultado) {
 	
       conceptos.detalle=resultado;
-    //  console.log("AAAAAAAAAAAA",conceptos.detalle);
       var total={totalFactura:0,totalGravamen:0}
       return G.Q.nfcall(__valorTotalGravamen,0,resultado,total);
       
       }).then(function(result) {
-      //obj.totalFactura - obj.totalGravamen
       parametros.totalFactura=result.totalFactura;
       parametros.totalGravamen=result.totalGravamen;
-//      console.log("result___ ",result);
-//      console.log("parametros___ ",parametros);
 	return G.Q.nfcall(__traerPorcentajeImpuestos,that,parametros);
       
      }).then(function(result) {
         conceptos.impuestos=result;
-//	console.log("BBBBBBBBBBBBBBB",conceptos.impuestos);
-	console.log("CCCCCCCCCCCCC",conceptos);
         if (conceptos.detalle.length > 0) {
             res.send(G.utils.r(req.url, 'listarConceptosDetalle', 200, {listarConceptosDetalle: conceptos}));
         } else {
+	    mensaje="0";
             throw 'Consulta sin resultados';
         }
 
     }).fail(function(err) {
         console.log("Error listarConceptosDetalle ", err);
-        res.send(G.utils.r(req.url, err, 500, {}));
+        res.send(G.utils.r(req.url, err, 500, {listarConceptosDetalle: mensaje}));
     }).done();
 };
 
 function __valorTotalGravamen(index,datos,total,callback){
    var conceptos = datos[index];
-//console.log("ssss",conceptos);
     if (!conceptos) {
 	callback(false, total);
 	return;
@@ -226,7 +220,6 @@ function __valorTotalGravamen(index,datos,total,callback){
     index++;
     total.totalFactura+=parseInt(conceptos.valor_total);
     total.totalGravamen+=parseInt(conceptos.valor_gravamen);
-//    console.log("totalllllllllll",total);
     __valorTotalGravamen(index,datos,total,callback);
     
 };
@@ -274,12 +267,18 @@ CajaGeneral.prototype.guardarFacturaCajaGenral = function(req, res) {
     var cliente=[];
     var conceptosDetalle=[];
     var impuesto;
+    var nombre_pdf="";
 
     if (args.prefijoFac === undefined) {
         res.send(G.utils.r(req.url, 'No Estan Definido rc_concepto_id', 404, {}));
         return;
     }
-  
+    
+     var ip = req.headers['x-forwarded-for'] || 
+     req.connection.remoteAddress || 
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress;
+    
      var parametros = {
 	documentoId: args.prefijoFac,
 	empresaId : args.empresaId, 
@@ -292,12 +291,10 @@ CajaGeneral.prototype.guardarFacturaCajaGenral = function(req, res) {
 	tipoFactura : args.tipoFactura, 
 	centroUtilidad : args.centroUtilidad,
 	conceptoId : args.conceptoId,
-	cajaId : args.cajaId
+	cajaId : args.cajaId,
+	tipoPago:args.tipoPago
     }; 
     
-//    console.log("session ", req.session.user.nombre_usuario);
-//    console.log("session ");
-//    return;
   G.knex.transaction(function(transaccion) {
     
 	    G.Q.nfcall(__crearPrefijoNumero,that, parametros,transaccion).then(function(resultado) {
@@ -321,12 +318,28 @@ CajaGeneral.prototype.guardarFacturaCajaGenral = function(req, res) {
 		}else{
 		   throw 'Consulta sin resultados';
 		}
-		//
-		//transaccion.commit();
 	    }).then(function(result) {
 
 		conceptosDetalle=result;
-		return G.Q.nfcall(__insertarFacFacturasConceptos,that,0,result,parametros,total,transaccion);
+		// console.log("ip ", ip.substr(0, 6));
+		//if(ip.substr(0, 6) === '::ffff'){               
+		    return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip});              
+//		}else{                
+//		    throw 'Consulta sin resultados';               
+//		} 
+	    }).then(function(resultado){	
+		
+		if (!resultado || resultado.length > 0) {
+		    parametros.direccionIp = ip;
+		    parametros.swTipoFactura = 2;
+		    return G.Q.ninvoke(that.m_caja_general, 'insertarPcFactura', parametros, transaccion);
+		} else {
+		    throw {msj: 'La Ip # ' + ip + ' No tiene permisos para realizar la peticion', status: 409};
+		}
+		
+	    }).then(function(result) {
+		
+		return G.Q.nfcall(__insertarFacFacturasConceptos,that,0,conceptosDetalle,parametros,total,transaccion);
 		
 	    }).then(function(result) {
 		
@@ -337,22 +350,34 @@ CajaGeneral.prototype.guardarFacturaCajaGenral = function(req, res) {
 		
 	    }).then(function(result) {
 		
+		    parametros.totalAbono = parametros.totalFactura;
+		    parametros.totalEfectivo = parametros.totalFactura;
+		    parametros.totalCheque = 0;
+		    parametros.totalTarjeta = 0;
+		    parametros.totalAbonos = 0;
+		
+		return G.Q.ninvoke(that.m_caja_general,'insertarFacturasContado', parametros,transaccion); 
+		
+	    }).then(function(result) {
+		
 		return G.Q.ninvoke(that.m_caja_general,'eliminarTmpDetalleConceptosTerceros', parametros,transaccion); 
 		
             }).then(function(result) {
 		
 		return G.Q.nfcall(__traerPorcentajeImpuestos,that,parametros);
-		//console.log("result:::: ",result);
-	    }).then(function(result) { //actualizarImpuestoFacturas
+		
+	    }).then(function(result) {
+		
 		impuesto=result;
 		impuesto.empresaId=parametros.empresaId;
 		impuesto.prefijo=parametros.prefijo;
 		impuesto.factura=parametros.factura;
-	//	console.log("traer impuesto",impuesto);
 		return G.Q.ninvoke(that.m_caja_general,'actualizarImpuestoFacturas', impuesto,transaccion);
+		
 	    }).then(function(result) { 
-	         console.log("actualizarImpuestoFacturas::: ",result);	
+		
 		transaccion.commit();
+		
 	    }).fail(function(err) {
 		console.log("Error ",err);
 		transaccion.rollback(err);
@@ -376,24 +401,23 @@ CajaGeneral.prototype.guardarFacturaCajaGenral = function(req, res) {
 	return G.Q.ninvoke(that.m_caja_general,'listarEmpresa',parametros);
 	
    }).then(function(result) {
-      
-	empresa=result;
-	
-	__generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
-	        
-                empresa: empresa[0],
-                cliente: cliente[0],
-                parametros: parametros,
-                conceptosDetalle: conceptosDetalle,
-		informacion :__infoFooter(parametros.prefijo),
-                usuario: req.session.user.nombre_usuario,
-                archivoHtml: 'facturaConceptos.html',
-		impuesto: impuesto,
-                }, function(nombre_pdf) {
-                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf}));
-            });	
+	    empresa=result;
+	   var informacion =  {
+		    serverUrl: req.protocol + '://' + req.get('host') + "/",
+		    empresa: empresa[0],
+		    cliente: cliente[0],
+		    parametros: parametros,
+		    conceptosDetalle: conceptosDetalle,
+		    informacion :__infoFooter(parametros.prefijo),
+		    usuario: req.session.user.nombre_usuario,
+		    archivoHtml: 'facturaConceptos.html',
+		    impuesto: impuesto
+                }
+	return G.Q.nfcall(__generarPdf,informacion);	
     }).then(function(result) {
-        res.send(G.utils.r(req.url, 'guardarFacturaCajaGenral Correctamente', 200, {guardarFacturaCajaGenral: 'ok'}));
+         console.log("retooorna ",result);
+        res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {guardarFacturaCajaGeneral: result}));
+	
     }). catch (function(err) {
 	 console.log("error transaccion ",err);
          res.send(G.utils.r(req.url, err, 500, {}));
@@ -430,38 +454,38 @@ function __infoFooter(prefijo) {
 }
 
 
-function __generarPdf(datos, callback) {  
-   
+function __generarPdf(datos, callback) {
+
     G.jsreport.render({
-        template: {
-            content: G.fs.readFileSync('app_modules/CajaGeneral/reports/'+datos.archivoHtml, 'utf8'),
-            recipe: "html",
-            engine: 'jsrender',
+	template: {
+	    content: G.fs.readFileSync('app_modules/CajaGeneral/reports/' + datos.archivoHtml, 'utf8'),
+	    recipe: "html",
+	    engine: 'jsrender',
 	    style: G.dirname + "/public/stylesheets/bootstrap.min.css",
-            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
-            phantom: {
-                margin: "10px",
-                width: '700px'
-            }
-        },
-        data: datos
+	    helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
+	    phantom: {
+		margin: "10px",
+		width: '700px'
+	    }
+	},
+	data: datos
     }, function(err, response) {
-        
-        response.body(function(body) { 
-           var nombreTmp = "factura_conceptocredito"+datos.parametros.prefijo+""+datos.parametros.factura+".html";
- 
-           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
-                if(err) {
-                    console.log("err [__generarPdf]: ", err);
-                   callback(true, err);
-                   return;
-                } else {
-                        console.log("___ [okkkkkkkkkk]: ");
-                         callback(nombreTmp);
-                         return;                  
-                }
-            });            
-        });
+
+	response.body(function(body) {
+	    var nombreTmp = "factura_conceptocredito" + datos.parametros.prefijo + "" + datos.parametros.factura + ".html";
+
+	    G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
+		if (err) {
+		    console.log("err [__generarPdf]: ", err);
+		    callback(true, err);
+		    return;
+		} else {
+		    console.log("___ [okkkkkkkkkk]: ",nombreTmp);
+		    callback(false, nombreTmp);
+		    return;
+		}
+	    });
+	});
     });
 }
 
@@ -529,11 +553,11 @@ function __traerPorcentajeImpuestos(that, obj, callback) {
     }).done();
 }
 ;
+        
+function __insertarFacFacturasConceptos(that, index, conceptosDetalle, parametros, total, transaccion, callback) {
 
-function __insertarFacFacturasConceptos(that, index, result, parametros, total, transaccion, callback) {
-
-    var conceptos = result[index];
-
+    var conceptos = conceptosDetalle[index];
+    
     if (!conceptos) {
 	callback(false, total);
 	return;
@@ -561,7 +585,8 @@ function __insertarFacFacturasConceptos(that, index, result, parametros, total, 
     }).then(function(result) {
 	if (result.rowCount >= 1) {
 	    index++;
-	    __insertarFacFacturasConceptos(that, index,  result, parametros, total,transaccion, callback);
+	
+	    __insertarFacFacturasConceptos(that, index, conceptosDetalle, parametros, total,transaccion, callback);
 	} else {
 	    throw 'Error en __insertarFacFacturasConceptos ';
 	}

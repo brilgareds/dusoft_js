@@ -115,14 +115,17 @@
 		<td width='30%'><b>CARGOS DE FATURACIÓN</b></td>
 		<td width='60%'><b>DESCRIPCIÓN</b></td>
 		<td width='10%'><b>VALOR</b></td>
+		 
 	    </tr>
 	    {{for conceptosDetalle}}
 	    <tr>
-		<td>{{:desconcepto}} -- {{:concepto}} </td>
-		<td>{{:descripcion}}</td>
-		<td>{{:~formatMoney(valorTotal)}}</td>
+		<td ><b>{{:desconcepto}}</b></td>
+		<td ><b>{{:descripcion}}</b></td>
+		<td ><b>{{:valorTotal}}</b></td>
+		 
 	    </tr>
 	    {{/for}}
+	    
 	</table>
 	<hr noshade="noshade"  />
 	<br />

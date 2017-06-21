@@ -1680,7 +1680,14 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
     }).then(function (resultadoProductosAgrupados) {
 
         cotizacion.tipo_producto = (cotizacion.tipo_producto === '' || cotizacion.tipo_producto === undefined) ? Object.keys(resultadoProductosAgrupados) : cotizacion.tipo_producto;
+        _productosPlanoValidadosValido.forEach(function(row){
+            //console.log("LOS PRODUCTOS ", row);
+            if(cotizacion.tipo_producto !== row.tipoProductoId){
+                 row.mensajeError = 'El tipo del producto no corresponde al tipo de la cotizacion ';
+                _productosPlanoValidadosInvalido.push(row);
+            }
 
+        });
         _productosPlanoValidadosValido = resultadoProductosAgrupados[cotizacion.tipo_producto];
 
         if (_productosPlanoValidadosValido === undefined || _productosPlanoValidadosValido.length === 0) {

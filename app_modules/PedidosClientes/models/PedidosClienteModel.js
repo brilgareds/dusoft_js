@@ -333,7 +333,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     ]).from("ventas_ordenes_pedidos_estado as aa").
     leftJoin("operarios_bodega as bb", "aa.responsable_id", "bb.operario_id").
     where("aa.estado", "1").
-    andWhere("aa.pedido_cliente_id", "=", G.knex.raw("a.pedido_cliente_id::integer")).
+    andWhere("aa.pedido_cliente_id", "=", G.knex.raw("a.numero_pedido::integer")).
     orderBy("aa.fecha_registro", "desc").limit(1).as("nombre_separador");
         
     var columns = [ 
@@ -373,8 +373,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
         "d.estado as estado_separacion",
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro"),
         "f.descripcion as descripcion_tipo_producto",
-        G.knex.raw("'1' as tipo_pedido"),
-        subQuery
+        G.knex.raw("'1' as tipo_pedido")
         
     ];
       
@@ -430,7 +429,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
         "e.empresa_id as despacho_empresa_id",
         "e.prefijo as despacho_prefijo",
         "e.numero as despacho_numero",
-        G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")
+        G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
+        subQuery
     ]).from(query).
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");   
     
@@ -1809,7 +1809,6 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      coalesce(a.observacion_cartera, '') as observacion_cartera,\
      coalesce(a.sw_aprobado_cartera, '') as sw_aprobado_cartera,\
      coalesce(a.tipo_producto,'') as tipo_producto,\
-     coalesce(g.descripcion,'') as descripcion_tipo_producto,\
      a.estado,\
      case when a.estado = '0' then 'Inactivo'\
      when a.estado = '1' then 'Activo'\
@@ -1819,18 +1818,25 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      when a.estado = '6' then 'Se solicita autorizacion'\
      when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
      to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro,\
+<<<<<<< HEAD
      h.pedido_cliente_id as numero_pedido, '0' as tipo_pedido, \
      j.sw_autorizacion, \
      j.sw_facturacion_agrupada\
+=======
+     '0' as tipo_pedido\
+>>>>>>> master
      from ventas_ordenes_pedidos_tmp a\
      inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
      inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
      inner join tipo_dptos d on c.tipo_pais_id = d.tipo_pais_id and c.tipo_dpto_id = d.tipo_dpto_id\
      inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
      inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
+<<<<<<< HEAD
      left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
      left join ventas_ordenes_pedidos h on a.pedido_cliente_id_tmp = h.pedido_cliente_id_tmp \
      LEFT JOIN vnts_contratos_clientes j ON a.tipo_id_tercero = j.tipo_id_tercero and a.tercero_id = j.tercero_id\
+=======
+>>>>>>> master
      where a.empresa_id= :1 and a.fecha_registro between :2 and :3 \
      " + filtroCotizacion + " " + filtroEstadoCotizacion;
 
@@ -1842,9 +1848,25 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
                
 
     var query = G.knex.select(G.knex.raw(sql, parametros)).
+<<<<<<< HEAD
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").then(function(resultado) {
         
+=======
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").as("a");
+        
+    
+    var queryPrincipal = G.knex.column([
+        "a.*",
+        "h.pedido_cliente_id as numero_pedido",
+        G.knex.raw("coalesce(g.descripcion,'') as descripcion_tipo_producto")
+    ]).from(query).
+    leftJoin("inv_tipo_producto as g", "a.tipo_producto", "g.tipo_producto_id ").
+    leftJoin("ventas_ordenes_pedidos as h", "a.numero_cotizacion", "h.pedido_cliente_id_tmp ");
+    
+    queryPrincipal.then(function(resultado) {
+>>>>>>> master
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [listar_cotizaciones]: ", err);

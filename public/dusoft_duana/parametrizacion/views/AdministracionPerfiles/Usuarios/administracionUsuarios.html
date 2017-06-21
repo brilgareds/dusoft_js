@@ -232,7 +232,19 @@
                 
                 
             </tab>
+            <tab ng-if="rootUsuario.usuarioAGuardar.id != ''">
+                <tab-heading>
+                    Sesiones
+                </tab-heading>
+                
+                                        
+                <div class="table-responsive tablaRoles" >
+                    <div class="grid-responsive listado_roles" ng-grid="listado_roles">
 
+                    </div>
+                </div>
+                
+            </tab>
     </div>
 
     <div class="col-md-4" ng-if='rootUsuario.rolAGuardar.id > 0' >

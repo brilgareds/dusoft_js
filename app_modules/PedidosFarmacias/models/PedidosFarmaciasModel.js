@@ -554,7 +554,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     ]).from("solicitud_productos_a_bodega_principal_estado as aa").
     leftJoin("operarios_bodega as bb", "aa.responsable_id", "bb.operario_id").
     where("aa.estado", "1").
-    andWhere("aa.solicitud_prod_a_bod_ppal_id", "=", G.knex.raw("a.solicitud_prod_a_bod_ppal_id::integer")).
+    andWhere("aa.solicitud_prod_a_bod_ppal_id", "=", G.knex.raw("a.numero_pedido::integer")).
     orderBy("aa.fecha_registro", "desc").limit(1).as("nombre_separador");
 
     var columns = [
@@ -588,7 +588,6 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "h.descripcion as zona",
         "a.pedido_cliente",
         subQuery
-        
     ];
     
     var query = G.knex.column(columns).
@@ -645,7 +644,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "g.empresa_id as despacho_empresa_id",
         "g.prefijo as despacho_prefijo", 
         "g.numero as despacho_numero", 
-        G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")
+        G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
+        subQuery
     ]).from(query).
     leftJoin("inv_bodegas_movimiento_despachos_farmacias as g", "a.numero_pedido", "g.solicitud_prod_a_bod_ppal_id ");
                

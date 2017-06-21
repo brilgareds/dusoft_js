@@ -4,11 +4,10 @@ module.exports = function(app, di_container) {
     var j_facturacion_clientes = di_container.get("j_facturacion_clientes");
   
   
-    j_facturacion_clientes.ejecutarJobProcesarDespachos();
+    //j_facturacion_clientes.ejecutarJobProcesarDespachos();
   
     // Listar los tipos terceros
-    app.post('/api/FacturacionClientes/listarTiposTerceros', function(req, res) {
-       
+    app.post('/api/FacturacionClientes/listarTiposTerceros', function(req, res) {      
         c_facturacion_clientes.listarTiposTerceros(req, res);
     });
     
@@ -67,5 +66,16 @@ module.exports = function(app, di_container) {
   
     app.post('/api/FacturacionClientes/procesosFacturacion', function(req, res) {     
         c_facturacion_clientes.procesosFacturacion(req, res);
+    });
+    
+    /**
+     * +Descripcion Registrar clientes
+     */
+    app.post('/api/FacturacionClientes/registrarCliente', function(req, res) {     
+        c_facturacion_clientes.registrarCliente(req, res);
+    });
+    
+    app.post('/api/FacturacionClientes/consultarDetalleCliente', function(req, res) {     
+        c_facturacion_clientes.consultarDetalleCliente(req, res);
     });
 };

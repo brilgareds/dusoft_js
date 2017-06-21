@@ -7,7 +7,77 @@ var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e0
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
 };
- 
+ /*
+ * ****************************************************************
+ * ****************************************************************
+ * ****************************************************************
+ * ****************************************************************
+ * ****************************************************************
+ *              
+ */
+FacturacionClientes.prototype.registrarCliente = function(req, res){
+   
+   console.log("**********FacturacionClientes.prototype.registrarCliente*******************");
+   console.log("**********FacturacionClientes.prototype.registrarCliente*******************");
+   console.log("**********FacturacionClientes.prototype.registrarCliente*******************");
+   
+    var that = this;
+    var args = req.body.data;           
+    
+    console.log("args ", args);
+    
+    if (args.registro_cliente === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {registro_cliente: []}));
+        return;
+    }
+    
+    if (args.registro_cliente.parametros === undefined) {
+        res.send(G.utils.r(req.url, 'Se requieren los parametros', 404, {registro_cliente: []}));
+        return;
+    }
+    
+    var parametros = args.registro_cliente.parametros;          
+    
+    //return res.send(G.utils.r(req.url, 'Se registra el cliente satisfactoriamente', 200, {registro_cliente:parametros}));
+    G.Q.ninvoke(that.m_facturacion_clientes,'registrarCliente',parametros).then(function(resultado){
+        
+    if(resultado.rowCount >0){
+        res.send(G.utils.r(req.url, 'Se registra el cliente satisfactoriamente', 200, {registro_cliente:resultado}));
+    }else{
+        throw 'No se realizo el registro';
+    }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+FacturacionClientes.prototype.consultarDetalleCliente = function(req, res){
+   
+    var that = this;
+                               
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleCliente').then(function(resultado){
+        
+    if(resultado.length >0){
+        res.send(G.utils.r(req.url, 'Consulta detalle del cliente', 200, {lista_clientes:resultado}));
+    }else{
+        throw 'Consulta sin resultados';
+    }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+
      
  /*
  * @author Cristian Ardila

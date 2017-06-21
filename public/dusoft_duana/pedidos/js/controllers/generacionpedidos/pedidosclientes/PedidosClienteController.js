@@ -1087,7 +1087,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     $scope.datos_view.productos_invalidos.forEach(function (row) {
 
-                        $scope.datos_view.productosInvalidos.push({codigo_producto: row.codigo_producto});
+                        $scope.datos_view.productosInvalidos.push({codigo_producto: row.codigo_producto, mensajeError: row.mensajeError});
 
                     });
 
@@ -1108,7 +1108,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.datos_view.productosInvalidosSinRepetir = removeDuplicates($scope.datos_view.productosInvalidos, "codigo_producto")
 
                     if ($scope.datos_view.productosInvalidosSinRepetir.length > 0) {
-
+                        console.log("datos_view.productosInvalidosSinRepetir ", $scope.datos_view.productosInvalidosSinRepetir)
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -1124,7 +1124,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                                 <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
                                                     <div class="list-group">\
                                                         <a ng-repeat="producto in datos_view.productosInvalidosSinRepetir" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                            {{ producto.codigo_producto}}\
+                                                            {{ producto.codigo_producto}} - {{ producto.mensajeError }}\
                                                         </a>\
                                                     </div>\
                                                 </div>\

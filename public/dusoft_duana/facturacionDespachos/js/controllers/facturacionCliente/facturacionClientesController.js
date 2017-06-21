@@ -709,10 +709,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 enableRowSelection: false,
                 enableCellSelection: true,
                 enableHighlighting: true,
-                columnDefs: [
+                columnDefs: [  
 
                     {field: '#Pedido', cellClass: "ngCellText", width: "15%", displayName: '#Pedido', 
-                        cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
+                    cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
 
                     {field: 'Vendedor', cellClass: "ngCellText", width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 

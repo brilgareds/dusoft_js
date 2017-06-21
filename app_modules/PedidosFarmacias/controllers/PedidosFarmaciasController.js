@@ -1070,7 +1070,7 @@ PedidosFarmacias.prototype.guardarPedidoTemporal = function(req, res) {
             empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id, observacion, usuario_id, function(err, rows) {
 
         if (err) {
-            console.log("error generado ", err);
+            console.log("PedidosFarmaciasController => guardarEncabezadoTemporal ", err);
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en la actualizaciÃ³n', 500, {error: err}));
             return;
         } else {
@@ -1158,6 +1158,8 @@ PedidosFarmacias.prototype.ingresarDetallePedidoTemporal = function(req, res) {
                 usuario_id,empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,nombreBodega).then(function() {
         res.send(G.utils.r(req.url, 'InserciÃ³n de detalle del pedido Exitosa!', 200, {}));
     }).fail(function(err) {
+        
+        console.log("PedidosFarmaciasController => ingresarDetallePedidoTemporal ", err);
         var msj = "Se ha Generado un Error en la InserciÃ³n del detalle del pedido";
 
         if (err.status) {

@@ -197,6 +197,9 @@ CajaGeneral.prototype.listarConceptosDetalle = function(req, res) {
 	return G.Q.nfcall(__traerPorcentajeImpuestos,that,parametros);
       
      }).then(function(result) {
+	 
+	 console.log("result ",result);
+	 
         conceptos.impuestos=result;
         if (conceptos.detalle.length > 0) {
             res.send(G.utils.r(req.url, 'listarConceptosDetalle', 200, {listarConceptosDetalle: conceptos}));
@@ -350,16 +353,6 @@ CajaGeneral.prototype.guardarFacturaCajaGenral = function(req, res) {
 		
 	    }).then(function(result) {
 		
-		    parametros.totalAbono = parametros.totalFactura;
-		    parametros.totalEfectivo = parametros.totalFactura;
-		    parametros.totalCheque = 0;
-		    parametros.totalTarjeta = 0;
-		    parametros.totalAbonos = 0;
-		
-		return G.Q.ninvoke(that.m_caja_general,'insertarFacturasContado', parametros,transaccion); 
-		
-	    }).then(function(result) {
-		
 		return G.Q.ninvoke(that.m_caja_general,'eliminarTmpDetalleConceptosTerceros', parametros,transaccion); 
 		
             }).then(function(result) {
@@ -373,9 +366,23 @@ CajaGeneral.prototype.guardarFacturaCajaGenral = function(req, res) {
 		impuesto.prefijo=parametros.prefijo;
 		impuesto.factura=parametros.factura;
 		return G.Q.ninvoke(that.m_caja_general,'actualizarImpuestoFacturas', impuesto,transaccion);
+	    	
 		
 	    }).then(function(result) { 
 		
+		    parametros.totalAbono = impuesto.totalGeneral;
+		    parametros.totalEfectivo = impuesto.totalGeneral;
+		    parametros.totalCheque = 0;
+		    parametros.totalTarjeta = 0;
+		    parametros.totalAbonos = 0;
+		    
+		if(parametros.tipoPago===0){
+		    return G.Q.ninvoke(that.m_caja_general,'insertarFacturasContado', parametros,transaccion); 
+		}else{
+		   return false; 
+		}
+	    }).then(function(result) {
+		console.log("commit  ",result);
 		transaccion.commit();
 		
 	    }).fail(function(err) {
@@ -499,7 +506,7 @@ function __traerPorcentajeImpuestos(that, obj, callback) {
 	return  G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
 
     }).then(function(result) {
-        console.log("resultado DDDD:: ",result);
+
 	var parametros = result[0];
 	var impuestos = {
 	    porcentajeRtf: '0',
@@ -508,7 +515,11 @@ function __traerPorcentajeImpuestos(that, obj, callback) {
 	    porcentajeCree: '0',
 	    swRtf: parametros.sw_rtf,
 	    swIca: parametros.sw_ica,
-	    swReteiva: parametros.sw_reteiva
+	    swReteiva: parametros.sw_reteiva,
+            totalGeneral:0,
+	    retencionFuente:0,
+	    retencionIca:0,
+	    valorSubtotal:0
 	};
 
 	if (parametros.sw_rtf === '1' || parametros.sw_rtf === '3')

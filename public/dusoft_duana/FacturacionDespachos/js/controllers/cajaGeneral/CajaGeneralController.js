@@ -289,6 +289,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                 <thead>\
                                                     <tr>\
                                                         <th class="text-center">SUBTOTAL</th>\
+                                                        <th class="text-center">IVA</th>\
                                                         <th class="text-center">RET-FTE</th>\
 							<th class="text-center">RETE-ICA</th>\
                                                         <th class="text-center">VALOR TOTAL</th>\
@@ -296,10 +297,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                 </thead>\
                                                 <tbody>\
                                                     <tr>\
-                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getSubTotal()| currency:"$"}}</td> \
-                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getValorRetFte() | currency:"$"}}</td> \
-                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getValorRetIca() | currency:"$"}}</td> \
-                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getTotal()| currency:"$"}}</td> \
+                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getSubTotal()| currency:"$ "}}</td> \
+                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getIva()| currency:"$ "}}</td> \
+                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getValorRetFte() | currency:"$ "}}</td> \
+                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getValorRetIca() | currency:"$ "}}</td> \
+                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getTotal()| currency:"$ "}}</td> \
                                                     </tr>\
                                                 </tbody>\
                                             </table>\
@@ -310,8 +312,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'Concepto', width: "15%", displayName: 'Concepto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionConcepto()}}</p></div>'},
                             {field: 'Tipo Pago', width: "5%", displayName: 'Tipo Pago', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoPagoDescripcion()}}</p></div>'},
                             {field: 'Descripcion', width: "44%", displayName: 'Descripcion', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcion()}}</p></div>'},
-                            {field: 'Valor Unitario', width: "8%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()| currency:"$"}}</p></div>'},
-                            {field: 'Valor Gravamen', width: "8%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getValorGravamen() | currency:"$"}}</p></div>'},
+                            {field: 'Valor Unitario', width: "8%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()| currency:"$ "}}</p></div>'},
+                            {field: 'Valor Gravamen', width: "8%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getValorGravamen() | currency:"$ "}}</p></div>'},
                             {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
                                 cellTemplate: ' <div class="row">\
                                                  <button class="btn btn-default btn-xs" ng-click="eliminarTmp(row.entity)">\
@@ -373,7 +375,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             backdrop: true,
                             backdropClick: true,
                             dialogFade: false,
-                           // windowClass: 'app-modal-window-smlg',
+                            windowClass: 'app-modal-window-smlg',
                             keyboard: true,
                             showFilter: true,
                             cellClass: "ngCellText",

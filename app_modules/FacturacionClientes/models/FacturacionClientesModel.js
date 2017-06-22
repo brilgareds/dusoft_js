@@ -706,7 +706,11 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
  * @fecha 2017-10-05
  */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
+      
+    var formato = 'YYYY-MM-DD';
      
+   
+         
     var columnQuery = [
         "a.tipo_id_tercero",
 	"a.tercero_id",
@@ -755,8 +759,10 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
             }
             this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
             if(obj.pedidoMultipleFarmacia === '1'){
-                //this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
-                this.andWhere("estado_proceso",obj.estadoProcesoPedido)
+                var fechaFinal = G.moment(obj.fechaFinal).format(formato);
+                var _fechaFinal = G.moment(fechaFinal).add(1, 'day').format(formato);
+                this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ _fechaFinal +"'"))
+                .andWhere("estado_proceso",obj.estadoProcesoPedido)
             }
         }).orderBy("a.fecha_registro",'desc')
     

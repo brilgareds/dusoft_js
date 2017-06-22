@@ -79,8 +79,9 @@ G.program
         .option('-t, --test', 'Run server in Testing mode')
         .option('-e, --eco', 'Run server in Testing mode in ecodev')
         .option('-P, --prod', 'Run server in Production mode')
+        .option('-Z, --dev170', 'Run server in base de datos 170')     
         .option('-c, --config', 'Output settings');
-G.program.parse(process.argv);
+G.program.parse(process.argv);   
 
 G.constants =  require("./lib/Constants").create();
 
@@ -91,6 +92,8 @@ if (G.program.dev)
     G.settings.setEnv(G.settings.envDevelopment());
 else if (G.program.test)
     G.settings.setEnv(G.settings.envTesting());
+else if (G.program.dev170)
+    G.settings.setEnv(G.settings.env170());
 else if (G.program.prod)
     G.settings.setEnv(G.settings.envProduction());
 else

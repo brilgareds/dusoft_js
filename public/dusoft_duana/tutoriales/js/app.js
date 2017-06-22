@@ -34,9 +34,10 @@ define([
     "includes/validation/NgValidateEvents",    
     "webNotification",
     "models/TutorialH",
-    "controllers/tutorialesController",
-    "controllers/tutorialesVideoController",
-    "services/tutorialesService",
+    "controllers/TutorialesController",
+    "controllers/TutorialesVideoController",
+    "services/TutorialesService",
+    "models/TiposTutorial"
 ], function(angular) { 
 
         /* App Module and its dependencies */
@@ -81,7 +82,7 @@ define([
                     url: "/Tutoriales",
                     text: "Tutoriales", 
                     templateUrl: "views/tutoriales/index.html",
-                    controller: "tutorialesController"
+                    controller: "TutorialesController"
                 }).state('TutorialesDetalle', {
                     url: "/TutorialesDetalle",
                     text: "lista de los tutoriales",

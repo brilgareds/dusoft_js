@@ -1,7 +1,7 @@
 define(["angular", "js/services"], function(angular, services) {
 
 
-    services.factory('tutorialesService', 
+    services.factory('TutorialesService', 
                     ['$rootScope', 'Request', 'API',
                      "Usuario","$modal","localStorageService","TutorialH",
                     
@@ -33,7 +33,7 @@ define(["angular", "js/services"], function(angular, services) {
             self.renderlListarVideoTutoriales = function(tutoriales){                                          
                 var resultado = [];                  
                 tutoriales.forEach(function(row) {                    
-                    var tutoriales = TutorialH.get(row.tag,row.tipo,row.titulo,row.descripcion,row.path,row.fecha_registro);
+                    var tutoriales = TutorialH.get(row.id, row.tag,row.tipo,row.titulo,row.descripcion,row.path,row.fecha_registro);
                     resultado.push(tutoriales);                                      
                 });   
                  

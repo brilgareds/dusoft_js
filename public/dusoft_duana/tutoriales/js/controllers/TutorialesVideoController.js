@@ -1,6 +1,6 @@
 define(["angular", "js/controllers"], function (angular, controllers) {
 
-    controllers.controller('tutorialesVideoController', ['$scope', '$rootScope', 'AlertService', 'Usuario', "$timeout",
+    controllers.controller('TutorialesVideoController', ['$scope', '$rootScope', 'AlertService', 'Usuario', "$timeout",
         "$filter", "localStorageService",
         "$state", "$modalInstance",
         "socket",

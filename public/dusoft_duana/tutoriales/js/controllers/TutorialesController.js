@@ -1,14 +1,18 @@
-define(["angular", "js/controllers"], function(angular, controllers) {
+define(["angular", "js/controllers", "controllers/GuardarTutorialController"], function(angular, controllers) {
 
-    controllers.controller('tutorialesController',
+    controllers.controller('TutorialesController',
                 ['$scope', '$rootScope','AlertService', 'Usuario', "$timeout", 
-                    "$filter", "localStorageService", "$state","$modal","socket", "tutorialesService","API",
-                    function($scope, $rootScope, AlertService, Usuario, $timeout, 
-                    $filter,localStorageService,$state,$modal,socket,tutorialesService,API) {
+                "$filter", "localStorageService", "$state","$modal","socket", "TutorialesService","API",
+                function($scope, $rootScope, AlertService, Usuario, $timeout, 
+                $filter,localStorageService,$state,$modal,socket,tutorialesService,API) {
 
         var that = this;
         $scope.paginaactual = 1;
-        var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
+        var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());    
+        
+                    
+        that.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+        
         $scope.root = {
             termino_busqueda:'',          
             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
@@ -16,38 +20,45 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         }; 
         
         $scope.root.filtros = [                
-                    {tipo: '-1',descripcion: "Seleccionar"},
-                    {tipo: '0',descripcion: "#Categoria"},
-                    {tipo: '1',descripcion: "Descripcion"} 
-                  ];
+            {tipo: '-1',descripcion: "Seleccionar"},
+            {tipo: '0',descripcion: "#Categoria"},
+            {tipo: '1',descripcion: "Descripcion"} 
+        ];
                  
         $scope.root.filtro = $scope.root.filtros[0]; 
         
-         $scope.onSeleccionFiltro = function(filtro){
-                      
-                    $scope.root.filtro = filtro;
-                    $scope.root.termino_busqueda = '';
-                };
+        $scope.onSeleccionFiltro = function(filtro){
+             
+            $scope.root.filtro = filtro;
+            $scope.root.termino_busqueda = '';
+        };
 
         that.cargar_permisos = function() {
         // Permisos               
-            $scope.root.permisos_ajustes = {
+           /* $scope.root.permisos_ajustes = {
                 btn_permisos_reproduccion_videos: {
                     'click': ''//$scope.root.opciones.sw_ajustar_entrega_formula
                 }
-            };                
+            };         */
+            $scope.opcionesModulo = {
+                btnCrearTutorial:{
+                    'click': that.opciones.sw_crear_tutorial
+                }
+            };
+            
+            console.log("opcionesModulo.btnModificarCantidad} ", $scope.opcionesModulo.btnCrearTutorial)
         };
-
         
         $scope.buscarVideo = function(event){
             
-             if (event.which === 13 || event.which === 1){     
+            if (event.which === 13 || event.which === 1){     
                                     
-                    that.listarVideoTutoriales();                         
+                that.listarVideoTutoriales();                         
                  
             }
             
         };
+        
         /**
          * +Descripcion Metodo encargado de invocar el servicio
          *              que consultara los tutoriales
@@ -100,7 +111,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         
         $scope.ventanaVisualizarVideo = function(entityTutorial){
              
-             $scope.tutorialEntity = entityTutorial;
+            $scope.tutorialEntity = entityTutorial;
              
             $scope.opts = {
                 backdrop: 'static',
@@ -109,19 +120,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 keyboard: true,
                 templateUrl: 'views/tutoriales/tutorialesvideo.html',
                 scope: $scope,                  
-                controller: "tutorialesVideoController",
+                controller: "TutorialesVideoController",
                 
                 resolve: {
                    urlTutorial: function() {
                         return API.PATH_URL_VIDEO+""+entityTutorial.getPath();
-                    },
-
+                    }
                 }
                                    
             };
             var modalInstance = $modal.open($scope.opts);             
                 modalInstance.result.then(function(){
-                },function(){});                                    
+            },function(){});                                    
         };
         
        
@@ -145,6 +155,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.paginaactual++;
             that.listarVideoTutoriales();
         };
+        
         /*
          * Inicializacion de variables
          * @param {type} empresa
@@ -160,7 +171,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             callback();
         };
-
+        
+        
+        $scope.onBtnCrearTutorial = function(){
+                         
+            $scope.opts = {
+                backdrop: 'static',
+                backdropClick: true,
+                dialogFade: true,
+                keyboard: true,
+                size: 'md',
+                templateUrl: 'views/tutoriales/guardarTutorial.html',
+                scope: $scope,                  
+                controller: "GuardarTutorialController"
+                                   
+            };
+            var modalInstance = $modal.open($scope.opts);             
+                modalInstance.result.then(function(){
+                    that.listarVideoTutoriales();
+            },function(){});  
+        };
 
 
         that.init(empresa, function() {
@@ -187,8 +217,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
  
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
             $scope.$$watchers = null;
-            $scope.root=null;
-       });
+            $scope.root = null;
+        });
 
     }]);
 });

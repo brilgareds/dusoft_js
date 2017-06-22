@@ -32,6 +32,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             pedidosCosmitetSeleccionados: [],
             documentosCosmitetSeleccionadosFiltrados: [],
             estadoSesion: true,
+            items_pedidos_cosmitet: 0,
             items: 0,
             items_facturas_generadas: 0,
             pedidos_cosmitet:[],
@@ -657,8 +658,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var pedidoClientes = [];
                 
                 if (data.status === 200) {
-
-                    $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
+                    console.log("data.obj.listar_pedidos_clientes.length ", data.obj.listar_pedidos_clientes.length);
+                    $scope.root.items_pedidos_cosmitet = data.obj.listar_pedidos_clientes.length;
                     
                     pedidoClientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
 
@@ -763,7 +764,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             if ($scope.paginaactualCosmitet === 1)
                 return;
             $scope.paginaactualCosmitet--;
-            that.listarPedidosCosmitet();
+            $scope.listarPedidosCosmitet();
         };
 
 
@@ -773,7 +774,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         */
         $scope.paginaSiguientePedidosCosmitet = function () {
             $scope.paginaactualCosmitet++;
-            that.listarPedidosCosmitet();
+            $scope.listarPedidosCosmitet();
         };
 
             

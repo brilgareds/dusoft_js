@@ -755,8 +755,8 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
             }
             this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
             if(obj.pedidoMultipleFarmacia === '1'){
-                this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
-                .andWhere("estado_proceso",obj.estadoProcesoPedido)
+                //this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
+                this.andWhere("estado_proceso",obj.estadoProcesoPedido)
             }
         }).orderBy("a.fecha_registro",'desc')
     

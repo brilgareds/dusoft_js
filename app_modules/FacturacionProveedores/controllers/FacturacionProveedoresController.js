@@ -261,7 +261,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         centro_utilidad: args.facturaProveedor.centroUtilidad,
         bodega: args.facturaProveedor.bodega,
         codigo_proveedor_id: args.facturaProveedor.parmetros.recepciones[0].proveedor,
-        observaciones: args.facturaProveedor.parmetros.descripcionFactura + '' + args.facturaProveedor.parmetros.descripcionFija,
+        observaciones: ' '+args.facturaProveedor.parmetros.descripcionFactura + ' ' + args.facturaProveedor.parmetros.descripcionFija,
         valor_descuento: args.facturaProveedor.parmetros.totalDescuento,
         fecha_factura: args.facturaProveedor.parmetros.fechaVencimiento,
         fecha_radicacion_factura: args.facturaProveedor.parmetros.fechaFactura,

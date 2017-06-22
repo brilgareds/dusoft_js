@@ -14,6 +14,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         var that = this;
         $scope.paginaactual = 1;
         $scope.paginaactualFacturasGeneradas = 1;
+        $scope.paginaactualCosmitet = 1;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
         var fecha_actual = new Date();
         $scope.notificarFacturaGeneradaCosmitet = 0;
@@ -639,7 +640,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     listar_pedidos_clientes: {
                         terminoBusqueda: $scope.root.termino_busqueda_cosmitet, //57760
                         empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-                        paginaActual: $scope.paginaactual,
+                        paginaActual: $scope.paginaactualCosmitet,
                         tipoIdTercero: '',
                         terceroId: '',
                         pedidoMultipleFarmacia: '1',
@@ -704,54 +705,77 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
         $scope.listaPedidosCosmitet = {
             
-                data: 'root.pedidos_cosmitet',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                enableCellSelection: true,
-                enableHighlighting: true,
-                columnDefs: [  
+            data: 'root.pedidos_cosmitet',
+            enableColumnResize: true,
+            enableRowSelection: false,
+            enableCellSelection: true,
+            enableHighlighting: true,
+            columnDefs: [  
 
-                    {field: '#Pedido', cellClass: "ngCellText", width: "15%", displayName: '#Pedido', 
-                    cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
+                {field: '#Pedido', cellClass: "ngCellText", width: "15%", displayName: '#Pedido', 
+                cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
 
-                    {field: 'Vendedor', cellClass: "ngCellText", width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
+                {field: 'Vendedor', cellClass: "ngCellText", width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 
-                    {field: '#Fecha', cellClass: "ngCellText", width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
+                {field: '#Fecha', cellClass: "ngCellText", width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
 
-                    {field: '#Factura', 
-                        cellClass: "ngCellText", 
-                        width: "25%", 
-                        displayName: '#Factura',
-                        cellTemplate: '<ul><button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 4"  \n\
-                            ng-click="listaPedidoPrefijos(row.entity.mostrarPedidos()[0].mostrarFacturas())" \n\
-                            class="btn btn-default btn-xs" >{{row.entity.mostrarPedidos()[0].mostrarFacturas().length}} Documentos</button>\
-                            <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 5" \n\
-                                class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
-                              <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
-                              <input type="checkbox"\n\
-                               ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}  <br> \
+                {field: '#Factura', 
+                    cellClass: "ngCellText", 
+                    width: "25%", 
+                    displayName: '#Factura',
+                    cellTemplate: '<ul><button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 4"  \n\
+                        ng-click="listaPedidoPrefijos(row.entity.mostrarPedidos()[0].mostrarFacturas())" \n\
+                        class="btn btn-default btn-xs" >{{row.entity.mostrarPedidos()[0].mostrarFacturas().length}} Documentos</button>\
+                        <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 5" \n\
+                            class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
+                          <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
+                          <input type="checkbox"\n\
+                           ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}  <br> \
+                        </li>\
+                      </ul>'},
+
+                {displayName: "Opc", cellClass: "txt-center dropdown-button",
+                    cellTemplate: '\
+                    <div class="btn-group">\
+                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                        <ul class="dropdown-menu dropdown-options">\
+                            <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                                <a href="javascript:void(0);" ng-click="imprimirReportePedido(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
                             </li>\
-                          </ul>'},
-                   
-                    {displayName: "Opc", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '\
-                        <div class="btn-group">\
-                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
-                            <ul class="dropdown-menu dropdown-options">\
-                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                    <a href="javascript:void(0);" ng-click="imprimirReportePedido(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
-                                </li>\
-                            </ul>\
-                        </div>'
-                    },
-                    /*<li>\n\
-                                <a href="javascript:void(0);" ng-click="generarFacturaIndividualCosmitet(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
-                             </li>\\n\*/
-                    {field: '', cellClass: "checkseleccion", width: "3%",
-                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccionCosmitet(row)'" +
-                                " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}, 
-                ]
-            };
+                        </ul>\
+                    </div>'
+                },
+                /*<li>\n\
+                            <a href="javascript:void(0);" ng-click="generarFacturaIndividualCosmitet(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
+                         </li>\\n\*/
+                {field: '', cellClass: "checkseleccion", width: "3%",
+                    cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccionCosmitet(row)'" +
+                            " ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}, 
+            ]
+        };
+        
+        
+        /*
+        * funcion para paginar anterior en la lista de pedidos de cosmitet
+        * @returns {lista datos}
+        */
+        $scope.paginaAnteriorPedidosCosmitet = function () {
+            if ($scope.paginaactualCosmitet === 1)
+                return;
+            $scope.paginaactualCosmitet--;
+            that.listarPedidosCosmitet();
+        };
+
+
+       /*
+        * funcion para paginar siguiente en la lista de pedidos de cosmitet
+        * @returns {lista datos}
+        */
+        $scope.paginaSiguientePedidosCosmitet = function () {
+            $scope.paginaactualCosmitet++;
+            that.listarPedidosCosmitet();
+        };
+
             
         /**
          * @author Cristian Ardila

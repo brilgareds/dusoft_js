@@ -730,7 +730,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 5" \n\
                             class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
                           <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
-                          <input type="checkbox"\n\
+                          <input type="checkbox" ng-checked="buscarDocumentoSeleccionadoCosmitet(row)"\n\
                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}  <br> \
                         </li>\
                       </ul>'},
@@ -1022,6 +1022,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             }
 
         }; 
+        $scope.buscarDocumentoSeleccionadoCosmitet = function (row) {
+            
+
+            for (var i in $scope.root.documentosCosmitetSeleccionadosFiltrados) {
+                var _documento = $scope.root.documentosCosmitetSeleccionadosFiltrados[i];
+                 if(_documento.prefijo === row.prefijo && _documento.numero === row.numero) {
+                    row.selected = true;
+                    return true;
+                }
+            }
+
+            row.selected = false;
+            return false;
+        }; 
         
         $scope.seleccionarTipoPago = function(tipoPago){
             $scope.tipoPagoFactura = tipoPago;
@@ -1079,6 +1093,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         */
         $scope.generarFacturasCosmitetAgrupadas = function () {
              
+            console.log("$scope.root.documentosCosmitetSeleccionadosFiltrados ", $scope.root.pedidosCosmitetSeleccionados);
+            console.log("$scope.root.documentosCosmitetSeleccionadosFiltrados ", $scope.root.documentosCosmitetSeleccionadosFiltrados);
            if ($scope.root.pedidosCosmitetSeleccionados.length > 1) {
   
                 var parametros = {

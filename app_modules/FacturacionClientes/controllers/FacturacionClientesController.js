@@ -597,7 +597,9 @@ function __insertarFacturaEnProcesoDetalle(that,index,datos,procesoId, callback)
  * @fecha 01/06/2017 DD/MM/YYYY generarFacturasAgrupadasEnProceso
  */                   
 FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
-      
+    
+    console.log("******FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso*************");
+    
     var that = this;
     var idProceso;
     var parametros = {
@@ -618,6 +620,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
     var resultadoFacturacionAgrupada;
     
     G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion',{filtro:'0'}).then(function(resultado){
+         
          
         if(resultado.length > 0){
             
@@ -671,7 +674,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
             parametros.usuario
         ); 
     }).fail(function (err) {
-        
+        console.log("resultado [generarFacturasAgrupadasEnProceso]:: ", err)
         G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {id:idProceso.id,estado:'2'}).then(function(resultado){
              
         }).fail(function (err) {

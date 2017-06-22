@@ -232,8 +232,9 @@ PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(emp
 PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solicitada,  
                                                                                      tipo_producto_id, cantidad_pendiente, usuario_id,empresa_origen_producto,centro_utilidad_origen_producto,
                                                                                      bodega_origen_producto,nombreBodega, callback) {
+                                                        
 
-
+    console.log("PedidosFarmaciasModel => insertar_detalle_pedido_farmacia_temporal arguments ", arguments);
     var that = this;
     
     G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:cantidad_solicitada, codigo_producto:codigo_producto}).then(function(resultado){
@@ -254,6 +255,7 @@ PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = func
     }).then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).fail(function(err){
+        console.log("PedidosFarmaciasModel => insertar_detalle_pedido_farmacia_temporal ", err);
         callback(err);
     });
     
@@ -377,6 +379,8 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function(empresa_id, ce
 
 PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id, empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id, callback) {
     
+    console.log("PedidosFarmaciasModel => insertarDetallePedidoFarmacia arguments", arguments);
+    
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
                 SELECT :1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_solic from solicitud_pro_a_bod_prpal_tmp \
                 WHERE farmacia_id = :2 and centro_utilidad = :3 and bodega = :4 and usuario_id = :5 and empresa_origen_producto = :6 and centro_utilidad_origen_producto = :7 and bodega_origen_producto = :8 ";
@@ -384,6 +388,7 @@ PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_
     G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:usuario_id, 6:empresa_origen_id, 7:centro_utilidad_origen_id, 8:bodega_origen_id}).then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("PedidosFarmaciasModel => insertarDetallePedidoFarmacia ", err);
         callback(err);
     });
 
@@ -393,6 +398,7 @@ PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_
 
 PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solic, tipo_producto_id, usuario_id, cantidad_pendiente, callback){
     
+    console.log("PedidosFarmaciasModel => insertar_producto_detalle_pedido_farmacia arguments", arguments);
     var that = this;
  
     G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:cantidad_solic, codigo_producto:codigo_producto}).then(function(resultado){
@@ -408,6 +414,7 @@ PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = func
     }).then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).fail(function(err){
+        console.log("PedidosFarmaciasModel => insertar_producto_detalle_pedido_farmacia ", err);
         callback(err);
     });
        

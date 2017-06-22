@@ -4729,18 +4729,11 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
 
 
 
-<<<<<<< HEAD
 function __precioVentaProductos(that, index, cotizacion, callback) {
 
     var productosInvalidos = [];
     var producto = cotizacion.productos[index];
 
-=======
-     console.log("cantidad de productos ", productos.length, index)
-    var producto = productos[index];
-    var productoUnidadMedida = "";
-    var def = G.Q.defer();
->>>>>>> master
     if (!producto) {
         callback(false, cotizacion);
         return;
@@ -4780,7 +4773,6 @@ function __precioVentaProductos(that, index, cotizacion, callback) {
      *               se validara de que el pedido al menos quede con un solo pro-
      *               ducto
      */
-<<<<<<< HEAD
     var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_cliente_id};
 
 
@@ -4949,30 +4941,6 @@ console.log("resultado ",resultado);
         if (productos[1].length > 0) {
             throw {msj: "Lista de productos no validos", status: 403, pedidos_clientes: {productos_invalidos: productos[1]}};
 
-=======
-    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
-    
-    G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
-        cotizacion.empresa_id,
-        cotizacion.centro_utilidad_id,
-        cotizacion.bodega_id,
-        cotizacion.cliente.contrato_id,
-        filtro,
-        1, filtros, filtroAvanzado).then(function(lista_productos){
-            
-        
-      
-        if (lista_productos.length === 0) {
-            index++;
-            
-            producto.mensajeError = "No se encontro el producto";
-            producto.cantidadValida = false;
-            productos_invalidos.push(producto);
-            
-            console.log("error code 1", producto.codigo_producto);
-            
-            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
->>>>>>> master
             return;
         }
         console.log("*************VLAIDANDO EL CLIENTE AUTORIZADO ******************************");
@@ -4985,7 +4953,6 @@ console.log("resultado ",resultado);
 
         }
 
-<<<<<<< HEAD
     }).then(function (resultado) {
 
         console.log("*************DEFER VLAIDANDO EL CLIENTE AUTORIZADO ******************************");
@@ -5069,54 +5036,6 @@ PedidosCliente.prototype.consultarEstadoAutorizacion = function (req, res) {
 
 
     var cotizacion = args.pedidos_clientes.cotizacion;
-=======
-        if(precioVenta.valido){
-            productoUnidadMedida = producto;
-            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
-            
-        }else{
-            
-            producto.mensajeError = "El precio venta no es valido";
-            producto.cantidadValida = false;
-            productoUnidadMedida = producto;
-            productos_invalidos.push(producto);
-            console.log("error code 2", producto.codigo_producto);
-        }
-        
-        def.resolve();
-
-    }) .then(function(resultado) {
-        index++;
-         
-        if(!resultado){
-            
-            setTimeout(function() {
-                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            }, 0);
-            
-        } else if (resultado.length > 0 && resultado[0].valido === '1') {
-             
-            productos_validos.push(productoUnidadMedida);
-            
-            setTimeout(function() {
-                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            }, 0);
-
-        }else{
-           
-            producto.mensajeError = "La cantidad ingresada no es valida para el producto";
-            producto.cantidadValida = false;
-            productos_invalidos.push(productoUnidadMedida);
-            console.log("error code 3", producto.codigo_producto);
-            setTimeout(function() {
-                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            }, 0);
-        } 
-    }).fail(function(err){  
-    console.log("error[__validar_datos_productos_archivo_plano]: ", err)    
-    }).done(); 
-};
->>>>>>> master
 
     var obj = {
         "tipo_id_tercero": cotizacion.cliente.tipo_id_tercero,

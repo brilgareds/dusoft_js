@@ -219,7 +219,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
                                       <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
                                         <input type="checkbox" \n\
-                                            class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)\
+                                            class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)"\
                                             ng-model="item.documentoSeleccionado" \n\
                                             ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)">\
                                         {{item.prefijo}} - {{item.numero}}  <br> \
@@ -416,7 +416,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
                     $scope.onDocumentoSeleccionado = function (check, row) {
-                       // console.log("row ", row)
+                       
                         row.selected = check;
                         
                         if (check) {
@@ -429,8 +429,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }; 
                     
                     $scope.buscarDocumentoSeleccion = function (row) {
-                        //var documento = row.entity;
-                        console.log("row ", row);             
+                                
                         for (var i in $scope.root.documentoSeleccionados) {
                              var _documento = $scope.root.documentoSeleccionados[i];
                             if(_documento.prefijo === row.prefijo && _documento.numero === row.numero) {

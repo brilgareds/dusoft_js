@@ -89,8 +89,8 @@ FacturacionProveedoresModel.prototype.consultarOrdenesCompraProveedor = function
         }
     }).andWhere('c.empresa_id', obj.empresaId);
 
-    query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
+//    query.limit(G.settings.limit).
+//            offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function(resultado) {
         callback(false, resultado)
     }). catch (function(err) {
@@ -184,8 +184,8 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
     }).andWhere('a.empresa_id', obj.empresaId)
       .whereNull('c.prefijo_nota');
             
-    query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
+//    query.limit(G.settings.limit).
+//            offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function(resultado) {
         callback(false, resultado)
     }). catch (function(err) {
@@ -254,10 +254,10 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
         }
     });
       
-    query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
+
     query.then(function(resultado) {
-        callback(false, resultado)
+	console.log("query",query.toSQL());
+        callback(false, resultado);
     }). catch (function(err) {
         console.log("err [consultarFacturaProveedorDetalle]:", err);
         callback(err);
@@ -291,10 +291,7 @@ FacturacionProveedoresModel.prototype.detalleRecepcionParcial = function(obj, ca
             .where("a.recepcion_parcial_id", obj.recepcion_parcial_id)
             .orderBy("a.codigo_producto");
 
-    query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
-
-    query.then(function(resultado) {
+     query.then(function(resultado) {
 
         callback(false, resultado)
     }). catch (function(err) {

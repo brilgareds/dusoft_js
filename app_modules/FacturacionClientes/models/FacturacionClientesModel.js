@@ -768,8 +768,10 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
             }
         }).orderBy("a.fecha_registro",'desc')
     
-    query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
+    console.log("obj.procesoFacturacion >>>>>> ", obj.procesoFacturacion);
+    if(obj.procesoFacturacion === 1){
+        query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)
+    }
     query.then(function (resultado) {
        // console.log("resultado [listarPedidosClientes] ", resultado);
         callback(false, resultado)

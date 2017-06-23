@@ -70,6 +70,36 @@ FacturacionClientes.prototype.consultarDetalleCliente = function(req, res){
 };
 
 
+FacturacionClientes.prototype.subirArchivoMensaje = function(req, res) {
+    var args = req.body.data;       
+    console.log("parametros ", args)
+    /*if(!parametros.req.files.file){
+        callback(false, {});
+        return;
+    }*/
+    
+    G.Q.ninvoke(G.utils, "obtenerTamanoArchivo", req.files.file.path ).then(function(mb){
+        
+        console.log("mb ", mb)
+        if(mb > 3){
+            throw {status:403, msj:"El archivo no fue enviado, el peso sobrepasa el limite"};
+            return;
+        }
+        
+        //return  G.Q.ninvoke(G.utils, "subirArchivo", parametros.req.files, true);
+        
+    })/*.then(function(_rutaNueva) {
+        console.log("file was moved to ", _rutaNueva, " original ", parametros.req.files.file.name);
+        
+        callback(false, {rutaNueva:'_rutaNueva', nombreArchivo:parametros.req.files.file.name});
+        
+    })*/.fail(function(err){
+        console.log("error ",err);
+        //callback(err);
+    });
+    
+
+};
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
@@ -327,7 +357,8 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         pedidoClienteId: terminoBusqueda,
         paginaActual: paginaActual,
         pedidoMultipleFarmacia: pedidoMultipleFarmacia,
-        estadoProcesoPedido: estadoProcesoPedido
+        estadoProcesoPedido: estadoProcesoPedido,
+        procesoFacturacion: 1
     };
     
     if(pedidoMultipleFarmacia === '1'){
@@ -540,6 +571,7 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
         parametros.terceroId = '';
         parametros.idProceso = resultado[0].id;
         parametros.estadoProcesoPedido = 0;
+        parametros.procesoFacturacion = 0;
         return G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros)
             
     }).then(function(resultado){

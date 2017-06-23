@@ -123,7 +123,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }]
                 };
                 var modalInstance = $modal.open($scope.opts);
-            }
+            };
             
             if(localStorageService.get("session")){
                 window.location = "../home/";

@@ -586,8 +586,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "a.observacion",
         "i.descripcion as descripcion_tipo_producto",
         "h.descripcion as zona",
-        "a.pedido_cliente",
-        subQuery
+        "a.pedido_cliente"
     ];
     
     var query = G.knex.column(columns).

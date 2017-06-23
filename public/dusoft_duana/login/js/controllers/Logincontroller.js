@@ -1,9 +1,12 @@
-define(["angular", "js/controllers"], function(angular, controllers) {
+define(["angular", "js/controllers", "controllers/ConexionesController"], function(angular, controllers) {
 
-    controllers.controller('Logincontroller', ['$scope', 'Usuario', "Request", "localStorageService","$modal","AlertService",
-        function($scope, Usuario, Request, localStorageService, $modal, AlertService) {
+    controllers.controller('Logincontroller', ['$scope', 'Usuario', "Request", "localStorageService",
+        "$modal","AlertService",
+        function($scope, Usuario, Request, localStorageService, 
+        $modal, AlertService, ConexionesController) {
 
             console.log("init login controller");
+            var that = this;
             $scope.usuario = "";
             $scope.clave = "";
             $scope.mostrarmensaje = false;
@@ -61,6 +64,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if (datos.status === 200) {
                         localStorageService.add("session", JSON.stringify(datos.obj.sesion));
                         window.location = "../home/";
+                    } else if(datos.status === 403) {
+                        
+                        var conexiones = datos.obj.sesion.conexiones;
+                        that.abrirVentanaConexiones(conexiones);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", datos.msj || "Ha ocurrido un error...");
                         $scope.mostrarmensaje = true;
@@ -123,7 +130,27 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }]
                 };
                 var modalInstance = $modal.open($scope.opts);
-            }
+            };
+            
+            that.abrirVentanaConexiones = function(conexiones){
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    transclude: true,   
+                    windowClass: 'contenedorLogin',
+                    templateUrl:"views/ventanaconexiones.html" ,
+                    scope: $scope,
+                    controller:"ConexionesController",
+                    resolve:{
+                        conexiones : function(){
+                            return conexiones
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
             
             if(localStorageService.get("session")){
                 window.location = "../home/";

@@ -15,7 +15,7 @@ var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e0
  * ****************************************************************
  *              
  */
-FacturacionClientes.prototype.registrarCliente = function(req, res){
+/*FacturacionClientes.prototype.registrarCliente = function(req, res){
    
    console.log("**********FacturacionClientes.prototype.registrarCliente*******************");
    console.log("**********FacturacionClientes.prototype.registrarCliente*******************");
@@ -67,9 +67,9 @@ FacturacionClientes.prototype.consultarDetalleCliente = function(req, res){
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
-};
+};*/
 
-
+/*
 FacturacionClientes.prototype.subirArchivoMensaje = function(req, res) {
     console.log("***********FacturacionClientes.prototype.subirArchivoMensajessssss**********************");
     console.log("***********FacturacionClientes.prototype.subirArchivoMensaje**s////ss/s/s**********************");
@@ -120,7 +120,7 @@ function __subirArchivoMensaje(index, archivos,callback) {
         __subirArchivoMensaje(index, archivos,callback);
     }, 0); 
    
-};
+};*/
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/

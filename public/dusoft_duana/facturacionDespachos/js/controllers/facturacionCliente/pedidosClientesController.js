@@ -218,7 +218,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 <ul>\
                                     <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
                                       <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
-                                        <input type="checkbox" ng-model="item.documentoSeleccionado" ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)">\
+                                        <input type="checkbox" \n\
+                                            class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)\
+                                            ng-model="item.documentoSeleccionado" \n\
+                                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)">\
                                         {{item.prefijo}} - {{item.numero}}  <br> \
                                     </li>\
                                 </ul>\
@@ -264,7 +267,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 5"\
                                         class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
                                         <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(row.entity, item)" class = "glyphicon glyphicon-print"></a>\
-                                        <input type="checkbox"\n\
+                                        <input type="checkbox" class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)"\n\
                                         ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} <br> \
                                     </li>\
                                   </ul>'},
@@ -424,6 +427,21 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
  
                     }; 
+                    
+                    $scope.buscarDocumentoSeleccion = function (row) {
+                        //var documento = row.entity;
+                        console.log("row ", row);             
+                        for (var i in $scope.root.documentoSeleccionados) {
+                             var _documento = $scope.root.documentoSeleccionados[i];
+                            if(_documento.prefijo === row.prefijo && _documento.numero === row.numero) {
+                                row.selected = true;
+                                return true;
+                            }
+                        }
+
+                        row.selected = false;
+                        return false;
+                    };
                    
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio

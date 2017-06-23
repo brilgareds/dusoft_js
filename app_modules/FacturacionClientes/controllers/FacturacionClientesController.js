@@ -71,34 +71,55 @@ FacturacionClientes.prototype.consultarDetalleCliente = function(req, res){
 
 
 FacturacionClientes.prototype.subirArchivoMensaje = function(req, res) {
+    console.log("***********FacturacionClientes.prototype.subirArchivoMensajessssss**********************");
+    console.log("***********FacturacionClientes.prototype.subirArchivoMensaje**s////ss/s/s**********************");
+    console.log("***********FacturacionClientes.prototype.subirArchivoMensaje**********************");
+    
     var args = req.body.data;       
-    console.log("parametros ", args)
-    /*if(!parametros.req.files.file){
-        callback(false, {});
-        return;
-    }*/
-    
-    G.Q.ninvoke(G.utils, "obtenerTamanoArchivo", req.files.file.path ).then(function(mb){
-        
-        console.log("mb ", mb)
-        if(mb > 3){
-            throw {status:403, msj:"El archivo no fue enviado, el peso sobrepasa el limite"};
-            return;
-        }
-        
-        //return  G.Q.ninvoke(G.utils, "subirArchivo", parametros.req.files, true);
-        
-    })/*.then(function(_rutaNueva) {
-        console.log("file was moved to ", _rutaNueva, " original ", parametros.req.files.file.name);
-        
-        callback(false, {rutaNueva:'_rutaNueva', nombreArchivo:parametros.req.files.file.name});
-        
-    })*/.fail(function(err){
+    var archivos = args.subir_archivo_comprimido;
+    console.log("archivos [subirArchivoMensaje]:: >>>>> ", args.subir_archivo_comprimido)
+    G.Q.nfcall(__subirArchivoMensaje,0, archivos).then(function(resultado) {
+        console.log("file was moved to ", resultado, " original ");
+         
+         res.send(G.utils.r(req.url, 'Se suben los archivos satisfactoriamente', 200, {lista_facturas_proceso:''}));
+         
+    }).fail(function(err){
         console.log("error ",err);
-        //callback(err);
+        res.send(G.utils.r(req.url, err, 500, {}));
     });
-    
+   
+};
 
+function __subirArchivoMensaje(index, archivos,callback) {
+   
+    var archivo = archivos[index];   
+    
+    if (!archivo) {               
+        callback(false);  
+        return;                     
+    }  
+    index++;
+    console.log("path ", archivo.path);
+    console.log("archivo ", archivo.name);
+    
+    G.Q.ninvoke(G.utils, "subirArchivoComprimido", archivo, true ).then(function(mb){
+        index++;
+        
+         setTimeout(function() {
+            __subirArchivoMensaje(index, archivos,callback);
+        }, 0);
+        
+        
+    }).fail(function(err){ 
+        console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
+        
+    }).done();
+    
+    
+    setTimeout(function() {
+        __subirArchivoMensaje(index, archivos,callback);
+    }, 0); 
+   
 };
 /******************************************************************************/
 /******************************************************************************/

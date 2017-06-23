@@ -724,16 +724,23 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     cellClass: "ngCellText", 
                     width: "25%", 
                     displayName: '#Factura',
-                    cellTemplate: '<ul><button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 4"  \n\
+                      
+                    cellTemplate: '<ul><button ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length > 3"  \n\
                         ng-click="listaPedidoPrefijos(row.entity.mostrarPedidos()[0].mostrarFacturas())" \n\
                         class="btn btn-default btn-xs" >{{row.entity.mostrarPedidos()[0].mostrarFacturas().length}} Documentos</button>\
-                        <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 5" \n\
-                            class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
-                          <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
-                          <input type="checkbox" ng-checked="buscarDocumentoSeleccionadoCosmitet(row)"\n\
-                           ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}  <br> \
+                        <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 4" \n\
+                            class="listaPrefijos"\
+                            ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
+                            <a href="javascript:void(0);"\
+                                ng-click="imprimirReporteDocumento(entity,item)"\
+                                class = "glyphicon glyphicon-print">\
+                            </a>\
+                            <input type="checkbox"\
+                                class="checkpedido"\
+                                ng-checked="buscarDocumentoSeleccionadoCosmitet(item)"\n\
+                                ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}  <br> \
                         </li>\
-                      </ul>'},
+                      </ul>'}, 
 
                 {displayName: "Opc", cellClass: "txt-center dropdown-button",
                     cellTemplate: '\
@@ -907,6 +914,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
                                       <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
                                         <input type="checkbox" ng-model="item.documentoSeleccionado" \
+                                        ng-checked="buscarDocumentoSeleccionadoCosmitet(item)"\
                                         ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"\
                                        >\n\
                                         {{item.prefijo}} - {{item.numero}}  <br> \
@@ -931,7 +939,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * +Descripion Funciones encargadas de procesar los pedidos seleccionados
          */
         that.quitarPedido = function (pedido) {
-
+            console.log("quitarPedido");
             for (var i in $scope.root.pedidosCosmitetSeleccionados) {
                 var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
                 if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
@@ -942,6 +950,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
 
         that.agregarPedido = function (pedido) {
+            console.log("agregarPedido");
             //valida que no exista el pedido en el array
             for (var i in $scope.root.pedidosCosmitetSeleccionados) {
                 var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
@@ -954,7 +963,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
         $scope.onPedidoSeleccionado = function (check, row) {
-
+            console.log("onPedidoSeleccionado");
             row.selected = check;
             if (check) {
                 that.agregarPedido(row.entity);
@@ -966,10 +975,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
 
         $scope.buscarSeleccionCosmitet = function (row) {
+           // console.log("buscarSeleccionCosmitet");
             var pedido = row.entity;
 
             for (var i in $scope.root.pedidosCosmitetSeleccionados) {
                 var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
+                //console.log("_pedido.mostrarPedidos()[0].get_numero_cotizacion() =  ", _pedido.mostrarPedidos()[0].get_numero_cotizacion() );
+                //console.log("pedido.mostrarPedidos()[0].get_numero_cotizacion() = ", pedido.mostrarPedidos()[0].get_numero_cotizacion())
                 if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
                     row.selected = true;
                     return true;
@@ -986,7 +998,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * +Descripcion Funciones encargadas de procesar los documentos seleccionados
          */
          that.quitarDocumento = function (documento) {
-                        
+            //console.log("quitarDocumento");            
             for(var i in $scope.root.documentosCosmitetSeleccionadosFiltrados) {
                 var _documento = $scope.root.documentosCosmitetSeleccionadosFiltrados[i];
                 if (_documento.prefijo === documento.prefijo && _documento.numero === documento.numero) {
@@ -998,7 +1010,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         }; 
 
         that.agregarDocumento = function (documento) {
-
+            //console.log("agregarDocumento");   
             for(var i in $scope.root.documentosCosmitetSeleccionadosFiltrados) {
                 var _documento = $scope.root.documentosCosmitetSeleccionadosFiltrados[i];
                 if(_documento.prefijo === documento.prefijo && _documento.numero === documento.numero) {
@@ -1011,7 +1023,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
         $scope.onDocumentoSeleccionado = function (check, row) {
-
+            //console.log("onDocumentoSeleccionado");
             row.selected = check;
 
             if (check) {
@@ -1022,9 +1034,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             }
 
         }; 
+        
         $scope.buscarDocumentoSeleccionadoCosmitet = function (row) {
-            
-
+             
             for (var i in $scope.root.documentosCosmitetSeleccionadosFiltrados) {
                 var _documento = $scope.root.documentosCosmitetSeleccionadosFiltrados[i];
                  if(_documento.prefijo === row.prefijo && _documento.numero === row.numero) {

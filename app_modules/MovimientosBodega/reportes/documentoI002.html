@@ -103,10 +103,10 @@
                                 <td align="center" style="border: black 1px solid;">{{:fecha_vencimiento}}</td>
                                 <td align="center" style="border: black 1px solid;">{{:lote}}</td>
                                 <td align="right" style="border: black 1px solid;">{{:cantidad}}</td>
-                                <td align="right" style="border: black 1px solid;">{{:valor_unit_1}}</td>
+                                <td align="right" style="border: black 1px solid;">{{:~formatMoney(valor_unit_1)}}</td>
                                 <td align="right" style="border: black 1px solid;">{{:porcentaje_gravamen}}</td>
-                                <td align="right" style="border: black 1px solid;">{{:iva_total_1}}</td>
-                                <td align="right" style="border: black 1px solid;">{{:total_costo}}</td>
+                                <td align="right" style="border: black 1px solid;">{{:~formatMoney(iva_total_1)}}</td>
+                                <td align="right" style="border: black 1px solid;">{{:~formatMoney(total_costo)}}</td>
                             </tr>
               {{/for}}
                             
@@ -125,12 +125,12 @@
                 <td><b>VALOR TOTAL</b></td>  
             </tr>  
             <tr align="center">  
-                <td>$ {{:impuestos.subtotal }}</td>  
-                <td>$ {{:impuestos.IvaTotal}}</td>  
-                <td>$ {{:impuestos.valorRetFte}}</td>  
-                <td>$ {{:impuestos.valorRetIca}}</td>  
-                <td>$ {{:impuestos.valorRetIva}}</td>  
-                <td>$ {{:impuestos.total}}</td>
+                <td>{{:~formatMoney(impuestos.subtotal)}}</td>  
+                <td>{{:~formatMoney(impuestos.IvaTotal)}}</td>  
+                <td>{{:~formatMoney(impuestos.valorRetFte)}}</td>  
+                <td>{{:~formatMoney(impuestos.valorRetIca)}}</td>  
+                <td>{{:~formatMoney(impuestos.valorRetIva)}}</td>  
+                <td>{{:~formatMoney(impuestos.total)}}</td>
             </tr>  
         </table>  
     <br />

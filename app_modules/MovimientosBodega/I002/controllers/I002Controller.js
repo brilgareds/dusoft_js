@@ -697,11 +697,12 @@ I002Controller.prototype.crearHtmlDocumento = function(req, res) {
 
         if (resultado.length > 0) {
             var valores = {
-                valorTotal: 0,
+	        valorTotal: 0,
                 porc_iva: 0,
                 ValorSubTotal: 0,
                 IvaProducto: 0,
                 IvaTotal: 0,
+                subtotal: 0,
 		total:0,
 		valorRetIva:0,
 	        valorRetIca:0,
@@ -715,6 +716,7 @@ I002Controller.prototype.crearHtmlDocumento = function(req, res) {
         }
 
     }).then(function(resultado) {
+	console.log("impuesto",resultado);
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
@@ -804,7 +806,7 @@ function __modificarComprasOrdenesPedidosDetalle(that, index, parametros, result
 
         index++;
 
-        var time = setTimeout(function() {
+       var time = setTimeout(function() {
             resultado += result;
             __modificarComprasOrdenesPedidosDetalle(that, index, parametros, resultado, transaccion, callback);
 	    clearTimeout(time);
@@ -831,10 +833,10 @@ function __insertarRecepcionParcialDetalle(that, index, parametros, resultado, t
 
         index++;
 
-       var time = setTimeout(function() {
+      var time = setTimeout(function() {
             resultado += result.rowCount;
             __insertarRecepcionParcialDetalle(that, index, parametros, resultado, transaccion, callback);
-	    clearTimeout(time);
+	   clearTimeout(time);
         }, 0);
 
     }).fail(function(err) {
@@ -863,7 +865,7 @@ function __ingresoAutorizacion(that, index, parametros, resultado, transaccion, 
             resultado += result.rowCount;
             __ingresoAutorizacion(that, index, parametros, resultado, transaccion, callback);
 	    clearTimeout(time);
-        }, 3);
+        }, 0);
 
     }).fail(function(err) {
         console.log("__ingresoAutorizacion:::::::", err);
@@ -878,6 +880,7 @@ function __generarPdf(datos, callback) {
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
+	    helpers: G.fs.readFileSync('app_modules/MovimientosBodega/I002/reports/javascripts/rotulos.js', 'utf8'),
             recipe: "html",
             engine: 'jsrender',
             phantom: {

@@ -290,7 +290,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
                 return G.Q.ninvoke(that.m_facturacion_proveedores, 'ingresarFacturaCabecera', parametros,transaccion);
 
             }).then(function(resultado) {
-
+console.log("args.facturaProveedor.parmetros.recepciones ::::",args.facturaProveedor.parmetros.recepciones);
                 return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones, parametros,transaccion);
 
             }).then(function(resultado) {
@@ -544,19 +544,22 @@ function __ingresarFacturaDetalle(that, index, detalle, parametros,transaccion, 
     producto.recepcion_parcial_id = producto.recepcion_parcial;
 
     G.Q.ninvoke(that.m_facturacion_proveedores, 'detalleRecepcionParcial', producto).then(function(resultado) {
-
-        return G.Q.nfcall(__insertarDetalle, that, 0, resultado, parametros,transaccion);
-
+        console.log("resultadoresultado ",resultado);
+	if(index===0){
+	    return G.Q.nfcall(__insertarDetalle, that, 0, resultado, parametros,transaccion);
+	}else{
+	    return true;    
+	}
     }).then(function(resultado) {
 
         return G.Q.ninvoke(that.m_facturacion_proveedores, 'updateEstadoRecepcionParcial', producto,transaccion);
 
     }).then(function(resultado) {
 
-        setTimeout(function() {
+       var time =  setTimeout(function() {
             index++;
             __ingresarFacturaDetalle(that, index, detalle, parametros,transaccion, callback);
-        }, 3);
+        }, 0);
 
     }).fail(function(err) {
         G.Q.nfcall(__eliminarFactura, that, producto);

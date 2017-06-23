@@ -123,12 +123,12 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
         console.log("conexiones >>>>>>>>>>>>>>>>>>>> ", conexiones);
         console.log("opciones >>>>>>>>>>>>>>>>>>>>>>>", opciones);
         
-        if(conexiones.length > 0 && !opciones.sw_multiples_conexiones){
+        /*if(conexiones.length > 0 && !opciones.sw_multiples_conexiones){
             console.log("usuario ", usuario);
-            throw {status:403, msj:"El usuario tiene sesiones activas",obj:conexiones};
-        } else {
+            throw {status:403, msj:"El usuario tiene sesiones activas"};
+        } else {*/
             return G.Q.ninvoke(G.auth, "set", usuario);
-        }
+       // }
       
     }).then(function(_sesion_usuario){
         sesion_usuario = _sesion_usuario;
@@ -149,7 +149,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
             status = err.status;
         }
            
-        res.send(G.utils.r(req.url, msj, status, {sesion: err.obj || {}}));
+        res.send(G.utils.r(req.url, msj, status, {sesion: {}}));
         
     }).done();
    

@@ -46,36 +46,39 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.notificacionPedidoAutorizar = 0;
             that.consultarEstadoPedidoCotizacion = function(tipo, numero) {
-
+                console.log("***that.consultarEstadoPedidoCotizacion*******");
                 var url = '';
                 var obj = {};
+                
+                if(!numero || numero.length === 0 ){
+                    if (tipo === 1) {
 
-                if (tipo === 1) {
-
-                    url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_PEDIDO;
-                    obj = {
-                        session: $scope.session,
-                        data: {pedidos_clientes: {pedido: numero}}
-                    };
-
-                }
-
-                if (tipo === 2) {
-
-                    url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
-                    obj = {
-                        session: $scope.session,
-                        data: {pedidos_clientes: {cotizacion: numero}}
-                    };
-
-                }
-                Request.realizarRequest(url, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        $scope.Pedido.setEstado(data.obj.pedidos_clientes);
+                        url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_PEDIDO;
+                        obj = {
+                            session: $scope.session,
+                            data: {pedidos_clientes: {pedido: numero}}
+                        };
 
                     }
-                });
+
+                    if (tipo === 2) {
+
+                        url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
+                        obj = {
+                            session: $scope.session,
+                            data: {pedidos_clientes: {cotizacion: numero}}
+                        };
+
+                    }
+                    Request.realizarRequest(url, "POST", obj, function(data) {
+                        console.log("data [consultarEstadoPedidoCotizacion]::: ", data)
+                        if (data.status === 200) {
+                            $scope.Pedido.setEstado(data.obj.pedidos_clientes);
+
+                        }
+                    });
+                
+                }
             };
             $scope.items = null;
             $scope.pedidoCotizacion = 8;
@@ -1026,6 +1029,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.datos_view.activar_tab.tab_productos = true;
                     $scope.datos_view.productos_validos = data.obj.pedidos_clientes.productos_validos;
                     $scope.datos_view.productos_invalidos = data.obj.pedidos_clientes.productos_invalidos;
+                    
                     $scope.opciones_archivo.cancel();
                     if ($scope.datos_view.productos_invalidos.length > 0) {
 
@@ -1044,7 +1048,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                                 <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
                                                     <div class="list-group">\
                                                         <a ng-repeat="producto in datos_view.productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                            {{ producto.codigo_producto}}\
+                                                            {{ producto.codigo_producto }} - {{ producto.mensajeError }}\
                                                         </a>\
                                                     </div>\
                                                 </div>\

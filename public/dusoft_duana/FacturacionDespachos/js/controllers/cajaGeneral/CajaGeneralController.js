@@ -29,6 +29,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     ];
                     $scope.root.filtro = $scope.root.filtros[0];
                     $scope.root.tipoTercero = $scope.root.filtros[0];
+		    $scope.root.tab=1;
                     /*
                      * Inicializacion de variables
                      * @param {type} empresa
@@ -114,6 +115,39 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             }
                         });
                     };
+		    
+		    
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara
+                     *              los tipos de terceros
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 02/05/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+                    that.listarFacturasGeneradas = function() {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                terminoBusqueda: $scope.root.termino_busqueda_tercero,
+				busquedaDocumento: $scope.root.tipoTercero.tipo,
+				empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+				
+				prefijo: 'undefined',
+				facturaFiscal: 'undefined'
+                            }
+                        };
+                        cajaGeneralService.listarFacturasGeneradas(obj, function(data) {
+                             console.log("data:: ",data);
+                            if (data.status === 200) {
+                                //$scope.root.tipoTerceros = facturacionClientesService.renderListarTipoTerceros(data.obj.listar_tipo_terceros);
+                            } else {
+                              //  AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+
+                        });
+                    };
+		    
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
                      *              los tipos de terceros
@@ -482,7 +516,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             return;
                         }
                         if ($scope.root.pago === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Pago');
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Tipo de Pago');
                             return;
                         }
                         if ($scope.root.precio === undefined) {
@@ -505,6 +539,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'La Descripcion debe Tener como Minimo 6 Caracteres');
                             return;
                         }
+			
+			if($scope.root.gravamen === undefined || $scope.root.gravamen === "") {
+			   $scope.root.gravamen=0; 
+			}
 
                         var parametros = {//$scope.root.caja
                             empresa_id: $scope.root.empresaSeleccionada.getCodigo(),
@@ -522,8 +560,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             descripcion: $scope.root.descripcion,
                             tipo_pago_id: $scope.root.pago
                         };
+			
+			that.limpiarVariablesConceptos();
                         callback(true, parametros);
                     };
+		    
+		    that.limpiarVariablesConceptos=function(){
+			$scope.root.precio="";
+			$scope.root.pago="";
+			$scope.root.gravamen="";
+			$scope.root.descripcion="";
+		    };
                     /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Permite realiar peticion al API para traer los terceros
@@ -584,6 +631,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
+		      $scope.tipoTab = function (valor){
+			  $scope.root.tab=valor;
+		      };
+		      
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 04/02/2016
+                     * +Descripcion scope selector del filtro
+                     * @param {type} $event
+                     */
                     $scope.tipoFactura = function(tipo) {
                         $scope.root.pagoCreditoModel = false;
                         $scope.root.pagoEfectivoModel = false;
@@ -617,15 +674,23 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
 
                     $scope.buscarTercero = function(event) {
+			console.log("$scope.root.tab::  ",$scope.root.tab);
                         if (event.which === 13) {
-                            that.listarTerceros(function(respuesta) {
-                                console.log("buscarTercero:: ", respuesta);
-                                if (respuesta) {
-                                    that.listarConceptosDetalle();
-                                }
-                            });
+			   switch ($scope.root.tab){ 
+			       case 1:
+					that.listarTerceros(function(respuesta) {
+					    if (respuesta) {
+						that.listarConceptosDetalle();
+					    }
+					});
+					break;
+			       case 3:	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				         that.listarFacturasGeneradas();
+					 break;
+			   } 
                         }
                     };
+		    
                     $scope.onColumnaSize = function(tipo) {
 
                         if (tipo === "AS" || tipo === "MS" || tipo === "CD") {

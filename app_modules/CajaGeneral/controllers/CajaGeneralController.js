@@ -8,6 +8,37 @@ var CajaGeneral = function(m_caja_general, m_sincronizacion,m_facturacion_provee
 
 /**
  * @author Andres Mauricio Gonzalez
+ * +Descripcion  Metodo encargado de obtener la lista Facturas Generadas
+ * @fecha 2017-06-23 (YYYY-MM-DD)
+ */
+CajaGeneral.prototype.listarFacturasGeneradasNotas = function(req, res) {
+console.log("********************listarFacturasGeneradasNotas************************");
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        terminoBusqueda: args.terminoBusqueda,
+        busquedaDocumento: args.busquedaDocumento,
+        empresaId: args.empresaId,
+        prefijo: args.prefijo,
+        facturaFiscal: args.facturaFiscal
+    };
+
+    G.Q.ninvoke(that.m_caja_general, 'listarFacturasGeneradas', parametros).then(function(resultado) {
+console.log("resultado",resultado);
+        if (resultado.length > 0) {
+            res.send(G.utils.r(req.url, 'listarFacturasGeneradas', 200, {listarFacturasGeneradas: resultado}));
+        } else {
+            throw 'Consulta sin resultados';
+        }
+
+    }).fail(function(err) {
+        console.log("Error listarFacturasGeneradas ", err);
+        res.send(G.utils.r(req.url, "Error listarFacturasGeneradas", 500, {}));
+    }).done();
+};
+/**
+ * @author Andres Mauricio Gonzalez
  * +Descripcion  Metodo encargado de obtener la lista de las ordenes de compra
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */

@@ -97,7 +97,7 @@
     <div class="col-md-12">
         <tabset>
             <tab  >
-                <tab-heading ng-click="tipoFactura(1)">
+                <tab-heading ng-click="tipoTab(1)">
                     <i class=""></i> Facturas
                 </tab-heading>
                 <br>
@@ -111,21 +111,21 @@
                 <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
             </tab>-->
             <tab >
-                <tab-heading >
+                <tab-heading ng-click="tipoTab(2)">
                     <i class=""></i> Notas Facturas
                 </tab-heading>
                 <br>
                 <div ng-include="'views/cajaGeneral/vistaNotas.html'"></div>
             </tab>
             <tab  >
-                <tab-heading >
+                <tab-heading ng-click="tipoTab(3)">
                     <i class=""></i> Manejo Facturas
                 </tab-heading>
                 <br>
                 <div ng-include="'views/cajaGeneral/vistaManejoFactura.html'"></div>
             </tab>
             <tab  >
-                <tab-heading >
+                <tab-heading ng-click="tipoTab(4)">
                     <i class=""></i> Cuadre Facturas
                 </tab-heading>
                 <br>

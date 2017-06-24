@@ -26,4 +26,8 @@ module.exports = function(app, di_container) {
         c_caja_general.guardarFacturaCajaGenral(req, res);
     });
 
+    app.post('/api/CajaGeneral/listarFacturasGeneradasNotas', function(req, res) {
+        c_caja_general.listarFacturasGeneradasNotas(req, res);
+    });
+
 };

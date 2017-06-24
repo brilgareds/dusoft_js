@@ -102,6 +102,109 @@ CajaGeneralModel.prototype.listarCajaGeneral = function(obj, callback) {
         callback(err);
     });
 };
+
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de listar facturas generadas
+ * @fecha 2017-05-31 YYYY-MM-DD
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+CajaGeneralModel.prototype.listarFacturasGeneradas = function(obj, callback) {
+console.log("********************listarFacturasGeneradas************************");
+    var columna_a = [
+	"a.tipo_factura", 
+	"a.empresa_id",
+	"a.fecha_registro", 
+	"a.prefijo", 
+	"a.factura_fiscal", 
+	"a.usuario_id", 
+	"b.nombre", 
+	"e.nombre_tercero", 
+	G.knex.raw("e.tipo_id_tercero ||' '|| e.tercero_id AS identificacion"), 
+	"a.sw_clase_factura",
+	"a.tipo_factura",
+	"fi.estado"
+    ];
+    
+    var query = G.knex.select(columna_a)
+            .from('fac_facturas as a')
+            .innerJoin('fac_facturas_conceptos as c', function() {
+	
+		this.on("c.prefijo", "a.prefijo")
+		    .on("c.factura_fiscal", "a.factura_fiscal")
+		    .on("c.empresa_id", "a.empresa_id")
+	
+	    }).innerJoin('system_usuarios as b', function() {
+		
+		this.on("a.usuario_id", "b.usuario_id")
+		
+	    }).innerJoin('cajas_rapidas as d', function() {
+		
+		this.on("c.caja_id", "d.caja_id")
+		
+	    }).innerJoin('departamentos as g', function() {
+		
+		this.on("d.departamento", "g.departamento")
+		
+	    }).innerJoin('terceros as e', function() {
+		
+		this.on("a.tipo_id_tercero", "e.tipo_id_tercero")		
+		    .on("a.tercero_id", "e.tercero_id")
+	    
+	    }).leftJoin('fac_facturas_contado as i', function() {
+		
+		this.on("a.empresa_id", "i.empresa_id")		
+		    .on("a.prefijo", "i.prefijo")
+		    .on("a.factura_fiscal", "i.factura_fiscal")
+	    
+	    }).leftJoin('logs_facturacion_clientes_ws_fi as fi', function() {
+		
+		this.on("fi.prefijo", "a.prefijo")
+		    .on("fi.factura_fiscal", "a.factura_fiscal")
+		    .on(G.knex.raw("numero_nota IS NULL"))
+	    
+	    }).where(function() {
+//		if(obj.tipoIdTercero !== undefined){
+//		    this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)
+//		}
+//		if(obj.terceroId !== undefined){
+//		    this.andWhere('a.tercero_id ', obj.terceroId)
+//		}
+		 
+		if (obj.terminoBusqueda.length > 0) {
+		    if (obj.busquedaDocumento.length > 0) {
+			this.andWhere("a.tipo_id_tercero", obj.busquedaDocumento)
+			    .andWhere("a.tercero_id", G.constants.db().LIKE, "%" + obj.terminoBusqueda + "%");
+
+		    } else {
+			this.andWhere("e.nombre_tercero", G.constants.db().LIKE, "%" + obj.terminoBusqueda + "%");
+		    }
+		}
+				
+		if(obj.empresaId !== undefined){
+		    this.andWhere('a.empresa_id ', obj.empresaId)
+		}
+		if(obj.prefijo !== undefined){
+		    this.andWhere('a.prefijo ', obj.prefijo)
+		}
+		if(obj.facturaFiscal !== undefined){
+		    this.andWhere('a.factura_fiscal ', obj.facturaFiscal)
+		}
+		//this.andWhere(G.knex.raw("a.estado in ('0', '1')"))
+	    });
+
+    query.then(function(resultado) {
+
+        callback(false, resultado);
+    }). catch (function(err) {
+	
+        console.log("err [listarFacturasGeneradas]:",query.toSQL());
+        console.log("err [listarFacturasGeneradas]:", err);
+        callback(err);
+    });
+};
 /**
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar los grupos

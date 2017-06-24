@@ -217,7 +217,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             <div class="modal-body">\
                                 <ul>\
                                     <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
-                                      <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
+                                        <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
                                         <input type="checkbox" \n\
                                             class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)"\
                                             ng-model="item.documentoSeleccionado" \n\
@@ -266,9 +266,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                     class="btn btn-default btn-xs" >{{row.entity.mostrarPedidos()[0].mostrarFacturas().length}} Documentos</button>\
                                     <li ng-if = "row.entity.mostrarPedidos()[0].mostrarFacturas().length < 5"\
                                         class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
-                                        <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(row.entity, item)" class = "glyphicon glyphicon-print"></a>\
+                                        <span class="label" style="color:black;"><a href="javascript:void(0);" ng-click="imprimirReporteDocumento(row.entity, item)" class = "glyphicon glyphicon-print"></a>\
                                         <input type="checkbox" class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)"\n\
-                                        ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} <br> \
+                                        ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} </span> <br> \
                                     </li>\
                                   </ul>'},
                             {displayName: "Opc", cellClass: "txt-center dropdown-button",

@@ -768,6 +768,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
             }
         }).orderBy("a.fecha_registro",'desc')
     
+    console.log("obj.pedidoMultipleFarmacia >>>>>> ", obj.pedidoMultipleFarmacia);
     console.log("obj.procesoFacturacion >>>>>> ", obj.procesoFacturacion);
     if(obj.procesoFacturacion === 1){
         query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)

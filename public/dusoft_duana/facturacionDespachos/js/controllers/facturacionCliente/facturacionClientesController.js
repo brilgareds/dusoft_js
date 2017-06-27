@@ -1,12 +1,11 @@
 define(["angular", "js/controllers"], function (angular, controllers) {
 
     var fo = controllers.controller('FacturacionClientesController',
-            ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
-
-                "$timeout",
-                "$filter",
-                "localStorageService",
-                "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho","webNotification",
+        ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
+        "$timeout",
+        "$filter",
+        "localStorageService",
+        "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho","webNotification",
     function ($scope, $rootScope, Request, API, AlertService, Usuario,
             $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho,webNotification) {
 
@@ -910,6 +909,25 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 <h4 class="modal-title">Seleccionar documentos</h4>\
                             </div>\
                             <div class="modal-body">\
+                                <div class="table-responsive">\n\
+                                    <table  class="table table-striped">\
+                                    <td ng-repeat="item in listaPedidosPrefijos" class="listaPrefijos">\n\
+                                        <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\n\
+                                        <input type="checkbox" \n\
+                                            class="checkpedido" ng-checked="buscarDocumentoSeleccionadoCosmitet(item)"\
+                                            ng-model="item.documentoSeleccionado" \n\
+                                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} \n\
+                                    </td>\
+                                </table>\
+                            </div></div>\
+                            <div class="modal-footer">\
+                                <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
+                            </div>',
+                /*template: ' <div class="modal-header">\
+                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                <h4 class="modal-title">Seleccionar documentos</h4>\
+                            </div>\
+                            <div class="modal-body">\
                                 <ul>\
                                     <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
                                       <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
@@ -923,7 +941,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             </div>\
                             <div class="modal-footer">\
                                 <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
-                            </div>',
+                            </div>',*/
                 scope: $scope,
                 controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
                         $scope.close = function () {
@@ -940,6 +958,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          */
         that.quitarPedido = function (pedido) {
             console.log("quitarPedido");
+            
+            for(var j in pedido.pedidos[0].documento){
+                console.log("pedido.pedidos[0].documento <><> ", pedido.pedidos[0].documento[j]);
+                that.quitarDocumento(pedido.pedidos[0].documento[j]);
+            }
             for (var i in $scope.root.pedidosCosmitetSeleccionados) {
                 var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
                 if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
@@ -951,7 +974,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
         that.agregarPedido = function (pedido) {
             console.log("agregarPedido");
+            console.log("buscarSeleccionCosmitet ", pedido);
             //valida que no exista el pedido en el array
+            
+            for(var j in pedido.pedidos[0].documento){
+                console.log("pedido.pedidos[0].documento <><> ", pedido.pedidos[0].documento[j]);
+                that.agregarDocumento(pedido.pedidos[0].documento[j]);
+            }
+            
             for (var i in $scope.root.pedidosCosmitetSeleccionados) {
                 var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
                 if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
@@ -1010,13 +1040,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         }; 
 
         that.agregarDocumento = function (documento) {
-            //console.log("agregarDocumento");   
+            
             for(var i in $scope.root.documentosCosmitetSeleccionadosFiltrados) {
                 var _documento = $scope.root.documentosCosmitetSeleccionadosFiltrados[i];
                 if(_documento.prefijo === documento.prefijo && _documento.numero === documento.numero) {
                     return false;
                 }  
             }
+            console.log("agregarDocumento ", documento);   
             $scope.root.documentosCosmitetSeleccionadosFiltrados.push(documento);
 
         }; 

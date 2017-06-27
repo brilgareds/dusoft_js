@@ -797,6 +797,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         facturacionCosmitet: args.generar_factura_agrupada.facturacionCosmitet
     };
     
+    
     var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho'};
       
     G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, ip).then(function(resultado){
@@ -807,7 +808,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
     }).fail(function (err) {
         console.log("err [generarPedidoBodegaFarmacia]: ", err);
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
-    }); 
+    });  
 
 };
 

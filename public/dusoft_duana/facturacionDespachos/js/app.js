@@ -38,8 +38,8 @@ define([
     "models/DocumentoDespacho",
     "models/VendedorDespacho",
     "models/PedidoDespacho",
-    "controllers/facturacionCliente/facturacionClientesController",
-    "controllers/facturacionCliente/pedidosClientesController",
+    "controllers/facturacionCliente/FacturacionClientesController",
+    "controllers/facturacionCliente/PedidosClientesController",
     "controllers/facturacionCliente/VentanaMensajeSincronizacionController",
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
@@ -88,12 +88,12 @@ define([
                     url: "/Despacho",
                     text: "Facturacion Despacho", 
                     templateUrl: "views/facturacionClientes/index.html",
-                    controller: "facturacionClientesController"
+                    controller: "FacturacionClientesController"
                 }).state('PedidosClientesDespacho', {
                     url: "/PedidosClientesDespacho",
                     text: "Listado de los productos listos para facturar",
                     templateUrl: "views/facturacionClientes/listarPedidos.html",
-                    controller: "pedidosClientesController",
+                    controller: "PedidosClientesController",
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {
                     url: "/FacturacionProveedores",

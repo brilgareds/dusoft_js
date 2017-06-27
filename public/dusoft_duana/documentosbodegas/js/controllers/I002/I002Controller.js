@@ -785,7 +785,8 @@ define([
                                                 <button class="btn btn-warning" ng-click="cerrar()">Cerrar</button>\
                                             </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+		    
+                    controller: ["$scope", "$modalInstance",function($scope, $modalInstance) {
 
                         $scope.facturar = function() {
 
@@ -845,7 +846,7 @@ define([
                                 numeroFactura: $scope.root.numeroFactura,
                                 totalDescuento: $scope.root.totalDescuento,
                                 descripcionFactura: $scope.root.descripcionFactura,
-                                descripcionFija: $scope.root.descripcionFija
+                                descripcionFija: $scope.DocumentoIngreso.orden_compra.observacion
                             };
                             that.crearDocumento(parametros);
                             that.borrarVariables();
@@ -855,7 +856,7 @@ define([
                         $scope.cerrar = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

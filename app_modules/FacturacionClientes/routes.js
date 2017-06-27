@@ -79,7 +79,7 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.consultarDetalleCliente(req, res);
     });
     
-   /* app.post('/api/FacturacionClientes/subirArchivoMensaje', function(req, res) {
+    app.post('/api/FacturacionClientes/subirArchivoMensaje', function(req, res) {
         c_facturacion_clientes.subirArchivoMensaje(req, res);
-    });*/
+    });
 };

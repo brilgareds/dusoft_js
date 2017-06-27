@@ -674,7 +674,10 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
  * @controller FacturacionClientes.prototype.listarTiposTerceros
  */
 FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,callback) {
-    
+   console.log("*********FacturacionClientesModel.prototype.consultarDocumentosPedidos**************"); 
+   console.log("*********FacturacionClientesModel.prototype.consultarDocumentosPedidos**************"); 
+   console.log("*********FacturacionClientesModel.prototype.consultarDocumentosPedidos**************");
+   //console.log("obj ", obj);
     var campos = [G.knex.raw(" x.pedido_cliente_id"),  "x.numero", "x.prefijo", "x.empresa_id"];
     if(obj.estado ===1){
         campos = [G.knex.raw(" x.pedido_cliente_id as bodegas_doc_id"),  "x.numero", "x.prefijo", G.knex.raw("x.empresa_id as empresa")];
@@ -699,6 +702,7 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
 
 
 
+
 /**
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de listar los pedidos para generar la factura
@@ -706,7 +710,9 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
  * @fecha 2017-10-05
  */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
-     
+      
+    var formato = 'YYYY-MM-DD';
+      
     var columnQuery = [
         "a.tipo_id_tercero",
 	"a.tercero_id",
@@ -755,15 +761,20 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
             }
             this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
             if(obj.pedidoMultipleFarmacia === '1'){
-                this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
+                var fechaFinal = G.moment(obj.fechaFinal).format(formato);
+                var _fechaFinal = G.moment(fechaFinal).add(1, 'day').format(formato);
+                this.where(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ _fechaFinal +"'"))
                 .andWhere("estado_proceso",obj.estadoProcesoPedido)
             }
         }).orderBy("a.fecha_registro",'desc')
     
-    query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
+    console.log("obj.pedidoMultipleFarmacia >>>>>> ", obj.pedidoMultipleFarmacia);
+    console.log("obj.procesoFacturacion >>>>>> ", obj.procesoFacturacion);
+    if(obj.procesoFacturacion === 1){
+        query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)
+    }
     query.then(function (resultado) {
-        console.log("resultado [listarPedidosClientes] ", resultado);
+       // console.log("resultado [listarPedidosClientes] ", resultado);
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarPedidosClientes] ", err);

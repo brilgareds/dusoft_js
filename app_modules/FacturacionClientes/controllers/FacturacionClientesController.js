@@ -70,6 +70,57 @@ FacturacionClientes.prototype.consultarDetalleCliente = function(req, res){
 };
 
 
+FacturacionClientes.prototype.subirArchivoMensaje = function(req, res) {
+    console.log("***********FacturacionClientes.prototype.subirArchivoMensajessssss**********************");
+    console.log("***********FacturacionClientes.prototype.subirArchivoMensaje**s////ss/s/s**********************");
+    console.log("***********FacturacionClientes.prototype.subirArchivoMensaje**********************");
+    
+    var args = req.body.data;       
+    var archivos = args.subir_archivo_comprimido;
+    console.log("archivos [subirArchivoMensaje]:: >>>>> ", args.subir_archivo_comprimido)
+    G.Q.nfcall(__subirArchivoMensaje,0, archivos).then(function(resultado) {
+        console.log("file was moved to ", resultado, " original ");
+         
+         res.send(G.utils.r(req.url, 'Se suben los archivos satisfactoriamente', 200, {lista_facturas_proceso:''}));
+         
+    }).fail(function(err){
+        console.log("error ",err);
+        res.send(G.utils.r(req.url, err, 500, {}));
+    });
+   
+};
+
+function __subirArchivoMensaje(index, archivos,callback) {
+   
+    var archivo = archivos[index];   
+    
+    if (!archivo) {               
+        callback(false);  
+        return;                     
+    }  
+    index++;
+    console.log("path ", archivo.path);
+    console.log("archivo ", archivo.name);
+    
+    G.Q.ninvoke(G.utils, "subirArchivoComprimido", archivo, true ).then(function(mb){
+        index++;
+        
+         setTimeout(function() {
+            __subirArchivoMensaje(index, archivos,callback);
+        }, 0);
+        
+        
+    }).fail(function(err){ 
+        console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
+        
+    }).done();
+    
+    
+    setTimeout(function() {
+        __subirArchivoMensaje(index, archivos,callback);
+    }, 0); 
+   
+};
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
@@ -327,7 +378,8 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         pedidoClienteId: terminoBusqueda,
         paginaActual: paginaActual,
         pedidoMultipleFarmacia: pedidoMultipleFarmacia,
-        estadoProcesoPedido: estadoProcesoPedido
+        estadoProcesoPedido: estadoProcesoPedido,
+        procesoFacturacion: 1
     };
     
     if(pedidoMultipleFarmacia === '1'){
@@ -540,6 +592,7 @@ FacturacionClientes.prototype.procesarDespachos = function(req, res){
         parametros.terceroId = '';
         parametros.idProceso = resultado[0].id;
         parametros.estadoProcesoPedido = 0;
+        parametros.procesoFacturacion = 0;
         return G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros)
             
     }).then(function(resultado){
@@ -597,7 +650,9 @@ function __insertarFacturaEnProcesoDetalle(that,index,datos,procesoId, callback)
  * @fecha 01/06/2017 DD/MM/YYYY generarFacturasAgrupadasEnProceso
  */                   
 FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
-      
+    
+    console.log("******FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso*************");
+    
     var that = this;
     var idProceso;
     var parametros = {
@@ -618,6 +673,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
     var resultadoFacturacionAgrupada;
     
     G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion',{filtro:'0'}).then(function(resultado){
+         
          
         if(resultado.length > 0){
             
@@ -671,7 +727,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
             parametros.usuario
         ); 
     }).fail(function (err) {
-        
+        console.log("resultado [generarFacturasAgrupadasEnProceso]:: ", err)
         G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {id:idProceso.id,estado:'2'}).then(function(resultado){
              
         }).fail(function (err) {
@@ -741,6 +797,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         facturacionCosmitet: args.generar_factura_agrupada.facturacionCosmitet
     };
     
+    
     var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho'};
       
     G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, ip).then(function(resultado){
@@ -751,7 +808,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
     }).fail(function (err) {
         console.log("err [generarPedidoBodegaFarmacia]: ", err);
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
-    }); 
+    });  
 
 };
 

@@ -311,6 +311,7 @@ define(["angular", "js/services"], function (angular, services) {
                          
                             var _documento = DocumentoDespacho.get(documento_id, prefijo, factura_fiscal||'', fecha_registro||'');
                                 _documento.set_empresa(empresa_id);
+                                //setDocumentoSeleccionado
                             return _documento;
                         
                        

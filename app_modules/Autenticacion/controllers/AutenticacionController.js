@@ -86,7 +86,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
     var sesion_usuario;
     var conexiones;
     
-    G.Q.ninvoke(G.auth, "obtenerConexionesActivas", {usuario:args.login.usuario}).
+    G.Q.ninvoke(G.auth, "obtenerConexionesActivas", {usuario:args.login.usuario, appId:appId}).
     then(function(_conexiones){
         conexiones = _conexiones;
         

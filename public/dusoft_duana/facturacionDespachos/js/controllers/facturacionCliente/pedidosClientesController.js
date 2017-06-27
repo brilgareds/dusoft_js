@@ -362,8 +362,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
         that.quitarPedido = function (pedido) {
 
-            for(var j in pedido.pedidos[0].documento){
-                console.log("pedido.pedidos[0].documento <><> ", pedido.pedidos[0].documento[j]);
+            for(var j in pedido.pedidos[0].documento){                 
                 that.quitarDocumento(pedido.pedidos[0].documento[j]);
             }
 
@@ -378,8 +377,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
         that.agregarPedido = function (pedido) {
 
-            for(var j in pedido.pedidos[0].documento){
-                console.log("pedido.pedidos[0].documento <><> ", pedido.pedidos[0].documento[j]);
+            for(var j in pedido.pedidos[0].documento){                 
                 that.agregarDocumento(pedido.pedidos[0].documento[j]);
             }
 

@@ -957,7 +957,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * +Descripion Funciones encargadas de procesar los pedidos seleccionados
          */
         that.quitarPedido = function (pedido) {
-            console.log("quitarPedido");
             
             for(var j in pedido.pedidos[0].documento){
                 console.log("pedido.pedidos[0].documento <><> ", pedido.pedidos[0].documento[j]);
@@ -972,9 +971,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             }
         };
 
-        that.agregarPedido = function (pedido) {
-            console.log("agregarPedido");
-            console.log("buscarSeleccionCosmitet ", pedido);
+        that.agregarPedido = function (pedido) {        
             //valida que no exista el pedido en el array
             
             for(var j in pedido.pedidos[0].documento){
@@ -993,7 +990,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
         $scope.onPedidoSeleccionado = function (check, row) {
-            console.log("onPedidoSeleccionado");
+           
             row.selected = check;
             if (check) {
                 that.agregarPedido(row.entity);
@@ -1047,7 +1044,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     return false;
                 }  
             }
-            console.log("agregarDocumento ", documento);   
+             
             $scope.root.documentosCosmitetSeleccionadosFiltrados.push(documento);
 
         }; 

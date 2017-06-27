@@ -9,6 +9,25 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
    
 };
 
+DispensacionHc.prototype.eliminarFormulasSinMovimiento = function(){
+    
+    console.log("******FacturacionClientes.prototype.eliminarFormulasSinMovimiento*************");
+    
+    var that = this;
+    
+    G.Q.ninvoke(that.m_dispensacion_hc,'eliminarFormulasSinMovimiento').then(function(resultado){
+   
+    if(resultado.length >0){
+        throw {msj:'[eliminarFormulasSinMovimiento]: Se elimina satisfactoriamente', status: 201}; 
+    }else{
+        throw {msj:'[eliminarFormulasSinMovimiento]: No se eliminaron los registros', status: 404}; 
+    }
+        
+    }).fail(function(err){      
+        console.log(" err ", err);  
+    }).done();
+}
+
 /*
  * @author Cristian Ardila
  * @fecha 20/05/2016

@@ -3920,6 +3920,33 @@ DispensacionHcModel.prototype.listarEvoluciones = function(callback){
     
 };
 
+/**
+ * +Descripcion Metodo que eliminara las formulas que se encuentren sin movimiento
+ *              a traves de una tarea programa todos los dias a las 10 pm
+ * @author Cristian Ardila
+ * @fecha  27/06/2017
+ */
+DispensacionHcModel.prototype.eliminarFormulasSinMovimiento = function(callback) {
+    
+   var query = G.knex('dispensacion_estados')
+        .where('numero_entrega_actual',99)
+        .andWhereNull('sw_refrendar')
+        .orWhere('sw_refrendar',0)
+        .andWhereNull('sw_pendiente')
+        .orWhere('sw_pendiente',0)
+        .andWhereNull('fecha_ultima_entrega')
+        .del();
+    
+    
+    query.then(function(resultado){   
+        console.log("resultado [eliminarFormulasSinMovimiento]: ", resultado)
+        callback(false, resultado);
+   }).catch(function(err){
+        console.log("err (/catch) [eliminarFormulasSinMovimiento]: ", err);        
+        callback({err:err, msj: "Error al eliminar los temporales"});   
+    });  
+};
+
 
 DispensacionHcModel.$inject = [];
 

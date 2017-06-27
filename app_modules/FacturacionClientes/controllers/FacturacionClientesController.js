@@ -71,52 +71,47 @@ FacturacionClientes.prototype.consultarDetalleCliente = function(req, res){
 
 
 FacturacionClientes.prototype.subirArchivoMensaje = function(req, res) {
-    console.log("***********FacturacionClientes.prototype.subirArchivoMensajessssss**********************");
-    console.log("***********FacturacionClientes.prototype.subirArchivoMensaje**s////ss/s/s**********************");
-    console.log("***********FacturacionClientes.prototype.subirArchivoMensaje**********************");
     
-    var args = req.body.data;       
-    var archivos = args.subir_archivo_comprimido;
-    console.log("archivos [subirArchivoMensaje]:: >>>>> ", args.subir_archivo_comprimido)
-    G.Q.nfcall(__subirArchivoMensaje,0, archivos).then(function(resultado) {
-        console.log("file was moved to ", resultado, " original ");
-         
-         res.send(G.utils.r(req.url, 'Se suben los archivos satisfactoriamente', 200, {lista_facturas_proceso:''}));
+    G.Q.nfcall(__subirArchivoMensaje,0,req.files.file).then(function(resultado) {
+    
+        res.send(G.utils.r(req.url, 'Se suben los archivos satisfactoriamente', 200, {lista_facturas_proceso:''}));
          
     }).fail(function(err){
         console.log("error ",err);
         res.send(G.utils.r(req.url, err, 500, {}));
-    });
+    });  
    
 };
 
 function __subirArchivoMensaje(index, archivos,callback) {
-   
-    var archivo = archivos[index];   
     
+    var archivo = archivos[index];   
+     
     if (!archivo) {               
         callback(false);  
         return;                     
     }  
     index++;
-    console.log("path ", archivo.path);
-    console.log("archivo ", archivo.name);
-    
-    G.Q.ninvoke(G.utils, "subirArchivoComprimido", archivo, true ).then(function(mb){
+     
+    G.Q.ninvoke(G.utils, "subirArchivo2", archivo, true).then(function(_rutaNueva){
         index++;
-        
-         setTimeout(function() {
+
+        setTimeout(function() {
             __subirArchivoMensaje(index, archivos,callback);
         }, 0);
         
         
     }).fail(function(err){ 
         console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
-        
+        index++;
+         
+         setTimeout(function() {
+            __subirArchivoMensaje(index, archivos,callback);
+        }, 0);
     }).done();
     
     
-    setTimeout(function() {
+   setTimeout(function() {
         __subirArchivoMensaje(index, archivos,callback);
     }, 0); 
    

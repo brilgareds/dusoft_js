@@ -545,20 +545,31 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
             this.andWhere('a.empresa_id', filtro.empresa_id)
             .andWhere('c.nombre_tercero', G.constants.db().LIKE, "%" + filtro.nombreTercero + "%")
             .andWhere('a.tercero_id', G.constants.db().LIKE, "%" + filtro.terceroId + "%");//
-            if (filtro.numero !== "") {
+            if (filtro.factura_fiscal !== "") {
+                console.log("factura_fiscal ", filtro.factura_fiscal);
                 this.andWhere('a.factura_fiscal', filtro.factura_fiscal);
             }
             if (filtro.prefijo !== "") {
+                console.log("prefijo ", filtro.prefijo);
                 this.andWhere('a.prefijo', filtro.prefijo);
             }
             if (filtro.tipoIdTercero !== "") {
-                this.andWhere('a.tipo_id_tercero', filtro.tipoIdTercero);
+                console.log("tipoIdTercero ", filtro.tipoIdTercero);
+                
+                this.andWhere('a.tipo_id_tercero', filtro.tipoIdTercero)
+                  
             }
             if (filtro.pedidoClienteId !== "") {
+                console.log("pedidoClienteId ", filtro.pedidoClienteId);
                 this.andWhere('a.pedido_cliente_id', filtro.pedidoClienteId);
             }
         });
-
+        /* if ((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !== "") {
+                this.andWhere(G.knex.raw("a.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
+            }
+            if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
+                this.andWhere(G.knex.raw("a.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
+            }*/
 
     if (estado === 0) {
 

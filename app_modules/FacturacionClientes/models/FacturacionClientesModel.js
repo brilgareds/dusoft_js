@@ -513,7 +513,7 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
             this.on("a.tipo_id_tercero", "c.tipo_id_tercero")
                     .on("a.tercero_id", "c.tercero_id")
         }).join('system_usuarios as d', function () {
-        this.on("a.usuario_id", "d.usuario_id")
+            this.on("a.usuario_id", "d.usuario_id")
         }).join('empresas as e', function () {
             this.on("a.empresa_id", "e.empresa_id")
         }).join('tipo_mpios as f', function () {
@@ -557,20 +557,14 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
                 console.log("tipoIdTercero ", filtro.tipoIdTercero);
                 
                 this.andWhere('a.tipo_id_tercero', filtro.tipoIdTercero)
-                  
+                    //.andWhere(G.knex.raw("a.tercero_id  " + G.constants.db().LIKE + "'%" + filtro.terceroId + "%'"))
             }
             if (filtro.pedidoClienteId !== "") {
                 console.log("pedidoClienteId ", filtro.pedidoClienteId);
                 this.andWhere('a.pedido_cliente_id', filtro.pedidoClienteId);
             }
         });
-        /* if ((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !== "") {
-                this.andWhere(G.knex.raw("a.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
-            }
-            if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
-                this.andWhere(G.knex.raw("a.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
-            }*/
-
+       
     if (estado === 0) {
 
         consulta.join('vnts_vendedores as b', function () {

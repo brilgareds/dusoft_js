@@ -20,13 +20,19 @@
                     "alias": "m_usuarios"
                 }
             }],
-         "events": [{
+        "events": [{
                 "dispensacion_hc_events": {
                     "module": "DispensacionHc",
                     "event": "DispensacionHcEvents",
                     "alias": "e_dispensacion_hc"
                 }
             }],
-        "cronJobs": []
+        "cronJobs": [{
+            "dispensacion_hc_crontab": {
+                "module": "DispensacionHc",
+                "cronjob": "DispensacionHcJobs",
+                "alias": "j_dispensacion_hc"
+            }
+        }]
     }
 }

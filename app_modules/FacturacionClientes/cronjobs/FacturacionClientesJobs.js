@@ -22,15 +22,7 @@ FacturacionClientesJobs.prototype.ejecutarJobProcesarDespachos = function() {
         console.log("INVOCANDO CONTROLADOR ejecutarJobProcesarDespachos... ");
     });
     job.start();
-    //var cron = new this.cronJob({
-      //  cronTime: '*/1 * * * *',       
-      /*  onTick: function() {
-            that.c_facturacion_clientes.generarFacturasAgrupadasEnProceso();           
-            console.log("Cada minuto y Dios sigue siendo Bueno")
-        },
-        start: false
-    });
-    cron.start();*/
+   
 };
 
 FacturacionClientesJobs.$inject = ["c_facturacion_clientes"];

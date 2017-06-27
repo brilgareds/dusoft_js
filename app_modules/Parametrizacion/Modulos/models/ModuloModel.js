@@ -6,7 +6,8 @@ var ModuloModel = function() {
 ModuloModel.prototype.listar_modulos = function(termino, callback) {
     
     var query = G.knex.column("*").
-    from("modulos");
+    from("modulos").
+    whereRaw("app_token is null or app_token = 'dusoft-web'");
     
     if (termino.length > 0) {
         query.where("nombre", G.constants.db().LIKE, "%" + termino + "%");
@@ -535,7 +536,7 @@ ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_
 ModuloModel.prototype.listarModulosPorEmpresa = function(empresa_id, callback) {
     var sql = "SELECT a.*, b.parent, b.nombre, b.state, b.icon FROM modulos_empresas a\
                INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = '1' and b.estado = '1' \
-               WHERE empresa_id =  :1 ORDER BY id";
+               WHERE empresa_id =  :1 and (b.app_token is null or b.app_token = 'dusoft-web') ORDER BY id";
     
     G.knex.raw(sql, {1:empresa_id}).then(function(resultado){
         callback(false, resultado.rows);
@@ -549,7 +550,7 @@ ModuloModel.prototype.listarModulosEmpresaPorRol = function(rol_id, callback) {
     var sql = " SELECT a.*, b.parent, c.estado as estado_rol, b.nombre, b.state, b.icon, c.id as roles_modulos_id FROM modulos_empresas a\
                 INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = '1' and b.estado = '1'\
                 INNER JOIN roles_modulos c ON c.modulos_empresas_id = a.id\
-                WHERE c.rol_id = :1   ORDER BY id";
+                WHERE c.rol_id = :1 and (b.app_token is null or b.app_token = 'dusoft-web')  ORDER BY id";
     
     G.knex.raw(sql, {1:rol_id}).then(function(resultado){
         callback(false, resultado.rows);
@@ -578,7 +579,7 @@ ModuloModel.prototype.listarModulosUsuario = function(rol_id, empresa_id, login_
                 FROM login_empresas a\
 		INNER JOIN login_modulos_empresas b ON b.login_empresas_id = a.id\
                 INNER JOIN modulos c ON b.modulo_id = c.id and c.estado = '1'\
-                WHERE a.rol_id = :1 AND a.empresa_id = :2 AND a.login_id = :3 "+sqlAux+"  ORDER BY id";
+                WHERE a.rol_id = :1 AND a.empresa_id = :2 AND a.login_id = :3 and (c.app_token is null or c.app_token = 'dusoft-web') "+sqlAux+"  ORDER BY id";
 
     G.knex.raw(sql, {1:rol_id, 2:empresa_id, 3:login_id}).then(function(resultado){
         callback(false, resultado.rows);

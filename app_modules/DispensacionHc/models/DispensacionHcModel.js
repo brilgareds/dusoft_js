@@ -3928,17 +3928,9 @@ DispensacionHcModel.prototype.listarEvoluciones = function(callback){
  */
 DispensacionHcModel.prototype.eliminarFormulasSinMovimiento = function(callback) {
     
-   var query = G.knex('dispensacion_estados')
-        .where('numero_entrega_actual',99)
-        .andWhereNull('sw_refrendar')
-        .orWhere('sw_refrendar',0)
-        .andWhereNull('sw_pendiente')
-        .orWhere('sw_pendiente',0)
-        .andWhereNull('fecha_ultima_entrega')
-        .del();
-    
-    
-    query.then(function(resultado){   
+    var sql = "DELETE FROM dispensacion_estados  \
+                WHERE numero_entrega_actual = 0 AND sw_refrendar is null or sw_refrendar = 0 AND sw_pendiente is null or sw_pendiente = 0 AND sw_pendiente is null or sw_pendiente = 0 AND fecha_ultima_entrega is null";
+    G.knex.raw(sql).then(function(resultado){   
         console.log("resultado [eliminarFormulasSinMovimiento]: ", resultado)
         callback(false, resultado);
    }).catch(function(err){

@@ -2,7 +2,7 @@ var DispensacionHcJobs = function(c_dispensacion_hc) {
     var that = this;
     /*this.cronJob = require('cron').CronJob;  */
     this.c_dispensacion_hc = c_dispensacion_hc;
-    if(G.program.prod){
+    if(!G.program.prod){
        
         that.ejecutarJobEliminarFormulasSinMovimiento();
         
@@ -15,8 +15,9 @@ var DispensacionHcJobs = function(c_dispensacion_hc) {
 DispensacionHcJobs.prototype.ejecutarJobEliminarFormulasSinMovimiento = function() {
 
     var that = this;   
-    
-    var job = new G.cronJob( '00 30 00 * * *', function () {
+    // '00 30 00 * * *'
+    //'*/1 * * * *'
+    var job = new G.cronJob('00 30 00 * * *', function () {
         
         that.c_dispensacion_hc.eliminarFormulasSinMovimiento();  
         console.log("INVOCANDO CONTROLADOR ejecutarJobProcesarDespachos... ");

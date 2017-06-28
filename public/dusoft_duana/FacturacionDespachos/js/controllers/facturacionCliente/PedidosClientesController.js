@@ -184,7 +184,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 }
             };
-            console.log("obj [imprimirReporteDocumento]:: ", obj);
+            
             facturacionClientesService.imprimirReporteDespacho(obj,function(data){
 
                 if (data.status === 200) {
@@ -227,26 +227,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 </div></div>\
                 <div class="modal-footer">\
                     <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
-                </div>',
-                /*template: ' <div class="modal-header">\
-                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                    <h4 class="modal-title">Seleccionar documentos</h4>\
-                </div>\
-                <div class="modal-body">\
-                    <ul>\
-                        <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
-                            <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
-                            <input type="checkbox" \n\
-                                class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)"\
-                                ng-model="item.documentoSeleccionado" \n\
-                                ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)">\
-                            {{item.prefijo}} - {{item.numero}}  <br> \
-                        </li>\
-                    </ul>\
-                </div>\
-                <div class="modal-footer">\
-                    <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
-                </div>',*/
+                </div>',              
                 scope: $scope,
                 controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
                         $scope.close = function () {
@@ -255,7 +236,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }]
             };
            var modalInstance = $modal.open($scope.opts);
-           console.log("prefijos ", prefijos);
         };
         /**
          * +Descripcion Se visualiza la tabla con todos los clientes
@@ -275,7 +255,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                 {field: '#Fecha', cellClass: "ngCellText", width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
 
-                {filed: 'PRUEBA', 
+                {filed: '#Factura', 
                     cellClass: "ngCellText", 
                     width: "25%", 
                     displayName: '#Factura',
@@ -664,16 +644,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             }
         });
 
-
-
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-
-            $scope.$$watchers = null;
-            //socket.remove(['onNotificarFacturacionTerminada']);  
-            //$scope.root = null;
-
-
+            $scope.$$watchers = null;           
         });
-
     }]);
 });

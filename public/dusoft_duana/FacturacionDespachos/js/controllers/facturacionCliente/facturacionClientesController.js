@@ -8,8 +8,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho","webNotification",
     function ($scope, $rootScope, Request, API, AlertService, Usuario,
             $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho,webNotification) {
-
-        console.log("facturacionClientesController");
+ 
         var that = this;
         $scope.paginaactual = 1;
         $scope.paginaactualFacturasGeneradas = 1;
@@ -59,14 +58,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @returns {void}
          */
         that.init = function (empresa, callback) {
-
-
-            // that.cargar_permisos();
-           
-           
+            
             $scope.documentosAprobados = [];
             that.centroUtilidad = [];
-
             $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
             $scope.columnaSizeBusqueda = "col-md-3";
             $scope.root.visibleBuscador = true;
@@ -905,43 +899,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 dialogFade: false,
                 keyboard: true,
                 template: ' <div class="modal-header">\
-                                <button type="button" class="close" ng-click="close()">&times;</button>\
-                                <h4 class="modal-title">Seleccionar documentos</h4>\
-                            </div>\
-                            <div class="modal-body">\
-                                <div class="table-responsive">\n\
-                                    <table  class="table table-striped">\
-                                    <td ng-repeat="item in listaPedidosPrefijos" class="listaPrefijos">\n\
-                                        <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\n\
-                                        <input type="checkbox" \n\
-                                            class="checkpedido" ng-checked="buscarDocumentoSeleccionadoCosmitet(item)"\
-                                            ng-model="item.documentoSeleccionado" \n\
-                                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} \n\
-                                    </td>\
-                                </table>\
-                            </div></div>\
-                            <div class="modal-footer">\
-                                <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
-                            </div>',
-                /*template: ' <div class="modal-header">\
-                                <button type="button" class="close" ng-click="close()">&times;</button>\
-                                <h4 class="modal-title">Seleccionar documentos</h4>\
-                            </div>\
-                            <div class="modal-body">\
-                                <ul>\
-                                    <li class="listaPrefijos" ng-repeat="item in listaPedidosPrefijos" >\
-                                      <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\
-                                        <input type="checkbox" ng-model="item.documentoSeleccionado" \
-                                        ng-checked="buscarDocumentoSeleccionadoCosmitet(item)"\
-                                        ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"\
-                                       >\n\
-                                        {{item.prefijo}} - {{item.numero}}  <br> \
-                                    </li>\
-                                </ul>\
-                            </div>\
-                            <div class="modal-footer">\
-                                <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
-                            </div>',*/
+                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                    <h4 class="modal-title">Seleccionar documentos</h4>\
+                </div>\
+                <div class="modal-body">\
+                    <div class="table-responsive">\n\
+                        <table  class="table table-striped">\
+                        <td ng-repeat="item in listaPedidosPrefijos" class="listaPrefijos">\n\
+                            <a href="javascript:void(0);" ng-click="imprimirReporteDocumento(entity,item)" class = "glyphicon glyphicon-print"></a>\n\
+                            <input type="checkbox" \n\
+                                class="checkpedido" ng-checked="buscarDocumentoSeleccionadoCosmitet(item)"\
+                                ng-model="item.documentoSeleccionado" \n\
+                                ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} \n\
+                        </td>\
+                    </table>\
+                </div></div>\
+                <div class="modal-footer">\
+                    <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
+                </div>',             
                 scope: $scope,
                 controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
                         $scope.close = function () {
@@ -959,9 +934,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         that.quitarPedido = function (pedido) {
             
             for(var j in pedido.pedidos[0].documento){
-                console.log("pedido.pedidos[0].documento <><> ", pedido.pedidos[0].documento[j]);
                 that.quitarDocumento(pedido.pedidos[0].documento[j]);
             }
+            
             for (var i in $scope.root.pedidosCosmitetSeleccionados) {
                 var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
                 if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
@@ -975,7 +950,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             //valida que no exista el pedido en el array
             
             for(var j in pedido.pedidos[0].documento){
-                console.log("pedido.pedidos[0].documento <><> ", pedido.pedidos[0].documento[j]);
                 that.agregarDocumento(pedido.pedidos[0].documento[j]);
             }
             
@@ -1002,13 +976,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
 
         $scope.buscarSeleccionCosmitet = function (row) {
-           // console.log("buscarSeleccionCosmitet");
+    
             var pedido = row.entity;
 
             for (var i in $scope.root.pedidosCosmitetSeleccionados) {
                 var _pedido = $scope.root.pedidosCosmitetSeleccionados[i];
-                //console.log("_pedido.mostrarPedidos()[0].get_numero_cotizacion() =  ", _pedido.mostrarPedidos()[0].get_numero_cotizacion() );
-                //console.log("pedido.mostrarPedidos()[0].get_numero_cotizacion() = ", pedido.mostrarPedidos()[0].get_numero_cotizacion())
                 if (_pedido.mostrarPedidos()[0].get_numero_cotizacion() === pedido.mostrarPedidos()[0].get_numero_cotizacion()) {
                     row.selected = true;
                     return true;
@@ -1024,8 +996,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         /**
          * +Descripcion Funciones encargadas de procesar los documentos seleccionados
          */
-         that.quitarDocumento = function (documento) {
-            //console.log("quitarDocumento");            
+        that.quitarDocumento = function (documento) {
+                
             for(var i in $scope.root.documentosCosmitetSeleccionadosFiltrados) {
                 var _documento = $scope.root.documentosCosmitetSeleccionadosFiltrados[i];
                 if (_documento.prefijo === documento.prefijo && _documento.numero === documento.numero) {
@@ -1051,7 +1023,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
         $scope.onDocumentoSeleccionado = function (check, row) {
-            //console.log("onDocumentoSeleccionado");
+
             row.selected = check;
 
             if (check) {
@@ -1133,9 +1105,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         */
         $scope.generarFacturasCosmitetAgrupadas = function () {
              
-            console.log("$scope.root.documentosCosmitetSeleccionadosFiltrados ", $scope.root.pedidosCosmitetSeleccionados);
-            console.log("$scope.root.documentosCosmitetSeleccionadosFiltrados ", $scope.root.documentosCosmitetSeleccionadosFiltrados);
-           if ($scope.root.pedidosCosmitetSeleccionados.length > 1) {
+            if ($scope.root.pedidosCosmitetSeleccionados.length > 1) {
   
                 var parametros = {
                     terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
@@ -1151,34 +1121,31 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     documentoSeleccionados: $scope.root.documentosCosmitetSeleccionadosFiltrados
                 };
 
-                facturacionClientesService.generarFacturasAgrupadasCompleta(parametros, function (data) {
-                    
+                facturacionClientesService.generarFacturasAgrupadasCompleta(parametros, function (data) {                   
                     
                     AlertService.mostrarMensaje("warning", data.msj);
-                        /**
-                         * +Descripcion si se genera la factura satisfacturiamente,
-                         *              el sistema activara la vista que lista las facturas generadas
-                         *              haciendo referencia a la factura reciente
-                         */            
-                        if (data.status === 200) {
+                    /**
+                     * +Descripcion si se genera la factura satisfacturiamente,
+                     *              el sistema activara la vista que lista las facturas generadas
+                     *              haciendo referencia a la factura reciente
+                     */            
+                    if (data.status === 200) {
 
-                            $scope.root.activarTabFacturasGeneradas = true;       
-                            that.listarFacturasGeneradas(data.obj.generar_factura_agrupada[0].numeracion,{tipo: 'ME', descripcion: "ME"});              
-                            that.mensajeSincronizacion(data.obj.resultado_sincronizacion_ws.resultado.mensaje_bd,
-                            data.obj.resultado_sincronizacion_ws.resultado.mensaje_ws);
-                            AlertService.mostrarMensaje("warning", data.msj);
-                        }
-                        if (data.status === 404) {
-                            AlertService.mostrarMensaje("warning", data.msj);
-                        }
-                        if (data.status === 409) {
-                            AlertService.mostrarMensaje("danger", data.msj);
-                        }
-                        if (data.status === 500) {
-                            AlertService.mostrarMensaje("danger", data.msj);
-                        } 
-                    
-                    //});
+                        $scope.root.activarTabFacturasGeneradas = true;       
+                        that.listarFacturasGeneradas(data.obj.generar_factura_agrupada[0].numeracion,{tipo: 'ME', descripcion: "ME"});              
+                        that.mensajeSincronizacion(data.obj.resultado_sincronizacion_ws.resultado.mensaje_bd,
+                        data.obj.resultado_sincronizacion_ws.resultado.mensaje_ws);
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                    if (data.status === 404) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                    if (data.status === 409) {
+                        AlertService.mostrarMensaje("danger", data.msj);
+                    }
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("danger", data.msj);
+                    } 
                 });   
                  
             } else {
@@ -1201,22 +1168,21 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Fecha creacion',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha creacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_fecha_registro()}}</p></div>'},
                 {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha Inicial', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
                 {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha final', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},               
-                //{field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}</p></div>'},
                 {displayName: "Opc", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '\
-                        <div class="btn-group">\
-                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
-                            <ul class="dropdown-menu dropdown-options">\
-                                <li ng-if="row.entity.get_numero() > 0 ">\
-                                    <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,1)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
-                                </li>\
-                            </ul>\
-                        </div>'
-                    },
+                cellTemplate: '\
+                <div class="btn-group">\
+                    <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                    <ul class="dropdown-menu dropdown-options">\
+                        <li ng-if="row.entity.get_numero() > 0 ">\
+                            <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,1)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
+                        </li>\
+                    </ul>\
+                </div>'
+                },
                 {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
-                    cellTemplate: '<div class="col-xs-16 ">\n\
-                                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
-                                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
+                cellTemplate: '<div class="col-xs-16 ">\n\
+                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
+                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
             ]
         };
           
@@ -1309,7 +1275,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
         socket.on("onNotificarFacturacionTerminada", function(datos) {
              
-             console.log("AQUI SALE ASI ", datos)
             if(datos.status === 200){
                 var resultado = datos.obj.generar_factura_agrupada[0];
                 that.notificarSolicitud(datos.msj, "Factura " + resultado.id+" - " +resultado.numeracion, 
@@ -1317,7 +1282,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                  factura:resultado.numeracion,
                  prefijo:resultado.id}
                 )}
-                console.log("onNotificarFacturacionTerminada {[[[[[]]]]]} ", resultado);
+                
                 $scope.notificarFacturaGeneradaCosmitet++;    
                 that.facturasEnProceso();
                 that.listarFacturasGeneradas(resultado.numeracion,{tipo: resultado.id, descripcion: resultado.id});   
@@ -1378,15 +1343,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             }
         });
  
-        $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-             
+        $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {            
             socket.remove(['onNotificarFacturacionTerminada']);  
             $scope.$$watchers = null;
             $scope.root.activarTabFacturasGeneradas = false;
             localStorageService.add("listaFacturaDespachoGenerada",null);
             $scope.root = null;
-
         });
-
     }]);
 });

@@ -3717,8 +3717,8 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                        
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){  
-        console.log("resultado model [consultarDispensacionEstadosFormula]:", resultado)  
-        return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion)
+        //console.log("resultado model [consultarDispensacionEstadosFormula]:", resultado)  
+        return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion);
             
     }).then(function(resultado){       
         callback(false, resultado);

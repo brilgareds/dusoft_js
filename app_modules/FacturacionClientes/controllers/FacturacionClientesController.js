@@ -7,7 +7,23 @@ var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e0
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
 };
-     
+
+G.log.configure({
+    appenders: [
+        {
+            type: "file",
+            filename: "files/Logs/FacturacionClientes/facturacion_clientes.log",
+            category: [ 'facturacion_clientes','console' ]
+        },
+        {
+            type: "console"
+        }
+    ],
+    replaceConsole: true
+});
+//G.log.configure('my_log4js_configuration.json', { cwd: '/files/Logs/FacturacionClientes' });
+G.log.loadAppender('file');
+var logger = G.log.getLogger('facturacion_clientes');
  /*
  * @author Cristian Ardila
  * @fecha 02/05/2017
@@ -16,6 +32,9 @@ var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e0
  */
 FacturacionClientes.prototype.procesosFacturacion = function(req, res){
    
+    logger.info('procesosFacturacion');
+    
+    console.log("logger ", logger);
     var that = this;
                                
     G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion',{filtro:'2'}).then(function(resultado){
@@ -40,7 +59,7 @@ FacturacionClientes.prototype.procesosFacturacion = function(req, res){
 FacturacionClientes.prototype.listarTiposTerceros = function(req, res){
    
     var that = this;
-                               
+    
     G.Q.ninvoke(that.m_facturacion_clientes,'listarTiposTerceros').then(function(resultado){
         
     if(resultado.length >0){

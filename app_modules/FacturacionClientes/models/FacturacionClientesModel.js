@@ -2,51 +2,6 @@ var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };
 
-FacturacionClientesModel.prototype.registrarCliente = function(obj, callback){
-       
-     var parametros = {
-        codigo: obj.codigo,
-        documento: obj.documento,
-        nombres: obj.nombres,
-        apellidos: obj.apellidos,                       
-        email: obj.email
-    }; 
-       
-    var query = G.knex("m_clientes").insert(parametros);     
-      
-    query.then(function(resultado){
-        console.log("resultado [registrarCliente]-->", resultado);
-        callback(false, resultado);
-    }).catch(function(err){
-        console.log("err (/catch) [registrarCliente]: ", err);     
-        callback({err:err, msj: "Error al guardar el cliente]"});   
-    }); 
-};
-
-FacturacionClientesModel.prototype.consultarDetalleCliente = function (callback) {
-
-    var query = G.knex.select('*')
-        .from('m_clientes')
-        /*.where(function(){
-            this.andWhere("id_proceso",obj.id)
-        });*/
-        
-        query.then(function (resultado) {
-            callback(false, resultado)
-        }).catch(function (err) {
-        console.log("err [consultarDetalleCliente]:", err);
-        callback({err:err, msj: "Error al consultar los el registro del cliente"});   
-    });
-
-};
-
-
-/******************************************************************************/
-/******************************************************************************/
-/******************************************************************************/
-/******************************************************************************/
-/******************************************************************************/
-
 /**
  * @fecha 2017/06/01
  * +Descripcion Metodo encargado de actualizar el estado de proceso de un pedido

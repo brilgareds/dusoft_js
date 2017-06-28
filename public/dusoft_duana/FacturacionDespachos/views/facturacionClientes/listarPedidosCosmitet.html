@@ -6,10 +6,11 @@
         <button ng-click="seleccionarTipoPago('3')"  class="btn btn-xxs btn-danger" style="position: relative;">Credito</button>                                                                          
 
     </div>
-    <div class="col-md-2">
+    <!--<div class="col-md-2">
 
-        <button ng-click="generarFacturasCosmitetAgrupadas()" ng-disabled='root.pedidosCosmitetSeleccionados.length < 2' class="btn btn-xxs btn-info" style="position: relative;">Generar factura agrupada</button>  
-    </div>                              
+        <button ng-click="generarFacturasCosmitetAgrupadas()" 
+    ng-disabled='root.pedidosCosmitetSeleccionados.length < 2' class="btn btn-xxs btn-info" style="position: relative;">Generar factura agrupada</button>  
+    </div>   //-->                           
 </div>
 <br>
 <div class ="row">
@@ -65,10 +66,35 @@
           </button>
             
         </div>
+        
     
-         <div class="{{columnaSizeBusqueda}} pull-right">                                                                
+     
+    <div class="{{columnaSizeBusqueda}} pull-right">                                                                
+        <div class="input-group">
+            <div class="input-group-btn">
+                <button type="button" 
+                   class="btn btn-info dropdown-toggle" 
+                   data-toggle="dropdown" 
+                   aria-haspopup="true" 
+                   aria-expanded="false"
+                   ng-click="generarFacturasCosmitetAgrupadas()" 
+                   ng-disabled='root.pedidosCosmitetSeleccionados.length < 2'>
+                Generar
+                </button>
+
+            </div>
+            <input ng-show="root.visibleBuscador" 
+                type="text" 
+                class="form-control" 
+                ng-keypress="buscarPedidosCosmitet($event);"  
+                ng-model="root.termino_busqueda_cosmitet" 
+                placeholder="#Pedido" name="" id="" />
+        </div> 
+    </div>         
+ 
+       <!--  <div class="{{columnaSizeBusqueda}} pull-right">                                                                
             
-          
+             
             <input ng-show="root.visibleBuscador" 
                            type="text" 
                            class="form-control" 
@@ -76,7 +102,7 @@
                            ng-model="root.termino_busqueda_cosmitet" 
                            placeholder="#Pedido" name="" id="" />
      
-            </div>
+        </div> //-->
           
         </div>
      <br>

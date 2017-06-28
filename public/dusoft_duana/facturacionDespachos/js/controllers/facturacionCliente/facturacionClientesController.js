@@ -1344,6 +1344,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             }
 
         };
+        
+        $scope.limpiarLocalStorageNotificacion = function(){
+            
+            localStorageService.add('listaFacturaDespachoGenerada', null); 
+            
+        };
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones

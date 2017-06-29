@@ -7,7 +7,7 @@ var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e0
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
 }; 
- 
+ /*
 G.log.configure({
     appenders: [
         {
@@ -20,10 +20,10 @@ G.log.configure({
         }
     ],
     replaceConsole: false
-});  
+});        
 //G.log.configure('my_log4js_configuration.json', { cwd: 'files/Logs/FacturacionClientes'});
 G.log.loadAppender('file');
-var logger = G.log.getLogger('facturacion_clientes');
+var logger = G.log.getLogger('facturacion_clientes');*/
  /*
  * @author Cristian Ardila
  * @fecha 02/05/2017

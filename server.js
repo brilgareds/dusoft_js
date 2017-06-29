@@ -29,7 +29,7 @@ if(process.argv.indexOf("cacheKey") !== -1){
 G = {};
 G.dirname = __dirname;
 G.settings = require('./lib/Settings').create();
-G.log = require('log4js');
+//G.log = require('log4js');
 G.utils = require('./lib/Utils');
 G.random = require('./lib/Random');
 G.auth = require('./lib/Authentication');

@@ -2,7 +2,6 @@ var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };
 
-
 /**
  * @fecha 2017/06/01
  * +Descripcion Metodo encargado de actualizar el estado de proceso de un pedido

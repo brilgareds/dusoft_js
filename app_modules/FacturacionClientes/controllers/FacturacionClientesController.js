@@ -7,7 +7,7 @@ var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e0
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
 }; 
- /*
+ 
 G.log.configure({
     appenders: [
         {
@@ -20,10 +20,11 @@ G.log.configure({
         }
     ],
     replaceConsole: false
-});        
+});    
+
 //G.log.configure('my_log4js_configuration.json', { cwd: 'files/Logs/FacturacionClientes'});
 G.log.loadAppender('file');
-var logger = G.log.getLogger('facturacion_clientes');*/
+var logger = G.log.getLogger('facturacion_clientes');
  /*
  * @author Cristian Ardila
  * @fecha 02/05/2017
@@ -31,12 +32,9 @@ var logger = G.log.getLogger('facturacion_clientes');*/
  *              
  */
 FacturacionClientes.prototype.procesosFacturacion = function(req, res){
-   
-    logger.info('procesosFacturacion');
     
-    //console.log("logger ", logger);
     var that = this;
-                               
+    var usuario = req.session.user.usuario_id;                           
     G.Q.ninvoke(that.m_facturacion_clientes,'procesosFacturacion',{filtro:'2'}).then(function(resultado){
         
     if(resultado.length >0){
@@ -45,7 +43,11 @@ FacturacionClientes.prototype.procesosFacturacion = function(req, res){
         throw 'Consulta sin resultados';
     }
         
-    }).fail(function(err){      
+    }).fail(function(err){ 
+       logger.error("FacturacionClientes.prototype.procesosFacturacion");
+       logger.error("usuario_id: ", usuario );
+       logger.error("parametros: ", {filtro:'2'})
+       logger.error("resultado: ",err);
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -59,7 +61,7 @@ FacturacionClientes.prototype.procesosFacturacion = function(req, res){
 FacturacionClientes.prototype.listarTiposTerceros = function(req, res){
    
     var that = this;
-    
+    var usuario = req.session.user.usuario_id;  
     G.Q.ninvoke(that.m_facturacion_clientes,'listarTiposTerceros').then(function(resultado){
         
     if(resultado.length >0){
@@ -68,7 +70,11 @@ FacturacionClientes.prototype.listarTiposTerceros = function(req, res){
         throw 'Consulta sin resultados';
     }
         
-    }).fail(function(err){      
+    }).fail(function(err){   
+       logger.error("FacturacionClientes.prototype.listarTiposTerceros");
+       logger.error("usuario_id: ", usuario );
+       logger.error("parametros: No tiene")
+       logger.error("resultado: ",err);
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -83,6 +89,7 @@ FacturacionClientes.prototype.listarPrefijosFacturas = function(req, res){
    
     var that = this;
     var args = req.body.data;           
+    var usuario = req.session.user.usuario_id;  
     
     if (args.listar_prefijos === undefined ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_prefijos: []}));
@@ -106,7 +113,11 @@ FacturacionClientes.prototype.listarPrefijosFacturas = function(req, res){
         throw 'Consulta sin resultados';
     }
         
-    }).fail(function(err){      
+    }).fail(function(err){    
+       logger.error("FacturacionClientes.prototype.listarPrefijosFacturas");
+       logger.error("usuario_id: ", usuario );
+       logger.error("parametros: ", parametros)
+       logger.error("resultado: ",err);
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -171,7 +182,11 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function(req, res){
             throw 'Consulta sin resultados';
         }
         
-    }).fail(function(err){      
+    }).fail(function(err){ 
+       logger.error("FacturacionClientes.prototype.listarFacturasGeneradas");
+       logger.error("usuario_id: ", usuario );
+       logger.error("parametros: ", parametros)
+       logger.error("resultado: ",err);
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };

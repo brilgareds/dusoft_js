@@ -6,7 +6,7 @@ var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e0
     this.m_sincronizacion = m_sincronizacion;
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
-};
+}; 
  
 G.log.configure({
     appenders: [

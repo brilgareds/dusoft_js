@@ -1275,22 +1275,28 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
         socket.on("onNotificarFacturacionTerminada", function(datos) {
              
+            console.log("datos [onNotificarFacturacionTerminada]:: ", datos)
             if(datos.status === 200){
                 var resultado = datos.obj.generar_factura_agrupada[0];
                 that.notificarSolicitud(datos.msj, "Factura " + resultado.id+" - " +resultado.numeracion, 
                 {
                  factura:resultado.numeracion,
                  prefijo:resultado.id}
-                )}
-                
-                $scope.notificarFacturaGeneradaCosmitet++;    
+                )
+                $scope.notificarFacturaGeneradaCosmitet++; 
                 that.facturasEnProceso();
                 that.listarFacturasGeneradas(resultado.numeracion,{tipo: resultado.id, descripcion: resultado.id});   
+            }
+                
+                 
+                
                 
             if(datos.status === 201){
-                 AlertService.mostrarMensaje("success", datos.msj); 
+                that.facturasEnProceso();
+                AlertService.mostrarMensaje("success", datos.msj); 
             }
-            if(datos.status === 500){                       
+            if(datos.status === 500){   
+                that.facturasEnProceso();
                 AlertService.mostrarMensaje("danger", datos.msj); 
             }
         });

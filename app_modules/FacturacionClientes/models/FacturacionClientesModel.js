@@ -1,7 +1,7 @@
 var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };
-
+var logger = G.log.getLogger('facturacion_clientes');
 /**
  * @fecha 2017/06/01
  * +Descripcion Metodo encargado de actualizar el estado de proceso de un pedido
@@ -1224,6 +1224,21 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
         }).then(function(){            
            transaccion.commit(); 
         }).fail(function(err){
+            logger.error({"metodo":"FacturacionClientes.prototype.transaccionGenerarFacturasAgrupadas",
+            "usuario_id": obj.parametros.usuario,
+            "documento_facturacion: ": obj.documento_facturacion,
+            "consultar_tercero_contrato: ": obj.consultar_tercero_contrato,
+            "consultar_parametros_retencion: ": obj.consultar_parametros_retencion,
+            "parametrosFacturasAgrupadas: ": parametrosFacturasAgrupadas,
+            "datosAdicionalesAgrupados": datosAdicionalesAgrupados,
+            "parametrosActualizarEstadoFactura": parametrosActualizarEstadoFactura,
+            "parametrosInsertaFacturaAgrupadaDetalle": parametrosInsertaFacturaAgrupadaDetalle,
+            "porcentajes":{ 
+                "porcentajeRtf" :porcentajeRtf,
+                "porcentajeIca":porcentajeIca,
+                "porcentajeReteiva":porcentajeReteiva
+            },
+            "resultado: ":err});
             console.log("err (/fail) [GenerarFacturasAgrupadas]: ", err);
             transaccion.rollback(err);
         }).done();
@@ -1522,6 +1537,19 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
         }).then(function(){        
            transaccion.commit(); 
         }).fail(function(err){
+            
+            logger.error({"metodo":"FacturacionClientes.prototype.transaccionGenerarFacturaIndividual",
+            "usuario_id": obj.parametros.usuario,
+            "documento_facturacion: ": obj.documento_facturacion,
+            "consultar_tercero_contrato: ": obj.consultar_tercero_contrato,
+            "consultar_parametros_retencion: ": obj.consultar_parametros_retencion,
+            "parametrosInsertarFacturaInvidual: ": parametrosInsertarFacturaInvidual,
+            "porcentajes":{ 
+                "porcentajeRtf" :porcentajeRtf,
+                "porcentajeIca":porcentajeIca,
+                "porcentajeReteiva":porcentajeReteiva
+            },
+            "resultado: ":err});
             console.log("err (/fail) [transaccionGenerarFacturaIndividual]: ", err);
             transaccion.rollback(err);
         }).done();

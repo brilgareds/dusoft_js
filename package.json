@@ -24,6 +24,7 @@
     "jsreport": "0.2.1",
     "jsreport-client": "*",
     "knex": "^0.11.5",
+    "log4js": "^1.1.1",
     "moment": "^2.13.0",
     "node-xlsx": "~0.5.1",
     "nodemailer": "^0.6.1",
@@ -34,7 +35,6 @@
     "soap": "^0.13.0",
     "socket.io": "1.4.5",
     "socket.io-client": "1.4.5",
-    "xls-to-json": "*",
-    "log4js": "*"
+    "xls-to-json": "*"
   }
 }

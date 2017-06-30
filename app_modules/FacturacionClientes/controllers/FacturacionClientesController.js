@@ -1546,7 +1546,7 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
             err = {};
             err.status = 500;
             err.msj = "Se ha generado un error..";
-        }
+        }   
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done(); 
       

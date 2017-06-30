@@ -68,18 +68,5 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.procesosFacturacion(req, res);
     });
     
-    /**
-     * +Descripcion Registrar clientes
-     */
-    app.post('/api/FacturacionClientes/registrarCliente', function(req, res) {     
-        c_facturacion_clientes.registrarCliente(req, res);
-    });
     
-    app.post('/api/FacturacionClientes/consultarDetalleCliente', function(req, res) {     
-        c_facturacion_clientes.consultarDetalleCliente(req, res);
-    });
-    
-    app.post('/api/FacturacionClientes/subirArchivoMensaje', function(req, res) {
-        c_facturacion_clientes.subirArchivoMensaje(req, res);
-    });
 };

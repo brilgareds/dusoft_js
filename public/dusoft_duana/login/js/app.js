@@ -2,7 +2,7 @@
  define(["angular", "route", "bootstrap","js/controllers", "js/models", 
   "controllers/Logincontroller", "models/User", "bootstrapjs", "js/directive","directive/focus","js/services",
    "loader","storage", "includes/http/Request", "httpinterceptor","includes/classes/Usuario", "jqueryEasing", "animate",
-   "includes/alert/Alert", "directive/loginDirective"
+   "includes/alert/Alert", "directive/loginDirective", "nggrid"
   
   ], function(angular){
   /* App Module and its dependencies */
@@ -13,7 +13,8 @@
           'ui.bootstrap',
           'directive',
           'LocalStorageModule',
-          'services'
+          'services',
+          'ngGrid'
       ]);
 
       loginapp.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider){

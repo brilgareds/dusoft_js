@@ -34,6 +34,9 @@ module.exports = function(app, di_container) {
         c_auth.guardarTokenPush(req, res);
     });
     
+    app.post('/cerrarSesiones', function(req, res) {
+        c_auth.cerrarSesiones(req, res);
+    });
 
     // Events 
     io.sockets.on('connection', function(socket) {

@@ -20,7 +20,8 @@ requirejs.config({
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor",
         jqueryEasing:"../../javascripts/jquery-easing",
-        animate:"../../javascripts/animate"
+        animate:"../../javascripts/animate",
+        nggrid:"../../javascripts/angular/ng-grid"
         //creative:"../../javascripts/creative",
         //scrollReveal:"../../javascripts/scrollreveal"
     },
@@ -37,6 +38,10 @@ requirejs.config({
         "creative":{
             deps:["scrollReveal"]
         },*/
+        "nggrid":{
+            deps:["jquery", "angular"]
+        },
+        
         "animate":{
             deps:["angular"]
         },

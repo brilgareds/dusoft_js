@@ -15,6 +15,8 @@ define(["angular", "js/controllers", "controllers/ConexionesController"], functi
             $scope.myInterval = 5000;
             $scope.loginform = {};
             $scope.formularioLogin = true;
+            $scope.usuario = "";
+            $scope.clave = "";
             
             $scope.slides.push(
                 {
@@ -41,6 +43,8 @@ define(["angular", "js/controllers", "controllers/ConexionesController"], functi
 
             $scope.autenticar = function(usuario, clave) {
                 console.log("usuario ", usuario, " clave ", clave)
+                $scope.usuario = usuario;
+                $scope.clave = clave;
                 if (usuario.length === 0 || clave === 0) {
                     return;
                 }
@@ -77,7 +81,10 @@ define(["angular", "js/controllers", "controllers/ConexionesController"], functi
 
             };
             
-
+            $scope.$on("onLogin",function(){
+                $scope.autenticar($scope.usuario, $scope.clave);
+            });
+            
             $scope.recuperarContrasenia = function(usuario) {
                 if (usuario.length === 0) {
                     return;
@@ -145,7 +152,7 @@ define(["angular", "js/controllers", "controllers/ConexionesController"], functi
                     controller:"ConexionesController",
                     resolve:{
                         conexiones : function(){
-                            return conexiones
+                            return conexiones;
                         }
                     }
                 };

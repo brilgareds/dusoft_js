@@ -120,15 +120,11 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
            
         var opciones = (parametrizacion.modulosJson && parametrizacion.modulosJson.dashboard) ? parametrizacion.modulosJson.dashboard.opciones : {};
         
-        console.log("conexiones >>>>>>>>>>>>>>>>>>>> ", conexiones);
-        console.log("opciones >>>>>>>>>>>>>>>>>>>>>>>", opciones);
-        
-       /* if(conexiones.length > 0 && !opciones.sw_multiples_conexiones){
-            console.log("usuario ", usuario);
+        if(conexiones.length > 0 && !opciones.sw_multiples_conexiones){
             throw {status:403, msj:"El usuario tiene sesiones activas", obj: {conexiones : conexiones}};
-        } else {*/
+        } else {
             return G.Q.ninvoke(G.auth, "set", usuario);
-       // }
+        }
       
     }).then(function(_sesion_usuario){
         sesion_usuario = _sesion_usuario;
@@ -340,6 +336,51 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
         }
     });
 };
+
+Autenticacion.prototype.cerrarSesiones = function(req, res) {
+    
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.login === undefined || args.login.conexiones === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+   
+    var conexiones = args.login.conexiones;
+    var cantidad = conexiones.length;
+    
+    G.Q.nfcall(__cerrarSesiones, conexiones).
+    then(function(){
+        res.send(G.utils.r(req.url, "Sesiones cerradas", 200, {}));
+    }).fail(function(err){
+        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {}));
+    }).done();
+
+};
+
+
+function __cerrarSesiones(conexiones, callback){
+    
+    var conexion = conexiones[0];
+    
+    if(!conexion){    
+        callback(false);
+        return;
+    }
+    
+    G.Q.ninvoke(G.auth, "logout", conexion.usuario_id, conexion.token).
+    then(function(){
+        conexiones.splice(0,1);
+        __cerrarSesiones(conexiones, callback);
+        
+    }).fail(function(err){
+        callback(err);
+        
+    }).done(); 
+}
+
 
 Autenticacion.prototype.logoutUsuario = function(req, res) {
 

@@ -1224,6 +1224,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
         }).then(function(){            
            transaccion.commit(); 
         }).fail(function(err){
+            logger.error("-----------------------------------");
             logger.error({"metodo":"FacturacionClientes.prototype.transaccionGenerarFacturasAgrupadas",
             "usuario_id": obj.parametros.usuario,
             "documento_facturacion: ": obj.documento_facturacion,
@@ -1239,6 +1240,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
                 "porcentajeReteiva":porcentajeReteiva
             },
             "resultado: ":err});
+            logger.error("-----------------------------------");
             console.log("err (/fail) [GenerarFacturasAgrupadas]: ", err);
             transaccion.rollback(err);
         }).done();
@@ -1537,7 +1539,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
         }).then(function(){        
            transaccion.commit(); 
         }).fail(function(err){
-            
+            logger.error("-----------------------------------");
             logger.error({"metodo":"FacturacionClientes.prototype.transaccionGenerarFacturaIndividual",
             "usuario_id": obj.parametros.usuario,
             "documento_facturacion: ": obj.documento_facturacion,
@@ -1550,6 +1552,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
                 "porcentajeReteiva":porcentajeReteiva
             },
             "resultado: ":err});
+            logger.error("-----------------------------------");
             console.log("err (/fail) [transaccionGenerarFacturaIndividual]: ", err);
             transaccion.rollback(err);
         }).done();

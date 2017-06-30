@@ -1,17 +1,20 @@
 <div>
     <div class="modal-header">
-        <button type="button" class="close" ng-click="onCerrarVentana()" aria-hidden="true">×</button>
-
+        <h4 style="font-weight: bold;">Para poder continuar debe cerrar las sesiones activas</h4>
     </div>
 
     <div class="modal-body">
-
+        <div class="panel-body">
+            <div style="height: 300px;" ng-grid="listaConexiones"></div>
+        </div>
     </div>
 
     <div class="modal-footer">
-        <a  href="#" data-toggle="modal" style="color: rgba(41, 78, 244, 1);margin: 5% auto 5% 10%;" ng-if="formularioLogin" ng-click="$parent.formularioLogin = false">Recuperar contraseña</a>
-        <a  href="#" data-toggle="modal" style="color: rgba(41, 78, 244, 1);margin: 5% auto 5% 1%;" ng-if="!formularioLogin" ng-click="$parent.formularioLogin = true" >Cancelar</a>
+        <button class="btn btn-sm btn-warning" ng-click="cerrarSesiones()">
+            Cerrar sesiones y continuar 
+            <i class="glyphicon glyphicon-chevron-right"></i>
 
+        </button>
     </div>
 
 

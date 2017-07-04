@@ -534,8 +534,9 @@ define(["angular", "js/controllers",
                     {field: 'descripcion', displayName: 'Nombre',
                         // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
                         cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
-                    
-                    {field: 'nombreBodega', displayName: 'Bodega', width: "90"},
+                    {field: 'nombreBodega', displayName: 'Bod', width: "50", cellTemplate:'<div class="ngCellText">\
+                                                                                                <span class="label label-primary"> {{row.entity.getNombreBodega()}}</span>\
+                                                                                            </div>'},
                     {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
                     {field: '#Cod.invima/F.Ven', width: "200", displayName: '#Cod.invima/F.Ven', 
                         cellTemplate: '<div class="col-xs-16 ">\n\

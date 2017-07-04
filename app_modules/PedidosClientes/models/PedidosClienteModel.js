@@ -1535,7 +1535,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 a.empresa_id,\
                 a.centro_utilidad,\
                 a.bodega,\
-                (select descripcion from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega\
+                (select alias from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\

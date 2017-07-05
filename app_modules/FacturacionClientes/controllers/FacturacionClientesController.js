@@ -361,7 +361,6 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
  * @fecha 2017/06/06
  */
 function __listarDocumentosPedidos(that, index, pedidos,empresaId,documentos, callback) {
-  
     var pedido = pedidos[index];   
     
     if (!pedido) {               
@@ -369,22 +368,25 @@ function __listarDocumentosPedidos(that, index, pedidos,empresaId,documentos, ca
         return;                     
     }  
    
-    index++;
-    G.Q.ninvoke(that.m_facturacion_clientes,'consultarDocumentosPedidos', {empresaId:empresaId,pedidoClienteId:pedido.pedido_cliente_id, estado:0})
-        .then(function(resultado){ 
-            if(resultado.length > 0){
-                documentos.push(resultado);
+    
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarDocumentosPedidos', {empresaId:empresaId,pedidoClienteId:pedido.pedido_cliente_id, estado:0}).
+    then(function(resultado){ 
+        
+        if(resultado.length > 0){
+            documentos.push(resultado);
         }
+        
+        index++;
+        var timer = setTimeout(function() {
+            clearTimeout(timer);
+            __listarDocumentosPedidos(that, index, pedidos,empresaId,documentos, callback);
+        }, 0);
                
     }).fail(function(err){ 
         console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
         callback(err);            
     }).done();     
     
-    setTimeout(function() {
-            __listarDocumentosPedidos(that, index, pedidos,empresaId,documentos, callback);
-    }, 300);
-   
 };
  
 /**

@@ -1,15 +1,22 @@
-<div class="row" >
-    <div class="col-md-2">
-
-        <button ng-click="seleccionarTipoPago('1')"  class="btn btn-xxs btn-success" style="position: relative;">Efectivo</button>
-        <button ng-click="seleccionarTipoPago('2')"  class="btn btn-xxs btn-warning" style="position: relative;">Cheque</button>
-        <button ng-click="seleccionarTipoPago('3')"  class="btn btn-xxs btn-danger" style="position: relative;">Credito</button>                                                                          
-
-    </div>
-                            
-</div>
-
 <div class ="row">       
+    <div class="col-md-6">
+        
+        <p class="btn-group">
+            <label class="btn btn-default" >
+              <span >Seleccionar tipo de pago: </span>
+            </label>
+            <label class="btn btn-default" ng-class="{'btn-success' : tipoPagoFactura == '1'}">
+              <input type="radio"  ng-click="seleccionarTipoPago('1')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-success">Efectivo</span>
+            </label>
+            <label class="btn btn-default"  ng-class="{'btn-warning' : tipoPagoFactura == '2'}">
+                <input type="radio"  ng-click="seleccionarTipoPago('2')"   class="ng-pristine ng-untouched ng-valid"><span class="label label-warning">Cheque</span>
+            </label>
+            <label class="btn btn-default" ng-class="{'btn-danger' : tipoPagoFactura == '3'}">
+              <input type="radio"  ng-click="seleccionarTipoPago('3')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-danger">Credito</span>
+            </label>
+         
+        </p>
+    </div>
     <div class="{{columnaSizeBusqueda}} pull-right">                                                                
         <div class="input-group">
             <div class="input-group-btn">
@@ -18,11 +25,6 @@
                   aria-haspopup="true" aria-expanded="false" 
                   ng-click="volverListaClientes()">Volver <span class="glyphicon glyphicon-arrow-left"></span>
               </button>
-              <button type="button" class="btn btn-info dropdown-toggle" 
-                  data-toggle="dropdown" 
-                  aria-haspopup="true" aria-expanded="false" 
-                  ng-click="generarFacturasAgrupadas()" 
-                  ng-disabled='root.pedidosSeleccionados.length < 2'>Generar</button>
 
             </div>
             <input ng-show="root.visibleBuscador" 
@@ -31,6 +33,15 @@
                  ng-keypress="buscarClientesFactura($event);"  
                  ng-model="root.termino_busqueda" 
                  placeholder="#Pedido" name="" id="" />
+            
+            
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle" 
+                  data-toggle="dropdown" 
+                  aria-haspopup="true" aria-expanded="false" 
+                  ng-click="generarFacturasAgrupadas()" 
+                  ng-disabled='root.pedidosSeleccionados.length < 2'>Fact Agrupada</button>
+            </div>
         </div> 
     </div>         
 </div>

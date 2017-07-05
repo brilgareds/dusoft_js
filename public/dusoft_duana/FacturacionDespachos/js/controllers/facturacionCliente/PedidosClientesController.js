@@ -55,7 +55,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             that.centroUtilidad = [];
 
             $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
-            $scope.columnaSizeBusqueda = "col-md-3";
+            $scope.columnaSizeBusqueda = "col-md-4";
             $scope.root.visibleBuscador = true;
             $scope.root.visibleBotonBuscador = true;
 
@@ -63,7 +63,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
 
         $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
-        $scope.columnaSizeBusqueda = "col-md-3";
+        $scope.columnaSizeBusqueda = "col-md-4";
         $scope.root.filtros = [
             {tipo: '', descripcion: "Todos"},
             {tipo: 'Nombre', descripcion: "Nombre"}

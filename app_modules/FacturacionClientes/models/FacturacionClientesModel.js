@@ -692,6 +692,9 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
     if(obj.procesoFacturacion === 1){
         query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)
     }
+    
+    console.log("query ", query.toSQL());
+    
     query.then(function (resultado) {      
         callback(false, resultado)
     }).catch(function (err) {

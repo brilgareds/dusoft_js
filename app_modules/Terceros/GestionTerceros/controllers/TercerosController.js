@@ -27,7 +27,7 @@ Terceros.prototype.obtenerParametrizacionFormularioTerceros = function(req, res)
         res.send(G.utils.r(req.url, 'Parametrizacion del formulario de terceros', 200, {parametrizacion: resultado}));
       
     }).fail(function(err) {
-        
+        console.log("err ", err)
         var msj = err;
         var status = 500;
         

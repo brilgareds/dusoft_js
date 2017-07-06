@@ -34,7 +34,17 @@
                         <br> 
                         <div ng-include="'views/facturacionClientes/listarFacturasEnProceso.html'"></div>  
                     </tab> 
-                
+                    <tab>
+                        <tab-heading >
+                            Facturacion
+                            <ul class="dropdown-menu">
+                                <li><a href="javascript:void(0);" ng-click="onCambiarVista(root.vistas[2], true)"><span ng-bind="">Temporales</span></a></li>
+                                <li><a href="javascript:void(0);" ng-click="onCambiarVista(root.vistas[3], true)"><span ng-bind="">Generadas</span></a></li>
+                            </ul>
+                        </tab-heading>
+                        <br> 
+                        <div ng-include="'views/facturacionClientes/listarFacturasEnProceso.html'"></div>  
+                    </tab> 
                     
                 </tabset>                                      
             </div>

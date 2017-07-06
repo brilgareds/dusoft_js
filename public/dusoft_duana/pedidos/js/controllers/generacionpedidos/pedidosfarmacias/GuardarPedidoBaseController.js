@@ -95,7 +95,7 @@ define(["angular", "js/controllers",
                     {field: 'getNombreBodega()', displayName: 'Bodega', width:"10%"},
                     {field: 'getCantidadSolicitada()', displayName: 'Solicitado'},
                     {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
-                    {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:true,
+                    {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:false,
                                 cellTemplate: ' <div class="col-xs-12">\n\
                                                     <input ng-disabled="!root.servicio.opciones.sw_modificar_pedido" type="text" validacion-numero-entero class="form-control grid-inline-input"'+
                                                     'ng-keyup="onModificarCantidad($event, row)" ng-model="row.entity.cantidadIngresada" />\

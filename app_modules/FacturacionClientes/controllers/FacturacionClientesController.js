@@ -350,6 +350,7 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         "parametros: ": parametros,
         "resultado: ":err});
         logger.error("-----------------------------------");
+        console.log("error generado ", err);
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };

@@ -247,15 +247,16 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
     andWhere(function() {
         if (laboratorio_id)
           this.where("a.clase_id", laboratorio_id);
-
-        if (numero_orden > 0){
+        
+        //Se comenta por requerimiento 07/07/2017
+        /*if (numero_orden > 0){
           
           if(!filtro || !filtro.auditoria){
             this.whereRaw(
               "a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = ?)", [numero_orden]
             );
           }
-        }
+        }*/
         
         if(filtro && filtro.descripcionProducto){
             this.where("a.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");

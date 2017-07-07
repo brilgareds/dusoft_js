@@ -852,3 +852,7 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 {
   background: rgba(0, 0, 0, 0.5);
 }*/
+
+.ngRow:hover{
+    background-color: lightgray!important;
+}

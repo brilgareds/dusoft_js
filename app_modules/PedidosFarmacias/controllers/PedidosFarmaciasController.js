@@ -1494,7 +1494,7 @@ PedidosFarmacias.prototype.consultarDetallePedido = function(req, res) {
     }
 
     if (args.pedidos_farmacias.numero_pedido === "") {
-        res.send(G.utils.r(req.url, 'numero_pedido estÃ¡ vacio', 404, {}));
+        res.send(G.utils.r(req.url, 'numero_pedido esta vacio', 404, {}));
         return;
     }
 

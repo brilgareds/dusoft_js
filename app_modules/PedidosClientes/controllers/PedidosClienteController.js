@@ -2260,7 +2260,7 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function (req, res) {
     var productos = cotizacion.productos;
 
 
-    if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
+    if (cotizacion.numero_cotizacion === null  || cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
         return;
     }

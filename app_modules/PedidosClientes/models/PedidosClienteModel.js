@@ -1964,7 +1964,8 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion
  * @fecha: 05/12/2015 9:58 pm
  */
 PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizacion, callback)
-{
+{   
+    console.log("observacion_cartera_cotizacion > ", arguments);
 
     var sql_aux = '4'; // Estado Activo
 

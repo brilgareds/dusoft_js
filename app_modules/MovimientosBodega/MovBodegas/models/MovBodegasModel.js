@@ -121,9 +121,9 @@ MovimientosBodegasModel.prototype.eliminar_detalle_movimiento_bodega_temporal = 
 
 // Eliminar Producto del Documento Temporal
 MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal = function(parametros, callback) {
-
+    console.log(parametros)
     G.knex("inv_bodegas_movimiento_tmp_d").
-    where('item_id', parametros.item_id).
+    where('item_id', parametros.item_id || parametros).
     del().
     then(function(resultado){
         callback(false, resultado);

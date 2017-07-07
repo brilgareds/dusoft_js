@@ -1,27 +1,45 @@
-<!--
-To change this template, choose Tools | Templates
-and open the template in the editor.
--->
-<!DOCTYPE html>
 <html>
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        <button type="button" class="btn btn-default dropdown-toggle" ng-disabled="validarCaja()"
-                aria-haspopup="true" aria-expanded="false" ng-click="onConcepto()" > Concepto
-        </button>
+	<div class="row">	
+		<div class="col-xs-12 col-sm-12 col-md-12 pull-right">
+		    <div class="col-xs-12 col-sm-6 col-md-2 pull-left">
+			<div class="input-group">
+			    <div class="input-group-btn">
+				<button type="button" class="btn btn-default dropdown-toggle"
+					data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.prefijo.prefijo}} <span class="caret"></span></button>
+				<ul class="dropdown-menu" ng-selected="onColumnaSize(root.prefijo.prefijo)">
+				    <li ng-repeat="prefijo in root.prefijos">
+					<a  href="javascript:void(0)" ng-click="onSeleccionPrefijo(prefijo)">{{prefijo.prefijo}}</a>
+				    </li>
+				</ul>
+			    </div>
+			    <input ng-show="root.visibleBuscador"
+				   type="text"
+				   class="form-control"
+				   ng-keypress="buscarTercero($event,2);"
+				   ng-model="root.factura"
+				   placeholder="No. Factura" name="" id="" />
+			</div>
+		    </div>
+		</div>
+	</div>
         <br />
         <br />
-        <br />
-        <div class="table-responsive" style="clear:both; ">
-            <div class="defaultGrid grid-responsive" ng-grid="listaConceptosTmp" ></div>
+        <div class="gridStyle" style="height: 100px">
+            <div style="height: 100px"  ng-grid="listaFacturasGeneradasNotas" ></div>
+        </div>
+	<br />
+        <div class="table-responsive" style="clear:both;" >
+            <div class="defaultGrid grid-responsive" ng-grid="listaNotasGeneradas" ></div>
         </div>
 	<br />
         <br />
 	<div class="col-md-5 pull-right">
-	    <button type="button" class="btn btn-default dropdown-toggle" ng-disabled="validarCaja()"
+	    <button type="button" class="btn btn-default dropdown-toggle" ng-disabled="validarConcepto()"
 		    aria-haspopup="true" aria-expanded="false" ng-click="guardarFacturaCajaGeneral()" > Facturar
 	    </button>
         </div>

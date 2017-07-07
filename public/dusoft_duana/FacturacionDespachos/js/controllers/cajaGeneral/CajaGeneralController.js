@@ -27,6 +27,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.root.filtros = [
                         {tipo: '', descripcion: "Nombre"}
                     ];
+		    
+		    $scope.root.prefijo= 
+                        {prefijo: "Prefijo"}
+                    ;
                     $scope.root.filtro = $scope.root.filtros[0];
                     $scope.root.tipoTercero = $scope.root.filtros[0];
 		    $scope.root.tab=1;
@@ -51,15 +55,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         $scope.root.visibleBotonBuscador = true;
                         callback();
                     };
+		    
                     /**
                      * +Descripcion Metodo encargado de consultar la caja general
                      * @author Andres Mauricio Gonzalez
                      * @fecha 01/06/2017
                      * @returns {undefined}
                      */
-                    // $scope.root.caja = [];
                     that.listarCajaGeneral = function(callback) {
-
+			    if(empresa.getCentroUtilidadSeleccionado()===undefined){
+				AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar la bodega");
+				return;
+			    }
                         var obj = {
                             session: $scope.session,
                             data: {
@@ -72,7 +79,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                             if (data.status === 200) {
                                 $scope.root.caja = cajaGeneralService.renderCajaGeneral(data.obj.listarCajaGeneral);
-                                console.log("$scope.root.caja::: ", $scope.root.caja);
+//                                console.log("$scope.root.caja::: ", $scope.root.caja);
                                 //$scope.root.cajas = $scope.root.caja[0];
                                 callback(true);
                             } else {
@@ -81,6 +88,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             }
                         });
                     };
+		    
                     /**
                      * +Descripcion Metodo encargado de consultar grupos
                      * @author Andres Mauricio Gonzalez
@@ -124,7 +132,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @fecha 02/05/2017 DD/MM/YYYY
                      * @returns {undefined}
                      */
-                    that.listarFacturasGeneradas = function() {
+                    that.listarFacturasGeneradas = function(limit,callback) {
+			
 
                         var obj = {
                             session: $scope.session,
@@ -132,17 +141,48 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 terminoBusqueda: $scope.root.termino_busqueda_tercero,
 				busquedaDocumento: $scope.root.tipoTercero.tipo,
 				empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-				
-				prefijo: 'undefined',
-				facturaFiscal: 'undefined'
+				prefijo: $scope.root.prefijo.prefijo!=='Prefijo'?$scope.root.prefijo.prefijo:'undefined',
+				facturaFiscal: $scope.root.factura?$scope.root.factura:'undefined',
+				limit:limit
                             }
                         };
                         cajaGeneralService.listarFacturasGeneradas(obj, function(data) {
-                             console.log("data:: ",data);
                             if (data.status === 200) {
-                                //$scope.root.tipoTerceros = facturacionClientesService.renderListarTipoTerceros(data.obj.listar_tipo_terceros);
+                                $scope.root.listarFacturasGeneradasNotas=data.obj.listarFacturasGeneradas;
+				callback(data.obj.listarFacturasGeneradas);
                             } else {
-                              //  AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                               //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+			       callback(false);
+                            }
+
+                        });
+                    };
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara
+                     *              los tipos de terceros
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 02/05/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+                    that.listarFacConceptosNotasDetalle = function(parametros) {
+			console.log("listarFacConceptosNotasDetalle",parametros);
+			if(parametros===undefined){
+			    return;
+			}
+			var facturaFiscal =parametros.factura_fiscal!==undefined?parametros.factura_fiscal:parametros.facturaFiscal;
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+				prefijo: parametros.prefijo,
+				facturaFiscal: facturaFiscal
+                            }
+                        };
+                        cajaGeneralService.listarFacConceptosNotas(obj, function(data) {
+                            if (data.status === 200) {
+				console.log("datos:::::: ",data);
+                                $scope.root.listarFacConceptosNotasDetalle=data.obj.listarFacConceptosNotas;
+                            } else {
+                              // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
 
                         });
@@ -174,6 +214,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                         });
                     };
+		    
                     /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Permite realiar peticion al API para traer los terceros
@@ -211,6 +252,32 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             }
                         });
                     };
+		    
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * +Descripcion Permite realiar peticion al API para traer los terceros
+                     * @params callback: {function}
+                     * @fecha 2017-06-01
+                     */		    
+                    that.listarPrefijos = function() {
+
+                        var parametros = {
+                            session: $scope.session,
+                            data: {
+                              
+                                    empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                            }
+                        };
+
+                        cajaGeneralService.listarPrefijos(parametros, function(respuesta) {
+                            if (respuesta.status === 200) {
+                                $scope.root.prefijos = respuesta.obj.listarPrefijos;
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.msj);
+                            }
+                        });
+                    };
+		    
                     /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Permite realiar peticion al API para traer los terceros
@@ -243,7 +310,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                             if (data.status === 200) {
                                 $scope.root.conceptoTmp = cajaGeneralService.renderConcepto(data.obj.listarConceptosDetalle);
-                                console.log("$scope.root.conceptoTmp::: ", $scope.root.conceptoTmp);
+//                                console.log("$scope.root.conceptoTmp::: ", $scope.root.conceptoTmp);
                             } else {
 				if(data.obj.listarConceptosDetalle !== '0'){
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -289,7 +356,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
 				
 				that.listarTerceros(function(respuesta) {
-                                console.log("buscarTercero:: ", respuesta);
+//                                console.log("buscarTercero:: ", respuesta);
                                 if (respuesta) {
                                     that.listarConceptosDetalle();
                                 }
@@ -303,7 +370,293 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             }
                         });
                     };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * +Descripcion Permite realiar peticion al API para guardar la factura de caja general
+                     * @params callback: {function}
+                     * @fecha 2017-06-10
+                     */
+                    that.guardarFacFacturasConceptosNotas = function(parametros,callback) {
+			
+                        var parametros = {
+                            session: $scope.session,
+                            data: {
+			        descripcion:parametros.descripcion,
+				empresaId:parametros.empresaId,
+				facturaFiscal:parametros.facturaFiscal,
+				porcentajeGravamen:parametros.porcentajeGravamen,
+				prefijo:parametros.prefijo,
+				swContable:parametros.swContable,
+				valorNotaTotal:parametros.valorNotaTotal                            
+			    }
+                        };
+                        cajaGeneralService.insertarFacFacturasConceptosNotas (parametros, function(data) {
+                          if (data.status === 200) {
+			      console.log("datos ",data);
+                               callback(true);
+                            } else {
+				callback(false);
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+			  
+                        });
+                    };
 
+                    /**
+                     * +Descripcion 
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+                    $scope.listaFacturasGeneradas = {
+                        data: 'root.listarFacturasGeneradasNotas',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+                        showFilter: true,
+			columnDefs: [
+                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
+                            {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.identificacion}}</p></div>'},
+                            {field: 'Tercero', width: "30%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre_tercero}}</p></div>'},
+                            {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
+                            {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
+                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
+			     cellTemplate: ' <div class="row">\
+							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
+							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
+								<span class="glyphicon glyphicon-export"> Sincronizar</span>\
+							    </button>\
+							  </div>\
+							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
+							    <button class="btn btn-success btn-xs  disabled">\
+								<span class="glyphicon glyphicon-saved"> Sincronizar</span>\
+							    </button>\
+							  </div>\
+						       </div>'
+			    }  
+			 ]
+                    };
+                    /**
+                     * +Descripcion 
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+                    $scope.listaNotasGeneradas = {
+                        data: 'root.listarFacConceptosNotasDetalle',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+                        showFilter: true,
+			columnDefs: [
+		            {field: 'No. Nota', width: "10%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fac_facturas_conceptos_notas_id}}</p></div>'}, //
+		            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
+                            {field: 'Nota', width: "10%", displayName: 'Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nota_contable}}</p></div>'}, //
+                            {field: 'Valor Total', width: "12%", displayName: 'Valor Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.valor_nota_total | currency:"$ " }}</p></div>'},
+                            {field: 'Valor Gravamen', width: "12%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.valor_gravamen | currency:"$ " }}</p></div>'}, //
+                            {field: 'Usuario', width: "26%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
+                            {field: 'Fecha', width: "10%", displayName: 'Fecha', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
+                           
+			 ]
+                    };
+                    /**
+                     * +Descripcion 
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+                    $scope.listaFacturasGeneradasNotas = {
+                        data: 'root.listarFacturasGeneradasNotas',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+                        showFilter: true,
+			columnDefs: [
+                            {field: 'No. Factura', width: "8%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
+                            {field: 'Identificación', width: "8%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.identificacion}}</p></div>'},
+                            {field: 'Tercero', width: "25%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre_tercero}}</p></div>'},
+                            {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Usuario', width: "10%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
+                            {field: 'Total', width: "8%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.total_factura| currency:"$ "}}</p></div>'},
+                            {field: 'Gravamen', width: "7%", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.gravamen| currency:"$ "}}</p></div>'},
+                            {field: 'Nota Credito', width: "7%", displayName: 'Nota Credito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
+                            {field: 'Nota Debito', width: "7%", displayName: 'Nota Debito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
+                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
+			     cellTemplate: ' <div class="row">\
+							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
+							    <button class="btn btn-danger btn-xs disabled">\
+								<span class="glyphicon glyphicon-export"> No Sincronizado</span>\
+							    </button>\
+							  </div>\
+							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
+							    <button class="btn btn-success btn-xs  disabled">\
+								<span class="glyphicon glyphicon-saved"> Sincronizado</span>\
+							    </button>\
+							  </div>\
+						       </div>'
+			    }  
+			 ]
+                    };
+		    
+		    /**
+			* +Descripcion sincronizar FI
+			* @author Andres Mauricio Gonzalez
+			* @fecha 18/05/2017
+			* @returns {undefined}
+			*/
+		    $scope.sincronizarFI = function(data) {
+			that.sincronizarFI(data,function(resultado){
+			});
+		    };
+		    
+			/**
+			* +Descripcion Metodo encargado de sincronizar en WS FI
+			* @author Andres Mauricio Gonzalez
+			* @fecha 18/05/2017
+			* @returns {undefined}
+			*/
+		       that.sincronizarFI = function(data,callback) {
+                           
+			   var obj = {
+			       session: $scope.session,
+			       data: {
+				   sincronizarFI: {
+				       empresaId: data.empresa_id,
+				       prefijo: data.prefijo,
+				       factura: data.factura_fiscal
+				   }
+			       }
+			   };
+
+			   cajaGeneralService.sincronizarFi(obj, function(data) {
+
+			       if (data.status === 200) {
+//				   console.log("data.obj.respuestaFI",data.obj.respuestaFI);
+				   that.listarFacturasGeneradas('',function(data){
+				       
+				   });
+				   that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd,data.obj.respuestaFI.resultado.mensaje_ws);
+				   callback(true);
+			       } else {
+				   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+				   callback(false);
+			       }
+
+			   });
+
+		       };
+		       
+		  /**
+			* +Descripcion mensaje de respuesta de WS
+			* @author Andres Mauricio Gonzalez
+			* @fecha 18/05/2017
+			* @returns {undefined}
+			*/     
+		  that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+
+                       $scope.mensaje_bd = mensaje_bd;
+                       $scope.mensaje_ws = mensaje_ws;
+                       $scope.opts = {
+                           backdrop: true,
+                           backdropClick: true,
+                           dialogFade: false,
+                           keyboard: true,
+                           template: ' <div class="modal-header">\
+                                           <button type="button" class="close" ng-click="close()">&times;</button>\
+                                           <h4 class="modal-title">Resultado sincronizacion</h4>\
+                                       </div>\
+                                       <div class="modal-body">\
+                                           <h4>Respuesta WS</h4>\
+                                           <h5> {{ mensaje_ws }}</h5>\
+                                           <h4>Respuesta BD</h4>\
+                                           <h5> {{ mensaje_bd }} </h5>\
+                                       </div>\
+                                       <div class="modal-footer">\
+                                           <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                       </div>',
+                           scope: $scope,
+                           controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+
+                                   $scope.close = function () {
+                                       $modalInstance.close();
+                                   };
+                               }]
+                       };
+                       var modalInstance = $modal.open($scope.opts);
+                   };
+		    
+		    /**
+                     * +Descripcion metodo para validar sincronizacion
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+		    $scope.validarSincronizacion=function(estado){
+			var respuesta=false;
+			if(estado === '1' || estado === null){
+			    respuesta=true;
+			}
+			return respuesta;
+		    };
+		    
+		    /**
+                     * +Descripcion metodo para imprimir las facturas
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+		    $scope.onImprimirFacturaNotas=function(datos){
+			 var parametros = {
+                            session: $scope.session,
+                            data: {
+			        prefijo:datos.prefijo,
+			        facturaFiscal:datos.factura_fiscal,
+				empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                            }
+                        };
+                        cajaGeneralService.imprimirFacturaNotas(parametros, function(data) {
+				    
+                            if (data.status === 200) {
+				var nombre = data.obj.imprimirFacturaNotas;
+				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+				
+                            } else {
+				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        });
+		    };
+		    /**
+                     * +Descripcion metodo para imprimir las facturas
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+		    $scope.onImprimirFacturaNotasDetalle=function(datos){
+			 var parametros = {
+                            session: $scope.session,
+                            data: {
+			        prefijo:datos.prefijo,
+			        facturaFiscal:datos.factura_fiscal,
+				empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                            }
+                        };
+                        cajaGeneralService.imprimirFacturaNotasDetalle(parametros, function(data) {
+				    
+                            if (data.status === 200) {
+				var nombre = data.obj.imprimirFacturaNotas;
+				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+				
+                            } else {
+				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        });
+		    };
+		    
                     /**
                      * +Descripcion scope del grid para mostrar los proveedores
                      * @author Andres Mauricio Gonzalez
@@ -368,6 +721,32 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.onConcepto = function() {
                         that.ver_recepcion();
                     };
+                    /**
+                     * +Descripcion scope del grid para mostrar el detalle de las recepciones
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 01/06/2017
+                     * @returns {undefined}
+                     */
+                    $scope.onNotaCredito = function(datos) {
+			$scope.root.precioNota=0;
+			$scope.root.gravamenNota=0;
+			$scope.root.descripcionNota="";
+			$scope.root.tituloNota="Nota Credito";
+                        that.verNotaCredito(1,datos);
+                    };
+                    /**
+                     * +Descripcion scope del grid para mostrar el detalle de las recepciones
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 01/06/2017
+                     * @returns {undefined}
+                     */
+                    $scope.onNotaDebito = function(datos) {
+			$scope.root.precioNota=0;
+			$scope.root.gravamenNota=0;
+			$scope.root.descripcionNota="";
+			$scope.root.tituloNota="Nota Debito";
+                        that.verNotaCredito(0,datos);
+                    };
 
                     /**
                      * +Descripcion funcion para eliminar temporal
@@ -376,7 +755,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {undefined}
                      */
                     $scope.eliminarTmp = function(row) {
-                        console.log("Row", row);
+//                        console.log("Row", row);
 
                         var parametros = {
                             session: $scope.session,
@@ -436,6 +815,54 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         };
                         var modalInstance = $modal.open($scope.opts);
                     };
+		    
+		    $scope.root.precioNota=0;
+		    $scope.root.gravamenNota=0;
+		    $scope.root.descripcionNota="";
+                    /**
+                     * +Descripcion scope del grid para mostrar el detalle de las recepciones
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 01/06/2017
+                     * @returns {undefined}
+		     * nota : 0-debito 1-credito
+                     */
+                    that.verNotaCredito = function(nota,datos) {
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            windowClass: 'app-modal-window-smlg',
+                            keyboard: true,
+                            showFilter: true,
+                            cellClass: "ngCellText",
+                            templateUrl: 'views/cajaGeneral/vistaNotaCredito.html',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.cerrar = function() {
+                                    $modalInstance.close();
+                                };
+				
+                                $scope.guardarFacFacturasConceptosNotas = function() {
+				    var parametros={
+					prefijo : datos.prefijo,
+					facturaFiscal : datos.factura_fiscal,
+					swContable : nota,
+					valorNotaTotal : $scope.root.precioNota,
+					porcentajeGravamen : $scope.root.gravamenNota,
+					descripcion : $scope.root.descripcionNota,
+					empresaId : $scope.root.empresaSeleccionada.getCodigo()
+				};
+				console.log("parametros  ",parametros);
+                                    that.guardarFacFacturasConceptosNotas(parametros,function(respuesta){
+					$modalInstance.close();
+					that.listarFacConceptosNotasDetalle(parametros);
+					
+				    });
+                                };
+                            }
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    };
                     /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 04/02/2016
@@ -443,7 +870,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.onSeleccionFiltro = function() {
-                        console.log("root.cajas.descripcionCaja>>>> ", $scope.root.cajas);
+//                        console.log("root.cajas.descripcionCaja>>>> ", $scope.root.cajas);
                         //that.listarConceptosDetalle();
                     };
                     /**
@@ -453,7 +880,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.onSeleccionFiltroGrupo = function() {
-                        console.log("root.cajas.grupo _______________>>> ", $scope.root.grupo.gruposConcepto);
                         that.listarGrupos(false, function() {
 
                         });
@@ -493,7 +919,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.onSeleccionFiltroConcepto = function() {
-                        console.log("root.cajas.grupo>>> ", $scope.root.concepto.conceptoId);
                     };
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -598,7 +1023,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 04/02/2016
-                     * +Descripcion scope selector del filtro
+                     * +Descripcion scope selector estado de pago
                      * @param {type} $event
                      */
                     $scope.checkearEstadoPago = function(check) {
@@ -625,20 +1050,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 $scope.root.credito = 'default';
                         }
                     };
-                    /**
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha 04/02/2016
-                     * +Descripcion scope selector del filtro
-                     * @param {type} $event
-                     */
-		      $scope.tipoTab = function (valor){
-			  $scope.root.tab=valor;
-		      };
+                    
 		      
                     /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 04/02/2016
-                     * +Descripcion scope selector del filtro
+                     * +Descripcion scope selector tipo factura
                      * @param {type} $event
                      */
                     $scope.tipoFactura = function(tipo) {
@@ -672,39 +1089,92 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         $scope.root.filtro = filtro;
                         $scope.root.tipoTercero = filtro;
                     };
-
-                    $scope.buscarTercero = function(event) {
-			console.log("$scope.root.tab::  ",$scope.root.tab);
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 04/02/2016
+                     * +Descripcion scope selector del filtro
+                     * @param {type} $event
+                     */
+                    $scope.onSeleccionPrefijo = function(filtro) {
+			$scope.root.prefijo.prefijo=filtro.prefijo;
+                    };
+		    
+		    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 28/06/2017
+                     * +Descripcion scope seleccionar tab
+                     * @param {type} $event
+                     */
+		      $scope.tipoTab = function (valor){
+			  $scope.root.tab=valor;
+			  console.log("tab ",$scope.root.tab);
+		      };
+		      
+		      /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 28/06/2017
+                     * +Descripcion seleccionar busqueda
+                     * @param {type} $event
+                     */
+                    $scope.buscarTercero = function(event,estado) {
+//			if(){
+//			}
+			console.log("$scope.root.tab",$scope.root.tab);
                         if (event.which === 13) {
 			   switch ($scope.root.tab){ 
-			       case 1:
+			       case 1: console.log("buscarTercero");
 					that.listarTerceros(function(respuesta) {
 					    if (respuesta) {
 						that.listarConceptosDetalle();
 					    }
 					});
 					break;
-			       case 3:	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-				         that.listarFacturasGeneradas();
+			       case 2:
+					that.listarFacturasGeneradas(1,function(data){
+					    that.listarFacConceptosNotasDetalle(data[0]);
+					});
+					break;
+			       case 3:				         
+				         that.listarFacturasGeneradas('',function(data){
+					   
+					});
 					 break;
 			   } 
                         }
                     };
 		    
+		     /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 28/06/2017
+                     * +Descripcion tamaño columna
+                     * @param {type} $event
+                     */
                     $scope.onColumnaSize = function(tipo) {
 
                         if (tipo === "AS" || tipo === "MS" || tipo === "CD") {
                             $scope.columnaSizeBusqueda = "col-md-4";
                         } else {
-                            $scope.columnaSizeBusqueda = "col-md-3";
+                            $scope.columnaSizeBusqueda = "col-md-4";
                         }
 
                     };
+		    
+		     /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 28/06/2017
+                     * +Descripcion init
+                     * @param {type} $event
+                     */
                     that.init(empresa, function() {
                         that.listarTiposTerceros();
+//			console.log("prefijo________________");
+			that.listarPrefijos();
+			
                     });
+		    
                     that.listarCajaGeneral(function(data) {
 
                     });
+		    
                 }]);
 });

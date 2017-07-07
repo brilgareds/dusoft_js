@@ -29,5 +29,29 @@ module.exports = function(app, di_container) {
     app.post('/api/CajaGeneral/listarFacturasGeneradasNotas', function(req, res) {
         c_caja_general.listarFacturasGeneradasNotas(req, res);
     });
+    
+    app.post('/api/CajaGeneral/imprimirFacturaNotas', function(req, res) {
+        c_caja_general.imprimirFacturaNotas(req, res);
+    });
+    
+    app.post('/api/CajaGeneral/sincronizarFacturaNotas', function(req, res) {
+        c_caja_general.sincronizarFacturaNotas(req, res);
+    });
+    
+    app.post('/api/CajaGeneral/listarPrefijos', function(req, res) {
+        c_caja_general.listarPrefijos(req, res);
+    });
+    
+    app.post('/api/CajaGeneral/insertarFacFacturasConceptosNotas', function(req, res) {
+        c_caja_general.insertarFacFacturasConceptosNotas(req, res);
+    });
+    
+    app.post('/api/CajaGeneral/listarFacConceptosNotas', function(req, res) {
+        c_caja_general.listarFacConceptosNotas(req, res);
+    });
+    
+    app.post('/api/CajaGeneral/imprimirFacturaNotasDetalle', function(req, res) {
+        c_caja_general.imprimirFacturaNotasDetalle(req, res);
+    });
 
 };

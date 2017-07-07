@@ -113,7 +113,9 @@ CajaGeneralModel.prototype.listarCajaGeneral = function(obj, callback) {
  */
 CajaGeneralModel.prototype.listarFacturasGeneradas = function(obj, callback) {
 console.log("********************listarFacturasGeneradas************************");
+console.log("[pararmetros]:",obj);
     var columna_a = [
+	G.knex.raw("distinct a.factura_fiscal"), 
 	"a.tipo_factura", 
 	"a.empresa_id",
 	"a.fecha_registro", 
@@ -125,7 +127,9 @@ console.log("********************listarFacturasGeneradas************************
 	G.knex.raw("e.tipo_id_tercero ||' '|| e.tercero_id AS identificacion"), 
 	"a.sw_clase_factura",
 	"a.tipo_factura",
-	"fi.estado"
+	"fi.estado",
+	"a.total_factura",
+	"a.gravamen",
     ];
     
     var query = G.knex.select(columna_a)
@@ -166,42 +170,196 @@ console.log("********************listarFacturasGeneradas************************
 		    .on(G.knex.raw("numero_nota IS NULL"))
 	    
 	    }).where(function() {
-//		if(obj.tipoIdTercero !== undefined){
-//		    this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)
-//		}
-//		if(obj.terceroId !== undefined){
-//		    this.andWhere('a.tercero_id ', obj.terceroId)
-//		}
-		 
-		if (obj.terminoBusqueda.length > 0) {
-		    if (obj.busquedaDocumento.length > 0) {
-			this.andWhere("a.tipo_id_tercero", obj.busquedaDocumento)
-			    .andWhere("a.tercero_id", G.constants.db().LIKE, "%" + obj.terminoBusqueda + "%");
+		if(obj.terminoBusqueda !== undefined && obj.busquedaDocumento !== undefined ){
+		    if (obj.terminoBusqueda.length > 0) {
+			if (obj.busquedaDocumento.length > 0) {
+			    this.andWhere("a.tipo_id_tercero", obj.busquedaDocumento)
+				.andWhere("a.tercero_id", G.constants.db().LIKE, "%" + obj.terminoBusqueda + "%");
 
-		    } else {
-			this.andWhere("e.nombre_tercero", G.constants.db().LIKE, "%" + obj.terminoBusqueda + "%");
+			} else {
+
+			    this.andWhere("e.nombre_tercero", G.constants.db().LIKE, "%" + obj.terminoBusqueda + "%");
+			}
 		    }
 		}
 				
 		if(obj.empresaId !== undefined){
 		    this.andWhere('a.empresa_id ', obj.empresaId)
 		}
-		if(obj.prefijo !== undefined){
+		if(obj.prefijo !== 'undefined'){
 		    this.andWhere('a.prefijo ', obj.prefijo)
 		}
-		if(obj.facturaFiscal !== undefined){
+		if(obj.facturaFiscal !== 'undefined'){
 		    this.andWhere('a.factura_fiscal ', obj.facturaFiscal)
 		}
-		//this.andWhere(G.knex.raw("a.estado in ('0', '1')"))
+		this.andWhere(G.knex.raw("a.estado in ('0', '1')"))
 	    });
-
+     if(obj.limit!== undefined){	    
+      query.limit(obj.limit);
+     }
     query.then(function(resultado) {
-
         callback(false, resultado);
     }). catch (function(err) {
 	
-        console.log("err [listarFacturasGeneradas]:",query.toSQL());
         console.log("err [listarFacturasGeneradas]:", err);
+        callback(err);
+    });
+};
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de listar los prefijos
+ * @fecha 2017-06-02 YYYY-MM-DD
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+CajaGeneralModel.prototype.listarPrefijos = function(obj, callback) {
+
+    var columna = [
+        G.knex.raw("DISTINCT a.prefijo")
+    ];
+
+    var query = G.knex.select(columna)
+		.from('documentos as a')
+		.innerJoin('fac_facturas as b',
+		function() {
+		    this.on("a.documento_id", "b.documento_id")
+		})
+		.innerJoin('fac_facturas_conceptos as c',
+		function() {
+		    this.on("b.factura_fiscal", "c.factura_fiscal")
+			.on("b.prefijo", "c.prefijo")
+		})
+		.innerJoin('cajas_rapidas as d',
+		function() {
+		    this.on("c.caja_id", "d.caja_id")
+		})
+		.leftJoin('fac_facturas_contado as e',
+		function() {
+		    this.on("b.prefijo", "e.prefijo")
+			.on("b.factura_fiscal", "e.factura_fiscal")
+		})
+		.where(function() {
+		})
+		.andWhere('a.empresa_id', obj.empresaId)
+
+    query.then(function(resultado) {
+        callback(false, resultado)
+    }). catch (function(err) {
+        console.log("err [listarPrefijos]:",query.toSQL());
+        console.log("err [listarPrefijos]:", err);
+        callback(err);
+    });
+};
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de listar los prefijos
+ * @fecha 2017-06-02 YYYY-MM-DD
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+CajaGeneralModel.prototype.listarFacConceptosNotas= function(obj, callback) {
+
+    var columna = [
+        G.knex.raw("case when b.sw_contable='1' then 'credito' else 'debito' end as nota_contable"),
+	"b.documento_id",
+	"b.fac_facturas_conceptos_notas_id",
+	"b.prefijo",
+	"b.factura_fiscal",
+	"b.valor_nota_total",
+	"b.valor_gravamen",
+	"b.descripcion",
+	"c.nombre",
+	"b.fecha_registro"
+    ];
+
+    var query = G.knex.select(columna)
+		.from('fac_facturas as a')
+		.innerJoin('fac_facturas_conceptos_notas as b',
+		function() {
+		    this.on("b.factura_fiscal", "a.factura_fiscal")
+			.on("b.prefijo", "a.prefijo")
+		})
+		.innerJoin('system_usuarios as c',
+		function() {
+		    this.on("c.usuario_id", "b.usuario_id")
+		})
+		.where(function() {
+	           this.andWhere('a.factura_fiscal', obj.facturaFiscal)
+	               .andWhere('a.prefijo', obj.prefijo)
+		}).orderBy("b.sw_contable", "ASC");
+
+    query.then(function(resultado) {
+        callback(false, resultado)
+    }). catch (function(err) {
+        console.log("err [listarPrefijos]:",query.toSQL());
+        console.log("err [listarPrefijos]:", err);
+        callback(err);
+    });
+};
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de listar RECIBOS CAJA
+ * @fecha 2017-06-02 YYYY-MM-DD
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+CajaGeneralModel.prototype.listarRecibosCaja= function(obj, callback) {
+
+    var columna = [
+	    "a.empresa_id",
+	    "a.centro_utilidad",
+	    "a.factura_fiscal as recibo_caja",
+	    "a.fecha_registro as fecha_ingcaja",
+	    "b.caja_id", 
+	    "b.descripcion as caja",
+	    "a.total_efectivo",
+	    "a.total_cheques",
+	    "a.total_bonos", 
+	    "a.total_tarjetas",
+	    "a.usuario_id",
+	    "a.prefijo",
+	    G.knex.raw("(a.total_efectivo + a.total_cheques + a.total_tarjetas + a.total_bonos) as suma"),
+	    G.knex.raw("CASE WHEN v.estado ='0' THEN a.total_abono ELSE -1 END AS total_abono")
+    ];
+/*
+ * 
+ * FROM fac_facturas v
+INNER JOIN fac_facturas_contado a ON (a.prefijo=v.prefijo and a.cierre_caja_id ISNULL)
+INNER JOIN cajas_rapidas b ON (a.factura_fiscal=v.factura_fiscal AND a.caja_id=b.caja_id)
+INNER JOIN userpermisos_cajas_rapidas c ON (a.usuario_id=c.usuario_id and b.caja_id=c.caja_id)
+ */
+    var query = G.knex.select(columna)
+		.from('fac_facturas as v')
+		.innerJoin('fac_facturas_contado as a',
+		function() {
+		    this.on("a.documento_id", "b.documento_id")
+		})
+		.innerJoin('fac_facturas_conceptos as c',
+		function() {
+		    this.on("b.factura_fiscal", "c.factura_fiscal")
+			.on("b.prefijo", "c.prefijo")
+		})
+		.innerJoin('cajas_rapidas as d',
+		function() {
+		    this.on("c.caja_id", "d.caja_id")
+		})
+		.leftJoin('fac_facturas_contado as e',
+		function() {
+		    this.on("b.prefijo", "e.prefijo")
+			.on("b.factura_fiscal", "e.factura_fiscal")
+		})
+		.where(function() {
+		})
+		.andWhere('a.empresa_id', obj.empresaId)
+
+    query.then(function(resultado) {
+        callback(false, resultado)
+    }). catch (function(err) {
+        console.log("err [listarPrefijos]:",query.toSQL());
+        console.log("err [listarPrefijos]:", err);
         callback(err);
     });
 };
@@ -253,6 +411,75 @@ CajaGeneralModel.prototype.listarGrupos = function(obj, callback) {
         callback(false, resultado)
     }). catch (function(err) {
         console.log("err [listarGrupos]:", err);
+        callback(err);
+    });
+};
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de listar las notas facturas
+ * @fecha 2017-06-02 YYYY-MM-DD
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+CajaGeneralModel.prototype.listarFacturasNotas = function(obj, callback) {
+
+    var columna = [
+	    "a.fac_factura_concepto_id",
+	    "a.empresa_id",
+	    "a.prefijo",
+	    "a.factura_fiscal",
+	    "a.sw_tipo",
+	    "a.cantidad",
+	    "a.precio",
+	    "a.valor_total",
+	    "a.valor_total as valorTotal",
+	    "a.porcentaje_gravamen",
+	    "a.valor_gravamen as totalGravamen",
+	    "a.valor_gravamen",
+	    "a.concepto",
+	    "a.caja_id",
+	    "a.concepto as descripcion",
+	    "d.tipo_id_tercero",
+	    "d.tercero_id",
+	    "c.descripcion as desconcepto",
+	    "c.concepto_id",
+	    "c.grupo_concepto"
+    ];
+
+    var query = G.knex.select(columna)
+            .from('fac_facturas_conceptos as a')
+            .innerJoin('fac_facturas_conceptos_dc as b',
+            function() {
+                this.on("a.fac_factura_concepto_id", "b.fac_factura_concepto_id")
+            })
+            .innerJoin('conceptos_caja_conceptos as c',
+            function() {
+                this.on("b.concepto_id", "c.concepto_id")
+		    .on("b.grupo_concepto", "c.grupo_concepto")
+		    .on("b.empresa_id", "c.empresa_id")
+            })
+            .innerJoin('fac_facturas as d',
+            function() {
+                this.on("a.prefijo", "d.prefijo")
+		    .on("a.factura_fiscal", "d.factura_fiscal")
+		    .on("a.empresa_id", "d.empresa_id")
+            })
+	    .where(function() {
+		if (obj.conceptoId !== '') {
+		    this.andWhere('a.prefijo', obj.prefijo)
+		}
+		if (obj.grupoConcepto !== '') {
+		    this.andWhere('a.factura_fiscal', obj.facturaFiscal)
+		}
+	    }).andWhere('a.empresa_id', obj.empresaId)
+
+    query.then(function(resultado) {
+        callback(false, resultado)
+    }). catch (function(err) {
+        console.log("err [obj]:", obj);
+        console.log("err [obj]:", query.toSQL());
+        console.log("err [listarFacturasNotas]:", err);
         callback(err);
     });
 };
@@ -332,20 +559,20 @@ CajaGeneralModel.prototype.listarConceptosDetalle = function(obj, callback) {
     ];
 
     var query = G.knex.select(columna)
-            .from('tmp_detalle_conceptos as a')
-            .innerJoin('grupos_conceptos as  b ',
-            function() {
-                this.on("a.grupo_concepto", "b.grupo_concepto")
-            })
-            .innerJoin('conceptos_caja_conceptos as  c',
-            function() {
-                this.on("c.grupo_concepto", "b.grupo_concepto")
-                        .on("a.concepto_id", "c.concepto_id")
-            }).where(function() {
-        this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
-                .andWhere("a.tercero_id", obj.terceroId)
-                .andWhere("b.empresa_id", obj.empresaId)
-                .andWhere("a.concepto_id", obj.conceptoId)
+		.from('tmp_detalle_conceptos as a')
+		.innerJoin('grupos_conceptos as  b ',
+		function() {
+		    this.on("a.grupo_concepto", "b.grupo_concepto")
+		})
+		.innerJoin('conceptos_caja_conceptos as  c',
+		function() {
+		    this.on("c.grupo_concepto", "b.grupo_concepto")
+			.on("a.concepto_id", "c.concepto_id")
+		}).where(function() {
+		    this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
+			.andWhere("a.tercero_id", obj.terceroId)
+			.andWhere("b.empresa_id", obj.empresaId)
+			.andWhere("a.concepto_id", obj.conceptoId)
     });
  
     query.limit(G.settings.limit).
@@ -428,7 +655,7 @@ CajaGeneralModel.prototype.bloquearTablaDocumentos = function(transaccion, callb
  * @param {type} callback
  * @returns {undefined}
  */
-CajaGeneralModel.prototype.actualizarTipoFormula = function(obj,transaccion, callback) {
+CajaGeneralModel.prototype.numeracionDocumento= function(obj,transaccion, callback) {
 
     var query = G.knex('documentos')
             .where('documento_id', obj.documentoId)
@@ -440,7 +667,7 @@ CajaGeneralModel.prototype.actualizarTipoFormula = function(obj,transaccion, cal
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-        console.log("err (/catch) [actualizarTipoFormula]: ", err);
+        console.log("err (/catch) [numeracionDocumento]: ", err);
         callback("Error al actualizar el tipo de formula");
     });
 };
@@ -519,6 +746,41 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptos = function(parametro,tra
     }). catch (function(err) {
         console.log("err (/catch) [insertarFacFacturasConceptos]: ", err);
         callback({err: err, msj: "Error al guardar la factura conceptos]"});
+    });
+};
+
+/**
+ * +Descripcion Metodo encargado de registrar en la tabla fac_facturas_conceptos_notas
+ * @param {type} obj
+ * @param {type} transaccion
+ * @param {type} callback
+ * @returns {undefined}
+ */
+CajaGeneralModel.prototype.insertarFacFacturasConceptosNotas = function(parametro,callback) {
+
+    var parametros = {
+		    documento_id : 1,
+		    prefijo : parametro.prefijo,
+		    factura_fiscal : parametro.facturaFiscal,
+		    sw_contable : parametro.swContable,
+		    valor_nota_total : parametro.valorNotaTotal,
+		    valor_gravamen : parametro.porcentajeGravamen,
+		    descripcion : parametro.descripcion,
+		    usuario_id : parametro.usuarioId,
+		    fecha_registro : 'now()',
+		    empresa_id : parametro.empresaId
+    };
+console.log("Parametros::: ",parametros);
+    var query = G.knex('fac_facturas_conceptos_notas')
+	        .insert(parametros)
+	        .returning(['fac_facturas_conceptos_notas_id']);
+
+    query.then(function(resultado) {
+       
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err (/catch) [insertarFacFacturasConceptosNotas]: ", err);
+        callback({err: err, msj: "Error al guardar la factura conceptos Notas]"});
     });
 };
 

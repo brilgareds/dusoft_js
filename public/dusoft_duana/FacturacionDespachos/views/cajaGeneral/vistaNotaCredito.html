@@ -1,0 +1,63 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <h4 class="h4MarginTopBottom"><span >{{root.tituloNota}}</span></h4>
+            </div>
+            <br>
+	    <div class="row">
+		<div class="col-md-12" >
+		    <div class="col-md-4">
+			<label class="control-label" for="IsSmallBusiness" >Precio:</label>
+		    </div>
+		    <div class="col-md-8">
+			<input
+			    type="text"
+			    class="form-control"
+			    validacion-numero-decimal
+			    ng-model="root.precioNota"
+			    name="" id="" />
+		    </div>
+		</div>
+		<br />
+		<br />
+		<br />
+		<div class="col-md-12" >
+		    <div class="col-md-4">
+			<label class="control-label" for="IsSmallBusiness">Gravamen:</label>
+		    </div>
+		    <div class="col-md-8">
+			<input
+			    type="text"
+			    class="form-control"
+			    validacion-numero-decimal
+			    ng-model="root.gravamenNota"
+			    name="" id="" />
+		    </div>
+		</div>
+		<br />
+		<br />
+		<br />
+		<div class="col-sm-12">
+		    <div class="col-md-12">
+			<textarea
+			    rows="4"
+			    placeholder="Observacion"
+			    class="form-control"
+			    ng-model="root.descripcionNota"
+			    name="" id="" >
+			</textarea>
+		    </div>
+		</div>
+	    </div>
+	    <br />
+	    <br />
+        </div>
+        <div class="modal-footer">
+	    <button type="button" class="btn btn-warning" ng-click="cerrar()">Cerrar</button>
+	    <button type="button" class="btn btn-primary" ng-click="guardarFacFacturasConceptosNotas()">Guardar</button>
+        </div>
+    </div>
+</div> 
+
+

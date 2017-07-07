@@ -33,8 +33,38 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
+                    self.listarFacConceptosNotas = function(obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
                     self.listarCajaGeneral = function(obj, callback) {
                         Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CAJA_GENERAL, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.imprimirFacturaNotas = function(obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_FACTURA_NOTAS, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.imprimirFacturaNotasDetalle = function(obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_FACTURA_NOTAS_DETALLE, "POST", obj, function(data) {
                             callback(data);
                         });
                     };
@@ -93,6 +123,30 @@ define(["angular", "js/services"], function(angular, services) {
                     self.listarTerceros = function(parametros, callback) {
 
                         Request.realizarRequest(API.TERCEROS.LISTAR_TERCEROS, "POST", parametros, function(data) {
+                            callback(data);
+
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.listarPrefijos = function(parametros, callback) {
+
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_PREFIJOS, "POST", parametros, function(data) {
+                            callback(data);
+
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.insertarFacFacturasConceptosNotas = function(parametros, callback) {
+
+                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", parametros, function(data) {
                             callback(data);
 
                         });
@@ -187,7 +241,17 @@ define(["angular", "js/services"], function(angular, services) {
                         return grupos;
                     };
 
-
+		    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  15/05/2017 DD/MM/YYYYY
+                     * +Descripcion sincronizar las facturas con FI 
+                     */
+                    self.sincronizarFi = function(obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.SINCRONIZAR_FACTURA_NOTAS, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+		    
                     return this;
                 }]);
 

@@ -35,6 +35,12 @@ define(["angular"], function(angular) {
                 "ELIMINAR_TMP_DETALLE_CONCEPTOS": BASE_URL + "/CajaGeneral/eliminarTmpDetalleConceptos",
                 "GUARDAR_FACTURA_CAJA_GENERAL": BASE_URL + "/CajaGeneral/guardarFacturaCajaGenral",
                 "LISTAR_FACTURAS_GENERADAS_NOTAS": BASE_URL + "/CajaGeneral/listarFacturasGeneradasNotas",
+                "IMPRIMIR_FACTURA_NOTAS": BASE_URL + "/CajaGeneral/imprimirFacturaNotas",
+                "IMPRIMIR_FACTURA_NOTAS_DETALLE": BASE_URL + "/CajaGeneral/imprimirFacturaNotasDetalle",
+                "SINCRONIZAR_FACTURA_NOTAS": BASE_URL + "/CajaGeneral/sincronizarFacturaNotas",
+                "LISTAR_PREFIJOS": BASE_URL + "/CajaGeneral/listarPrefijos",
+                "INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/insertarFacFacturasConceptosNotas",
+                "LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/listarFacConceptosNotas"
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",

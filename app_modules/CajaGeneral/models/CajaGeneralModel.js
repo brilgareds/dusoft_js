@@ -756,10 +756,10 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptos = function(parametro,tra
  * @param {type} callback
  * @returns {undefined}
  */
-CajaGeneralModel.prototype.insertarFacFacturasConceptosNotas = function(parametro,callback) {
+CajaGeneralModel.prototype.insertarFacFacturasConceptosNotas = function(parametro,transaccion,callback) {
 
     var parametros = {
-		    documento_id : 1,
+		    documento_id : parametro.documentoId,
 		    prefijo : parametro.prefijo,
 		    factura_fiscal : parametro.facturaFiscal,
 		    sw_contable : parametro.swContable,
@@ -768,13 +768,16 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptosNotas = function(parametr
 		    descripcion : parametro.descripcion,
 		    usuario_id : parametro.usuarioId,
 		    fecha_registro : 'now()',
-		    empresa_id : parametro.empresaId
+		    empresa_id : parametro.empresaId,
+		    prefijo_nota : prefijoNota,
+		    numero_nota : numeroNota
     };
 console.log("Parametros::: ",parametros);
     var query = G.knex('fac_facturas_conceptos_notas')
 	        .insert(parametros)
 	        .returning(['fac_facturas_conceptos_notas_id']);
-
+     if (transaccion)
+        query.transacting(transaccion); 
     query.then(function(resultado) {
        
         callback(false, resultado);

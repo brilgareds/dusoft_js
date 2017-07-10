@@ -258,22 +258,48 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 			prefijo:args.prefijo,
 			swContable:args.swContable,
 			valorNotaTotal:args.valorNotaTotal,
-			usuarioId:req.body.session.usuario_id
+			usuarioId:req.body.session.usuario_id,
+			documentoId:args.swContable===1?'485':'486'
 			};
-
-    G.Q.ninvoke(that.m_caja_general, 'insertarFacFacturasConceptosNotas', parametros).then(function(resultado) {
+			//485 credito
+			
+    G.knex.transaction(function(transaccion) {
 	
-        if (resultado.length > 0) {
-	    return  G.Q.ninvoke(that.m_caja_general,'listarFacConceptosNotas', parametros);
-           
-        } else {
-            throw 'Consulta sin resultados';
-        }
-    }).then(function(result) {
-        res.send(G.utils.r(req.url, 'insertarFacFacturasConceptosNotas', 200, {insertarFacFacturasConceptosNotas: 'Se Inserto el Concepto Correctamente',resultado:result}));
-    }).fail(function(err) {
-        console.log("Error insertarFacFacturasConceptosNotas ", err);
-        res.send(G.utils.r(req.url, err, 500, {}));
+	G.Q.nfcall(__crearPrefijoNumero,that, parametros,transaccion).then(function(resultado) {
+	    
+	parametros.documentoId = args.swContable===1?'485':'486';
+	parametros.prefijoNota = resultado[0].prefijo;
+	parametros.numeroNota = resultado[0].numeracion;
+	console.log("parametros ",parametros);
+	G.Q.ninvoke(that.m_caja_general, 'insertarFacFacturasConceptosNotas', parametros,transaccion);
+
+	}).then(function(resultado) {
+           console.log("listar ",resultado);
+//	    if (resultado.length > 0) {
+		return  G.Q.ninvoke(that.m_caja_general,'listarFacConceptosNotas', parametros);
+
+//	    } else {
+//		throw 'Consulta sin resultados';
+//	    }
+
+	}).then(function(result) {
+
+	    console.log("commit  ",result);
+	    transaccion.commit();
+
+	}).fail(function(err) {
+	    console.log("Error ",err);
+	    transaccion.rollback(err);
+	}).done();
+			
+			
+     }).then(function(result) {
+        
+	 res.send(G.utils.r(req.url, 'insertarFacFacturasConceptosNotas', 200, {insertarFacFacturasConceptosNotas: 'Se Inserto el Concepto Correctamente',resultado:result}));
+	
+    }). catch (function(err) {
+	 console.log("error transaccion ",err);
+         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
 /**

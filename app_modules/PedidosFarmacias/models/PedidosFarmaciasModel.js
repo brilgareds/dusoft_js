@@ -385,7 +385,9 @@ PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_
                 SELECT :1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_solic from solicitud_pro_a_bod_prpal_tmp \
                 WHERE farmacia_id = :2 and centro_utilidad = :3 and bodega = :4 and usuario_id = :5 and empresa_origen_producto = :6 and centro_utilidad_origen_producto = :7 and bodega_origen_producto = :8 ";
 
-    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:usuario_id, 6:empresa_origen_id, 7:centro_utilidad_origen_id, 8:bodega_origen_id}).then(function(resultado){
+   var query= G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:usuario_id, 6:empresa_origen_id, 7:centro_utilidad_origen_id, 8:bodega_origen_id});
+	query.then(function(resultado){
+	    console.log("AAAAAAAAAAAASSSSSSS ",query.toSQL());
         callback(false, resultado.rows, resultado);
     }).catch(function(err){
         console.log("PedidosFarmaciasModel => insertarDetallePedidoFarmacia ", err);
@@ -840,8 +842,8 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 LEFT JOIN param_torreproducto j ON j.codigo_producto = a.codigo_producto AND j.empresa_id = g.empresa_destino\
                 where a.solicitud_prod_a_bod_ppal_id= ? order by e.descripcion ; ";
 
-   G.knex.raw(sql, [numero_pedido]).
-   then(function(resultado){
+   var query =G.knex.raw(sql, [numero_pedido]);
+   query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
        console.log("eroro >", err); 

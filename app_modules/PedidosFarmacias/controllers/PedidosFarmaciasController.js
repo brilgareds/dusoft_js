@@ -1685,7 +1685,7 @@ PedidosFarmacias.prototype.generarPedidoModuloCliente = function(req, res) {
  * */
  
 function __generarPedidoAutomatico(that, req, callback) {
-
+console.log("***********generar pedido automatico****************");
         var args = req.body.data;
         var pedido_cliente = null;
 
@@ -1745,7 +1745,7 @@ function __generarPedidoAutomatico(that, req, callback) {
         }
 
     }).then(function(rows) {
-        
+        console.log("insertarDetallePedidoFarmacia rows ",rows);
         if(rows[1].rowCount > 0){
             return G.Q.ninvoke(that.m_pedidos_farmacias, "insertarDetallePedidoFarmacia", numero_pedido, empresa_id, centro_utilidad_id,
                 bodega_id, usuario_id, empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id);

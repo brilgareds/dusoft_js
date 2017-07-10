@@ -158,6 +158,7 @@ define(["angular", "js/controllers", "controllers/ConexionesController"], functi
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
+
             
             if(localStorageService.get("session")){
                 window.location = "../home/";

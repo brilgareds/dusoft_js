@@ -248,6 +248,7 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
         if (laboratorio_id)
           this.where("a.clase_id", laboratorio_id);
 
+
         /*if (numero_orden > 0){
           
           if(!filtro || !filtro.auditoria){

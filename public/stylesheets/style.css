@@ -940,3 +940,7 @@ input[type=number]::-webkit-inner-spin-button {
 input[type=number] {
     -moz-appearance:textfield;
 }
+
+.ngRow:hover{
+    background-color: #E5E5E5!important;
+}

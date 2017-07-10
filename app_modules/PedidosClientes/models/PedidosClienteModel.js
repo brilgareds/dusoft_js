@@ -1585,6 +1585,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).then(function(resultado) {
           
+
         callback(false, resultado);
     }). catch (function(err) {
             console.log("err [listar_productos]: ", err);

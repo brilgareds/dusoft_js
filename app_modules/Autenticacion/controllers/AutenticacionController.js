@@ -123,6 +123,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
         if(conexiones.length > 0 && !opciones.sw_multiples_conexiones){
             throw {status:403, msj:"El usuario tiene sesiones activas", obj: {conexiones : conexiones}};
         } else {
+
             return G.Q.ninvoke(G.auth, "set", usuario);
         }
       

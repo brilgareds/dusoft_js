@@ -41,6 +41,7 @@ define([
     "controllers/facturacionCliente/FacturacionClientesController",
     "controllers/facturacionCliente/PedidosClientesController",
     "controllers/facturacionCliente/VentanaMensajeSincronizacionController",
+    "controllers/facturacionCliente/FacturacionConsumoController",
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
     "services/facturacionClientesService",

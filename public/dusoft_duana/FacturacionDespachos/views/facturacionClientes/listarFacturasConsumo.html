@@ -1,0 +1,14 @@
+<div class="table-responsive" style="clear:both;" ng-controller="FacturacionConsumoController">
+    <div class="defaultGrid grid-responsive" ng-grid="listarFacturasConsumo" ></div>
+</div>  
+<br>
+<div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="root.items_pedidos_clientes < 25" ng-click="paginaSiguiente()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div>
+<visualizar-reporte></visualizar-reporte>
+

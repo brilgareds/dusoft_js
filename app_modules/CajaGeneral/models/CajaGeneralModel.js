@@ -271,7 +271,11 @@ CajaGeneralModel.prototype.listarFacConceptosNotas= function(obj, callback) {
 	"b.valor_gravamen",
 	"b.descripcion",
 	"c.nombre",
-	"b.fecha_registro"
+	"b.fecha_registro",
+	"b.prefijo_nota",
+	"b.numero_nota",
+	"b.empresa_id",
+	"b.bodega"
     ];
 
     var query = G.knex.select(columna)
@@ -769,8 +773,9 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptosNotas = function(parametr
 		    usuario_id : parametro.usuarioId,
 		    fecha_registro : 'now()',
 		    empresa_id : parametro.empresaId,
-		    prefijo_nota : prefijoNota,
-		    numero_nota : numeroNota
+		    prefijo_nota : parametro.prefijoNota,
+		    numero_nota : parametro.numeroNota,
+	            bodega: parametro.bodega
     };
 console.log("Parametros::: ",parametros);
     var query = G.knex('fac_facturas_conceptos_notas')
@@ -779,7 +784,7 @@ console.log("Parametros::: ",parametros);
      if (transaccion)
         query.transacting(transaccion); 
     query.then(function(resultado) {
-       
+       console.log("insertarFacFacturasConceptosNotas ",resultado);
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err (/catch) [insertarFacFacturasConceptosNotas]: ", err);

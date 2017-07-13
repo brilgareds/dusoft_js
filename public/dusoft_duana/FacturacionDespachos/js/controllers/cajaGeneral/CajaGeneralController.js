@@ -24,6 +24,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 		    $scope.root.pagoEfectivo = 'default';
                     $scope.root.pagoCredito = 'default';
                     $scope.root.grupo.gruposConcepto = '';
+		    $scope.root.gravamenesNotaCredito=0;
+		    $scope.root.gravamenesNotaDebito=0;
+		    $scope.root.totalesNotaCredito=0;
+		    $scope.root.totalesNotaDebito=0;
+		    
                     $scope.root.filtros = [
                         {tipo: '', descripcion: "Nombre"}
                     ];
@@ -179,10 +184,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         };
                         cajaGeneralService.listarFacConceptosNotas(obj, function(data) {
                             if (data.status === 200) {
-				console.log("datos:::::: ",data);
                                 $scope.root.listarFacConceptosNotasDetalle=data.obj.listarFacConceptosNotas;
+					    data.obj.listarFacConceptosNotas.forEach(function(value) {
+						
+						if(value.nota_contable==='credito'){
+						 $scope.root.totalesNotaCredito+=parseInt(value.valor_nota_total);
+						 $scope.root.gravamenesNotaCredito+=parseInt(value.valor_gravamen);
+						  console.log("credito",$scope.root.totalesNotaCredito);
+						}else{
+						 $scope.root.totalesNotaDebito+=parseInt(value.valor_nota_total);
+						 $scope.root.gravamenesNotaDebito+=parseInt(value.valor_gravamen);  
+						 console.log("debito",$scope.root.gravamenesNotaDebito);
+						}
+						
+					    });
                             } else {
-                              // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+				$scope.root.listarFacConceptosNotasDetalle={};
                             }
 
                         });
@@ -383,6 +400,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             data: {
 			        descripcion:parametros.descripcion,
 				empresaId:parametros.empresaId,
+				bodega:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada(),
 				facturaFiscal:parametros.facturaFiscal,
 				porcentajeGravamen:parametros.porcentajeGravamen,
 				prefijo:parametros.prefijo,
@@ -414,7 +432,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableRowSelection: false,
                         enableCellSelection: true,
                         enableHighlighting: true,
-                        showFilter: true,
 			columnDefs: [
                             {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
                             {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.identificacion}}</p></div>'},
@@ -452,13 +469,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableHighlighting: true,
                         showFilter: true,
 			columnDefs: [
-		            {field: 'No. Nota', width: "10%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fac_facturas_conceptos_notas_id}}</p></div>'}, //
+		            {field: 'No. Nota', width: "10%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo_nota}} {{row.entity.numero_nota}}</p></div>'}, //
 		            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
                             {field: 'Nota', width: "10%", displayName: 'Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nota_contable}}</p></div>'}, //
-                            {field: 'Valor Total', width: "12%", displayName: 'Valor Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.valor_nota_total | currency:"$ " }}</p></div>'},
-                            {field: 'Valor Gravamen', width: "12%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.valor_gravamen | currency:"$ " }}</p></div>'}, //
+                            {field: 'Valor Total', width: "12%", displayName: 'Valor Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="right" >{{row.entity.valor_nota_total | currency:"$ " }}</p></div>'},
+                            {field: 'Valor Gravamen', width: "12%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="right" >{{row.entity.valor_gravamen | currency:"$ " }}</p></div>'}, //
                             {field: 'Usuario', width: "26%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
-                            {field: 'Fecha', width: "10%", displayName: 'Fecha', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Fecha', width: "10%", displayName: 'Fecha', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="center">{{row.entity.fecha_registro | date:"dd/MM/yyyy hh:mm a"}}</p></div>'},
                             {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
                            
 			 ]
@@ -469,7 +486,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @fecha 18/05/2017
                      * @returns {undefined}
                      */
-                    $scope.listaFacturasGeneradasNotas = {
+                    $scope.listaFacturasGeneradasNotas = { 
                         data: 'root.listarFacturasGeneradasNotas',
                         enableColumnResize: true,
                         enableRowSelection: false,
@@ -482,10 +499,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'Tercero', width: "25%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre_tercero}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
                             {field: 'Usuario', width: "10%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
-                            {field: 'Total', width: "8%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.total_factura| currency:"$ "}}</p></div>'},
-                            {field: 'Gravamen', width: "7%", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.gravamen| currency:"$ "}}</p></div>'},
-                            {field: 'Nota Credito', width: "7%", displayName: 'Nota Credito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
-                            {field: 'Nota Debito', width: "7%", displayName: 'Nota Debito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
+                            {field: 'Total', width: "8%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.total_factura)">{{row.entity.total_factura| currency:"$ "}}</p></div>'},
+                            {field: 'Gravamen', width: "7%", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.gravamen)">{{row.entity.gravamen| currency:"$ "}}</p></div>'},
+                            {field: 'Nota Credito', width: "7%", displayName: 'Nota Credito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
+                            {field: 'Nota Debito', width: "7%", displayName: 'Nota Debito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
                             {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
 			     cellTemplate: ' <div class="row">\
 							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
@@ -502,6 +519,37 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			    }  
 			 ]
                     };
+		    $scope.root.gravamenes=0;
+		    $scope.sumarGravamen=function(gravamen){//root.gravamenes
+			$scope.root.gravamenes2=gravamen;
+		    };
+		    $scope.root.totales=0;
+		    $scope.sumarTotal=function(total){
+			$scope.root.totales=total;
+		    };
+		    
+		   /*
+		    * 1-nota credito 0 - nota debito
+		    * @param {type} tipoNota
+		    * @returns {disabled}
+		    */
+		  $scope.comparaValorNota=function(tipoNota){
+		      var disabled=false;
+		      if(tipoNota===1){
+		       if(parseInt($scope.root.totales) < parseInt($scope.root.totalesNotaCredito)){
+			   console.log("compara Entro");
+			disabled=true;
+			}
+		      }else{
+		       if(parseInt($scope.root.totales) - parseInt($scope.root.totalesNotaCredito) === 0 ){
+			   console.log("compara Entro");
+			disabled=true;
+			}
+		      }
+			console.log("disabled ",disabled);
+			return disabled;
+		  };
+		    
 		    
 		    /**
 			* +Descripcion sincronizar FI
@@ -726,14 +774,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @author Andres Mauricio Gonzalez
                      * @fecha 01/06/2017
                      * @returns {undefined}
-                     */
+                     */		    
+		    
                     $scope.onNotaCredito = function(datos) {
 			$scope.root.precioNota=0;
 			$scope.root.gravamenNota=0;
 			$scope.root.descripcionNota="";
 			$scope.root.tituloNota="Nota Credito";
-                        that.verNotaCredito(1,datos);
+                        that.verNota(1,datos);		    
                     };
+		    
                     /**
                      * +Descripcion scope del grid para mostrar el detalle de las recepciones
                      * @author Andres Mauricio Gonzalez
@@ -745,7 +795,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			$scope.root.gravamenNota=0;
 			$scope.root.descripcionNota="";
 			$scope.root.tituloNota="Nota Debito";
-                        that.verNotaCredito(0,datos);
+                        that.verNota(0,datos);	
                     };
 
                     /**
@@ -826,7 +876,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {undefined}
 		     * nota : 0-debito 1-credito
                      */
-                    that.verNotaCredito = function(nota,datos) {
+                    that.verNota = function(nota,datos) {
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -838,11 +888,44 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             templateUrl: 'views/cajaGeneral/vistaNotaCredito.html',
                             scope: $scope,
                             controller: function($scope, $modalInstance) {
+						      
                                 $scope.cerrar = function() {
                                     $modalInstance.close();
                                 };
 				
-                                $scope.guardarFacFacturasConceptosNotas = function() {
+                                $scope.guardarFacFacturasConceptosNotas = function() {				    
+				   
+				    var valorIngresado=0;
+				    if($scope.root.descripcionNota===''){
+					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar la Descripcion");
+					 return;
+				    }
+
+				    if($scope.root.precioNota === '' ){
+					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar el Valor");
+					 return;
+				    }
+				    if($scope.root.gravamenNota === ''){
+					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar la Descripcion");
+					 return;
+				    }
+				    if(datos.sw_clase_factura==='0'){
+					valorIngresado = valorIngresado - parseInt($scope.root.precioNota);
+				    }else{
+					valorIngresado += parseInt($scope.root.precioNota);
+				    }
+				console.log("precio ingresado ",valorIngresado);   
+				console.log("credito total ",parseInt($scope.root.totalesNotaCredito));   
+				console.log("Debito total ",parseInt($scope.root.totalesNotaDebito));   
+				var totalNota=(parseInt($scope.root.totalesNotaCredito)- parseInt($scope.root.totalesNotaDebito))+ valorIngresado;
+				console.log("total ",totalNota);    
+				return true; 
+				    if(parseInt($scope.root.totales) < totalNota){
+					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota Supera el Precio de la Factura");
+					 return;
+				    }
+				    	    
+				    
 				    var parametros={
 					prefijo : datos.prefijo,
 					facturaFiscal : datos.factura_fiscal,
@@ -852,7 +935,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					descripcion : $scope.root.descripcionNota,
 					empresaId : $scope.root.empresaSeleccionada.getCodigo()
 				};
-				console.log("parametros  ",parametros);
+				
                                     that.guardarFacFacturasConceptosNotas(parametros,function(respuesta){
 					$modalInstance.close();
 					that.listarFacConceptosNotasDetalle(parametros);

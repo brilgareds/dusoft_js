@@ -226,7 +226,11 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
         return;
     }
     if (args.empresaId === undefined) {
-        res.send(G.utils.r(req.url, 'No Estan Definidos empresaId', 404, {}));
+        res.send(G.utils.r(req.url, 'No Estan Definida la empresaId', 404, {}));
+        return;
+    }
+    if (args.bodega === undefined) {
+        res.send(G.utils.r(req.url, 'No Estan Definida la bodega', 404, {}));
         return;
     }
     if (args.facturaFiscal === undefined) {
@@ -253,15 +257,15 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
      var parametros = {
 			descripcion:args.descripcion,
 			empresaId:args.empresaId,
+			bodega:args.bodega.codigo,
 			facturaFiscal:args.facturaFiscal,
 			porcentajeGravamen:args.porcentajeGravamen,
 			prefijo:args.prefijo,
 			swContable:args.swContable,
 			valorNotaTotal:args.valorNotaTotal,
 			usuarioId:req.body.session.usuario_id,
-			documentoId:args.swContable===1?'485':'486'
+			documentoId:args.swContable===1?'485':'483'
 			};
-			//485 credito
 			
     G.knex.transaction(function(transaccion) {
 	
@@ -271,6 +275,7 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 	parametros.prefijoNota = resultado[0].prefijo;
 	parametros.numeroNota = resultado[0].numeracion;
 	console.log("parametros ",parametros);
+	
 	G.Q.ninvoke(that.m_caja_general, 'insertarFacFacturasConceptosNotas', parametros,transaccion);
 
 	}).then(function(resultado) {

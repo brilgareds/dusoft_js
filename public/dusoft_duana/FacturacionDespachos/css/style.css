@@ -449,3 +449,7 @@ button.btnTipo{
     margin-top: 5px; 
     margin-bottom: 5px
 }
+
+.gridFacturasConsumo{
+    height: 270px;
+}

@@ -1,0 +1,135 @@
+<form  ng-model="formularios.formularioTerceros" name="formularios.formularioTerceros" id="formularioTerceros" form-validation   ng-init="onFormularioTercerosListo()">
+    <div class="row contenedorCamposTercero">
+
+        <div class="col-md-3">
+            <label class="control-label">Cliente</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.genero"  
+                           theme="select2" 
+                           name="genero"
+                           class="form-control selectgeneral pull-left ui-select-z-index-11 {{formularios.formularioTerceros.sumitedWithErrors}}" 
+                           append-to-body = "true"
+                           title="Se requiere el género" 
+                           data-placement="top"
+                           required="required">
+                    <ui-select-match  placeholder="Busqueda por nombre o documento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh="listarTerceros($select.search)" refresh-delay="0" repeat="documentos in  root.parametros.generos | filter:$select.search">
+                        <span ng-bind="genero.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
+
+        <div class="col-md-3">
+            <label class="control-label">Documento</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.genero"  
+                           theme="select2" 
+                           name="genero"
+                           class="form-control selectgeneral pull-left ui-select-z-index-11 {{formularios.formularioTerceros.sumitedWithErrors}}" 
+                           append-to-body = "true"
+                           title="Se requiere el género" 
+                           data-placement="top"
+                           required="required">
+                    <ui-select-match  placeholder="Buscar por número de documento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh="listarDocumentos($select.search)" refresh-delay="0" repeat="documentos in  root.parametros.generos | filter:$select.search">
+                        <span ng-bind="genero.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
+        
+        
+        <!--div class="col-md-6">
+            <fieldset>
+                <legend>Proveedor</legend> 
+                <div class="row">
+                    <div class="col-md-7"> 
+                        <ui-select ng-disabled="vista_previa"  ng-model="codigo_proveedor_id" theme="select2" class="form-control selectgeneral pull-left ui-select-z-index-11" ng-change="seleccionar_proveedor(codigo_proveedor_id)">
+                            <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
+                            <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
+                                {{ proveedor.get_nombre() }}
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+            </fieldset>
+        </div-->
+
+    </div>
+
+</form>
+<h4>Detalle del documento</h4>
+<div  class="table-responsive" style="clear:both;">
+    <div class="gridFacturasConsumo grid-responsive" ng-grid="listaDocumentos" ></div>
+</div>
+<hr>
+<h4>Detalle de Facturación</h4>
+<form  ng-model="formularios.formularioTerceros" name="formularios.formularioTerceros" id="formularioTerceros" form-validation   ng-init="onFormularioTercerosListo()">
+    <div class="row contenedorCamposTercero">
+
+        <div class="col-md-3">
+            <label class="control-label">Corte</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control"  
+                       ng-model="root.tercero.razonSocial" placeholder="Buscar tercero" name="buscarTercero" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </p>
+        </div>
+        
+        <div class="col-md-3">
+            <label class="control-label">Observacion</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control"  
+                       ng-model="root.tercero.razonSocial" placeholder="Buscar tercero" name="buscarTercero" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </p>
+        </div>
+    </div>
+
+</form>
+<div  class="table-responsive" style="clear:both;">
+    <div class="gridFacturasConsumo grid-responsive" ng-grid="listaDocumentos" ></div>
+</div>
+
+<label>Productos : 4</label>
+<div class="row">
+    <div class="col-md-2">
+        <label>Subtotal : 10000000</label>
+    </div>
+    <div class="col-md-2">
+        <label>Iva : 5000</label>
+    </div>
+    <div class="col-md-2">
+        <label>RetFte : 5000</label>
+    </div>
+    <div class="col-md-2">
+        <label>RetIca : 200</label>
+    </div>
+    <div class="col-md-2">
+        <label>RetIva : 100</label>
+    </div>
+    <div class="col-md-2">
+        <label>Total : 100000005</label>
+    </div>
+</div>
+<br>
+<p class="pull-right">
+    <button class="btn btn-default" ng-click="onBtnVolver()">
+        Volver
+    </button>
+    <button class="btn btn-warning">
+        Eliminar temporal <i class="glyphicon glyphicon-trash"></i>
+    </button>
+    <button class="btn btn-success">
+        Facturar <i class="glyphicon glyphicon-duplicate"></i>
+    </button>
+</p>

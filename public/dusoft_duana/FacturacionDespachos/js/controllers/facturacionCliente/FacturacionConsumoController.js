@@ -24,13 +24,25 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.root = {
                 fechaInicialPedidosCosmitet: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
                 fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),            
-                opciones: Usuario.getUsuarioActual().getModuloActual().opciones
+                opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
+                vistaFacturacion:"",
+                vistas : [
+                    {
+                        id : 1,
+                        descripcion : "Facturas Generadas"
+                    },
+                    {
+                        id : 2,
+                        descripcion : "Facturas Temporales"
+                    }
+                ]
             };
             $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
+            $scope.root.vistaSeleccionada = $scope.root.vistas[0];
             
             callback();
         };
@@ -96,8 +108,47 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
             ]
         };
-                
+        
+        $scope.listarFacturasConsumoTemporales = {
+            data: 'root.facturas_proceso',
+            enableColumnResize: true,
+            enableRowSelection: false,
+            enableCellSelection: true,
+            enableHighlighting: true,
+            columnDefs: [
 
+                {field: 'Factura',  cellClass: "ngCellText", width: "15%", displayName: 'Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_prefijo()}}- {{row.entity.get_numero()}}</p></div>'},
+                {field: 'Empresa',  cellClass: "ngCellText", width: "15%", displayName: 'Empresa', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_empresa()}}</p></div>'},
+                {field: 'Fecha creacion',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha creacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_fecha_registro()}}</p></div>'},
+                {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha Inicial', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
+                {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha final', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},               
+                {displayName: "Opc", cellClass: "txt-center dropdown-button",
+                cellTemplate: '\
+                <div class="btn-group">\
+                    <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                    <ul class="dropdown-menu dropdown-options">\
+                        <li ng-if="row.entity.get_numero() > 0 ">\
+                            <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,1)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
+                        </li>\
+                    </ul>\
+                </div>'
+                },
+                {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
+                cellTemplate: '<div class="col-xs-16 ">\n\
+                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
+                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
+            ]
+        };
+        
+        $scope.onCambiarVista = function(vista){
+            console.log("cambiar vista ", vista)
+            $scope.root.vistaFacturacion = vista;
+        };
+                
+        $scope.onBtnGenearFactura = function(){
+            $state.go("GuardarFacturaConsumo");
+        };
+        
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones
@@ -124,6 +175,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 }
             }
         });
+        
  
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {            
             socket.remove(['onNotificarFacturacionTerminada']);  

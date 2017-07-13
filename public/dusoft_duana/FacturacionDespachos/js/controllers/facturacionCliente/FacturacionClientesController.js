@@ -490,7 +490,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 18/05/2017
          */
         $scope.limpiarLocalStorageFacturaGenerada = function(){
-            console.log(">>>>>>>>>>>>>>>>>>>>")
             $scope.notificarFacturaGeneradaCosmitet = 0;
             localStorageService.add('listaFacturaDespachoGenerada', null); 
         };

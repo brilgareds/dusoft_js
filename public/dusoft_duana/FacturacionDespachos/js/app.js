@@ -42,6 +42,7 @@ define([
     "controllers/facturacionCliente/PedidosClientesController",
     "controllers/facturacionCliente/VentanaMensajeSincronizacionController",
     "controllers/facturacionCliente/FacturacionConsumoController",
+    "controllers/facturacionCliente/GuardarFacturaConsumoController",
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
     "services/facturacionClientesService",
@@ -108,6 +109,12 @@ define([
                     parent_name: "Despacho",
                     templateUrl: "views/facturacionProveedores/detallePedidos.html",
                     controller: "DetalleRecepcionParcialController"                        
+                }).state('GuardarFacturaConsumo', {
+                    url: "/GuardarFacturaConsumo",
+                    text: "Generar factura de consumo", 
+                    parent_name: "Despacho",
+                    templateUrl: "views/facturacionClientes/guardarFacturaConsumo.html",
+                    controller: "GuardarFacturaConsumoController"                        
                 });
                     
 

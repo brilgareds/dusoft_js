@@ -1,14 +1,53 @@
-<div class="table-responsive" style="clear:both;" ng-controller="FacturacionConsumoController">
-    <div class="defaultGrid grid-responsive" ng-grid="listarFacturasConsumo" ></div>
-</div>  
 <br>
-<div class="row text-center">
-    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
-        <span class="glyphicon glyphicon-chevron-left" ></span>
-    </button>
-    <button type="button" class="btn btn-default btn-medium" ng-disabled="root.items_pedidos_clientes < 25" ng-click="paginaSiguiente()">
-        <span class="glyphicon glyphicon-chevron-right" ></span>
-    </button>
+<div class="row">
+    <div class="col-md-6">
+            <div class="input-group-btn">                                                                      
+                <button type="button" class="btn btn-default dropdown-toggle" 
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.vistaSeleccionada.descripcion}} <span class="caret"></span></button>
+                <ul class="dropdown-menu" >
+                    <li ng-repeat="vista in root.vistas">
+                        <a href="javascript:void(0)" ng-click="onSeleccionarVista(vista)">{{vista.descripcion}}</a>
+                    </li>
+                </ul>                                         
+                <button type="button" class="btn btn-default" 
+                        aria-expanded="false" ng-click="onBtnGenearFactura()" >Generar factura</span></button>
+            </div>
+    </div>
+
+</div>
+
+<br>
+<div ng-if="root.vistaSeleccionada.id == 1">
+    
+    <div  class="table-responsive" style="clear:both;">
+        <div class="defaultGrid grid-responsive" ng-grid="listarFacturasConsumo" ></div>
+    </div>  
+    <br>
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="root.items_pedidos_clientes < 25" ng-click="paginaSiguiente()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+    
+</div>
+<div ng-if="root.vistaSeleccionada.id == 2">
+    
+    <div  class="table-responsive" style="clear:both;">
+        <div class="defaultGrid grid-responsive" ng-grid="listarFacturasConsumoTemporales" ></div>
+    </div>  
+    <br>
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="root.items_pedidos_clientes < 25" ng-click="paginaSiguiente()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+    
 </div>
 <visualizar-reporte></visualizar-reporte>
 

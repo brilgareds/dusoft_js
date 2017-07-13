@@ -944,3 +944,7 @@ input[type=number] {
 .ngRow:hover{
     background-color: #E5E5E5!important;
 }
+
+.contenedorDropdown{
+    width: 100%;
+}

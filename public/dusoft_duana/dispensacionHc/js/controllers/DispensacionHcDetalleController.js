@@ -695,7 +695,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          *              de un medicamento confrontado
          */
         that.ventanaAutorizaDispensacion = function(ultimoRegistroDispensacion, entity){
-            
+            console.log("ventanaAutorizaDispensacion");
             $scope.opts = {
                 backdrop: true,
                 backdropClick: true,
@@ -703,7 +703,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 keyboard: true,
                 templateUrl: 'views/dispensacionHc/dispensarAutorizaDispensacion.html',
                 scope: $scope,                  
-                controller: "dispensacionAutorizarDispensacion",
+                controller: "DispensacionAutorizarDispensacion",
                 resolve: {
                         detalleRegistroDispensacion: function() {
                             return ultimoRegistroDispensacion;

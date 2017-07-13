@@ -583,7 +583,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         keyboard: true,
                         templateUrl: 'views/dispensacionHc/descartarPendientesFormula.html',
                         scope: $scope,                  
-                        controller: "descartarPendientesFormulaController",
+                        controller: "DescartarPendientesFormulaController",
                         windowClass: 'app-modal-window-smlg',
                         resolve: {
                                 identificadorProductoPendiente: function() {

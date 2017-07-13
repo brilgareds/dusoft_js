@@ -244,7 +244,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
               
                 var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
 
-                if ($scope.documentoAuditado[0].getTipoPedido() === 1) {
+                if ($scope.documentoAuditado[0].getTipoPedido() === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_FARMACIAS;
                 }
 

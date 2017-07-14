@@ -1200,18 +1200,27 @@ PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function
 
 // obtiene informacion del rotulo para imprimir
 PedidosFarmaciasModel.prototype.obtenerDetalleRotulo = function(numero_pedido, numero_caja, tipo, callback) {
-
+    
+    var obj = {1: numero_pedido};
+    var sqlAux = "";
+    
+    if(numero_caja){
+        sqlAux = " AND a.numero_caja = :3 AND a.tipo = :4 ";
+        obj["3"] = numero_caja;
+        obj["4"] = tipo;
+    }
 
     var sql  =  "SELECT c.ubicacion as direccion, c.descripcion as cliente, e.departamento, a.numero_caja, a.tipo FROM inv_rotulo_caja  a\
             INNER JOIN solicitud_productos_a_bodega_principal b ON b.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id\
             INNER JOIN bodegas c ON b.farmacia_id = c.empresa_id AND b.centro_utilidad = c.centro_utilidad AND b.bodega = c.bodega\
             INNER JOIN centros_utilidad d ON c.empresa_id = d.empresa_id AND c.centro_utilidad = d.centro_utilidad\
             INNER JOIN tipo_dptos e ON e.tipo_dpto_id 	= d.tipo_dpto_id AND e.tipo_pais_id = d.tipo_pais_id\
-            WHERE a.solicitud_prod_a_bod_ppal_id = :1 AND a.numero_caja = :2 AND a.tipo = :3;";
+            WHERE a.solicitud_prod_a_bod_ppal_id = :1 "+sqlAux+" and a.tipo_pedido = '2'";
 
-    G.knex.raw(sql, {1:numero_pedido, 2:numero_caja, 3:tipo}).then(function(resultado){
+    G.knex.raw(sql, obj).then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
+        console.log("error ", err);
         callback(err);
     });
 };

@@ -111,6 +111,92 @@ CajaGeneralModel.prototype.listarCajaGeneral = function(obj, callback) {
  * @param {type} callback
  * @returns {undefined}
  */
+CajaGeneralModel.prototype.listarNotasGeneradas = function(obj, callback) {
+console.log("********************listarNotasGeneradas************************");
+console.log("[pararmetros]:",obj);
+    var columna_a = [
+	"a.documento_id as documento_nota",
+	"b.documento_id as documento_factura",
+	"a.factura_fiscal",
+	"a.prefijo",
+	"a.numero_nota",
+	"a.prefijo_nota",
+	"a.sw_contable",
+	"a.valor_nota_total",
+	"a.valor_gravamen",
+	"a.descripcion",
+	"a.empresa_id",
+	"a.bodega",
+	"c.nombre",
+	"a.fecha_registro",
+	"d.nombre_tercero",
+	"d.direccion",
+	"d.telefono",
+	"b.total_factura",
+	"b.gravamen",
+	G.knex.raw("d.tipo_id_tercero ||' '|| d.tercero_id AS identificacion"),
+	"d.tercero_id",
+	"d.tipo_id_tercero"
+    ];
+    
+    var query = G.knex.select(columna_a)
+            .from('fac_facturas_conceptos_notas as a ')
+            .innerJoin('fac_facturas as b', function() {
+	
+		this.on("b.prefijo", "a.prefijo")
+		    .on("b.factura_fiscal", "a.factura_fiscal")
+		    .on("b.empresa_id", "a.empresa_id")
+	
+	    }).innerJoin('system_usuarios as c', function() {
+		
+		this.on("a.usuario_id", "c.usuario_id")
+		
+	    }).innerJoin('terceros as d', function() {
+		
+		this.on("b.tipo_id_tercero", "d.tipo_id_tercero")		
+		    .on("b.tercero_id", "d.tercero_id")
+	    
+	    }).where(function() {
+		
+		if(obj.empresaId !== undefined){
+		    this.andWhere('a.empresa_id ', obj.empresaId)
+		}
+		if(obj.empresaId !== undefined){
+		    this.andWhere('a.bodega ', obj.bodega)
+		}
+		if(obj.prefijo !== 'undefined'){
+		    this.andWhere('a.prefijo ', obj.prefijo)
+		}
+		if(obj.facturaFiscal !== 'undefined'){
+		    this.andWhere('a.factura_fiscal ', obj.facturaFiscal)
+		}
+		if(obj.numeroNota !== 'undefined'){
+		    this.andWhere('a.numero_nota ', obj.numeroNota)
+		}
+		if(obj.prefijoNota !== 'undefined'){
+		    this.andWhere('a.prefijo_nota ', obj.prefijoNota)
+		}
+		
+	    });
+     if(obj.limit!== undefined){	    
+      query.limit(obj.limit);
+     }
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+	
+        console.log("err [listarNotasGeneradas]:", err);
+        callback(err);
+    });
+};
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de listar facturas generadas
+ * @fecha 2017-05-31 YYYY-MM-DD
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
 CajaGeneralModel.prototype.listarFacturasGeneradas = function(obj, callback) {
 console.log("********************listarFacturasGeneradas************************");
 console.log("[pararmetros]:",obj);
@@ -777,7 +863,6 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptosNotas = function(parametr
 		    numero_nota : parametro.numeroNota,
 	            bodega: parametro.bodega
     };
-console.log("Parametros::: ",parametros);
     var query = G.knex('fac_facturas_conceptos_notas')
 	        .insert(parametros)
 	        .returning(['fac_facturas_conceptos_notas_id']);

@@ -264,14 +264,14 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 			swContable:args.swContable,
 			valorNotaTotal:args.valorNotaTotal,
 			usuarioId:req.body.session.usuario_id,
-			documentoId:args.swContable===1?'485':'483'
+			documentoId:args.swContable===1?'506':'504'
 			};
 			
     G.knex.transaction(function(transaccion) {
 	
 	G.Q.nfcall(__crearPrefijoNumero,that, parametros,transaccion).then(function(resultado) {
 	    
-	parametros.documentoId = args.swContable===1?'485':'486';
+	parametros.documentoId = args.swContable===1?'506':'504';
 	parametros.prefijoNota = resultado[0].prefijo;
 	parametros.numeroNota = resultado[0].numeracion;
 	console.log("parametros ",parametros);
@@ -875,6 +875,96 @@ CajaGeneral.prototype.imprimirFacturaNotasDetalle = function(req, res) {
 	console.log("result ___",result);
 	res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirFacturaNotas: result}));
 
+    }). catch (function(err) {
+	console.log("error transaccion ", err);
+	res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion  Metodo encargado de imprimir las facturas
+ * @fecha 2017-06-13 (YYYY-MM-DD)
+ */
+CajaGeneral.prototype.imprimirNota = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    var impuesto;
+
+    var parametros = {
+	empresaId: args.empresaId,
+	bodega: args.bodega,
+	prefijo: args.prefijo,
+	facturaFiscal: args.facturaFiscal,
+	prefijoNota: args.prefijoNota,
+	numeroNota: args.numeroNota
+    };
+    
+    G.Q.ninvoke(that.m_caja_general, 'listarNotasGeneradas', parametros).then(function(result) {
+	//console.log(">>>>>>>>>>>>>>>>>>",result);
+
+    	parametros.empresaId = result[0].empresa_id;
+    	parametros.empresa_id = result[0].empresa_id;
+    	parametros.tipoIdTercero = result[0].tipo_id_tercero;
+    	parametros.terceroId = result[0].tercero_id;
+    	parametros.totalFactura = parseInt(result[0].valor_nota_total);
+	parametros.totalGravamen = parseInt(result[0].valor_gravamen);
+	
+	
+	return G.Q.nfcall(__traerPorcentajeImpuestos, that, parametros);
+
+    }).then(function(result) {
+	
+	impuesto = result;
+	impuesto.empresaId = parametros.empresaId;
+	impuesto.prefijo = parametros.prefijo;
+	impuesto.factura = parametros.facturaFiscal;
+	parametros.totalAbono = impuesto.totalGeneral;
+	parametros.totalEfectivo = impuesto.totalGeneral;
+	parametros.totalCheque = 0;
+	parametros.totalTarjeta = 0;
+	parametros.totalAbonos = 0;
+
+	var parametrosEmpresa = {
+	    tercero: {
+		id: parametros.terceroId,
+		tipoDocumento: {id: parametros.tipoIdTercero},
+		empresa_id: parametros.empresaId
+	    }
+	};
+	
+//	console.log("impuesto ",impuesto);
+//	console.log("parametros ",parametros);
+//	console.log("parametrosEmpresa ",parametrosEmpresa);
+	return G.Q.ninvoke(that.m_gestion_terceros, 'obtenerTercero', parametrosEmpresa);
+
+    }).then(function(result) {
+	
+	console.log("result ",result);
+//
+//	cliente = result;
+//	return G.Q.ninvoke(that.m_caja_general, 'listarEmpresa', parametros);
+//
+//    }).then(function(result) {
+//	empresa = result;
+//	var informacion = {
+//	    serverUrl: req.protocol + '://' + req.get('host') + "/",
+//	    empresa: empresa[0],
+//	    cliente: cliente[0],
+//	    parametros: parametros,
+//	    conceptosDetalle: conceptosDetalle,
+//	    informacion: __infoFooter(parametros.prefijo),
+//	    usuario: req.session.user.nombre_usuario,
+//	    archivoHtml: 'facturaConceptos.html',
+//	    impuesto: impuesto
+//	}
+//	return G.Q.nfcall(__generarPdf, informacion);
+//	
+//    }).then(function(result) {
+//	console.log("result ___",result);
+	res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirNota: 'qw'}));
+//	res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirNota: result}));
+//
     }). catch (function(err) {
 	console.log("error transaccion ", err);
 	res.send(G.utils.r(req.url, err, 500, {}));

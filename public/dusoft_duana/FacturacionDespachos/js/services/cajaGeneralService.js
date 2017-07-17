@@ -73,6 +73,16 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
+                    self.imprimirNota = function(obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_NOTA, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
                     self.insertarTmpDetalleConceptos = function(obj, callback) {
                         Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_TMP_DETALLE_CONCEPTOS, "POST", obj, function(data) {
                             callback(data);

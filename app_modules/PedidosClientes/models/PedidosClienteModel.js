@@ -2590,6 +2590,7 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
                   from ventas_ordenes_pedidos_tmp a\
                   left join vnts_contratos_clientes AS b on b.tipo_id_tercero = a.tipo_id_tercero and b.tercero_id = a.tercero_id\
                   where a.pedido_cliente_id_tmp = :1\
+                  and b.estado = '1'\
                 ) returning pedido_cliente_id as numero_pedido ";
 
 

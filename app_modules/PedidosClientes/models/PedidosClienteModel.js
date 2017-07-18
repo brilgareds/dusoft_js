@@ -1857,7 +1857,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
     leftJoin("vnts_contratos_clientes as j", function(){
        this.on("a.tipo_id_tercero", "j.tipo_id_tercero").
        on("a.tercero_id", "j.tercero_id");
-    }).    
+    }).where("j.estado", "1").
     then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {

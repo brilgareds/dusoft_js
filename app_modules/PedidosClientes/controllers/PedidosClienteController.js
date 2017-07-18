@@ -625,7 +625,7 @@ function __productosBodegas(that, index, productos, listaProductos, callback) {
     index++;
     setTimeout(function () {
         __productosBodegas(that, index, productos, listaProductos, callback);
-    }, 300);
+    }, 0);
 
 }
 ;
@@ -673,7 +673,7 @@ function __bodegasPedidos(that, index, bodegasPedidos, listaProductos, empresa_i
                     filtro,
                     pagina,
                     filtros, filtroAvanzado, callback);
-        }, 300);
+        }, 0);
 
     }).fail(function (err) {
         console.log("err (/fail) [__bodegasPedidos]: ", err);
@@ -1601,19 +1601,19 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
         }
 
     }).then(function (contenido) {
-
+        
         if (contenido.length > 0) {
             /*
              * +Descripcion Se valida si cada uno de los productos existe en el inventario
              */
-            return G.Q.nfcall(__validar_productos_archivo_plano, that, 0, contenido, [], []);
+            return G.Q.nfcall(__validar_productos_archivo_plano, that, 0, contenido, [], []);  
 
         } else {
             throw {msj: "El archivo esta vacio", status: 500, data: {pedidos_clientes: {}}};
         }
 
     }).then(function (productosPlano) {
-
+        console.log("termino de validar archivo");
         /*
          * +Descripcion Productos que no se encuentran en el inventario
          */
@@ -1645,7 +1645,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
 
     }).then(function (resultado) {
 
-
+        
         _productosPlanoValidadosValido = resultado[0];
         productosPlano = resultado[0];
         _productosPlanoValidadosInvalido = resultado[1];
@@ -2137,6 +2137,7 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
     producto.centroUtilidadProducto = producto.centro_utilidad;
     producto.bodegaProducto = producto.bodega;
     producto.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id;
+    index++;
 
     G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function (resultado) {
 
@@ -2144,7 +2145,7 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
 
             setTimeout(function () {
                 __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
-            }, 300);
+            }, 0);
             return;
         }
 
@@ -2195,13 +2196,8 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
         }
     }).fail(function (err) {
         console.log("err [__cantidadSolicitadaProducto]: ", err);
+        callback(err);
     }).done();
-
-    index++;
-    setTimeout(function () {
-
-        __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
-    }, 300);
 }
 
 /**
@@ -2233,7 +2229,7 @@ function __insertarDetalleCotizacion(that, index, usuario, cotizacion, _producto
             setTimeout(function () {
 
                 __insertarDetalleCotizacion(that, index, usuario, cotizacion, _productos_validos, _productos_invalidos, callback);
-            }, 300);
+            }, 0);
         });
 
     });
@@ -4294,33 +4290,33 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
      */
     G.Q.ninvoke(that.m_productos, 'validar_producto', producto.codigo).then(function (resultado) {
 
-        var productoValidos = {codigo_producto: producto.codigo, cantidad_solicitada: producto.cantidad};
+        var _producto = {codigo_producto: producto.codigo, cantidad_solicitada: producto.cantidad};
 
         if (resultado.length > 0 && producto.cantidad > 0) {
 
-            productoValidos.tipoProductoId = resultado[0].tipo_producto_id;
-            productoValidos.descripcion = resultado[0].descripcion_producto;
-            productoValidos.cantidadSolicitada = producto.cantidad;
-            productoValidos.totalSolicitado = 0;
-            productoValidos.totalDisponible = 0;
-            productosValidos.push(productoValidos);
+            _producto.tipoProductoId = resultado[0].tipo_producto_id;
+            _producto.descripcion = resultado[0].descripcion_producto;
+            _producto.cantidadSolicitada = producto.cantidad;
+            _producto.totalSolicitado = 0;
+            _producto.totalDisponible = 0;
+            productosValidos.push(_producto);
 
         } else {
-            productoValidos.mensajeError = "No existe en inventario";
-            productoValidos.existeInventario = false;
-            productosInvalidos.push(productoValidos);
+            _producto.mensajeError = "No existe en inventario";
+            _producto.existeInventario = false;
+            productosInvalidos.push(_producto);
 
         }
 
+        index++;
+        setTimeout(function () {
+            __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback);
+        }, 0);
 
     }).fail(function (error) {
 
         callback(error);
     });
-    index++;
-    setTimeout(function () {
-        __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback);
-    }, 300);
 }
 ;
 
@@ -4713,7 +4709,7 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
 
         setTimeout(function () {
             __insertarProductosFarmaciaCotizacion(that, index, cotizacion, productos, callback);
-        }, 300);
+        }, 0);
 
     }).fail(function (err) {
         callback({msj: 'Error al insertar los productos en la cotizacion', status: 500, pedidos_clientes: ''});
@@ -4797,7 +4793,7 @@ function __precioVentaProductos(that, index, cotizacion, callback) {
         producto.cantidadValida = true;
         setTimeout(function () {
             __precioVentaProductos(that, index, cotizacion, callback);
-        }, 300);
+        }, 0);
 
     }).fail(function (err) {
         producto.mensajeError = 'No se encuentra en la bodega el producto ';

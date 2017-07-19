@@ -28,6 +28,7 @@
                                         <ui-select-choices ui-disable-choice="cliente.getTipoBloqueoId() != 1 || cliente.getEstadoContrato() != 1" refresh="listar_clientes($select.search)" refresh-delay="0" repeat="cliente in Empresa.get_clientes() | filter:$select.search">
                                             
                                           <i ng-if='cliente.getTipoBloqueoId() != 1' class="glyphicon glyphicon-ban-circle"></i> {{ cliente.get_descripcion() }}
+                                          <span ng-if="cliente.getEstadoContrato() != 1" style="color:orange"> - SIN CONTRATO</span>
                                               
                                             
                                         </ui-select-choices>

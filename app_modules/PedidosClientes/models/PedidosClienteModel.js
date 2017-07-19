@@ -1842,7 +1842,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
 
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").as("a");
+    offset((pagina - 1) * G.settings.limit).orderBy("a.fecha_registro", "desc").as("a");
         
     
     var queryPrincipal = G.knex.column([
@@ -1856,8 +1856,10 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
     leftJoin("ventas_ordenes_pedidos as h", "a.numero_cotizacion", "h.pedido_cliente_id_tmp").
     leftJoin("vnts_contratos_clientes as j", function(){
        this.on("a.tipo_id_tercero", "j.tipo_id_tercero").
-       on("a.tercero_id", "j.tercero_id");
-    }).where("j.estado", "1").
+       on("a.tercero_id", "j.tercero_id").
+       on(G.knex.raw("j.estado = '1'"));
+    }).
+    //where("j.estado", "1").
     then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {

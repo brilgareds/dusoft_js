@@ -433,6 +433,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     cliente.setMunicipio(data.municipio);
                     cliente.set_contrato(data.contrato_cliente_id);
                     cliente.setTipoBloqueoId(data.tipo_bloqueo_id);
+                    cliente.setEstadoContrato(data.estado_contrato);
                     $scope.Empresa.set_clientes(cliente);
 
                 });

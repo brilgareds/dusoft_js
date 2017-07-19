@@ -501,8 +501,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'Usuario', width: "15%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
                             {field: 'Total', width: "8%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.total_factura)">{{row.entity.total_factura| currency:"$ "}}</p></div>'},
                             {field: 'Gravamen', width: "7%", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.gravamen)">{{row.entity.gravamen| currency:"$ "}}</p></div>'},
-                            {field: 'Nota Credito', width: "6%", displayName: 'Nota Credito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
-                            {field: 'Nota Debito', width: "6%", displayName: 'Nota Debito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
+                            {field: 'Nota Credito', width: "6%", displayName: 'Nota Credito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
+                            {field: 'Nota Debito', width: "6%", displayName: 'Nota Debito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
                             {field: 'Imprimir2', width: "6%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
                             {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "5%",
 			     cellTemplate: ' <div class="row">\
@@ -935,37 +935,40 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 				    }
 
 				    if($scope.root.precioNota === '' ){
-					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar el Valor");
+					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar el Precio");
 					 return;
 				    }
 				    if($scope.root.gravamenNota === ''){
 					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar la Descripcion");
 					 return;
 				    }
-				    if(datos.sw_clase_factura==='0'){
+				    
+				     if($scope.root.precioNota === 0){
+					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota debe ser Mayor a cero");
+					 return;
+				    }
+				    
+				    if(nota==='1'){
 					valorIngresado = valorIngresado - parseInt($scope.root.precioNota);
 				    }else{
 					valorIngresado += parseInt($scope.root.precioNota);
 				    }
-				    console.log("valor ingresado ",valorIngresado);
-				    
-				    var totalNota=(parseInt($scope.root.totalesNotaDebito )- parseInt($scope.root.totalesNotaCredito))+ valorIngresado;
+				     
+				   
+				    var totalNota=parseInt($scope.root.totales)+(parseInt($scope.root.totalesNotaDebito )- parseInt($scope.root.totalesNotaCredito))+ valorIngresado;
 				
 				    if(parseInt($scope.root.totales) < valorIngresado){
 					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota Supera el Precio de la Factura");
 					 return;
 				    }
+				    console.log("datos.sw_clase_factura ",datos.sw_clase_factura);
+				    console.log("valor ingresado ",valorIngresado);
+				    console.log("valor totalNota ",totalNota);
+				    
 				    if(totalNota < 0){
-					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota no debe ser a Menor a la Factura");
+					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota no debe ser Menor a la Factura");
 					 return;
 				    }
-				    	    
-//				console.log("precio ingresado ",valorIngresado);   
-//				console.log("credito total ",parseInt($scope.root.totalesNotaCredito));   
-//				console.log("Debito total ",parseInt($scope.root.totalesNotaDebito)); 
-//				console.log("total ",totalNota);    
-//				console.log("totals ",$scope.root.totales);    
-//				return true; 
 				    
 				    var parametros={
 					prefijo : datos.prefijo,

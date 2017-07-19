@@ -408,27 +408,6 @@ CajaGeneral.prototype.listarConceptosDetalle = function(req, res) {
     }).done();
 };
 
-//function __valorTotalGravamen(index,datos,total,callback){
-//   var conceptos = datos[index];
-//   
-//    if (!conceptos) {
-//	callback(false, total);
-//	return;
-//    }
-//    
-//    total.totalFactura+=parseInt(conceptos.valor_total);
-//    total.totalGravamen+=parseInt(conceptos.valor_gravamen);
-//    
-//    index++;
-//    var timer = setTimeout(function(){
-//  
-//    __valorTotalGravamen(index,datos,total,callback);
-//    
-//     clearTimeout(timer);
-//     
-//   }, 0);
-//    
-//};
 
 function __valorTotalGravamen(index, conceptosDetalle,total,callback){
 
@@ -890,6 +869,9 @@ CajaGeneral.prototype.imprimirNota = function(req, res) {
     var that = this;
     var args = req.body.data;
     var impuesto;
+    var cliente = [];
+    var empresa = [];
+    var conceptosDetalle = [];
 
     var parametros = {
 	empresaId: args.empresaId,
@@ -901,8 +883,8 @@ CajaGeneral.prototype.imprimirNota = function(req, res) {
     };
     
     G.Q.ninvoke(that.m_caja_general, 'listarNotasGeneradas', parametros).then(function(result) {
-	//console.log(">>>>>>>>>>>>>>>>>>",result);
-
+	conceptosDetalle=result;
+    	parametros.nombreNota = result[0].sw_contable==='0'?"DEBITO":"CREDITO";
     	parametros.empresaId = result[0].empresa_id;
     	parametros.empresa_id = result[0].empresa_id;
     	parametros.tipoIdTercero = result[0].tipo_id_tercero;
@@ -933,38 +915,35 @@ CajaGeneral.prototype.imprimirNota = function(req, res) {
 	    }
 	};
 	
-//	console.log("impuesto ",impuesto);
-//	console.log("parametros ",parametros);
-//	console.log("parametrosEmpresa ",parametrosEmpresa);
 	return G.Q.ninvoke(that.m_gestion_terceros, 'obtenerTercero', parametrosEmpresa);
 
     }).then(function(result) {
+
+	cliente = result;
+	return G.Q.ninvoke(that.m_caja_general, 'listarEmpresa', parametros);
+
+    }).then(function(result) {
+	console.log("result cliente ",cliente);
+	console.log("result ",result );
+	console.log("conceptosDetalle ",conceptosDetalle);
+	empresa = result;
+	var informacion = {
+	    serverUrl: req.protocol + '://' + req.get('host') + "/",
+	    empresa: empresa[0],
+	    cliente: cliente[0],
+	    parametros: parametros,
+	    conceptosDetalle: conceptosDetalle,
+	    informacion: __infoFooter(parametros.prefijo),
+	    usuario: req.session.user.nombre_usuario,
+	    archivoHtml: 'notaFactura.html',
+	    impuesto: impuesto
+	}
+	return G.Q.nfcall(__generarPdf, informacion);
 	
-	console.log("result ",result);
-//
-//	cliente = result;
-//	return G.Q.ninvoke(that.m_caja_general, 'listarEmpresa', parametros);
-//
-//    }).then(function(result) {
-//	empresa = result;
-//	var informacion = {
-//	    serverUrl: req.protocol + '://' + req.get('host') + "/",
-//	    empresa: empresa[0],
-//	    cliente: cliente[0],
-//	    parametros: parametros,
-//	    conceptosDetalle: conceptosDetalle,
-//	    informacion: __infoFooter(parametros.prefijo),
-//	    usuario: req.session.user.nombre_usuario,
-//	    archivoHtml: 'facturaConceptos.html',
-//	    impuesto: impuesto
-//	}
-//	return G.Q.nfcall(__generarPdf, informacion);
-//	
-//    }).then(function(result) {
-//	console.log("result ___",result);
-	res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirNota: 'qw'}));
-//	res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirNota: result}));
-//
+    }).then(function(result) {
+	console.log("result ___",result);
+	res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirNota: result}));
+
     }). catch (function(err) {
 	console.log("error transaccion ", err);
 	res.send(G.utils.r(req.url, err, 500, {}));
@@ -1118,7 +1097,7 @@ function __insertarFacFacturasConceptos(that, index, conceptosDetalle, parametro
     }
 
     conceptos.empresaId = parametros.empresaId;
-    conceptos.prefijo = parametros.prefijo;
+    conceptos.prefijo = parametros.prefijo; 
     conceptos.cajaId = parametros.cajaId;
     conceptos.concepto = parametros.conceptoId;
     conceptos.facturaFiscal = parametros.factura;

@@ -269,6 +269,35 @@ FacturacionClientes.prototype.listarClientes = function(req, res){
 };
 
 
+
+FacturacionClientes.prototype.listarDocumentosPorFacturar = function(req, res){
+    var that = this;
+    var args = req.body.data;           
+    
+    if (args.facturas_consumo === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {facturas_consumo: []}));
+        return;
+    }
+    
+    if (args.facturas_consumo.numeroDocumento === undefined || !args.facturas_consumo.tipoTerceroId ||  
+        !args.facturas_consumo.terceroId) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero documento, documento y tipo de tercero', 404, {facturas_consumo: []}));
+        return;
+    }
+    
+    G.Q.ninvoke(that.m_facturacion_clientes,'listarDocumentosPorFacturar',args.facturas_consumo).then(function(resultado){
+        
+        return res.send(G.utils.r(req.url, 'Consulta lista de documentos', 200, {facturas_consumo:resultado}));
+        
+    }).
+    fail(function(err){   
+
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+    
+    
+};
+
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017

@@ -162,6 +162,17 @@ define(["angular", "js/services"], function (angular, services) {
                         });
                     };
                     
+                    /**
+                     * @author Eduar Garcia
+                     * @fecha  24/07/2017 DD/MM/YYYYY
+                     * +Descripcion Permite traer los documentos del cliente seleccionado
+                     */
+                    self.listarDocumentos = function(obj, callback){
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.DOCUMENTOS_POR_FACTURAR, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
                     
                     
                     /**
@@ -446,6 +457,28 @@ define(["angular", "js/services"], function (angular, services) {
                         }
                         return facturaProceso;
                     };
+                    
+                    
+                   /* self.buscarClientes = function (datos,callback) {
+
+                        var obj = {
+                            session: datos.session,
+                            data: {
+                                clientes: {
+                                    empresa_id: datos.empresaId,
+                                    termino_busqueda: datos.terminoBusqueda,
+                                    paginacion: false
+                                }
+                            }
+                        };
+                        Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function (data) {
+
+
+                            if (data.status === 200) {
+                                callback(data.obj.listado_clientes);
+                            }
+                        });
+                    };*/
                     
                     return this;
                 }]);

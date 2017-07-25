@@ -1,4 +1,4 @@
-define(["angular", "js/controllers"], function (angular, controllers) {
+define(["angular", "js/controllers", "js/models/FacturaConsumo",  "js/models/FacturaDetalleConsumo"], function (angular, controllers) {
 
     var fo = controllers.controller('GuardarFacturaConsumoController',
         ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
@@ -6,8 +6,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "$filter",
         "localStorageService",
         "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho","webNotification",
+        "TerceroDespacho","FacturaConsumo","FacturaDetalleConsumo",
     function ($scope, $rootScope, Request, API, AlertService, Usuario,
-            $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho,webNotification) {
+            $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho,webNotification,
+            TerceroDespacho, FacturaConsumo, FacturaDetalleConsumo) {
  
         var that = this;
         
@@ -24,7 +26,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.root = {
                 fechaInicialPedidosCosmitet: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
                 fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),            
-                opciones: Usuario.getUsuarioActual().getModuloActual().opciones
+                opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
+                clientes:[],
+                cliente:null,
+                factura:null,
+                documentos:[], 
+                documento:null
             };
             $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
             $scope.session = {
@@ -69,7 +76,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
            $scope.root.datepicker_fecha_final = false;
 
        };
-
+       
+       /**
+        * @author Eduar Garcia
+        * @fecha 24/07/2016
+        * +Descripcion Handler del dropdown al seleccionar un cliente
+        * @param {type} $event
+        */   
+        $scope.onSeleccionarCliente = function(){
+           
+        };
   
         $scope.onCambiarVista = function(vista){
             $scope.root.vistaFacturacion = vista;
@@ -84,7 +100,74 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             if(busqueda.length < 3){
                 return;
             }
-            console.log("busqueda ", busqueda);
+                        
+            var obj = {
+                session: $scope.session,
+                data: {
+                    facturas_consumo: {
+                        numeroDocumento: busqueda,
+                        tipoTerceroId: $scope.root.cliente.getTipoId(),
+                        terceroId:$scope.root.cliente.getId()
+                    }
+                }
+            };
+                        
+            facturacionClientesService.listarDocumentos(obj, function(data){
+                if(data.status === 200){
+                    var _documentos = data.obj.facturas_consumo;
+                    
+                    
+                    for(var i in _documentos){
+                        var _documento = _documentos[i];
+                        $scope.root.documentos.push(facturacionClientesService.renderDocumentosPrefijosClientes(
+                            _documento.pedido_cliente_id, 
+                            _documento.prefijo,
+                            _documento.numero,
+                            _documento.fecha_registro,
+                            _documento.empresa_id
+                        ));
+                              
+                    }
+                }
+            });
+                
+        };
+        
+        /**
+        * @author Eduar Garcia
+        * @fecha 21/07/2017
+        * +Descripcion Permite consumir el API para listar clientes
+        * @param {type} $event
+        */ 
+        $scope.listarClientes = function(busqueda){
+            if(busqueda.length < 3){
+                return;
+            }
+            
+            var empresa =  Usuario.getUsuarioActual().getEmpresa();
+            
+            var obj = {
+                session: $scope.session,
+                data: {
+                    listar_clientes: {
+                        empresaId: empresa.getCodigo(),
+                        terminoBusqueda: busqueda,
+                        paginaActual: 1,
+                        filtro:{
+                            tipo: "Nombre"
+                        }
+                    }
+                }
+            };
+                        
+            facturacionClientesService.listarClientes(obj ,function(respuesta){
+                if(respuesta.status === 200){
+                    $scope.root.clientes = facturacionClientesService.renderTerceroDespacho(respuesta.obj.listar_clientes);
+                    console.log($scope.root.clientes)
+                }
+                
+            });
+            
         };
         
 

@@ -553,7 +553,7 @@ define(["angular", "js/controllers",
                     {field: 'precio_venta', width: "150", displayName: "$ Venta", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" select-on-click\
                      ng-model="row.entity.precio_venta" \
-                     validacion-numero-entero\
+                     validacion-numero-decimal\
                      ng-disabled = "row.entity.sw_pactado"\n\
                      class="form-control grid-inline-input" name="" id="" /> \n\
                      <div ng-if="row.entity.sw_pactado" class="ngCellText" >\n\

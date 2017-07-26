@@ -241,7 +241,9 @@ KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centr
                  b.cantidad,  \
                  b.lote,  \
                  b.fecha_vencimiento,  \
-                 round(b.total_costo/b.cantidad) as costo,  \
+                 case WHEN (b.cantidad > 0) THEN \
+                 round(b.total_costo/b.cantidad) \
+		 ELSE 0  END as costo,  \
                  g.usuario,  \
                  g.nombre,  \
                  null as bodegas_doc_id,  \
@@ -505,9 +507,10 @@ KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centr
     var sql = (G.settings.env === 'prod') ? sql_produccion : sql_pruebas;
 
     G.knex.raw(sql, {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: codigo_producto, 5: fecha_inicial, 6: fecha_final}).then(function(resultado) {
+	
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
-       
+         console.log("ERROR ",err);
         callback(err);
     });
 

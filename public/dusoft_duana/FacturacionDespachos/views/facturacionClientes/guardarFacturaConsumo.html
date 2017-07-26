@@ -1,20 +1,20 @@
-<form  ng-model="formularios.formularioTerceros" name="formularios.formularioTerceros" id="formularioTerceros" form-validation   ng-init="onFormularioTercerosListo()">
+<form  ng-model="formularios.formularioTerceros" name="formularios.formularioFactura" id="formularioTerceros" form-validation   ng-init="onFormularioTercerosListo()">
     <div class="row contenedorCamposTercero">
 
         <div class="col-md-3">
             <label class="control-label">Cliente</label>
             <p class="input-group contenedorDropdown">            
-                <ui-select ng-model="root.tercero.genero"  
+                <ui-select ng-model="root.cliente"  
                            theme="select2" 
-                           name="genero"
-                           class="form-control selectgeneral pull-left ui-select-z-index-11 {{formularios.formularioTerceros.sumitedWithErrors}}" 
+                           name="cliente"
+                           class="form-control selectgeneral pull-left ui-select-z-index-11 {{formularios.formularioFactura.sumitedWithErrors}}" 
                            append-to-body = "true"
-                           title="Se requiere el género" 
+                           title="Se requiere el cliente" 
                            data-placement="top"
                            required="required">
-                    <ui-select-match  placeholder="Busqueda por nombre o documento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                    <ui-select-choices refresh="listarTerceros($select.search)" refresh-delay="0" repeat="documentos in  root.parametros.generos | filter:$select.search">
-                        <span ng-bind="genero.getDescripcion()"></span>
+                    <ui-select-match  placeholder="Busqueda por nombre o documento"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
+                    <ui-select-choices refresh="listarClientes($select.search)"  refresh-delay="0" repeat="cliente in  root.clientes | filter:$select.search">
+                        <span ng-bind="cliente.getNombre()"></span>
                     </ui-select-choices>
                 </ui-select>  
             </p>
@@ -23,17 +23,17 @@
         <div class="col-md-3">
             <label class="control-label">Documento</label>
             <p class="input-group contenedorDropdown">            
-                <ui-select ng-model="root.tercero.genero"  
+                <ui-select ng-model="root.documento"  
                            theme="select2" 
-                           name="genero"
+                           name="documento"
                            class="form-control selectgeneral pull-left ui-select-z-index-11 {{formularios.formularioTerceros.sumitedWithErrors}}" 
                            append-to-body = "true"
-                           title="Se requiere el género" 
+                           title="Se requiere el documento" 
                            data-placement="top"
                            required="required">
-                    <ui-select-match  placeholder="Buscar por número de documento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                    <ui-select-choices refresh="listarDocumentos($select.search)" refresh-delay="0" repeat="documentos in  root.parametros.generos | filter:$select.search">
-                        <span ng-bind="genero.getDescripcion()"></span>
+                    <ui-select-match  placeholder="Buscar por número de documento"><span ng-bind="$select.selected.get_prefijo()"></span> - <span ng-bind="$select.selected.get_numero()"></span></ui-select-match>
+                    <ui-select-choices refresh="listarDocumentos($select.search)" refresh-delay="0" repeat="documento in  root.documentos | filter:$select.search">
+                        <span ng-bind="documento.get_prefijo()"></span> - <span ng-bind="documento.get_numero()"></span>
                     </ui-select-choices>
                 </ui-select>  
             </p>

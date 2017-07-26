@@ -195,15 +195,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
                   
                   Request.realizarRequest(API.DESPACHOS_AUDITADOS.DETALLE_DOCUMENTO_AUDITADO, "POST", obj, function(data){
-                             
-                             $scope.productos = []; 
-                              if (data.status === 200) {
-                                  that.renderObtenerProductos(data.obj.despachos_auditados);
-                              }else{
-                                  AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                              }
+                            $scope.productos = []; 
+                            if (data.status === 200) {
+                                   that.renderObtenerProductos(data.obj.despachos_auditados);
+                            } else {
+                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
                        }); 
-                  };
+                };
                   
             /**
              * @author Cristian Ardila
@@ -220,8 +219,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                            _producto.setTipoCajaId(productos[i].tipo_caja);                        
                       $scope.productos.push(_producto);
                   }
-                     $scope.documentoAuditado[0].obtenerPedidos()[0][0].agregarProductos($scope.productos);                        
+                  
+                  $scope.documentoAuditado[0].obtenerPedidos()[0][0].agregarProductos($scope.productos);                        
             };
+            
             /**
              * +Descripcion: Se activa el cambo de interfaz, cuando se selecciona
              *               el detalle de una documento
@@ -240,11 +241,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              la tabla de los productos de un documento
              * 
              */
-            $scope.onImprimirRotulo = function(entity) {
+            $scope.onImprimirRotulo = function(entity, todos) {
+                var documento = localStorageService.get("auditoriaDespachos");  
+
               
                 var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
 
-                if ($scope.documentoAuditado[0].getTipoPedido() === 1) {
+                if ($scope.documentoAuditado[0].getTipoPedido() === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_FARMACIAS;
                 }
 
@@ -253,8 +256,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         documento_temporal: {
                             numero_pedido: $scope.documentoAuditado[0].getPedido(),
-                            numero_caja: entity.getNumeroCaja(),
-                            tipo: entity.getTipoCajaId()
+                            numero_caja: (entity) ? entity.getNumeroCaja() : undefined,
+                            tipo: (entity) ? entity.getTipoCajaId() : undefined,
+                            todos:todos,
+                            prefijo:documento.prefijo,
+                            documento:documento.numero
                         }
                     }
                 };
@@ -263,18 +269,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     if (data.status === 200) {
                         var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
-
-                        $scope.visualizarReporte("/reports/" + nombre_reporte, "Rotulo_" + entity.getNumeroCaja(), "download");
+                        var documentoDespacho = documento.prefijo + "-" + documento.numero;
+                        
+                        $scope.visualizarReporte("/reports/" + nombre_reporte, (!todos) ? documentoDespacho + "C_" + entity.getNumeroCaja() : documentoDespacho, "download");
                     } else {
                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);   
                     }
                 });
-              };
+            };
+            
            /**
              * +Descripcion Se visualiza la tabla con todas las aprobaciones
              *              por parte del personal de seguridad
             */
-            $scope.listaProductosDocumentosAuditados={
+            $scope.listaProductosDocumentosAuditados = {
                 data: 'documentoAuditado[0].obtenerPedidos()[0][0].obtenerProductos()[0]',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -286,14 +294,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    {field: 'getNumeroCaja()', displayName: 'Numero caja', width:"20%"},
                    {field: 'getCantidadSeparada()', displayName: 'Cant. Separada', width:"10%"},    
                    {field: 'getTipo()', displayName: 'Caj/Nev', width:"10%"},
-                   {field: 'movimiento', displayName: "Opciones", width: "10%", cellClass: "txt-center",
+                   {
+                        field: 'movimiento', displayName: "Opciones", width: "10%", cellClass: "txt-center",
                         cellTemplate: '<div >\
                             <button class="btn btn-default btn-xs" ng-click="onImprimirRotulo(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
                         </div>'
                     }
                    
-                 ]
-             }; 
+                ]
+            }; 
            
            /*
             * @author Cristian Ardila
@@ -304,17 +313,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             */
            $scope.volverPaginaPrincipal = function() {
                
-                 $state.go('AuditarPedidos');
+                $state.go('AuditarPedidos');
 
             };
+            
            /**
             * @author Cristian Ardila
             * @fecha 04/02/2016
             * +Descripcion Metodo encargado de llevar al usuario a la pagina
             *              inicial
             */
-           $scope.regresarListaDespachosAprobados = function() {
+            $scope.regresarListaDespachosAprobados = function() {
                 $state.go('ValidacionEgresos');
+            };
+            
+           /**
+            * @author Eduar garcia
+            * @fecha 14/07/2017
+            * +Descripcion Metodo encargado de llevar al usuario a la pagina
+            *              inicial
+            */
+            $scope.imprimirRotulos = function(){
+                $scope.onImprimirRotulo(null, true);
             };
 
                  

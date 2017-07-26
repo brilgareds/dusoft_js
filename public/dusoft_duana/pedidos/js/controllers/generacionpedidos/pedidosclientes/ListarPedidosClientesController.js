@@ -96,8 +96,8 @@ define(["angular", "js/controllers",
                     {nombre: "Vendedor", tipo_busqueda: 2}
                 ],
                 opcion_pedido: [
-                    {descripcion: "Crear",tipo_pedido: 0},
-                    {descripcion: "Crear multiple",tipo_pedido: 1}              
+                    {descripcion: "Crear",tipo_pedido: 0}
+                   // {descripcion: "Crear multiple",tipo_pedido: 1}              
                 ],
                 opcion_inicial: {descripcion: "Seleccione",tipo_pedido: -1},
                     

@@ -10,6 +10,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
                 this.tipoBloqueoId =0;
                 this.sw_autorizacion =0;
                 this.sw_facturacion_agrupada =0;
+                this.estadoContrato;
             }
 
 
@@ -52,6 +53,16 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
             ClientePedido.prototype.get_contrato = function() {
 
                 return this.contrato_id;
+            };
+            
+            ClientePedido.prototype.setEstadoContrato = function(estadoContrato) {
+                this.estadoContrato = estadoContrato;
+                return this;
+            };
+
+            ClientePedido.prototype.getEstadoContrato = function() {
+
+                return this.estadoContrato;
             };
             
             

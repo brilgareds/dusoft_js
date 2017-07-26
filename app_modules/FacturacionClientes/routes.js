@@ -68,5 +68,9 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.procesosFacturacion(req, res);
     });
     
+    app.post('/api/FacturacionClientes/listarDocumentosPorFacturar', function(req, res) {     
+        c_facturacion_clientes.listarDocumentosPorFacturar(req, res);
+    });
+    
     
 };

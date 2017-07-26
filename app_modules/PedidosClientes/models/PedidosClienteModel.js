@@ -1286,20 +1286,26 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido, e
  * @fecha: 04/12/2015 11:33 am
  * */
 PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, numero_caja, tipo, callback) {
+    
+    var obj = {1: numero_pedido};
+    var sqlAux = "";
+    
+    if(numero_caja){
+        sqlAux = " AND a.numero_caja = :3 AND a.tipo = :4 ";
+        obj["3"] = numero_caja;
+        obj["4"] = tipo;
+    }
 
     var sql = "SELECT a.direccion, a.cliente, '' AS departamento, a.numero_caja, a.tipo FROM inv_rotulo_caja a\
-               WHERE a.solicitud_prod_a_bod_ppal_id = :1 AND a.numero_caja = :2 AND a.tipo = :3; ";
+               WHERE a.solicitud_prod_a_bod_ppal_id = :1 "+sqlAux+" and a.tipo_pedido = '1' ";
 
 
-    G.knex.raw(sql, {1: numero_pedido, 2: numero_caja, 3: tipo}).then(function(resultado) {
+    G.knex.raw(sql, obj).then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
         console.log("err [obtenerDetalleRotulo]: ", err);
         callback(err);
     });
-
-
-
 };
 
 /**
@@ -1836,7 +1842,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
 
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").as("a");
+    offset((pagina - 1) * G.settings.limit).orderBy("a.fecha_registro", "desc").as("a");
         
     
     var queryPrincipal = G.knex.column([
@@ -1850,8 +1856,10 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
     leftJoin("ventas_ordenes_pedidos as h", "a.numero_cotizacion", "h.pedido_cliente_id_tmp").
     leftJoin("vnts_contratos_clientes as j", function(){
        this.on("a.tipo_id_tercero", "j.tipo_id_tercero").
-       on("a.tercero_id", "j.tercero_id");
-    }).    
+       on("a.tercero_id", "j.tercero_id").
+       on(G.knex.raw("j.estado = '1'"));
+    }).
+    //where("j.estado", "1").
     then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
@@ -2584,6 +2592,7 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
                   from ventas_ordenes_pedidos_tmp a\
                   left join vnts_contratos_clientes AS b on b.tipo_id_tercero = a.tipo_id_tercero and b.tercero_id = a.tercero_id\
                   where a.pedido_cliente_id_tmp = :1\
+                  and b.estado = '1'\
                 ) returning pedido_cliente_id as numero_pedido ";
 
 

@@ -28,6 +28,8 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/helpersdirectives/selectOnClick",
     "includes/validation/NgValidateEvents",
+    "includes/classes/Factura",
+    "includes/classes/FacturaDetalle",
     "models/TipoTerceros",
     "models/OrdenesComprasProveedores",
     "models/Totales",

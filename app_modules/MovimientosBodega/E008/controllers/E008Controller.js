@@ -1557,26 +1557,34 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
 
 
 E008Controller.prototype.imprimirRotuloClientes = function(req, res) {
-
-    var that = this;
-
+ 
     var args = req.body.data;
-
-    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined 
-        || args.documento_temporal.numero_caja === undefined ||  args.documento_temporal.tipo === undefined) {
-        res.send(G.utils.r(req.url, 'Documento temporal, numero_pedido, numero caja o tipo  No Estan Definidos', 404, {}));
+    
+    if(args.documento_temporal === undefined ){
+        res.send(G.utils.r(req.url, 'Parametros incorrectos', 404, {}));
         return;
     }
     
-    var pedido = args.documento_temporal.numero_pedido;
-    var numero = args.documento_temporal.numero_caja;
-    var tipo   = args.documento_temporal.tipo;
-
-
+    var that = this;
+    var pedido = args.documento_temporal.numero_pedido;;
+    var numero = args.documento_temporal.numero_caja || undefined;
+    var tipo   = args.documento_temporal.tipo || undefined;
+    var prefijo = args.documento_temporal.prefijo || undefined;
+    var documento = args.documento_temporal.documento || undefined;
+    
+    if(args.documento_temporal.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero de pedido no esta definido', 404, {}));
+        return;
+    }
+    
+    if(!args.documento_temporal.todos){
+        if(numero === undefined || tipo === undefined) {
+            res.send(G.utils.r(req.url, 'El numero caja o tipo no estan definido', 404, {}));
+            return;
+        }
+    } 
+    
     that.m_pedidos_clientes.obtenerDetalleRotulo(pedido, numero, tipo, function(e, rows) {
-
-
-
         if (e) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
             return;
@@ -1587,8 +1595,12 @@ E008Controller.prototype.imprimirRotuloClientes = function(req, res) {
             return;
         }
         
+        for(var i in rows){
+            rows[i].documentoDespacho = {prefijo: prefijo, numero : documento};
+        }
+        
         var obj = {
-            detalle : rows[0],
+            detalle : rows,
             serverUrl : req.protocol + '://' + req.get('host')+ "/"
         };
 
@@ -1604,24 +1616,34 @@ E008Controller.prototype.imprimirRotuloClientes = function(req, res) {
 
 E008Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
 
-    var that = this;
-
     var args = req.body.data;
-
-    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined 
-        || args.documento_temporal.numero_caja === undefined ||  args.documento_temporal.tipo === undefined) {
-        res.send(G.utils.r(req.url, 'Documento temporal, numero_pedido, numero caja o tipo  No Estan Definidos', 404, {}));
+    
+    if(args.documento_temporal === undefined ){
+        res.send(G.utils.r(req.url, 'Parametros incorrectos', 404, {}));
         return;
     }
     
-    var pedido = args.documento_temporal.numero_pedido;
-    var numero = args.documento_temporal.numero_caja;
-    var tipo   = args.documento_temporal.tipo;
+    var that = this;
+    var pedido = args.documento_temporal.numero_pedido;;
+    var numero = args.documento_temporal.numero_caja || undefined;
+    var tipo   = args.documento_temporal.tipo || undefined;
+    var prefijo = args.documento_temporal.prefijo || undefined;
+    var documento = args.documento_temporal.documento || undefined;
+    
+    if(args.documento_temporal.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero de pedido no esta definido', 404, {}));
+        return;
+    }
+    
+    if(!args.documento_temporal.todos){
+        if(numero === undefined || tipo === undefined) {
+            res.send(G.utils.r(req.url, 'El numero caja o tipo no estan definido', 404, {}));
+            return;
+        }
+    } 
 
 
     that.m_pedidos_farmacias.obtenerDetalleRotulo(pedido, numero, tipo, function(e, rows) {
-
-
 
         if (e) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -1633,8 +1655,12 @@ E008Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
             return;
         }
         
+        for(var i in rows){
+            rows[i].documentoDespacho = {prefijo: prefijo, numero : documento};
+        }
+        
         var obj = {
-            detalle : rows[0],
+            detalle : rows,
             serverUrl : req.protocol + '://' + req.get('host')+ "/"
         };
         

@@ -703,6 +703,41 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
     });
 };
  
+ 
+/**
+ * @author Eduar Garcia
+ * +Descripcion Listar documentos sin facturar
+ * @fecha 2017-24-07
+ */
+FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, callback) {
+            
+    var columnQuery = [
+        "a.prefijo",
+        "a.numero",
+        "b.tipo_id_tercero",
+        "b.tercero_id",
+        "b.fecha_registro",
+        "b.pedido_cliente_id",
+        "b.empresa_id"
+    ];
+             
+    var query = G.knex.select(columnQuery).
+    from("inv_bodegas_movimiento_despachos_clientes as a").
+    join("ventas_ordenes_pedidos as b", function () {
+        this.on("a.pedido_cliente_id","b.pedido_cliente_id");
+    }).
+    where("a.numero",G.constants.db().LIKE, "%" + obj.numeroDocumento + "%" ).
+    andWhere("b.tipo_id_tercero", obj.tipoTerceroId).
+    andWhere("b.tercero_id", obj.terceroId).
+    andWhere("a.factura_gener", "0").
+    orderBy("a.fecha_registro",'desc').
+    then(function (resultado) {      
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarPedidosClientes] ", err);
+        callback({err:err, msj: "Error al consultar la lista de los pedidos"});   
+    });
+};
 
 FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, callback) {
   

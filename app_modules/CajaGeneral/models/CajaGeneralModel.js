@@ -216,6 +216,7 @@ console.log("[pararmetros]:",obj);
 	"fi.estado",
 	"a.total_factura",
 	"a.gravamen",
+	G.knex.raw("(a.total_factura - a.gravamen) as subtotal")
     ];
     
     var query = G.knex.select(columna_a)
@@ -361,7 +362,8 @@ CajaGeneralModel.prototype.listarFacConceptosNotas= function(obj, callback) {
 	"b.prefijo_nota",
 	"b.numero_nota",
 	"b.empresa_id",
-	"b.bodega"
+	"b.bodega",
+	G.knex.raw("(b.valor_nota_total + b.valor_gravamen) as total")
     ];
 
     var query = G.knex.select(columna)

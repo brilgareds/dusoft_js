@@ -12,7 +12,7 @@ define(["angular", "js/services"], function(angular, services) {
                      * @author Andres Mauricio Gonzalez
                      * @fecha  23/06/2017 DD/MM/YYYYY
                      * +Descripcion LISTAR FACTURAS GENERADAS
-                     */
+                     */ 
                     self.listarFacturasGeneradas = function(obj, callback) {
                         Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FACTURAS_GENERADAS_NOTAS, "POST", obj, function(data) {
                             callback(data);

@@ -865,7 +865,7 @@ CajaGeneral.prototype.imprimirFacturaNotasDetalle = function(req, res) {
  * @fecha 2017-06-13 (YYYY-MM-DD)
  */
 CajaGeneral.prototype.imprimirNota = function(req, res) {
-
+console.log("*************imprimirNota*****************");
     var that = this;
     var args = req.body.data;
     var impuesto;
@@ -877,22 +877,23 @@ CajaGeneral.prototype.imprimirNota = function(req, res) {
 	empresaId: args.empresaId,
 	bodega: args.bodega,
 	prefijo: args.prefijo,
+	factura: args.facturaFiscal,
 	facturaFiscal: args.facturaFiscal,
 	prefijoNota: args.prefijoNota,
 	numeroNota: args.numeroNota
     };
     
     G.Q.ninvoke(that.m_caja_general, 'listarNotasGeneradas', parametros).then(function(result) {
+	
 	conceptosDetalle=result;
     	parametros.nombreNota = result[0].sw_contable==='0'?"DEBITO":"CREDITO";
     	parametros.empresaId = result[0].empresa_id;
     	parametros.empresa_id = result[0].empresa_id;
     	parametros.tipoIdTercero = result[0].tipo_id_tercero;
     	parametros.terceroId = result[0].tercero_id;
-    	parametros.totalFactura = parseInt(result[0].valor_nota_total);
+    	parametros.totalFactura = parseInt(result[0].valor_nota_total) + parseInt(result[0].valor_gravamen);//valor_nota_total
 	parametros.totalGravamen = parseInt(result[0].valor_gravamen);
-	
-	
+
 	return G.Q.nfcall(__traerPorcentajeImpuestos, that, parametros);
 
     }).then(function(result) {
@@ -901,6 +902,7 @@ CajaGeneral.prototype.imprimirNota = function(req, res) {
 	impuesto.empresaId = parametros.empresaId;
 	impuesto.prefijo = parametros.prefijo;
 	impuesto.factura = parametros.facturaFiscal;
+
 	parametros.totalAbono = impuesto.totalGeneral;
 	parametros.totalEfectivo = impuesto.totalGeneral;
 	parametros.totalCheque = 0;
@@ -1000,6 +1002,7 @@ function __generarPdf(datos, callback) {
     }, function(err, response) {
 
 	response.body(function(body) {
+	    console.log("AAAAAAAAAAAAA",datos.parametros);
 	    var nombreTmp = "factura_conceptocredito" + datos.parametros.prefijo + "" + datos.parametros.factura + ".html";
 
 	    G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
@@ -1057,7 +1060,7 @@ function __traerPorcentajeImpuestos(that, obj, callback) {
 	impuestos.valorSubtotal = obj.totalFactura - obj.totalGravamen;
 	impuestos.iva = obj.totalGravamen;
 
-	if (impuestos.porcentajeRtf > 0) {
+	if (impuestos.porcentajeRtf > 0) { 
 
 	    if (impuestos.valorSubtotal >= parametros.base_rtf) {
 		impuestos.retencionFuente = impuestos.valorSubtotal * (impuestos.porcentajeRtf / 100);

@@ -1757,7 +1757,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormula = function(obj,callback){
                     .andWhere("a.paciente_id",obj.pacienteId)                               
             }
         }).as("ca");
-        
+       
     var query = G.knex.select(colQuery).from(subQuery)
                         
         query.then(function(resultado){

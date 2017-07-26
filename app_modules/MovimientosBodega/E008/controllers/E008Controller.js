@@ -1595,12 +1595,29 @@ E008Controller.prototype.imprimirRotuloClientes = function(req, res) {
             return;
         }
         
+        var detalleDepurado = [];
+        
         for(var i in rows){
             rows[i].documentoDespacho = {prefijo: prefijo, numero : documento};
+            var existe = false;
+            
+            for(var ii in detalleDepurado){
+                var _rows = detalleDepurado[ii];
+                
+                if(rows[i].numero_caja === _rows.numero_caja){
+                    existe = true;
+                    break;
+                }
+            }
+            
+            if(!existe){
+                detalleDepurado.push(rows[i]);
+            }
+            
         }
-        
+                
         var obj = {
-            detalle : rows,
+            detalle : detalleDepurado,
             serverUrl : req.protocol + '://' + req.get('host')+ "/"
         };
 
@@ -1657,10 +1674,26 @@ E008Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
         
         for(var i in rows){
             rows[i].documentoDespacho = {prefijo: prefijo, numero : documento};
+            var existe = false;
+            
+            var detalleDepurado = [];
+            
+            for(var ii in detalleDepurado){
+                var _rows = detalleDepurado[ii];
+                
+                if(rows[i].numero_caja === _rows.numero_caja){
+                    existe = true;
+                    break;
+                }
+            }
+            
+            if(!existe){
+                detalleDepurado.push(rows[i]);
+            }
         }
         
         var obj = {
-            detalle : rows,
+            detalle : detalleDepurado,
             serverUrl : req.protocol + '://' + req.get('host')+ "/"
         };
         
@@ -2636,6 +2669,20 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
                 datos_documento.encabezado.total = datos_documento.encabezado.total.toFixed(2);
                 datos_documento.encabezado.subTotal = datos_documento.encabezado.subTotal.toFixed(2);
                 datos_documento.encabezado.totalIva = datos_documento.encabezado.totalIva.toFixed(2);
+                
+                
+                //Se ordena por caja
+                datos_documento.detalle.sort(function(a, b){
+                    if(a.numero_caja > b.numero_caja){
+                        return 1;
+                    }
+                    
+                    if(a.numero_caja < b.numero_caja){
+                        return -1;
+                    }
+                    
+                    return 0;
+                });
                 
                 __generarPdfDespacho(datos_documento, function(nombre_pdf) {
                     

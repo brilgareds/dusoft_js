@@ -302,10 +302,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     return;
                 }
                      
-                self.onGuardarCantidad(function(continuar, msj){ 
+                self.validarCaja(function(continuar, msj){ 
                     
                     if(continuar){
-                        self.validarCaja(function(continuar, msj){
+                        self.onGuardarCantidad(function(continuar, msj){
                             if(continuar){
                                 self.asignarCaja(function(continuar, msj){
 
@@ -347,7 +347,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             
             
             $modalInstance.opened.then(function() {
-                self.consultarNumeroMayorRotulo();
+                //self.consultarNumeroMayorRotulo();
 
             });
             

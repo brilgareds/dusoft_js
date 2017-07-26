@@ -95,6 +95,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",  "js/models/Fac
             $state.go("GuardarFacturaConsumo");
         };
         
+        $scope.onDocumentoSeleccionado = function(){
+            console.log("root ", $scope.root.documento);
+        };
+        
         
         $scope.listarDocumentos = function(busqueda){
             if(busqueda.length < 3){

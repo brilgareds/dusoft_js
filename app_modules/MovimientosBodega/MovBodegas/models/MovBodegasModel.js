@@ -469,7 +469,8 @@ MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = functio
                 ((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)) as iva_1,\
                 ((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total_1,\
                 (((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total_1,\
-                a.valor_unitario\
+                a.valor_unitario,\
+                a.numero_caja\
                 FROM\
                 inv_bodegas_movimiento_d as a,\
                 inventarios_productos as b,\

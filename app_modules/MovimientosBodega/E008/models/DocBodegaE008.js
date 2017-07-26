@@ -877,10 +877,17 @@ DocumentoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
 
 // Consultar el rotulo mayor para validar el consecutivo de la caja o nevera 
 DocumentoBodegaE008.prototype.consultarNumeroMayorRotulo = function(documento_id, numero_pedido, tipoCaja, tipoPedido, callback) {
-    var sql = " select coalesce(max(a.numero_caja), 0) as numero_caja from inv_rotulo_caja a \
-                where  a.documento_temporal_id = :1  and   solicitud_prod_a_bod_ppal_id = :2 and (sw_despachado = '0' or sw_despachado is null) and a.tipo = :3 and tipo_pedido = :4;";
+    var obj = { 2:numero_pedido, 3:tipoCaja, 4:tipoPedido};
+    /*var sqlAux = "";
+    if(documento_id && parseInt(documento_id) !== 0){
+        obj["1"] = parseInt(documento_id);
+        sqlAux = " and a.documento_temporal_id = :1  ";
+    }*/
     
-   G.knex.raw(sql, {1:documento_id, 2:numero_pedido, 3:tipoCaja, 4:tipoPedido}).
+    var sql = " select coalesce(max(a.numero_caja), 0) as numero_caja from inv_rotulo_caja a \
+                where   solicitud_prod_a_bod_ppal_id = :2 and (sw_despachado = '0' or sw_despachado is null) and a.tipo = :3 and tipo_pedido = :4 ";
+    
+   G.knex.raw(sql, obj).
    then(function(resultado){
        callback(false, resultado.rows, resultado);
    }).catch(function(err){
@@ -1443,6 +1450,50 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
                     AND b.codigo_producto = a.codigo_producto\
                     AND c.unidad_id = b.unidad_id\
                     ORDER BY a.codigo_producto";
+   
+    var parametros = {
+        1: obj.empresa,
+        2: obj.prefijoDocumento , 
+        3: obj.numeroDocumento 
+    };
+       
+     G.knex.raw(sql, parametros). then(function(resultado){       
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+     
+        callback(err);
+    });        
+};
+
+
+/**
+ * @author Eduar Garcia
+ * @fecha  26/07/2017
+ * +Descripcion Permite traer el documento con datos de facturacion de consumo
+ */
+DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callback){
+     
+    var subQueryB = G.knex.column([
+        "a.codigo_producto",
+        G.knex.raw("fc_descripcion(a.codigo_producto) as descripcion")
+    ]).from("inv_bodegas_movimiento_d as a").
+     /* .join("solicitud_productos_a_bodega_principal as b", function () {
+        this.on("a.solicitud_prod_a_bod_ppal_id","b.solicitud_prod_a_bod_ppal_id")
+    }).join("bodegas as c", function(){
+        this.on("b.farmacia_id","c.empresa_id")
+            .on("b.centro_utilidad","c.centro_utilidad")
+            .on("b.bodega","c.bodega")
+    }).join("centros_utilidad as d", function(){
+        this.on("c.centro_utilidad","d.centro_utilidad")
+            .on("c.empresa_id","d.empresa_id")
+    }).join("empresas as e", function(){
+        this.on("d.empresa_id","e.empresa_id")
+
+    }).*/where(function(){
+        this.andWhere("a.empresa_id", obj.empresa_id)
+            .andWhere("a.prefijo", obj.prefijo)
+            .andWhere("a.numero", obj.numero)
+    }).as("b");
    
     var parametros = {
         1: obj.empresa,

@@ -772,7 +772,12 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
 };
 
 PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
-
+    
+    if(!numero_pedido || parseInt(numero_pedido) === 0){
+        callback(false, []);
+        return;
+    }
+    
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                 a.codigo_producto,\

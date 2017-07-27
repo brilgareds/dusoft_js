@@ -1471,7 +1471,7 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
  * @fecha  26/07/2017
  * +Descripcion Permite traer el documento con datos de facturacion de consumo
  */
-DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callback){
+DocumentoBodegaE008.prototype.obtenerDetallePorFacturar = function(obj, callback){
      
     var subQueryB = G.knex.column([
         "a.codigo_producto",

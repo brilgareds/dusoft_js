@@ -739,6 +739,43 @@ FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, 
     });
 };
 
+/**
+ * @author Eduar Garcia
+ * @fecha  26/07/2017
+ * +Descripcion Permite traer el documento con datos de facturacion de consumo
+ */
+FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, callback){
+     
+    var query = G.knex.column([
+        "a.codigo_producto",
+        G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
+        "c.cantidad_despachada",
+        "a.lote",
+        G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento"),
+        "c.pedido_cliente_id"
+    ]).from("inv_bodegas_movimiento_d as a").
+    innerJoin("inv_bodegas_movimiento_despachos_clientes as b", function () {
+        this.on("a.numero","b.numero").
+        on("a.prefijo", "b.prefijo");
+    }).
+    innerJoin("ventas_ordenes_pedidos_d as c", function () {
+        this.on("b.pedido_cliente_id","c.pedido_cliente_id");
+    }).where(function(){
+        this.andWhere("a.empresa_id", obj.empresa_id)
+            .andWhere("a.prefijo", obj.prefijo_documento)
+            .andWhere("a.numero", obj.numero_documento);
+    });
+    
+    console.log(query.toSQL());
+       
+    query.then(function(resultado){       
+        callback(false, resultado);   
+    }).catch(function(err) { 
+        console.log("err ", err)
+        callback({status:err.status || 500, msj:err.msj || "Ha ocurrido un error"});
+    });        
+};
+
 FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, callback) {
   
    var columnQuery = [

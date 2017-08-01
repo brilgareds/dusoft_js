@@ -1,4 +1,5 @@
-define(["angular", "js/controllers", "js/models/FacturaConsumo",  "js/models/FacturaDetalleConsumo"], function (angular, controllers) {
+define(["angular", "js/controllers", "js/models/FacturaConsumo",
+        "js/models/FacturaDetalleConsumo", "js/models/DocumentoDetalleConsumo"], function (angular, controllers) {
 
     var fo = controllers.controller('GuardarFacturaConsumoController',
         ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
@@ -6,10 +7,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",  "js/models/Fac
         "$filter",
         "localStorageService",
         "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho","webNotification",
-        "TerceroDespacho","FacturaConsumo","FacturaDetalleConsumo",
+        "TerceroDespacho","FacturaConsumo","FacturaDetalleConsumo","DocumentoDetalleConsumo",
     function ($scope, $rootScope, Request, API, AlertService, Usuario,
             $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho,webNotification,
-            TerceroDespacho, FacturaConsumo, FacturaDetalleConsumo) {
+            TerceroDespacho, FacturaConsumo, FacturaDetalleConsumo, DocumentoDetalleConsumo) {
  
         var that = this;
         
@@ -42,21 +43,21 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",  "js/models/Fac
             callback();
         };
         
-        $scope.listaDocumentos = {
-            data: 'root.facturas_proceso',
+        $scope.listaDetalleDocumento = {
+            data: 'root.documento.getDetalle()',
             enableColumnResize: true,
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
             columnDefs: [
 
-                {field: 'Factura',  cellClass: "ngCellText", width: "15%", displayName: 'Producto', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_prefijo()}}- {{row.entity.get_numero()}}</p></div>'},
-                {field: 'Empresa',  cellClass: "ngCellText", width: "15%", displayName: 'Cant despachada', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_empresa()}}</p></div>'},
-                {field: 'Fecha creacion',  cellClass: "ngCellText", width: "15%", displayName: 'Cant Facturada', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_fecha_registro()}}</p></div>'},
-                {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
-                {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Lote', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},
-                {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha vto', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},
-                {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a facturar', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},
+                {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
+                {field: 'cantidaDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant despachada'},
+                {field: 'cantidadFacturada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant Facturada'},
+                {field: 'cantidadPorFacturar',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar'},
+                {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},
+                {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha vto'},
+                {field: 'cantidadAFacturar',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a facturar', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},
 
             ]
         };
@@ -97,6 +98,30 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",  "js/models/Fac
         
         $scope.onDocumentoSeleccionado = function(){
             console.log("root ", $scope.root.documento);
+            
+            var obj = {
+                session: $scope.session,
+                data: {
+                    facturas_consumo: {
+                        numero_documento: $scope.root.documento.get_numero(),
+                        prefijo_documento: $scope.root.documento.get_prefijo(),
+                        empresa_id:$scope.root.documento.get_empresa()
+                    }
+                }
+            };
+            
+            facturacionClientesService.obtenerDetallePorFacturar(obj,function(respuesta){
+                if(respuesta.status === 200){
+                    $scope.root.documento.vaciarDetalle();
+                    var _documentos = respuesta.obj.detalle;
+                    for(var i in _documentos){
+                        var _documento = _documentos[i];
+                        var documento = DocumentoDetalleConsumo.get(_documento.codigo_producto, _documento.cantidad_despachada, _documento.lote, _documento.fecha_vencimiento);
+                        $scope.root.documento.agregarDetalle(documento);
+                    }
+                }
+                
+            });
         };
         
         
@@ -173,7 +198,6 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",  "js/models/Fac
             });
             
         };
-        
 
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo

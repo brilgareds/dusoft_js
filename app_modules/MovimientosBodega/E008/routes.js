@@ -215,7 +215,7 @@ module.exports = function(app, di_container) {
         c_e008.obtenerDocumento(req, res);
     });  
     
-   app.post('/api/movBodegas/E008/consultarNumeroMayorRotulo', function(req, res) {
+    app.post('/api/movBodegas/E008/consultarNumeroMayorRotulo', function(req, res) {
        
         c_e008.consultarNumeroMayorRotulo(req, res);
     }); 

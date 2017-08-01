@@ -458,6 +458,18 @@ define(["angular", "js/services"], function (angular, services) {
                         return facturaProceso;
                     };
                     
+                   /**
+                     * @author Eduar Garcia
+                     * +Descripcion Permite traer el detalle del documento para facturar por consumo
+                     * @fecha 10/05/2017 DD/MM/YYYYY
+                     */
+                    self.obtenerDetallePorFacturar = function(obj, callback){
+                        
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.OBTENER_DETALLE_POR_FACTURAR, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                    
                     
                    /* self.buscarClientes = function (datos,callback) {
 

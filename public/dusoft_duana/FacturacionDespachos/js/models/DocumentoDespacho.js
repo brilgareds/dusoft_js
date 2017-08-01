@@ -27,6 +27,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.estadoFacturacion;
                 this.fechaInicial;
                 this.fechaFinal;
+                this.detalle = [];
             }
 
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
@@ -197,6 +198,18 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.getDocumentoSeleccionado = function(){
                 return this.documentoSeleccionado;
+            };
+            
+            DocumentoDespacho.prototype.agregarDetalle = function(detalle){
+                return this.detalle.push(detalle);
+            };
+            
+            DocumentoDespacho.prototype.vaciarDetalle = function(){
+                this.detalle = [];
+            };
+            
+            DocumentoDespacho.prototype.getDetalle = function(){
+                return this.detalle;
             };
             
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {

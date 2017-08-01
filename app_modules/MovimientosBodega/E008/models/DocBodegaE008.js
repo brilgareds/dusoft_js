@@ -1465,50 +1465,6 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
     });        
 };
 
-
-/**
- * @author Eduar Garcia
- * @fecha  26/07/2017
- * +Descripcion Permite traer el documento con datos de facturacion de consumo
- */
-DocumentoBodegaE008.prototype.obtenerDetallePorFacturar = function(obj, callback){
-     
-    var subQueryB = G.knex.column([
-        "a.codigo_producto",
-        G.knex.raw("fc_descripcion(a.codigo_producto) as descripcion")
-    ]).from("inv_bodegas_movimiento_d as a").
-     /* .join("solicitud_productos_a_bodega_principal as b", function () {
-        this.on("a.solicitud_prod_a_bod_ppal_id","b.solicitud_prod_a_bod_ppal_id")
-    }).join("bodegas as c", function(){
-        this.on("b.farmacia_id","c.empresa_id")
-            .on("b.centro_utilidad","c.centro_utilidad")
-            .on("b.bodega","c.bodega")
-    }).join("centros_utilidad as d", function(){
-        this.on("c.centro_utilidad","d.centro_utilidad")
-            .on("c.empresa_id","d.empresa_id")
-    }).join("empresas as e", function(){
-        this.on("d.empresa_id","e.empresa_id")
-
-    }).*/where(function(){
-        this.andWhere("a.empresa_id", obj.empresa_id)
-            .andWhere("a.prefijo", obj.prefijo)
-            .andWhere("a.numero", obj.numero)
-    }).as("b");
-   
-    var parametros = {
-        1: obj.empresa,
-        2: obj.prefijoDocumento , 
-        3: obj.numeroDocumento 
-    };
-       
-     G.knex.raw(sql, parametros). then(function(resultado){       
-        callback(false, resultado.rows);   
-    }).catch(function(err) { 
-     
-        callback(err);
-    });        
-};
-
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016

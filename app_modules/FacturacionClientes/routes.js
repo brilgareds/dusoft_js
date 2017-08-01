@@ -72,5 +72,10 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.listarDocumentosPorFacturar(req, res);
     });
     
+    app.post('/api/FacturacionClientes/obtenerDetallePorFacturar', function(req, res) {
+       
+        c_facturacion_clientes.obtenerDetallePorFacturar(req, res);
+    });
+    
     
 };

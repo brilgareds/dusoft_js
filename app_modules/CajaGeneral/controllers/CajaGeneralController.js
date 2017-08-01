@@ -262,9 +262,11 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 			porcentajeGravamen:args.porcentajeGravamen,
 			prefijo:args.prefijo,
 			swContable:args.swContable,
-			valorNotaTotal:args.valorNotaTotal,
+		valorNotaImpuestos:args.valorNotaImpuestos ,
 			usuarioId:req.body.session.usuario_id,
-			documentoId:args.swContable===1?'506':'504'
+			documentoId:args.swContable===1?'506':'504',
+			saldo : 0,
+		valorNotaTotal:args.valorNotaTotal
 			};
 			
     G.knex.transaction(function(transaccion) {
@@ -279,17 +281,15 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 	G.Q.ninvoke(that.m_caja_general, 'insertarFacFacturasConceptosNotas', parametros,transaccion);
 
 	}).then(function(resultado) {
-           console.log("listar ",resultado);
-//	    if (resultado.length > 0) {
-		return  G.Q.ninvoke(that.m_caja_general,'listarFacConceptosNotas', parametros);
+	    //se actualiza el saldo en cero para que el triger se active y calcule el salgo automatico
+	G.Q.ninvoke(that.m_caja_general, 'actualizarSaldoFacturas', parametros,transaccion);
+		    
+	}).then(function(resultado) {
 
-//	    } else {
-//		throw 'Consulta sin resultados';
-//	    }
+		return  G.Q.ninvoke(that.m_caja_general,'listarFacConceptosNotas', parametros);
 
 	}).then(function(result) {
 
-	    console.log("commit  ",result);
 	    transaccion.commit();
 
 	}).fail(function(err) {
@@ -775,7 +775,7 @@ CajaGeneral.prototype.imprimirFacturaNotas = function(req, res) {
  * @fecha 2017-06-13 (YYYY-MM-DD)
  */
 CajaGeneral.prototype.imprimirFacturaNotasDetalle = function(req, res) {
-
+    console.log("**********imprimirFacturaNotasDetalle**********");
     var that = this;
     var args = req.body.data;
     var total = {totalFactura: 0, totalGravamen: 0};
@@ -891,10 +891,15 @@ console.log("*************imprimirNota*****************");
     	parametros.empresa_id = result[0].empresa_id;
     	parametros.tipoIdTercero = result[0].tipo_id_tercero;
     	parametros.terceroId = result[0].tercero_id;
-    	parametros.totalFactura = parseInt(result[0].valor_nota_total) + parseInt(result[0].valor_gravamen);//valor_nota_total
-	parametros.totalGravamen = parseInt(result[0].valor_gravamen);
+    	
+	parametros.totalFactura = parseInt(result[0].total_factura) + parseInt(result[0].gravamen);//valor_nota_total
+	parametros.totalGravamen = parseInt(result[0].gravamen);
+	
+	parametros.totalNota=parseInt(result[0].valor_nota_total) + parseInt(result[0].valor_gravamen);
+	parametros.totalGravamenNota=parseInt(result[0].valor_gravamen);
+	
 
-	return G.Q.nfcall(__traerPorcentajeImpuestos, that, parametros);
+	return G.Q.nfcall(__traerPorcentajeImpuestosNotas, that, parametros);
 
     }).then(function(result) {
 	
@@ -1020,6 +1025,91 @@ function __generarPdf(datos, callback) {
     });
 }
 
+CajaGeneral.prototype.consultarImpuestosTercero = function(req, res) {
+    var retencionTercero;
+    var args = req.body.data;
+    var that = this;
+    
+    var obj={
+	empresaId : args.empresaId,
+	empresa_id : args.empresaId,
+	tipoIdTercero : args.tipoIdTercero,
+	terceroId : args.terceroId,
+	anio: args.anio
+    };
+    
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj).then(function(resultado) {
+       
+	retencionTercero = resultado[0];
+	return  G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
+
+    }).then(function(result) {
+	var retencion = result[0];
+	res.send(G.utils.r(req.url, 'Listar Impuestos', 200, {retencion: retencion,retencionTercero:retencionTercero}));
+
+    }). catch (function(err) {
+	console.log("error transaccion ", err);
+	res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+function __traerPorcentajeImpuestosNotas(that, obj, callback) {
+    var retencion;
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj).then(function(resultado) {
+       
+	retencion = resultado[0];
+	return  G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
+
+    }).then(function(result) {
+	var parametros = result[0];
+	
+	var impuestos = {
+	    porcentajeRtf: '0',
+	    porcentajeIca: '0',
+	    porcentajeReteiva: '0',
+	    porcentajeCree: '0',
+	    swRtf: parametros.sw_rtf,
+	    swIca: parametros.sw_ica,
+	    swReteiva: parametros.sw_reteiva,
+            totalGeneral:0,
+	    retencionFuente:0,
+	    retencionIca:0,
+	    valorSubtotal:0,
+	    valorSubtotalFactura:0
+	};
+	impuestos.valorSubtotalFactura = obj.totalFactura - obj.totalGravamen;
+	
+	if (parametros.sw_rtf === '2' || parametros.sw_rtf === '3'){
+	   
+	     if (impuestos.valorSubtotalFactura >= parametros.base_rtf) {
+		 
+		impuestos.retencionFuente = obj.totalNota * (retencion.porcentaje_rtf / 100);
+		
+	     }
+	}
+	
+	if (parametros.sw_ica === '2' || parametros.sw_ica === '3'){
+	     if (impuestos.valorSubtotalFactura >= parametros.base_ica) {
+		impuestos.retencionIca = obj.totalNota * (retencion.porcentaje_ica / 1000);
+	     }
+	}
+	
+	impuestos.valorSubtotal =obj.totalNota;
+	impuestos.iva = obj.totalGravamenNota;
+	impuestos.totalGeneral = impuestos.valorSubtotal + obj.totalGravamenNota - (impuestos.retencionFuente + impuestos.retencionIca);
+	
+	var timer = setTimeout(function() {
+	    callback(false, impuestos);
+	    clearTimeout(timer);
+
+	}, 0);
+	
+    }).fail(function(err) {
+	console.log("Error __traerPorcentajeImpuestos ", err);
+	callback(err);
+    }).done();
+}
+
 function __traerPorcentajeImpuestos(that, obj, callback) {
 
     var parametros;
@@ -1027,6 +1117,7 @@ function __traerPorcentajeImpuestos(that, obj, callback) {
     G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj).then(function(resultado) {
        
 	retencion = resultado[0];
+	
 	return  G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
 
     }).then(function(result) {
@@ -1071,6 +1162,9 @@ function __traerPorcentajeImpuestos(that, obj, callback) {
 	}
 	if (impuestos.porcentajeIca > 0) {
 	    if (impuestos.valorSubtotal >= parametros.base_ica) {
+		console.log("valorSubtotal ",impuestos.valorSubtotal);
+		console.log("porcentajeIca ",impuestos.porcentajeIca);
+		console.log("retencionIca ",impuestos.valorSubtotal * (impuestos.porcentajeIca / 1000));
 		impuestos.retencionIca = impuestos.valorSubtotal * (impuestos.porcentajeIca / 1000);
 		if (impuestos.retencionIca > 0) {
 		    impuestos.retencionIca = parseInt(impuestos.retencionIca);

@@ -181,6 +181,70 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.observacionSincronizacion;
             };
             
+            FacturaProveedores.prototype.setSubTotal = function(subTotal) {
+                this.subTotal = subTotal;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getSubTotal = function() {
+                return this.subTotal;
+            };
+            
+            
+            FacturaProveedores.prototype.setSaldo = function(saldo) {
+                this.saldo = saldo;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getSaldo = function() {
+                return this.saldo;
+            };
+            
+            FacturaProveedores.prototype.setGravamen = function(gravamen) {
+                this.gravamen = gravamen;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getGravamen = function() {
+                return this.gravamen;
+            };
+            
+            FacturaProveedores.prototype.setIdentificacion = function(identificacion) {
+                this.identificacion = identificacion;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getIdentificacion = function() {
+                return this.identificacion;
+            };
+            
+            FacturaProveedores.prototype.setSwClaseFactura = function(swClaseFactura) {
+                this.swClaseFactura = swClaseFactura;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getSwClaseFactura = function() {
+                return this.swClaseFactura;
+            };
+            
+            FacturaProveedores.prototype.setTipoFactura = function(tipoFactura) {
+                this.tipoFactura = tipoFactura;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getTipoFactura = function() {
+                return this.tipoFactura;
+            };
+            
+            FacturaProveedores.prototype.setPrefijo = function(prefijo) {
+                this.prefijo = prefijo;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getPrefijo = function() {
+                return this.prefijo;
+            };
+            
             // Instancia
             this.get = function(numeroFactura, codigoProveedor,fechaRegistro,observacion) {
                 return new FacturaProveedores(numeroFactura, codigoProveedor,fechaRegistro,observacion);

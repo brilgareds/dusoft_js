@@ -2,8 +2,8 @@ define(["angular", "js/services"], function(angular, services) {
 
 
     services.factory('cajaGeneralService',
-            ['Request', 'API', 'CajaGeneral', 'Grupos', 'ConceptoCaja','Totales',
-                function(Request, API, CajaGeneral, Grupos, ConceptoCaja,Totales) {
+            ['Request', 'API', 'CajaGeneral', 'Grupos', 'ConceptoCaja','Totales','FacturaProveedores',
+                function(Request, API, CajaGeneral, Grupos, ConceptoCaja,Totales,FacturaProveedores) {
 
                     var self = this;
 
@@ -35,6 +35,16 @@ define(["angular", "js/services"], function(angular, services) {
                      */
                     self.listarFacConceptosNotas = function(obj, callback) {
                         Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion consulta los parametros para calcular los impuestos
+                     */
+                    self.listarImpuestosTercero = function(obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_IMPUESTOS_TERCERO, "POST", obj, function(data) {
                             callback(data);
                         });
                     };
@@ -249,6 +259,37 @@ define(["angular", "js/services"], function(angular, services) {
                         });
                         console.log("grupo", grupos);
                         return grupos;
+                    };
+		    
+		    /**
+                     * @author Andres Mauricio Gonzalez
+                     * +Descripcion Funcion encargada de serializar el resultado de la
+                     *              consulta que obtiene las facturas de proveedores
+                     * @fecha 10/05/2017 DD/MM/YYYYY
+                     */
+                    self.renderFacturasProveedores = function(facturasProveedores) {
+
+                        var facturas = [];
+                        facturasProveedores.forEach(function(data) {
+                            var factura = FacturaProveedores.get(data.factura_fiscal, data.codigo_proveedor_id, data.fecha_registro, data.observaciones);
+                            factura.setMensaje(data.mensaje);
+                            factura.setNombreUsuario(data.nombre);
+                            factura.setEstado(data.estado);
+                            factura.setEmpresa(data.empresa_id);
+                            factura.setDescripcionEstado(data.descripcion_estado);
+                            factura.setValorFactura(data.total_factura);
+                            factura.setValorDescuento(data.valor_descuento);
+                            factura.setObservacionSincronizacion(data.mensaje);
+                            factura.setNombreProveedor(data.nombre_tercero);
+                            factura.setSaldo(data.saldo);
+                            factura.setGravamen(data.gravamen);
+                            factura.setIdentificacion(data.identificacion);
+                            factura.setPrefijo(data.prefijo);
+                            factura.setSubTotal(data.subtotal);
+                            facturas.push(factura);
+                        });
+
+                        return facturas;
                     };
 
 		    /**

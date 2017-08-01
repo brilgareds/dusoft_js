@@ -113,7 +113,7 @@ CajaGeneralModel.prototype.listarCajaGeneral = function(obj, callback) {
  */
 CajaGeneralModel.prototype.listarNotasGeneradas = function(obj, callback) {
 console.log("********************listarNotasGeneradas************************");
-console.log("[pararmetros]:",obj);
+
     var columna_a = [
 	"a.documento_id as documento_nota",
 	"b.documento_id as documento_factura",
@@ -134,6 +134,7 @@ console.log("[pararmetros]:",obj);
 	"d.telefono",
 	"b.total_factura",
 	"b.gravamen",
+	"b.saldo",
 	G.knex.raw("d.tipo_id_tercero ||' '|| d.tercero_id AS identificacion"),
 	"d.tercero_id",
 	"d.tipo_id_tercero"
@@ -211,11 +212,14 @@ console.log("[pararmetros]:",obj);
 	"b.nombre", 
 	"e.nombre_tercero", 
 	G.knex.raw("e.tipo_id_tercero ||' '|| e.tercero_id AS identificacion"), 
+	"e.tipo_id_tercero", 
+	"e.tercero_id", 
 	"a.sw_clase_factura",
 	"a.tipo_factura",
 	"fi.estado",
 	"a.total_factura",
 	"a.gravamen",
+	"a.saldo",
 	G.knex.raw("(a.total_factura - a.gravamen) as subtotal")
     ];
     
@@ -1023,6 +1027,31 @@ CajaGeneralModel.prototype.actualizarImpuestoFacturas= function(obj,transaccion,
 		    porcentaje_ica:obj.porcentajeIca,
 		    porcentaje_reteiva:obj.porcentajeReteiva,
 		    porcentaje_cree:obj.porcentajeCree
+		});
+		
+       if (transaccion)
+        query.transacting(transaccion); 
+    query.then(function(resultado){ 
+       callback(false, resultado);
+    }).catch(function(err){    
+       console.log("err (/catch) [actualizarImpuestoFacturas]: ", err);
+       callback("Error al actualizar fac_facturas");  
+    });
+};
+/**
+ * 
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+CajaGeneralModel.prototype.actualizarSaldoFacturas= function(obj,transaccion, callback) {
+
+    var query = G.knex('fac_facturas')
+		.where('empresa_id', obj.empresaId)
+		.andWhere('prefijo', obj.prefijo)
+		.andWhere('factura_fiscal', obj.facturaFiscal)
+		.update({
+		    saldo:obj.saldo
 		});
 		
        if (transaccion)

@@ -16,6 +16,8 @@
 			    class="form-control"
 			    validacion-numero-decimal
 			    ng-model="root.precioNota"
+			    format="currency"
+			    ng-change="onImpuesto()"
 			    name="" id="" />
 		    </div>
 		</div>
@@ -32,6 +34,8 @@
 			    class="form-control"
 			    validacion-numero-decimal
 			    ng-model="root.gravamenNota"
+			    format="currency"
+			    ng-change="onImpuesto()"
 			    name="" id="" />
 		    </div>
 		</div>
@@ -51,8 +55,48 @@
 		</div>
 	    </div>
 	    <br />
-	    <br />
+	    <div class="row">
+		<div class="col-md-1">
+	 	  <label class="control-label text-center" for="IsSmallBusiness"></label>
+		</div>
+		<div class="col-md-2">
+	 	  <label class="control-label text-center" for="IsSmallBusiness">Subtotal</label>
+		</div>
+		<div class="col-md-2">
+	 	  <label class="control-label text-center" for="IsSmallBusiness" >Iva</label>
+		</div>
+		<div class="col-md-2">
+	 	  <label class="control-label text-center" for="IsSmallBusiness">Retefuente</label>
+		</div>
+		<div class="col-md-2">
+	 	  <label class="control-label text-center" for="IsSmallBusiness">Reteica</label>
+		</div>
+		<div class="col-md-3">
+	 	  <label class="control-label text-center" for="IsSmallBusiness" >Total Nota</label>
+		</div>
+	    </div>
+	    <div class="row" style="font-size: 10px;">
+		<div class="col-md-1">
+	 	  <!--<label class="control-label text-center" for="IsSmallBusiness"></label>-->
+		</div>
+		<div class="col-md-2">
+	 	  <label class="control-label text-center" for="IsSmallBusiness">{{root.impuestos.valorSubtotal | currency:"$"}}</label>
+		</div>
+		<div class="col-md-2">
+	 	  <label class="control-label text-center" for="IsSmallBusiness" >{{root.impuestos.iva | currency:"$"}}</label>
+		</div>
+		<div class="col-md-2">
+	 	  <label class="control-label text-center" for="IsSmallBusiness">{{root.impuestos.retencionFuente | currency:"$"}}</label>
+		</div>
+		<div class="col-md-2">
+	 	  <label class="control-label text-center" for="IsSmallBusiness">{{root.impuestos.retencionIca | currency:"$"}}</label>
+		</div>
+		<div class="col-md-3">
+	 	  <label class="control-label text-center" for="IsSmallBusiness" >{{root.impuestos.totalGeneral | currency:"$"}}</label>
+		</div>
+	    </div>
         </div>
+	<br />
         <div class="modal-footer">
 	    <button type="button" class="btn btn-warning" ng-click="cerrar()">Cerrar</button>
 	    <button type="button" class="btn btn-primary" ng-click="guardarFacFacturasConceptosNotas()">Guardar</button>

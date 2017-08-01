@@ -84,8 +84,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                             if (data.status === 200) {
                                 $scope.root.caja = cajaGeneralService.renderCajaGeneral(data.obj.listarCajaGeneral);
-//                                console.log("$scope.root.caja::: ", $scope.root.caja);
-                                //$scope.root.cajas = $scope.root.caja[0];
+                                
                                 callback(true);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -120,7 +119,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 } else {
                                     $scope.root.conceptos = cajaGeneralService.renderGrupos(data.obj.listarGrupos);
                                 }
-                                //$scope.root.grupo = $scope.root.grupos[0];
+                               
                                 callback(true);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -153,8 +152,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         };
                         cajaGeneralService.listarFacturasGeneradas(obj, function(data) {
                             if (data.status === 200) {
-				console.log(">>>>> ",data.obj.listarFacturasGeneradas);
+				
                                 $scope.root.listarFacturasGeneradasNotas=data.obj.listarFacturasGeneradas;
+				var s =cajaGeneralService.renderFacturasProveedores(data.obj.listarFacturasGeneradas);
+				console.log("____________listarFacturasGeneradas objeto_____________",s);
+                                console.log("____________listarFacturasGeneradas_____________",$scope.root.listarFacturasGeneradasNotas);
+				
 				callback(data.obj.listarFacturasGeneradas);
                             } else {
                                //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -163,6 +166,103 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                         });
                     };
+
+		    /**
+                     * +Descripcion Metodo encargado de listar los impuestos de un cliente
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 27/07/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+		    that.listarImpuestosTercero = function() {
+			if($scope.root.listarFacturasGeneradasNotas===undefined){
+			    return;
+			}
+			var fecha = new Date($scope.root.listarFacturasGeneradasNotas[0].fecha_registro);
+			var anio = fecha.getFullYear();
+			var obj = {
+			    session: $scope.session,
+			    data: {
+				empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+				tipoIdTercero: $scope.root.listarFacturasGeneradasNotas[0].tipo_id_tercero,
+				terceroId: $scope.root.listarFacturasGeneradasNotas[0].tercero_id,
+				anio: anio
+			    }
+			};
+			cajaGeneralService.listarImpuestosTercero(obj, function(data) {
+			    
+			    if (data.status === 200) {
+                              data.obj.factura=$scope.root.listarFacturasGeneradasNotas[0];
+			      $scope.root.listarImpuestos=data.obj;
+//			      that.traerPorcentajeImpuestosNotas(data.obj,function(datas){
+//				  console.log("Data ",datas);
+//			      });
+				
+			    } else {
+				callback(false);
+			    }
+
+			});
+		    };
+		    
+                    /**
+                     * +Descripcion Metodo encargado de calcular los impuestos de una nota
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 27/07/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+		     that.traerPorcentajeImpuestosNotas = function(callback) {
+		        var objs=$scope.root.listarImpuestos; 
+			var parametros=objs.retencion;
+			var terceroImpuesto=objs.retencionTercero;
+			var obj=objs.factura;
+			
+			$scope.root.totalNota=$scope.root.precioNota;
+			$scope.root.totalGravamenNota=$scope.root.gravamenNota;
+
+			    var impuestos = {
+				porcentajeRtf: '0',
+				porcentajeIca: '0',
+				porcentajeReteiva: '0',
+				porcentajeCree: '0',
+				swRtf: parametros.sw_rtf,
+				swIca: parametros.sw_ica,
+				swReteiva: parametros.sw_reteiva,
+				totalGeneral:0,
+				retencionFuente:0,
+				retencionIca:0,
+				valorSubtotal:0,
+				valorSubtotalFactura:0
+			    };
+			    
+			    impuestos.valorSubtotalFactura = obj.saldo;
+			//    impuestos.valorSubtotalFactura = obj.totalFactura - obj.totalGravamen;
+
+			    if (parametros.sw_rtf === '2' || parametros.sw_rtf === '3'){
+				
+				 if (parseInt(impuestos.valorSubtotalFactura) >= parseInt(parametros.base_rtf)) {
+				                                         
+				     impuestos.retencionFuente = $scope.root.totalNota * (terceroImpuesto.porcentaje_rtf / 100);				   
+
+				 }
+			    }
+
+			    if (parametros.sw_ica === '2' || parametros.sw_ica === '3'){
+				
+				 if (parseInt(impuestos.valorSubtotalFactura) >= parseInt(parametros.base_ica)) {
+				     
+				    impuestos.retencionIca = $scope.root.totalNota * (terceroImpuesto.porcentaje_ica / 1000);
+				 }
+			    }
+
+			    impuestos.valorSubtotal =$scope.root.totalNota;
+			    impuestos.iva = parseInt($scope.root.totalGravamenNota)+0;	    
+			    impuestos.totalGeneral = parseInt(impuestos.valorSubtotal) + parseInt(impuestos.iva) - (parseInt(impuestos.retencionFuente) + parseInt(impuestos.retencionIca));
+                 		callback(impuestos);
+				return;
+		    };
+		    
+		    
+		    
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
                      *              los tipos de terceros
@@ -381,7 +481,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			    }else if(data.msj.status===409){ 
 				AlertService.mostrarVentanaAlerta("Mensaje del sistema",data.msj.msj);
 			    }else{
-				console.log("data.obj ",data);
 				var mensaje = data.obj.guardarFacturaCajaGeneral;
 				if(mensaje===""){
                                  AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -407,7 +506,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 				porcentajeGravamen:parametros.porcentajeGravamen,
 				prefijo:parametros.prefijo,
 				swContable:parametros.swContable,
-				valorNotaTotal:parametros.valorNotaTotal                            
+				valorNotaTotal:parametros.valorNotaTotal,
+			     valorNotaImpuestos:$scope.root.impuestos.totalGeneral
 			    }
                         };
                         cajaGeneralService.insertarFacFacturasConceptosNotas (parametros, function(data) {
@@ -509,13 +609,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableHighlighting: true,
                         showFilter: true,
 			columnDefs: [
-                            {field: 'No. Factura', width: "8%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
-                            {field: 'Identificación', width: "8%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.identificacion}}</p></div>'},
+                            {field: 'No. Factura', width: "5%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
+                            {field: 'Identificación', width: "5%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.identificacion}}</p></div>'},
                             {field: 'Tercero', width: "16%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre_tercero}}</p></div>'},
                             {field: 'Fecha', width: "8%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
                             {field: 'Usuario', width: "15%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
-                            {field: 'SubTotal', width: "7%", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.subtotal)">{{row.entity.subtotal| currency:"$ "}}</p></div>'},
-                            {field: 'Gravamen', width: "7%", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.gravamen)">{{row.entity.gravamen| currency:"$ "}}</p></div>'},
+                            {field: 'Saldo', width: "8%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.saldo)">{{row.entity.saldo| currency:"$ "}}</p></div>'},
+                            {field: 'SubTotal', width: "6%", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.subtotal)">{{row.entity.subtotal| currency:"$ "}}</p></div>'},
+                            {field: 'Gravamen', width: "6%", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.gravamen)">{{row.entity.gravamen| currency:"$ "}}</p></div>'},
 			    {field: 'Total', width: "8%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.total_factura| currency:"$ "}}</p></div>'},
                             {field: 'Nota Credito', width: "5%", displayName: 'Nota Credito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
                             {field: 'Nota Debito', width: "5%", displayName: 'Nota Debito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
@@ -605,7 +706,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			   cajaGeneralService.sincronizarFi(obj, function(data) {
 
 			       if (data.status === 200) {
-//				   console.log("data.obj.respuestaFI",data.obj.respuestaFI);
 				   that.listarFacturasGeneradas('',function(data){
 				       
 				   });
@@ -856,7 +956,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {undefined}
                      */
                     $scope.eliminarTmp = function(row) {
-//                        console.log("Row", row);
 
                         var parametros = {
                             session: $scope.session,
@@ -928,6 +1027,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 		     * nota : 0-debito 1-credito
                      */
                     that.verNota = function(nota,datos) {
+			$scope.root.impuestos="";
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -979,9 +1079,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota Supera el Precio de la Factura");
 					 return;
 				    }
-				    console.log("datos.sw_clase_factura ",datos.sw_clase_factura);
-				    console.log("valor ingresado ",valorIngresado);
-				    console.log("valor totalNota ",totalNota);
 				    
 				    if(totalNota < 0){
 					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota no debe ser Menor a la Factura");
@@ -1000,13 +1097,24 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 				
                                     that.guardarFacFacturasConceptosNotas(parametros,function(respuesta){
 					$modalInstance.close();
+//					that.listarImpuestosTercero();
+					that.listarFacturasGeneradas(1,function(){});
 					that.listarFacConceptosNotasDetalle(parametros);
 					
 				    });
                                 };
+					$scope.onImpuesto=function(){
+					    
+						   
+						   that.traerPorcentajeImpuestosNotas(function(datas){
+							 $scope.root.impuestos=datas;
+					             });			    
+					};
                             }
                         };
                         var modalInstance = $modal.open($scope.opts);
+			 
+			      
                     };
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -1252,7 +1360,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
 		      $scope.tipoTab = function (valor){
 			  $scope.root.tab=valor;
-			  console.log("tab ",$scope.root.tab);
 		      };
 		      
 		      /**
@@ -1264,10 +1371,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.buscarTercero = function(event,estado) {
 //			if(){
 //			}
-			console.log("$scope.root.tab",$scope.root.tab);
                         if (event.which === 13) {
 			   switch ($scope.root.tab){ 
-			       case 1: console.log("buscarTercero");
+			       case 1:
 					that.listarTerceros(function(respuesta) {
 					    if (respuesta) {
 						that.listarConceptosDetalle();
@@ -1277,11 +1383,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			       case 2:
 					that.listarFacturasGeneradas(1,function(data){
 					    that.listarFacConceptosNotasDetalle(data[0]);
+					    that.listarImpuestosTercero();
 					});
 					break;
 			       case 3:				         
 				         that.listarFacturasGeneradas('',function(data){
-					   
+					   // that.listarImpuestosTercero();
 					});
 					 break;
 			   } 
@@ -1312,7 +1419,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     that.init(empresa, function() {
                         that.listarTiposTerceros();
-//			console.log("prefijo________________");
 			that.listarPrefijos();
 			
                     });
@@ -1320,6 +1426,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     that.listarCajaGeneral(function(data) {
 
                     });
+		    
 		    
                 }]);
 });

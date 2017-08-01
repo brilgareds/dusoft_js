@@ -343,6 +343,7 @@ FacturacionProveedoresModel.prototype.listarParametrosRetencion = function(param
             .andWhere('a.anio', anio);
 
     query.then(function(resultado) {
+	console.log(" query ",query.toSQL());
         callback(false, resultado);
     }). catch (function(error) {
         console.log("error [parametrosRetencion]: ", error);

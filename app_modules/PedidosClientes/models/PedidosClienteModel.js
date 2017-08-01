@@ -111,7 +111,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                   /*,
                       3: termino_busqueda.empresa_origen_id,  //AND a.pedido_farmacia = :4
                       4: termino_busqueda.centro_utilidad_origen_id,*/
-        andSql = "  a.bodega_origen_producto != :3 AND pedido_farmacia != '1'  AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
+        andSql = "  a.bodega_origen_producto != :3 AND pedido_farmacia != '1' AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
         campos = "a.codigo_producto as codigo,a.numero_unidades as cantidad,"
     }
     
@@ -158,9 +158,11 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 (SELECT descripcion FROM bodegas WHERE empresa_id = a.empresa_origen_producto AND centro_utilidad = a.centro_utilidad_origen_producto  AND bodega = a.bodega_origen_producto) as nombre_bodega,\
                 a.centro_utilidad_origen_producto,\
                 a.bodega_origen_producto,\
-                a.empresa_origen_producto\
-                FROM ventas_ordenes_pedidos_d_tmp AS a\
-                WHERE pedido_cliente_id_tmp = :1 and \
+                a.empresa_origen_producto,\
+                b.estado_multiple_pedido\
+                FROM ventas_ordenes_pedidos_tmp as b \
+                INNER JOIN ventas_ordenes_pedidos_d_tmp AS a ON b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
+                WHERE a.pedido_cliente_id_tmp = :1 and \
                 "+andSql+"(\
                     a.codigo_producto ilike :2 or\
                     fc_descripcion_producto(a.codigo_producto) ilike :2 \
@@ -1630,8 +1632,8 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
         13: '',
         14: '',
         15: cotizacion.centro_utilidad_id,
-        16: cotizacion.bodega_id
-        //17: cotizacion.estadoMultiplePedido
+        16: cotizacion.bodega_id,
+        17: cotizacion.estadoMultiplePedido
    
     };
 
@@ -1652,9 +1654,10 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
                 observacion_cartera,\
                 sw_aprobado_cartera,\
                 centro_destino,\
-                bodega_destino\
+                bodega_destino,\
+                estado_multiple_pedido\
                 )\
-                VALUES( :1, :2, :3, NOW(), :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16) \
+                VALUES( :1, :2, :3, NOW(), :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16, :17) \
                 RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";
 
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega

@@ -1720,10 +1720,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 if (aprobado === 1) {
                     that.consultarDetalleProductosCotizacion('1','03',function (estado, resultado) {
-
-
-                        if ($scope.Pedido.observacion_cartera.length > 0) {
-                            if (estado) {
+                        console.log("estado ", estado);
+                        console.log("resultado ", resultado);
+                       if ($scope.Pedido.observacion_cartera.length > 0) {
+                            if (estado && resultado[0].estado_multiple_pedido === "1") {
                                 
                                 that.generarPedidoModuloCliente(2,resultado,aprobado, denegar);
                                
@@ -1982,7 +1982,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                        that.consultarDetalleProductosCotizacion('1','03',function (estado, resultado) {
                               console.log("estado ", estado);                                  
                               console.log("resultado ", resultado);                                  
-                            if (estado) {                                
+                            if (estado && resultado[0].estado_multiple_pedido === "1") {                            
                                 that.generarPedidoModuloCliente(1,resultado,0,0)                               
                             }else{
                                 that.generarPedidoClientesAutorizados();

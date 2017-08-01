@@ -778,18 +778,18 @@ PedidosCliente.prototype.insertarCotizacion = function (req, res) {
         return;
     }
 
-    /*if(args.pedidos_clientes.estadoMultiplePedido === undefined){
+    if(args.pedidos_clientes.estadoMultiplePedido === undefined){
      res.send(G.utils.r(req.url, 'estadoMultiplePedido esta vacia', 404, {}));
      return;
      
-     }*/
+     }
     cotizacion.usuario_id = req.session.user.usuario_id;
-    //cotizacion.estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
+    cotizacion.estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
     var obj = {
         "tipo_id_tercero": cotizacion.cliente.tipo_id_tercero,
         "tercero_id": cotizacion.cliente.id
     };
-
+    
     G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion).then(function (resultado) {
         res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, resultado));
     }).fail(function (err) {

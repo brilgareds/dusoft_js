@@ -74,8 +74,8 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.conceptoId;
             };
 
-            this.get = function(GruposConcepto, descripcion) {
-                return new Grupos(GruposConcepto, descripcion);
+            this.get = function(gruposConcepto, descripcion) {
+                return new Grupos(gruposConcepto, descripcion);
             };
 
             return this;

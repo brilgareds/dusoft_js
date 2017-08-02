@@ -41,8 +41,7 @@ define(["angular", "js/models"], function(angular, models) {
             Grupos.prototype.getPrecio = function() {
                 return this.precio;
             };
-	    
-	    
+	    	    
             Grupos.prototype.setPorcentajeGravamen = function(porcentajeGravamen) {
                 this.porcentajeGravamen = porcentajeGravamen;
             };

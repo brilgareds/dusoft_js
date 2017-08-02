@@ -93,6 +93,7 @@ define(["angular", "js/models"], function(angular, models) {
                 return new CajaGeneral(cajaId, empresa, centroUtilidad);
             };
 	    
+	    
             return this;
 
         }]);

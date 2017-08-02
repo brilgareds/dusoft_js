@@ -105,8 +105,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             session: $scope.session,
                             data: {
                                 empresa_id: $scope.root.empresaSeleccionada.getCodigo(),
-                                credito: $scope.root.credito, // $scope.root.credito,
-                                contado: $scope.root.contado, //$scope.root.contado
+                                credito: $scope.root.credito, 
+                                contado: $scope.root.contado,
                                 concepto_id: $scope.root.cajas.conceptoCaja,
                                 grupo_concepto: $scope.root.grupo.gruposConcepto
                             }
@@ -153,10 +153,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         cajaGeneralService.listarFacturasGeneradas(obj, function(data) {
                             if (data.status === 200) {
 				
-                                $scope.root.listarFacturasGeneradasNotas=data.obj.listarFacturasGeneradas;
-				var s =cajaGeneralService.renderFacturasProveedores(data.obj.listarFacturasGeneradas);
-				console.log("____________listarFacturasGeneradas objeto_____________",s);
-                                console.log("____________listarFacturasGeneradas_____________",$scope.root.listarFacturasGeneradasNotas);
+//                                $scope.root.listarFacturasGeneradasNotas=data.obj.listarFacturasGeneradas;
+				$scope.root.listarFacturasGeneradasNotas=cajaGeneralService.renderFacturasProveedores(data.obj.listarFacturasGeneradas);
 				
 				callback(data.obj.listarFacturasGeneradas);
                             } else {
@@ -177,14 +175,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			if($scope.root.listarFacturasGeneradasNotas===undefined){
 			    return;
 			}
-			var fecha = new Date($scope.root.listarFacturasGeneradasNotas[0].fecha_registro);
+			var fecha = new Date($scope.root.listarFacturasGeneradasNotas[0].getFechaRegistro());
 			var anio = fecha.getFullYear();
 			var obj = {
 			    session: $scope.session,
 			    data: {
 				empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-				tipoIdTercero: $scope.root.listarFacturasGeneradasNotas[0].tipo_id_tercero,
-				terceroId: $scope.root.listarFacturasGeneradasNotas[0].tercero_id,
+				tipoIdTercero: $scope.root.listarFacturasGeneradasNotas[0].getTipoTercero(),
+				terceroId: $scope.root.listarFacturasGeneradasNotas[0].getTerceroId(),
 				anio: anio
 			    }
 			};
@@ -198,7 +196,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 //			      });
 				
 			    } else {
-				callback(false);
+				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 			    }
 
 			});
@@ -233,8 +231,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 				valorSubtotal:0,
 				valorSubtotalFactura:0
 			    };
-			    
-			    impuestos.valorSubtotalFactura = obj.saldo;
+			    console.log("saldo",obj.getSaldo());
+			    impuestos.valorSubtotalFactura = obj.getSaldo();
 			//    impuestos.valorSubtotalFactura = obj.totalFactura - obj.totalGravamen;
 
 			    if (parametros.sw_rtf === '2' || parametros.sw_rtf === '3'){
@@ -271,6 +269,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {undefined}
                      */
                     that.listarFacConceptosNotasDetalle = function(parametros) {
+			console.log("parametros:: ",parametros);
 			$scope.root.totalesNotaCredito=0;
 			$scope.root.totalesNotaDebito=0;
 			
@@ -534,11 +533,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableCellSelection: true,
                         enableHighlighting: true,
 			columnDefs: [
-                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
-                            {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.identificacion}}</p></div>'},
-                            {field: 'Tercero', width: "30%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre_tercero}}</p></div>'},
-                            {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
+                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
+                            {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
+                            {field: 'Tercero', width: "30%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
+                            {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
                             {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
                             {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
 			     cellTemplate: ' <div class="row">\
@@ -609,15 +608,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableHighlighting: true,
                         showFilter: true,
 			columnDefs: [
-                            {field: 'No. Factura', width: "5%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
-                            {field: 'Identificación', width: "5%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.identificacion}}</p></div>'},
-                            {field: 'Tercero', width: "16%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre_tercero}}</p></div>'},
-                            {field: 'Fecha', width: "8%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'Usuario', width: "15%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
-                            {field: 'Saldo', width: "8%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.saldo)">{{row.entity.saldo| currency:"$ "}}</p></div>'},
-                            {field: 'SubTotal', width: "6%", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.subtotal)">{{row.entity.subtotal| currency:"$ "}}</p></div>'},
-                            {field: 'Gravamen', width: "6%", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.gravamen)">{{row.entity.gravamen| currency:"$ "}}</p></div>'},
-			    {field: 'Total', width: "8%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.total_factura| currency:"$ "}}</p></div>'},
+                            {field: 'No. Factura', width: "5%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
+                            {field: 'Identificación', width: "5%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
+                            {field: 'Tercero', width: "16%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
+                            {field: 'Fecha', width: "8%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Usuario', width: "15%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
+                            {field: 'Saldo', width: "8%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSaldo())">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
+                            {field: 'SubTotal', width: "6%", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSubTotal())">{{row.entity.getSubTotal()| currency:"$ "}}</p></div>'},
+                            {field: 'Gravamen', width: "6%", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.getGravamen())">{{row.entity.getGravamen()| currency:"$ "}}</p></div>'},
+			    {field: 'Total', width: "8%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Nota Credito', width: "5%", displayName: 'Nota Credito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
                             {field: 'Nota Debito', width: "5%", displayName: 'Nota Debito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
                             {field: 'Imprimir2', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
@@ -696,9 +695,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			       session: $scope.session,
 			       data: {
 				   sincronizarFI: {
-				       empresaId: data.empresa_id,
-				       prefijo: data.prefijo,
-				       factura: data.factura_fiscal
+				       empresaId: data.getEmpresa(),
+				       prefijo: data.getPrefijo(),
+				       factura: data.getNumeroFactura()
 				   }
 			       }
 			   };
@@ -783,8 +782,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			 var parametros = {
                             session: $scope.session,
                             data: {
-			        prefijo:datos.prefijo,
-			        facturaFiscal:datos.factura_fiscal,
+			        prefijo:datos.getPrefijo(),
+			        facturaFiscal:datos.getNumeroFactura(),
 				empresaId: $scope.root.empresaSeleccionada.getCodigo()
                             }
                         };
@@ -1084,16 +1083,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota no debe ser Menor a la Factura");
 					 return;
 				    }
-				    
+				    console.log("Datos:: ",datos);
 				    var parametros={
-					prefijo : datos.prefijo,
-					facturaFiscal : datos.factura_fiscal,
+					prefijo : datos.getPrefijo(),
+					facturaFiscal : datos.getNumeroFactura(),
 					swContable : nota,
 					valorNotaTotal : $scope.root.precioNota,
 					porcentajeGravamen : $scope.root.gravamenNota,
 					descripcion : $scope.root.descripcionNota,
 					empresaId : $scope.root.empresaSeleccionada.getCodigo()
-				};
+				    };
 				
                                     that.guardarFacFacturasConceptosNotas(parametros,function(respuesta){
 					$modalInstance.close();
@@ -1369,8 +1368,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.buscarTercero = function(event,estado) {
-//			if(){
-//			}
+
                         if (event.which === 13) {
 			   switch ($scope.root.tab){ 
 			       case 1:
@@ -1388,7 +1386,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					break;
 			       case 3:				         
 				         that.listarFacturasGeneradas('',function(data){
-					   // that.listarImpuestosTercero();
 					});
 					 break;
 			   } 

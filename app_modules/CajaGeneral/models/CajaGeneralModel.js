@@ -4,11 +4,9 @@ var CajaGeneralModel = function() {
 
 /**
  * @author Andres Mauricio Gonzalez
- * +Descripcion Metodo encargado de listar los clientes
+ * +Descripcion Metodo encargado de consultar las cajas
  * @fecha 2017-05-31 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns callback
  */
 CajaGeneralModel.prototype.listarCajaGeneral = function(obj, callback) {
 
@@ -105,11 +103,9 @@ CajaGeneralModel.prototype.listarCajaGeneral = function(obj, callback) {
 
 /**
  * @author Andres Mauricio Gonzalez
- * +Descripcion Metodo encargado de listar facturas generadas
+ * +Descripcion Metodo encargado de listar las notas generadas
  * @fecha 2017-05-31 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.listarNotasGeneradas = function(obj, callback) {
 console.log("********************listarNotasGeneradas************************");
@@ -146,43 +142,43 @@ console.log("********************listarNotasGeneradas************************");
 	
 		this.on("b.prefijo", "a.prefijo")
 		    .on("b.factura_fiscal", "a.factura_fiscal")
-		    .on("b.empresa_id", "a.empresa_id")
+		    .on("b.empresa_id", "a.empresa_id");
 	
 	    }).innerJoin('system_usuarios as c', function() {
 		
-		this.on("a.usuario_id", "c.usuario_id")
+		this.on("a.usuario_id", "c.usuario_id");
 		
 	    }).innerJoin('terceros as d', function() {
 		
 		this.on("b.tipo_id_tercero", "d.tipo_id_tercero")		
-		    .on("b.tercero_id", "d.tercero_id")
+		    .on("b.tercero_id", "d.tercero_id");
 	    
 	    }).where(function() {
 		
 		if(obj.empresaId !== undefined){
-		    this.andWhere('a.empresa_id ', obj.empresaId)
+		    this.andWhere('a.empresa_id ', obj.empresaId);
 		}
 		if(obj.empresaId !== undefined){
-		    this.andWhere('a.bodega ', obj.bodega)
+		    this.andWhere('a.bodega ', obj.bodega);
 		}
 		if(obj.prefijo !== 'undefined'){
-		    this.andWhere('a.prefijo ', obj.prefijo)
+		    this.andWhere('a.prefijo ', obj.prefijo);
 		}
 		if(obj.facturaFiscal !== 'undefined'){
-		    this.andWhere('a.factura_fiscal ', obj.facturaFiscal)
+		    this.andWhere('a.factura_fiscal ', obj.facturaFiscal);
 		}
 		if(obj.numeroNota !== 'undefined'){
-		    this.andWhere('a.numero_nota ', obj.numeroNota)
+		    this.andWhere('a.numero_nota ', obj.numeroNota);
 		}
 		if(obj.prefijoNota !== 'undefined'){
-		    this.andWhere('a.prefijo_nota ', obj.prefijoNota)
+		    this.andWhere('a.prefijo_nota ', obj.prefijoNota);
 		}
 		
 	    });
      if(obj.limit!== undefined){	    
-      query.limit(obj.limit);
+	query.limit(obj.limit);
      }
-    query.then(function(resultado) {
+	query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
 	
@@ -194,13 +190,11 @@ console.log("********************listarNotasGeneradas************************");
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar facturas generadas
  * @fecha 2017-05-31 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.listarFacturasGeneradas = function(obj, callback) {
 console.log("********************listarFacturasGeneradas************************");
-console.log("[pararmetros]:",obj);
+
     var columna_a = [
 	G.knex.raw("distinct a.factura_fiscal"), 
 	"a.tipo_factura", 
@@ -227,38 +221,38 @@ console.log("[pararmetros]:",obj);
             .from('fac_facturas as a')
             .innerJoin('fac_facturas_conceptos as c', function() {
 	
-		this.on("c.prefijo", "a.prefijo")
-		    .on("c.factura_fiscal", "a.factura_fiscal")
-		    .on("c.empresa_id", "a.empresa_id")
+	     this.on("c.prefijo", "a.prefijo")
+		 .on("c.factura_fiscal", "a.factura_fiscal")
+		 .on("c.empresa_id", "a.empresa_id");
 	
 	    }).innerJoin('system_usuarios as b', function() {
 		
-		this.on("a.usuario_id", "b.usuario_id")
+   	     this.on("a.usuario_id", "b.usuario_id");
 		
 	    }).innerJoin('cajas_rapidas as d', function() {
 		
-		this.on("c.caja_id", "d.caja_id")
+	     this.on("c.caja_id", "d.caja_id");
 		
 	    }).innerJoin('departamentos as g', function() {
 		
-		this.on("d.departamento", "g.departamento")
+	     this.on("d.departamento", "g.departamento");
 		
 	    }).innerJoin('terceros as e', function() {
 		
-		this.on("a.tipo_id_tercero", "e.tipo_id_tercero")		
-		    .on("a.tercero_id", "e.tercero_id")
+	     this.on("a.tipo_id_tercero", "e.tipo_id_tercero")		
+		 .on("a.tercero_id", "e.tercero_id");
 	    
 	    }).leftJoin('fac_facturas_contado as i', function() {
 		
-		this.on("a.empresa_id", "i.empresa_id")		
-		    .on("a.prefijo", "i.prefijo")
-		    .on("a.factura_fiscal", "i.factura_fiscal")
+	     this.on("a.empresa_id", "i.empresa_id")		
+		 .on("a.prefijo", "i.prefijo")
+		 .on("a.factura_fiscal", "i.factura_fiscal");
 	    
 	    }).leftJoin('logs_facturacion_clientes_ws_fi as fi', function() {
 		
-		this.on("fi.prefijo", "a.prefijo")
-		    .on("fi.factura_fiscal", "a.factura_fiscal")
-		    .on(G.knex.raw("numero_nota IS NULL"))
+	      this.on("fi.prefijo", "a.prefijo")
+		  .on("fi.factura_fiscal", "a.factura_fiscal")
+		  .on(G.knex.raw("numero_nota IS NULL"));
 	    
 	    }).where(function() {
 		if(obj.terminoBusqueda !== undefined && obj.busquedaDocumento !== undefined ){
@@ -275,22 +269,23 @@ console.log("[pararmetros]:",obj);
 		}
 				
 		if(obj.empresaId !== undefined){
-		    this.andWhere('a.empresa_id ', obj.empresaId)
+		  this.andWhere('a.empresa_id ', obj.empresaId);
 		}
 		if(obj.prefijo !== 'undefined'){
-		    this.andWhere('a.prefijo ', obj.prefijo)
+		  this.andWhere('a.prefijo ', obj.prefijo);
 		}
 		if(obj.facturaFiscal !== 'undefined'){
-		    this.andWhere('a.factura_fiscal ', obj.facturaFiscal)
+		  this.andWhere('a.factura_fiscal ', obj.facturaFiscal);
 		}
-		this.andWhere(G.knex.raw("a.estado in ('0', '1')"))
+		  this.andWhere(G.knex.raw("a.estado in ('0', '1')"))
 	    });
+	    
      if(obj.limit!== undefined){	    
       query.limit(obj.limit);
      }
-    query.then(function(resultado) {
-        callback(false, resultado);
-    }). catch (function(err) {
+      query.then(function(resultado) {
+      callback(false, resultado);
+    }).catch (function(err) {
 	
         console.log("err [listarFacturasGeneradas]:", err);
         callback(err);
@@ -300,9 +295,7 @@ console.log("[pararmetros]:",obj);
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar los prefijos
  * @fecha 2017-06-02 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.listarPrefijos = function(obj, callback) {
 
@@ -314,28 +307,29 @@ CajaGeneralModel.prototype.listarPrefijos = function(obj, callback) {
 		.from('documentos as a')
 		.innerJoin('fac_facturas as b',
 		function() {
-		    this.on("a.documento_id", "b.documento_id")
+		    this.on("a.documento_id", "b.documento_id");
 		})
 		.innerJoin('fac_facturas_conceptos as c',
 		function() {
 		    this.on("b.factura_fiscal", "c.factura_fiscal")
-			.on("b.prefijo", "c.prefijo")
+			.on("b.prefijo", "c.prefijo");
 		})
 		.innerJoin('cajas_rapidas as d',
 		function() {
-		    this.on("c.caja_id", "d.caja_id")
+		    this.on("c.caja_id", "d.caja_id");
 		})
 		.leftJoin('fac_facturas_contado as e',
 		function() {
 		    this.on("b.prefijo", "e.prefijo")
-			.on("b.factura_fiscal", "e.factura_fiscal")
+			.on("b.factura_fiscal", "e.factura_fiscal");
 		})
 		.where(function() {
 		})
 		.andWhere('a.empresa_id', obj.empresaId)
 
-    query.then(function(resultado) {
-        callback(false, resultado)
+	query.then(function(resultado) {
+        callback(false, resultado);
+	
     }). catch (function(err) {
         console.log("err [listarPrefijos]:",query.toSQL());
         console.log("err [listarPrefijos]:", err);
@@ -344,11 +338,8 @@ CajaGeneralModel.prototype.listarPrefijos = function(obj, callback) {
 };
 /**
  * @author Andres Mauricio Gonzalez
- * +Descripcion Metodo encargado de listar los prefijos
+ * +Descripcion Metodo encargado de consultar fac_facturas_conceptos_notas
  * @fecha 2017-06-02 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
  */
 CajaGeneralModel.prototype.listarFacConceptosNotas= function(obj, callback) {
 
@@ -386,7 +377,7 @@ CajaGeneralModel.prototype.listarFacConceptosNotas= function(obj, callback) {
 	               .andWhere('a.prefijo', obj.prefijo)
 		}).orderBy("b.sw_contable", "ASC");
 
-    query.then(function(resultado) {
+	query.then(function(resultado) {
         callback(false, resultado)
     }). catch (function(err) {
         console.log("err [listarPrefijos]:",query.toSQL());
@@ -398,9 +389,7 @@ CajaGeneralModel.prototype.listarFacConceptosNotas= function(obj, callback) {
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar RECIBOS CAJA
  * @fecha 2017-06-02 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.listarRecibosCaja= function(obj, callback) {
 
@@ -420,13 +409,7 @@ CajaGeneralModel.prototype.listarRecibosCaja= function(obj, callback) {
 	    G.knex.raw("(a.total_efectivo + a.total_cheques + a.total_tarjetas + a.total_bonos) as suma"),
 	    G.knex.raw("CASE WHEN v.estado ='0' THEN a.total_abono ELSE -1 END AS total_abono")
     ];
-/*
- * 
- * FROM fac_facturas v
-INNER JOIN fac_facturas_contado a ON (a.prefijo=v.prefijo and a.cierre_caja_id ISNULL)
-INNER JOIN cajas_rapidas b ON (a.factura_fiscal=v.factura_fiscal AND a.caja_id=b.caja_id)
-INNER JOIN userpermisos_cajas_rapidas c ON (a.usuario_id=c.usuario_id and b.caja_id=c.caja_id)
- */
+
     var query = G.knex.select(columna)
 		.from('fac_facturas as v')
 		.innerJoin('fac_facturas_contado as a',
@@ -449,10 +432,11 @@ INNER JOIN userpermisos_cajas_rapidas c ON (a.usuario_id=c.usuario_id and b.caja
 		})
 		.where(function() {
 		})
-		.andWhere('a.empresa_id', obj.empresaId)
+		.andWhere('a.empresa_id', obj.empresaId);
 
-    query.then(function(resultado) {
-        callback(false, resultado)
+	query.then(function(resultado) {
+        callback(false, resultado);
+	
     }). catch (function(err) {
         console.log("err [listarPrefijos]:",query.toSQL());
         console.log("err [listarPrefijos]:", err);
@@ -463,9 +447,7 @@ INNER JOIN userpermisos_cajas_rapidas c ON (a.usuario_id=c.usuario_id and b.caja
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar los grupos
  * @fecha 2017-06-02 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.listarGrupos = function(obj, callback) {
 
@@ -501,10 +483,12 @@ CajaGeneralModel.prototype.listarGrupos = function(obj, callback) {
         }
     }).andWhere('a.empresa_id', obj.empresa_id)
 
-    query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
-    query.then(function(resultado) {
-        callback(false, resultado)
+	query.limit(G.settings.limit).
+        offset((obj.paginaActual - 1) * G.settings.limit);
+
+	query.then(function(resultado) {
+        callback(false, resultado);
+	
     }). catch (function(err) {
         console.log("err [listarGrupos]:", err);
         callback(err);
@@ -514,9 +498,7 @@ CajaGeneralModel.prototype.listarGrupos = function(obj, callback) {
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar las notas facturas
  * @fecha 2017-06-02 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.listarFacturasNotas = function(obj, callback) {
 
@@ -547,34 +529,32 @@ CajaGeneralModel.prototype.listarFacturasNotas = function(obj, callback) {
             .from('fac_facturas_conceptos as a')
             .innerJoin('fac_facturas_conceptos_dc as b',
             function() {
-                this.on("a.fac_factura_concepto_id", "b.fac_factura_concepto_id")
+               this.on("a.fac_factura_concepto_id", "b.fac_factura_concepto_id")
             })
             .innerJoin('conceptos_caja_conceptos as c',
             function() {
                 this.on("b.concepto_id", "c.concepto_id")
-		    .on("b.grupo_concepto", "c.grupo_concepto")
-		    .on("b.empresa_id", "c.empresa_id")
+		.on("b.grupo_concepto", "c.grupo_concepto")
+		.on("b.empresa_id", "c.empresa_id")
             })
             .innerJoin('fac_facturas as d',
             function() {
                 this.on("a.prefijo", "d.prefijo")
-		    .on("a.factura_fiscal", "d.factura_fiscal")
-		    .on("a.empresa_id", "d.empresa_id")
+		.on("a.factura_fiscal", "d.factura_fiscal")
+		.on("a.empresa_id", "d.empresa_id")
             })
 	    .where(function() {
 		if (obj.conceptoId !== '') {
-		    this.andWhere('a.prefijo', obj.prefijo)
+		 this.andWhere('a.prefijo', obj.prefijo)
 		}
 		if (obj.grupoConcepto !== '') {
-		    this.andWhere('a.factura_fiscal', obj.facturaFiscal)
+		 this.andWhere('a.factura_fiscal', obj.facturaFiscal)
 		}
-	    }).andWhere('a.empresa_id', obj.empresaId)
+	    }).andWhere('a.empresa_id', obj.empresaId);
 
-    query.then(function(resultado) {
-        callback(false, resultado)
+	query.then(function(resultado) {
+        callback(false, resultado);
     }). catch (function(err) {
-        console.log("err [obj]:", obj);
-        console.log("err [obj]:", query.toSQL());
         console.log("err [listarFacturasNotas]:", err);
         callback(err);
     });
@@ -583,9 +563,7 @@ CajaGeneralModel.prototype.listarFacturasNotas = function(obj, callback) {
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar los Conceptos
  * @fecha 2017-06-02 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.listarConceptos = function(obj, callback) {
 
@@ -600,24 +578,25 @@ CajaGeneralModel.prototype.listarConceptos = function(obj, callback) {
     ];
 
     var query = G.knex.select(columna)
-            .from('grupos_conceptos as a')
-            .innerJoin('conceptos_caja_conceptos as b',
-            function() {
-                this.on("a.grupo_concepto", "b.grupo_concepto")
-            }).where(function() {
+        .from('grupos_conceptos as a')
+        .innerJoin('conceptos_caja_conceptos as b',
+         function() {
+         this.on("a.grupo_concepto", "b.grupo_concepto")
+        }).where(function() {
         if (obj.contado) {
-            this.andWhere(G.knex.raw("b.sw_contado='1'"))
+         this.andWhere(G.knex.raw("b.sw_contado='1'"))
         }
         if (obj.credito) {
-            this.andWhere(G.knex.raw("b.sw_credito='1'"))
+         this.andWhere(G.knex.raw("b.sw_credito='1'"))
         }
     }).andWhere('a.empresa_id', obj.empresa_id)
 
     query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
+    offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function(resultado) {
 
-        callback(false, resultado)
+        callback(false, resultado);
+	
     }). catch (function(err) {
         console.log("err [listarGrupos]:", err);
         callback(err);
@@ -625,11 +604,9 @@ CajaGeneralModel.prototype.listarConceptos = function(obj, callback) {
 };
 /**
  * @author Andres Mauricio Gonzalez
- * +Descripcion Metodo encargado de listar los Conceptos
+ * +Descripcion Metodo encargado de listar los tmp_detalle_conceptos
  * @fecha 2017-06-02 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.listarConceptosDetalle = function(obj, callback) {
 
@@ -658,24 +635,25 @@ CajaGeneralModel.prototype.listarConceptosDetalle = function(obj, callback) {
 		.from('tmp_detalle_conceptos as a')
 		.innerJoin('grupos_conceptos as  b ',
 		function() {
-		    this.on("a.grupo_concepto", "b.grupo_concepto")
+		 this.on("a.grupo_concepto", "b.grupo_concepto")
 		})
 		.innerJoin('conceptos_caja_conceptos as  c',
 		function() {
-		    this.on("c.grupo_concepto", "b.grupo_concepto")
-			.on("a.concepto_id", "c.concepto_id")
+		this.on("c.grupo_concepto", "b.grupo_concepto")
+		.on("a.concepto_id", "c.concepto_id")
 		}).where(function() {
-		    this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
-			.andWhere("a.tercero_id", obj.terceroId)
-			.andWhere("b.empresa_id", obj.empresaId)
-			.andWhere("a.concepto_id", obj.conceptoId)
+		this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
+		.andWhere("a.tercero_id", obj.terceroId)
+		.andWhere("b.empresa_id", obj.empresaId)
+		.andWhere("a.concepto_id", obj.conceptoId);
     });
  
-    query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
-    query.then(function(resultado) {
-	
-        callback(false, resultado);
+	query.limit(G.settings.limit).
+	offset((obj.paginaActual - 1) * G.settings.limit);
+
+	query.then(function(resultado) {
+	callback(false, resultado);
+    
     }). catch (function(err) {
         console.log("err [listarConceptosDetalle]:", err);
         callback(err);
@@ -684,7 +662,7 @@ CajaGeneralModel.prototype.listarConceptosDetalle = function(obj, callback) {
 
 /**
  * +Descripcion Metodo encargado de registrar en la tabla tmp_detalle_conceptos
- * @param {type} obj
+
  * @param {type} transaccion
  * @param {type} callback
  * @returns {undefined}
@@ -693,9 +671,10 @@ CajaGeneralModel.prototype.insertarTmpDetalleConceptos = function(parametros, ca
 
     var query = G.knex('tmp_detalle_conceptos').insert(parametros);
 
-    query.then(function(resultado) {
+	query.then(function(resultado) {
        
         callback(false, resultado);
+	
     }). catch (function(err) {
         console.log("err (/catch) [insertarTmpDetalleConceptos]: ", err);
         callback({err: err, msj: "Error al guardar la factura agrupada]"});
@@ -710,12 +689,13 @@ CajaGeneralModel.prototype.insertarTmpDetalleConceptos = function(parametros, ca
 CajaGeneralModel.prototype.eliminarTmpDetalleConceptos = function(obj, callback) {
 
     var query = G.knex('tmp_detalle_conceptos')
-            .where('rc_concepto_id', obj.rc_concepto_id)
-            .del();
+	.where('rc_concepto_id', obj.rc_concepto_id)
+	.del();
 
-    query.then(function(resultado) {
-        console.log("query::: ", query.toString());
-        callback(false, resultado);
+	query.then(function(resultado) {
+
+	callback(false, resultado);
+	
     }). catch (function(err) {
         console.log("err (/catch) [eliminarTmpDetalleConceptos]: ", err);
         callback({err: err, msj: "Error al eliminar los temporales"});
@@ -723,10 +703,8 @@ CajaGeneralModel.prototype.eliminarTmpDetalleConceptos = function(obj, callback)
 };
 
 /**
- *
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * +Descripcion Metodo encargado de bloquear la tabla documentos
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.bloquearTablaDocumentos = function(transaccion, callback) {
 
@@ -735,8 +713,9 @@ CajaGeneralModel.prototype.bloquearTablaDocumentos = function(transaccion, callb
     var query = G.knex.raw(sql);
 
     if (transaccion)
-        query.transacting(transaccion);
-    query.then(function(resultado) {
+	query.transacting(transaccion);
+   
+	query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err (/catch) [bloquearTabla documentos]: ", err);
@@ -746,32 +725,31 @@ CajaGeneralModel.prototype.bloquearTablaDocumentos = function(transaccion, callb
 };
 
 /**
- *
- * @param {type} obj
- * @param {type} callback
+ * +Descripcion Metodo encargado de consultar documentos e incrementar en uno
  * @returns {undefined}
  */
 CajaGeneralModel.prototype.numeracionDocumento= function(obj,transaccion, callback) {
 
     var query = G.knex('documentos')
-            .where('documento_id', obj.documentoId)
-            .returning(['numeracion','prefijo'])
-            .increment('numeracion', 1);
+	.where('documento_id', obj.documentoId)
+	.returning(['numeracion','prefijo'])
+	.increment('numeracion', 1);
     
    if (transaccion)
-        query.transacting(transaccion);    
-    query.then(function(resultado) {
-        callback(false, resultado);
-    }). catch (function(err) {
-        console.log("err (/catch) [numeracionDocumento]: ", err);
-        callback("Error al actualizar el tipo de formula");
-    });
+	query.transacting(transaccion);   
+    
+	query.then(function(resultado) {
+	    callback(false, resultado);
+	}). catch (function(err) {
+	    console.log("err (/catch) [numeracionDocumento]: ", err);
+	    callback("Error al actualizar el tipo de formula");
+	});
 };
 
 
 /**
  * +Descripcion Metodo encargado de registrar en la tabla fac_facturas
- * @param {type} obj
+
  * @param {type} transaccion
  * @param {type} callback
  * @returns {undefined}
@@ -796,10 +774,10 @@ CajaGeneralModel.prototype.insertarFacFacturas = function(parametros,transaccion
     var query = G.knex('fac_facturas').insert(parametro);
 
    if (transaccion)
-        query.transacting(transaccion); 
-    query.then(function(resultado) {
+	query.transacting(transaccion); 
+	query.then(function(resultado) {
         
-        callback(false, resultado);
+	callback(false, resultado);
 	
     }). catch (function(err) {
         console.log("err (/catch) [insertarFacFacturas]: ", err);
@@ -809,7 +787,7 @@ CajaGeneralModel.prototype.insertarFacFacturas = function(parametros,transaccion
 
 /**
  * +Descripcion Metodo encargado de registrar en la tabla tmp_detalle_conceptos
- * @param {type} obj
+
  * @param {type} transaccion
  * @param {type} callback
  * @returns {undefined}
@@ -831,12 +809,13 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptos = function(parametro,tra
     };
 
     var query = G.knex('fac_facturas_conceptos')
-	        .insert(parametros)
-	        .returning(['fac_factura_concepto_id']);
+	.insert(parametros)
+	.returning(['fac_factura_concepto_id']);
+
      if (transaccion)
         query.transacting(transaccion); 
     
-    query.then(function(resultado) {
+	query.then(function(resultado) {
        
         callback(false, resultado);
     }). catch (function(err) {
@@ -847,7 +826,7 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptos = function(parametro,tra
 
 /**
  * +Descripcion Metodo encargado de registrar en la tabla fac_facturas_conceptos_notas
- * @param {type} obj
+
  * @param {type} transaccion
  * @param {type} callback
  * @returns {undefined}
@@ -870,12 +849,13 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptosNotas = function(parametr
 	            bodega: parametro.bodega
     };
     var query = G.knex('fac_facturas_conceptos_notas')
-	        .insert(parametros)
-	        .returning(['fac_facturas_conceptos_notas_id']);
+	.insert(parametros)
+	.returning(['fac_facturas_conceptos_notas_id']);
+
      if (transaccion)
         query.transacting(transaccion); 
-    query.then(function(resultado) {
-       console.log("insertarFacFacturasConceptosNotas ",resultado);
+    
+	query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err (/catch) [insertarFacFacturasConceptosNotas]: ", err);
@@ -885,7 +865,7 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptosNotas = function(parametr
 
 /**
  * +Descripcion Metodo encargado de registrar la direccion ip en el 
- * @param {type} obj
+
  * @param {type} transaccion
  * @param {type} callback
  * @returns {undefined}
@@ -903,22 +883,18 @@ CajaGeneralModel.prototype.insertarPcFactura = function(parametro,transaccion, c
     var query = G.knex('pc_factura_clientes').insert(parametros);
     
     if(transaccion)
-        query.transacting(transaccion);     
+        query.transacting(transaccion);   
+    
         query.then(function(resultado){   
-            console.log("resultado [insertarPcFactura]", resultado);
-            callback(false, resultado);
-        }).catch(function(err){
-            console.log("err (/catch) [insertarPcFactura]: ", err);     
-            callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+        callback(false, resultado);
+        }).catch(function(err){    
+        callback({err:err, msj: "Error al guardar la factura agrupada]"});   
         });
 };
 
 /**
  * +Descripcion Metodo encargado de registrar en la tabla tmp_detalle_conceptos
- * @param {type} obj
- * @param {type} transaccion
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.insertarFacFacturasConceptosDc = function(parametro,transaccion,callback) {
 
@@ -934,7 +910,7 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptosDc = function(parametro,t
      if (transaccion)
         query.transacting(transaccion); 
     
-    query.then(function(resultado) {
+	query.then(function(resultado) {
        
         callback(false, resultado);
     }). catch (function(err) {
@@ -944,9 +920,6 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptosDc = function(parametro,t
 };
 /**
  * +Descripcion Metodo encargado de registrar en la tabla tmp_detalle_conceptos
- * @param {type} obj
- * @param {type} transaccion
- * @param {type} callback
  * @returns {undefined}
  */
 CajaGeneralModel.prototype.insertarFacturasContado = function(parametro,transaccion,callback) {
@@ -974,7 +947,7 @@ CajaGeneralModel.prototype.insertarFacturasContado = function(parametro,transacc
      if (transaccion)
         query.transacting(transaccion); 
     
-    query.then(function(resultado) {
+	query.then(function(resultado) {
        
         callback(false, resultado);
     }). catch (function(err) {
@@ -984,10 +957,8 @@ CajaGeneralModel.prototype.insertarFacturasContado = function(parametro,transacc
 };
 
 /**
- * 
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * +Descripcion Metodo encargado de actualizar fac_facturas total_factura
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.actualizarTotalesFacturas= function(obj,transaccion, callback) {
  console.log("obj",obj);
@@ -998,12 +969,13 @@ CajaGeneralModel.prototype.actualizarTotalesFacturas= function(obj,transaccion, 
 		.update({
 		    total_factura:obj.totalFactura,
 		    gravamen:obj.totalGravamen
-		});
-//console.log("actualizarTotalesFacturas::::::::::::::::: ",query.toSQL());		
-       if (transaccion)
+		});		
+     if (transaccion)
         query.transacting(transaccion); 
-    query.then(function(resultado){ 
-       callback(false, resultado);
+    
+	query.then(function(resultado){ 
+	callback(false, resultado);
+	
     }).catch(function(err){    
        console.log("err (/catch) [actualizarTotalesFacturas]: ", err);
        callback("Error al actualizar fac_facturas");  
@@ -1011,13 +983,11 @@ CajaGeneralModel.prototype.actualizarTotalesFacturas= function(obj,transaccion, 
 };
 
 /**
- * 
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * +Descripcion Metodo encargado de actualizar fac_facturas impuestos
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.actualizarImpuestoFacturas= function(obj,transaccion, callback) {
- //console.log("obj",obj);
+
     var query = G.knex('fac_facturas')
 		.where('empresa_id', obj.empresaId)
 		.andWhere('prefijo', obj.prefijo)
@@ -1029,9 +999,10 @@ CajaGeneralModel.prototype.actualizarImpuestoFacturas= function(obj,transaccion,
 		    porcentaje_cree:obj.porcentajeCree
 		});
 		
-       if (transaccion)
+    if (transaccion)
         query.transacting(transaccion); 
-    query.then(function(resultado){ 
+    
+	query.then(function(resultado){ 
        callback(false, resultado);
     }).catch(function(err){    
        console.log("err (/catch) [actualizarImpuestoFacturas]: ", err);
@@ -1039,10 +1010,9 @@ CajaGeneralModel.prototype.actualizarImpuestoFacturas= function(obj,transaccion,
     });
 };
 /**
- * 
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * +Descripcion Metodo encargado de actualizar saldos de la factura este solo se invoca 
+ * porque realmente el que actualiza el saldo es el triger
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.actualizarSaldoFacturas= function(obj,transaccion, callback) {
 
@@ -1054,13 +1024,14 @@ CajaGeneralModel.prototype.actualizarSaldoFacturas= function(obj,transaccion, ca
 		    saldo:obj.saldo
 		});
 		
-       if (transaccion)
+    if (transaccion)
         query.transacting(transaccion); 
-    query.then(function(resultado){ 
-       callback(false, resultado);
+    
+	query.then(function(resultado){ 
+        callback(false, resultado);
     }).catch(function(err){    
-       console.log("err (/catch) [actualizarImpuestoFacturas]: ", err);
-       callback("Error al actualizar fac_facturas");  
+        console.log("err (/catch) [actualizarImpuestoFacturas]: ", err);
+        callback("Error al actualizar fac_facturas");  
     });
 };
 
@@ -1073,15 +1044,15 @@ CajaGeneralModel.prototype.actualizarSaldoFacturas= function(obj,transaccion, ca
 CajaGeneralModel.prototype.eliminarTmpDetalleConceptosTerceros = function(obj,transaccion, callback) {
 
     var query = G.knex('tmp_detalle_conceptos')
-            .where('tipo_id_tercero', obj.tipoIdTercero)
-            .where('tercero_id', obj.terceroId)
-            .where('empresa_id', obj.empresaId)
-            .del();
+		.where('tipo_id_tercero', obj.tipoIdTercero)
+		.where('tercero_id', obj.terceroId)
+		.where('empresa_id', obj.empresaId)
+		.del();
     
      if (transaccion)
         query.transacting(transaccion); 
-    query.then(function(resultado) {
-      //  console.log("query::: ", query.toString());
+    
+	query.then(function(resultado) {	    
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err (/catch) [eliminarTmpDetalleConceptosTerceros]: ", err);
@@ -1093,9 +1064,7 @@ CajaGeneralModel.prototype.eliminarTmpDetalleConceptosTerceros = function(obj,tr
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar los Conceptos
  * @fecha 2017-06-02 YYYY-MM-DD
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
+ * @returns {callback}
  */
 CajaGeneralModel.prototype.listarEmpresa = function(obj, callback) {
 
@@ -1123,11 +1092,11 @@ CajaGeneralModel.prototype.listarEmpresa = function(obj, callback) {
                     .on("c.tipo_mpio_id", "a.tipo_mpio_id")
             }).where("empresa_id", obj.empresaId);
 
-    query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
-    query.then(function(resultado) {
-
-        callback(false, resultado)
+	query.limit(G.settings.limit).
+            offset((obj.paginaActual - 1) * G.settings.limit);
+	query.then(function(resultado) {
+        callback(false, resultado);
+	
     }). catch (function(err) {
         console.log("err [listarGrupos]:", err);
         callback(err);
@@ -1135,6 +1104,5 @@ CajaGeneralModel.prototype.listarEmpresa = function(obj, callback) {
 };
 
 CajaGeneralModel.$inject = [];
-
 
 module.exports = CajaGeneralModel;

@@ -286,6 +286,8 @@ define(["angular", "js/services"], function(angular, services) {
                             factura.setIdentificacion(data.identificacion);
                             factura.setPrefijo(data.prefijo);
                             factura.setSubTotal(data.subtotal);
+                            factura.setTipoTercero(data.tipo_id_tercero);
+                            factura.setTerceroId(data.tercero_id);
                             facturas.push(factura);
                         });
 

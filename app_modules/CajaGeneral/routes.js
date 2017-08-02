@@ -23,7 +23,7 @@ module.exports = function(app, di_container) {
     });
 
     app.post('/api/CajaGeneral/guardarFacturaCajaGenral', function(req, res) {
-        c_caja_general.guardarFacturaCajaGenral(req, res);
+        c_caja_general.guardarFacturaCajaGeneral(req, res);
     });
 
     app.post('/api/CajaGeneral/listarFacturasGeneradasNotas', function(req, res) {

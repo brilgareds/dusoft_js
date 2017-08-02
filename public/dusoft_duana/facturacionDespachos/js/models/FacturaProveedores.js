@@ -245,6 +245,26 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.prefijo;
             };
             
+            
+            FacturaProveedores.prototype.setTipoTercero = function(tipoTercero) {
+                this.tipoTercero = tipoTercero;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getTipoTercero = function() {
+                return this.tipoTercero;
+            };
+	    
+            
+            FacturaProveedores.prototype.setTerceroId = function(terceroId) {
+                this.terceroId = terceroId;
+                return this;
+            };
+
+            FacturaProveedores.prototype.getTerceroId = function() {
+                return this.terceroId;
+            };
+            
             // Instancia
             this.get = function(numeroFactura, codigoProveedor,fechaRegistro,observacion) {
                 return new FacturaProveedores(numeroFactura, codigoProveedor,fechaRegistro,observacion);

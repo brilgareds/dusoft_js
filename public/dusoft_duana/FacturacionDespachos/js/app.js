@@ -19,11 +19,12 @@ define([
     "includes/validation/ValidacionNumero",
     "includes/validation/ValidacionNumeroEntero",
     "includes/validation/ValidacionNumeroDecimal",
-    "includes/widgets/InputCheck",     
-    "includes/menu/menucontroller",   
+    "includes/widgets/InputCheck",
+    "includes/menu/menucontroller",
     "includes/alert/Alert",
-    "includes/header/HeaderController",           
+    "includes/header/HeaderController",
     "includes/classes/Usuario",
+    "includes/classes/Concepto",
     "includes/http/Request",
     "includes/helpersdirectives/visualizarReporte",
     "includes/helpersdirectives/selectOnClick",
@@ -33,6 +34,8 @@ define([
     "models/TipoTerceros",
     "models/OrdenesComprasProveedores",
     "models/Totales",
+    "models/Grupos",
+    "models/ConceptoCaja",
     "models/TerceroDespacho",
     "models/EmpresaDespacho",
     "models/FacturaProveedores",
@@ -40,19 +43,22 @@ define([
     "models/DocumentoDespacho",
     "models/VendedorDespacho",
     "models/PedidoDespacho",
-    "controllers/facturacionCliente/FacturacionClientesController",
-    "controllers/facturacionCliente/PedidosClientesController",
+    "models/CajaGeneral",
+    "controllers/facturacionCliente/facturacionClientesController",
+    "controllers/facturacionCliente/pedidosClientesController",
     "controllers/facturacionCliente/VentanaMensajeSincronizacionController",
     "controllers/facturacionCliente/FacturacionConsumoController",
     "controllers/facturacionCliente/GuardarFacturaConsumoController",
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
+    "controllers/cajaGeneral/CajaGeneralController",
     "services/facturacionClientesService",
     "services/facturacionProveedoresService",
+    "services/cajaGeneralService",
     "webNotification"
-], function(angular) { 
+], function(angular) {
 
-        /* App Module and its dependencies */
+    /* App Module and its dependencies */
     var facturacionClientes = angular.module('Facturacion', [
         'ui.router',
         'controllers',
@@ -80,10 +86,10 @@ define([
         }]).run(["$rootScope", "localStorageService", "Usuario", "$state", "$location", function($rootScope, localStorageService, Usuario, $state, $location) {
 
             $rootScope.name = "Bienvenido";
-            
+
 
             $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion) {
-                
+
                 var vista_predeterminada = "Despacho";
 
                 facturacionClientes.urlRouterProvider.otherwise(vista_predeterminada);
@@ -117,8 +123,13 @@ define([
                     parent_name: "Despacho",
                     templateUrl: "views/facturacionClientes/guardarFacturaConsumo.html",
                     controller: "GuardarFacturaConsumoController"                        
+                }).state('CajaGeneral', {
+                    url: "/CajaGeneral",
+                    text: "Caja General",
+                    parent_name: "Despacho",
+                    templateUrl: "views/cajaGeneral/index.html",
+                    controller: "CajaGeneralController"
                 });
-                    
 
                 if ($location.path() === "")
                     $state.go(vista_predeterminada);
@@ -130,5 +141,5 @@ define([
 
     angular.bootstrap(document, ['Facturacion']);
     return facturacionClientes;
-    
+
 });

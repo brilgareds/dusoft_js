@@ -16,9 +16,9 @@ SincronizacionModel.prototype.sincronizarCuentasXpagarFi=function(obj, callback)
     };
 
     obj.error = false;
-    console.log("LOS PARAMAETROSLOSOSOS ", obj.parametros)
-    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
 
+    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
+         
         return G.Q.ninvoke(client, "sincronizarFi", obj.parametros);
 
     }).spread(function(result, raw, soapHeader) {

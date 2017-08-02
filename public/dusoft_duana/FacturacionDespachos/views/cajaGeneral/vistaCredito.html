@@ -1,0 +1,31 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <button type="button" class="btn btn-default dropdown-toggle" ng-disabled="validarCaja()"
+                aria-haspopup="true" aria-expanded="false" ng-click="onConcepto()" > Concepto
+        </button>
+        <br />
+        <br />
+        <br />
+        <div class="table-responsive" style="clear:both; ">
+            <div class="defaultGrid grid-responsive" ng-grid="listaConceptosTmp" ></div>
+        </div>
+	<br />
+        <br />
+	<div class="input-group-btn">
+	    <button type="button" class="btn btn-default pull-right" ng-disabled="validarConcepto()"
+		    aria-haspopup="true" aria-expanded="false" ng-click="guardarFacturaCajaGeneral()" > 
+		Facturar <i class="glyphicon glyphicon-floppy-disk"></i>
+	    </button>
+        </div>
+	
+    </body>
+</html>

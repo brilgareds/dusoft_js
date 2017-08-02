@@ -10,12 +10,12 @@ define(["angular", "js/models"], function(angular, models) {
             this.fecha_registro = fecha_registro || "";
         }
         ;
-        
+
         Documento.prototype.set_fecha_registro = function(fecha_registro) {
             this.fecha_registro = fecha_registro;
             return this;
         };
-        
+
         Documento.prototype.set_empresa = function(empresa) {
             this.empresa = empresa;
             return this;
@@ -35,7 +35,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.descripcion = descripcion;
             return this;
         };
-        
+
 
         Documento.prototype.set_tipo = function(tipo) {
             this.tipo = tipo; // I002
@@ -46,8 +46,8 @@ define(["angular", "js/models"], function(angular, models) {
             this.tipo_clase_documento = tipo_clase_documento; //"EGRESO POR PRESTAMO A OTRAS ENTIDADES"
             return this;
         };
-        
-        
+
+
         Documento.prototype.set_tipo_movimiento = function(tipo_movimiento) {
             this.tipo_movimiento = tipo_movimiento; // E o I
             return this;
@@ -62,25 +62,25 @@ define(["angular", "js/models"], function(angular, models) {
             this.observaciones = observaciones;
             return this;
         };
-        
-        
-         Documento.prototype.get_fecha_registro = function() {
+
+
+        Documento.prototype.get_fecha_registro = function() {
             return this.fecha_registro;
         };
-        
+
         Documento.prototype.get_prefijo = function() {
             return this.prefijo;
         };
-        
+
         Documento.prototype.setPrefijo = function(prefijo) {
             this.prefijo = prefijo;
         };
-        
+
         Documento.prototype.get_numero = function() {
             return this.numero;
         };
-        
-        
+
+
         Documento.prototype.get_empresa = function() {
             return this.empresa;
         };
@@ -96,11 +96,11 @@ define(["angular", "js/models"], function(angular, models) {
         Documento.prototype.get_descripcion = function() {
             return this.descripcion;
         };
-        
+
         Documento.prototype.get_tipo_clase_documento = function() {
             return this.tipo_clase_documento;
         };
-        
+
         Documento.prototype.get_tipo = function() {
             return this.tipo;
         };
@@ -116,8 +116,6 @@ define(["angular", "js/models"], function(angular, models) {
         Documento.prototype.get_observaciones = function() {
             return this.observaciones;
         };
-        
-        
 
         this.getClass = function() {
             return Documento;

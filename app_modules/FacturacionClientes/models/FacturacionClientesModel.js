@@ -634,8 +634,6 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
  */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
     
-    console.log("*********FacturacionClientesModel.prototype.listarPedidosClientes*************");
-    console.log("obj ", obj);
     var formato = 'YYYY-MM-DD';
       
     var columnQuery = [

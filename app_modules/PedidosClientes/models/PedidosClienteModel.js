@@ -1615,7 +1615,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
     console.log("**********PedidosClienteModel.prototype.insertar_cotizacion****************");
     console.log("**********PedidosClienteModel.prototype.insertar_cotizacion****************");
     
-    console.log("cotizacion ",cotizacion);
+    //console.log("cotizacion ",cotizacion);
     var parametros = {
         1: cotizacion.empresa_id,
         2: cotizacion.cliente.tipo_id_tercero,
@@ -1636,7 +1636,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
         17: cotizacion.estadoMultiplePedido
    
     };
-
+    console.log("parametros ", parametros);
     var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
                 empresa_id,\
                 tipo_id_tercero,\
@@ -2621,6 +2621,9 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
  * @fecha: 04/12/2015 2:43 pm
  */
 function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callback) {
+    console.log("*******__generar_detalle_pedido_cliente************");
+    console.log("*******__generar_detalle_pedido_cliente************");
+    console.log("*******__generar_detalle_pedido_cliente************");
     
     var parametros = {1: pedido.numero_pedido, 
                       2: cotizacion.numero_cotizacion, 
@@ -2657,8 +2660,8 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
                     AND bodega_origen_producto = :5 \
                     AND pedido_farmacia = '0'\
                 ) ;";                            
-
-    
+                
+    console.log("parametros ", parametros);
     var query = G.knex.raw(sql, parametros);
 
     if (transaccion)

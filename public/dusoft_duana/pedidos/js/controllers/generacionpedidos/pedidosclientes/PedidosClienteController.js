@@ -1674,11 +1674,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
 
-                });*/
+                });*/                       
                 that.actualizarProductos(productos,function(data){
                     
                     if (data.status === 200) {
-
+                                                                      
                         that.autorizarCotizacionCartera(aprobado, denegar);
 
                     } else {
@@ -1717,12 +1717,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              de lo contrario se generara el pedido normal
              */
             that.generarPedidoBodegaMultiple = function (aprobado, denegar) {
-
+                
+                var bodegaCotizacion = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
+                
                 if (aprobado === 1) {
-                    that.consultarDetalleProductosCotizacion('1','03',function (estado, resultado) {
-                        console.log("estado ", estado);
-                        console.log("resultado ", resultado);
-                       if ($scope.Pedido.observacion_cartera.length > 0) {
+                    that.consultarDetalleProductosCotizacion('1',bodegaCotizacion,function (estado, resultado) {
+                        
+                        if ($scope.Pedido.observacion_cartera.length > 0) {
                             if (estado && resultado[0].estado_multiple_pedido === "1") {
                                 
                                 that.generarPedidoModuloCliente(2,resultado,aprobado, denegar);
@@ -1732,7 +1733,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         } else {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar la observacion");
-                        }
+                        } 
                     });
                 } else {
                     that.autorizarCotizacionCartera(aprobado, denegar);
@@ -1974,12 +1975,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
-
+                var bodegaCotizacion = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
+                
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_AUTORIZACION, "POST", objConsultarAurorizacion, function (data) {
                    
                     if (data.status === 200) {
 
-                       that.consultarDetalleProductosCotizacion('1','03',function (estado, resultado) {
+                       that.consultarDetalleProductosCotizacion('1',bodegaCotizacion,function (estado, resultado) {
                               console.log("estado ", estado);                                  
                               console.log("resultado ", resultado);                                  
                             if (estado && resultado[0].estado_multiple_pedido === "1") {                            
@@ -1999,7 +2001,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             
             that.generarPedidoModuloCliente = function(funcion,resultado,aprobado, denegar){
-                                
+                
+                console.log("************generarPedidoModuloCliente*******************");
+                console.log("************generarPedidoModuloCliente*******************");
+                console.log("************generarPedidoModuloCliente*******************");
+                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -2019,10 +2025,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
-
+                
                 var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
                      
-                Request.realizarRequest(url, "POST", obj, function (data) {
+                Request.realizarRequest(url, "POST", obj, function (data) {                        
 
                     if (data.status === 200) {
                         
@@ -2074,8 +2080,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var date = new Date();
                 var fecha = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
                 var productos = $scope.Pedido.get_productos();
+                var bodegaCotizacion = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
                 
-                that.consultarDetalleProductosCotizacion('3','03',function (estado, resultado) {
+                that.consultarDetalleProductosCotizacion('3',bodegaCotizacion,function (estado, resultado) {
                   
                    if(estado){
                        

@@ -1567,7 +1567,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
     }
     var estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
     cotizacion.usuario_id = req.session.user.usuario_id;
-    //cotizacion.estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
+    cotizacion.estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
 
     var limite_productos = 60;
     var usuario = req.session.user;
@@ -1696,7 +1696,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
         /**
          * +Descripcion Se verifica si la cotizacion ya ha sido creada
          */
-        if (cotizacion.numero_cotizacion === 0) {
+        if (cotizacion.numero_cotizacion === 0) {      
             return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);
         } else {
             def.resolve();
@@ -2535,6 +2535,11 @@ PedidosCliente.prototype.consultarDetallePedido = function (req, res) {
  */
 PedidosCliente.prototype.generarPedido = function (req, res) {
 
+console.log("**************PedidosCliente.prototype.generarPedido*****************************");
+console.log("**************PedidosCliente.prototype.generarPedido*****************************");
+console.log("**************PedidosCliente.prototype.generarPedido*****************************");
+console.log("**************PedidosCliente.prototype.generarPedido*****************************");
+
     var that = this;
 
     var args = req.body.data;
@@ -2551,7 +2556,7 @@ PedidosCliente.prototype.generarPedido = function (req, res) {
         res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
         return;
     }
-
+    console.log("cotizacion ", cotizacion);
     //cotizacion.usuario_id = req.session.user.usuario_id;
     that.pedidoGenerado;
 

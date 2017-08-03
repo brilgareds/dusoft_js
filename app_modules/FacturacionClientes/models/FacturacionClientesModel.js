@@ -710,6 +710,19 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
  * @fecha 2017-24-07
  */
 FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, callback) {
+    
+    
+   /* select a.* from (
+
+        select distinct on (a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario) a.prefijo, a.numero, a.codigo_producto, 
+        fc_descripcion_producto(a.codigo_producto) as descripcion, a.lote, 
+        TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento, sum(a.cantidad) as cantidad_despachada --, a.numero_caja
+        from inv_bodegas_movimiento_d as a 
+        inner join inv_bodegas_movimiento_despachos_clientes as b on a.numero = b.numero and a.prefijo = b.prefijo 
+        where a.empresa_id = '03' and a.prefijo = 'EFC' and a.numero = '204400'
+        group by a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario, a.prefijo, a.numero --, a.numero_caja
+    ) as a */
+    
             
     var columnQuery = [
         "a.prefijo",

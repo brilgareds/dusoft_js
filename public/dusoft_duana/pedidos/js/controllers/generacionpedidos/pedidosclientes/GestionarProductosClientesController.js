@@ -533,7 +533,7 @@ define(["angular", "js/controllers",
                     },
                     {field: 'descripcion', displayName: 'Nombre',
                         // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
-                        cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
+                        cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>", width:450},
                     {field: 'nombreBodega', displayName: 'Bod', width: "50", 
                         cellTemplate:'<div class="ngCellText">\
                                         <span class="label label-primary"  ng-if="row.entity.getNombreBodega() == \'DUA\' "> {{row.entity.getNombreBodega()}}</span>\
@@ -541,7 +541,7 @@ define(["angular", "js/controllers",
                                       </div>'
                     },
                     {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
-                    {field: '#Cod.invima/F.Ven', width: "200", displayName: '#Cod.invima/F.Ven', 
+                    {field: '#Cod.invima/F.Ven',  displayName: '#Cod.invima/F.Ven', 
                         cellTemplate: '<div class="col-xs-16 ">\n\
                             <p class="text-uppercase">{{row.entity.codigo_invima}} / {{row.entity.fecha_vencimiento_invima}}</p></div>'},
                   

@@ -633,7 +633,7 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
  * @fecha 2017-10-05
  */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
-    
+      
     var formato = 'YYYY-MM-DD';
       
     var columnQuery = [

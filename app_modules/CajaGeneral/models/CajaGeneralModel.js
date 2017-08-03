@@ -668,7 +668,7 @@ CajaGeneralModel.prototype.listarConceptosDetalle = function(obj, callback) {
  * @returns {undefined}
  */
 CajaGeneralModel.prototype.insertarTmpDetalleConceptos = function(parametros, callback) {
-
+console.log("parametros",parametros);
     var query = G.knex('tmp_detalle_conceptos').insert(parametros);
 
 	query.then(function(resultado) {
@@ -676,8 +676,8 @@ CajaGeneralModel.prototype.insertarTmpDetalleConceptos = function(parametros, ca
         callback(false, resultado);
 	
     }). catch (function(err) {
-        console.log("err (/catch) [insertarTmpDetalleConceptos]: ", err);
-        callback({err: err, msj: "Error al guardar la factura agrupada]"});
+        console.log("err (/catch) [tmp_detalle_conceptos]: ", err);
+        callback(err);
     });
 };
 
@@ -888,7 +888,7 @@ CajaGeneralModel.prototype.insertarPcFactura = function(parametro,transaccion, c
         query.then(function(resultado){   
         callback(false, resultado);
         }).catch(function(err){    
-        callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+        callback({err:err, msj: "Error al guardar la insertarPcFactura"});   
         });
 };
 

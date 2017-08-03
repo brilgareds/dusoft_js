@@ -29,6 +29,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 		    $scope.root.totalesNotaCredito=0;
 		    $scope.root.totalesNotaDebito=0;
 		    
+		    $scope.root.termino_busqueda_tercero={};
+		    
                     $scope.root.filtros = [
                         {tipo: '', descripcion: "Nombre"}
                     ];
@@ -39,6 +41,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.root.filtro = $scope.root.filtros[0];
                     $scope.root.tipoTercero = $scope.root.filtros[0];
 		    $scope.root.tab=1;
+		    $scope.terceroSeleccionado=null;
                     /*
                      * Inicializacion de variables
                      * @param {type} empresa
@@ -339,7 +342,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @fecha 2017-06-01
                      */
                     that.listarTerceros = function(callback) {
-
+			console.log("____",$scope.root.termino_busqueda_tercero);
+                        if($scope.root.termino_busqueda_tercero===undefined){
+			    $scope.root.termino_busqueda_tercero='';
+			}
                         var parametros = {
                             session: $scope.session,
                             data: {
@@ -351,7 +357,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 }
                             }
                         };
-
+                             
                         cajaGeneralService.listarTerceros(parametros, function(respuesta) {
                             if (respuesta.status === 200) {
                                 $scope.root.terceros = [];
@@ -407,7 +413,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             return;
                         }
                         if ($scope.root.cajas === undefined) {
-			     AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe seleccionar la Caja");
+//			     AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe seleccionar la Caja");
                             return;
                         }
 
@@ -1367,16 +1373,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * +Descripcion seleccionar busqueda
                      * @param {type} $event
                      */
-                    $scope.buscarTercero = function(event,estado) {
-
-                        if (event.which === 13) {
+                    $scope.buscarTercero = function(event,estado,busqueda) {
+                           
+			   $scope.root.termino_busqueda_tercero=busqueda;
+//                        if (event.which === 13) {
 			   switch ($scope.root.tab){ 
 			       case 1:
+				        if($scope.root.termino_busqueda_tercero.length> 3){
 					that.listarTerceros(function(respuesta) {
 					    if (respuesta) {
 						that.listarConceptosDetalle();
 					    }
 					});
+					}
 					break;
 			       case 2:
 					that.listarFacturasGeneradas(1,function(data){
@@ -1389,7 +1398,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					});
 					 break;
 			   } 
-                        }
+//                        }
                     };
 		    
 		     /**
@@ -1417,7 +1426,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     that.init(empresa, function() {
                         that.listarTiposTerceros();
 			that.listarPrefijos();
-			
                     });
 		    
                     that.listarCajaGeneral(function(data) {

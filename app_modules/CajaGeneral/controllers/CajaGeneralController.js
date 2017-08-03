@@ -263,7 +263,12 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 			saldo : 0,
 			valorNotaTotal:args.valorNotaTotal
 			};
-			
+		
+    parametros.valorNotaTotal = parseInt(parametros.valorNotaTotal)+parseInt(parametros.porcentajeGravamen);
+    console.log("___________parametros_____________");
+    console.log(parametros);
+    console.log("______________________________");
+    
     G.knex.transaction(function(transaccion) {
 	
 	G.Q.nfcall(__crearPrefijoNumero,that, parametros,transaccion).then(function(resultado) {
@@ -271,7 +276,7 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 	parametros.documentoId = args.swContable===1?'506':'504';
 	parametros.prefijoNota = resultado[0].prefijo;
 	parametros.numeroNota = resultado[0].numeracion;
-	console.log("parametros ",parametros);
+	
 	
 	G.Q.ninvoke(that.m_caja_general, 'insertarFacFacturasConceptosNotas', parametros,transaccion);
 
@@ -504,8 +509,10 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function(req, res) {
 		return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip});     
 		
 	    }).then(function(resultado){	
-		
-		if (!resultado || resultado.length > 0) {
+		console.log("ip2 ",ip.substr(7, ip.length));
+		console.log("resultado ",resultado);
+		console.log("ip ",ip);
+		if (ip.substr(0, 6) === '::1' || !resultado || resultado.length > 0) {
 		    parametros.direccionIp = ip;
 		    parametros.swTipoFactura = 2;
 		    return G.Q.ninvoke(that.m_caja_general, 'insertarPcFactura', parametros, transaccion);
@@ -864,7 +871,7 @@ console.log("*************imprimirNota*****************");
 	parametros.totalFactura = parseInt(result[0].total_factura) + parseInt(result[0].gravamen);//valor_nota_total
 	parametros.totalGravamen = parseInt(result[0].gravamen);
 	
-	parametros.totalNota=parseInt(result[0].valor_nota_total) + parseInt(result[0].valor_gravamen);
+	parametros.totalNota=parseInt(result[0].valor_nota_total) - parseInt(result[0].valor_gravamen);
 	parametros.totalGravamenNota=parseInt(result[0].valor_gravamen);
 	
 
@@ -899,9 +906,9 @@ console.log("*************imprimirNota*****************");
 	return G.Q.ninvoke(that.m_caja_general, 'listarEmpresa', parametros);
 
     }).then(function(result) {
-	console.log("result cliente ",cliente);
-	console.log("result ",result );
-	console.log("conceptosDetalle ",conceptosDetalle);
+//	console.log("result cliente ",cliente);
+//	console.log("result ",result );
+//	console.log("conceptosDetalle ",conceptosDetalle);
 	empresa = result;
 	var informacion = {
 	    serverUrl: req.protocol + '://' + req.get('host') + "/",

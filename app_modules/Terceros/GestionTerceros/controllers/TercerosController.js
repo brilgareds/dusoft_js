@@ -163,6 +163,7 @@ Terceros.prototype.listarTerceros = function(req, res){
         res.send(G.utils.r(req.url, 'Consulta de tercero', 200, {terceros: resultado}));
         
     }).fail(function(err){
+	console.log("terceros ",err);
         res.send(G.utils.r(req.url, 'Ha ocurrido un error consultando los terceros', 404, {}));
     }).done();
 };

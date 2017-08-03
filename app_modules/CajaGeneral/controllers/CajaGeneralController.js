@@ -506,7 +506,7 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function(req, res) {
 	    }).then(function(result) {
 
 		conceptosDetalle=result;            
-		return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip});     
+		return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});     
 		
 	    }).then(function(resultado){	
 		console.log("ip2 ",ip.substr(7, ip.length));

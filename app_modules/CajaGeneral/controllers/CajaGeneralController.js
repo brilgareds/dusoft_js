@@ -506,18 +506,18 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function(req, res) {
 	    }).then(function(result) {
 
 		conceptosDetalle=result;            
-		return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});     
+		ip=ip.replace('::ffff:', '');
+		console.log("IP  ",ip.replace('::ffff:', ''));
+		
+		return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip});     
 		
 	    }).then(function(resultado){	
-		console.log("ip2 ",ip.substr(7, ip.length));
-		console.log("resultado ",resultado);
-		console.log("ip ",ip);
 		if (ip.substr(0, 6) === '::1' || !resultado || resultado.length > 0) {
 		    parametros.direccionIp = ip;
 		    parametros.swTipoFactura = 2;
 		    return G.Q.ninvoke(that.m_caja_general, 'insertarPcFactura', parametros, transaccion);
 		} else {
-		    throw {msj: 'La Ip # ' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
+		    throw {msj: 'La Ip # ' + ip + ' No tiene permisos para realizar la peticion', status: 409};
 		}
 		
 	    }).then(function(result) {

@@ -517,7 +517,7 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function(req, res) {
 		    parametros.swTipoFactura = 2;
 		    return G.Q.ninvoke(that.m_caja_general, 'insertarPcFactura', parametros, transaccion);
 		} else {
-		    throw {msj: 'La Ip # ' + ip + ' No tiene permisos para realizar la peticion', status: 409};
+		    throw {msj: 'La Ip # ' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
 		}
 		
 	    }).then(function(result) {

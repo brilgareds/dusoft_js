@@ -490,7 +490,9 @@ define(["angular", "js/controllers",
 
                 });
             } else {
-                self.generarPedido(0);
+                self.generarPedido(0, function(){
+                    
+                });
             }
 
 

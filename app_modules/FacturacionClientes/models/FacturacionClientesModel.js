@@ -827,6 +827,9 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
    query.then(function(resultado) {      
         callback(false, resultado);
     }).catch(function (err) {
+        console.log("__________________ ");
+        console.log(query.toSQL());
+	console.log("__________________ ");
         console.log("err [consultarTerceroContrato] ", err);
         callback({err:err, msj: "Error al consultar el contrato de terceros"});   
     });

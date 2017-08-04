@@ -29,19 +29,12 @@
 	</div>
         <br />
         <br />
-        <div class="gridStyle" style="height: 100px">
-            <div style="height: 100px"  ng-grid="listaFacturasGeneradasNotas" ></div>
+        <div class=" table-responsive gridStyle" style="clear:both; height: 100px">
+            <div class="defaultGrid grid-responsive" style="height: 100px"  ng-grid="listaFacturasGeneradasNotas" ></div>
         </div>
 	<br />
         <div class="table-responsive" style="clear:both;" >
             <div class="defaultGrid grid-responsive" ng-grid="listaNotasGeneradas" ></div>
-        </div>
-	<br />
-        <br />
-	<div class="col-md-5 pull-right">
-	    <button type="button" class="btn btn-default dropdown-toggle" ng-disabled="validarConcepto()"
-		    aria-haspopup="true" aria-expanded="false" ng-click="guardarFacturaCajaGeneral()" > Facturar
-	    </button>
         </div>
     </body>
 </html>

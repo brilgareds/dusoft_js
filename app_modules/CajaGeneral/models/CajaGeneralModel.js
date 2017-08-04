@@ -46,48 +46,49 @@ CajaGeneralModel.prototype.listarCajaGeneral = function(obj, callback) {
     ];
 
     var query = G.knex.select(columna_a)
-            .from('cajas_usuarios as a')
-            .innerJoin('cajas as b', function() {
-        this.on("a.caja_id", "b.caja_id")
+    .from('cajas_usuarios as a')
+    .innerJoin('cajas as b', function() {
+       this.on("a.caja_id", "b.caja_id")
     })
-            .innerJoin('documentos as c', function() {
-        this.on("b.tipo_numeracion", "c.documento_id")
+     .innerJoin('documentos as c', function() {
+       this.on("b.tipo_numeracion", "c.documento_id")
     })
-            .innerJoin('empresas as d', function() {
-        this.on("b.empresa_id", "d.empresa_id")
+     .innerJoin('empresas as d', function() {
+       this.on("b.empresa_id", "d.empresa_id")
     })
-            .innerJoin('centros_utilidad as e', function() {
-        this.on("d.empresa_id", "e.empresa_id")
-                .on("b.centro_utilidad", "e.centro_utilidad")
+     .innerJoin('centros_utilidad as e', function() {
+       this.on("d.empresa_id", "e.empresa_id")
+           .on("b.centro_utilidad", "e.centro_utilidad")
     })
-            .where(function() {
+     .where(function() {
 
     }).andWhere(' a.usuario_id', obj.usuario_id)
-            .andWhere('d.empresa_id', obj.empresa_id)
-            .andWhere('b.centro_utilidad', obj.centro_utilidad)
-            .union(function() {
-        this.select(columna_b)
-                .from("userpermisos_cajas_rapidas as a")
-                .innerJoin('cajas_rapidas as b', function() {
-            this.on("a.caja_id", "b.caja_id")
+      .andWhere('d.empresa_id', obj.empresa_id)
+      .andWhere('b.centro_utilidad', obj.centro_utilidad)
+      .union(function() {
+  
+      this.select(columna_b)
+	.from("userpermisos_cajas_rapidas as a")
+	.innerJoin('cajas_rapidas as b', function() {
+	    this.on("a.caja_id", "b.caja_id")
         })
-                .innerJoin('empresas as d', function() {
-            this.on("b.empresa_id", "d.empresa_id")
+        .innerJoin('empresas as d', function() {
+	    this.on("b.empresa_id", "d.empresa_id")
         })
-                .innerJoin('departamentos as f', function() {
-            this.on("b.departamento", "f.departamento")
+        .innerJoin('departamentos as f', function() {
+	    this.on("b.departamento", "f.departamento")
         })
-                .innerJoin('centros_utilidad as e', function() {
-            this.on("f.centro_utilidad", "e.centro_utilidad")
-                    .on("f.empresa_id", "e.empresa_id")
+        .innerJoin('centros_utilidad as e', function() {
+	    this.on("f.centro_utilidad", "e.centro_utilidad")
+	    .on("f.empresa_id", "e.empresa_id")
         })
-                .where(function() {
+        .where(function() {
             this.andWhere(G.knex.raw("b.cuenta_tipo_id = '03'"))
             this.orWhere(G.knex.raw("b.cuenta_tipo_id='08'"))
 
         }).andWhere('a.usuario_id', obj.usuario_id)
-                .andWhere('f.empresa_id', obj.empresa_id)
-                .andWhere('f.centro_utilidad', obj.centro_utilidad)
+          .andWhere('f.empresa_id', obj.empresa_id)
+          .andWhere('f.centro_utilidad', obj.centro_utilidad)
     }).as("b");
 
     query.limit(G.settings.limit).
@@ -431,8 +432,8 @@ CajaGeneralModel.prototype.listarRecibosCaja= function(obj, callback) {
 			.on("b.factura_fiscal", "e.factura_fiscal")
 		})
 		.where(function() {
-		})
-		.andWhere('a.empresa_id', obj.empresaId);
+		    this.andWhere('a.empresa_id', obj.empresaId)
+		});
 
 	query.then(function(resultado) {
         callback(false, resultado);
@@ -668,7 +669,7 @@ CajaGeneralModel.prototype.listarConceptosDetalle = function(obj, callback) {
  * @returns {undefined}
  */
 CajaGeneralModel.prototype.insertarTmpDetalleConceptos = function(parametros, callback) {
-console.log("parametros",parametros);
+
     var query = G.knex('tmp_detalle_conceptos').insert(parametros);
 
 	query.then(function(resultado) {
@@ -676,7 +677,7 @@ console.log("parametros",parametros);
         callback(false, resultado);
 	
     }). catch (function(err) {
-        console.log("err (/catch) [tmp_detalle_conceptos]: ", err);
+        console.log("err (/catch) [insertarTmpDetalleConceptos tmp_detalle_conceptos]: ", err);
         callback(err);
     });
 };
@@ -961,7 +962,7 @@ CajaGeneralModel.prototype.insertarFacturasContado = function(parametro,transacc
  * @returns {callback}
  */
 CajaGeneralModel.prototype.actualizarTotalesFacturas= function(obj,transaccion, callback) {
- console.log("obj",obj);
+
     var query = G.knex('fac_facturas')
 		.where('empresa_id', obj.empresaId)
 		.andWhere('prefijo', obj.prefijo)

@@ -711,19 +711,6 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
  */
 FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, callback) {
     
-    
-   /* select a.* from (
-
-        select distinct on (a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario) a.prefijo, a.numero, a.codigo_producto, 
-        fc_descripcion_producto(a.codigo_producto) as descripcion, a.lote, 
-        TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento, sum(a.cantidad) as cantidad_despachada --, a.numero_caja
-        from inv_bodegas_movimiento_d as a 
-        inner join inv_bodegas_movimiento_despachos_clientes as b on a.numero = b.numero and a.prefijo = b.prefijo 
-        where a.empresa_id = '03' and a.prefijo = 'EFC' and a.numero = '204400'
-        group by a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario, a.prefijo, a.numero --, a.numero_caja
-    ) as a */
-    
-            
     var columnQuery = [
         "a.prefijo",
         "a.numero",
@@ -758,30 +745,34 @@ FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, 
  * +Descripcion Permite traer el documento con datos de facturacion de consumo
  */
 FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, callback){
-     
+                    
     var query = G.knex.column([
+        G.knex.raw("distinct on (a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario) a.prefijo"),
+        "a.numero",
         "a.codigo_producto",
         G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
-        "c.cantidad_despachada",
         "a.lote",
         G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento"),
-        "c.pedido_cliente_id"
+        G.knex.raw("round(sum(a.cantidad)) as cantidad_despachada")
     ]).from("inv_bodegas_movimiento_d as a").
-    innerJoin("inv_bodegas_movimiento_despachos_clientes as b", function () {
-        this.on("a.numero","b.numero").
-        on("a.prefijo", "b.prefijo");
-    }).
-    innerJoin("ventas_ordenes_pedidos_d as c", function () {
-        this.on("b.pedido_cliente_id","c.pedido_cliente_id");
+        innerJoin("inv_bodegas_movimiento_despachos_clientes as b", function (){
+            this.on("a.numero","b.numero").
+            on("a.prefijo", "b.prefijo");
     }).where(function(){
         this.andWhere("a.empresa_id", obj.empresa_id)
             .andWhere("a.prefijo", obj.prefijo_documento)
             .andWhere("a.numero", obj.numero_documento);
-    });
-    
-    console.log(query.toSQL());
+    }).as("a").groupBy("a.codigo_producto", 
+                "a.fecha_vencimiento", 
+                "a.lote", 
+                "a.valor_unitario", 
+                "a.prefijo", 
+                "a.numero");
+   
+    var query2 = G.knex.select(G.knex.raw("a.*"))
+        .from(query)
        
-    query.then(function(resultado){       
+    query2.then(function(resultado){       
         callback(false, resultado);   
     }).catch(function(err) { 
         console.log("err ", err)

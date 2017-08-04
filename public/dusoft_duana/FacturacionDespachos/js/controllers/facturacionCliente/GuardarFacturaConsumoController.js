@@ -52,7 +52,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             columnDefs: [
 
                 {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
-                {field: 'cantidaDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant despachada'},
+                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant despachada'},
                 {field: 'cantidadFacturada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant Facturada'},
                 {field: 'cantidadPorFacturar',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar'},
                 {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},
@@ -116,8 +116,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     var _documentos = respuesta.obj.detalle;
                     for(var i in _documentos){
                         var _documento = _documentos[i];
+                          
                         var documento = DocumentoDetalleConsumo.get(_documento.codigo_producto, _documento.cantidad_despachada, _documento.lote, _documento.fecha_vencimiento);
-                        $scope.root.documento.agregarDetalle(documento);
+                            $scope.root.documento.agregarDetalle(documento);
                     }
                 }
                 

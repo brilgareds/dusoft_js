@@ -227,7 +227,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
             that.render_cotizacion = function (data) {
-
+                
                 var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
                 cliente.setDepartamento(data.departamento);
                 cliente.setMunicipio(data.municipio);
@@ -239,6 +239,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.set_estado_cotizacion(data.estado).set_descripcion_estado_cotizacion(data.descripcion_estado);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
+                $scope.Pedido.setEstadoMultiplePedido(data.estado_multiple_pedido);
+               
             };
             /*
              * @author  Cristian Ardila
@@ -505,8 +507,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     disabled = true;
                 return disabled;
             };
-            $scope.buscar_productos = function () {
-
+            $scope.buscar_productos = function (Pedido) {
+                
+               // console.log("Pedido [buscar_productos]::: ", Pedido);
                 /* var pedido =  {                 
                  empresa_id: '03', 
                  centro_utilidad_id: '1 ',

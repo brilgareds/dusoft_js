@@ -1915,7 +1915,8 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                      when a.estado = '4' then 'Desaprobado por cartera' end as descripcion_estado,\
                 a.fecha_registro,\
                 j.razon_social,\
-                k.nombre as usuario_cotizacion\
+                k.nombre as usuario_cotizacion,\
+                a.estado_multiple_pedido\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
                 inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\

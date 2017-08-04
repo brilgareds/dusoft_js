@@ -260,8 +260,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			    impuestos.valorSubtotal =$scope.root.totalNota;
 			    impuestos.iva = parseInt($scope.root.totalGravamenNota)+0;	    
 			    impuestos.totalGeneral = parseInt(impuestos.valorSubtotal) + parseInt(impuestos.iva) - (parseInt(impuestos.retencionFuente) + parseInt(impuestos.retencionIca));
-                 		callback(impuestos);
-				return;
+			    callback(impuestos);
+			    return;
 		    };
 		    
 		    
@@ -291,18 +291,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         };
                         cajaGeneralService.listarFacConceptosNotas(obj, function(data) {
                             if (data.status === 200) {
-                                $scope.root.listarFacConceptosNotasDetalle=data.obj.listarFacConceptosNotas;
-					    data.obj.listarFacConceptosNotas.forEach(function(value) {
-						
-						if(value.nota_contable==='credito'){
-						 $scope.root.totalesNotaCredito+=parseInt(value.valor_nota_total);
-						 $scope.root.gravamenesNotaCredito+=parseInt(value.valor_gravamen);
-						}else{
-						 $scope.root.totalesNotaDebito+=parseInt(value.valor_nota_total);
-						 $scope.root.gravamenesNotaDebito+=parseInt(value.valor_gravamen);  
-						}
-						
-					    });
+				
+                            $scope.root.listarFacConceptosNotasDetalle=data.obj.listarFacConceptosNotas;
+			    data.obj.listarFacConceptosNotas.forEach(function(value) {
+
+				if(value.nota_contable==='credito'){
+				    
+				 $scope.root.totalesNotaCredito+=parseInt(value.valor_nota_total);
+				 $scope.root.gravamenesNotaCredito+=parseInt(value.valor_gravamen);
+				 
+				}else{
+				    
+				 $scope.root.totalesNotaDebito+=parseInt(value.valor_nota_total);
+				 $scope.root.gravamenesNotaDebito+=parseInt(value.valor_gravamen);  
+				}
+
+			    });
                             } else {
 				$scope.root.listarFacConceptosNotasDetalle={};
                             }

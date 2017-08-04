@@ -155,12 +155,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         };
                         cajaGeneralService.listarFacturasGeneradas(obj, function(data) {
                             if (data.status === 200) {
-				
+				console.log("listarFacturasGeneradas");
 //                                $scope.root.listarFacturasGeneradasNotas=data.obj.listarFacturasGeneradas;
 				$scope.root.listarFacturasGeneradasNotas=cajaGeneralService.renderFacturasProveedores(data.obj.listarFacturasGeneradas);
 				
 				callback(data.obj.listarFacturasGeneradas);
                             } else {
+				$scope.root.listarFacturasGeneradasNotas=null;
                                //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 			       callback(false);
                             }
@@ -272,7 +273,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {undefined}
                      */
                     that.listarFacConceptosNotasDetalle = function(parametros) {
-			console.log("parametros:: ",parametros);
+			console.log("listarFacConceptosNotasDetalle parametros:: ",parametros);
 			$scope.root.totalesNotaCredito=0;
 			$scope.root.totalesNotaDebito=0;
 			
@@ -433,7 +434,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                             if (data.status === 200) {
                                 $scope.root.conceptoTmp = cajaGeneralService.renderConcepto(data.obj.listarConceptosDetalle);
-                            } else {
+                            }else if(data.msj.status===404){
+				
+			    }else {
 				if(data.obj.listarConceptosDetalle !== '0'){
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 				}
@@ -1165,9 +1168,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         var validar = false;
                         if ($scope.root.cajas === undefined || $scope.root.terceros === undefined || 
 			    $scope.root.conceptoTmp.length === 0 || ($scope.root.pagoEfectivoModel === $scope.root.pagoCreditoModel && 
-			    ($scope.root.pagoCreditoModel === undefined) && ($scope.root.pagoCreditoModel === undefined))) {
+			    ($scope.root.pagoCreditoModel === undefined) && ($scope.root.pagoEfectivoModel === undefined))) {
+			console.log("validarConcepto 1 ",validar);
                             validar = true;
                         }
+			console.log("validarConcepto 2 ",validar);
                         return validar;
                     };
                     /**
@@ -1375,10 +1380,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.buscarTercero = function(event,estado,busqueda) {
                            
-			   $scope.root.termino_busqueda_tercero=busqueda;
+			   
 //                        if (event.which === 13) {
 			   switch ($scope.root.tab){ 
-			       case 1:
+			       case 1: $scope.root.termino_busqueda_tercero=busqueda;
 				        if($scope.root.termino_busqueda_tercero.length> 3){
 					that.listarTerceros(function(respuesta) {
 					    if (respuesta) {
@@ -1387,13 +1392,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					});
 					}
 					break;
-			       case 2:
+			       case 2:  
+				      if (event.which === 13) {
 					that.listarFacturasGeneradas(1,function(data){
+					   if(data!==false){
 					    that.listarFacConceptosNotasDetalle(data[0]);
 					    that.listarImpuestosTercero();
+					   }
 					});
+			       }
 					break;
-			       case 3:				         
+			       case 3:		$scope.root.termino_busqueda_tercero=busqueda;		         
 				         that.listarFacturasGeneradas('',function(data){
 					});
 					 break;

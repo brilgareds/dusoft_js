@@ -265,9 +265,6 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 			};
 		
     parametros.valorNotaTotal = parseInt(parametros.valorNotaTotal)+parseInt(parametros.porcentajeGravamen);
-    console.log("___________parametros_____________");
-    console.log(parametros);
-    console.log("______________________________");
     
     G.knex.transaction(function(transaccion) {
 	
@@ -366,11 +363,15 @@ CajaGeneral.prototype.listarConceptosDetalle = function(req, res) {
         res.send(G.utils.r(req.url, 'No Estan Definidos tipo_id_tercero', 404, {}));
         return;
     }
+    if (args.tercero_id === undefined) {
+        res.send(G.utils.r(req.url, 'No Estan Definidos tercero_id', 404, {}));
+        return;
+    }
     if (args.concepto_id === undefined) {
         res.send(G.utils.r(req.url, 'No Estan Definidos concepto_id', 404, {}));
         return;
     }
-
+    
     var parametros={
 	terceroId : args.tercero_id,
 	empresa_id : args.empresa_id,
@@ -378,13 +379,18 @@ CajaGeneral.prototype.listarConceptosDetalle = function(req, res) {
 	conceptoId : args.concepto_id,
 	tipoIdTercero : args.tipo_id_tercero
     };
+    
+    console.log("parametros ",parametros);
 
     G.Q.ninvoke(that.m_caja_general, 'listarConceptosDetalle', parametros).then(function(resultado) {
-	
+       
+       if(resultado.length > 0){
       conceptos.detalle=resultado;
       var total={totalFactura:0,totalGravamen:0}
       return G.Q.nfcall(__valorTotalGravamen,0,resultado,total);
-      
+       }else{
+	   throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
+       }
       }).then(function(result) {
       parametros.totalFactura=result.totalFactura;
       parametros.totalGravamen=result.totalGravamen;
@@ -403,7 +409,7 @@ CajaGeneral.prototype.listarConceptosDetalle = function(req, res) {
 
     }).fail(function(err) {
         console.log("Error listarConceptosDetalle ", err);
-        res.send(G.utils.r(req.url, err, 500, {listarConceptosDetalle: mensaje}));
+        res.send(G.utils.r(req.url, err, 500, {listarConceptosDetalle: err}));
     }).done();
 };
 
@@ -605,7 +611,7 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function(req, res) {
 	return G.Q.nfcall(__generarPdf,informacion);	
 	
     }).then(function(result) {
-         console.log("retooorna ",result);
+       
         res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {guardarFacturaCajaGeneral: result}));
 	
     }). catch (function(err) {
@@ -1126,7 +1132,7 @@ function __traerPorcentajeImpuestosNotas(that, obj, callback) {
 	}, 0);
 	
     }).fail(function(err) {
-	console.log("Error __traerPorcentajeImpuestos ", err);
+	console.log("Error __traerPorcentajeImpuestosNotas", err);
 	callback(err);
     }).done();
 }
@@ -1140,14 +1146,22 @@ function __traerPorcentajeImpuestos(that, obj, callback) {
 
     var parametros;
     var retencion;
+    console.log("__traerPorcentajeImpuestos obj ",obj);
     G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj).then(function(resultado) {
-       
-	retencion = resultado[0];
+        console.log("__traerPorcentajeImpuestos",resultado);
 	
-	return  G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
-
+	if (resultado.length > 0){
+	    
+	    retencion = resultado[0];
+	    return  G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
+	
+	}else{
+	    
+	    throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};  
+	}
+	
     }).then(function(result) {
- 
+
 	var parametros = result[0];
 	var impuestos = {
 	    porcentajeRtf: '0',

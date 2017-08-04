@@ -61,5 +61,4 @@ module.exports = function(app, di_container) {
     app.post('/api/CajaGeneral/consultarImpuestosTercero', function(req, res) {
         c_caja_general.consultarImpuestosTercero(req, res);
     });
-
 };

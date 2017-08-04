@@ -49,6 +49,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {void}
                      */
                     that.init = function(empresa, callback) {
+			
                         // that.cargar_permisos();
                         $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
                         $scope.session = {
@@ -259,8 +260,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			    impuestos.valorSubtotal =$scope.root.totalNota;
 			    impuestos.iva = parseInt($scope.root.totalGravamenNota)+0;	    
 			    impuestos.totalGeneral = parseInt(impuestos.valorSubtotal) + parseInt(impuestos.iva) - (parseInt(impuestos.retencionFuente) + parseInt(impuestos.retencionIca));
-                 		callback(impuestos);
-				return;
+			    callback(impuestos);
+			    return;
 		    };
 		    
 		    
@@ -290,18 +291,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         };
                         cajaGeneralService.listarFacConceptosNotas(obj, function(data) {
                             if (data.status === 200) {
-                                $scope.root.listarFacConceptosNotasDetalle=data.obj.listarFacConceptosNotas;
-					    data.obj.listarFacConceptosNotas.forEach(function(value) {
-						
-						if(value.nota_contable==='credito'){
-						 $scope.root.totalesNotaCredito+=parseInt(value.valor_nota_total);
-						 $scope.root.gravamenesNotaCredito+=parseInt(value.valor_gravamen);
-						}else{
-						 $scope.root.totalesNotaDebito+=parseInt(value.valor_nota_total);
-						 $scope.root.gravamenesNotaDebito+=parseInt(value.valor_gravamen);  
-						}
-						
-					    });
+				
+                            $scope.root.listarFacConceptosNotasDetalle=data.obj.listarFacConceptosNotas;
+			    data.obj.listarFacConceptosNotas.forEach(function(value) {
+
+				if(value.nota_contable==='credito'){
+				    
+				 $scope.root.totalesNotaCredito+=parseInt(value.valor_nota_total);
+				 $scope.root.gravamenesNotaCredito+=parseInt(value.valor_gravamen);
+				 
+				}else{
+				    
+				 $scope.root.totalesNotaDebito+=parseInt(value.valor_nota_total);
+				 $scope.root.gravamenesNotaDebito+=parseInt(value.valor_gravamen);  
+				}
+
+			    });
                             } else {
 				$scope.root.listarFacConceptosNotasDetalle={};
                             }
@@ -615,7 +620,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableRowSelection: false,
                         enableCellSelection: true,
                         enableHighlighting: true,
-                        showFilter: true,
+                        showFilter: true,			
 			columnDefs: [
                             {field: 'No. Factura', width: "5%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
                             {field: 'Identificación', width: "5%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
@@ -1092,7 +1097,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota no debe ser Menor a la Factura");
 					 return;
 				    }
-				    console.log("Datos:: ",datos);
+				   
 				    var parametros={
 					prefijo : datos.getPrefijo(),
 					facturaFiscal : datos.getNumeroFactura(),
@@ -1131,8 +1136,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.onSeleccionFiltro = function() {
-//                        console.log("root.cajas.descripcionCaja>>>> ", $scope.root.cajas);
-                        //that.listarConceptosDetalle();
                     };
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -1169,7 +1172,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         if ($scope.root.cajas === undefined || $scope.root.terceros === undefined || 
 			    $scope.root.conceptoTmp.length === 0 || ($scope.root.pagoEfectivoModel === $scope.root.pagoCreditoModel && 
 			    ($scope.root.pagoCreditoModel === undefined) && ($scope.root.pagoEfectivoModel === undefined))) {
-			console.log("validarConcepto 1 ",validar);
+			
                             validar = true;
                         }
 			console.log("validarConcepto 2 ",validar);
@@ -1204,6 +1207,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             return;
                         }
                         if ($scope.root.pago === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Tipo de Pago');
+                            return;
+                        }
+                        if ($scope.root.pago === '') {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Tipo de Pago');
                             return;
                         }
@@ -1258,6 +1265,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			$scope.root.pago="";
 			$scope.root.gravamen="";
 			$scope.root.descripcion="";
+			$scope.checkearEstadoPago();
 		    };
                     /**
                      * @author Andres Mauricio Gonzalez

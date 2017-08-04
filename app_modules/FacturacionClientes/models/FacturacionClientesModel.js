@@ -831,6 +831,9 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
    query.then(function(resultado) {      
         callback(false, resultado);
     }).catch(function (err) {
+        console.log("__________________ ");
+        console.log(query.toSQL());
+	console.log("__________________ ");
         console.log("err [consultarTerceroContrato] ", err);
         callback({err:err, msj: "Error al consultar el contrato de terceros"});   
     });
@@ -894,7 +897,7 @@ FacturacionClientesModel.prototype.consultarFacturaAgrupada = function (obj,call
  * @author Cristian Ardila
  */
 FacturacionClientesModel.prototype.consultarDireccionIp = function(obj, callback){
- 
+ console.log("obj.direccionIp",obj.direccionIp);
     G.knex.select('*')
     .from('pc_crea_facturacion')
     .where("ip", obj.direccionIp)

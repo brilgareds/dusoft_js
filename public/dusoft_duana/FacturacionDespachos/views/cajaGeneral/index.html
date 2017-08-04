@@ -1,0 +1,131 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-4">
+        <fieldset>
+	    
+            <div class="col-xs-12 col-sm-12 col-md-8 pull-left">
+                <legend>Cajas</legend>
+                <ui-select ng-model="root.cajas"
+                           theme="select2"
+                           class="form-control selectgeneral pull-left col-md-2"
+                           ng-change="onSeleccionFiltro()">
+                    <ui-select-match   placeholder="Seleccionar Caja">{{ $select.selected.getDescripcionCaja()}}</ui-select-match>
+                    <ui-select-choices repeat="filtro in root.caja | filter:$select.search">
+                        {{ filtro.getDescripcionCaja() }}
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </fieldset>
+    </div>
+    
+    <div class="col-xs-12 col-sm-12 col-md-4">
+        <fieldset>
+            <div class="col-md-12 pull-center">
+		         <legend>Tipo de Pago</legend>
+                        <!--<label class="col-md-2 control-label" for="IsSmallBusiness">Tipo de Pago:</label>-->
+                        <div class="col-xs-12 col-sm-6 col-md-12">
+                            <div class="btn-group">
+                                <label class="btn btn-{{root.pagoEfectivo}}">
+                                    <input type="radio"
+                                           name="tipoProducto"
+                                           ng-model="root.pagoEfectivoModel"
+                                           ng-click="tipoFactura(0)"
+                                           /><span class="label label-primary">Contado</span>
+                                </label>
+                                <label class="btn btn-{{root.pagoCredito}}">
+                                    <input type="radio"
+                                           name ="tipoProducto"
+                                           ng-model="root.pagoCreditoModel"
+                                           ng-click="tipoFactura(1)"
+                                           /><span class="label label-success">Credito</span>
+                                </label>
+                            </div>
+                        </div>		
+            </div>
+        </fieldset>
+    </div>
+    
+    <div class="col-xs-12 col-sm-12 col-md-4">
+        <div class="col-xs-12 col-sm-12 col-md-8 pull-right">
+            <legend>&nbsp;</legend>
+            <div class="input-group">
+		<div class="input-group-btn">
+                   <ui-select 
+		       ng-model="terceroSeleccionado"
+		       theme="select2" 
+		       ng-change="buscarTercero($event,0,terceroSeleccionado.nombre_tercero)"
+		       class="form-control selectgeneral pull-left">
+			<ui-select-match  placeholder="Seleccionar tercero">{{ $select.selected.nombre_tercero}}</ui-select-match>
+			<ui-select-choices  refresh-delay="0" repeat="tercero in root.terceros | filter:$select.search"  refresh="buscarTercero($event,0,$select.search)">
+			{{ tercero.nombre_tercero }}
+			</ui-select-choices>
+		    </ui-select>  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<legend></legend>
+<br />
+<div class="row">
+    <div class="col-md-3">
+        Identificación:  <b> {{root.terceros[0].getTipoId()}} {{root.terceros[0].getId()}}</b>
+    </div>
+    <div class="col-md-3">
+        Responsable :<b> {{root.terceros[0].getNombre()}}</b>
+    </div>
+    <div class="col-md-2">
+        Dirección :<b> {{root.terceros[0].getDireccion()}}</b>
+    </div>
+    <div class="col-md-2">
+        Telefono :<b> {{root.terceros[0].getTelefono()}}</b>
+    </div>
+    <div class="col-md-2">
+        Email : <b>{{root.terceros[0].getCorreo()}}</b>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <tabset>
+            <tab ng-click="tipoTab(1)" >
+                <tab-heading >
+                    <i class=""></i> Facturas
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+            </tab>
+<!--            <tab >
+                <tab-heading ng-click="tipoFactura(0)">
+                    <i class=""></i> Facturas Contado
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+            </tab>-->
+            <tab ng-click="tipoTab(2)">
+                <tab-heading >
+                    <i class=""></i> Notas Facturas
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaNotas.html'"></div>
+            </tab>
+            <tab  ng-click="tipoTab(3)" >
+                <tab-heading >
+                    <i class=""></i> Manejo Facturas
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaManejoFactura.html'"></div>
+            </tab>
+            <tab ng-click="tipoTab(4)" >
+                <tab-heading >
+                    <i class=""></i> Cuadre Facturas
+                </tab-heading>
+                <br>
+                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+            </tab>
+        </tabset>
+    </div>
+</div>
+
+<visualizar-reporte></visualizar-reporte>
+

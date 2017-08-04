@@ -371,7 +371,7 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function(empresa_id, ce
     G.knex.raw(sql, {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: usuario_id, 5: observacion || "", 6: tipo_pedido, 7: pedido_cliente}).then(function(resultado) {
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
-        console.log(pedido_cliente + ") errorr ", err);
+        console.log(pedido_cliente + ") errorr >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", err);
         callback(err);
     });
 

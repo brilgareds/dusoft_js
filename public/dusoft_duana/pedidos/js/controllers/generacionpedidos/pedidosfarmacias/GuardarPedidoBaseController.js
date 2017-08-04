@@ -46,7 +46,7 @@ define(["angular", "js/controllers",
              * +Descripcion: Se crea la variable bodegaMultiple para identificar que se va a sacar productos de multiples bodegas.
              */
             if ($state.is("GuardarPedidoTemporal") === true) {
-                var resultadoStorage = localStorageService.get("bodegaMultiple"); 
+                var resultadoStorage = localStorageService.get("bodegaMultiple") || {multiple : false}; 
                 $scope.root.bodegaMultiple=resultadoStorage;
                 $scope.root.bodegaMultiple.bools=resultadoStorage.multiple===1?true:false;
                 if($scope.root.bodegaMultiple.bools){                   
@@ -593,7 +593,6 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.LISTAR_PRODUCTOS_FARMACIAS;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {    
-                    console.log("",data.obj.lista_productos[0].disponibilidad_bodega);
                     if (data.status === 200) {
                          if (callback) {
                              callback(data.obj.lista_productos[0].disponibilidad_bodega);

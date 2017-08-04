@@ -269,22 +269,30 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
     if (args.valorNotaTotal === undefined) {
         res.send(G.utils.r(req.url, 'No Estan Definidos valorNotaTotal', 404, {}));
         return;
-    }
-
+    } 
+    
+    var credito='506';
+    var debito='504';
+    
+    if(G.program.prod){
+      credito='502';
+      debito='504';
+     }
+       
      var parametros = {
-			descripcion:args.descripcion,
-			empresaId:args.empresaId,
-			bodega:args.bodega.codigo,
-			facturaFiscal:args.facturaFiscal,
-			porcentajeGravamen:args.porcentajeGravamen,
-			prefijo:args.prefijo,
-			swContable:args.swContable,
-			valorNotaImpuestos:args.valorNotaImpuestos ,
-			usuarioId:req.body.session.usuario_id,
-			documentoId:args.swContable===1?'506':'504',
-			saldo : 0,
-			valorNotaTotal:args.valorNotaTotal
-			};
+	descripcion:args.descripcion,
+	empresaId:args.empresaId,
+	bodega:args.bodega.codigo,
+	facturaFiscal:args.facturaFiscal,
+	porcentajeGravamen:args.porcentajeGravamen,
+	prefijo:args.prefijo,
+	swContable:args.swContable,
+	valorNotaImpuestos:args.valorNotaImpuestos ,
+	usuarioId:req.body.session.usuario_id,
+	documentoId:args.swContable===1?credito:debito,
+	saldo : 0,
+	valorNotaTotal:args.valorNotaTotal
+    };
 		
     parametros.valorNotaTotal = parseInt(parametros.valorNotaTotal)+parseInt(parametros.porcentajeGravamen);
     
@@ -292,7 +300,7 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 	
 	G.Q.nfcall(__crearPrefijoNumero,that, parametros,transaccion).then(function(resultado) {
 	    
-	    parametros.documentoId = args.swContable===1?'506':'504';
+	    parametros.documentoId = args.swContable===1?credito:debito;
 	    parametros.prefijoNota = resultado[0].prefijo;
 	    parametros.numeroNota = resultado[0].numeracion;
 	

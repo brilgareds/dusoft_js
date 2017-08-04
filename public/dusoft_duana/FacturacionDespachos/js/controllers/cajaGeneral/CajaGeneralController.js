@@ -1008,6 +1008,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             templateUrl: 'views/cajaGeneral/vistaConceptos.html',
                             scope: $scope,
                             controller: function($scope, $modalInstance) {
+
                                 that.listarGrupos(true, function() {
 
                                 });
@@ -1167,7 +1168,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
-                    $scope.validarConcepto = function() {
+                    $scope.validarConcepto = function() { 
                         var validar = false;
                         if ($scope.root.cajas === undefined || $scope.root.terceros === undefined || 
 			    $scope.root.conceptoTmp.length === 0 || ($scope.root.pagoEfectivoModel === $scope.root.pagoCreditoModel && 
@@ -1175,7 +1176,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			
                             validar = true;
                         }
-			console.log("validarConcepto 2 ",validar);
+//			console.log("validarConcepto 2 ",validar);
                         return validar;
                     };
                     /**
@@ -1406,6 +1407,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					   if(data!==false){
 					    that.listarFacConceptosNotasDetalle(data[0]);
 					    that.listarImpuestosTercero();
+					   }else{
+					    $scope.root.listarFacConceptosNotasDetalle = null;  
 					   }
 					});
 			       }

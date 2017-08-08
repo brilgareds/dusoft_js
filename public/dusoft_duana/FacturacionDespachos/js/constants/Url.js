@@ -26,8 +26,8 @@ define(["angular"], function(angular) {
                  "FACTURAS_EN_PROCESO": BASE_URL + "/FacturacionClientes/procesosFacturacion",
                  "DOCUMENTOS_POR_FACTURAR": BASE_URL + "/FacturacionClientes/listarDocumentosPorFacturar",
                  "OBTENER_DETALLE_POR_FACTURAR" : BASE_URL + "/FacturacionClientes/obtenerDetallePorFacturar",
-
-            },
+                 "GENERAR_TMP_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/generarTemporalFacturaConsumo"
+            },   
             'FACTURACIONPROVEEDOR': {
                 "LISTAR_ORDENES_COMPRA_PROVEEDORES": BASE_URL + "/FacturacionProveedores/listarOrdenesCompraProveedor",
                 "DETALLE_RECEPCION_PARCIAL": BASE_URL + "/FacturacionProveedores/detalleRecepcionParcial",
@@ -35,6 +35,7 @@ define(["angular"], function(angular) {
                 "LISTAR_FACTURA_PROVEEDOR": BASE_URL + "/FacturacionProveedores/listarFacturaProveedor",
                 "REPORTE_FACTURA_PROVEEDOR": BASE_URL + "/FacturacionProveedores/reporteFacturaProveedor",
                 "SINCRONIZAR_FI": BASE_URL + "/FacturacionProveedores/sincronizarFi",
+
             },
             'CAJA_GENERAL': {
                 "LISTAR_CAJA_GENERAL": BASE_URL + "/CajaGeneral/listarCajaGeneral",

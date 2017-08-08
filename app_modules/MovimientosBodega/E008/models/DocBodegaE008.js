@@ -142,7 +142,7 @@ DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
                 "y.centro_utilidad",	
                 G.knex.raw("(SELECT c.descripcion FROM centros_utilidad as c WHERE c.centro_utilidad = y.centro_utilidad) as nombre_centro_utilidad"),
                 "y.bodega",
-                 G.knex.raw("(SELECT b.descripcion FROM bodegas as b WHERE b.bodega = y.bodega) as nombre_bodega"),
+                 G.knex.raw("(SELECT b.descripcion FROM bodegas as b WHERE b.empresa_id = y.empresa_id AND b.bodega = y.bodega) as nombre_bodega"),
                 "y.prefijo",
                 "y.numero",
                 "y.observacion",	

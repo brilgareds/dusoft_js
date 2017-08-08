@@ -747,7 +747,8 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function(){
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017
- * +Descripcion Controlador encargado de listar los terceros
+ * +Descripcion Controlador encargado de generar la facturacion con multiples
+ *              Documentos
  *              
  */
 FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
@@ -770,11 +771,6 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
     
     if (args.generar_factura_agrupada.empresaId === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {generar_factura_agrupada: []}));
-        return;
-    }
-    
-    if (args.generar_factura_agrupada.tipoPago === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {generar_factura_agrupada: []}));
         return;
     }
     
@@ -938,6 +934,176 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
         callback(err, {status: status, msj: msj});
     }).done();        
       
+};
+
+/*
+ * @author Cristian Ardila
+ * @fecha 02/05/2017
+ * +Descripcion Controlador encargado de listar los terceros
+ *              
+ */
+FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res){
+   
+   console.log("***********FacturacionClientes.prototype.generarTemporalFacturaConsumo ***************");
+   console.log("***********FacturacionClientes.prototype.generarTemporalFacturaConsumo ***************");
+   console.log("***********FacturacionClientes.prototype.generarTemporalFacturaConsumo ***************");
+   
+    var that = this;
+    var args = req.body.data;
+    
+    /**
+     * +Descripcion Variable encargada de capturar la ip del cliente que se conecta
+     * @example '::ffff:10.0.2.158'
+     */
+    var ip = req.headers['x-forwarded-for'] || 
+    req.connection.remoteAddress || 
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress;
+    var usuario = req.session.user.usuario_id;
+    var def = G.Q.defer(); 
+    
+    
+    
+   if (args.facturas_consumo === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    
+    if (!args.facturas_consumo.empresaId) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    
+    if (!args.facturas_consumo.tipoIdTercero) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo del tercero', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    
+    if (!args.facturas_consumo.terceroId) {
+        res.send(G.utils.r(req.url, 'Se requiere el tercero', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+     
+    if (!args.facturas_consumo.documentoId) {
+        res.send(G.utils.r(req.url, 'Se requiere el documento', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    
+    if (!args.facturas_consumo.estado) {
+        res.send(G.utils.r(req.url, 'Se requiere el estado', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    
+    if (!args.facturas_consumo.pedidos) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    
+    if (!args.facturas_consumo.documentos) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    var documentoFacturacion;
+    var consultarTerceroContrato;
+    var consultarParametrosRetencion;
+   
+    var parametros = {
+        empresaId: args.facturas_consumo.empresaId,
+        tipoIdTercero: args.facturas_consumo.tipoIdTercero,
+        terceroId: args.facturas_consumo.terceroId,
+        documentoId:'',
+        estado:1,
+        tipoPago: args.facturas_consumo.tipoPago,
+        usuario:usuario,
+        direccion_ip: '',
+        pedidos: args.facturas_consumo.documentos,
+        documentos: ''
+    };
+    
+    var parametroBodegaDocId = {variable:"documento_factura_"+args.facturas_consumo.empresaId, tipoVariable:1, modulo:'FacturasDespacho'};
+    
+    
+   G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
+         
+        console.log("resultado [estadoParametrizacionReformular]:: ", resultado)
+        if(resultado.length >0){
+            parametros.documentoId = resultado[0].valor;
+            return G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros)
+        }else{
+            throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
+        }
+         
+        
+    }).then(function(resultado){
+        
+        documentoFacturacion = resultado;
+        console.log("resultado [listarPrefijosFacturas]:: ", documentoFacturacion)
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTerceroContrato',parametros);
+        }else{
+            throw {msj:'[listarPrefijosFacturas]: Consulta sin resultados', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+        
+        consultarTerceroContrato = resultado;
+        //console.log("resultado [listarPrefijosFacturas]:: ", documentoFacturacion);
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarParametrosRetencion',parametros);       
+        }else{
+            throw {msj:'[consultarTerceroContrato]: Consulta sin resultados', status: 404}; 
+        }
+
+    }).then(function(resultado){  
+        
+        consultarParametrosRetencion = resultado;
+        //console.log("resultado [consultarParametrosRetencion]:: ", consultarParametrosRetencion);
+        if(resultado.length > 0){
+            
+            if(ip.substr(0, 6) === '::ffff'){               
+                return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
+            }else{                
+                def.resolve();                
+            } 
+            
+        }else{           
+            
+            throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};    
+            
+        }
+         
+    }).then(function(resultado){
+       
+        if(!resultado || resultado.length > 0){
+            parametros.direccion_ip = ip;
+            
+            return G.Q.ninvoke(that.m_facturacion_clientes,'generarTemporalFacturaConsumo',
+            {documento_facturacion:documentoFacturacion,
+                consultar_tercero_contrato:consultarTerceroContrato,
+                consultar_parametros_retencion:consultarParametrosRetencion,
+                parametros:parametros
+             });
+             
+        }else{
+            throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
+        }
+            
+    }).fail(function(err){  
+        logger.error("-----------------------------------");
+        logger.error({"metodo":"FacturacionClientes.prototype.sincronizarFactura",
+            "usuario_id": usuario,
+            "parametros: ": parametros,
+            "parametroBodegaDocId": parametroBodegaDocId,
+            "resultado: ":err});
+        logger.error("-----------------------------------");
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done();
+    
 };
 /*
  * @author Cristian Ardila

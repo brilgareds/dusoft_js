@@ -77,5 +77,10 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.obtenerDetallePorFacturar(req, res);
     });
     
+    app.post('/api/FacturacionClientes/generarTemporalFacturaConsumo', function(req, res) {
+       
+        c_facturacion_clientes.generarTemporalFacturaConsumo(req, res);
+    });
+    
     
 };

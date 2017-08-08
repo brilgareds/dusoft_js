@@ -22,6 +22,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.descripcionTipoPedido = "";
             this.tipoPedido = "";
             this.nombreSeparador = "";
+            this.estadoMultiplePedido = "";
         }
 
         // Pedidos
@@ -126,7 +127,17 @@ define(["angular", "js/models"], function(angular, models) {
         Pedido.prototype.getEstadoSeparacion = function() {
             return this.estado_separacion;
         };
+        
+        
+        
+        Pedido.prototype.setEstadoMultiplePedido = function(estadoMultiplePedido){
+            this.estadoMultiplePedido = estadoMultiplePedido;
+            return this;
+        };
 
+        Pedido.prototype.getEstadoMultiplePedido = function() {
+            return this.estadoMultiplePedido;
+        };
 
         this.getClass = function(){
             return Pedido;

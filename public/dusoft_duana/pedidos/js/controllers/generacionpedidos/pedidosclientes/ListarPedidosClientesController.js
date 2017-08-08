@@ -1239,7 +1239,7 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-                 
+                localStorageService.add("multiple_pedido", null);
                 socket.remove(['onListarEstadoCotizacion','onListarPedidosClientes','onListarEstadoPedido']);  
                                      
             });

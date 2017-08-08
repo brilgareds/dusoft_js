@@ -25,7 +25,8 @@ define(["angular"], function (angular) {
                  "PROCESAR_DESPACHOS": BASE_URL + "/FacturacionClientes/procesarDespachos",
                  "FACTURAS_EN_PROCESO": BASE_URL + "/FacturacionClientes/procesosFacturacion",
                  "DOCUMENTOS_POR_FACTURAR": BASE_URL + "/FacturacionClientes/listarDocumentosPorFacturar",
-                 "OBTENER_DETALLE_POR_FACTURAR" : BASE_URL + "/FacturacionClientes/obtenerDetallePorFacturar"
+                 "OBTENER_DETALLE_POR_FACTURAR" : BASE_URL + "/FacturacionClientes/obtenerDetallePorFacturar",
+                 "GENERAR_TMP_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/generarTemporalFacturaConsumo"
                  
             },
             'FACTURACIONPROVEEDOR':{

@@ -19,6 +19,7 @@ define([
     "includes/validation/ValidacionNumero",
     "includes/validation/ValidacionNumeroEntero",
     "includes/validation/ValidacionNumeroDecimal",
+    "includes/validation/CambiarFoco",
     "includes/widgets/InputCheck",     
     "includes/menu/menucontroller",   
     "includes/alert/Alert",

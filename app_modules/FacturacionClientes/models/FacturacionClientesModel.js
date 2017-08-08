@@ -284,7 +284,7 @@ FacturacionClientesModel.prototype.consultarPedidosFacturaAgrupada = function(pa
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
- * +Descripcion Modelo encargado de listar los tipos de terceros
+ * +Descripcion Modelo encargado de listar los prefijos de las facturas
  * @controller FacturacionClientes.prototype.listarTiposTerceros
  */
 FacturacionClientesModel.prototype.listarPrefijosFacturas = function (obj,callback) {
@@ -841,7 +841,7 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
- * +Descripcion Modelo encargado de listar los tipos de terceros
+ * +Descripcion Modelo encargado de consultar las retenciones segun la empresa
  * @controller FacturacionClientes.prototype.listarTiposTerceros
  */
 FacturacionClientesModel.prototype.consultarParametrosRetencion = function (obj,callback) {
@@ -1189,6 +1189,104 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
         callback({err:err, msj: "Error al actualizar el estado de factura del pedido"});
     });    
 };
+
+
+
+/************************************GENERAR FACTURAS CONSUMO OK***************/
+FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callback){
+    
+    console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
+    console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
+    console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
+    
+    var parametros = {empresa_id: obj.parametros.documento_facturacion[0].empresa_id,
+        tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
+        tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
+        //factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
+        //prefijo: obj.parametros.documento_facturacion[0].id,
+        //documento_id: obj.parametros.documento_facturacion[0].documento_id,
+        usuario_id: obj.usuario,
+        observaciones: obj.parametros.consultar_tercero_contrato[0].condiciones_cliente,
+        porcentaje_rtf: obj.porcentaje_rtf,
+        porcentaje_ica: obj.porcentaje_ica,
+        porcentaje_reteiva: obj.porcentaje_reteiva,
+        porcentaje_cree: obj.porcentaje_cree,
+        tipo_pago_id: obj.tipoPago 
+    };
+    
+    
+    console.log("parametros ", parametros);
+    var query = G.knex('inv_facturas_xconsumo_tmp').insert(parametros);     
+     
+    query.then(function(resultado){      
+        console.log("resultado [insertarFacturaConsumo]::>>  ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+        callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+    }); 
+};
+/**
+ * +Descripcion Metodo encargado de generar las facturas agrupadas 
+ *              mediante la transaccion la cual ejecuta varios querys
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj, callback)
+{   
+   console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
+   console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
+   console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");
+   
+    var that = this;
+    var def = G.Q.defer();
+    var porcentajeRtf = '0';
+    var porcentajeIca = '0';
+    var porcentajeReteiva = '0';
+    var porcentajeCree = obj.consultar_tercero_contrato[0].porcentaje_cree;    
+    var parametrosFacturasAgrupadas;
+    datosAdicionalesAgrupados = [];
+    parametrosActualizarEstadoFactura = [];
+    parametrosInsertaFacturaAgrupadaDetalle = [];
+     
+    if (obj.consultar_parametros_retencion.sw_rtf === '1' || obj.consultar_parametros_retencion.sw_rtf === '3')
+        porcentajeRtf = obj.consultar_tercero_contrato[0].porcentaje_rtf;
+    if (obj.consultar_parametros_retencion.sw_ica === '1' || obj.consultar_parametros_retencion.sw_ica === '3')
+        porcentajeIca = obj.consultar_tercero_contrato[0].porcentaje_ica;
+    if (obj.consultar_parametros_retencion.sw_reteiva === '1' || obj.consultar_parametros_retencion.sw_reteiva === '3')
+        porcentajeReteiva = obj.consultar_tercero_contrato[0].porcentaje_reteiva;
+  
+        G.Q.ninvoke(that,'insertarFacturaConsumo',
+        {parametros:obj, porcentaje_rtf:porcentajeRtf, porcentaje_ica: porcentajeIca, 
+        porcentaje_reteiva: porcentajeReteiva, porcentaje_cree: porcentajeCree, usuario: obj.parametros.usuario, 
+        tipoPago: obj.parametros.tipoPago
+         
+        }).then(function(resultado){  
+            
+        }).fail(function(err){
+            logger.error("-----------------------------------");
+            logger.error({"metodo":"FacturacionClientes.prototype.generarTemporalFacturaConsumo",
+            "usuario_id": obj.parametros.usuario,
+            "documento_facturacion: ": obj.documento_facturacion,
+            "consultar_tercero_contrato: ": obj.consultar_tercero_contrato,
+            "consultar_parametros_retencion: ": obj.consultar_parametros_retencion,
+            "parametrosFacturasAgrupadas: ": parametrosFacturasAgrupadas,
+            "datosAdicionalesAgrupados": datosAdicionalesAgrupados,
+            "parametrosActualizarEstadoFactura": parametrosActualizarEstadoFactura,
+            "parametrosInsertaFacturaAgrupadaDetalle": parametrosInsertaFacturaAgrupadaDetalle,
+            "porcentajes":{ 
+                "porcentajeRtf" :porcentajeRtf,
+                "porcentajeIca":porcentajeIca,
+                "porcentajeReteiva":porcentajeReteiva
+            },
+            "resultado: ":err});
+            logger.error("-----------------------------------");
+            console.log("err (/fail) [generarTemporalFacturaConsumo]: ", err);
+                  
+        }).done();
+ 
+}
 
 var parametrosActualizarEstadoFactura = [];
 var datosAdicionalesAgrupados = [];

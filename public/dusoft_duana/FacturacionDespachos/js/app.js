@@ -54,7 +54,7 @@ define([
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
     "controllers/cajaGeneral/CajaGeneralController",
     "services/facturacionClientesService",
-    "services/facturacionProveedoresService",
+    "services/facturacionProveedoresService",   
     "services/cajaGeneralService",
     "webNotification"
 ], function(angular) {

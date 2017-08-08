@@ -290,11 +290,11 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 	valorNotaImpuestos:args.valorNotaImpuestos ,
 	usuarioId:req.body.session.usuario_id,
 	documentoId:args.swContable===1?credito:debito,
-	saldo : 0,
+	saldo : args.valorNotaTotal,
 	valorNotaTotal:args.valorNotaTotal
     };
 		
-    parametros.valorNotaTotal = parseInt(parametros.valorNotaTotal)+parseInt(parametros.porcentajeGravamen);
+    parametros.valorNotaTotal = parseInt(parametros.valorNotaTotal)+parseInt(parametros.porcentajeGravamen);   
     
     G.knex.transaction(function(transaccion) {
 	
@@ -304,16 +304,11 @@ CajaGeneral.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
 	    parametros.prefijoNota = resultado[0].prefijo;
 	    parametros.numeroNota = resultado[0].numeracion;
 	
-	
 	G.Q.ninvoke(that.m_caja_general, 'insertarFacFacturasConceptosNotas', parametros,transaccion);
 
 	}).then(function(resultado) {
-	    //se actualiza el saldo en cero para que el triger se active y calcule el salgo automatico
+	    
 	   return G.Q.ninvoke(that.m_caja_general, 'actualizarSaldoFacturas', parametros,transaccion);
-		    
-	}).then(function(resultado) {
-
-	   return  G.Q.ninvoke(that.m_caja_general,'listarFacConceptosNotas', parametros);
 
 	}).then(function(result) {
 

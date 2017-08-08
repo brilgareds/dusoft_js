@@ -104,6 +104,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {undefined}
                      */
                     that.listarGrupos = function(control, callback) {
+			$scope.root.grupos = null;
+			$scope.root.conceptos = null;
 
                         var obj = {
                             session: $scope.session,
@@ -120,8 +122,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             if (data.status === 200) {
                                 if (control) {
                                     $scope.root.grupos = cajaGeneralService.renderGrupos(data.obj.listarGrupos);
+				    $scope.root.grupo=$scope.root.grupos;
+				    $scope.root.concepto =null;
                                 } else {
                                     $scope.root.conceptos = cajaGeneralService.renderGrupos(data.obj.listarGrupos);
+				    $scope.root.concepto = $scope.root.conceptos;
                                 }
                                
                                 callback(true);
@@ -668,23 +673,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 		    */
 		  $scope.comparaValorNota=function(tipoNota){
 		      var disabled=false;
-
-		      var totalNota=(parseInt($scope.root.totalesNotaDebito)- parseInt($scope.root.totalesNotaCredito));
-                                                           
+                   
 		      if(tipoNota===1){
-			if(parseInt($scope.root.totales) + totalNota <= 0){
+			if(parseInt($scope.root.listarFacturasGeneradasNotas[0].saldo) <= 0){
 			   disabled=true;
 			}
 		       
-		      }else{
-			if(parseInt($scope.root.totales) < totalNota ){
-
-			   disabled=true;
-			}  		       
 		      }
 			return disabled;
 		  };
-		    
+    
 		    
 		    /**
 			* +Descripcion sincronizar FI
@@ -931,6 +929,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {undefined}
                      */
                     $scope.onConcepto = function() {
+			that.limpiarVariablesConceptos();
                         that.ver_recepcion();
                     };
                     /**
@@ -1041,6 +1040,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 		     * nota : 0-debito 1-credito
                      */
                     that.verNota = function(nota,datos) {
+			console.log("nota ",nota);
+			console.log("datos ",datos);
 			$scope.root.impuestos="";
                         $scope.opts = {
                             backdrop: true,
@@ -1059,8 +1060,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 };
 				
                                 $scope.guardarFacFacturasConceptosNotas = function() {				    
-				   
+				    var saldo=0;
 				    var valorIngresado=0;
+				    
 				    if($scope.root.descripcionNota===''){
 					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar la Descripcion");
 					 return;
@@ -1080,25 +1082,28 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					 return;
 				    }
 				    
-				    if(nota==='1'){
+				    if(nota === 1){
+					saldo=(parseInt($scope.root.listarFacturasGeneradasNotas[0].saldo) - parseInt($scope.root.precioNota));
 					valorIngresado = valorIngresado - parseInt($scope.root.precioNota);
 				    }else{
 					valorIngresado += parseInt($scope.root.precioNota);
+					$scope.root.totalesNotaCredito=parseInt($scope.root.totalesNotaCredito)-parseInt(datos.gravamen);
 				    }
 				     
-				   
-				    var totalNota=parseInt($scope.root.totales)+(parseInt($scope.root.totalesNotaDebito )- parseInt($scope.root.totalesNotaCredito))+ valorIngresado;
+//				      console.log(" $scope.root.totales "+$scope.root.totales+" + $scope.root.totalesNotaDebito "+$scope.root.totalesNotaDebito+" - $scope.root.totalesNotaCredito "+$scope.root.totalesNotaCredito+" + valorIngresado "+valorIngresado);   
+//				    var totalNota=parseInt($scope.root.totales)+(parseInt($scope.root.totalesNotaDebito )- parseInt($scope.root.totalesNotaCredito))+ parseInt(valorIngresado);
 				
-				    if(parseInt($scope.root.totales) < valorIngresado){
-					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota Supera el Precio de la Factura");
-					 return;
-				    }
+//				    if(parseInt($scope.root.totales) < valorIngresado){
+//					 AlertService.mostrarVentanaAlerta("Mensaje del sistema",$scope.root.totales+"El valor de la Nota Supera el Precio de la Factura"+valorIngresado);
+//					 return;
+//				    }
+					
 				    
-				    if(totalNota < 0){
-					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota no debe ser Menor a la Factura");
+				    if( saldo < 0 && nota === 1){
+					 AlertService.mostrarVentanaAlerta(" Mensaje del sistema","El valor de la Nota credito no debe ser Mayor al saldo de la Factura ");
 					 return;
 				    }
-				   
+				    				   
 				    var parametros={
 					prefijo : datos.getPrefijo(),
 					facturaFiscal : datos.getNumeroFactura(),
@@ -1137,6 +1142,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.onSeleccionFiltro = function() {
+			
+			console.log("____________________");
                     };
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -1207,6 +1214,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Concepto');
                             return;
                         }
+			console.log("$scope.root.pago ",$scope.root.pago);
                         if ($scope.root.pago === undefined) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Tipo de Pago');
                             return;
@@ -1299,6 +1307,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.checkearEstadoPago = function(check) {
+			console.log("checkearEstadoPago ",check);
                         $scope.root.pago = check;
                         switch (check) {
                             case 1:
@@ -1331,6 +1340,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.tipoFactura = function(tipo) {
+			console.log("tipoFactura ",tipo);
                         $scope.root.pagoCreditoModel = false;
                         $scope.root.pagoEfectivoModel = false;
 			
@@ -1403,19 +1413,31 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					break;
 			       case 2:  
 				      if (event.which === 13) {
-					that.listarFacturasGeneradas(1,function(data){
-					   if(data!==false){
-					    that.listarFacConceptosNotasDetalle(data[0]);
-					    that.listarImpuestosTercero();
-					   }else{
-					    $scope.root.listarFacConceptosNotasDetalle = null;  
-					   }
-					});
-			       }
+					  if($scope.root.prefijo.prefijo==='Prefijo'){
+					     AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe seleccionar un prefijo");  
+					  }else{
+//					  console.log("Prefijo ",$scope.root.prefijo.prefijo);
+					    that.listarFacturasGeneradas(1,function(data){
+					       if(data!==false){
+						that.listarFacConceptosNotasDetalle(data[0]);
+						that.listarImpuestosTercero();
+					       }else{
+						$scope.root.listarFacConceptosNotasDetalle = null;  
+					       }
+					    });
+					  }
+					}
 					break;
-			       case 3:		$scope.root.termino_busqueda_tercero=busqueda;		         
-				         that.listarFacturasGeneradas('',function(data){
-					});
+			       case 3:	
+				       if (event.which === 13) {
+					  if($scope.root.prefijo.prefijo==='Prefijo'){
+					     AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe seleccionar un prefijo");  
+					  }else{
+					    $scope.root.termino_busqueda_tercero=busqueda;		         
+					     that.listarFacturasGeneradas('',function(data){
+					    });
+					  }
+				       }
 					 break;
 			   } 
 //                        }

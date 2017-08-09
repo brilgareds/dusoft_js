@@ -627,28 +627,28 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableHighlighting: true,
                         showFilter: true,			
 			columnDefs: [
-                            {field: 'No. Factura', width: "5%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
-                            {field: 'Identificación', width: "5%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
-                            {field: 'Tercero', width: "16%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
-                            {field: 'Fecha', width: "8%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'Usuario', width: "15%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
-                            {field: 'Saldo', width: "8%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSaldo())">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
-                            {field: 'SubTotal', width: "6%", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSubTotal())">{{row.entity.getSubTotal()| currency:"$ "}}</p></div>'},
-                            {field: 'Gravamen', width: "6%", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.getGravamen())">{{row.entity.getGravamen()| currency:"$ "}}</p></div>'},
-			    {field: 'Total', width: "8%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
-                            {field: 'Nota Credito', width: "5%", displayName: 'Nota Credito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
-                            {field: 'Nota Debito', width: "5%", displayName: 'Nota Debito', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span> Nota</button></div>'},
-                            {field: 'Imprimir2', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
-                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "8%",
+                            {field: 'No. Factura', width: "70px", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
+                            {field: 'Identificación', width: "70px", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
+                            {field: 'Tercero', width: "76px", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
+                            {field: 'Fecha', width: "70px", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Usuario', displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
+                            {field: 'Saldo', width: "70px", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSaldo())">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
+                            {field: 'SubTotal', width: "70px", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSubTotal())">{{row.entity.getSubTotal()| currency:"$ "}}</p></div>'},
+                            {field: 'Gravamen', width: "70px", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.getGravamen())">{{row.entity.getGravamen()| currency:"$ "}}</p></div>'},
+			    {field: 'Total', width: "70px", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
+                            {field: 'NC', width: "70px", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'ND', width: "70px", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'Imprimir2', width: "70px", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'},
+                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "50px",
 			     cellTemplate: ' <div class="row">\
 							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-danger btn-xs disabled">\
-								<span class="glyphicon glyphicon-export"> No Sincronizado</span>\
+								<span class="glyphicon glyphicon-export"></span>\
 							    </button>\
 							  </div>\
 							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-success btn-xs  disabled">\
-								<span class="glyphicon glyphicon-saved"> Sincronizado</span>\
+								<span class="glyphicon glyphicon-saved"></span>\
 							    </button>\
 							  </div>\
 						       </div>'
@@ -910,7 +910,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'Tipo Pago', width: "5%", displayName: 'Tipo Pago', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoPagoDescripcion()}}</p></div>'},
                             {field: 'Descripcion', width: "44%", displayName: 'Descripcion', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcion()}}</p></div>'},
                             {field: 'Valor Unitario', width: "8%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()| currency:"$ "}}</p></div>'},
-                            {field: 'Valor Gravamen', width: "8%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getValorGravamen() | currency:"$ "}}</p></div>'},
+                            {field: 'Valor Gravamen',  displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getValorGravamen() | currency:"$ "}}</p></div>'},
                             {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
                                 cellTemplate: ' <div class="row">\
                                                  <button class="btn btn-default btn-xs" ng-click="eliminarTmp(row.entity)">\
@@ -1089,15 +1089,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					valorIngresado += parseInt($scope.root.precioNota);
 					$scope.root.totalesNotaCredito=parseInt($scope.root.totalesNotaCredito)-parseInt(datos.gravamen);
 				    }
-				     
-//				      console.log(" $scope.root.totales "+$scope.root.totales+" + $scope.root.totalesNotaDebito "+$scope.root.totalesNotaDebito+" - $scope.root.totalesNotaCredito "+$scope.root.totalesNotaCredito+" + valorIngresado "+valorIngresado);   
-//				    var totalNota=parseInt($scope.root.totales)+(parseInt($scope.root.totalesNotaDebito )- parseInt($scope.root.totalesNotaCredito))+ parseInt(valorIngresado);
-				
-//				    if(parseInt($scope.root.totales) < valorIngresado){
-//					 AlertService.mostrarVentanaAlerta("Mensaje del sistema",$scope.root.totales+"El valor de la Nota Supera el Precio de la Factura"+valorIngresado);
-//					 return;
-//				    }
-					
+				     			
 				    
 				    if( saldo < 0 && nota === 1){
 					 AlertService.mostrarVentanaAlerta(" Mensaje del sistema","El valor de la Nota credito no debe ser Mayor al saldo de la Factura ");

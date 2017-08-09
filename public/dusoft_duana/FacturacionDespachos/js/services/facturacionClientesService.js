@@ -469,28 +469,18 @@ define(["angular", "js/services"], function (angular, services) {
                             callback(data);
                         });
                     };
-                    
-                    
-                   /* self.buscarClientes = function (datos,callback) {
-
-                        var obj = {
-                            session: datos.session,
-                            data: {
-                                clientes: {
-                                    empresa_id: datos.empresaId,
-                                    termino_busqueda: datos.terminoBusqueda,
-                                    paginacion: false
-                                }
-                            }
-                        };
-                        Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function (data) {
-
-
-                            if (data.status === 200) {
-                                callback(data.obj.listado_clientes);
-                            }
+                   
+                   /**
+                     * @author Cristian Ardila
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invicar el path para generar las facturas
+                     *              agrupadas
+                     */
+                    self.generarTemporalFacturaConsumo = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_TMP_FACTURA_CONSUMO, "POST", obj, function (data) {
+                            callback(data);
                         });
-                    };*/
+                    };
                     
                     return this;
                 }]);

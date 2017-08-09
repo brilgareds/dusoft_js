@@ -19,8 +19,9 @@ define([
     "includes/validation/ValidacionNumero",
     "includes/validation/ValidacionNumeroEntero",
     "includes/validation/ValidacionNumeroDecimal",
-    "includes/widgets/InputCheck",
-    "includes/menu/menucontroller",
+    "includes/validation/CambiarFoco",
+    "includes/widgets/InputCheck",     
+    "includes/menu/menucontroller",   
     "includes/alert/Alert",
     "includes/header/HeaderController",
     "includes/classes/Usuario",
@@ -53,7 +54,7 @@ define([
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
     "controllers/cajaGeneral/CajaGeneralController",
     "services/facturacionClientesService",
-    "services/facturacionProveedoresService",
+    "services/facturacionProveedoresService",   
     "services/cajaGeneralService",
     "webNotification"
 ], function(angular) {
@@ -99,7 +100,7 @@ define([
                     text: "Facturacion Despacho", 
                     templateUrl: "views/facturacionClientes/index.html",
                     controller: "FacturacionClientesController"
-                }).state('PedidosClientesDespacho', {
+                }).state('PedidosClientesDespacho', {  
                     url: "/PedidosClientesDespacho",
                     text: "Listado de los productos listos para facturar",
                     templateUrl: "views/facturacionClientes/listarPedidos.html",

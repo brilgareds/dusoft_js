@@ -8,7 +8,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.cantidadDespachada = cantidadDespachada || 0;
             this.lote = lote || 0;
             this.fechaVencimiento = fechaVencimiento || 0;
-            
+            this.cantidadNueva = 0;
         };
         
         DocumentoDetalle.prototype.setProducto = function(producto) {
@@ -28,7 +28,16 @@ define(["angular", "js/models"], function(angular, models) {
         DocumentoDetalle.prototype.getCantidadDespachada = function() {
             return this.cantidadDespachada;
         };
+        
+        DocumentoDetalle.prototype.setCantidadNueva = function(cantidadNueva) {
+            this.cantidadNueva = cantidadNueva;
+            return this;
+        };
 
+        DocumentoDetalle.prototype.getCantidadNueva = function() {
+            return this.cantidadNueva;
+        };
+        
         DocumentoDetalle.prototype.setLote = function(lote) {
             this.lote = lote;
             return this;

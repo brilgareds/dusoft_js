@@ -52,9 +52,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             columnDefs: [
 
                 {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
-                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant despachada'},
-                {field: 'cantidadFacturada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant Facturada'},
-                {field: 'cantidadPorFacturar',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar'},
+                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a despachar'},
+                {field: 'cantidadTmpDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant Facturada'},
+                {field: 'cantidadFacturada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar'},
                 {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},
                 {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "10%", displayName: 'Fecha vto'},
                 {displayName: 'Cantidad', width: "10%", 
@@ -63,11 +63,13 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                                         validacion-numero-entero \
                                         class="form-control grid-inline-input" \
                                         ng-model = "row.entity.cantidadNueva" \
+                                        ng-disabled = "row.entity.cantidadDespachada === row.entity.cantidadTmpDespachada "\
                                         name="" \
                                         id="" \
                                         /> </div>'},
                 {width: "5%", displayName: "Opcion", cellClass: "txt-center",
-                cellTemplate: '<button ng-disabled="validar_seleccion_producto()" \n\
+                cellTemplate: '<button\
+                    ng-disabled="row.entity.cantidadDespachada === row.entity.cantidadTmpDespachada " \n\
                     class="btn btn-default btn-xs" \n\
                     ng-validate-events="{{ habilitar_seleccion_producto() }}" \n\
                     ng-click="guardarTemporalFacturaConsumo(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
@@ -78,27 +80,16 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             ]
         };
         
+        $scope.seleccionarTipoPagoConsumo = function(tipoPago){
+            $scope.tipoPagoFacturaConsumo = tipoPago;
+        };
+        
         $scope.guardarTemporalFacturaConsumo = function(documento){
-             
             
-           /* var parametros = {
-                    terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
-                    empresaSeleccionada: $scope.root.empresaSeleccionada,
-                    paginaActual: $scope.paginaactual,
-                    tipoIdTercero: 'NIT',
-                    terceroId: '830023202',
-                    tipoPagoFactura: $scope.tipoPagoFactura,
-                    pedidosSeleccionados: $scope.root.pedidosCosmitetSeleccionados,
-                    facturacionCosmitet: '1',
-                    session: $scope.session,
-                    AlertService: AlertService,
-                    documentoSeleccionados: $scope.root.documentosCosmitetSeleccionadosFiltrados
-                };*/
-           
-             
-            /*console.log("LOS DOCUMENTOS ", $scope.root.documento);
-            console.log("guardarTemporalFacturaConsumo -> rowEntityt ", documento);*/
-            
+            if(documento.cantidadNueva > documento.cantidadDespachada){
+                AlertService.mostrarMensaje("warning", "La cantidad nueva no debe ser mayor a la cantidad a despachar");
+                return;
+            }
             var obj = {
                 session: $scope.session,
                 data: {
@@ -108,19 +99,25 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         terceroId: $scope.root.cliente.id,
                         documentoId:'1',
                         estado:1,
-                        tipoPago: 1,
+                        tipoPago: $scope.tipoPagoFacturaConsumo,
                         documentos: {
                             pedido:$scope.root.documento.bodegas_doc_id,
                             empresa: $scope.root.documento.empresa,
                             prefijo: $scope.root.documento.prefijo,
                             numero: $scope.root.documento.numero
-                        }
+                        },
+                        documentoDetalle: documento
                     }
                 }
             };
             
-            facturacionClientesService.generarTemporalFacturaConsumo(obj,function(respuesta){
-                 console.log("respuesta ", respuesta); 
+            facturacionClientesService.generarTemporalFacturaConsumo(obj,function(data){
+                
+                if(data.status === 200){
+                    AlertService.mostrarMensaje("success", data.msj);
+                }else{
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
             });
         };
        /**
@@ -177,9 +174,13 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     var _documentos = respuesta.obj.detalle;
                     for(var i in _documentos){
                         var _documento = _documentos[i];
-                          
+                     
                         var documento = DocumentoDetalleConsumo.get(_documento.codigo_producto, _documento.cantidad_despachada, _documento.lote, _documento.fecha_vencimiento);
-                            documento.setCantidadNueva(0);
+                            
+                            documento.setValorUnitario(_documento.valor_unitario);                          
+                            documento.setPorcIva(_documento.porc_iva);                          
+                            documento.setCantidadTmpDespachada(_documento.cantidad_tmp_despachada); 
+                            documento.setCantidadNueva(parseInt(_documento.cantidad_despachada) - parseInt(_documento.cantidad_tmp_despachada));
                             $scope.root.documento.agregarDetalle(documento);
                     }
                 }

@@ -1,8 +1,27 @@
 <form  ng-model="formularios.formularioTerceros" name="formularios.formularioFactura" id="formularioTerceros" form-validation   ng-init="onFormularioTercerosListo()">
     <div class="row contenedorCamposTercero">
+        
+        <div class="col-md-6">
 
+            <p class="btn-group">
+                <label class="btn btn-default" >
+                    <span >Seleccionar tipo de pago: </span>
+                </label>
+                <label class="btn btn-default" ng-class="{'btn-success' : tipoPagoFacturaConsumo == '1'}">
+                    <input type="radio"  ng-click="seleccionarTipoPagoConsumo('1')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-success">Efectivo</span>
+                </label>
+                <label class="btn btn-default"  ng-class="{'btn-warning' : tipoPagoFacturaConsumo == '2'}">
+                    <input type="radio"  ng-click="seleccionarTipoPagoConsumo('2')"   class="ng-pristine ng-untouched ng-valid"><span class="label label-warning">Cheque</span>
+                </label>
+                <label class="btn btn-default" ng-class="{'btn-danger' : tipoPagoFacturaConsumo == '3'}">
+                    <input type="radio"  ng-click="seleccionarTipoPagoConsumo('3')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-danger">Credito</span>
+                </label>
+
+            </p>
+        </div>
+        
         <div class="col-md-3">
-            <label class="control-label">Cliente</label>
+             
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.cliente"  
                            theme="select2" 
@@ -21,7 +40,7 @@
         </div>
 
         <div class="col-md-3">
-            <label class="control-label">Documento</label>
+            
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.documento"  
                            theme="select2" 

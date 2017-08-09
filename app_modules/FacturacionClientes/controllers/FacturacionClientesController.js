@@ -1073,13 +1073,13 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         if(!resultado || resultado.length > 0){
             parametros.direccion_ip = ip;
             
-            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo', parametros);
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo', parametros.tipoIdTercero);
              
         }else{
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
         
-    }).then(function(resultado){
+    })/*.then(function(resultado){
         
         if(resultado.length > 0){
             
@@ -1095,16 +1095,15 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         }
              
     }).then(function(resultado){
-       
-       
-       return G.Q.ninvoke(that.m_facturacion_clientes,'generarTemporalFacturaConsumoDetalle',
+      
+        return G.Q.ninvoke(that.m_facturacion_clientes,'generarTemporalFacturaConsumoDetalle',
             {documento_facturacion:documentoFacturacion,
                 consultar_tercero_contrato:consultarTerceroContrato,
                 consultar_parametros_retencion:consultarParametrosRetencion,
                 parametros:parametros
              });
         
-    }).fail(function(err){  
+    })*/.fail(function(err){  
         logger.error("-----------------------------------");
         logger.error({"metodo":"FacturacionClientes.prototype.sincronizarFactura",
             "usuario_id": usuario,

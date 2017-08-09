@@ -1196,8 +1196,31 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
 
 
 /************************************GENERAR FACTURAS CONSUMO OK***************/
-FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callback){
+
+/**
+ * +Descripcion Metodo encargado de consultar el temporal de la factura de
+ *              consumo
+ * @author Cristian Ardila
+ * @fecha 2017-15-05 YYYY-DD-MM
+ */
+FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(parametros, callback){
     
+    var query = G.knex.select()
+        .from('inv_facturas_xconsumo_tmp')
+        .where(parametros);     
+ 
+    query.then(function(resultado){    
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
+        callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
+    }); 
+};
+
+
+FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callback){
+             
+              
     console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
     console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
     console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
@@ -1219,7 +1242,7 @@ FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callba
     
     
     console.log("parametros ", obj.parametros.parametros.pedidos);
-    var query = G.knex('inv_facturas_xconsumo_tmp').insert(parametros);     
+    var query = G.knex('inv_facturas_xconsumo_tmp').insert(parametros).returning(['id_factura_xconsumo']);     
      
     query.then(function(resultado){      
         console.log("resultado [insertarFacturaConsumo]::>>  ", resultado);

@@ -1196,8 +1196,31 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
 
 
 /************************************GENERAR FACTURAS CONSUMO OK***************/
-FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callback){
+
+/**
+ * +Descripcion Metodo encargado de consultar el temporal de la factura de
+ *              consumo
+ * @author Cristian Ardila
+ * @fecha 2017-15-05 YYYY-DD-MM
+ */
+FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(parametros, callback){
     
+    var query = G.knex.select()
+        .from('inv_facturas_xconsumo_tmp')
+        .where(parametros);     
+ 
+    query.then(function(resultado){    
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
+        callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
+    }); 
+};
+
+
+FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callback){
+             
+              
     console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
     console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
     console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
@@ -1218,8 +1241,8 @@ FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callba
     };
     
     
-    console.log("parametros ", parametros);
-    var query = G.knex('inv_facturas_xconsumo_tmp').insert(parametros);     
+    console.log("parametros ", obj.parametros.parametros.pedidos);
+    var query = G.knex('inv_facturas_xconsumo_tmp').insert(parametros).returning(['id_factura_xconsumo']);     
      
     query.then(function(resultado){      
         console.log("resultado [insertarFacturaConsumo]::>>  ", resultado);
@@ -1238,9 +1261,9 @@ FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callba
  */
 FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj, callback)
 {   
-   console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
-   console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
-   console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");
+    console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
+    console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
+    console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");
    
     var that = this;
     var def = G.Q.defer();
@@ -1260,35 +1283,18 @@ FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj,
     if (obj.consultar_parametros_retencion.sw_reteiva === '1' || obj.consultar_parametros_retencion.sw_reteiva === '3')
         porcentajeReteiva = obj.consultar_tercero_contrato[0].porcentaje_reteiva;
   
-        G.Q.ninvoke(that,'insertarFacturaConsumo',
-        {parametros:obj, porcentaje_rtf:porcentajeRtf, porcentaje_ica: porcentajeIca, 
-        porcentaje_reteiva: porcentajeReteiva, porcentaje_cree: porcentajeCree, usuario: obj.parametros.usuario, 
-        tipoPago: obj.parametros.tipoPago
-         
-        }).then(function(resultado){  
-            
-        }).fail(function(err){
-            logger.error("-----------------------------------");
-            logger.error({"metodo":"FacturacionClientes.prototype.generarTemporalFacturaConsumo",
-            "usuario_id": obj.parametros.usuario,
-            "documento_facturacion: ": obj.documento_facturacion,
-            "consultar_tercero_contrato: ": obj.consultar_tercero_contrato,
-            "consultar_parametros_retencion: ": obj.consultar_parametros_retencion,
-            "parametrosFacturasAgrupadas: ": parametrosFacturasAgrupadas,
-            "datosAdicionalesAgrupados": datosAdicionalesAgrupados,
-            "parametrosActualizarEstadoFactura": parametrosActualizarEstadoFactura,
-            "parametrosInsertaFacturaAgrupadaDetalle": parametrosInsertaFacturaAgrupadaDetalle,
-            "porcentajes":{ 
-                "porcentajeRtf" :porcentajeRtf,
-                "porcentajeIca":porcentajeIca,
-                "porcentajeReteiva":porcentajeReteiva
-            },
-            "resultado: ":err});
-            logger.error("-----------------------------------");
-            console.log("err (/fail) [generarTemporalFacturaConsumo]: ", err);
-                  
-        }).done();
- 
+    G.Q.ninvoke(that,'insertarFacturaConsumo',
+    {parametros:obj, porcentaje_rtf:porcentajeRtf, porcentaje_ica: porcentajeIca, 
+    porcentaje_reteiva: porcentajeReteiva, porcentaje_cree: porcentajeCree, usuario: obj.parametros.usuario, 
+    tipoPago: obj.parametros.tipoPago
+
+    }).then(function(resultado){         
+
+    }).fail(function(err){
+       
+        console.log("err (/fail) [generarTemporalFacturaConsumo]: ", err);
+
+    }).done(); 
 }
 
 var parametrosActualizarEstadoFactura = [];

@@ -2035,7 +2035,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                            {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
                            
         
-        if(pedido.empresa_id === '03' && pedido.bodega_id === '03'){       
+        if(pedido.empresa_id === '03' && (pedido.bodega_id === '03' ||   pedido.bodega_id === '06') ){       
                
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespacho", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento , numeroDocumento:numero_documento});
             
@@ -2048,7 +2048,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
             var parametros = {
                 ordenes_compras:{
                     usuario_id :  req.session.user.usuario_id,
-                    unidad_negocio : '4',
+                    unidad_negocio : (pedido.bodega_id === '03') ? '4' : '0',
                     codigo_proveedor : 55,
                     empresa_id : pedido.empresa_id,
                     observacion : "Orden Generada por documento: " + prefijo_documento + " - " + numero_documento,

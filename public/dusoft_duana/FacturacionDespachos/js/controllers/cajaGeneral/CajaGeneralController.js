@@ -627,19 +627,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableHighlighting: true,
                         showFilter: true,			
 			columnDefs: [
-                            {field: 'No. Factura', width: "70px", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
-                            {field: 'Identificación', width: "70px", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
-                            {field: 'Tercero', width: "76px", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
-                            {field: 'Fecha', width: "70px", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'No. Factura', width: "90px", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
+                            {field: 'Identificación', width: "120px", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
+                            {field: 'Tercero', width: "350px", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
+                            {field: 'Fecha', width: "140px", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
                             {field: 'Usuario', displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
-                            {field: 'Saldo', width: "70px", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSaldo())">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
-                            {field: 'SubTotal', width: "70px", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSubTotal())">{{row.entity.getSubTotal()| currency:"$ "}}</p></div>'},
-                            {field: 'Gravamen', width: "70px", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.getGravamen())">{{row.entity.getGravamen()| currency:"$ "}}</p></div>'},
-			    {field: 'Total', width: "70px", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
-                            {field: 'NC', width: "70px", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
-                            {field: 'ND', width: "70px", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
-                            {field: 'Imprimir2', width: "70px", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'},
-                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "50px",
+                            {field: 'Saldo', width: "140px", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSaldo())">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
+                            {field: 'SubTotal', width: "140px", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSubTotal())">{{row.entity.getSubTotal()| currency:"$ "}}</p></div>'},
+                            {field: 'Gravamen', width: "120px", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.getGravamen())">{{row.entity.getGravamen()| currency:"$ "}}</p></div>'},
+			    {field: 'Total', width: "140px", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
+                            {field: 'NC', width: "50px", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'ND', width: "50px", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0) || !validarSincronizacion(row.entity.estado)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'Imprimir2', width: "80px", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'},
+                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "100px",
 			     cellTemplate: ' <div class="row">\
 							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-danger btn-xs disabled">\
@@ -1006,7 +1006,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             cellClass: "ngCellText",
                             templateUrl: 'views/cajaGeneral/vistaConceptos.html',
                             scope: $scope,
-                            controller: function($scope, $modalInstance) {
+                            controller: ['$scope','$modalInstance',function($scope, $modalInstance) {
 
                                 that.listarGrupos(true, function() {
 
@@ -1024,7 +1024,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                         }
                                     });
                                 };
-                            }
+                            }]
                         };
                         var modalInstance = $modal.open($scope.opts);
                     };
@@ -1053,7 +1053,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             cellClass: "ngCellText",
                             templateUrl: 'views/cajaGeneral/vistaNotaCredito.html',
                             scope: $scope,
-                            controller: function($scope, $modalInstance) {
+                            controller: ['$scope','$modalInstance',function($scope, $modalInstance) {
 						      
                                 $scope.cerrar = function() {
                                     $modalInstance.close();
@@ -1121,7 +1121,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 							 $scope.root.impuestos=datas;
 					             });			    
 					};
-                            }
+                            }]
                         };
                         var modalInstance = $modal.open($scope.opts);
 			 

@@ -381,8 +381,8 @@ CajaGeneralModel.prototype.listarFacConceptosNotas= function(obj, callback) {
 	query.then(function(resultado) {
         callback(false, resultado)
     }). catch (function(err) {
-        console.log("err [listarPrefijos]:",query.toSQL());
-        console.log("err [listarPrefijos]:", err);
+        console.log("err [listarFacConceptosNotas]:",query.toSQL());
+        console.log("err [listarFacConceptosNotas]:", err);
         callback(err);
     });
 };
@@ -849,12 +849,12 @@ CajaGeneralModel.prototype.insertarFacFacturasConceptosNotas = function(parametr
 		    numero_nota : parametro.numeroNota,
 	            bodega: parametro.bodega
     };
-    var query = G.knex('fac_facturas_conceptos_notas')
-	.insert(parametros)
-	.returning(['fac_facturas_conceptos_notas_id']);
+    var query = G.knex('fac_facturas_conceptos_notas') 
+	//.returning(['fac_facturas_conceptos_notas_id'])
+	.insert(parametros);
 
-     if (transaccion)
-        query.transacting(transaccion); 
+     if(transaccion)
+        query.transacting(transaccion);  
     
 	query.then(function(resultado) {
         callback(false, resultado);
@@ -1021,14 +1021,12 @@ CajaGeneralModel.prototype.actualizarSaldoFacturas= function(obj,transaccion, ca
 		.where('empresa_id', obj.empresaId)
 		.andWhere('prefijo', obj.prefijo)
 		.andWhere('factura_fiscal', obj.facturaFiscal)
-		.update({
-		    saldo:obj.saldo
-		});
+		.increment('saldo',obj.saldo);
 		
     if (transaccion)
         query.transacting(transaccion); 
     
-	query.then(function(resultado){ 
+	query.then(function(resultado){ 	    
         callback(false, resultado);
     }).catch(function(err){    
         console.log("err (/catch) [actualizarImpuestoFacturas]: ", err);

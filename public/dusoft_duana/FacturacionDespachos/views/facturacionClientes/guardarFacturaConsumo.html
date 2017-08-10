@@ -1,8 +1,58 @@
 <form  ng-model="formularios.formularioTerceros" name="formularios.formularioFactura" id="formularioTerceros" form-validation   ng-init="onFormularioTercerosListo()">
     <div class="row contenedorCamposTercero">
-
+        
         <div class="col-md-3">
-            <label class="control-label">Cliente</label>
+
+            <p class="btn-group">
+                <label class="btn btn-default" >
+                    <span >Seleccionar tipo de pago: </span>
+                </label>
+                <label class="btn btn-default" ng-class="{'btn-success' : tipoPagoFacturaConsumo == '1'}">
+                    <input type="radio"  ng-click="seleccionarTipoPagoConsumo('1')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-success">Efectivo</span>
+                </label>
+                <label class="btn btn-default"  ng-class="{'btn-warning' : tipoPagoFacturaConsumo == '2'}">
+                    <input type="radio"  ng-click="seleccionarTipoPagoConsumo('2')"   class="ng-pristine ng-untouched ng-valid"><span class="label label-warning">Cheque</span>
+                </label>
+                <label class="btn btn-default" ng-class="{'btn-danger' : tipoPagoFacturaConsumo == '3'}">
+                    <input type="radio"  ng-click="seleccionarTipoPagoConsumo('3')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-danger">Credito</span>
+                </label>
+
+            </p>
+        </div>
+        
+        <div class="col-md-2">
+            
+            <p class="input-group contenedorDropdown">            
+                <input type="text" class="form-control"  
+                       ng-model="root.observacion" placeholder="Observacion" name="observacion" /> 
+            </p>
+        </div>
+        
+        <div class="col-md-2">
+            <p class="input-group">
+
+                <input type="text" class="form-control readonlyinput" 
+                       datepicker-popup="{{format}}" 
+                       ng-model="root.fecha_corte" 
+                       is-open="datepicker_fecha_corte" 
+                       min="minDate"   
+                       readonly  
+                       close-text="Cerrar" 
+                       ng-change="" 
+                       clear-text="Borrar" 
+                       current-text="Hoy" 
+                       placeholder="Fecha Corte" 
+                       show-weeks="false" 
+                       toggle-weeks-text="#"  />
+
+                <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="abrir_fecha_corte($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+        </div>
+        
+        <div class="col-md-2">
+             
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.cliente"  
                            theme="select2" 
@@ -20,8 +70,8 @@
             </p>
         </div>
 
-        <div class="col-md-3">
-            <label class="control-label">Documento</label>
+        <div class="col-md-2">
+            
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.documento"  
                            theme="select2" 
@@ -39,24 +89,8 @@
                 </ui-select>  
             </p>
         </div>
+         
         
-        
-        <!--div class="col-md-6">
-            <fieldset>
-                <legend>Proveedor</legend> 
-                <div class="row">
-                    <div class="col-md-7"> 
-                        <ui-select ng-disabled="vista_previa"  ng-model="codigo_proveedor_id" theme="select2" class="form-control selectgeneral pull-left ui-select-z-index-11" ng-change="seleccionar_proveedor(codigo_proveedor_id)">
-                            <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
-                            <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
-                                {{ proveedor.get_nombre() }}
-                            </ui-select-choices>
-                        </ui-select>
-                    </div>
-                </div>
-            </fieldset>
-        </div-->
-
     </div>
 
 </form>
@@ -66,37 +100,7 @@
 </div>
 <hr>
 <h4>Detalle de Facturación</h4>
-<form  ng-model="formularios.formularioTerceros" name="formularios.formularioTerceros" id="formularioTerceros" form-validation   ng-init="onFormularioTercerosListo()">
-    <div class="row contenedorCamposTercero">
-
-        <div class="col-md-3">
-            <label class="control-label">Corte</label>
-            <p class="input-group">
-
-                <input type="text" class="form-control"  
-                       ng-model="root.tercero.razonSocial" placeholder="Buscar tercero" name="buscarTercero" />
-                <span class="input-group-btn">
-
-                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </p>
-        </div>
-        
-        <div class="col-md-3">
-            <label class="control-label">Observacion</label>
-            <p class="input-group">
-
-                <input type="text" class="form-control"  
-                       ng-model="root.tercero.razonSocial" placeholder="Buscar tercero" name="buscarTercero" />
-                <span class="input-group-btn">
-
-                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
-                </span>
-            </p>
-        </div>
-    </div>
-
-</form>
+ 
 <div  class="table-responsive" style="clear:both;">
     <div class="gridFacturasConsumo grid-responsive" ng-grid="listaDetalleDocumento" ></div>
 </div>

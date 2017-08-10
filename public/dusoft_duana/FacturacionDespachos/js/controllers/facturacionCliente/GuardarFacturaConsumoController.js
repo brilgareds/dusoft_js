@@ -32,7 +32,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 cliente:null,
                 factura:null,
                 documentos:[], 
-                documento:null
+                documento:null,
+                detalleDocumentoTmp: []
             };
             $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
             $scope.session = {
@@ -43,6 +44,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             callback();
         };
         
+        /**
+         * +Descripcion Grid que lista el detalle del efc seleccionado
+         */
         $scope.listaDetalleDocumento = {
             data: 'root.documento.getDetalle()',
             enableColumnResize: true,
@@ -78,16 +82,91 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             ]
         };
         
+         /**
+         * +Descripcion Grid que lista el detalle del efc seleccionado
+         */
+        $scope.listaDetalleDocumentoTmp = {
+            data: 'root.detalleDocumentoTmp[0]',
+            enableColumnResize: true,
+            enableRowSelection: false,
+            enableCellSelection: true,
+            enableHighlighting: true,
+            columnDefs: [
+
+                {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
+                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a despachar'},
+                {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},
+                {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha vto'},
+                {field: 'valorUnitario',  cellClass: "ngCellText", width: "10%", displayName: 'Valor unitario'},
+                
+                { displayName: "Opcion", cellClass: "txt-center",
+                cellTemplate: '<button\
+                    class="btn btn-default btn-xs" \n\
+                    ng-validate-events="{{ habilitar_seleccion_producto() }}" \n\
+                    ng-click="eliminarTemporalFacturaConsumo(row.entity)" ><span class="glyphicon glyphicon-remove"></span></button>\
+                    </div>'}
+               
+            ]
+        };
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo invocado cuando se selecciona el tipo de pago
+         */
         $scope.seleccionarTipoPagoConsumo = function(tipoPago){
             $scope.tipoPagoFacturaConsumo = tipoPago;
         };
         
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de invocar el servicio que eliminara
+         *              un producto del detalle de la factura temporal
+         * @fecha 10-08-2017 DD-MM-YYYY
+         */
+        $scope.eliminarTemporalFacturaConsumo = function(documento){
+            console.log("documento ", documento);
+            var obj = {
+                session: $scope.session,
+                data: {
+                    eliminar_producto_tmp: {
+                        id: documento.id,
+                        codigoProducto: documento.producto,
+                        lote: documento.lote,
+                        fechaVencimiento: documento.fechaVencimiento,
+                        
+                    }
+                }
+            };
+            
+            facturacionClientesService.eliminarProductoTemporalFacturaConsumo(obj,function(data){
+                
+                if(data.status === 200){
+                    AlertService.mostrarMensaje("success", data.msj);
+                    that.listarDetalleTmpFacturaConsumo();
+                    $scope.onDocumentoSeleccionado();
+                }else{
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+                
+            });
+        };
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de registrar en la tabla de temporal
+         *              los productos del EFC a facturar
+         */
         $scope.guardarTemporalFacturaConsumo = function(documento){
             
-            if(documento.cantidadNueva > documento.cantidadDespachada){
+            
+           
+           /* var cantidadActual = parseInt(parseInt(documento.cantidadNueva) + parseInt(documento.cantidadFacturada));
+            console.log("documento.cantidadDespachada ", documento.cantidadDespachada);
+            console.log("documento.cantidadNueva ", documento.cantidadNueva);
+            console.log("documento.cantidadFacturada ", documento.cantidadFacturada);
+            console.log("cantidadActual ", cantidadActual);
+            if( cantidadActual > documento.cantidadDespachada){
                 AlertService.mostrarMensaje("warning", "La cantidad nueva no debe ser mayor a la cantidad a despachar");
                 return;
-            }
+            }*/
             var obj = {
                 session: $scope.session,
                 data: {
@@ -115,6 +194,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 
                 if(data.status === 200){
                     AlertService.mostrarMensaje("success", data.msj);
+                    that.listarDetalleTmpFacturaConsumo();
+                    $scope.onDocumentoSeleccionado();
                 }else{
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
@@ -155,6 +236,39 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             $state.go("GuardarFacturaConsumo");
         };
         
+        that.listarDetalleTmpFacturaConsumo = function(){
+            $scope.root.detalleDocumentoTmp = [];
+            var obj = {
+                session: $scope.session,
+                data: {
+                    facturas_consumo: {
+                        numero_documento: $scope.root.documento.get_numero(),
+                        prefijo_documento: $scope.root.documento.get_prefijo(),
+                        empresa_id:$scope.root.documento.get_empresa(),
+                        tipoTerceroId: $scope.root.cliente.getTipoId(),
+                        terceroId:$scope.root.cliente.getId()
+                    }
+                }
+            };
+            facturacionClientesService.consultarDetalleTemporalFacturaConsumo(obj, function(data){
+                
+                if(data.status === 200){
+  
+                    $scope.root.detalleDocumentoTmp.push(facturacionClientesService.renderDetalleTmpFacturaConsumo(data.obj.procesar_factura_cosmitet));
+                    
+                }else{
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+                    
+            });
+        };
+        
+        /**
+         * +Descripcion Metodo encargado de listar el detalle del documento que
+         *              se va a almacenar en temporal
+         * @author Eduar Garcia
+         * 
+         */
         $scope.onDocumentoSeleccionado = function(){
             console.log("root >>> ", $scope.root.documento);
             
@@ -164,7 +278,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     facturas_consumo: {
                         numero_documento: $scope.root.documento.get_numero(),
                         prefijo_documento: $scope.root.documento.get_prefijo(),
-                        empresa_id:$scope.root.documento.get_empresa()
+                        empresa_id:$scope.root.documento.get_empresa(),
+                        tipoTerceroId: $scope.root.cliente.getTipoId(),
+                        terceroId:$scope.root.cliente.getId()
                     }
                 }
             };
@@ -172,6 +288,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             facturacionClientesService.obtenerDetallePorFacturar(obj,function(respuesta){
                 if(respuesta.status === 200){
                     $scope.root.documento.vaciarDetalle();
+                    that.listarDetalleTmpFacturaConsumo();
                     var _documentos = respuesta.obj.detalle;
                     for(var i in _documentos){
                         var _documento = _documentos[i];
@@ -191,6 +308,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         
         
         $scope.listarDocumentos = function(busqueda){
+            
+            
             if(busqueda.length < 3){
                 return;
             }
@@ -226,6 +345,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             });
                 
         };
+        
         
         /**
         * @author Eduar Garcia

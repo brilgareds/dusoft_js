@@ -2,9 +2,9 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('facturacionClientesService',
-            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho","VendedorDespacho","PedidoDespacho","EmpresaDespacho",
+            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho","VendedorDespacho","PedidoDespacho","EmpresaDespacho","DocumentoDetalleConsumo",
 
-                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho,PedidoDespacho,EmpresaDespacho) {
+                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho,PedidoDespacho,EmpresaDespacho,DocumentoDetalleConsumo) {
 
                     var self = this;
  
@@ -458,6 +458,26 @@ define(["angular", "js/services"], function (angular, services) {
                         return facturaProceso;
                     };
                     
+                    self.renderDetalleTmpFacturaConsumo = function (datos) {      
+                      
+                        var detalleFacturaTmp = [];
+                        for (var i in datos) {
+                            
+                            var _documento = DocumentoDetalleConsumo.get(datos[i].codigo_producto, 
+                            datos[i].cantidad_despachada, 
+                            datos[i].lote, 
+                            datos[i].fecha_vencimiento);
+                            
+                            _documento.setValorUnitario(datos[i].valor_unitario);                          
+                            _documento.setPorcIva(datos[i].porc_iva);                          
+                            _documento.setId(datos[i].id_factura_xconsumo);                          
+                            
+                           
+                            detalleFacturaTmp.push(_documento);
+                        }
+                        return detalleFacturaTmp;
+                    };
+                    
                    /**
                      * @author Eduar Garcia
                      * +Descripcion Permite traer el detalle del documento para facturar por consumo
@@ -473,11 +493,35 @@ define(["angular", "js/services"], function (angular, services) {
                    /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
-                     * +Descripcion Metodo encargado del Invicar el path para generar las facturas
+                     * +Descripcion Metodo encargado del Invocar el path para generar las facturas
                      *              agrupadas
                      */
                     self.generarTemporalFacturaConsumo = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_TMP_FACTURA_CONSUMO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invocar el path 
+                     *              para eliminar las facturas agrupadas
+                     *              
+                     */
+                    self.eliminarProductoTemporalFacturaConsumo = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.ELIMINAR_PRODUCTO_TEMPORAL_FACTURA_CONSUMO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invocar el path para consultar el detalle del temporal de facturas de consumo
+                     */
+                    self.consultarDetalleTemporalFacturaConsumo = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.CONSULTAR_DETALLE_TMP_FACTURA_CONSUMO, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

@@ -999,8 +999,18 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         return;
     }
     
-    if (!args.facturas_consumo.documentos) {
-        res.send(G.utils.r(req.url, 'Se requiere los documentos', 404, {procesar_factura_cosmitet: []}));
+    if (!args.facturas_consumo.tipoPago) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    
+    if (!args.facturas_consumo.observacion) {
+        res.send(G.utils.r(req.url, 'Se requiera observacion', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    
+    if (!args.facturas_consumo.fechaCorte) {
+        res.send(G.utils.r(req.url, 'Se requiera la fecha del corte de facturacion', 404, {procesar_factura_cosmitet: []}));
         return;
     }
     var documentoFacturacion;
@@ -1018,7 +1028,9 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         direccion_ip: '',
         pedidos: args.facturas_consumo.documentos,
         documentos: args.facturas_consumo.documentoDetalle,
-        id_factura_xconsumo:0
+        id_factura_xconsumo:0,
+        observacion: args.facturas_consumo.observacion,
+        fechaCorte: args.facturas_consumo.fechaCorte
     };
     
     

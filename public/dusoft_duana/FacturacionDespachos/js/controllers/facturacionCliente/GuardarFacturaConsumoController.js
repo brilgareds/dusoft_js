@@ -13,7 +13,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             TerceroDespacho, FacturaConsumo, FacturaDetalleConsumo, DocumentoDetalleConsumo) {
  
         var that = this;
-        
+ 
         /*
          * Inicializacion de variables
          * @param {type} empresa
@@ -25,8 +25,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
             var fecha_actual = new Date();
             $scope.root = {
-                fechaInicialPedidosCosmitet: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
-                fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),            
+                fecha_corte: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"), 
+                observacion: '',
                 opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
                 clientes:[],
                 cliente:null,
@@ -74,9 +74,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     ng-validate-events="{{ habilitar_seleccion_producto() }}" \n\
                     ng-click="guardarTemporalFacturaConsumo(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                     </div>'}
-                /*{field: 'cantidadAFacturar',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a facturar', 
-                    cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},*/
-
+               
             ]
         };
         
@@ -98,6 +96,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         tipoIdTercero: $scope.root.cliente.tipo_id_tercero,
                         terceroId: $scope.root.cliente.id,
                         documentoId:'1',
+                        observacion: $scope.root.observacion,
+                        fechaCorte: $filter('date')($scope.root.fecha_corte, "yyyy-MM-dd") + " 00:00:00",
                         estado:1,
                         tipoPago: $scope.tipoPagoFacturaConsumo,
                         documentos: {
@@ -124,15 +124,16 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         * @author Eduar Garcia
         * @fecha 11/07/2016
         * +Descripcion Funcion que permitira desplegar el popup datePicker
-        *               de la fecha inicio
+        *               de la fecha corte
         * @param {type} $event
         */   
-        $scope.abrir_fecha_inicial = function($event) {
+       
+        $scope.abrir_fecha_corte = function($event) {
 
            $event.preventDefault();
            $event.stopPropagation();
-           $scope.root.datepicker_fecha_inicial = true;
-           $scope.root.datepicker_fecha_final = false;
+           $scope.datepicker_fecha_corte = true;
+          
 
         };
        

@@ -1234,6 +1234,81 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(pa
 };
 
 /**
+ * +Descripcion Metodo encargado de consultar el detalle del temporal de la factura de
+ *              consumo
+ * @author Cristian Ardila
+ * @fecha 2017-15-05 YYYY-DD-MM
+ */
+FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
+    
+    var campos = [
+        G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
+        "b.tipo_id_vendedor",
+        "b.vendedor_id",
+        //"b.pedido_cliente_id",
+        "b.empresa_id",
+        "b.prefijo",
+        "b.numero",
+        "b.observacion",
+        "b.codigo_producto",
+        G.knex.raw("to_char(b.fecha_vencimiento, 'yyyy-mm-dd') as fecha_vencimiento"),
+        "b.lote",
+        "b.porc_iva",
+        "b.valor_unitario",
+        "a.id_factura_xconsumo"
+        //"b.cantidad_devuelta",
+        
+    ];
+    var query = G.knex.select(campos)
+        .from('inv_facturas_xconsumo_tmp as a')
+        .innerJoin('inv_facturas_xconsumo_tmp_d as b', function(){
+            this.on("a.id_factura_xconsumo", "b.id_factura_xconsumo")
+        })
+        .where(function(){
+            this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
+            .andWhere("a.tercero_id", obj.terceroId)
+            .andWhere("b.prefijo", obj.prefijo)
+            .andWhere("b.numero", obj.numero)
+            .andWhere("b.empresa_id", obj.empresaId)
+            .andWhere("a.sw_facturacion",0)
+            if(obj.estado === 1){
+                this.andWhere("b.codigo_producto", obj.codigo_producto)
+                .andWhere("b.lote",obj.lote)
+            }
+        })
+        .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.empresa_id",
+        "b.prefijo", "b.numero", "b.observacion",
+        "b.codigo_producto","b.fecha_vencimiento","b.lote", "b.porc_iva","b.valor_unitario",
+        "a.id_factura_xconsumo")
+        
+    query.then(function(resultado){            
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
+        callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
+    }); 
+};
+
+
+/*
+ * @autor : Cristian Ardila
+ * Descripcion : SQL encargado de eliminar los productos que estan en temporal
+ * @fecha: 08/06/2015 2:43 pm 
+ */
+FacturacionClientesModel.prototype.eliminarProductoTemporalFacturaConsumo = function(obj,callback) {
+    
+   var query = G.knex('inv_facturas_xconsumo_tmp_d')
+        .where(obj)
+        .del();    
+      
+    query.then(function(resultado){                
+        callback(false, resultado);
+   }).catch(function(err){
+        console.log("err (/catch) [eliminarProductoTemporalFacturaConsumo]: ", err);        
+        callback({err:err, msj: "Error al eliminar los temporales"});   
+    });  
+};
+/**
  * +Descripcion Metodo encargado de registrar la cabecera de la factura temporal
  *              de consumo
  * @author Cristian Ardila

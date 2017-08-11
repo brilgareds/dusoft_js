@@ -3,7 +3,7 @@ define(["angular", "js/models"], function(angular, models) {
     models.factory('DocumentoDetalle', function() {
 
         function DocumentoDetalle(producto, cantidadDespachada, lote, fechaVencimiento) {
-
+            this.id = 0;
             this.producto = producto;
             this.cantidadDespachada = cantidadDespachada || 0;
             this.lote = lote || 0;
@@ -12,6 +12,15 @@ define(["angular", "js/models"], function(angular, models) {
             this.valorUnitario = 0;
             this.porcIva = 0;
             this.cantidadTmpDespachada = 0;
+        };
+        
+        DocumentoDetalle.prototype.setId = function(id) {
+            this.id = id;
+            return this;
+        };
+        
+        DocumentoDetalle.prototype.getId = function() {
+            return this.id;
         };
         
         DocumentoDetalle.prototype.setProducto = function(producto) {

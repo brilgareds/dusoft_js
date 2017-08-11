@@ -753,11 +753,22 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
         "a.lote",
         G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento"),
-        G.knex.raw("round(sum(a.cantidad)) as cantidad_despachada")
+        G.knex.raw("round(sum(a.cantidad)) as cantidad_despachada"),
+        "a.valor_unitario",
+        "c.porc_iva",
+        G.knex.raw("coalesce((SELECT sum(cantidad_despachada)\
+        FROM inv_facturas_xconsumo_tmp_d as tmp\
+        WHERE tmp.codigo_producto = a.codigo_producto AND tmp.lote = a.lote\
+        AND tmp.empresa_id = '" + obj.empresa_id + "'\
+        AND tmp.prefijo = '"+obj.prefijo_documento +"'\
+        AND tmp.numero = " + obj.numero_documento + "), 0) as cantidad_tmp_despachada")
+        
     ]).from("inv_bodegas_movimiento_d as a").
         innerJoin("inv_bodegas_movimiento_despachos_clientes as b", function (){
             this.on("a.numero","b.numero").
             on("a.prefijo", "b.prefijo");
+    }).innerJoin("inventarios_productos as c", function (){
+            this.on("c.codigo_producto","a.codigo_producto")
     }).where(function(){
         this.andWhere("a.empresa_id", obj.empresa_id)
             .andWhere("a.prefijo", obj.prefijo_documento)
@@ -767,15 +778,18 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
                 "a.lote", 
                 "a.valor_unitario", 
                 "a.prefijo", 
-                "a.numero");
+                "a.numero",
+                "c.porc_iva","cantidad_tmp_despachada"
+                );
    
     var query2 = G.knex.select(G.knex.raw("a.*"))
         .from(query)
-       
-    query2.then(function(resultado){       
+     
+    query2.then(function(resultado){
+        
         callback(false, resultado);   
     }).catch(function(err) { 
-        console.log("err ", err)
+        console.log("err ", err);
         callback({status:err.status || 500, msj:err.msj || "Ha ocurrido un error"});
     });        
 };
@@ -1205,11 +1219,69 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
  */
 FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(parametros, callback){
     
+    
     var query = G.knex.select()
         .from('inv_facturas_xconsumo_tmp')
         .where(parametros);     
  
     query.then(function(resultado){    
+       
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
+        callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
+    }); 
+};
+
+/**
+ * +Descripcion Metodo encargado de consultar el detalle del temporal de la factura de
+ *              consumo
+ * @author Cristian Ardila
+ * @fecha 2017-15-05 YYYY-DD-MM
+ */
+FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
+    
+    var campos = [
+        G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
+        "b.tipo_id_vendedor",
+        "b.vendedor_id",
+        //"b.pedido_cliente_id",
+        "b.empresa_id",
+        "b.prefijo",
+        "b.numero",
+        "b.observacion",
+        "b.codigo_producto",
+        G.knex.raw("to_char(b.fecha_vencimiento, 'yyyy-mm-dd') as fecha_vencimiento"),
+        "b.lote",
+        "b.porc_iva",
+        "b.valor_unitario",
+        "a.id_factura_xconsumo"
+        //"b.cantidad_devuelta",
+        
+    ];
+    var query = G.knex.select(campos)
+        .from('inv_facturas_xconsumo_tmp as a')
+        .innerJoin('inv_facturas_xconsumo_tmp_d as b', function(){
+            this.on("a.id_factura_xconsumo", "b.id_factura_xconsumo")
+        })
+        .where(function(){
+            this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
+            .andWhere("a.tercero_id", obj.terceroId)
+            .andWhere("b.prefijo", obj.prefijo)
+            .andWhere("b.numero", obj.numero)
+            .andWhere("b.empresa_id", obj.empresaId)
+            .andWhere("a.sw_facturacion",0)
+            if(obj.estado === 1){
+                this.andWhere("b.codigo_producto", obj.codigo_producto)
+                .andWhere("b.lote",obj.lote)
+            }
+        })
+        .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.empresa_id",
+        "b.prefijo", "b.numero", "b.observacion",
+        "b.codigo_producto","b.fecha_vencimiento","b.lote", "b.porc_iva","b.valor_unitario",
+        "a.id_factura_xconsumo")
+        
+    query.then(function(resultado){            
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
@@ -1218,21 +1290,38 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(pa
 };
 
 
+/*
+ * @autor : Cristian Ardila
+ * Descripcion : SQL encargado de eliminar los productos que estan en temporal
+ * @fecha: 08/06/2015 2:43 pm 
+ */
+FacturacionClientesModel.prototype.eliminarProductoTemporalFacturaConsumo = function(obj,callback) {
+    
+   var query = G.knex('inv_facturas_xconsumo_tmp_d')
+        .where(obj)
+        .del();    
+      
+    query.then(function(resultado){                
+        callback(false, resultado);
+   }).catch(function(err){
+        console.log("err (/catch) [eliminarProductoTemporalFacturaConsumo]: ", err);        
+        callback({err:err, msj: "Error al eliminar los temporales"});   
+    });  
+};
+/**
+ * +Descripcion Metodo encargado de registrar la cabecera de la factura temporal
+ *              de consumo
+ * @author Cristian Ardila
+ * @fecha 2017-08-09 YYYY-MM-DD
+ */
 FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callback){
              
-              
-    console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
-    console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
-    console.log("*******FacturacionClientesModel.prototype.insertarFacturaConsumo*************");
-    
     var parametros = {empresa_id: obj.parametros.documento_facturacion[0].empresa_id,
         tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
         tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
-        //factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
-        //prefijo: obj.parametros.documento_facturacion[0].id,
-        //documento_id: obj.parametros.documento_facturacion[0].documento_id,
         usuario_id: obj.usuario,
-        observaciones: obj.parametros.consultar_tercero_contrato[0].condiciones_cliente,
+        observaciones: obj.parametros.consultar_tercero_contrato[0].condiciones_cliente + " - " + obj.parametros.parametros.observacion,
+        fecha_corte: obj.parametros.parametros.fechaCorte,
         porcentaje_rtf: obj.porcentaje_rtf,
         porcentaje_ica: obj.porcentaje_ica,
         porcentaje_reteiva: obj.porcentaje_reteiva,
@@ -1252,6 +1341,33 @@ FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callba
         callback({err:err, msj: "Error al guardar la factura agrupada]"});   
     }); 
 };
+
+/**
+ * +Descripcion Metodo encargado de registrar la cabecera de la factura temporal
+ *              de consumo
+ * @author Cristian Ardila
+ * @fecha 2017-08-09 YYYY-MM-DD
+ */
+FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo = function(parametros, callback){
+    
+    console.log("************FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo*****************");
+    console.log("************FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo*****************");
+    console.log("************FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo*****************");
+    console.log("************FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo*****************");   
+    console.log("parametros [insertarDetalleFacturaConsumo]:: ", parametros);
+    
+    var query = G.knex('inv_facturas_xconsumo_tmp_d').insert(parametros);     
+     
+    query.then(function(resultado){      
+        console.log("resultado [insertarFacturaConsumo]::>>  ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+        callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+    }); 
+    
+};
+
 /**
  * +Descripcion Metodo encargado de generar las facturas agrupadas 
  *              mediante la transaccion la cual ejecuta varios querys
@@ -1259,8 +1375,7 @@ FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callba
  * @param {type} callback
  * @returns {undefined}
  */
-FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj, callback)
-{   
+FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj, callback){   
     console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
     console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
     console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");
@@ -1290,11 +1405,12 @@ FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj,
 
     }).then(function(resultado){         
 
-    }).fail(function(err){
-       
-        console.log("err (/fail) [generarTemporalFacturaConsumo]: ", err);
-
-    }).done(); 
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+        callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+    }); 
 }
 
 var parametrosActualizarEstadoFactura = [];

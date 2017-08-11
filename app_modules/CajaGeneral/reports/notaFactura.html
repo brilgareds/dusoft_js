@@ -62,39 +62,41 @@
         </style>
     </head>
     <body>
-	<div class="box">
-                    
-        </div>
-	<table class="table table-bordered" border="0" align="center" width='100%' height="20"  style="font-size: 10px; line-height: 1;"> 
+	<table class="table table-bordered" border="0" align="center" width='80%' style="font-size: 10px; line-height: 1; height:50px;"> 
 	    <tr>
-		<td width='50%' height="20" align='center' >
-		    <img src="{{:serverUrl}}images/logocliente.png" width="300" height="80" /> 
+		<td width='50%' align='center' >
+		    <img src="{{:serverUrl}}images/logocliente.png" width="280" height="50" /> 
 		</td>
-		<td width='50%' height="20" align='center' >
-		    <table border='0' width='100%' style="font-size: 12px; line-height: 0;">
-			<tr>
-			    <td height="10%" colspan='3' align='center' >
-				<h1>NOTA {{:parametros.nombreNota}}</h1>
+		<td width='50%'  align='center' >
+		    <table border='0' width='100%' style="font-size: 12px; line-height: 0; height:10px;">
+			<tr >
+			    <td colspan='3' align='center' height='10px'>
+				<b>NOTA {{:parametros.nombreNota}}</b>
 			    </td>
 			</tr>
-			<tr height="10%">
-			    <td height="10%" align='right' width='35%' >				
+			<tr >
+			    <td colspan='3' align='center' height='10px'>
+				<b></b>
 			    </td>
-			    <td height="10%" align='left' width='25%' >
-				<h4>NOTA No.</h4>				
+			</tr>
+			<tr>
+			    <td align='right' width='30%' height='10px' >				
 			    </td>
-			    <td  height="10%" align='left' width='40%' >
-				<h4>{{:parametros.prefijoNota}} - {{:parametros.numeroNota}}</h4>				
+			    <td  align='left' width='30%' height='10px' >
+				<b>NOTA No.</b>				
+			    </td>
+			    <td align='left' width='40%' >
+				<b>{{:parametros.prefijoNota}} - {{:parametros.numeroNota}}	</b>			
 			    </td>
 			</tr>
 			<tr>
 			    <td  align='right'  >			
 			    </td>
-			    <td  align='left'  >
-				<h4>FACTURA No.</h4>				
+			    <td  align='left' height='10px' >
+				<b>FACTURA No.	</b>			
 			    </td>
-			    <td  align='left'  >
-				<h4>{{:parametros.prefijo}} - {{:parametros.facturaFiscal}}</h4>
+			    <td  align='left' height='10px' >
+				<b>{{:parametros.prefijo}} - {{:parametros.facturaFiscal}}</b>
 			    </td>
 			</tr>
 		    </table>
@@ -103,8 +105,8 @@
 	</table>
       <table class="table table-bordered" align="center" width='100%'  style="font-size: 10px; line-height: 1;"> 
 	    <tr>
-		<td colspan='2' ><h2> {{:empresa.razon_social}} </h2></td>
-		<td colspan='2'><h2>{{:empresa.tipo_id_tercero}} {{:empresa.id}}</h2> </td>
+		<td colspan='2' ><h3> {{:empresa.razon_social}} </h3></td>
+		<td colspan='2'><h3>{{:empresa.tipo_id_tercero}} {{:empresa.id}}</h3> </td>
 	    </tr>
 	    <tr>
 		<td>Dirección: </td>
@@ -148,7 +150,7 @@
 	    
 	</table>
 	<hr noshade="noshade"  />
-	<br />
+	
 	<table class="table table-striped" width='100%' style="font-size: 10px; line-height: 1;" border='0' align="center" >
 	    <tr>
 		<td  align="right" width='90%'><b>SUBTOTAL</b></td>
@@ -171,7 +173,6 @@
 		<td align="right"><b>{{:~formatMoney(impuesto.totalGeneral)}}</b></td>
 	    </tr>
 	</table>
-	<br />
 	<br />
 	<table class="table table-striped" width='100%' style="font-size: 10px; border-collapse: collapse; border: 1px solid black;"  align="center" >
 	    <tr>

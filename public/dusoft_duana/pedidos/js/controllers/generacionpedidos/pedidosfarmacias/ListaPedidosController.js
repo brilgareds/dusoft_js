@@ -416,8 +416,18 @@ define(["angular",
             });
             
             localStorageService.remove("pedidoFarmacia");
-            self.buscarPedidos();
-
+            
+            var empresaUsuario = Usuario.getUsuarioActual().getEmpresa();
+            
+            if(!empresaUsuario){
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para generar pedidos.", tipo:"warning"});
+            } else if(!empresaUsuario.getCentroUtilidadSeleccionado()){
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para generar pedidos.", tipo:"warning"});
+            } else if(!empresaUsuario.getCentroUtilidadSeleccionado().getBodegaSeleccionada()){
+                $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para generar pedidos", tipo:"warning"});
+            } else {
+                self.buscarPedidos();
+            }
 
         }]);
 

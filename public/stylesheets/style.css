@@ -953,3 +953,54 @@ input[type=number] {
 .contenedorDropdown{
     width: 100%;
 }
+
+.bodegaTitulo{
+    text-decoration: underline;
+}
+
+
+.text-left-responsive-center, .text-right-responsive-center{
+    text-align: center;
+}
+
+
+/* Portrait phones and smaller */
+@media (max-width: 767px) {
+    nav.navbar-fixed-top{
+        height:auto;
+    }
+    
+    div.contenedorEmpresaUsuario{
+        position:inherit;
+        margin:0 auto;
+        float:left;
+        margin-bottom: 10px;
+    }
+}
+
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .text-left-responsive-center, .text-right-responsive-center {
+        text-align: center;
+    }
+
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .text-left-responsive-center, .text-right-responsive-center{
+        text-align: center;
+    }
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .text-left-responsive-center {
+        text-align: left;
+    }
+    
+    .text-right-responsive-center{
+        text-align: right;
+    }
+}

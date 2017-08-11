@@ -7,15 +7,18 @@
 
             <div class="panel panel-default marginBottom0 paddingBottomZero"> <!--Div Panel Principal Superior-->
 
-                <div class="panel-heading col-sm-12 col-md-12 col-lg-12">
+                <div class="panel-heading clearfix">
 
-                    <div class="col-sm-6 col-md-6 col-lg-6">
-                        <h3 class="h4MarginTopBottom">Información General</h3></br>
+                    <div class="col-sm-4">
+                        <h3 class="text-left-responsive-center"><strong>Información General</strong></h3>
                     </div>
+                    <h3 class="text-center col-sm-4"  ><u><strong ng-bind="root.empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()"></u></strong></h3>
+                    <div class="col-sm-4">                        
+                         <h3 class="text-right-responsive-center">Pedido N°: <span ng-bind="root.pedido.get_numero_pedido()"></span></h3>
 
-                    <div class="col-sm-6 col-md-6 col-lg-6">
-                        <h3 class="h4MarginTopBottom">Pedido N°: <span ng-bind="root.pedido.get_numero_pedido()"></span></h3>
                     </div>
+                      
+                    
                 </div>
   
                 <div class="panel-body marginBottom0 paddingBottomZero marginRightZero"> <!--Div Panel Body-->

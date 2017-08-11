@@ -28,6 +28,7 @@ define(["angular", "js/controllers",
             $scope.root = {};
             $scope.root.empresasDestino = angular.copy(Usuario.getUsuarioActual().getEmpresasFarmacias());
             $scope.root.empresasOrigen = [angular.copy(Usuario.getUsuarioActual().getEmpresa())];
+            $scope.root.empresa = Usuario.getUsuarioActual().getEmpresa();
             //handler slide
             $scope.root.mostrarSeleccionProductoCompleto;
                         

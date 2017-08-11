@@ -1176,16 +1176,17 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         estado: 1
     };
     
-   console.log("args.facturas_consumo.documentos ", args.facturas_consumo.documentoDetalle)
+    //console.log("args.facturas_consumo.documentos ", args.facturas_consumo.documentoDetalle)
     var parametroBodegaDocId = {variable:"documento_factura_"+args.facturas_consumo.empresaId, tipoVariable:1, modulo:'FacturasDespacho'};
+    var totalValorProductos = 0;
+    var subTotalValorProductos = 0;
+    var totalValorIva = 0;
     
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametrosDetalleTmp).then(function(resultado){
         
         if(resultado.length >0){
             var cantidadRestante = parseInt(args.facturas_consumo.documentoDetalle.cantidadDespachada) - parseInt(resultado[0].cantidad_despachada);
-            console.log("cantidadNueva = ", args.facturas_consumo.documentoDetalle.cantidadNueva);
-            console.log("deespahcada = ", resultado[0].cantidad_despachada);
-            console.log("cantidadRestante ", cantidadRestante);
+          
             if(args.facturas_consumo.documentoDetalle.cantidadNueva > cantidadRestante){
               
                 throw {msj:'La nueva cantidad no debe superar a la cantidad a facturar', status: 404}; 
@@ -1202,13 +1203,9 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
                 return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId)
             }
         }
-        console.log("resultado [consultarDetalleTemporalFacturaConsumo]] ", resultado);
-         
-        
         
     }).then(function(resultado){
-         
-        //console.log("resultado [estadoParametrizacionReformular]:: ", resultado)
+          
         if(resultado.length >0){
             parametros.documentoId = resultado[0].valor;
             return G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros)
@@ -1312,17 +1309,68 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             
         
     }).then(function(resultado){
-        console.log("resultado [[insertarDetalleFacturaConsumo]]:: ", resultado)
-        res.send(G.utils.r(req.url, 'Se registra el producto satisfactoriamente', 200, {facturas_consumo:resultado}));
+        
+        console.log("resultado [insertarDetalleFacturaConsumo]:: ", resultado);
+        if(resultado.rowCount > 0){
+            parametrosDetalleTmp.estado = 0;
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametrosDetalleTmp);
+        }else{
+            throw {msj:'No se registro ninguna unidad', status: 404}; 
+            return;
+        }
+        
+    }).then(function(resultado){
+        
+        console.log("resultado [consultarDetalleTemporalFacturaConsumo]: ", resultado);
+        if(resultado.length > 0){    
+            
+            resultado.forEach(function(row){
+                /*console.log("---------------------------------------");
+                console.log("producto ", row.codigo_producto)
+                console.log("valor_unitario ", parseFloat(row.valor_unitario));*/
+                subTotalValorProductos += parseFloat(row.cantidad_despachada*(parseFloat(row.valor_unitario)))
+                totalValorIva += parseFloat((parseFloat(parseFloat(row.valor_unitario))*parseFloat(row.porc_iva))/100);
+                //console.log("VALOR TOTAL ", parseFloat(row.cantidad_despachada*(parseFloat(parseFloat(row.valor_unitario)) + parseFloat((parseFloat(parseFloat(row.valor_unitario))*parseFloat(row.porc_iva))/100))).toFixed(2));
+                totalValorProductos += parseFloat(parseFloat(row.cantidad_despachada*(parseFloat(parseFloat(row.valor_unitario)) + parseFloat((parseFloat(parseFloat(row.valor_unitario))*parseFloat(row.porc_iva))/100))).toFixed(2));
+                //console.log("---------------------------------------");
+            });
+            
+            var parametrosTotalValor = {
+                id_factura_xconsumo:parametros.id_factura_xconsumo, 
+                tipo_id_vendedor: 'NIT', 
+                vendedor_id: '830080649', 
+                valor_sub_total: subTotalValorProductos.toFixed(2),
+                valor_total: totalValorProductos.toFixed(2),
+                total_valor_iva: totalValorIva
+            }
+            console.log("parametrosTotalValor ", parametrosTotalValor);
+            return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosTotalValor); 
+            
+        }else{
+            
+            throw {msj:'Consulta sin resultados Detalleee', status: 404}; 
+            return;
+        }
+     
+    }).then(function(resultado){
+        
+        if(resultado > 0){
+            res.send(G.utils.r(req.url, 'Se registra el temporal satisfactoriamente', 200, {facturas_consumo: []}));
+            return;
+        }else{
+            throw {msj:'No se registro el producto en temporal', status: 404}; 
+            return;
+        }
+       
         
     }).fail(function(err){  
-        logger.error("-----------------------------------");
+        /*logger.error("-----------------------------------");
         logger.error({"metodo":"FacturacionClientes.prototype.generarTemporalFacturaConsumo",
             "usuario_id": usuario,
             "parametros: ": parametros,
             "parametroBodegaDocId": parametroBodegaDocId,
             "resultado: ":err});
-        logger.error("-----------------------------------");
+        logger.error("-----------------------------------");*/
         if(!err.status){
             err = {};
             err.status = 500;

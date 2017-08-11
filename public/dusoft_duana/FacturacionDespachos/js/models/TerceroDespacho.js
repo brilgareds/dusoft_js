@@ -10,9 +10,19 @@ define(["angular", "js/models", "includes/classes/Tercero"], function (angular, 
                 this.tipoBloqueoId;
                 this.pedidos = [];
                 this.ubicacion;
+                this.contratoClienteId;
             }
 
             TerceroDespacho.prototype = Object.create(Tercero.getClass().prototype);
+            
+            TerceroDespacho.prototype.setContratoClienteId = function (contratoClienteId) {   
+                this.contratoClienteId = contratoClienteId;
+            };
+
+            TerceroDespacho.prototype.getContratoClienteId = function () {
+                return this.contratoClienteId;
+            };
+
             
             TerceroDespacho.prototype.setUbicacion = function (ubicacion) {   
                 this.ubicacion = ubicacion;

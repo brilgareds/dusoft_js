@@ -224,6 +224,8 @@ define(["angular", "js/services"], function (angular, services) {
                                 _terceroDespacho.setMunicipio(tipoDocumento[i].municipio); 
                                 _terceroDespacho.setDepartamento(tipoDocumento[i].departamento); 
                                 _terceroDespacho.setPais(tipoDocumento[i].pais); 
+                                _terceroDespacho.setContratoClienteId(tipoDocumento[i].contrato_cliente_id); 
+                                
                           
                             tercerosDespacho.push(_terceroDespacho);
                         }

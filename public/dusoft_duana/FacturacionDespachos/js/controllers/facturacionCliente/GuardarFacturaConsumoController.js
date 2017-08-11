@@ -280,7 +280,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         prefijo_documento: $scope.root.documento.get_prefijo(),
                         empresa_id:$scope.root.documento.get_empresa(),
                         tipoTerceroId: $scope.root.cliente.getTipoId(),
-                        terceroId:$scope.root.cliente.getId()
+                        terceroId:$scope.root.cliente.getId(),
+                        contratoClienteId: $scope.root.cliente.contratoClienteId,
                     }
                 }
             };
@@ -375,9 +376,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             };
                         
             facturacionClientesService.listarClientes(obj ,function(respuesta){
+               
                 if(respuesta.status === 200){
                     $scope.root.clientes = facturacionClientesService.renderTerceroDespacho(respuesta.obj.listar_clientes);
-                    console.log($scope.root.clientes)
+                    
                 }
                 
             });

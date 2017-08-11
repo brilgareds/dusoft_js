@@ -332,7 +332,8 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
         "a.tipo_bloqueo_id",
         "f.departamento",
         "g.pais",
-        "municipio"
+        "municipio",
+        G.knex.raw("COALESCE(cntrtos.contrato_cliente_id,(SELECT contrato_cliente_id FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1')) as contrato_cliente_id")
     ];
 
     var query = G.knex.select(columnas)
@@ -343,6 +344,11 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
         }).leftJoin('inv_tipos_bloqueos as c', function () {
             this.on("a.tipo_bloqueo_id", "c.tipo_bloqueo_id")
 
+        }).leftJoin('vnts_contratos_clientes as cntrtos', function () {
+            this.on("a.tipo_id_tercero", "cntrtos.tipo_id_tercero")
+                .on("a.tercero_id", "cntrtos.tercero_id")
+                .on('cntrtos.empresa_id', "b.empresa_id")
+                 
         }).join('inv_bodegas_movimiento_despachos_clientes as d', function () {
             this.on("a.tipo_id_tercero", "b.tipo_id_tercero")
                 .on("a.tercero_id", "d.tercero_id")
@@ -359,7 +365,7 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
         }).groupBy("a.tipo_id_tercero",
             "a.tercero_id", "a.direccion", "a.telefono",
             "a.email", "a.nombre_tercero", "a.tipo_bloqueo_id",
-            "c.descripcion", "g.pais", "f.departamento", "municipio"
+            "c.descripcion", "g.pais", "f.departamento", "municipio","contrato_cliente_id"
         ).orderBy("a.nombre_tercero")
         .where(function () {
 
@@ -369,11 +375,13 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
             if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
                 this.andWhere(G.knex.raw("a.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
             }
-        }).andWhere('b.empresa_id', obj.empresaId);
+        }).andWhere('b.empresa_id', obj.empresaId)
+          .andWhere("cntrtos.estado",1)
 
     query.limit(G.settings.limit).
         offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
+        console.log("resultado [listarClientes]:", resultado);
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarClientes]:", err);
@@ -754,7 +762,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         "a.lote",
         G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento"),
         G.knex.raw("round(sum(a.cantidad)) as cantidad_despachada"),
-        "a.valor_unitario",
+        G.knex.raw("split_part(coalesce(fc_precio_producto_contrato_cliente('"+obj.contratoClienteId+"', a.codigo_producto, '"+obj.empresa_id+"' ),'0'), '@', 1) as valor_unitario"),
         "c.porc_iva",
         G.knex.raw("coalesce((SELECT sum(cantidad_despachada)\
         FROM inv_facturas_xconsumo_tmp_d as tmp\
@@ -786,7 +794,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         .from(query)
      
     query2.then(function(resultado){
-        
+        console.log("resultado ", resultado);
         callback(false, resultado);   
     }).catch(function(err) { 
         console.log("err ", err);
@@ -1306,6 +1314,28 @@ FacturacionClientesModel.prototype.eliminarProductoTemporalFacturaConsumo = func
    }).catch(function(err){
         console.log("err (/catch) [eliminarProductoTemporalFacturaConsumo]: ", err);        
         callback({err:err, msj: "Error al eliminar los temporales"});   
+    });  
+};
+
+
+/*
+ * @autor : Cristian Ardila
+ * Descripcion : SQL encargado de actualiza el valor total y sub total del temporal de facturacion por consumo
+ * @fecha: 08/11/2015 2:43 pm 
+ */
+FacturacionClientesModel.prototype.actualizarValorTotalTemporalFacturaConsumo = function(obj,callback) {
+    
+   var query = G.knex('inv_facturas_xconsumo_tmp')
+        .where({id_factura_xconsumo: obj.id_factura_xconsumo})
+        .update({valor_total:obj.valor_total,
+                valor_sub_total: obj.valor_sub_total,
+                total_valor_iva: obj.total_valor_iva});    
+      
+    query.then(function(resultado){                
+        callback(false, resultado);
+   }).catch(function(err){
+        console.log("err (/catch) [actualizarValorTotalTemporalFacturaConsumo]: ", err);        
+        callback({err:err, msj: "Error al actualizar el valor total y sub total del temporal de facturacion por consumo"});   
     });  
 };
 /**

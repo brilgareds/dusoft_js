@@ -1304,7 +1304,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             cantidad_devuelta: 0, 
             porc_iva: parametros.documentos.porcIva
         }
-        //console.log("parametros ==?? parametros", parametrosDetalleFactura);
+        
         return G.Q.ninvoke(that.m_facturacion_clientes,'insertarDetalleFacturaConsumo',parametrosDetalleFactura);
             
         
@@ -1325,14 +1325,11 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         if(resultado.length > 0){    
             
             resultado.forEach(function(row){
-                /*console.log("---------------------------------------");
-                console.log("producto ", row.codigo_producto)
-                console.log("valor_unitario ", parseFloat(row.valor_unitario));*/
+                
                 subTotalValorProductos += parseFloat(row.cantidad_despachada*(parseFloat(row.valor_unitario)))
                 totalValorIva += parseFloat((parseFloat(parseFloat(row.valor_unitario))*parseFloat(row.porc_iva))/100);
-                //console.log("VALOR TOTAL ", parseFloat(row.cantidad_despachada*(parseFloat(parseFloat(row.valor_unitario)) + parseFloat((parseFloat(parseFloat(row.valor_unitario))*parseFloat(row.porc_iva))/100))).toFixed(2));
                 totalValorProductos += parseFloat(parseFloat(row.cantidad_despachada*(parseFloat(parseFloat(row.valor_unitario)) + parseFloat((parseFloat(parseFloat(row.valor_unitario))*parseFloat(row.porc_iva))/100))).toFixed(2));
-                //console.log("---------------------------------------");
+                 
             });
             
             var parametrosTotalValor = {
@@ -1341,9 +1338,9 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
                 vendedor_id: '830080649', 
                 valor_sub_total: subTotalValorProductos.toFixed(2),
                 valor_total: totalValorProductos.toFixed(2),
-                total_valor_iva: totalValorIva
+                valor_total_iva: totalValorIva
             }
-            console.log("parametrosTotalValor ", parametrosTotalValor);
+             
             return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosTotalValor); 
             
         }else{

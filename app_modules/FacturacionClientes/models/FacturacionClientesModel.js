@@ -1263,7 +1263,10 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         "b.lote",
         "b.porc_iva",
         "b.valor_unitario",
-        "a.id_factura_xconsumo"
+        "a.id_factura_xconsumo",
+        "a.valor_total",
+        "a.valor_sub_total",
+        "a.valor_total_iva"
         //"b.cantidad_devuelta",
         
     ];
@@ -1287,9 +1290,10 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.empresa_id",
         "b.prefijo", "b.numero", "b.observacion",
         "b.codigo_producto","b.fecha_vencimiento","b.lote", "b.porc_iva","b.valor_unitario",
-        "a.id_factura_xconsumo")
+        "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva")
         
-    query.then(function(resultado){            
+    query.then(function(resultado){  
+        console.log("resultado [consultarDetalleTemporalFacturaConsumo]: ", resultado);    
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
@@ -1329,7 +1333,7 @@ FacturacionClientesModel.prototype.actualizarValorTotalTemporalFacturaConsumo = 
         .where({id_factura_xconsumo: obj.id_factura_xconsumo})
         .update({valor_total:obj.valor_total,
                 valor_sub_total: obj.valor_sub_total,
-                total_valor_iva: obj.total_valor_iva});    
+                valor_total_iva: obj.valor_total_iva});    
       
     query.then(function(resultado){                
         callback(false, resultado);
@@ -1367,7 +1371,7 @@ FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callba
         console.log("resultado [insertarFacturaConsumo]::>>  ", resultado);
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+        console.log("err (/catch) [insertarFacturaConsumo]: ", err);     
         callback({err:err, msj: "Error al guardar la factura agrupada]"});   
     }); 
 };
@@ -1380,19 +1384,13 @@ FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callba
  */
 FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo = function(parametros, callback){
     
-    console.log("************FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo*****************");
-    console.log("************FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo*****************");
-    console.log("************FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo*****************");
-    console.log("************FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo*****************");   
-    console.log("parametros [insertarDetalleFacturaConsumo]:: ", parametros);
-    
     var query = G.knex('inv_facturas_xconsumo_tmp_d').insert(parametros);     
      
     query.then(function(resultado){      
-        console.log("resultado [insertarFacturaConsumo]::>>  ", resultado);
+        
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+        console.log("err (/catch) [insertarDetalleFacturaConsumo]: ", err);     
         callback({err:err, msj: "Error al guardar la factura agrupada]"});   
     }); 
     
@@ -1438,7 +1436,7 @@ FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj,
         callback(false, resultado);
         
     }).catch(function(err){
-        console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+        console.log("err (/catch) [generarTemporalFacturaConsumo]: ", err);     
         callback({err:err, msj: "Error al guardar la factura agrupada]"});   
     }); 
 }

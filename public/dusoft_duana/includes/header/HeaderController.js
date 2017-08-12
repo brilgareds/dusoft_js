@@ -263,7 +263,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     return;
                 }
                 
-                $window.location.reload();
+                self.irAlHome();
                 
             };
             

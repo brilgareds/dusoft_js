@@ -229,6 +229,32 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             $state.go("GuardarFacturaConsumo");
         };
         
+        $scope.generarFacturaXConsumo = function(){
+            
+            var obj = {
+                session: $scope.session,
+                data: {
+                    generar_factura_consumo: {
+                        empresa_id:$scope.root.documento.get_empresa(),
+                        tipoTerceroId: $scope.root.cliente.getTipoId(),
+                        terceroId:$scope.root.cliente.getId(),
+                        contratoClienteId: $scope.root.cliente.contratoClienteId
+                    }
+                }
+            };
+            facturacionClientesService.generarFacturaXConsumo(obj, function(data){
+                
+                if(data.status === 200){
+                     
+                    
+                }else{
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+                    
+            });
+            
+        };
+        
         that.listarDetalleTmpFacturaConsumo = function(){
             $scope.root.detalleDocumentoTmp = [];
             var obj = {
@@ -249,7 +275,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     $scope.root.valorFacturaTemporal.valorTotal = data.obj.procesar_factura_cosmitet[0].valor_total,
                     $scope.root.valorFacturaTemporal.valorSubTotal = data.obj.procesar_factura_cosmitet[0].valor_sub_total,
                     $scope.root.valorFacturaTemporal.valorTotalIva = data.obj.procesar_factura_cosmitet[0].valor_total_iva
-                    console.log("data.obj.procesar_factura_cosmitet ", data.obj.procesar_factura_cosmitet);
+                    
                     $scope.root.detalleDocumentoTmp.push(facturacionClientesService.renderDetalleTmpFacturaConsumo(data.obj.procesar_factura_cosmitet));
                     
                 }else{

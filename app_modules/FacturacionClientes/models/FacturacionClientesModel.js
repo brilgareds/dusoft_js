@@ -1249,6 +1249,10 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(pa
  */
 FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
     
+    console.log("***********FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo**************");
+    console.log("***********FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo**************");
+    console.log("***********FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo**************");
+    
     var campos = [
         G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
         "b.tipo_id_vendedor",
@@ -1270,6 +1274,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         //"b.cantidad_devuelta",
         
     ];
+    console.log("obj ***// ", obj)
     var query = G.knex.select(campos)
         .from('inv_facturas_xconsumo_tmp as a')
         .innerJoin('inv_facturas_xconsumo_tmp_d as b', function(){
@@ -1277,11 +1282,14 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         })
         .where(function(){
             this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
-            .andWhere("a.tercero_id", obj.terceroId)
-            .andWhere("b.prefijo", obj.prefijo)
-            .andWhere("b.numero", obj.numero)
+            .andWhere("a.tercero_id", obj.terceroId)           
             .andWhere("b.empresa_id", obj.empresaId)
             .andWhere("a.sw_facturacion",0)
+            
+            if(obj.estado !== 2){
+                this.andWhere("b.prefijo", obj.prefijo)
+                .andWhere("b.numero", obj.numero)
+            }
             if(obj.estado === 1){
                 this.andWhere("b.codigo_producto", obj.codigo_producto)
                 .andWhere("b.lote",obj.lote)
@@ -1293,7 +1301,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva")
         
     query.then(function(resultado){  
-        console.log("resultado [consultarDetalleTemporalFacturaConsumo]: ", resultado);    
+        //console.log("resultado [consultarDetalleTemporalFacturaConsumo]: ", resultado);    
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     

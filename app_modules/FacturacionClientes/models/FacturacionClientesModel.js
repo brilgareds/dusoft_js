@@ -769,7 +769,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         WHERE tmp.codigo_producto = a.codigo_producto AND tmp.lote = a.lote\
         AND tmp.empresa_id = '" + obj.empresa_id + "'\
         AND tmp.prefijo = '"+obj.prefijo_documento +"'\
-        AND tmp.numero = " + obj.numero_documento + "), 0) as cantidad_tmp_despachada")
+        AND tmp.factura_fiscal = " + obj.numero_documento + "), 0) as cantidad_tmp_despachada")
         
     ]).from("inv_bodegas_movimiento_d as a").
         innerJoin("inv_bodegas_movimiento_despachos_clientes as b", function (){
@@ -961,40 +961,50 @@ FacturacionClientesModel.prototype.insertarPcFactura = function(obj,transaccion,
         callback({err:err, msj: "Error al guardar la factura agrupada]"});   
     });
 };
+
 /**
  * +Descripcion Metodo encargado de registrar la cabecera de la factura
  *              agrupada
  * @author Cristian Manuel Ardila Troches
  * @fecha  2017-05-08
  */
-FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(obj,transaccion, callback){
-     
-    var parametros = {empresa_id: obj.parametros.documento_facturacion[0].empresa_id,
-        tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
-        tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
-        factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
-        prefijo: obj.parametros.documento_facturacion[0].id,
-        documento_id: obj.parametros.documento_facturacion[0].documento_id,
-        usuario_id: obj.usuario,
-        observaciones: obj.parametros.consultar_tercero_contrato[0].condiciones_cliente,
-        porcentaje_rtf: obj.porcentaje_rtf,
-        porcentaje_ica: obj.porcentaje_ica,
-        porcentaje_reteiva: obj.porcentaje_reteiva,
-        porcentaje_cree: obj.porcentaje_cree,
-        tipo_pago_id: obj.tipoPago,
-        facturacion_cosmitet: obj.facturacion_cosmitet
-    };
-         
+FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(estado,obj,transaccion, callback){
+    var parametros;
+    
+    if(estado === 0){
+         parametros = {empresa_id: obj.parametros.documento_facturacion[0].empresa_id,
+            tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
+            tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
+            factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
+            prefijo: obj.parametros.documento_facturacion[0].id,
+            documento_id: obj.parametros.documento_facturacion[0].documento_id,
+            usuario_id: obj.usuario,
+            observaciones: obj.parametros.consultar_tercero_contrato[0].condiciones_cliente,
+            porcentaje_rtf: obj.porcentaje_rtf,
+            porcentaje_ica: obj.porcentaje_ica,
+            porcentaje_reteiva: obj.porcentaje_reteiva,
+            porcentaje_cree: obj.porcentaje_cree,
+            tipo_pago_id: obj.tipoPago,
+            facturacion_cosmitet: obj.facturacion_cosmitet
+        };   
+    }
+    
+    if(estado === 1){
+        parametros = obj;
+    }
+    
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
     
-    if(transaccion) query.transacting(transaccion);     
-    query.then(function(resultado){       
+    if(estado === 0){if(transaccion) query.transacting(transaccion); }   
+    query.then(function(resultado){     
+        console.log("parametros [insertarFacturaAgrupada]: ", resultado);
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
         callback({err:err, msj: "Error al guardar la factura agrupada]"});   
     });
 };
+
 
 /**
  * +Descripcion Metodo encargado de registrar la cabecera de la factura
@@ -1131,7 +1141,6 @@ function __insertarFacturaIndividualDetalle(obj,transaccion, callback){
  */
 FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj,tabla,transaccion, callback){
      
-  
     var parametros = {
         item_id: G.knex.raw('DEFAULT'),
         tipo_id_vendedor: obj.tipo_id_vendedor,
@@ -1145,12 +1154,14 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
         valor_unitario: obj.valor_unitario,
         lote:obj.lote,
         fecha_vencimiento:obj.fecha_vencimiento,
-        porc_iva: obj.porc_iva
+        porc_iva: obj.porc_iva,
+        prefijo_documento: obj.prefijo_documento,
+        numeracion_documento: obj.numeracion_documento
     }; 
-       
+    
     var query = G.knex(tabla).insert(parametros);     
      
-    if(transaccion) query.transacting(transaccion);     
+   if(transaccion) query.transacting(transaccion);     
     query.then(function(resultado){
         console.log("resultado [__insertarFacturaAgrupadaDetalle]-->", resultado);
         callback(false, resultado);
@@ -1169,8 +1180,8 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
  */
 FacturacionClientesModel.prototype.actualizarNumeracion = function(obj,transaccion, callback){
     
-    var parametros = {empresa_id:obj.parametros.documento_facturacion[0].empresa_id,
-        documento_id:obj.parametros.documento_facturacion[0].documento_id,
+    var parametros = {empresa_id:obj.empresa_id,
+        documento_id:obj.documento_id,
         tipo_doc_general_id: 'FV01'
     };
     var query = G.knex('documentos').where(parametros).increment('numeracion', '1' );         
@@ -1256,11 +1267,10 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
     var campos = [
         G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
         "b.tipo_id_vendedor",
-        "b.vendedor_id",
-        //"b.pedido_cliente_id",
+        "b.vendedor_id", 
         "b.empresa_id",
         "b.prefijo",
-        "b.numero",
+        "b.factura_fiscal",
         "b.observacion",
         "b.codigo_producto",
         G.knex.raw("to_char(b.fecha_vencimiento, 'yyyy-mm-dd') as fecha_vencimiento"),
@@ -1270,7 +1280,8 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         "a.id_factura_xconsumo",
         "a.valor_total",
         "a.valor_sub_total",
-        "a.valor_total_iva"
+        "a.valor_total_iva",
+        "b.pedido_cliente_id"
         //"b.cantidad_devuelta",
         
     ];
@@ -1288,7 +1299,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
             
             if(obj.estado !== 2){
                 this.andWhere("b.prefijo", obj.prefijo)
-                .andWhere("b.numero", obj.numero)
+                .andWhere("b.factura_fiscal", obj.numero)
             }
             if(obj.estado === 1){
                 this.andWhere("b.codigo_producto", obj.codigo_producto)
@@ -1296,9 +1307,9 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
             }
         })
         .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.empresa_id",
-        "b.prefijo", "b.numero", "b.observacion",
+        "b.prefijo", "b.factura_fiscal", "b.observacion",
         "b.codigo_producto","b.fecha_vencimiento","b.lote", "b.porc_iva","b.valor_unitario",
-        "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva")
+        "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva", "b.pedido_cliente_id")
         
     query.then(function(resultado){  
         //console.log("resultado [consultarDetalleTemporalFacturaConsumo]: ", resultado);    
@@ -1482,7 +1493,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
         
     G.knex.transaction(function(transaccion) {  
         
-        G.Q.ninvoke(that,'insertarFacturaAgrupada',
+        G.Q.ninvoke(that,'insertarFacturaAgrupada',0,
         {parametros:obj,
          porcentaje_rtf:porcentajeRtf,
          porcentaje_ica: porcentajeIca,
@@ -1491,7 +1502,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
          usuario: obj.parametros.usuario,
          tipoPago: obj.parametros.tipoPago,
          facturacion_cosmitet:obj.parametros.facturacionCosmitet
-         
+              
         },transaccion).then(function(){           
             
             return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);    
@@ -1532,7 +1543,9 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
                                         valor_unitario: rowDetalle.valor_unitario,
                                         lote:rowDetalle.lote,
                                         fecha_vencimiento: rowDetalle.fecha_vencimiento,
-                                        porcentaje_gravamen: rowDetalle.porcentaje_gravamen
+                                        porcentaje_gravamen: rowDetalle.porcentaje_gravamen,
+                                        prefijo_documento: null,
+                                        numeracion_documento: null
                                     };                                                                
                                     parametrosInsertaFacturaAgrupadaDetalle.push(parametrosFacturasAgrupadas);                            
                                 });
@@ -1552,8 +1565,12 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
             return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,parametrosInsertaFacturaAgrupadaDetalle,"inv_facturas_agrupadas_despacho_d",transaccion);
            
         }).then(function(){
-            
-            return G.Q.ninvoke(that,'actualizarNumeracion',{parametros:obj}, transaccion);
+              
+        
+            return G.Q.ninvoke(that,'actualizarNumeracion',{
+                empresa_id:obj.documento_facturacion[0].empresa_id,
+                documento_id:obj.documento_facturacion[0].documento_id
+                }, transaccion);
             
         }).then(function(){
  
@@ -1562,7 +1579,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
         }).then(function(){            
            transaccion.commit(); 
         }).fail(function(err){
-            logger.error("-----------------------------------");
+            /*logger.error("-----------------------------------");
             logger.error({"metodo":"FacturacionClientes.prototype.transaccionGenerarFacturasAgrupadas",
             "usuario_id": obj.parametros.usuario,
             "documento_facturacion: ": obj.documento_facturacion,
@@ -1578,7 +1595,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
                 "porcentajeReteiva":porcentajeReteiva
             },
             "resultado: ":err});
-            logger.error("-----------------------------------");
+            logger.error("-----------------------------------");*/
             console.log("err (/fail) [GenerarFacturasAgrupadas]: ", err);
             transaccion.rollback(err);
         }).done();
@@ -1860,7 +1877,10 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
              
         }).then(function(){
             
-            return G.Q.ninvoke(that,'actualizarNumeracion',{parametros:obj}, transaccion);
+            return G.Q.ninvoke(that,'actualizarNumeracion',{
+                empresa_id:obj.documento_facturacion[0].empresa_id,
+                documento_id:obj.documento_facturacion[0].documento_id
+            }, transaccion);
             
         }).then(function(){
            

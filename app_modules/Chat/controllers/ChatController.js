@@ -480,6 +480,36 @@ ChatController.prototype.subirArchivoMensaje = function(parametros, callback) {
 
 };
 
+/**
+* @author Eduar Garcia
+* +Descripcion Permite subir un archivo en el chat
+* @params obj: {usuario_id}
+* @fecha 2016-09-07
+*/
+ChatController.prototype.subirArchivoMensaje2 = function(req, res) {
+   
+    console.log("************ChatController.prototype.subirArchivoMensaje2 ******************");
+    console.log("************ChatController.prototype.subirArchivoMensaje2 ******************");
+    console.log("************ChatController.prototype.subirArchivoMensaje2 ******************");
+    
+    var that = this;
+    var args = req.body.data;
+     
+    
+    //console.log("args.files ", req.files);
+    G.Q.ninvoke(G.utils, "subirArchivo", req.files, true).then(function(_rutaNueva){
+        
+        console.log("file was moved to ", _rutaNueva, " original ", req.files.file.name);
+        res.send(G.utils.r(req.url, 'Se subio el fichero satisfactoriamente', 200, {conversaciones: ''}));
+        
+    }).fail(function(err){
+        console.log("error ",err);
+        callback(err);
+    });
+    
+
+};
+
 
 /**
 * @author Eduar Garcia

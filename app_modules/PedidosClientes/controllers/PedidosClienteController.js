@@ -1039,7 +1039,16 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function (req, res) {
     /*Se invoca la funcion encargada de traer los parametros para actualizar el estado
      del pedido a aprobado o denegado por cartera*/
     var paramLogCotizacionActualizar = __parametrosLogs(cotizacion.numero_cotizacion, cotizacion.productos, cotizacion.usuario_id, cotizacion.observacion_cartera, cotizacion.total, 0, 0);
-    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion).then(function (resultado) {
+    var precioProducto;
+    
+    var parametros = {empresaId: producto.empresaIdProducto,
+    codigoProducto: producto.codigo_producto,
+    contratoId: cotizacion.cliente.contrato_id};
+    
+    G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function (_precioProducto) {
+        precioProducto = _precioProducto;
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion);
+    }).then(function (resultado) {
 
         /**
          * +Descripcion: Se valida si el estado de la cotizacion es
@@ -1054,13 +1063,22 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function (req, res) {
         }
 
     }).then(function (resultado) {
+        
+        
+        var precioVenta = __validarPrecioVenta(producto, precioProducto, 0);
+        
+        if (precioVenta.valido) {
+            if (resultado.length > 0 && resultado[0].valido === '1') {
+                return  G.Q.ninvoke(that.m_pedidos_clientes, 'modificar_detalle_cotizacion', cotizacion, producto);
 
-        if (resultado.length > 0 && resultado[0].valido === '1') {
-            return  G.Q.ninvoke(that.m_pedidos_clientes, 'modificar_detalle_cotizacion', cotizacion, producto);
-
+            } else {
+                throw  "La cantidad no corresponde a la unidad de medida";
+            }
         } else {
-            throw  "La cantidad no corresponde a la unidad de medida";
+            throw precioVenta.msj;
         }
+
+
 
     }).then(function (resultado) {
 
@@ -3134,7 +3152,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function (req, 
          */
         if (resultado > 0) {
 
-            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamente', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
             throw 'Error actualizando la observacion de cartera';

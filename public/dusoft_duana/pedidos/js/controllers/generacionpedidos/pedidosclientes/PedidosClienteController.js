@@ -297,6 +297,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
+            
             that.render_productos_cotizacion = function (productos) {
 
                 $scope.Pedido.limpiar_productos();
@@ -310,6 +311,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     producto.setCentroUtilidadProducto(data.centro_utilidad_origen_producto);
                     producto.setBodegaProducto(data.bodega_origen_producto);
                     producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
+                    
+                    var valorIva = Number(producto.get_iva())
+                    var valorTotalIva = (producto.get_precio_venta() * valorIva) / 100;
+                    var precioVentaIva = producto.get_precio_venta() + valorTotalIva;
+                    producto.setPrecioVentaIva(precioVentaIva);
+                    
 
                     $scope.Pedido.set_productos(producto);
                 });
@@ -942,7 +949,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                      class="form-control grid-inline-input" \n\
                      name="" id="" /> </div>'},*/
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
-                    {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "8%", cellFilter: 'currency : "$"'},
+                    //{field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "8%", cellFilter: 'currency : "$"'},
+                    {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "8%", cellFilter: 'currency : "$"', 
+                        cellTemplate: '<div class="col-xs-12"> \
+                                  <input type="text"  ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 || Pedido.getEstadoSolicitud() == 8 || Pedido.get_numero_pedido() == 0" \
+                                        ng-model="row.entity.precioVentaIva" \
+                                        validacion-numero-entero \
+                                        class="form-control grid-inline-input" \
+                                  name="" id="" /> <span ng-if="Pedido.get_numero_pedido() > 0">row.entity.get_precio_venta()</span> </div>'
+                    },
                     {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "8%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",

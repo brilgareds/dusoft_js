@@ -186,7 +186,7 @@ define(["angular", "js/controllers",
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
                 var costoCompra = Number(productoSeleccionado.getPrecioVentaAnterior());
-                var valorIva = Number(productoSeleccionado.get_iva())
+                var valorIva = Number(productoSeleccionado.get_iva());
                 var valorTotalIva = (precioVenta * valorIva) / 100;
                 var precioVentaIva = precioVenta + valorTotalIva;
 

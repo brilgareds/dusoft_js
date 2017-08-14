@@ -1719,6 +1719,8 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
  * @fecha: 04/12/2015 2:43 pm
  */
 PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion, producto, callback) {
+    
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", producto.precioVentaIva);
 
     G.knex('ventas_ordenes_pedidos_d_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
@@ -1729,9 +1731,10 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
             .update({
         porc_iva: producto.iva,
         numero_unidades: producto.cantidad_solicitada,
-        valor_unitario: producto.precio_venta,
+        valor_unitario: (Number(producto.precioVentaIva > 0)) ? Number(producto.precioVentaIva) : producto.precio_venta,
         usuario_id: cotizacion.usuario_id,
         fecha_registro: 'NOW()'
+        
 
     }).then(function(resultado) {
         callback(false, resultado);

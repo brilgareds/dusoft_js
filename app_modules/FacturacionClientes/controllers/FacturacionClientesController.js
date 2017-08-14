@@ -1361,13 +1361,13 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
        
         
     }).fail(function(err){  
-        /*logger.error("-----------------------------------");
+        logger.error("-----------------------------------");
         logger.error({"metodo":"FacturacionClientes.prototype.generarTemporalFacturaConsumo",
             "usuario_id": usuario,
             "parametros: ": parametros,
             "parametroBodegaDocId": parametroBodegaDocId,
             "resultado: ":err});
-        logger.error("-----------------------------------");*/
+        logger.error("-----------------------------------");
         if(!err.status){
             err = {};
             err.status = 500;
@@ -1377,10 +1377,105 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).done();
     
 };
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 12/08/2017
+ * +Descripcion Controlador encargado de consultar los documentos que se encuentran
+ *              en los temporales para posteriormente generar la facturacion
+ *              por consumo
+ *              
+ */
+FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
+   
+   console.log("************FacturacionClientes.prototype.generarFacturaXConsumo**************");
+   console.log("************FacturacionClientes.prototype.generarFacturaXConsumo**************");
+   console.log("************FacturacionClientes.prototype.generarFacturaXConsumo**************");
+   
+    var that = this;
+    var args = req.body.data;
+    
+    if(!args.generar_factura_consumo){
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {generar_factura_consumo: []}));
+        return;
+    }
+    
+    if(!args.generar_factura_consumo.empresa_id){
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {generar_factura_consumo: []}));
+        return;
+    }
+    
+    if(!args.generar_factura_consumo.tipoTerceroId){
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de documento del cliente', 404, {generar_factura_consumo: []}));
+        return;
+    }
+    
+    if(!args.generar_factura_consumo.terceroId){
+        res.send(G.utils.r(req.url, 'Se requiere el documento del cliente', 404, {generar_factura_consumo: []}));
+        return;
+    }
+    
+    if(!args.generar_factura_consumo.contratoClienteId){
+        res.send(G.utils.r(req.url, 'Se requiere el id del contrato', 404, {generar_factura_consumo: []}));
+        return;
+    }
+    var datosDocumentosXConsumo = {
+        cabecera: '',
+        detalle: ''
+    };
+    var parametros =  {
+        tipo_id_tercero:args.generar_factura_consumo.tipoTerceroId, 
+        tercero_id: args.generar_factura_consumo.terceroId, 
+        sw_facturacion:0
+    };
+    var usuario = req.session.user.usuario_id;
+    
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
+        
+        var parametrosDetalle = {
+            tipoIdTercero:args.generar_factura_consumo.tipoTerceroId, 
+            terceroId: args.generar_factura_consumo.terceroId,
+            empresaId: args.generar_factura_consumo.empresa_id,
+            estado: 2
+        };
+        
+        if(resultado.length >0){
+            datosDocumentosXConsumo.cabecera = resultado;
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametrosDetalle)
+        }else{
+            throw {msj:'[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404}; 
+        }
+       
+    }).then(function(resultado){
+        
+        if(resultado.length >0){
+            
+            datosDocumentosXConsumo.detalle = resultado;
+            
+        }
+         console.log("resultado [datosDocumentosXConsumo]:", datosDocumentosXConsumo);
+         
+    }).fail(function(err){  
+        /*logger.error("-----------------------------------");
+        logger.error({"metodo":"FacturacionClientes.prototype.generarFacturaXConsumo",
+            "usuario_id": usuario,
+            "parametros: ": parametros,
+            "resultado: ":err});
+        logger.error("-----------------------------------");*/
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done(); 
+};
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017
- * +Descripcion Controlador encargado de listar los terceros
+ * +Descripcion Controlador encargado de generar la facturacion por cada documento
+ *              validando si la ip tiene permisos para generar la accion
  *              
  */
 FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){

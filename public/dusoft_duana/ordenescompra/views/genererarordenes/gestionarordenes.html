@@ -2,14 +2,20 @@
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
+                
                 <div class="panel-heading clearfix">
-                    <div class="pull-left">
-                        <!-- h3 class="text-center"><strong>Logo</strong></h3 -->
+                    <div class="col-sm-4">
+                        <!--h3 class="text-left-responsive-center"><strong>Información Cliente</strong></h3-->
                     </div>
-                    <div class="pull-right">
-                        <h3 class="text-center"><strong>OC # {{ numero_orden }}</strong></h3>
+                    <h3 class="text-center col-sm-4"  ><u><strong ng-bind="datos_view.usuario.getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()"></u></strong></h3>
+                    <div class="col-sm-4">
+                        <h3 class="text-right-responsive-center"><strong>OC # {{ numero_orden }}</strong></h3>
+
                     </div>
+
                 </div>
+                
+                
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-6">

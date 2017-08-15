@@ -33,6 +33,16 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
+                    self.listarNotas = function(obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_NOTAS, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
                     self.listarFacConceptosNotas = function(obj, callback) {
                         Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", obj, function(data) {
                             callback(data);

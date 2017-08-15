@@ -58,6 +58,10 @@ module.exports = function(app, di_container) {
         c_caja_general.imprimirNota(req, res);
     });
     
+    app.post('/api/CajaGeneral/listarNotas', function(req, res) {
+        c_caja_general.listarNotas(req, res);
+    });
+    
     app.post('/api/CajaGeneral/consultarImpuestosTercero', function(req, res) {
         c_caja_general.consultarImpuestosTercero(req, res);
     });

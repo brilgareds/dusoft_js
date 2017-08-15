@@ -1604,14 +1604,15 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
     
     index++;
      
-    G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleFacturaConsumo',{
+    G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
+        cantidad_facturada: dato.cantidad,
         prefijo: dato.prefijo, 
         factura_fiscal: dato.factura_fiscal,
         codigo_producto: dato.codigo_producto, 
         tipo_id_vendedor: dato.tipo_id_vendedor, 
         vendedor_id: dato.vendedor_id
     }).then(function(resultado){
-        productosFacturados.push(resultado[0]);
+        
     }).fail(function(err){
         console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
     }).done();

@@ -1367,6 +1367,26 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
 
 /*
  * @autor : Cristian Ardila
+ * Descripcion : SQL encargado de actualizar la cantidad facturada hasta el momento
+ * @fecha: 08/15/2015 2:43 pm 
+ */
+FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = function(obj,callback) {
+    
+   var query = G.knex('inv_bodegas_movimiento_d')
+        .where({prefijo: obj.prefijo, 
+                numero: obj.factura_fiscal,
+                codigo_producto: obj.codigo_producto})
+        .update({cantidad_facturada:obj.cantidad_facturada});    
+      
+    query.then(function(resultado){                
+        callback(false, resultado);
+   }).catch(function(err){
+        console.log("err (/catch) [actualizarValorTotalTemporalFacturaConsumo]: ", err);        
+        callback({err:err, msj: "Error al actualizar el valor total y sub total del temporal de facturacion por consumo"});   
+    });  
+};
+/*
+ * @autor : Cristian Ardila
  * Descripcion : SQL encargado de eliminar los productos que estan en temporal
  * @fecha: 08/06/2015 2:43 pm 
  */

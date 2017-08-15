@@ -54,9 +54,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.valor_total = 0;
 
             $scope.datos_view = {
-                termino_busqueda_proveedores: ""
+                termino_busqueda_proveedores: "",
+                usuario:Sesion.getUsuarioActual()
             };
-
 
             // Variable para paginacion
             $scope.paginas = 0;

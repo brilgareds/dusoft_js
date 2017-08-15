@@ -224,6 +224,8 @@ define(["angular", "js/services"], function (angular, services) {
                                 _terceroDespacho.setMunicipio(tipoDocumento[i].municipio); 
                                 _terceroDespacho.setDepartamento(tipoDocumento[i].departamento); 
                                 _terceroDespacho.setPais(tipoDocumento[i].pais); 
+                                _terceroDespacho.setContratoClienteId(tipoDocumento[i].contrato_cliente_id); 
+                                
                           
                             tercerosDespacho.push(_terceroDespacho);
                         }
@@ -526,12 +528,20 @@ define(["angular", "js/services"], function (angular, services) {
                         });
                     };
                     
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invocar el path para consultar el detalle del temporal de facturas de consumo
+                     */
+                    self.generarFacturaXConsumo = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_FACTURA_POR_CONSUMO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
                     return this;
                 }]);
-            
-            
-          
- 
+             
 
 });
 

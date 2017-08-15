@@ -108,10 +108,10 @@
 <label>Productos : 4</label>
 <div class="row">
     <div class="col-md-2">
-        <label>Subtotal : 10000000</label>
+        <label>Subtotal : {{root.valorFacturaTemporal.valorSubTotal}}</label>
     </div>
     <div class="col-md-2">
-        <label>Iva : 5000</label>
+        <label>Iva : {{root.valorFacturaTemporal.valorTotalIva}}</label>
     </div>
     <div class="col-md-2">
         <label>RetFte : 5000</label>
@@ -123,7 +123,7 @@
         <label>RetIva : 100</label>
     </div>
     <div class="col-md-2">
-        <label>Total : 100000005</label>
+        <label>Total : {{root.valorFacturaTemporal.valorTotal}}</label>
     </div>
 </div>
 <br>
@@ -134,7 +134,7 @@
     <button class="btn btn-warning">
         Eliminar temporal <i class="glyphicon glyphicon-trash"></i>
     </button>
-    <button class="btn btn-success">
+    <button class="btn btn-success" ng-click="generarFacturaXConsumo()">
         Facturar <i class="glyphicon glyphicon-duplicate"></i>
     </button>
 </p>

@@ -33,7 +33,12 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 factura:null,
                 documentos:[], 
                 documento:null,
-                detalleDocumentoTmp: []
+                detalleDocumentoTmp: [],
+                valorFacturaTemporal: {
+                    valorTotal: 0,
+                    valorSubTotal: 0,
+                    valorTotalIva: 0
+                }
             };
             $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
             $scope.session = {
@@ -123,7 +128,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          * @fecha 10-08-2017 DD-MM-YYYY
          */
         $scope.eliminarTemporalFacturaConsumo = function(documento){
-            console.log("documento ", documento);
+           
             var obj = {
                 session: $scope.session,
                 data: {
@@ -156,17 +161,6 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          */
         $scope.guardarTemporalFacturaConsumo = function(documento){
             
-            
-           
-           /* var cantidadActual = parseInt(parseInt(documento.cantidadNueva) + parseInt(documento.cantidadFacturada));
-            console.log("documento.cantidadDespachada ", documento.cantidadDespachada);
-            console.log("documento.cantidadNueva ", documento.cantidadNueva);
-            console.log("documento.cantidadFacturada ", documento.cantidadFacturada);
-            console.log("cantidadActual ", cantidadActual);
-            if( cantidadActual > documento.cantidadDespachada){
-                AlertService.mostrarMensaje("warning", "La cantidad nueva no debe ser mayor a la cantidad a despachar");
-                return;
-            }*/
             var obj = {
                 session: $scope.session,
                 data: {
@@ -201,8 +195,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 }
             });
         };
+        
        /**
-        * @author Eduar Garcia
+        * @author Cristian Ardila
         * @fecha 11/07/2016
         * +Descripcion Funcion que permitira desplegar el popup datePicker
         *               de la fecha corte
@@ -210,12 +205,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         */   
        
         $scope.abrir_fecha_corte = function($event) {
-
            $event.preventDefault();
            $event.stopPropagation();
            $scope.datepicker_fecha_corte = true;
           
-
         };
        
        /**
@@ -236,6 +229,32 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             $state.go("GuardarFacturaConsumo");
         };
         
+        $scope.generarFacturaXConsumo = function(){
+            
+            var obj = {
+                session: $scope.session,
+                data: {
+                    generar_factura_consumo: {
+                        empresa_id:$scope.root.documento.get_empresa(),
+                        tipoTerceroId: $scope.root.cliente.getTipoId(),
+                        terceroId:$scope.root.cliente.getId(),
+                        contratoClienteId: $scope.root.cliente.contratoClienteId
+                    }
+                }
+            };
+            facturacionClientesService.generarFacturaXConsumo(obj, function(data){
+                
+                if(data.status === 200){
+                     
+                    
+                }else{
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+                    
+            });
+            
+        };
+        
         that.listarDetalleTmpFacturaConsumo = function(){
             $scope.root.detalleDocumentoTmp = [];
             var obj = {
@@ -253,7 +272,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             facturacionClientesService.consultarDetalleTemporalFacturaConsumo(obj, function(data){
                 
                 if(data.status === 200){
-  
+                    $scope.root.valorFacturaTemporal.valorTotal = data.obj.procesar_factura_cosmitet[0].valor_total,
+                    $scope.root.valorFacturaTemporal.valorSubTotal = data.obj.procesar_factura_cosmitet[0].valor_sub_total,
+                    $scope.root.valorFacturaTemporal.valorTotalIva = data.obj.procesar_factura_cosmitet[0].valor_total_iva
+                    
                     $scope.root.detalleDocumentoTmp.push(facturacionClientesService.renderDetalleTmpFacturaConsumo(data.obj.procesar_factura_cosmitet));
                     
                 }else{
@@ -280,7 +302,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         prefijo_documento: $scope.root.documento.get_prefijo(),
                         empresa_id:$scope.root.documento.get_empresa(),
                         tipoTerceroId: $scope.root.cliente.getTipoId(),
-                        terceroId:$scope.root.cliente.getId()
+                        terceroId:$scope.root.cliente.getId(),
+                        contratoClienteId: $scope.root.cliente.contratoClienteId,
                     }
                 }
             };
@@ -375,9 +398,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             };
                         
             facturacionClientesService.listarClientes(obj ,function(respuesta){
+               
                 if(respuesta.status === 200){
                     $scope.root.clientes = facturacionClientesService.renderTerceroDespacho(respuesta.obj.listar_clientes);
-                    console.log($scope.root.clientes)
+                    
                 }
                 
             });

@@ -10,11 +10,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
         "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega","VariableModulo",
-        "$timeout","$modal", "Conversacion",  "webNotification",
+        "$timeout","$modal", "Conversacion",  "webNotification","$window",
         function($scope, $rootScope, $state,
                 Request, Usuario, socket, URL, localStorageService, Empresa,
                 Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo,
-                $timeout, $modal, Conversacion, webNotification) {
+                $timeout, $modal, Conversacion, webNotification, $window) {
 
             var self = this;
            
@@ -256,6 +256,15 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             $scope.onBodegaSeleccionada = function(bodega){
                 localStorageService.set("bodega_usuario", bodega.getCodigo());
                 $scope.Usuario.getEmpresa().getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega); 
+                
+                var moduloActual = $scope.Usuario.getModuloActual();
+                
+                if(!moduloActual || moduloActual.nombre.toLowerCase() === 'dashboard'){
+                    return;
+                }
+                
+                self.irAlHome();
+                
             };
             
             $scope.onIrAlHome = function(){

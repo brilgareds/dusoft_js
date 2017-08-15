@@ -306,7 +306,7 @@ FacturacionClientes.prototype.obtenerDetallePorFacturar = function(req, res){
         res.send(G.utils.r(req.url, 'Algunos datos abligatorios no esta definidos', 404, {}));
         return;
     }
-    
+    args.facturas_consumo.estado = 1;
     G.Q.ninvoke(that.m_facturacion_clientes, "obtenerDetallePorFacturar", args.facturas_consumo).then(function(resultado){
         res.send(G.utils.r(req.url, 'Detalle del documento', 200, {detalle:resultado}));
         
@@ -1566,10 +1566,26 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
          
     }).then(function(resultado){
         
-        if(resultado.length > 0){
-            console.log("productosFacturados ", resultado);
-        }
         
+        if(resultado.length > 0){
+             
+           /*resultado.forEach(function(row){
+               console.log("row ", row);
+               if(row.codigo_producto === _producto){
+                   if(row.cantidad >= cantidad_g)
+                       despachada = cantidad_g;
+                       row.cantidad = row.cantidad - cantidad_g;
+               }
+           })*/
+            return G.Q.nfcall(__actualizarCantidadFacturadaXConsumo,that,0,resultado);  
+            
+        } 
+        
+        
+    }).then(function(resultado){
+        
+         res.send(G.utils.r(req.url, 'OK oK', 201, {generar_factura_consumo: []}));
+        console.log("resultado ----> ", resultado)
         
     }).fail(function(err){ 
      
@@ -1590,13 +1606,13 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
 
 /**
  * @author Cristian Ardila
- * +Descripcion funcion recursiva encargada de almacenar en un arreglo la consulta 
- *              del detalle de lo que se ha facturado por consumo hasta ahora
+ * +Descripcion funcion recursiva encargada de actualizar uno a uno cada producto
+ *              segun la cantidad que se ha facturado
  * @fecha 2017-08-15             
  */
 function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
     
-    var dato = datos.detalle[index];
+    var dato = datos[index];
     if(!dato){
         callback(false);
         return;
@@ -1604,21 +1620,49 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
     
     index++;
      
-    G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
-        cantidad_facturada: dato.cantidad,
-        prefijo: dato.prefijo, 
-        factura_fiscal: dato.factura_fiscal,
-        codigo_producto: dato.codigo_producto, 
-        tipo_id_vendedor: dato.tipo_id_vendedor, 
-        vendedor_id: dato.vendedor_id
+    
+    G.Q.ninvoke(that.m_facturacion_clientes,'obtenerDetallePorFacturar',{ 
+    empresa_id: dato.empresa_id, estado: 0, prefijo_documento: dato.prefijo_documento, numero_documento: dato.numeracion_documento
     }).then(function(resultado){
+        var despachada = 0;
+       /* console.log("codigo producto  ", dato.codigo_producto);
+        console.log("lote ", dato.lote);
+        console.log("prefijo_documento  ", dato.prefijo_documento);
+        console.log("numero_documento ", dato.numeracion_documento);
+        console.log("cantidad ", dato.cantidad);
+        console.log("resultado >>>>> ", resultado);*/
+        resultado.forEach(function(row){
+               //console.log("row ", row);
+               if(row.codigo_producto === dato.codigo_producto  && row.lote === dato.lote){
+                   if(dato.cantidad >= row.cantidad)
+                       despachada = row.cantidad;
+                       dato.cantidad = dato.cantidad - row.cantidad;
+                    //console.log("despachada ", )
+                    console.log("codigo_producto = [", row.codigo_producto, "] lote = [",row.lote, "] despachada = [", despachada, "] ")
+                    //console.log("lote ", row.lote)
+               }
+           })  
         
     }).fail(function(err){
         console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
     }).done();
+            /*
+            G.Q.ninvoke(that.m_facturacion_clientes, "obtenerDetallePorFacturar", args.facturas_consumo)*/
+   /* G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
+        cantidad_facturada: dato.cantidad,
+        prefijo: dato.prefijo_documento, 
+        factura_fiscal: dato.numeracion_documento,
+        codigo_producto: dato.codigo_producto, 
+        tipo_id_vendedor: dato.tipo_id_vendedor, 
+        vendedor_id: dato.vendedor_id
+    }).then(function(resultado){
+        console.log("dato >>> ", resultado);
+    }).fail(function(err){
+        console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
+    }).done();*/
     
     setTimeout(function() {    
-        __consultarCantidadesFacturadasXConsumo(that,index,datos, callback)   
+        __actualizarCantidadFacturadaXConsumo(that,index,datos, callback)   
     }, 300);
 }
 
@@ -1643,7 +1687,8 @@ function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFa
         factura_fiscal: dato.factura_fiscal,
         codigo_producto: dato.codigo_producto, 
         tipo_id_vendedor: dato.tipo_id_vendedor, 
-        vendedor_id: dato.vendedor_id
+        vendedor_id: dato.vendedor_id,
+        lote: dato.lote
     }).then(function(resultado){
         productosFacturados.push(resultado[0]);
     }).fail(function(err){
@@ -1664,12 +1709,13 @@ function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFa
 function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback){
     
     var dato = datos.detalle[index];
-    if(!dato){       
+    if(!dato){   
+        
         callback(false);
         return;
     }
     
-    index++;
+    
      
     var parametros = { 
         tipo_id_vendedor: dato.tipo_id_vendedor,
@@ -1687,20 +1733,18 @@ function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, ca
         prefijo_documento: dato.prefijo,
         numeracion_documento: dato.factura_fiscal
     };
-    
+    console.log("parametros ", parametros);
+    index++;
     G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaAgrupadaDetalle',parametros,tabla,transaccion).then(function(resultado){
-       transaccion.commit();  
+       
     }).fail(function(err){
         console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
         transaccion.rollback(err);
     }).done();
     
-     setTimeout(function() {
-         
-            __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback)
-    
+    setTimeout(function() {         
+        __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback)    
     }, 300);
-    
 };
 /*
  * @author Cristian Ardila

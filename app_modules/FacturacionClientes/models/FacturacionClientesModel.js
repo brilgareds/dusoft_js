@@ -753,25 +753,45 @@ FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, 
  * +Descripcion Permite traer el documento con datos de facturacion de consumo
  */
 FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, callback){
-                    
-    var query = G.knex.column([
-        G.knex.raw("distinct on (a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario) a.prefijo"),
-        "a.numero",
-        "a.codigo_producto",
-        G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
-        "a.lote",
-        G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento"),
-        G.knex.raw("round(sum(a.cantidad)) as cantidad_despachada"),
-        G.knex.raw("split_part(coalesce(fc_precio_producto_contrato_cliente('"+obj.contratoClienteId+"', a.codigo_producto, '"+obj.empresa_id+"' ),'0'), '@', 1) as valor_unitario"),
-        "c.porc_iva",
-        G.knex.raw("coalesce((SELECT sum(cantidad_despachada)\
-        FROM inv_facturas_xconsumo_tmp_d as tmp\
-        WHERE tmp.codigo_producto = a.codigo_producto AND tmp.lote = a.lote\
-        AND tmp.empresa_id = '" + obj.empresa_id + "'\
-        AND tmp.prefijo = '"+obj.prefijo_documento +"'\
-        AND tmp.factura_fiscal = " + obj.numero_documento + "), 0) as cantidad_tmp_despachada")
-        
-    ]).from("inv_bodegas_movimiento_d as a").
+     
+    var parametros = [];
+    
+    var parametrosGrup = ["a.codigo_producto", 
+                "a.fecha_vencimiento", 
+                "a.lote",
+                "a.prefijo", 
+                "a.numero",
+                "c.porc_iva"];
+    
+    if(obj.estado === 1){
+        parametros.push(G.knex.raw("distinct on (a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario) a.prefijo"))
+        parametros.push(G.knex.raw("round(sum(a.cantidad)) as cantidad_despachada")),
+        parametros.push(G.knex.raw("split_part(coalesce(fc_precio_producto_contrato_cliente('"+obj.contratoClienteId+"', a.codigo_producto, '"+obj.empresa_id+"' ),'0'), '@', 1) as valor_unitario")),       
+        parametros.push(G.knex.raw("coalesce((SELECT sum(cantidad_despachada)\
+            FROM inv_facturas_xconsumo_tmp_d as tmp\
+            WHERE tmp.codigo_producto = a.codigo_producto AND tmp.lote = a.lote\
+            AND tmp.empresa_id = '" + obj.empresa_id + "'\
+            AND tmp.prefijo = '"+obj.prefijo_documento +"'\
+            AND tmp.factura_fiscal = " + obj.numero_documento + "), 0) as cantidad_tmp_despachada"));
+
+        parametrosGrup.push("cantidad_tmp_despachada");
+        parametrosGrup.push("a.valor_unitario");
+    }
+    
+    parametros.push("a.numero"),
+    parametros.push("a.codigo_producto"),
+    parametros.push(G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion")),
+    parametros.push("a.lote"),
+    parametros.push(G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento")),
+    parametros.push("c.porc_iva")
+
+    if(obj.estado === 0){
+       parametros.push("a.cantidad");
+       parametros.push("a.numero_caja");
+       parametros.push("a.prefijo");
+    }
+    
+    var query = G.knex.column(parametros).from("inv_bodegas_movimiento_d as a").
         innerJoin("inv_bodegas_movimiento_despachos_clientes as b", function (){
             this.on("a.numero","b.numero").
             on("a.prefijo", "b.prefijo");
@@ -781,20 +801,17 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         this.andWhere("a.empresa_id", obj.empresa_id)
             .andWhere("a.prefijo", obj.prefijo_documento)
             .andWhere("a.numero", obj.numero_documento);
-    }).as("a").groupBy("a.codigo_producto", 
-                "a.fecha_vencimiento", 
-                "a.lote", 
-                "a.valor_unitario", 
-                "a.prefijo", 
-                "a.numero",
-                "c.porc_iva","cantidad_tmp_despachada"
-                );
-   
-    var query2 = G.knex.select(G.knex.raw("a.*"))
-        .from(query)
+    }).as("a")
+    
+    if(obj.estado === 1){
+        query.groupBy(parametrosGrup);
+    }
+    
+    var query2 = G.knex.select(G.knex.raw("a.*")).from(query)
+        
      
     query2.then(function(resultado){
-        console.log("resultado ", resultado);
+         
         callback(false, resultado);   
     }).catch(function(err) { 
         console.log("err ", err);
@@ -1282,6 +1299,7 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
              this.andWhere("b.prefijo_documento", obj.prefijo)
                 .andWhere("b.numeracion_documento", obj.factura_fiscal)
                 .andWhere("b.codigo_producto", obj.codigo_producto)
+                .andWhere("b.lote", obj.lote)
                 .andWhere("b.tipo_id_vendedor", obj.tipo_id_vendedor)
                 .andWhere("b.vendedor_id", obj.vendedor_id)
         })
@@ -1377,12 +1395,12 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
                 numero: obj.factura_fiscal,
                 codigo_producto: obj.codigo_producto})
         .update({cantidad_facturada:obj.cantidad_facturada});    
-      
+      console.log("obj ", obj)
     query.then(function(resultado){                
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [actualizarValorTotalTemporalFacturaConsumo]: ", err);        
-        callback({err:err, msj: "Error al actualizar el valor total y sub total del temporal de facturacion por consumo"});   
+        callback({err:err, msj: "Error al actualizar la cantidad facturada en el movimiento"});   
     });  
 };
 /*

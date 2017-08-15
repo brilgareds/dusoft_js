@@ -1392,11 +1392,14 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
     
    var query = G.knex('inv_bodegas_movimiento_d')
         .where({prefijo: obj.prefijo, 
-                numero: obj.factura_fiscal,
-                codigo_producto: obj.codigo_producto})
+                numero: obj.numero,
+                codigo_producto: obj.codigo_producto,
+                lote: obj.lote,
+                numero_caja: obj.numero_caja})
         .update({cantidad_facturada:obj.cantidad_facturada});    
-      console.log("obj ", obj)
-    query.then(function(resultado){                
+      
+    query.then(function(resultado){  
+        console.log("resultado [actualizarCantidadFacturadaXConsumo]:", resultado)
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [actualizarValorTotalTemporalFacturaConsumo]: ", err);        

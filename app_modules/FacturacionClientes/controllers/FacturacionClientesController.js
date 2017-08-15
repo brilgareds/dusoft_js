@@ -1622,47 +1622,36 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
      
     var despachada = 0;
     var cantidad_c = 0;
+     
     G.Q.ninvoke(that.m_facturacion_clientes,'obtenerDetallePorFacturar',{ 
     empresa_id: dato.empresa_id, estado: 0, prefijo_documento: dato.prefijo_documento, numero_documento: dato.numeracion_documento
     }).then(function(resultado){
-        
-       /* console.log("codigo producto  ", dato.codigo_producto);
-        console.log("lote ", dato.lote);
-        console.log("prefijo_documento  ", dato.prefijo_documento);
-        console.log("numero_documento ", dato.numeracion_documento);
-        console.log("cantidad ", dato.cantidad);
-        console.log("resultado >>>>> ", resultado);*/
+       
         resultado.forEach(function(row){
                //console.log("row ", row);
                if(row.codigo_producto === dato.codigo_producto  && row.lote === dato.lote){
                    if(dato.cantidad >= row.cantidad)
                        despachada = row.cantidad;
-                       cantidad_c = dato.cantidad - despachada;
-                       //dato.cantidad = dato.cantidad - despachada;
-                    //console.log("despachada ", )
-                    //console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],desp[", despachada, "],", "cant_act[", dato.cantidad, "]", ",cant_c[", cantidad_c, "]")
-                    console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],", "cant_act[", dato.cantidad, "]", ",cant_c[", cantidad_c, "]")
-                    //console.log("lote ", row.lote)
+                        cantidad_c = dato.cantidad - despachada;
+                        console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],", "cant_act[", dato.cantidad, "]", ",cant_c[", cantidad_c, "], caja[",row.numero_caja,"]")
+                        return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
+                            cantidad_facturada: cantidad_c,
+                            prefijo: row.prefijo, 
+                            numero: row.numero,
+                            codigo_producto: dato.codigo_producto,
+                            lote: row.lote,
+                            numero_caja: row.numero_caja});
+
+                        
                }
            })  
         
+    }).then(function(resultado){
+        console.log("ESTO resultado ", resultado);
     }).fail(function(err){
         console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
     }).done();
-            /*
-            G.Q.ninvoke(that.m_facturacion_clientes, "obtenerDetallePorFacturar", args.facturas_consumo)*/
-   /* G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
-        cantidad_facturada: dato.cantidad,
-        prefijo: dato.prefijo_documento, 
-        factura_fiscal: dato.numeracion_documento,
-        codigo_producto: dato.codigo_producto, 
-        tipo_id_vendedor: dato.tipo_id_vendedor, 
-        vendedor_id: dato.vendedor_id
-    }).then(function(resultado){
-        console.log("dato >>> ", resultado);
-    }).fail(function(err){
-        console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
-    }).done();*/
+           
     
     setTimeout(function() {    
         __actualizarCantidadFacturadaXConsumo(that,index,datos, callback)   

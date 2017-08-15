@@ -1507,7 +1507,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
             throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};                
         }
          
-    }).then(function(resultado){
+    })/*.then(function(resultado){
        
         if(!resultado || resultado.length > 0){
             parametros.direccion_ip = ip;
@@ -1548,6 +1548,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
                 return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,datosDocumentosXConsumo,"inv_facturas_agrupadas_despacho_d",transaccion);         
             }); 
         }
+        
     }).then(function(){
         
         G.knex.transaction(function(transaccion) { 
@@ -1556,10 +1557,20 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
                 documento_id: datosDocumentosXConsumo.cabecera[0].documento_id
             }, transaccion);
         });
-    }).then(function(){
         
+    })*/.then(function(){
+        
+        return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
+         
         res.send(G.utils.r(req.url, 'Se genera la factura por consumo satisfactoriamente', 201, {generar_factura_individual: []}));
          
+    }).then(function(resultado){
+        
+        if(resultado.length > 0){
+            console.log("productosFacturados ", resultado);
+        }
+        
+        
     }).fail(function(err){ 
      
         /*logger.error("-----------------------------------");
@@ -1577,12 +1588,82 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     }).done(); 
 };
 
-
-function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback){
+/**
+ * @author Cristian Ardila
+ * +Descripcion funcion recursiva encargada de almacenar en un arreglo la consulta 
+ *              del detalle de lo que se ha facturado por consumo hasta ahora
+ * @fecha 2017-08-15             
+ */
+function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
     
     var dato = datos.detalle[index];
     if(!dato){
-        
+        callback(false);
+        return;
+    }
+    
+    index++;
+     
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleFacturaConsumo',{
+        prefijo: dato.prefijo, 
+        factura_fiscal: dato.factura_fiscal,
+        codigo_producto: dato.codigo_producto, 
+        tipo_id_vendedor: dato.tipo_id_vendedor, 
+        vendedor_id: dato.vendedor_id
+    }).then(function(resultado){
+        productosFacturados.push(resultado[0]);
+    }).fail(function(err){
+        console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
+    }).done();
+    
+    setTimeout(function() {    
+        __consultarCantidadesFacturadasXConsumo(that,index,datos, callback)   
+    }, 300);
+}
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion funcion recursiva encargada de almacenar en un arreglo la consulta 
+ *              del detalle de lo que se ha facturado por consumo hasta ahora
+ * @fecha 2017-08-15             
+ */
+function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFacturados, callback){
+    
+    var dato = datos.detalle[index];
+    if(!dato){
+        callback(false,productosFacturados);
+        return;
+    }
+    
+    index++;
+     
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleFacturaConsumo',{
+        prefijo: dato.prefijo, 
+        factura_fiscal: dato.factura_fiscal,
+        codigo_producto: dato.codigo_producto, 
+        tipo_id_vendedor: dato.tipo_id_vendedor, 
+        vendedor_id: dato.vendedor_id
+    }).then(function(resultado){
+        productosFacturados.push(resultado[0]);
+    }).fail(function(err){
+        console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
+    }).done();
+    
+    setTimeout(function() {    
+        __consultarCantidadesFacturadasXConsumo(that,index,datos,productosFacturados, callback)   
+    }, 300);
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion recursiva encargada de registrar el detalle de una factura
+ *              agrupada
+ * @fecha 2017-15-08
+ */
+function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback){
+    
+    var dato = datos.detalle[index];
+    if(!dato){       
         callback(false);
         return;
     }
@@ -1607,7 +1688,7 @@ function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, ca
     };
     
     G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaAgrupadaDetalle',parametros,tabla,transaccion).then(function(resultado){
-         
+       transaccion.commit();  
     }).fail(function(err){
         console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
         transaccion.rollback(err);

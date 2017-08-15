@@ -1252,6 +1252,50 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(pa
     }); 
 };
 
+
+
+/**
+ * +Descripcion Metodo encargado de obtener los pedidos agrupados en una sola
+ *              factura
+ * @author Cristian Ardila
+ * @fecha 2017-15-05 YYYY-DD-MM
+ */
+FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj, callback){
+    
+    var campos = [ G.knex.raw("sum(b.cantidad) as cantidad"),
+            "b.tipo_id_vendedor",
+            "b.vendedor_id",
+            "b.pedido_cliente_id",
+            "b.empresa_id", 
+            "b.codigo_producto",
+            G.knex.raw("to_char(b.fecha_vencimiento, 'yyyy-mm-dd') as fecha_vencimiento"),
+            "b.lote",
+            "b.prefijo_documento",
+            "b.numeracion_documento"];
+    var query = G.knex.column(campos)
+        .select()
+        .from('inv_facturas_agrupadas_despacho as a')
+        .innerJoin('inv_facturas_agrupadas_despacho_d as b',function(){
+            this.on("a.prefijo", "b.prefijo")
+                .on("a.factura_fiscal", "b.factura_fiscal")
+        }).where(function(){
+             this.andWhere("b.prefijo_documento", obj.prefijo)
+                .andWhere("b.numeracion_documento", obj.factura_fiscal)
+                .andWhere("b.codigo_producto", obj.codigo_producto)
+                .andWhere("b.tipo_id_vendedor", obj.tipo_id_vendedor)
+                .andWhere("b.vendedor_id", obj.vendedor_id)
+        })
+        .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.pedido_cliente_id","b.empresa_id",
+        "b.codigo_producto","b.fecha_vencimiento","b.lote",
+        "b.prefijo_documento","b.numeracion_documento");     
+ 
+    query.then(function(resultado){    
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [consultarPedidosFacturaAgrupada]: ", err);     
+        callback({err:err, msj: "Error al consultar los pedidos de la factura agrupada]"});   
+    }); 
+};
 /**
  * +Descripcion Metodo encargado de consultar el detalle del temporal de la factura de
  *              consumo

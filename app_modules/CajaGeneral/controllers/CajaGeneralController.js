@@ -874,6 +874,32 @@ CajaGeneral.prototype.imprimirFacturaNotasDetalle = function(req, res) {
 	res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion  Metodo encargado de crear las consultas para generar el contenido de las notas
+ * @fecha 2017-06-13 (YYYY-MM-DD)
+ */
+CajaGeneral.prototype.listarNotas = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    var parametros = {
+	empresaId: args.empresaId,
+	prefijoNota: args.prefijoNota,
+	numeroNota: args.numeroNota
+    };
+    
+    G.Q.ninvoke(that.m_caja_general, 'listarNotasGeneradas', parametros).then(function(result) {
+	
+      res.send(G.utils.r(req.url, 'listado Correctamente', 200, {listadoNota: result}));
+
+    }). catch (function(err) {
+	console.log("error listarNotas ", err);
+	res.send(G.utils.r(req.url, err, 500, {error:err}));
+    }).done();
+    
+};
 /**
  * @author Andres Mauricio Gonzalez
  * +Descripcion  Metodo encargado de crear las consultas para generar el contenido de las notas

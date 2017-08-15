@@ -35,8 +35,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         {tipo: '', descripcion: "Nombre"}
                     ];
 		    
+		    $scope.root.prefijoBusquedaNota='seleccionar';
+                    $scope.root.prefijosNotas = [
+                        {prefijo: 'NCFC', descripcion: "NCFC"},
+                        {prefijo: 'NDFD', descripcion: "NDFD"}
+                    ];
+		    
 		    $scope.root.prefijo= 
-                        {prefijo: "Prefijo"}
+                        {prefijo: "seleccionar"}
                     ;
                     $scope.root.filtro = $scope.root.filtros[0];
                     $scope.root.tipoTercero = $scope.root.filtros[0];
@@ -273,7 +279,34 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 		    
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
-                     *              los tipos de terceros
+                     *              las Notas
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 02/05/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+		     that.listarNotas = function(parametros) {
+			 var obj = {
+                            session: $scope.session,
+                            data: {
+				prefijoNota: parametros.prefijo,
+				numeroNota: parametros.numero,
+				empresaId :parametros.empresaId
+                            }
+                        };
+			
+			cajaGeneralService.listarNotas(obj, function(data) {
+			     if (data.status === 200) {
+				$scope.root.listadoNota=cajaGeneralService.renderFacturasProveedores(data.obj.listadoNota);
+			     }else{
+				 $scope.root.listadoNota= {};
+			     }
+			    
+			 });
+		     };
+		    
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara
+                     *              las notas de una factura
                      * @author Andres Mauricio Gonzalez
                      * @fecha 02/05/2017 DD/MM/YYYY
                      * @returns {undefined}
@@ -539,6 +572,41 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         });
                     };
 
+                    /**
+                     * +Descripcion 
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+                    $scope.listaNotas= {
+                        data: 'root.listadoNota',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+			columnDefs: [
+                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
+                            {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
+                            {field: 'Tercero', width: "30%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
+                            {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
+                            {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
+                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
+			     cellTemplate: ' <div class="row">\
+							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
+							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
+								<span class="glyphicon glyphicon-export"> Sincronizar</span>\
+							    </button>\
+							  </div>\
+							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
+							    <button class="btn btn-success btn-xs  disabled">\
+								<span class="glyphicon glyphicon-saved"> Sincronizar</span>\
+							    </button>\
+							  </div>\
+						       </div>'
+			    }  
+			 ]
+                    };
                     /**
                      * +Descripcion 
                      * @author Andres Mauricio Gonzalez
@@ -1372,6 +1440,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.onSeleccionPrefijo = function(filtro) {
 			$scope.root.prefijo.prefijo=filtro.prefijo;
                     };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 04/02/2016
+                     * +Descripcion scope selector del filtro
+                     * @param {type} $event
+                     */
+                    $scope.onSeleccionPrefijoNota = function(filtro) {
+			$scope.root.prefijoBusquedaNota=filtro.prefijo;
+                    };
 		    
 		    /**
                      * @author Andres Mauricio Gonzalez
@@ -1383,6 +1460,27 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			  $scope.root.tab=valor;
 		      };
 		      
+		      /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 28/06/2017
+                     * +Descripcion seleccionar busqueda
+                     * @param {type} $event
+                     */
+		    $scope.buscarNota=function(event){
+			 if (event.which === 13) {
+			     console.log("$scope.root.prefijoBusquedaNota ",$scope.root.prefijoBusquedaNota);
+			     if($scope.root.prefijoBusquedaNota!=='seleccionar' && $scope.root.numeroBusquedaNota!==''){
+			     var parametros = {
+				prefijo:$scope.root.prefijoBusquedaNota,
+				numero:$scope.root.numeroBusquedaNota,
+			        empresaId: $scope.root.empresaSeleccionada.getCodigo()
+			     };
+			     that.listarNotas(parametros);
+			     }else{
+				 console.log("Debe seleccionar el prefijo");
+			     }
+			 }
+		    };
 		      /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 28/06/2017
@@ -1447,6 +1545,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             $scope.columnaSizeBusqueda = "col-md-4";
                         } else {
                             $scope.columnaSizeBusqueda = "col-md-4";
+                        }
+
+                    };
+		     /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 28/06/2017
+                     * +Descripcion tamaño columna
+                     * @param {type} $event
+                     */
+                    $scope.onColumnaSizeNota = function(tipo) {
+
+                        if (tipo === "NCFC" || tipo === "NCFC") {
+                            $scope.columnaSizeBusqueda = "col-md-4";
+                        } else {
+                            $scope.columnaSizeBusqueda = "col-md-12";
                         }
 
                     };

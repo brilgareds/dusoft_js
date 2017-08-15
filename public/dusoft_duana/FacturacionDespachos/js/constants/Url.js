@@ -54,7 +54,8 @@ define(["angular"], function(angular) {
                 "LISTAR_PREFIJOS": BASE_URL + "/CajaGeneral/listarPrefijos",
                 "INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/insertarFacFacturasConceptosNotas",
                 "LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/listarFacConceptosNotas",
-                "LISTAR_IMPUESTOS_TERCERO": BASE_URL + "/CajaGeneral/consultarImpuestosTercero"
+                "LISTAR_IMPUESTOS_TERCERO": BASE_URL + "/CajaGeneral/consultarImpuestosTercero",
+                "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas"
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",

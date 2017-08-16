@@ -960,7 +960,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         cellTemplate: '<div class="col-xs-12 "> \
                                   <input type="text"  ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 || Pedido.getEstadoSolicitud() == 8 || Pedido.get_numero_pedido() > 0" \
                                         ng-model="row.entity.precioVentaIva" \
-                                        validacion-numero-entero \
+                                        validacion-numero-decimal \
                                         class="form-control grid-inline-input" \
                                   name="" id="" />'
                     },

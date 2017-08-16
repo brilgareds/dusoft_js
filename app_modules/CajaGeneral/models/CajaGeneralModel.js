@@ -159,19 +159,19 @@ console.log("********************listarNotasGeneradas************************");
 		if(obj.empresaId !== undefined){
 		    this.andWhere('a.empresa_id ', obj.empresaId);
 		}
-		if(obj.empresaId !== undefined){
+		if(obj.bodega !== undefined){
 		    this.andWhere('a.bodega ', obj.bodega);
 		}
-		if(obj.prefijo !== 'undefined'){
+		if(obj.prefijo !== 'undefined' && obj.prefijo !== undefined){
 		    this.andWhere('a.prefijo ', obj.prefijo);
 		}
-		if(obj.facturaFiscal !== 'undefined'){
+		if(obj.facturaFiscal !== 'undefined' && obj.facturaFiscal !== undefined){
 		    this.andWhere('a.factura_fiscal ', obj.facturaFiscal);
 		}
-		if(obj.numeroNota !== 'undefined'){
+		if(obj.numeroNota !== 'undefined' && obj.numeroNota !== undefined){
 		    this.andWhere('a.numero_nota ', obj.numeroNota);
 		}
-		if(obj.prefijoNota !== 'undefined'){
+		if(obj.prefijoNota !== 'undefined' && obj.prefijoNota !== undefined){
 		    this.andWhere('a.prefijo_nota ', obj.prefijoNota);
 		}
 		
@@ -180,6 +180,7 @@ console.log("********************listarNotasGeneradas************************");
 	query.limit(obj.limit);
      }
 	query.then(function(resultado) {
+	    console.log("resultado ",resultado);
         callback(false, resultado);
     }). catch (function(err) {
 	

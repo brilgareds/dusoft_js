@@ -1568,15 +1568,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         
         
         if(resultado.length > 0){
-             
-           /*resultado.forEach(function(row){
-               console.log("row ", row);
-               if(row.codigo_producto === _producto){
-                   if(row.cantidad >= cantidad_g)
-                       despachada = cantidad_g;
-                       row.cantidad = row.cantidad - cantidad_g;
-               }
-           })*/
+            //console.log("row ==== ", resultado);
             return G.Q.nfcall(__actualizarCantidadFacturadaXConsumo,that,0,resultado);  
             
         } 
@@ -1610,6 +1602,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
  *              segun la cantidad que se ha facturado
  * @fecha 2017-08-15             
  */
+var productosActualizados = [];
 function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
     
     var dato = datos[index];
@@ -1622,32 +1615,56 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
      
     var despachada = 0;
     var cantidad_c = 0;
-     
+    
+    //console.log("dato ", dato);
     G.Q.ninvoke(that.m_facturacion_clientes,'obtenerDetallePorFacturar',{ 
     empresa_id: dato.empresa_id, estado: 0, prefijo_documento: dato.prefijo_documento, numero_documento: dato.numeracion_documento
     }).then(function(resultado){
+         
        
+         //SE CREARA FUNCION RECURSIVA OK
         resultado.forEach(function(row){
-               //console.log("row ", row);
-               if(row.codigo_producto === dato.codigo_producto  && row.lote === dato.lote){
-                   if(dato.cantidad >= row.cantidad)
-                       despachada = row.cantidad;
-                        cantidad_c = dato.cantidad - despachada;
-                        console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],", "cant_act[", dato.cantidad, "]", ",cant_c[", cantidad_c, "], caja[",row.numero_caja,"]")
-                        return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
-                            cantidad_facturada: cantidad_c,
-                            prefijo: row.prefijo, 
-                            numero: row.numero,
-                            codigo_producto: dato.codigo_producto,
-                            lote: row.lote,
-                            numero_caja: row.numero_caja});
+           /* if(productosActualizados.length > 0){
+                productosActualizados.forEach(function(re){
+                    if(!(re.codigo_producto === dato.codigo_producto && re.lote === dato.lote)){
+                        dato.cantidad = dato.cantidad2;
+                    }
+                })
+            }*/
+           // console.log("productosActualizados ", productosActualizados);
+            //Cambiar la cantidad [resultado]
+            if(row.codigo_producto === dato.codigo_producto  && row.lote === dato.lote){
+                
+                //console.log("***[", row.codigo_producto,  "],[",row.lote, "], cant_g  [",row.cantidad, "],caja[",row.numero_caja,"]");
+                //console.log("XXX[", dato.codigo_producto, "],[",dato.lote, "],cantidad[",dato.cantidad,"],caja[",row.numero_caja,"]");
+                 //productosActualizados.push({codigo_producto: row.codigo_producto, lote: row.lote});
+                if(dato.cantidad >= row.cantidad )
+                    //console.log("a) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad);
+                    despachada = row.cantidad; //3
+                    
+                    dato.cantidad = dato.cantidad - despachada; //5 - 3 = 3
+                    if(dato.cantidad < dato.cantidad2){
+                        dato.cantidad = 0;
+                    }
+                   // dato.cantidad = (dato.cantidad - row.cantidad) < row.cantidad ? row.cantidad :  (dato.cantidad - row.cantidad) ;
+                        /*return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
+                         cantidad_facturada: cantidad_c,
+                         prefijo: row.prefijo, 
+                         numero: row.numero,
+                         codigo_producto: dato.codigo_producto,
+                         lote: row.lote,
+                         numero_caja: row.numero_caja});*/
 
-                        
-               }
-           })  
+                //}
+                /*console.log("b) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad);
+                  */
+                console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],", "cant_act[", dato.cantidad, "]", ",cant_act2[", dato.cantidad2, "], caja[",row.numero_caja,"]")
+              
+           }
+        })  
         
     }).then(function(resultado){
-        console.log("ESTO resultado ", resultado);
+        //console.log("ESTO resultado ", resultado);
     }).fail(function(err){
         console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
     }).done();
@@ -1657,7 +1674,7 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
         __actualizarCantidadFacturadaXConsumo(that,index,datos, callback)   
     }, 300);
 }
-
+ 
 /**
  * @author Cristian Ardila
  * +Descripcion funcion recursiva encargada de almacenar en un arreglo la consulta 

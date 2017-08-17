@@ -786,7 +786,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
     parametros.push("c.porc_iva")
 
     if(obj.estado === 0){
-       parametros.push("a.cantidad");
+       parametros.push(G.knex.raw("round(a.cantidad) as cantidad"));
        parametros.push("a.numero_caja");
        parametros.push("a.movimiento_id");
        parametros.push("a.prefijo");

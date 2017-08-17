@@ -1571,7 +1571,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         }         
         
     }).then(function(resultado){
-        
+        productosActualizados = [];
         res.send(G.utils.r(req.url, 'OK oK', 201, {generar_factura_consumo: []}));
         console.log("resultado ----> ", resultado)
         
@@ -1641,13 +1641,54 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
                 productosActualizados.push({codigo_producto: row.codigo_producto, lote: row.lote});*/
                 //console.log("***[", row.codigo_producto,  "],[",row.lote, "], cant_g  [",row.cantidad, "],caja[",row.numero_caja,"]");
                 //console.log("XXX[", dato.codigo_producto, "],[",dato.lote, "],cantidad[",dato.cantidad,"],caja[",row.numero_caja,"]");
-                productosActualizados.push({codigo_producto: row.codigo_producto, lote: row.lote});
-                if(dato.cantidad >= row.cantidad )
-                    //console.log("a) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad);
-                    despachada = row.cantidad; //3
+                
+                if(dato.cantidad > 0 ){
+                    console.log("a) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad);
+                     
+                    if(productosActualizados.length > 0){
+                        console.log("b) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad, "Tamano ", productosActualizados.length);
+                        
+                        if(dato.codigo_producto === productosActualizados[0].codigo_producto && 
+                           dato.lote ===  productosActualizados[0].lote){
+                           console.log("Existe")
+                           /*dato.cantidad = (dato.cantidad - row.cantidad);*/
+                           despacho = dato.cantidad;
+                           dato.cantidad = (dato.cantidad - row.cantidad);
+                        }else{
+                            console.log("Nuevo");
+                            dato.cantidad = dato.cantidad2;
+                            despacho = dato.cantidad2;
+                            if(dato.cantidad >= row.cantidad){
+                            //dato.cantidad = row.cantidad; //3
+                            //despacho =row.cantidad;
+                            
+                            dato.cantidad = (dato.cantidad - row.cantidad);
+                            despacho = dato.cantidad;
+                        }
+                            
+                        }
+                            //console.log("productosActualizados: ", productosActualizados);
+                    }else{
+                        console.log("Primero")
+                        if(dato.cantidad >= row.cantidad){
+                            //dato.cantidad = row.cantidad; //3
+                            //despacho =row.cantidad;
+                            despacho = row.cantidad;
+                            dato.cantidad = (dato.cantidad - row.cantidad);
+                        }/*else{
+                            despacho = dato.cantidad2;
+                            //dato.cantidad = dato.cantidad2;
+                        }*/
                     
-                    dato.cantidad = (dato.cantidad - despachada) < 0 ? (dato.cantidad - despachada) * -1 : (dato.cantidad - despachada) ; //5 - 3 = 3
+                    }
                     
+                     //< 0 ? (dato.cantidad - despachada) * -1 : (dato.cantidad - despachada) ; //5 - 3 = 3
+                    
+                    productosActualizados.unshift({codigo_producto: row.codigo_producto, lote: row.lote});
+                    
+                    console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],", "cant_act[", dato.cantidad, "]", "desp[", despacho, "]", ", caja[",row.numero_caja,"]")
+              
+                }
                     
                    /* if(dato.cantidad < dato.cantidad2){
                         dato.cantidad = 0;
@@ -1664,8 +1705,7 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
                 //}
                 /*console.log("b) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad);
                   */
-                console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],", "cant_act[", dato.cantidad, "]", ",cant_act2[", dato.cantidad2, "], caja[",row.numero_caja,"]")
-              
+                
            }
         })  
         

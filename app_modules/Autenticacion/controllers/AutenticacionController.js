@@ -77,7 +77,8 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
     var nombre_usuario = args.login.usuario;
     var contrasenia = args.login.contrasenia;
     var device = (args.login.device === undefined) ? '' : args.login.device;
-    var appId = (args.login.appId === undefined) ? 'dusoft-web' : args.login.appId;
+    //var appId = (args.login.appId === undefined) ? 'dusoft-web' : args.login.appId;
+    var appId =  'dusoft-web';
     var socket = args.login.socket;
     
     

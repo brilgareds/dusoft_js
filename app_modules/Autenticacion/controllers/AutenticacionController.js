@@ -77,8 +77,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
     var nombre_usuario = args.login.usuario;
     var contrasenia = args.login.contrasenia;
     var device = (args.login.device === undefined) ? '' : args.login.device;
-    //var appId = (args.login.appId === undefined) ? 'dusoft-web' : args.login.appId;
-    var appId =  'dusoft-web';
+    var appId = (args.login.appId === undefined) ? 'dusoft-web' : args.login.appId;
     var socket = args.login.socket;
     
     
@@ -121,7 +120,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
            
         var opciones = (parametrizacion.modulosJson && parametrizacion.modulosJson.dashboard) ? parametrizacion.modulosJson.dashboard.opciones : {};
         
-        if(conexiones.length > 0 && !opciones.sw_multiples_conexiones){
+        if(conexiones.length > 0 && !opciones.sw_multiples_conexiones && appId === 'dusoft-web'){
             throw {status:403, msj:"El usuario tiene sesiones activas", obj: {conexiones : conexiones}};
         } else {
 

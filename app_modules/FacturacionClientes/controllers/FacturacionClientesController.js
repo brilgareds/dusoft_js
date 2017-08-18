@@ -1339,7 +1339,8 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
                 vendedor_id: '830080649', 
                 valor_sub_total: subTotalValorProductos.toFixed(2),
                 valor_total: totalValorProductos.toFixed(2),
-                valor_total_iva: totalValorIva
+                valor_total_iva: totalValorIva,
+                estado: 0
             }
              
             return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosTotalValor); 
@@ -1439,6 +1440,12 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         tercero_id: args.generar_factura_consumo.terceroId, 
         sw_facturacion:0
     };
+    var parametrosDetalle = {
+        tipoIdTercero:args.generar_factura_consumo.tipoTerceroId, 
+        terceroId: args.generar_factura_consumo.terceroId,
+        empresaId: args.generar_factura_consumo.empresa_id,
+        estado: 2
+    };
     var resultadoFacturasXConsumo;
     var documentoFacturacion = "";
     var consultarParametrosRetencion = "";
@@ -1447,12 +1454,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
         
-        var parametrosDetalle = {
-            tipoIdTercero:args.generar_factura_consumo.tipoTerceroId, 
-            terceroId: args.generar_factura_consumo.terceroId,
-            empresaId: args.generar_factura_consumo.empresa_id,
-            estado: 2
-        };
+        
         
         if(resultado.length >0){
             datosDocumentosXConsumo.cabecera = resultado;
@@ -1577,8 +1579,16 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         }
     }).then(function(resultado){
         productosActualizados = [];
+            console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo.detalle[0])
+            // return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosDetalle); 
+            return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
+            {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1}); 
+            
+            
         res.send(G.utils.r(req.url, 'Se Genera la factura por consumo satisfactoriamente ', 201, {generar_factura_consumo: []}));
         
+        
+    }).then(function(resultado){
         
     }).fail(function(err){ 
      

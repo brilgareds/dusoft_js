@@ -1424,7 +1424,7 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
         console.log("resultado [actualizarCantidadFacturadaXConsumo]:", resultado)
         callback(false, resultado);
    }).catch(function(err){
-        console.log("err (/catch) [actualizarValorTotalTemporalFacturaConsumo]: ", err);        
+        console.log("err (/catch) [actualizarCantidadFacturadaXConsumo]: ", err);        
         callback({err:err, msj: "Error al actualizar la cantidad facturada en el movimiento"});   
     });  
 };
@@ -1454,14 +1454,21 @@ FacturacionClientesModel.prototype.eliminarProductoTemporalFacturaConsumo = func
  * @fecha: 08/11/2015 2:43 pm 
  */
 FacturacionClientesModel.prototype.actualizarValorTotalTemporalFacturaConsumo = function(obj,callback) {
-    
-   var query = G.knex('inv_facturas_xconsumo_tmp')
-        .where({id_factura_xconsumo: obj.id_factura_xconsumo})
-        .update({valor_total:obj.valor_total,
+   
+    var parametros = {valor_total:obj.valor_total,
                 valor_sub_total: obj.valor_sub_total,
-                valor_total_iva: obj.valor_total_iva});    
+                valor_total_iva: obj.valor_total_iva};
+    
+    if(obj.estado === 1){
+        parametros = {sw_facturacion: obj.sw_facturacion}
+    }
+    
+    var query = G.knex('inv_facturas_xconsumo_tmp')
+        .where({id_factura_xconsumo: obj.id_factura_xconsumo})
+        .update(parametros);    
       
-    query.then(function(resultado){                
+    query.then(function(resultado){ 
+        console.log("actualizarValorTotalTemporalFacturaConsumo ", resultado);
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [actualizarValorTotalTemporalFacturaConsumo]: ", err);        

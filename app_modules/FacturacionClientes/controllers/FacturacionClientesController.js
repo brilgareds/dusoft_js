@@ -1570,8 +1570,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         
     }).then(function(resultado){
         
-        console.log("resultadoFacturasXConsumo ", resultadoFacturasXConsumo);
-        //return G.Q.nfcall(__distribuirUnidadesFacturadas,that,0,0,resultadoFacturasXConsumo,resultado);   
+        return G.Q.nfcall(__distribuirUnidadesFacturadas,that,0,0,resultadoFacturasXConsumo,resultado);   
              
     }).then(function(resultado){
         productosActualizados = [];
@@ -1639,12 +1638,16 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
     index++;
     index2++;
     //console.log("dato ", dato);
-    //console.log("producto ", producto);
+   // console.log("producto ", producto);
     producto.forEach(function(row){
-        if(dato.codigo_producto === row.codigo_producto  && dato.lote === row.lote){
-            console.log("FACTURADO (",dato.codigo_producto, " - ", dato.lote, ")");
-            console.log("row.codigo_producto=",row.codigo_producto," row.lote=", row.lote, " numero_caja=", row.numero_caja, " dato.cantidad=", dato.cantidad );
-            
+        if(dato.codigo_producto === row.codigo_producto  
+        && dato.lote === row.lote 
+        && dato.prefijo_documento === row.prefijo
+        && dato.numeracion_documento === row.numero){
+            //console.log("FACTURADO (",dato.codigo_producto, " - ", dato.lote, ")");
+            /*console.log("--------------------------------------------------------------------");
+            console.log("row.codigo_producto=",row.codigo_producto," row.lote=", row.lote, " row.cantidad = ", row.cantidad, " numero_caja=", row.numero_caja, " dato.cantidad=", dato.cantidad );
+            console.log("--------------------------------------------------------------------");*/
             //console.log(" row.codigo_producto = ",row.codigo_producto," row.lote === ", row.lote ); 
            
                 //console.log("*****dato.codigo_producto ===", dato.codigo_producto, " dato.lote === ", dato.lote,"*****"); 
@@ -1656,67 +1659,79 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                     if(productosActualizados.length > 0){
                         //console.log("b) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad, "Tamano ", productosActualizados.length);
                         //console.log("VALIDACION [", productosActualizados[0].codigo_producto, "] LOTE=== ", productosActualizados[0].lote);
-                        if(dato.codigo_producto === productosActualizados[0].codigo_producto && 
-                           dato.lote ===  productosActualizados[0].lote){
+                        if(dato.codigo_producto === productosActualizados[0].codigo_producto 
+                           && dato.lote ===  productosActualizados[0].lote
+                           && dato.prefijo_documento === productosActualizados[0].prefijo
+                           && dato.numeracion_documento === productosActualizados[0].numero){
                            //console.log("Existe [", dato.codigo_producto, "], lote[",dato.lote,"]");
                             //console.log("c) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad);
                            /*dato.cantidad = (dato.cantidad - row.cantidad);*/
-                           //if(dato.cantidad >= row.cantidad){
-                                despacho =  dato.cantidad;
-                                dato.cantidad =  (dato.cantidad - row.cantidad);
-                           /*}else{
-                                despacho = dato.cantidad2;
+                           if(dato.cantidad >= row.cantidad){
+                                despacho =  parseInt(row.cantidad);
+                                dato.cantidad =  (parseInt(dato.cantidad) - parseInt(row.cantidad));
+                           }else{
+                                despacho = dato.cantidad;
                                 //dato.cantidad = dato.cantidad2;
-                            }*/
+                            }
                             
-                            productosActualizados.unshift({codigo_producto: row.codigo_producto, lote: row.lote, caja: row.numero_caja});
+                            productosActualizados.unshift({codigo_producto: row.codigo_producto, 
+                                lote: row.lote, caja: row.numero_caja, prefijo: row.prefijo, numero: row.numero});
                             //console.log("Listo ", {codigo_producto: row.codigo_producto, lote: row.lote});
                             
                         }else{
                             
-                            //console.log("Nuevo [", dato.codigo_producto, "], lote[",dato.lote,"]");
-                            //console.log("d) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad);
+                            /*console.log("--------------------------------------------------------------------");
+                            console.log("Nuevo [", dato.codigo_producto, "], lote[",dato.lote,"]");
+                            console.log("d) dato.cantidad > ", dato.cantidad, " row.cantidad ", row.cantidad);
+                            console.log("--------------------------------------------------------------------");*/
                             
-                            dato.cantidad = dato.cantidad2;
-                            //despacho = dato.cantidad2;
-                            if(dato.cantidad >= row.cantidad){
-                            //dato.cantidad = row.cantidad; //3
-                            //despacho =row.cantidad;
-                                despacho = dato.cantidad;
+                            dato.cantidad = parseInt(dato.cantidad2);
+
+                            if(parseInt(dato.cantidad) >= parseInt(row.cantidad)){
+                             
+                                despacho = row.cantidad;
                                 dato.cantidad = (dato.cantidad - row.cantidad);
                                  
                             }else{
                                 despacho = dato.cantidad2;
                                  
-                                //dato.cantidad = dato.cantidad2;
                             }
-                            productosActualizados.unshift({codigo_producto: row.codigo_producto, lote: row.lote, caja: row.numero_caja});
+                            productosActualizados.unshift({codigo_producto: row.codigo_producto, 
+                                lote: row.lote, caja: row.numero_caja, prefijo: row.prefijo, numero: row.numero});
                             //console.log("Listo ", {codigo_producto: row.codigo_producto, lote: row.lote});
                             
                             
                         }
                              
                     }else{
-                        //console.log("Primero [", dato.codigo_producto, "], lote[",dato.lote,"]");
+                        //console.log("!!!!PRIMERO!!!! [", dato.codigo_producto, "], lote[",dato.lote,"]");
+                        //console.log("dato.cantidad = ", dato.cantidad, " row.cantidad = ", row.cantidad);
                         //console.log("Listo ", {codigo_producto: row.codigo_producto, lote: row.lote});
                         
-                        if(dato.cantidad >= row.cantidad){
+                        if(parseInt(dato.cantidad) >= parseInt(row.cantidad)){
                             //dato.cantidad = row.cantidad; //3
                             //despacho =row.cantidad;
                             despacho =row.cantidad;
-                            dato.cantidad = (dato.cantidad - row.cantidad);
-                        }/*else{
-                            despacho = dato.cantidad2;
+                            dato.cantidad = (parseInt(dato.cantidad) - parseInt(row.cantidad));
+                            //console.log("------>>>>> 1 ", despacho);
+                            //console.log("------>>>>> 2 ", dato.cantidad);
+                        }else{
+                            
+                            despacho = parseInt(dato.cantidad2);
+                            //console.log("------>>>>> 3 ", despacho)
                             //dato.cantidad = dato.cantidad2;
-                        }*/
-                        productosActualizados.unshift({codigo_producto: row.codigo_producto, lote: row.lote, caja: row.numero_caja});
+                        }
+                        productosActualizados.unshift({codigo_producto: row.codigo_producto, 
+                                lote: row.lote, caja: row.numero_caja, prefijo: row.prefijo, numero: row.numero});
                     }
                     
                      //< 0 ? (dato.cantidad - despachada) * -1 : (dato.cantidad - despachada) ; //5 - 3 = 3
                     
                     //productosActualizados.unshift({codigo_producto: row.codigo_producto, lote: row.lote, caja: row.numero_caja});
-                    console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],", "cant_act[", dato.cantidad, "]", "desp[", despacho, "]", ", caja[",row.numero_caja,"]")
-              
+            //console.log("====================================================================");        
+            console.log("Prefijo [", row.prefijo, "] numero [", row.numero, "]")
+            console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],", "cant_act[", dato.cantidad, "]", "desp[", despacho, "]", ", caja[",row.numero_caja,"]")
+            console.log("====================================================================");     
                 //}
                 /*return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
                          cantidad_facturada: despacho,

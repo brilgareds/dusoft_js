@@ -1400,8 +1400,10 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
                 codigo_producto: obj.codigo_producto,
                 lote: obj.lote,
                 numero_caja: obj.numero_caja})
-        .update({cantidad_facturada:obj.cantidad_facturada});    
-      
+        .update({cantidad_facturada:obj.cantidad_facturada})
+        //.decrement('cantidad_pendiente_por_facturar',obj.cantidad_facturada);    
+    
+    console.log("SQL === ",query.toSQL());
     query.then(function(resultado){  
         console.log("resultado [actualizarCantidadFacturadaXConsumo]:", resultado)
         callback(false, resultado);

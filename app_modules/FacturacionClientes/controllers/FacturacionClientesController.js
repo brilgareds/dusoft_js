@@ -1671,13 +1671,7 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                         despacho = dato.cantidad;
 
                     }
-                    /*productosActualizados.unshift({
-                        codigo_producto: row.codigo_producto, 
-                        lote: row.lote, 
-                        caja: row.numero_caja, 
-                        prefijo: row.prefijo, 
-                        numero: row.numero
-                    });*/
+                   
                 }else{
 
                     dato.cantidad = parseInt(dato.cantidad2);
@@ -1688,13 +1682,6 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                     }else{
                         despacho = dato.cantidad2;
                     }
-                    /*productosActualizados.unshift({
-                        codigo_producto: row.codigo_producto, 
-                        lote: row.lote, 
-                        caja: row.numero_caja, 
-                        prefijo: row.prefijo, 
-                        numero: row.numero
-                    });*/
 
                 }
 
@@ -1706,31 +1693,18 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 }else{
                     despacho = parseInt(dato.cantidad2);
                 }
-                /*productosActualizados.unshift({
-                    codigo_producto: row.codigo_producto, 
-                    lote: row.lote, 
-                    caja: row.numero_caja, 
-                    prefijo: row.prefijo, 
-                    numero: row.numero
-                });*/
+               
             }
             
             productosActualizados.unshift({
-                    codigo_producto: row.codigo_producto, 
-                    lote: row.lote, 
-                    caja: row.numero_caja, 
-                    prefijo: row.prefijo, 
-                    numero: row.numero
-                });
-                
-             console.log({
-                         cantidad_facturada: despacho,
-                         prefijo: row.prefijo, 
-                         numero: row.numero,
-                         codigo_producto: row.codigo_producto,
-                         lote: row.lote,
-                         numero_caja: row.numero_caja} ); 
-            /*G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
+                codigo_producto: row.codigo_producto, 
+                lote: row.lote, 
+                caja: row.numero_caja, 
+                prefijo: row.prefijo, 
+                numero: row.numero
+            });
+             
+            G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
                          cantidad_facturada: despacho,
                          prefijo: row.prefijo, 
                          numero: row.numero,
@@ -1740,7 +1714,7 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 console.log("resultado [actualizarCantidadFacturadaXConsumo]: ", resultado);
             }).fail(function(err){
                 console.log("err (/fail) [__distribuirUnidadesFacturadas]: ", err);     
-            }).done();*/
+            }).done();
                 
         }
     });

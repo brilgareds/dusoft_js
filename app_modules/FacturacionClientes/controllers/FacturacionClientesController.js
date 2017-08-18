@@ -1439,6 +1439,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         tercero_id: args.generar_factura_consumo.terceroId, 
         sw_facturacion:0
     };
+    var resultadoFacturasXConsumo;
     var documentoFacturacion = "";
     var consultarParametrosRetencion = "";
     var usuario = req.session.user.usuario_id;    
@@ -1561,31 +1562,23 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     })*/.then(function(){
         
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
-         
-        res.send(G.utils.r(req.url, 'Se genera la factura por consumo satisfactoriamente', 201, {generar_factura_individual: []}));
-         
+          
     }).then(function(resultado){
+        resultadoFacturasXConsumo = resultado;              
+        return G.Q.nfcall(__obtenerDetallePorFacturar,that,0,resultado,[]);            
+           
         
+    }).then(function(resultado){
         
         if(resultado.length > 0){
-             
-           /*resultado.forEach(function(row){
-               console.log("row ", row);
-               if(row.codigo_producto === _producto){
-                   if(row.cantidad >= cantidad_g)
-                       despachada = cantidad_g;
-                       row.cantidad = row.cantidad - cantidad_g;
-               }
-           })*/
-            return G.Q.nfcall(__actualizarCantidadFacturadaXConsumo,that,0,resultado);  
-            
-        } 
-        
-        
+            return G.Q.nfcall(__distribuirUnidadesFacturadas,that,0,0,resultadoFacturasXConsumo,resultado);   
+        }else{
+            throw {msj:'[Detalle de productos por facturar]: Consulta sin resultados', status: 404};          
+        }
     }).then(function(resultado){
+        productosActualizados = [];
+        res.send(G.utils.r(req.url, 'Se Genera la factura por consumo satisfactoriamente ', 201, {generar_factura_consumo: []}));
         
-         res.send(G.utils.r(req.url, 'OK oK', 201, {generar_factura_consumo: []}));
-        console.log("resultado ----> ", resultado)
         
     }).fail(function(err){ 
      
@@ -1610,54 +1603,156 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
  *              segun la cantidad que se ha facturado
  * @fecha 2017-08-15             
  */
-function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
+var productosActualizados = [];
+ 
+function __obtenerDetallePorFacturar(that, index, datos, detallePorFacturar, callback){
     
     var dato = datos[index];
+    if(!dato){
+        callback(false,detallePorFacturar);
+        return;
+    }
+    
+    index++;
+     
+    G.Q.ninvoke(that.m_facturacion_clientes,'obtenerDetallePorFacturar',{ 
+    empresa_id: dato.empresa_id, estado: 0, prefijo_documento: dato.prefijo_documento, numero_documento: dato.numeracion_documento}).then(function(resultado){
+       detallePorFacturar.push(resultado);
+        
+    }).fail(function(err){
+        console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
+    }).done();
+    
+    setTimeout(function() {    
+        __obtenerDetallePorFacturar(that,index,datos,detallePorFacturar, callback)   
+    }, 300);
+};
+
+/**
+ * +Descripcion Metodo encargado de distribuir las unidades facturadas,
+ *              de acuerdo a los productos almacenados en el movimiento
+ *              segun la cantidad y la caja
+ *              Ejemplo:
+ *              producto_facturado = 11223, cantidad = 3
+ *              producto_mov1 = 11223, Lote = 11, caja = 1, cantidad_mov = 2
+ *              producto_mov2 = 11223, Lote = 11, caja = 2, cantidad_mov = 1
+ *              de esta forma garantizar que en cada producto_mov
+ *              se asigne la cantidad requerida
+ */
+function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, callback){
+    
+    var dato = datos[index];
+    var producto = productos[index2];
     if(!dato){
         callback(false);
         return;
     }
     
     index++;
-     
-    var despachada = 0;
-    var cantidad_c = 0;
-     
-    G.Q.ninvoke(that.m_facturacion_clientes,'obtenerDetallePorFacturar',{ 
-    empresa_id: dato.empresa_id, estado: 0, prefijo_documento: dato.prefijo_documento, numero_documento: dato.numeracion_documento
-    }).then(function(resultado){
-       
-        resultado.forEach(function(row){
-               //console.log("row ", row);
-               if(row.codigo_producto === dato.codigo_producto  && row.lote === dato.lote){
-                   if(dato.cantidad >= row.cantidad)
-                       despachada = row.cantidad;
-                        cantidad_c = dato.cantidad - despachada;
-                        console.log("[", row.codigo_producto, "],[",row.lote, "],cant_g[",row.cantidad,"],", "cant_act[", dato.cantidad, "]", ",cant_c[", cantidad_c, "], caja[",row.numero_caja,"]")
-                        return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
-                            cantidad_facturada: cantidad_c,
-                            prefijo: row.prefijo, 
-                            numero: row.numero,
-                            codigo_producto: dato.codigo_producto,
-                            lote: row.lote,
-                            numero_caja: row.numero_caja});
-
-                        
-               }
-           })  
-        
-    }).then(function(resultado){
-        console.log("ESTO resultado ", resultado);
-    }).fail(function(err){
-        console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);     
-    }).done();
-           
+    index2++;
     
-    setTimeout(function() {    
-        __actualizarCantidadFacturadaXConsumo(that,index,datos, callback)   
-    }, 300);
-}
+    producto.forEach(function(row){
+        if(dato.codigo_producto === row.codigo_producto  
+        && dato.lote === row.lote 
+        && dato.prefijo_documento === row.prefijo
+        && dato.numeracion_documento === row.numero){
+             
+            if(productosActualizados.length > 0){
 
+                if(dato.codigo_producto === productosActualizados[0].codigo_producto 
+                   && dato.lote ===  productosActualizados[0].lote
+                   && dato.prefijo_documento === productosActualizados[0].prefijo
+                   && dato.numeracion_documento === productosActualizados[0].numero){
+
+                    if(dato.cantidad >= row.cantidad){
+                        despacho =  parseInt(row.cantidad);
+                        dato.cantidad =  (parseInt(dato.cantidad) - parseInt(row.cantidad));
+                    }else{
+                        despacho = dato.cantidad;
+
+                    }
+                    /*productosActualizados.unshift({
+                        codigo_producto: row.codigo_producto, 
+                        lote: row.lote, 
+                        caja: row.numero_caja, 
+                        prefijo: row.prefijo, 
+                        numero: row.numero
+                    });*/
+                }else{
+
+                    dato.cantidad = parseInt(dato.cantidad2);
+
+                    if(parseInt(dato.cantidad) >= parseInt(row.cantidad)){
+                        despacho = row.cantidad;
+                        dato.cantidad = (dato.cantidad - row.cantidad);
+                    }else{
+                        despacho = dato.cantidad2;
+                    }
+                    /*productosActualizados.unshift({
+                        codigo_producto: row.codigo_producto, 
+                        lote: row.lote, 
+                        caja: row.numero_caja, 
+                        prefijo: row.prefijo, 
+                        numero: row.numero
+                    });*/
+
+                }
+
+            }else{
+
+                if(parseInt(dato.cantidad) >= parseInt(row.cantidad)){
+                    despacho =row.cantidad;
+                    dato.cantidad = (parseInt(dato.cantidad) - parseInt(row.cantidad));
+                }else{
+                    despacho = parseInt(dato.cantidad2);
+                }
+                /*productosActualizados.unshift({
+                    codigo_producto: row.codigo_producto, 
+                    lote: row.lote, 
+                    caja: row.numero_caja, 
+                    prefijo: row.prefijo, 
+                    numero: row.numero
+                });*/
+            }
+            
+            productosActualizados.unshift({
+                    codigo_producto: row.codigo_producto, 
+                    lote: row.lote, 
+                    caja: row.numero_caja, 
+                    prefijo: row.prefijo, 
+                    numero: row.numero
+                });
+                
+             console.log({
+                         cantidad_facturada: despacho,
+                         prefijo: row.prefijo, 
+                         numero: row.numero,
+                         codigo_producto: row.codigo_producto,
+                         lote: row.lote,
+                         numero_caja: row.numero_caja} ); 
+            /*G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
+                         cantidad_facturada: despacho,
+                         prefijo: row.prefijo, 
+                         numero: row.numero,
+                         codigo_producto: row.codigo_producto,
+                         lote: row.lote,
+                         numero_caja: row.numero_caja}).then(function(resultado){
+                console.log("resultado [actualizarCantidadFacturadaXConsumo]: ", resultado);
+            }).fail(function(err){
+                console.log("err (/fail) [__distribuirUnidadesFacturadas]: ", err);     
+            }).done();*/
+                
+        }
+    });
+    /*if(dato.codigo_producto === producto.codigo_producto  && dato.lote === producto.lote){
+        console.log(" row.codigo_producto = ",producto.codigo_producto," row.lote === ", producto.lote ); 
+    }*/
+     
+    setTimeout(function() {    
+        __distribuirUnidadesFacturadas(that,index,index2,datos, productos, callback)   
+    }, 0);
+}
+ 
 /**
  * @author Cristian Ardila
  * +Descripcion funcion recursiva encargada de almacenar en un arreglo la consulta 

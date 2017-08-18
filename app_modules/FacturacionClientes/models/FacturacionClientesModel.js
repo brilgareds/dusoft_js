@@ -786,8 +786,9 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
     parametros.push("c.porc_iva")
 
     if(obj.estado === 0){
-       parametros.push("a.cantidad");
+       parametros.push(G.knex.raw("round(a.cantidad) as cantidad"));
        parametros.push("a.numero_caja");
+       parametros.push("a.movimiento_id");
        parametros.push("a.prefijo");
     }
     
@@ -807,9 +808,12 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         query.groupBy(parametrosGrup);
     }
     
+    
     var query2 = G.knex.select(G.knex.raw("a.*")).from(query)
         
-     
+    if(obj.estado === 0){
+        query2.orderBy("a.cantidad","desc");
+    } 
     query2.then(function(resultado){
          
         callback(false, resultado);   
@@ -1279,7 +1283,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(pa
  */
 FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj, callback){
     
-    var campos = [ G.knex.raw("sum(b.cantidad) as cantidad"),
+    var campos = [ G.knex.raw("sum(b.cantidad) as cantidad"),G.knex.raw("sum(b.cantidad) as cantidad2"),
             "b.tipo_id_vendedor",
             "b.vendedor_id",
             "b.pedido_cliente_id",

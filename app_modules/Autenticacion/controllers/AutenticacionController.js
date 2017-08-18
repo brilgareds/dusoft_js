@@ -120,7 +120,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
            
         var opciones = (parametrizacion.modulosJson && parametrizacion.modulosJson.dashboard) ? parametrizacion.modulosJson.dashboard.opciones : {};
         
-        if(conexiones.length > 0 && !opciones.sw_multiples_conexiones){
+        if(conexiones.length > 0 && !opciones.sw_multiples_conexiones && appId === 'dusoft-web'){
             throw {status:403, msj:"El usuario tiene sesiones activas", obj: {conexiones : conexiones}};
         } else {
 

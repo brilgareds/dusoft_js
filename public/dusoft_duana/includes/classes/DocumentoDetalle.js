@@ -12,6 +12,8 @@ define(["angular", "js/models"], function(angular, models) {
             this.valorUnitario = 0;
             this.porcIva = 0;
             this.cantidadTmpDespachada = 0;
+            this.cantidadPendientePorFacturar = 0;
+            this.estadoEntrega = 0;
         };
         
         DocumentoDetalle.prototype.setId = function(id) {
@@ -85,9 +87,7 @@ define(["angular", "js/models"], function(angular, models) {
         DocumentoDetalle.prototype.getPorcIva = function() {           
             return this.porcIva;
         };
-        
-        
-        
+         
         DocumentoDetalle.prototype.setCantidadTmpDespachada = function(cantidadTmpDespachada) {
             this.cantidadTmpDespachada = cantidadTmpDespachada; //"EGRESO POR PRESTAMO A OTRAS ENTIDADES"
             return this;
@@ -95,6 +95,26 @@ define(["angular", "js/models"], function(angular, models) {
         
         DocumentoDetalle.prototype.getCantidadTmpDespachada = function() {           
             return this.cantidadTmpDespachada;
+        };
+        
+        
+        DocumentoDetalle.prototype.setCantidadPendientePorFacturar = function(cantidadPendientePorFacturar) {
+            this.cantidadPendientePorFacturar = cantidadPendientePorFacturar; //"EGRESO POR PRESTAMO A OTRAS ENTIDADES"
+            return this;
+        };       
+        
+        DocumentoDetalle.prototype.getCantidadPendientePorFacturar = function() {           
+            return this.cantidadPendientePorFacturar;
+        };
+        
+        
+        DocumentoDetalle.prototype.setEstadoEntrega = function(estadoEntrega) {
+            this.estadoEntrega = estadoEntrega;  
+            return this;
+        };       
+        
+        DocumentoDetalle.prototype.getEstadoEntrega = function() {           
+            return this.estadoEntrega;
         };
 
         this.getClass = function() {

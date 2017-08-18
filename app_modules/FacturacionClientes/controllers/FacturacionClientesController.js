@@ -1718,10 +1718,7 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 
         }
     });
-    /*if(dato.codigo_producto === producto.codigo_producto  && dato.lote === producto.lote){
-        console.log(" row.codigo_producto = ",producto.codigo_producto," row.lote === ", producto.lote ); 
-    }*/
-     
+    
     setTimeout(function() {    
         __distribuirUnidadesFacturadas(that,index,index2,datos, productos, callback)   
     }, 0);

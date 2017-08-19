@@ -1563,32 +1563,35 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         
     })*/.then(function(){
         
+        //console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo);
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           
     }).then(function(resultado){
-        resultadoFacturasXConsumo = resultado;              
-        return G.Q.nfcall(__obtenerDetallePorFacturar,that,0,resultado,[]);            
+        
+        resultadoFacturasXConsumo = resultado;       
+        console.log("resultadoFacturasXConsumo ", resultadoFacturasXConsumo);
+        return G.Q.nfcall(__obtenerDetallePorFacturar,that,0,resultado,[]);          
            
         
     }).then(function(resultado){
         
-        if(resultado.length > 0){
+       console.log("resultado [__obtenerDetallePorFacturar]:: ", resultado);
+        /*if(resultado.length > 0){
             return G.Q.nfcall(__distribuirUnidadesFacturadas,that,0,0,resultadoFacturasXConsumo,resultado);   
         }else{
             throw {msj:'[Detalle de productos por facturar]: Consulta sin resultados', status: 404};          
-        }
+        }*/
     }).then(function(resultado){
         productosActualizados = [];
-            console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo.detalle[0])
+            //console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo.detalle[0])
             // return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosDetalle); 
-            return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
-            {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1}); 
-            
-            
-        res.send(G.utils.r(req.url, 'Se Genera la factura por consumo satisfactoriamente ', 201, {generar_factura_consumo: []}));
-        
+        /*return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
+        {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1}); 
+          */
         
     }).then(function(resultado){
+        
+        res.send(G.utils.r(req.url, 'Se Genera la factura por consumo satisfactoriamente ', 201, {generar_factura_consumo: []}));
         
     }).fail(function(err){ 
      
@@ -1714,7 +1717,14 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 numero: row.numero
             });
              
-            G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
+            console.log("Productos distribuidos ", {
+                         cantidad_facturada: despacho,
+                         prefijo: row.prefijo, 
+                         numero: row.numero,
+                         codigo_producto: row.codigo_producto,
+                         lote: row.lote,
+                         numero_caja: row.numero_caja});
+            /*G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
                          cantidad_facturada: despacho,
                          prefijo: row.prefijo, 
                          numero: row.numero,
@@ -1724,7 +1734,7 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 console.log("resultado [actualizarCantidadFacturadaXConsumo]: ", resultado);
             }).fail(function(err){
                 console.log("err (/fail) [__distribuirUnidadesFacturadas]: ", err);     
-            }).done();
+            }).done();*/
                 
         }
     });

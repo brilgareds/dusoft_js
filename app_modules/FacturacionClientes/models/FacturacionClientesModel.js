@@ -787,7 +787,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
     parametros.push("c.porc_iva")
 
     if(obj.estado === 0){
-       parametros.push(G.knex.raw("round(a.cantidad) as cantidad"));
+       parametros.push(G.knex.raw("(round(a.cantidad) - a.cantidad_facturada) as cantidad"));
        parametros.push("a.numero_caja");
        parametros.push("a.movimiento_id");
        parametros.push("a.prefijo");
@@ -803,6 +803,9 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         this.andWhere("a.empresa_id", obj.empresa_id)
             .andWhere("a.prefijo", obj.prefijo_documento)
             .andWhere("a.numero", obj.numero_documento);
+        if(obj.estado === 0){
+             this.andWhere(G.knex.raw("round(a.cantidad) > a.cantidad_facturada"))
+        }
     }).as("a")
     
     if(obj.estado === 1){
@@ -822,7 +825,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
          
     }
     query2.then(function(resultado){
-         console.log("resultado ", resultado);
+         //console.log("resultado ", resultado);
         callback(false, resultado);   
     }).catch(function(err) { 
         console.log("err ", err);

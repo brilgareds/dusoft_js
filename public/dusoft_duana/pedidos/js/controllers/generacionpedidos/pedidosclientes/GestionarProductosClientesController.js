@@ -334,7 +334,7 @@ define(["angular", "js/controllers",
                                 contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
                                 pagina_actual: $scope.datos_form.pagina_actual,
                                 termino_busqueda: $scope.datos_form.termino_busqueda,
-                                tipo_producto: $scope.datos_form.tipo_producto,
+                                tipo_producto: $scope.Pedido.tipo_producto,//$scope.datos_form.tipo_producto,
                                 numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
                                 numero_pedido: $scope.Pedido.get_numero_pedido(),
                                 filtro: $scope.rootSeleccionProducto.filtro,
@@ -368,7 +368,7 @@ define(["angular", "js/controllers",
                                 contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
                                 pagina_actual: $scope.datos_form.pagina_actual,
                                 termino_busqueda: $scope.datos_form.termino_busqueda,
-                                tipo_producto: $scope.datos_form.tipo_producto,
+                                tipo_producto: $scope.Pedido.tipo_producto,
                                 numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
                                 numero_pedido: $scope.Pedido.get_numero_pedido(),
                                 filtro: $scope.rootSeleccionProducto.filtro,
@@ -386,7 +386,7 @@ define(["angular", "js/controllers",
                         }
                     };
                 }
-                 
+                
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data){
 
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;

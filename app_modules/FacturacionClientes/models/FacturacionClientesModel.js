@@ -1574,7 +1574,7 @@ FacturacionClientesModel.prototype.generarFacturaXConsumo = function(obj, callba
                 
         }).then(function(resultado){   
            
-          // transaccion.commit();         
+           transaccion.commit();         
         }).fail(function(err){   
            console.log("err [generarFacturaXConsumo]: ", err)
            transaccion.rollback(err);

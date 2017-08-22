@@ -540,6 +540,7 @@ define(["angular", "js/controllers",
                                                 <span class="label label-warning" ng-show="row.entity.get_tipo_producto() == 4">I</span>\
                                                 <span class="label label-default" ng-show="row.entity.get_tipo_producto() == 5">Ne</span>\
                                                 <span class="label label-info" ng-show="row.entity.get_tipo_producto() == 8">Nu</span>\
+                                                <span class="label label-info" ng-show="row.entity.get_tipo_producto() == 9">Ge</span>\
                                                 <span ng-cell-text >{{COL_FIELD}}</span>\
                                                 <span class="glyphicon glyphicon-lock pull-right text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'

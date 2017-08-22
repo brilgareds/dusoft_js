@@ -1552,7 +1552,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo);
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           
-    })/*.then(function(resultado){
+    }).then(function(resultado){
         
         resultadoFacturasXConsumo = resultado;       
         console.log("resultadoFacturasXConsumo ", resultadoFacturasXConsumo);
@@ -1575,7 +1575,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1}); 
          
         
-    })*/.then(function(resultado){
+    }).then(function(resultado){
         
         res.send(G.utils.r(req.url, 'Se Genera la factura por consumo satisfactoriamente ', 201, {generar_factura_consumo: []}));
         
@@ -1703,13 +1703,13 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 numero: row.numero
             });
              
-            console.log("Productos distribuidos ", {
+            /*console.log("Productos distribuidos ", {
                          cantidad_facturada: despacho,
                          prefijo: row.prefijo, 
                          numero: row.numero,
                          codigo_producto: row.codigo_producto,
                          lote: row.lote,
-                         numero_caja: row.numero_caja});
+                         numero_caja: row.numero_caja});*/
             G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
                          cantidad_facturada: despacho,
                          prefijo: row.prefijo, 

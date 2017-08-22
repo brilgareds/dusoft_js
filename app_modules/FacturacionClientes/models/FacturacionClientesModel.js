@@ -1429,8 +1429,10 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
                 numero_caja: obj.numero_caja
             }),
             cantidad_pendiente_por_facturar: 
-            G.knex.select([G.knex.raw('cantidad_pendiente_por_facturar-'+obj.cantidad_facturada)]) 
-            .from('inv_bodegas_movimiento_d')
+            G.knex.select([G.knex.raw('CASE WHEN cantidad_pendiente_por_facturar = 0\
+            THEN cantidad-'+obj.cantidad_facturada+' ELSE\
+            cantidad_pendiente_por_facturar-'+obj.cantidad_facturada+' END as cantidad_des')]) //cantidad-cantidad_facturada
+            .from('inv_bodegas_movimiento_d')      
             .where({prefijo: obj.prefijo, 
                 numero: obj.numero,
                 codigo_producto: obj.codigo_producto,

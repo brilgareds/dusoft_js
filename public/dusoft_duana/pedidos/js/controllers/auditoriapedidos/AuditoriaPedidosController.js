@@ -437,60 +437,69 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.onEliminarProductoAuditado = function(DocumentoTemporal, row) {
+        $scope.onEliminarProductoAuditado = function(DocumentoTemporal, row) {
+            
+            var msj = "Favor tener en cuenta que la caja es la número:  "+row.entity.getNumeroCaja();
+            
+            AlertService.mostrarVentanaAlerta("Mensaje del sistema", msj, function(aceptar){
 
+               if(!aceptar){
+                   return;
+               }
 
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        documento_temporal: {
-                            item_id: row.entity.lote.item_id,
-                            auditado: false,
-                            numero_caja: 0,
-                            documento_temporal_id: DocumentoTemporal.documento_temporal_id,
-                            codigo_producto: row.entity.codigo_producto,
-                            cantidad_pendiente: 0,
-                            justificacion_auditor: "",
-                            existencia: "",
-                            usuario_id: DocumentoTemporal.separador.usuario_id
-                        }
+               var obj = {
+                   session: $scope.session,
+                   data: {
+                       documento_temporal: {
+                           item_id: row.entity.lote.item_id,
+                           auditado: false,
+                           numero_caja: 0,
+                           documento_temporal_id: DocumentoTemporal.documento_temporal_id,
+                           codigo_producto: row.entity.codigo_producto,
+                           cantidad_pendiente: 0,
+                           justificacion_auditor: "",
+                           existencia: "",
+                           usuario_id: DocumentoTemporal.separador.usuario_id
+                       }
+                   }
+               };
+
+               Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
+
+                   if (data.status === 200) {
+                       that.sacarProductoAuditados(row.entity);
+                       AlertService.mostrarMensaje("success", data.msj); 
+
+                   }
+               });
+
+           });
+
+        };
+
+        $scope.onCerrarCaja = function(caja, tipoPedido) {
+            var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
+            var obj = {
+                session: $scope.session,
+                data: {
+                    documento_temporal: {
+                        documento_temporal_id: caja.documento_temporal_id,
+                        numero_caja: caja.numero_caja,
+                        tipo: caja.tipo,
+                        tipo_pedido: tipoPedido
                     }
-                };
-
-                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        that.sacarProductoAuditados(row.entity);
-                        AlertService.mostrarMensaje("success", data.msj);
-
-                    }
-                });
-
+                }
             };
 
-            $scope.onCerrarCaja = function(caja, tipoPedido) {
-                var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        documento_temporal: {
-                            documento_temporal_id: caja.documento_temporal_id,
-                            numero_caja: caja.numero_caja,
-                            tipo: caja.tipo,
-                            tipo_pedido: tipoPedido
-                        }
-                    }
-                };
+            Request.realizarRequest(url, "POST", obj, function(data) {
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                  
-                    if (data.status === 200) {
-                        caja.caja_cerrada = '1';
-                       
-                    } else {
-                        AlertService.mostrarMensaje("warning", "Se genero un error al cerrar la caja");
-                    }
-                });
+                if (data.status === 200) {
+                    caja.caja_cerrada = '1';
+
+                } else {
+                    AlertService.mostrarMensaje("warning", "Se genero un error al cerrar la caja");
+                }
+            });
             };
 
 

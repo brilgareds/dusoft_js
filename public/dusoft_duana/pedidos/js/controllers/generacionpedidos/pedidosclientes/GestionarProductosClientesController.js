@@ -259,6 +259,8 @@ define(["angular", "js/controllers",
             // Productos
             $scope.seleccionar_tipo_producto = function(tipo_producto) {
                 
+                $scope.Pedido.tipo_producto = tipo_producto;
+                
                 $scope.datos_form.tipo_producto = tipo_producto;
                 $scope.datos_form.pagina_actual = 1;
 
@@ -285,6 +287,9 @@ define(["angular", "js/controllers",
                 
                 if ($scope.datos_form.tipo_producto === '8')
                     $scope.datos_form.seleccion_tipo_producto = "- Nutricional -";
+                
+                if ($scope.datos_form.tipo_producto === '9')
+                    $scope.datos_form.seleccion_tipo_producto = "- Gerencia -";
             };
 
             $scope.buscador_productos = function(ev, tipo) {
@@ -300,7 +305,9 @@ define(["angular", "js/controllers",
             };
 
             that.buscar_productos_clientes = function() {
-                 
+                
+                console.log("ESTOAOSOAOS get_numero_cotizacion ", $scope.Pedido.get_numero_cotizacion())
+                console.log("ESTOAOSOAOS get_numero_pedido ", $scope.Pedido.get_numero_pedido())
                 that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
                  
                  if($scope.Pedido.estadoMultiplePedido){

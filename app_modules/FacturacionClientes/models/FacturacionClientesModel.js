@@ -825,7 +825,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
          
     }
     query2.then(function(resultado){
-         //console.log("resultado ", resultado);
+        console.log("resultado >>>>>> ", resultado);
         callback(false, resultado);   
     }).catch(function(err) { 
         console.log("err ", err);
@@ -833,6 +833,12 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
     });        
 };
 
+/**
+ * 
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
 FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, callback) {
   
    var columnQuery = [
@@ -1026,9 +1032,9 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(estado,obj
     
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
     
-    if(estado === 0){if(transaccion) query.transacting(transaccion); }   
+    if(transaccion) query.transacting(transaccion);
     query.then(function(resultado){     
-        console.log("parametros [insertarFacturaAgrupada]: ", resultado);
+        console.log("resultado [insertarFacturaAgrupada]: ", resultado);
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
@@ -1542,6 +1548,46 @@ FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo = function(para
     
 };
 
+/*
+ * @autor : Cristian Ardila
+ * +Descripcion : Transaccion para almacenar los temporales de la formula
+ *                que vendrian siendo los lotes
+ * @fecha: 05/07/2015
+ */
+FacturacionClientesModel.prototype.generarFacturaXConsumo = function(obj, callback)
+{   
+    var that = this;
+    var def = G.Q.defer();
+    //console.log("obj ", obj);
+    G.knex.transaction(function(transaccion) {
+        
+        G.Q.ninvoke(that,'insertarFacturaAgrupada',1,obj.parametrosCabecera,transaccion).then(function(){ 
+             
+            return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,obj.datosDocumentosXConsumo,"inv_facturas_agrupadas_despacho_d",1,transaccion);  
+                
+        }).then(function(resultado){
+            
+           return G.Q.ninvoke(that,'actualizarNumeracion',{
+                empresa_id: obj.datosDocumentosXConsumo.cabecera[0].empresa_id,
+                documento_id: obj.datosDocumentosXConsumo.cabecera[0].documento_id
+                }, transaccion); 
+                
+        }).then(function(resultado){   
+           
+          // transaccion.commit();         
+        }).fail(function(err){   
+           console.log("err [generarFacturaXConsumo]: ", err)
+           transaccion.rollback(err);
+        }).done();
+    }).then(function(){     
+            callback(false);
+    }).catch(function(err){       
+            callback(err);       
+    }).done(); 
+    
+};
+
+
 /**
  * +Descripcion Metodo encargado de generar las facturas agrupadas 
  *              mediante la transaccion la cual ejecuta varios querys
@@ -1689,7 +1735,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
                                       
         }).then(function(){
            
-            return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,parametrosInsertaFacturaAgrupadaDetalle,"inv_facturas_agrupadas_despacho_d",transaccion);
+            return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,parametrosInsertaFacturaAgrupadaDetalle,"inv_facturas_agrupadas_despacho_d",0,transaccion);
            
         }).then(function(){
               
@@ -1768,18 +1814,39 @@ function __actualizarEstadoFacturaPedido(that,index,datos,transaccion, callback)
  *              registrara el detalle de las facturas agrupadas
  * @fecha 2017-05-17
  */
-function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback){
+function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,estado,transaccion, callback){
     
-    var dato = datos[index];
+    var parametros;
+    var dato = estado === 1 ? datos.detalle[index]: datos[index] ;   
+
     if(!dato){
         
         callback(false);
         return;
     }
     
+   
+    if(estado === 1){
+        parametros = { 
+            tipo_id_vendedor: dato.tipo_id_vendedor,
+            vendedor_id: dato.vendedor_id,
+            pedido_cliente_id: dato.pedido_cliente_id, 
+            empresa_id: dato.empresa_id,
+            factura_fiscal: datos.cabecera[0].factura_fiscal,
+            prefijo: datos.cabecera[0].prefijo,
+            codigo_producto: dato.codigo_producto,
+            cantidad: dato.cantidad_despachada,
+            valor_unitario: dato.valor_unitario,
+            lote:dato.lote,
+            fecha_vencimiento:dato.fecha_vencimiento,
+            porc_iva: dato.porc_iva,
+            prefijo_documento: dato.prefijo,
+            numeracion_documento: dato.factura_fiscal
+        };
+    }
     index++;
-    
-    G.Q.ninvoke(that,'insertarFacturaAgrupadaDetalle',dato,tabla,transaccion).then(function(resultado){
+   
+    G.Q.ninvoke(that,'insertarFacturaAgrupadaDetalle',estado === 1 ? parametros: dato,tabla,transaccion).then(function(resultado){
          
     }).fail(function(err){
         console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
@@ -1788,7 +1855,7 @@ function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, ca
     
      setTimeout(function() {
          
-            __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback)
+            __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,estado,transaccion, callback)
     
     }, 300);
     

@@ -1537,36 +1537,22 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
                 facturacion_cosmitet: 0
                 
             }; 
-           
+            //console.log("parametrosCabecera ", parametrosCabecera);
+            //console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo);
+            return G.Q.ninvoke(that.m_facturacion_clientes,'generarFacturaXConsumo', 
+            {parametrosCabecera:parametrosCabecera, datosDocumentosXConsumo: datosDocumentosXConsumo});
             //return G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaAgrupada',1, parametrosCabecera,{});
   
         }else{
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
         
-    })/*.then(function(resultado){
-         
-        if(resultado.rowCount > 0){
-            G.knex.transaction(function(transaccion) { 
-                return G.Q.nfcall(__insertarFacturaAgrupadaDetalle,that,0,datosDocumentosXConsumo,"inv_facturas_agrupadas_despacho_d",transaccion);         
-            }); 
-        }
-        
     }).then(function(){
-        
-        G.knex.transaction(function(transaccion) { 
-            return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarNumeracion',{
-                empresa_id: datosDocumentosXConsumo.cabecera[0].empresa_id,
-                documento_id: datosDocumentosXConsumo.cabecera[0].documento_id
-            }, transaccion);
-        });
-        
-    })*/.then(function(){
         
         console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo);
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           
-    }).then(function(resultado){
+    })/*.then(function(resultado){
         
         resultadoFacturasXConsumo = resultado;       
         console.log("resultadoFacturasXConsumo ", resultadoFacturasXConsumo);
@@ -1585,11 +1571,11 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         productosActualizados = [];
             //console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo.detalle[0])
             // return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosDetalle); 
-        /*return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
+        return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
         {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1}); 
-          */
+         
         
-    }).then(function(resultado){
+    })*/.then(function(resultado){
         
         res.send(G.utils.r(req.url, 'Se Genera la factura por consumo satisfactoriamente ', 201, {generar_factura_consumo: []}));
         
@@ -1784,7 +1770,7 @@ function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFa
  *              agrupada
  * @fecha 2017-15-08
  */
-function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback){
+/*function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback){
     
     var dato = datos.detalle[index];
     if(!dato){   
@@ -1823,7 +1809,7 @@ function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, ca
     setTimeout(function() {         
         __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback)    
     }, 300);
-};
+};*/
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017

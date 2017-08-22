@@ -96,9 +96,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             ]
         };
         
-        $scope.estadosProductosFacturados = [           
-            "glyphicon glyphicon-saved",
-            "glyphicon glyphicon-ok"
+        $scope.estadosProductosFacturados = [            
+            "glyphicon glyphicon-ok",
+            "glyphicon glyphicon-saved"
         ];
         $scope.claseIconButton = function(entity){
             

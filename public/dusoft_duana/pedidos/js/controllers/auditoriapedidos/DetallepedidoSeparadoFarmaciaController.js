@@ -185,6 +185,7 @@ define(["angular", "js/controllers",
                                     </div>'
                     },
                     {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
+                    {field:'numeroCaja', displayName:"Caja"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEliminarProductoAuditado(DocumentoTemporal, row)">\n\

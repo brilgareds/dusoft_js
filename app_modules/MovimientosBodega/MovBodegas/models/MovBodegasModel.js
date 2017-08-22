@@ -209,7 +209,8 @@ MovimientosBodegasModel.prototype.consultar_productos_auditados = function(docum
         b.empresa_id,\
         b.centro_utilidad,\
         c.existencia_actual,\
-        d.existencia as existencia_bodega\
+        d.existencia as existencia_bodega,\
+        b.numero_caja\
         from inv_bodegas_movimiento_tmp a\
         inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id and b.auditado = '1'\
         left join existencias_bodegas_lote_fv c on c.empresa_id = b.empresa_id and c.centro_utilidad = b.centro_utilidad\
@@ -229,7 +230,8 @@ MovimientosBodegasModel.prototype.consultar_productos_auditados = function(docum
         '' as empresa_id,\
         '' as centro_utilidad,\
         0 as existencia_actual,\
-        0 as existencia_bodega\
+        0 as existencia_bodega,\
+        0 as numero_caja\
         from inv_bodegas_movimiento_tmp a\
         inner join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
         where a.doc_tmp_id = :1 and a.usuario_id = :2 and b.codigo_producto not in(\

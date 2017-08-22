@@ -83,7 +83,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
 
-                    if (data.obj.documentos_temporales !== undefined) {
+                    if (data.obj && data.obj.documentos_temporales !== undefined) {
                         callback(data.obj, paginando, tipo);
                     }
 
@@ -402,6 +402,9 @@ define(["angular", "js/controllers",
                             obj.codigo_producto, obj.descripcion_producto, obj.existencia_bodega, 0, obj.cantidad_solicitada,
                             obj.cantidad_ingresada, obj.observacion_cambio
                     );
+                    
+                    producto.setNumeroCaja(obj.numero_caja);
+                    
                     var lote = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
                     lote.item_id = obj.item_id;
                     lote.setExistenciaActual(obj.existencia_actual);

@@ -62,8 +62,15 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
 
                 {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
                 {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a despachar'},
+                /*{filed: 'Estado', 
+                    cellClass: "ngCellText", 
+                    width: "5%", 
+                    displayName: 'Estado',//CantidadPendientePorFacturar
+                    cellTemplate: '<div class="col-xs-16 ">{{row.entity.getCantidadDespachada()}} \n\
+                                   <span class="glyphicon glyphicon-saved" ng-if="row.entity.cantidadDespachada() === row.entity.CantidadPendientePorFacturar"></span><div>'},//
+                */
                 {field: 'cantidadTmpDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant Facturada'},
-                {field: 'cantidadFacturada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar'},
+                {field: 'cantidadPendientePorFacturar',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar'},
                 {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},
                 {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "10%", displayName: 'Fecha vto'},
                 {displayName: 'Cantidad', width: "10%", 
@@ -76,16 +83,28 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                                         name="" \
                                         id="" \
                                         /> </div>'},
+                                
                 {width: "5%", displayName: "Opcion", cellClass: "txt-center",
                 cellTemplate: '<button\
                     ng-disabled="row.entity.cantidadDespachada === row.entity.cantidadTmpDespachada " \n\
                     class="btn btn-default btn-xs" \n\
                     ng-validate-events="{{ habilitar_seleccion_producto() }}" \n\
-                    ng-click="guardarTemporalFacturaConsumo(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                    ng-click="guardarTemporalFacturaConsumo(row.entity)" >\n\
+                    <span ng-class="claseIconButton(row.entity)"></span></button>\
                     </div>'}
                
             ]
         };
+        
+        $scope.estadosProductosFacturados = [           
+            "glyphicon glyphicon-saved",
+            "glyphicon glyphicon-ok"
+        ];
+        $scope.claseIconButton = function(entity){
+            
+            return $scope.estadosProductosFacturados[entity.estadoEntrega];
+             
+        }
         
          /**
          * +Descripcion Grid que lista el detalle del efc seleccionado
@@ -272,9 +291,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             facturacionClientesService.consultarDetalleTemporalFacturaConsumo(obj, function(data){
                 
                 if(data.status === 200){
-                    $scope.root.valorFacturaTemporal.valorTotal = data.obj.procesar_factura_cosmitet[0].valor_total,
-                    $scope.root.valorFacturaTemporal.valorSubTotal = data.obj.procesar_factura_cosmitet[0].valor_sub_total,
-                    $scope.root.valorFacturaTemporal.valorTotalIva = data.obj.procesar_factura_cosmitet[0].valor_total_iva
+                    $scope.root.valorFacturaTemporal.valorTotal = data.obj.procesar_factura_cosmitet[0].valor_total;
+                    $scope.root.valorFacturaTemporal.valorSubTotal = data.obj.procesar_factura_cosmitet[0].valor_sub_total;
+                    $scope.root.valorFacturaTemporal.valorTotalIva = data.obj.procesar_factura_cosmitet[0].valor_total_iva;
                     
                     $scope.root.detalleDocumentoTmp.push(facturacionClientesService.renderDetalleTmpFacturaConsumo(data.obj.procesar_factura_cosmitet));
                     
@@ -310,6 +329,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             
             facturacionClientesService.obtenerDetallePorFacturar(obj,function(respuesta){
                 if(respuesta.status === 200){
+                    console.log("respuesta.obj.detalle ", respuesta.obj.detalle)
                     $scope.root.documento.vaciarDetalle();
                     that.listarDetalleTmpFacturaConsumo();
                     var _documentos = respuesta.obj.detalle;
@@ -319,7 +339,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         var documento = DocumentoDetalleConsumo.get(_documento.codigo_producto, _documento.cantidad_despachada, _documento.lote, _documento.fecha_vencimiento);
                             
                             documento.setValorUnitario(_documento.valor_unitario);                          
+                            documento.setCantidadPendientePorFacturar(_documento.cantidad_pendiente_por_facturar);                          
                             documento.setPorcIva(_documento.porc_iva);                          
+                            documento.setEstadoEntrega(_documento.estado_entrega);                          
                             documento.setCantidadTmpDespachada(_documento.cantidad_tmp_despachada); 
                             documento.setCantidadNueva(parseInt(_documento.cantidad_despachada) - parseInt(_documento.cantidad_tmp_despachada));
                             $scope.root.documento.agregarDetalle(documento);

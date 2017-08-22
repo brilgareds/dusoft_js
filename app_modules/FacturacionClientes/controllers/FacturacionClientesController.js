@@ -1339,7 +1339,8 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
                 vendedor_id: '830080649', 
                 valor_sub_total: subTotalValorProductos.toFixed(2),
                 valor_total: totalValorProductos.toFixed(2),
-                valor_total_iva: totalValorIva
+                valor_total_iva: totalValorIva,
+                estado: 0
             }
              
             return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosTotalValor); 
@@ -1439,6 +1440,12 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         tercero_id: args.generar_factura_consumo.terceroId, 
         sw_facturacion:0
     };
+    var parametrosDetalle = {
+        tipoIdTercero:args.generar_factura_consumo.tipoTerceroId, 
+        terceroId: args.generar_factura_consumo.terceroId,
+        empresaId: args.generar_factura_consumo.empresa_id,
+        estado: 2
+    };
     var resultadoFacturasXConsumo;
     var documentoFacturacion = "";
     var consultarParametrosRetencion = "";
@@ -1447,12 +1454,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
         
-        var parametrosDetalle = {
-            tipoIdTercero:args.generar_factura_consumo.tipoTerceroId, 
-            terceroId: args.generar_factura_consumo.terceroId,
-            empresaId: args.generar_factura_consumo.empresa_id,
-            estado: 2
-        };
+        
         
         if(resultado.length >0){
             datosDocumentosXConsumo.cabecera = resultado;
@@ -1561,24 +1563,35 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         
     })*/.then(function(){
         
+        //console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo);
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           
     }).then(function(resultado){
-        resultadoFacturasXConsumo = resultado;              
-        return G.Q.nfcall(__obtenerDetallePorFacturar,that,0,resultado,[]);            
+        
+        resultadoFacturasXConsumo = resultado;       
+        console.log("resultadoFacturasXConsumo ", resultadoFacturasXConsumo);
+        return G.Q.nfcall(__obtenerDetallePorFacturar,that,0,resultado,[]);          
            
         
     }).then(function(resultado){
         
-        if(resultado.length > 0){
+       console.log("resultado [__obtenerDetallePorFacturar]:: ", resultado);
+        /*if(resultado.length > 0){
             return G.Q.nfcall(__distribuirUnidadesFacturadas,that,0,0,resultadoFacturasXConsumo,resultado);   
         }else{
             throw {msj:'[Detalle de productos por facturar]: Consulta sin resultados', status: 404};          
-        }
+        }*/
     }).then(function(resultado){
         productosActualizados = [];
-        res.send(G.utils.r(req.url, 'Se Genera la factura por consumo satisfactoriamente ', 201, {generar_factura_consumo: []}));
+            //console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo.detalle[0])
+            // return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosDetalle); 
+        /*return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
+        {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1}); 
+          */
         
+    }).then(function(resultado){
+        
+        res.send(G.utils.r(req.url, 'Se Genera la factura por consumo satisfactoriamente ', 201, {generar_factura_consumo: []}));
         
     }).fail(function(err){ 
      
@@ -1671,13 +1684,7 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                         despacho = dato.cantidad;
 
                     }
-                    /*productosActualizados.unshift({
-                        codigo_producto: row.codigo_producto, 
-                        lote: row.lote, 
-                        caja: row.numero_caja, 
-                        prefijo: row.prefijo, 
-                        numero: row.numero
-                    });*/
+                   
                 }else{
 
                     dato.cantidad = parseInt(dato.cantidad2);
@@ -1688,13 +1695,6 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                     }else{
                         despacho = dato.cantidad2;
                     }
-                    /*productosActualizados.unshift({
-                        codigo_producto: row.codigo_producto, 
-                        lote: row.lote, 
-                        caja: row.numero_caja, 
-                        prefijo: row.prefijo, 
-                        numero: row.numero
-                    });*/
 
                 }
 
@@ -1706,30 +1706,24 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 }else{
                     despacho = parseInt(dato.cantidad2);
                 }
-                /*productosActualizados.unshift({
-                    codigo_producto: row.codigo_producto, 
-                    lote: row.lote, 
-                    caja: row.numero_caja, 
-                    prefijo: row.prefijo, 
-                    numero: row.numero
-                });*/
+               
             }
             
             productosActualizados.unshift({
-                    codigo_producto: row.codigo_producto, 
-                    lote: row.lote, 
-                    caja: row.numero_caja, 
-                    prefijo: row.prefijo, 
-                    numero: row.numero
-                });
-                
-             console.log({
+                codigo_producto: row.codigo_producto, 
+                lote: row.lote, 
+                caja: row.numero_caja, 
+                prefijo: row.prefijo, 
+                numero: row.numero
+            });
+             
+            console.log("Productos distribuidos ", {
                          cantidad_facturada: despacho,
                          prefijo: row.prefijo, 
                          numero: row.numero,
                          codigo_producto: row.codigo_producto,
                          lote: row.lote,
-                         numero_caja: row.numero_caja} ); 
+                         numero_caja: row.numero_caja});
             /*G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
                          cantidad_facturada: despacho,
                          prefijo: row.prefijo, 
@@ -1744,10 +1738,7 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 
         }
     });
-    /*if(dato.codigo_producto === producto.codigo_producto  && dato.lote === producto.lote){
-        console.log(" row.codigo_producto = ",producto.codigo_producto," row.lote === ", producto.lote ); 
-    }*/
-     
+    
     setTimeout(function() {    
         __distribuirUnidadesFacturadas(that,index,index2,datos, productos, callback)   
     }, 0);

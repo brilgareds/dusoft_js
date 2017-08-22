@@ -1305,23 +1305,25 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
             "b.numeracion_documento"];
     var query = G.knex.column(campos)
         .select()
-        .from('inv_facturas_agrupadas_despacho as a')
+        .from('inv_facturas_agrupadas_despacho as a')             
         .innerJoin('inv_facturas_agrupadas_despacho_d as b',function(){
             this.on("a.prefijo", "b.prefijo")
                 .on("a.factura_fiscal", "b.factura_fiscal")
         }).where(function(){
              this.andWhere("b.prefijo_documento", obj.prefijo)
-                .andWhere("b.numeracion_documento", obj.factura_fiscal)
+                .andWhere("b.numeracion_documento", obj.numero)
                 .andWhere("b.codigo_producto", obj.codigo_producto)
                 .andWhere("b.lote", obj.lote)
                 .andWhere("b.tipo_id_vendedor", obj.tipo_id_vendedor)
                 .andWhere("b.vendedor_id", obj.vendedor_id)
+                .andWhere("b.factura_fiscal", obj.factura_fiscal)
         })
         .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.pedido_cliente_id","b.empresa_id",
         "b.codigo_producto","b.fecha_vencimiento","b.lote",
         "b.prefijo_documento","b.numeracion_documento");     
  
-    query.then(function(resultado){    
+    query.then(function(resultado){   
+       
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [consultarPedidosFacturaAgrupada]: ", err);     
@@ -1407,21 +1409,29 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
     
    var query = G.knex('inv_bodegas_movimiento_d')
         .where({prefijo: obj.prefijo, 
+            numero: obj.numero,
+            codigo_producto: obj.codigo_producto,
+            lote: obj.lote,
+            numero_caja: obj.numero_caja})
+        .update({cantidad_facturada:
+            G.knex.select([G.knex.raw('cantidad_facturada+'+obj.cantidad_facturada)]) 
+            .from('inv_bodegas_movimiento_d')
+            .where({prefijo: obj.prefijo, 
                 numero: obj.numero,
                 codigo_producto: obj.codigo_producto,
                 lote: obj.lote,
-                numero_caja: obj.numero_caja})
-        .update({cantidad_facturada:obj.cantidad_facturada, 
-                    cantidad_pendiente_por_facturar: 
-                    G.knex.select([G.knex.raw('cantidad-'+obj.cantidad_facturada)]) 
-                    .from('inv_bodegas_movimiento_d')
-                    .where({prefijo: obj.prefijo, 
-                        numero: obj.numero,
-                        codigo_producto: obj.codigo_producto,
-                        lote: obj.lote,
-                        numero_caja: obj.numero_caja
-                    }) 
-               })  
+                numero_caja: obj.numero_caja
+            }),
+            cantidad_pendiente_por_facturar: 
+            G.knex.select([G.knex.raw('cantidad_pendiente_por_facturar-'+obj.cantidad_facturada)]) 
+            .from('inv_bodegas_movimiento_d')
+            .where({prefijo: obj.prefijo, 
+                numero: obj.numero,
+                codigo_producto: obj.codigo_producto,
+                lote: obj.lote,
+                numero_caja: obj.numero_caja
+            }) 
+        })  
      
     query.then(function(resultado){  
         console.log("resultado [actualizarCantidadFacturadaXConsumo]:", resultado)

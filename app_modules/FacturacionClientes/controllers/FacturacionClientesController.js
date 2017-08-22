@@ -1510,7 +1510,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
             throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};                
         }
          
-    })/*.then(function(resultado){
+    }).then(function(resultado){
        
         if(!resultado || resultado.length > 0){
             parametros.direccion_ip = ip;
@@ -1537,14 +1537,14 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
                 facturacion_cosmitet: 0
                 
             }; 
-          
-            return G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaAgrupada',1, parametrosCabecera,{});
+           
+            //return G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaAgrupada',1, parametrosCabecera,{});
   
         }else{
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
         
-    }).then(function(resultado){
+    })/*.then(function(resultado){
          
         if(resultado.rowCount > 0){
             G.knex.transaction(function(transaccion) { 
@@ -1563,7 +1563,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         
     })*/.then(function(){
         
-        //console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo);
+        console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo);
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           
     }).then(function(resultado){
@@ -1576,11 +1576,11 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     }).then(function(resultado){
         
        console.log("resultado [__obtenerDetallePorFacturar]:: ", resultado);
-        /*if(resultado.length > 0){
+        if(resultado.length > 0){
             return G.Q.nfcall(__distribuirUnidadesFacturadas,that,0,0,resultadoFacturasXConsumo,resultado);   
         }else{
             throw {msj:'[Detalle de productos por facturar]: Consulta sin resultados', status: 404};          
-        }*/
+        }
     }).then(function(resultado){
         productosActualizados = [];
             //console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo.detalle[0])
@@ -1724,7 +1724,7 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                          codigo_producto: row.codigo_producto,
                          lote: row.lote,
                          numero_caja: row.numero_caja});
-            /*G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
+            G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
                          cantidad_facturada: despacho,
                          prefijo: row.prefijo, 
                          numero: row.numero,
@@ -1734,8 +1734,7 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 console.log("resultado [actualizarCantidadFacturadaXConsumo]: ", resultado);
             }).fail(function(err){
                 console.log("err (/fail) [__distribuirUnidadesFacturadas]: ", err);     
-            }).done();*/
-                
+            }).done();               
         }
     });
     
@@ -1762,11 +1761,12 @@ function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFa
      
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleFacturaConsumo',{
         prefijo: dato.prefijo, 
-        factura_fiscal: dato.factura_fiscal,
+        numero: dato.factura_fiscal,
         codigo_producto: dato.codigo_producto, 
         tipo_id_vendedor: dato.tipo_id_vendedor, 
         vendedor_id: dato.vendedor_id,
-        lote: dato.lote
+        lote: dato.lote,
+        factura_fiscal:datos.cabecera[0].factura_fiscal
     }).then(function(resultado){
         productosFacturados.push(resultado[0]);
     }).fail(function(err){

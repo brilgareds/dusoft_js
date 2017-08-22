@@ -83,7 +83,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
 
-                    if (data.obj.documentos_temporales !== undefined) {
+                    if (data.obj && data.obj.documentos_temporales !== undefined) {
                         callback(data.obj, paginando, tipo);
                     }
 
@@ -402,6 +402,9 @@ define(["angular", "js/controllers",
                             obj.codigo_producto, obj.descripcion_producto, obj.existencia_bodega, 0, obj.cantidad_solicitada,
                             obj.cantidad_ingresada, obj.observacion_cambio
                     );
+                    
+                    producto.setNumeroCaja(obj.numero_caja);
+                    
                     var lote = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
                     lote.item_id = obj.item_id;
                     lote.setExistenciaActual(obj.existencia_actual);
@@ -526,6 +529,52 @@ define(["angular", "js/controllers",
                 });
                 
             };
+            
+            that.mostrarVentanaPendientesInvalidos = function(pendientes){
+                
+
+                $scope.opts = {
+                    size: 'lg',
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: 'views/auditoriapedidos/pendientesInvalidos.html',
+                    controller:["$scope", "pendientes", "$modalInstance", function($scope, pendientes, $modalInstance){
+                            
+                            $scope.pendientes = pendientes;
+                            
+                            $scope.listadoPendientes = {
+                                data: 'pendientes',
+                                enableColumnResize: true,
+                                enableRowSelection: false,
+                                showFilter: true,
+                                enableHighlighting:true,
+                                size:'sm',
+                                columnDefs: [
+                                    {field: 'codigo_producto', displayName: 'Codigo', width:120},
+                                    {field: 'descripcion_producto', displayName: 'Descripcion'},
+                                    {field: 'cantidad_solicitada', displayName: 'Solicitado', width:100},
+                                    {field: 'cantidad_ingresada', displayName: 'Ingresado', width:100}
+
+                                ]
+
+                            };
+                            
+                            $scope.onCerrar = function(){
+                                $modalInstance.close();
+                            };
+                            
+                            
+                    }],
+                    resolve: {
+                        pendientes: function() {
+                            return pendientes;
+                        }
+                    }
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+
+            };
            
             
             $scope.generarDocumento = function(documento) {
@@ -628,13 +677,22 @@ define(["angular", "js/controllers",
 
 
                     } else if(parseInt(data.status) !== 500 ) {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                       
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];
                         $scope.productosPendientes = [];
                         $scope.cajasSinCerrar = [];
 
                         var productosNoAuditados = [];
+                        
+                        
+                        if(movimientos_bodegas.productos_pendientes_invalidos && movimientos_bodegas.productos_pendientes_invalidos.length > 0){
+                            
+                            that.mostrarVentanaPendientesInvalidos(movimientos_bodegas.productos_pendientes_invalidos);
+                            return;
+                        }
+                        
+                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                         if (documento, movimientos_bodegas.productos_no_auditados !== undefined) {
                             that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);

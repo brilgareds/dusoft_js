@@ -1801,8 +1801,14 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
             
         return G.Q.nfcall(__validar_productos_pedidos_clientes, that, numero_pedido, documento_temporal_id, usuario_id);
         
-    }).spread(function(productos_no_auditados, productos_pendientes, productosSinExistencias){
-        if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
+    }).spread(function(productos_no_auditados, productos_pendientes, productosSinExistencias, productosPendientesInvalidos){
+        
+        if(productosPendientesInvalidos.length > 0){
+            
+           throw {msj:"Hay productos con cantidades pendientes invalidas", status:404,
+                   obj:{movimientos_bodegas: {productos_no_auditados: [], productos_pendientes: [], productos_pendientes_invalidos:productosPendientesInvalidos}}};
+            
+        } else if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
             throw {msj:"Hay productos sin auditar o pendientes sin justificación.", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
        
@@ -1976,9 +1982,15 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
             
         return G.Q.nfcall(__validar_productos_pedidos_farmacias, that, numero_pedido, documento_temporal_id, usuario_id);
         
-    }).spread(function(productos_no_auditados, productos_pendientes, productosSinExistencias){
+    }).spread(function(productos_no_auditados, productos_pendientes, productosSinExistencias, productosPendientesInvalidos){
         console.log("spread 1 >>>>>>>>>>>>>>>>>>>>");
-        if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
+        
+         if(productosPendientesInvalidos.length > 0){
+            
+           throw {msj:"Hay productos con cantidades pendientes invalidas", status:404,
+                   obj:{movimientos_bodegas: {productos_no_auditados: [], productos_pendientes: [], productos_pendientes_invalidos:productosPendientesInvalidos}}};
+            
+        } else if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
             throw {msj:"Algunos productos no ha sido auditados o tienen pendientes la justificacion.", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
         } else if(productosSinExistencias.length > 0){
@@ -3092,6 +3104,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                     var productos_pendientes = [];
                     var productos_no_auditados = [];
                     var productosSinExistencias = [];
+                    var productosPendientesInvalidos = [];
 
                     detalle_pedido = that.m_pedidos.unificarLotesDetalle(detalle_pedido);
 
@@ -3109,33 +3122,40 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
 
                             console.log("producto separado   >>>>>>>>>>>>>>>>", producto_pedido);
                             var cantidad_pendiente = producto_pedido.cantidad_pendiente;
-
-                            if (producto_separado.length === 0) {
-                                // Producto que no fue separado y le falta la justificacion del auditor
-                                if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '') {
-                                    productos_pendientes.push(producto_pedido);
-                                    //productos_pendientes = __agregarProducto(producto_pedido, productos_pendientes);
-                                } else if (producto_pedido.item_id > 0) {
-                                    productos_no_auditados.push(producto_pedido);
-                                    //productos_no_auditados = __agregarProducto(producto_pedido, productos_no_auditados);
-                                } 
+                            
+                            //Verificar productos con cantidades pendientes
+                            if(cantidad_pendiente < 0){
+                                
+                                productosPendientesInvalidos.push(producto_pedido);
                             } else {
+                                if (producto_separado.length === 0) {
+                                    // Producto que no fue separado y le falta la justificacion del auditor
+                                    if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '') {
+                                        productos_pendientes.push(producto_pedido);
+                                        //productos_pendientes = __agregarProducto(producto_pedido, productos_pendientes);
+                                    } else if (producto_pedido.item_id > 0) {
+                                        productos_no_auditados.push(producto_pedido);
+                                        //productos_no_auditados = __agregarProducto(producto_pedido, productos_no_auditados);
+                                    } 
+                                } else {
 
-                                // Verificar que los productos con pendientes esten justificados po el auditor/
-                                if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '') {
+                                    // Verificar que los productos con pendientes esten justificados po el auditor/
+                                    if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '') {
 
-                                    productos_pendientes.push(producto_pedido);
+                                        productos_pendientes.push(producto_pedido);
 
-                                } else if (producto_pedido.auditado === '0') {
-                                    productos_no_auditados.push(producto_pedido);
+                                    } else if (producto_pedido.auditado === '0') {
+                                        productos_no_auditados.push(producto_pedido);
 
+                                    }
                                 }
                             }
+
                         }
 
                     });
 
-                    callback(err, productos_no_auditados, productos_pendientes, productosSinExistencias);
+                    callback(err, productos_no_auditados, productos_pendientes, productosSinExistencias, productosPendientesInvalidos);
                     return;
                 }
             });
@@ -3166,6 +3186,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
                     var productos_pendientes = [];
                     var productos_no_auditados = [];
                     var productosSinExistencias = [];
+                    var productosPendientesInvalidos = [];
 
                     detalle_pedido = that.m_pedidos.unificarLotesDetalle(detalle_pedido);
 
@@ -3181,8 +3202,12 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 
                             // var cantidad_pendiente = _obtenerCantidadPendiente(detalle_pedido,producto_pedido);
                             var cantidad_pendiente = producto_pedido.cantidad_pendiente;
-
-                            if (producto_separado.length === 0) {
+                            
+                            if(cantidad_pendiente < 0){
+                                
+                                productosPendientesInvalidos.push(producto_pedido);
+                                
+                            } else if (producto_separado.length === 0) {
                                 // Producto que no fue separado y le falta la justificacion del auditor
                                 if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '') {
                                     productos_pendientes.push(producto_pedido);
@@ -3210,7 +3235,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
                         }
                     });
 
-                    callback(err, productos_no_auditados, productos_pendientes, productosSinExistencias);
+                    callback(err, productos_no_auditados, productos_pendientes, productosSinExistencias, productosPendientesInvalidos);
                     return;
                 }
             });

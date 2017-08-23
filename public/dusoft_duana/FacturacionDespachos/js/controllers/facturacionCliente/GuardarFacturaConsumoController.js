@@ -248,6 +248,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             $state.go("GuardarFacturaConsumo");
         };
         
+        $scope.onBtnVolverListaClientes = function(){
+             $state.go('Despacho');     
+        };
+        
         $scope.generarFacturaXConsumo = function(){
             
             var obj = {

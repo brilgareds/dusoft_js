@@ -1702,14 +1702,7 @@ function __distribuirUnidadesFacturadas(that, index,index2, datos, productos, ca
                 prefijo: row.prefijo, 
                 numero: row.numero
             });
-             
-            /*console.log("Productos distribuidos ", {
-                         cantidad_facturada: despacho,
-                         prefijo: row.prefijo, 
-                         numero: row.numero,
-                         codigo_producto: row.codigo_producto,
-                         lote: row.lote,
-                         numero_caja: row.numero_caja});*/
+            
             G.Q.ninvoke(that.m_facturacion_clientes,'actualizarCantidadFacturadaXConsumo',{
                          cantidad_facturada: despacho,
                          prefijo: row.prefijo, 
@@ -1764,52 +1757,7 @@ function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFa
     }, 300);
 };
 
-/**
- * @author Cristian Ardila
- * +Descripcion Funcion recursiva encargada de registrar el detalle de una factura
- *              agrupada
- * @fecha 2017-15-08
- */
-/*function __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback){
-    
-    var dato = datos.detalle[index];
-    if(!dato){   
-        
-        callback(false);
-        return;
-    }
-    
-    
-     
-    var parametros = { 
-        tipo_id_vendedor: dato.tipo_id_vendedor,
-        vendedor_id: dato.vendedor_id,
-        pedido_cliente_id: dato.pedido_cliente_id, 
-        empresa_id: dato.empresa_id,
-        factura_fiscal: datos.cabecera[0].factura_fiscal,
-        prefijo: datos.cabecera[0].prefijo,
-        codigo_producto: dato.codigo_producto,
-        cantidad: dato.cantidad_despachada,
-        valor_unitario: dato.valor_unitario,
-        lote:dato.lote,
-        fecha_vencimiento:dato.fecha_vencimiento,
-        porc_iva: dato.porc_iva,
-        prefijo_documento: dato.prefijo,
-        numeracion_documento: dato.factura_fiscal
-    };
-    console.log("parametros ", parametros);
-    index++;
-    G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaAgrupadaDetalle',parametros,tabla,transaccion).then(function(resultado){
-       
-    }).fail(function(err){
-        console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
-        transaccion.rollback(err);
-    }).done();
-    
-    setTimeout(function() {         
-        __insertarFacturaAgrupadaDetalle(that,index,datos,tabla,transaccion, callback)    
-    }, 300);
-};*/
+
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017

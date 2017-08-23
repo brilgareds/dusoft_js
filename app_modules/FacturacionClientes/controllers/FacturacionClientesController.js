@@ -1984,7 +1984,7 @@ FacturacionClientes.prototype.sincronizarFactura = function(req, res){
         parametrosSincronizar[1] = resultado[0].id;
         parametrosSincronizar[2] = args.sincronizar_factura.factura_fiscal ;
         var param = {param: parametrosSincronizar,funcion:'facturas_venta_fi'};
-        console.log("ESTA SINCRONIZANDO ", param);
+        
         return G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);
         
     }).then(function(resultado){

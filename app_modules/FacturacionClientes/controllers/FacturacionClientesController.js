@@ -1575,9 +1575,22 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1}); 
          
         
+    }).then(function(resultado){                              
+          
+         
+        var parametros = [];
+            parametros[0] = datosDocumentosXConsumo.cabecera[0].empresa_id;
+            parametros[1] = documentoFacturacion[0].id;
+            parametros[2] = documentoFacturacion[0].numeracion;
+    
+        var param = {param: parametros,funcion:'facturas_venta_fi'};
+        return G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);       
+         
     }).then(function(resultado){
-        
-        res.send(G.utils.r(req.url, 'Se Genera la factura por consumo satisfactoriamente ', 201, {generar_factura_consumo: []}));
+         
+        return res.send(G.utils.r(req.url, 'Se genera la factura por consumo satisfactoriamente', 200,{generar_factura_consumo:documentoFacturacion,
+            resultado_sincronizacion_ws: resultado
+        }));
         
     }).fail(function(err){ 
      
@@ -1971,7 +1984,7 @@ FacturacionClientes.prototype.sincronizarFactura = function(req, res){
         parametrosSincronizar[1] = resultado[0].id;
         parametrosSincronizar[2] = args.sincronizar_factura.factura_fiscal ;
         var param = {param: parametrosSincronizar,funcion:'facturas_venta_fi'};
-        
+        console.log("ESTA SINCRONIZANDO ", param);
         return G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);
         
     }).then(function(resultado){

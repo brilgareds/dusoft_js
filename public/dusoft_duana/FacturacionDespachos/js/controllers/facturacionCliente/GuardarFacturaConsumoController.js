@@ -266,25 +266,26 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     }
                 }
             };
-            facturacionClientesService.generarFacturaXConsumo(obj, function(data){
-                
-                if(data.status === 200){
-                    AlertService.mostrarMensaje("success", data.msj);
-                    that.listarDetalleTmpFacturaConsumo();
-                    $scope.onDocumentoSeleccionado();  
-                    localStorageService.add("listaFacturaDespachoGenerada",
-                    {
-                        active:true,  
-                        datos: '',//data.obj.generar_factura_agrupada[0],
-                        mensaje: 'ESTOQUE'
-                    });//data.obj.resultado_sincronizacion_ws.resultado});                      
-                    $state.go('Despacho');     
-                    
-                }else{
-                    AlertService.mostrarMensaje("warning", data.msj);
-                }
-                    
-            });
+            AlertService.mostrarVentanaAlerta("Generar factura por consumo", "Confirma que realizara la facturacion por consumo ? ",
+                function (estadoConfirm) {
+                    if (estadoConfirm) {
+                        facturacionClientesService.generarFacturaXConsumo(obj, function(data){
+
+                            if(data.status === 200){
+                                AlertService.mostrarMensaje("success", data.msj); 
+                                localStorageService.add("listaFacturaDespachoGenerada",
+                                {
+                                    active:true,  
+                                    datos: data.obj.generar_factura_consumo[0],
+                                    mensaje: data.obj.resultado_sincronizacion_ws.resultado
+                                });                 
+                                $state.go('Despacho');                       
+                            }else{
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                        });           
+                    }
+                });
             
         };
         
@@ -476,7 +477,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             socket.remove(['onNotificarFacturacionTerminada']);  
             $scope.$$watchers = null;
             $scope.root.activarTabFacturasGeneradas = false;
-            localStorageService.add("listaFacturaDespachoGenerada",null);
+            //localStorageService.add("listaFacturaDespachoGenerada",null);
             $scope.root = null;
         });
     }]);

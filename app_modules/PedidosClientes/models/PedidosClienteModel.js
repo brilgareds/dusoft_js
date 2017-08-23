@@ -1720,8 +1720,6 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
  */
 PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion, producto, callback) {
     
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", producto.precioVentaIva);
-
     G.knex('ventas_ordenes_pedidos_d_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
             .andWhere('codigo_producto', producto.codigo_producto)

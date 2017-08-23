@@ -895,9 +895,17 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function (req, res) {
         "tipo_id_tercero": cotizacion.cliente.tipo_id_tercero,
         "tercero_id": cotizacion.cliente.id
     };
-
-    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
-            .then(function (resultado) {
+    
+    
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosCotizacion', cotizacion.numero_cotizacion).then(function(resultado){
+         
+        if(resultado[0].total >= 60){
+            throw {msj: "La cantidad de items no puede exceder las 60 unidades", status: 403};
+        }else{
+            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
+        }
+            
+    }).then(function (resultado) {
 
                 if (resultado.length > 0 && resultado[0].valido === '1') {
                     return G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj);
@@ -2828,9 +2836,17 @@ PedidosCliente.prototype.insertarDetallePedido = function (req, res) {
         tipo: '1',
         pendiente: 0
     };
-
-    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
-            .then(function (resultado) {
+     
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosPedido', pedido.numero_pedido).then(function(resultado){
+          
+        if(resultado[0].total >= 60){
+            throw {msj: "La cantidad de items no puede exceder las 60 unidades", status: 403};
+        }else{
+            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
+            
+        }
+            
+    }).then(function (resultado) {
 
                 if (resultado.length > 0 && resultado[0].valido === '1') {
                     return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros);

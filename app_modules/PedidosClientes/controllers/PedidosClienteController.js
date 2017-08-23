@@ -2840,7 +2840,7 @@ PedidosCliente.prototype.insertarDetallePedido = function (req, res) {
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosPedido', pedido.numero_pedido).then(function(resultado){
           
         if(resultado[0].total >= 60){
-            throw {msj: "La cantidad de items no puede exceder las 60 unidades", status: 403};
+            throw "La cantidad de items no puede exceder las 60 unidades";
         }else{
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
             

@@ -249,6 +249,12 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         };
         
         $scope.onBtnVolverListaClientes = function(){
+            localStorageService.add("listaFacturasConsumo",
+                            {active:true, 
+                            datos:{},
+                            mensaje:'asasasasasa'}
+                        );
+                       
              $state.go('Despacho');     
         };
         

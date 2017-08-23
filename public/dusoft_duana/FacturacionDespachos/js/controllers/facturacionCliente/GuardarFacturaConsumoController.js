@@ -249,13 +249,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         };
         
         $scope.onBtnVolverListaClientes = function(){
-            localStorageService.add("listaFacturasConsumo",
-                            {active:true, 
-                            datos:{},
-                            mensaje:'asasasasasa'}
-                        );
-                       
-             $state.go('Despacho');     
+            localStorageService.add("listaFacturasConsumo",{active:true});                      
+            $state.go('Despacho');     
         };
         
         $scope.generarFacturaXConsumo = function(){
@@ -274,7 +269,16 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             facturacionClientesService.generarFacturaXConsumo(obj, function(data){
                 
                 if(data.status === 200){
-                     
+                    AlertService.mostrarMensaje("success", data.msj);
+                    that.listarDetalleTmpFacturaConsumo();
+                    $scope.onDocumentoSeleccionado();  
+                    localStorageService.add("listaFacturaDespachoGenerada",
+                    {
+                        active:true,  
+                        datos: '',//data.obj.generar_factura_agrupada[0],
+                        mensaje: 'ESTOQUE'
+                    });//data.obj.resultado_sincronizacion_ws.resultado});                      
+                    $state.go('Despacho');     
                     
                 }else{
                     AlertService.mostrarMensaje("warning", data.msj);

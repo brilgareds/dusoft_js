@@ -1539,12 +1539,10 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
                 facturacion_cosmitet: 0
                 
             }; 
-            //console.log("parametrosCabecera ", parametrosCabecera);
-            //console.log("datosDocumentosXConsumo ", datosDocumentosXConsumo);
+            
             return G.Q.ninvoke(that.m_facturacion_clientes,'generarFacturaXConsumo', 
             {parametrosCabecera:parametrosCabecera, datosDocumentosXConsumo: datosDocumentosXConsumo});
-            //return G.Q.ninvoke(that.m_facturacion_clientes,'insertarFacturaAgrupada',1, parametrosCabecera,{});
-  
+            
         }else{
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
@@ -1557,18 +1555,16 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     }).then(function(resultado){
         
         resultadoFacturasXConsumo = resultado;       
-        //console.log("resultadoFacturasXConsumo ", resultadoFacturasXConsumo);
-        return G.Q.nfcall(__obtenerDetallePorFacturar,that,0,resultado,[]);          
-           
+        return G.Q.nfcall(__obtenerDetallePorFacturar,that,0,resultado,[]);                   
         
     }).then(function(resultado){
         
-       //console.log("resultado [__obtenerDetallePorFacturar]:: ", resultado);
         if(resultado.length > 0){
             return G.Q.nfcall(__distribuirUnidadesFacturadas,that,0,0,resultadoFacturasXConsumo,resultado, []);   
         }else{
             throw {msj:'[Detalle de productos por facturar]: Consulta sin resultados', status: 404};          
         }
+        
     }).then(function(resultado){
         
         productosActualizados = [];  
@@ -1586,15 +1582,20 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1});
         
     }).then(function(resultado){
-        console.log("datosDocumentosXConsumo.temporal ", datosDocumentosXConsumo.temporal)
-        return G.Q.nfcall(__obtenerEstadoFacturaPedidoDespacho,that,0,datosDocumentosXConsumo.temporal,[]); 
+        
+         if(resultado > 0){
+            return G.Q.nfcall(__obtenerEstadoFacturaPedidoDespacho,that,0,datosDocumentosXConsumo.temporal,[]);             
+        }else{
+            throw {msj:'No actualizo el valor total de la factura', status: 404}; 
+            return;
+        }
+        
         
     }).then(function(resultado){
-         
-         console.log("resultado [__actualizarEstadoFacturaPedidoDespacho]:: ", resultado);
+          
         return G.Q.nfcall(__actualizarEstadoFacturaPedidoDespacho,that,0,resultado); 
         
-    })/*.then(function(resultado){                                        
+    }).then(function(resultado){                                        
          
         var parametros = [];
             parametros[0] = datosDocumentosXConsumo.cabecera[0].empresa_id;
@@ -1610,7 +1611,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
             resultado_sincronizacion_ws: resultado
         }));
         
-    })*/.fail(function(err){ 
+    }).fail(function(err){ 
      
         logger.error("-----------------------------------");
         logger.error({"metodo":"FacturacionClientes.prototype.generarFacturaXConsumo",
@@ -1658,8 +1659,8 @@ function __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback){
     }
     
     var timer = setTimeout(function() {
-                clearTimeout(timer);
-                 __actualizarEstadoFacturaPedidoDespacho(that,index,datos,callback)   
+        clearTimeout(timer);
+         __actualizarEstadoFacturaPedidoDespacho(that,index,datos,callback)   
     }, 0);
     
 };

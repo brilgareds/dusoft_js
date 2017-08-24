@@ -1426,7 +1426,7 @@ FacturacionClientesModel.prototype.consultarEstadoPedido = function(obj, callbac
         .from(query)
 
     query2.then(function(resultado){   
-        console.log("resultado [consultarEstadoPedido]:: ", resultado)
+         
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [consultarEstadoPedido]: ", err);     

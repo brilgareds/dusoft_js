@@ -1657,6 +1657,10 @@ function __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback){
         }).done();
     }
     
+    var timer = setTimeout(function() {
+                clearTimeout(timer);
+                 __actualizarEstadoFacturaPedidoDespacho(that,index,datos,callback)   
+    }, 0);
     
 };
 

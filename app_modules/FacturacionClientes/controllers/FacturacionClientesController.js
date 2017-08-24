@@ -1586,14 +1586,15 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1});
         
     }).then(function(resultado){
-            
+        console.log("datosDocumentosXConsumo.temporal ", datosDocumentosXConsumo.temporal)
         return G.Q.nfcall(__obtenerEstadoFacturaPedidoDespacho,that,0,datosDocumentosXConsumo.temporal,[]); 
         
     }).then(function(resultado){
          
+         console.log("resultado [__actualizarEstadoFacturaPedidoDespacho]:: ", resultado);
         return G.Q.nfcall(__actualizarEstadoFacturaPedidoDespacho,that,0,resultado); 
         
-    }).then(function(resultado){                                        
+    })/*.then(function(resultado){                                        
          
         var parametros = [];
             parametros[0] = datosDocumentosXConsumo.cabecera[0].empresa_id;
@@ -1609,7 +1610,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
             resultado_sincronizacion_ws: resultado
         }));
         
-    }).fail(function(err){ 
+    })*/.fail(function(err){ 
      
         logger.error("-----------------------------------");
         logger.error({"metodo":"FacturacionClientes.prototype.generarFacturaXConsumo",
@@ -1644,14 +1645,19 @@ function __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback){
             
             return G.Q.ninvoke(that.m_facturacion_clientes,"actualizarDespacho", {empresa_id:dato.empresa_id,prefijo:dato.prefijo,numero: dato.numeracion},{});
            
+        }).then(function(resultado){
+            
+            var timer = setTimeout(function() {
+                clearTimeout(timer);
+                 __actualizarEstadoFacturaPedidoDespacho(that,index,datos,callback)   
+            }, 0);
+            
         }).fail(function(err){
             console.log("err (/fail) [__actualizarEstadoFacturaPedidoDespacho]: ", err);     
         }).done();
     }
     
-    setTimeout(function() {    
-        __actualizarEstadoFacturaPedidoDespacho(that,index,datos,callback)   
-    }, 300);
+    
 };
 
 
@@ -1673,15 +1679,20 @@ function __obtenerEstadoFacturaPedidoDespacho(that, index, datos, pedidosEstados
     
     index++;
      
-    G.Q.ninvoke(that.m_facturacion_clientes,'consultarEstadoPedido',{prefijo: dato.prefijo, numeracion: dato.factura_fiscal}).then(function(resultado){   
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarEstadoPedido',{prefijo: dato.prefijo, numeracion: dato.factura_fiscal}).then(function(resultado){ 
+        console.log("ESTO ES LO QUE DEBE ACTUALIZAR OK ", resultado);
         pedidosEstados.push({empresa_id: dato.empresa_id,prefijo: dato.prefijo, numeracion: dato.factura_fiscal, pedido_cliente_id:dato.pedido_cliente_id, estado_pedido: resultado[0].estado_pedido});
+        
+        var timer = setTimeout(function() {
+            clearTimeout(timer);
+             __obtenerEstadoFacturaPedidoDespacho(that,index,datos,pedidosEstados,callback);
+        }, 0);
+        
     }).fail(function(err){
         console.log("err (/fail) [__obtenerEstadoFacturaPedidoDespacho]: ", err);     
     }).done();
     
-    setTimeout(function() {    
-        __obtenerEstadoFacturaPedidoDespacho(that,index,datos,pedidosEstados,callback)   
-    }, 300);
+    
 };
 
 /**
@@ -1828,13 +1839,18 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback){
         numero: dato.numero,
         codigo_producto: dato.codigo_producto,
         lote: dato.lote,
-        numero_caja: dato.numero_caja}).fail(function(err){
+        numero_caja: dato.numero_caja}).then(function(resultado){
+         console.log(" [__actualizarCantidadFacturadaXConsumo]: OJO A QUI", resultado);   
+        var timer = setTimeout(function() {
+            clearTimeout(timer);
+             __actualizarCantidadFacturadaXConsumo(that,index,datos, callback)   
+        }, 0);
+        }).fail(function(err){
         console.log("err (/fail) [actualizarCantidadFacturadaXConsumo]: ", err);     
     }).done();
     
-    setTimeout(function() {    
-        __actualizarCantidadFacturadaXConsumo(that,index,datos, callback)   
-    }, 300);
+    
+  
 };
 /**
  * @author Cristian Ardila

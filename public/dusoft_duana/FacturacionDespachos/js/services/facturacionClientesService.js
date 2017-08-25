@@ -8,6 +8,16 @@ define(["angular", "js/services"], function (angular, services) {
 
                     var self = this;
  
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  25/08/2017 DD/MM/YYYYY
+                     * +Descripcion lista las facturas en temporal
+                     */
+                    self.listarFacturasTemporal = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_FACTURAS_TEMPORALES, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
                     
                     /**
                      * @author Cristian Ardila

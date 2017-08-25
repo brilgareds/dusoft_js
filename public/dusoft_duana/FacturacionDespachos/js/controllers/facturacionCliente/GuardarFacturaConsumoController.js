@@ -62,13 +62,6 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
 
                 {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
                 {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a despachar'},
-                /*{filed: 'Estado', 
-                    cellClass: "ngCellText", 
-                    width: "5%", 
-                    displayName: 'Estado',//CantidadPendientePorFacturar
-                    cellTemplate: '<div class="col-xs-16 ">{{row.entity.getCantidadDespachada()}} \n\
-                                   <span class="glyphicon glyphicon-saved" ng-if="row.entity.cantidadDespachada() === row.entity.CantidadPendientePorFacturar"></span><div>'},//
-                */
                 {field: 'cantidadTmpDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant Facturada'},
                 {field: 'cantidadPendientePorFacturar',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar'},
                 {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},

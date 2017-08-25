@@ -1381,6 +1381,41 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
 };
 
 
+FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
+    
+    console.log("**********FacturacionClientes.prototype.listarFacturasTemporales*******************");
+    console.log("**********FacturacionClientes.prototype.listarFacturasTemporales*******************");
+    console.log("**********FacturacionClientes.prototype.listarFacturasTemporales*******************");
+    
+    var that = this;
+    var args = req.body.data;
+     var usuario = req.session.user.usuario_id;    
+     
+    var parametros = {tipo_id_tercero:'', tercero_id: '', sw_facturacion:0};
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
+        
+        if(resultado.length >0){
+            return res.send(G.utils.r(req.url, 'Lista de facturas temporales', 200,{listar_facturas_temporal:resultado}));
+        }else{
+            throw {msj:'[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404}; 
+        }
+            
+    }).fail(function(err){
+       logger.error("-----------------------------------");
+        logger.error({"metodo":"FacturacionClientes.prototype.generarFacturaXConsumo",
+            "usuario_id": usuario,
+            "parametros: ": parametros,
+            "resultado: ":err});
+        logger.error("-----------------------------------");
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done(); 
+    
+}
 /*
  * @author Cristian Ardila
  * @fecha 12/08/2017
@@ -1629,7 +1664,15 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
 };
 
 
-
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion recursiva que actualizara el estado factura_fiscal del pedido
+ *              en 1 evitando de esta manera ser facturado mas de una vez
+ *              posteriormente actualizara el despacho en la tabla de movimientos
+ *              de despacho evitando tambien ser seleccionado el mismo documento ya
+ *              facturado
+ * @fecha 24/08/2017
+ */
 function __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback){
     
     var dato = datos[index];

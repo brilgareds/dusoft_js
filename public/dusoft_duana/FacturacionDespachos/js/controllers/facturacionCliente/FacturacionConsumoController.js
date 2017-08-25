@@ -78,7 +78,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
        };
        
-        $scope.listarFacturasConsumo = {
+       /* $scope.listarFacturasConsumo = {
             data: 'root.facturas_proceso',
             enableColumnResize: true,
             enableRowSelection: false,
@@ -107,6 +107,41 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
                 <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
             ]
+        };*/
+        
+         /**
+         * @author Cristian Ardila
+         * @fecha 2017-08-25
+         * +Descripcion Metodo encargado de invocar el servicio que consultara  
+         *              las facturas en temporal
+         */
+        that.listarFacturasTemporal = function(){
+            console.log("*******that.listarFacturasTemporal************");
+            console.log("*******that.listarFacturasTemporal************");
+            console.log("*******that.listarFacturasTemporal************");
+            
+            var obj = {
+                session: $scope.session,
+                data: {
+                    listar_facturas_temporal: {
+                        tipo_id_tercero: '',
+                        tercero_id: ''
+                        
+                    }
+                }
+            };
+            
+            facturacionClientesService.listarFacturasTemporal(obj,function(data){
+                
+                console.log("data ", data)
+                if(data.status === 200){
+                    AlertService.mostrarMensaje("success", data.msj);
+                     
+                }else{
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+                
+            });
         };
         
         $scope.listarFacturasConsumoTemporales = {
@@ -170,7 +205,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
   
-                        
+                        that.listarFacturasTemporal();
                     }
                 }
             }

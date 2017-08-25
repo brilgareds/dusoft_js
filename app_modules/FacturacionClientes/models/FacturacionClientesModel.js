@@ -1274,12 +1274,19 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
  * @author Cristian Ardila
  * @fecha 2017-15-05 YYYY-DD-MM
  */
-FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(parametros, callback){
+FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(obj, callback){
     
     
     var query = G.knex.select()
         .from('inv_facturas_xconsumo_tmp')
-        .where(parametros);     
+        .where(function(resuldado){
+            
+            this.andWhere("sw_facturacion",obj.sw_facturacion);
+            if(obj.tipo_id_tercer){
+                this.andWhere("tipo_id_tercero",obj.tipo_id_tercero)
+                .andWhere("tercero_id",obj.tercero_id)               
+            }
+        });     
  
     query.then(function(resultado){    
        

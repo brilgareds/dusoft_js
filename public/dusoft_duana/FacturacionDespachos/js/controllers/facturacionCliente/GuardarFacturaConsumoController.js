@@ -461,9 +461,15 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para ingresar a la aplicacion", tipo: "warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
-                            var facturaTemporalCabecera = localStorageService.get("facturaTemporalCabecera");
-                            if(facturaTemporalCabecera){
-                                that.listarCliente(facturaTemporalCabecera.nombre_tercero);
+                            var lsTemp = localStorageService.get("facturaTemporalCabecera");
+                            if(lsTemp){
+                                that.listarCliente(lsTemp.nombre_tercero);
+                                console.log($scope.root.cliente);//.setNombre("DIOS ES BUENO")
+                                $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 
+                                lsTemp.tipo_id_tercero, 
+                                lsTemp.tercero_id,
+                                "",
+                                "")
                             }
                     }
                 }
@@ -476,6 +482,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             $scope.$$watchers = null;
             $scope.root.activarTabFacturasGeneradas = false;
             //localStorageService.add("listaFacturaDespachoGenerada",null);
+            localStorageService.add("facturaTemporalCabecera",null);
             $scope.root = null;
         });
     }]);

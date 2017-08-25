@@ -50,7 +50,22 @@
                 </span>
             </p>
         </div>
-        
+        <!-- <div class="col-md-4">
+
+                                <fieldset>
+                                    <legend class="icon-search icon-large icon-white">Cliente</legend>  
+                                    <ui-select ng-model="Pedido.cliente" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_cliente()">
+                                        <ui-select-match  placeholder="Seleccionar cliente">{{ $select.selected.get_descripcion() }}</ui-select-match>
+                                        <ui-select-choices ui-disable-choice="cliente.getTipoBloqueoId() != 1 || cliente.getEstadoContrato() != 1" refresh="listar_clientes($select.search)" refresh-delay="0" repeat="cliente in Empresa.get_clientes() | filter:$select.search">
+                                            
+                                          <i ng-if='cliente.getTipoBloqueoId() != 1' class="glyphicon glyphicon-ban-circle"></i> {{ cliente.get_descripcion() }}
+                                          <span ng-if="cliente.getEstadoContrato() != 1" style="color:orange"> - SIN CONTRATO</span>
+                                              
+                                            
+                                        </ui-select-choices>
+                                    </ui-select>                                   
+                                </fieldset>
+                            </div>  //-->
         <div class="col-md-2">
              
             <p class="input-group contenedorDropdown">            

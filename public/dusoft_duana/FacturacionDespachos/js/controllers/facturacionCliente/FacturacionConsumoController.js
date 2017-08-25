@@ -26,6 +26,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),            
                 opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
                 vistaFacturacion:"",
+                facturasTemporales: "",
                 vistas : [
                     {
                         id : 1,
@@ -133,46 +134,61 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             
             facturacionClientesService.listarFacturasTemporal(obj,function(data){
                 
-                console.log("data ", data)
+                
                 if(data.status === 200){
-                    AlertService.mostrarMensaje("success", data.msj);
-                     
+                    $scope.root.facturasTemporales = facturacionClientesService.renderCabeceraTmpFacturaConsumo(data.obj.listar_facturas_temporal);
                 }else{
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
                 
+                console.log("data >>>> ", $scope.root.facturasTemporales)
             });
+            
+            
         };
         
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Grid que listara todos los temporales de las facturas
+         * @fecha 25/08/2017
+         */
         $scope.listarFacturasConsumoTemporales = {
-            data: 'root.facturas_proceso',
+            data: 'root.facturasTemporales',
             enableColumnResize: true,
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
             columnDefs: [
-
-                {field: 'Factura',  cellClass: "ngCellText", width: "15%", displayName: 'Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_prefijo()}}- {{row.entity.get_numero()}}</p></div>'},
-                {field: 'Empresa',  cellClass: "ngCellText", width: "15%", displayName: 'Empresa', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_empresa()}}</p></div>'},
-                {field: 'Fecha creacion',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha creacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_fecha_registro()}}</p></div>'},
-                {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha Inicial', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
-                {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha final', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},               
-                {displayName: "Opc", cellClass: "txt-center dropdown-button",
-                cellTemplate: '\
-                <div class="btn-group">\
-                    <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
-                    <ul class="dropdown-menu dropdown-options">\
-                        <li ng-if="row.entity.get_numero() > 0 ">\
-                            <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,1)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
-                        </li>\
-                    </ul>\
-                </div>'
+                {cellClass: "ngCellText", width: "25%", displayName: 'Cliente', 
+                cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarTerceros()[0].getTipoId()}}- {{row.entity.mostrarTerceros()[0].getId()}}: {{ row.entity.mostrarTerceros()[0].getNombre()}}</p></div>'},
+                {field: 'empresa',  cellClass: "ngCellText", width: "10%", displayName: 'Empresa'},
+                {field: 'observaciones',  cellClass: "ngCellText", width: "15%", displayName: 'Observacion'},
+                {field: 'fechaRegistro',  cellClass: "ngCellText", width: "15%", displayName: 'F. Reg'},
+                {field: 'tipoPago',  cellClass: "ngCellText", width: "5%", displayName: 'Tipo pago'},
+                {field: 'usuario',  cellClass: "ngCellText", width: "15%", displayName: 'Usuario'},
+                {field: 'valorSubTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Sub Total'},
+                {field: 'valorTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Total'},
+                {displayName: "Opc", width: "5%", cellClass: "txt-center dropdown-button",
+                    cellTemplate: '<div class="btn-group">\
+                           <button ng-click="detalleFacturaTemporal(row.entity)" \n\
+                                class="btn btn-default btn-xs dropdown-toggle" \n\
+                                data-toggle="dropdown" title="Ver detalle">\n\
+                            <span class="glyphicon glyphicon-list"></span> Ingresar</button>\
+                      </div>'
                 },
-                {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
-                cellTemplate: '<div class="col-xs-16 ">\n\
-                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
-                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
+                 
             ]
+        };
+        
+        $scope.detalleFacturaTemporal = function(entity){           
+            
+            localStorageService.add("facturaTemporalCabecera",
+            {
+                nombre_tercero: entity.mostrarTerceros()[0].getNombre(),
+                tipo_id_tercero: entity.mostrarTerceros()[0].getTipoId(),
+                tercero_id: entity.mostrarTerceros()[0].getId()
+            }); 
+            $state.go("GuardarFacturaConsumo");
         };
         
         $scope.onCambiarVista = function(vista){
@@ -217,6 +233,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.$$watchers = null;
             $scope.root.activarTabFacturasGeneradas = false;
             localStorageService.add("listaFacturaDespachoGenerada",null);
+            localStorageService.add("localStorageService",null);
             $scope.root = null;
         });
     }]);

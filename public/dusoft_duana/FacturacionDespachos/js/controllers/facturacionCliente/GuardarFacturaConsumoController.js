@@ -411,8 +411,13 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 return;
             }
             
-            var empresa =  Usuario.getUsuarioActual().getEmpresa();
+            that.listarCliente(busqueda);
             
+        };
+        
+        that.listarCliente = function(busqueda){
+            
+            var empresa =  Usuario.getUsuarioActual().getEmpresa();
             var obj = {
                 session: $scope.session,
                 data: {
@@ -426,16 +431,14 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     }
                 }
             };
-                        
+
             facturacionClientesService.listarClientes(obj ,function(respuesta){
-               
+                console.log("respuesta ", respuesta);
                 if(respuesta.status === 200){
                     $scope.root.clientes = facturacionClientesService.renderTerceroDespacho(respuesta.obj.listar_clientes);
-                    
+
                 }
-                
             });
-            
         };
 
         /**
@@ -458,8 +461,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para ingresar a la aplicacion", tipo: "warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
-  
-                        
+                            var facturaTemporalCabecera = localStorageService.get("facturaTemporalCabecera");
+                            if(facturaTemporalCabecera){
+                                that.listarCliente(facturaTemporalCabecera.nombre_tercero);
+                            }
                     }
                 }
             }

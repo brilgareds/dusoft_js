@@ -3,8 +3,9 @@ define(["angular", "js/services"], function (angular, services) {
 
     services.factory('facturacionClientesService',
             ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho","VendedorDespacho","PedidoDespacho","EmpresaDespacho","DocumentoDetalleConsumo",
-
-                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho,PedidoDespacho,EmpresaDespacho,DocumentoDetalleConsumo) {
+                "FacturaConsumo",
+                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho,PedidoDespacho,EmpresaDespacho,DocumentoDetalleConsumo,
+                FacturaConsumo) {
 
                     var self = this;
  
@@ -193,6 +194,66 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.generarFacturaIndividual = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_FACTURA_INDIVIDUAL, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Eduar Garcia
+                     * +Descripcion Permite traer el detalle del documento para facturar por consumo
+                     * @fecha 10/05/2017 DD/MM/YYYYY
+                     */
+                    self.obtenerDetallePorFacturar = function(obj, callback){
+                        
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.OBTENER_DETALLE_POR_FACTURAR, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
+                   
+                   /**
+                     * @author Cristian Ardila
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invocar el path para generar las facturas
+                     *              agrupadas
+                     */
+                    self.generarTemporalFacturaConsumo = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_TMP_FACTURA_CONSUMO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invocar el path 
+                     *              para eliminar las facturas agrupadas
+                     *              
+                     */
+                    self.eliminarProductoTemporalFacturaConsumo = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.ELIMINAR_PRODUCTO_TEMPORAL_FACTURA_CONSUMO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invocar el path para consultar el detalle del temporal de facturas de consumo
+                     */
+                    self.consultarDetalleTemporalFacturaConsumo = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.CONSULTAR_DETALLE_TMP_FACTURA_CONSUMO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invocar el path para consultar el detalle del temporal de facturas de consumo
+                     */
+                    self.generarFacturaXConsumo = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_FACTURA_POR_CONSUMO, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -490,65 +551,33 @@ define(["angular", "js/services"], function (angular, services) {
                         return detalleFacturaTmp;
                     };
                     
-                   /**
-                     * @author Eduar Garcia
-                     * +Descripcion Permite traer el detalle del documento para facturar por consumo
-                     * @fecha 10/05/2017 DD/MM/YYYYY
-                     */
-                    self.obtenerDetallePorFacturar = function(obj, callback){
-                        
-                        Request.realizarRequest(API.FACTURACIONCLIENTES.OBTENER_DETALLE_POR_FACTURAR, "POST", obj, function(data) {
-                            callback(data);
-                        });
+                    self.renderCabeceraTmpFacturaConsumo = function (datos) {      
+                       
+                        var cabeceraFacturaTmp = [];
+                        for (var i in datos) {
+                            
+                            var _documento = FacturaConsumo.get('','0',1,1);
+                            var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
+                                datos[i].tercero_id,
+                                datos[i].direccion,
+                                datos[i].telefono||'');
+                                
+                            _documento.setId(datos[i].id_factura_xconsumo);                          
+                            _documento.setEmpresa(datos[i].nombre_empresa);                          
+                            _documento.setTipoPago(datos[i].descripcion_tipo_pago);                          
+                            _documento.setUsuario(datos[i].nombre_usuario);                          
+                            _documento.setFechaRegistro(datos[i].fecha_registro);                          
+                            _documento.setValorTotal(datos[i].valor_total);                          
+                            _documento.setValorSubTotal(datos[i].valor_sub_total);                          
+                            _documento.setObservaciones(datos[i].observaciones);                          
+                            
+                            _documento.agregarTerceros(_terceroDespacho);
+                            cabeceraFacturaTmp.push(_documento);
+                        }
+                        return cabeceraFacturaTmp;
                     };
+                    
                    
-                   /**
-                     * @author Cristian Ardila
-                     * @fecha  02/05/2017 DD/MM/YYYYY
-                     * +Descripcion Metodo encargado del Invocar el path para generar las facturas
-                     *              agrupadas
-                     */
-                    self.generarTemporalFacturaConsumo = function (obj, callback) {
-                        Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_TMP_FACTURA_CONSUMO, "POST", obj, function (data) {
-                            callback(data);
-                        });
-                    };
-                    
-                    /**
-                     * @author Cristian Ardila
-                     * @fecha  02/05/2017 DD/MM/YYYYY
-                     * +Descripcion Metodo encargado del Invocar el path 
-                     *              para eliminar las facturas agrupadas
-                     *              
-                     */
-                    self.eliminarProductoTemporalFacturaConsumo = function (obj, callback) {
-                        Request.realizarRequest(API.FACTURACIONCLIENTES.ELIMINAR_PRODUCTO_TEMPORAL_FACTURA_CONSUMO, "POST", obj, function (data) {
-                            callback(data);
-                        });
-                    };
-                    
-                    /**
-                     * @author Cristian Ardila
-                     * @fecha  02/05/2017 DD/MM/YYYYY
-                     * +Descripcion Metodo encargado del Invocar el path para consultar el detalle del temporal de facturas de consumo
-                     */
-                    self.consultarDetalleTemporalFacturaConsumo = function (obj, callback) {
-                        Request.realizarRequest(API.FACTURACIONCLIENTES.CONSULTAR_DETALLE_TMP_FACTURA_CONSUMO, "POST", obj, function (data) {
-                            callback(data);
-                        });
-                    };
-                    
-                    
-                    /**
-                     * @author Cristian Ardila
-                     * @fecha  02/05/2017 DD/MM/YYYYY
-                     * +Descripcion Metodo encargado del Invocar el path para consultar el detalle del temporal de facturas de consumo
-                     */
-                    self.generarFacturaXConsumo = function (obj, callback) {
-                        Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_FACTURA_POR_CONSUMO, "POST", obj, function (data) {
-                            callback(data);
-                        });
-                    };
                     return this;
                 }]);
              

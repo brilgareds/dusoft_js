@@ -1,25 +1,25 @@
+define(["angular", "js/models", "includes/classes/Documento"], function (angular, models) {
 
-define(["angular", "js/models", "includes/classes/Factura"], function (angular, models) {
-
-    models.factory('FacturaConsumo', ["Factura", function (Factura) {
+    models.factory('FacturaConsumo', ["Documento", function (Documento) {
 
 
-            function FacturaConsumo(){
-                Factura.getClass().call(this);
+            function FacturaConsumo(bodegas_doc_id, prefijo, numero, fecha_registro){
+                Documento.getClass().call(this, bodegas_doc_id, prefijo, numero, fecha_registro);
                 this.detalle = [];
                 this.documentos = [];
                 this.id =0;
-                this.empresaId = '';
-                this.tercero = [];
+                this.empresa = '';
+                this.terceros = [];
                 this.fechaRegistro = '';
                 this.observaciones = '';
                 this.valorTotal = '';
                 this.valorSubTotal = '';
                 this.tipoPago = '';
                 this.fechaCorte = '';
+                this.usuario = '';
             }
             
-            FacturaConsumo.prototype = Object.create(Factura.getClass().prototype);
+            FacturaConsumo.prototype = Object.create(Documento.getClass().prototype);
             
             FacturaConsumo.prototype.setId = function(id){
                 this.id = id;
@@ -28,12 +28,12 @@ define(["angular", "js/models", "includes/classes/Factura"], function (angular, 
             FacturaConsumo.prototype.getId = function(){
                 return this.id;
             };
-            FacturaConsumo.prototype.setEmpresaId = function(empresaId){
-                this.empresaId = empresaId;
+            FacturaConsumo.prototype.setEmpresa = function(empresa){
+                this.empresa = empresa;
             };
             
-            FacturaConsumo.prototype.getEmpresaId = function(){
-                return this.empresaId;
+            FacturaConsumo.prototype.getEmpresa = function(){
+                return this.empresa;
             };
             
             FacturaConsumo.prototype.setFechaRegistro = function(fechaRegistro){
@@ -68,8 +68,32 @@ define(["angular", "js/models", "includes/classes/Factura"], function (angular, 
                 return this.valorSubTotal;
             };
             
-            this.get = function () {
-                return new FacturaConsumo();
+            FacturaConsumo.prototype.setTipoPago = function(tipoPago){
+                this.tipoPago = tipoPago;
+            };
+            
+            FacturaConsumo.prototype.getTipoPago = function(){
+                return this.tipoPago;
+            };
+            
+            FacturaConsumo.prototype.setUsuario = function(usuario){
+                this.usuario = usuario;
+            };
+            
+            FacturaConsumo.prototype.getUsuario = function(){
+                return this.usuario;
+            };
+            
+            FacturaConsumo.prototype.agregarTerceros = function(terceros){
+                this.terceros.push(terceros);
+            };
+            
+            FacturaConsumo.prototype.mostrarTerceros = function(){
+                return this.terceros;
+            };
+            
+            this.get = function (numeroFactura, codigoProveedor,fechaRegistro,observacion) {
+                return new FacturaConsumo(numeroFactura, codigoProveedor,fechaRegistro,observacion);
             };
 
             return this;

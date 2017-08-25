@@ -1272,14 +1272,23 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
  * +Descripcion Metodo encargado de consultar el temporal de la factura de
  *              consumo
  * @author Cristian Ardila
- * @fecha 2017-15-05 YYYY-DD-MM
+ * @fecha 2017-15-05 YYYY-DD-MM        
  */
 FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(obj, callback){
     
     
-    var query = G.knex.select()
-        .from('inv_facturas_xconsumo_tmp')
-        .where(function(resuldado){
+    var query = G.knex.select(["a.*","b.*",
+       G.knex.raw("case when a.tipo_pago_id=1 then 'Efectivo' \
+        when a.tipo_pago_id=2 then 'Cheque'\
+        when a.tipo_pago_id=3 then 'Credito' end as descripcion_tipo_pago"),
+        G.knex.raw("(SELECT e.razon_social FROM empresas as e WHERE e.empresa_id = a.empresa_id) as nombre_empresa"),
+        G.knex.raw("(SELECT s.nombre FROM system_usuarios as s WHERE s.usuario_id = a.usuario_id) as nombre_usuario"),
+    ])//  G.knex.raw("(SELECT s.nombre_tercero FROM terceros as s WHERE s.tipo_id_tercero = a.tipo_id_tercero and s.tercero_id = a.tercero_id) as nombre_cliente")
+        .from('inv_facturas_xconsumo_tmp as a')
+        .innerJoin("terceros as b", function(resultado){
+            this.on("b.tipo_id_tercero","a.tipo_id_tercero")
+            .on("b.tercero_id","a.tercero_id")
+        }).where(function(resuldado){
             
             this.andWhere("sw_facturacion",obj.sw_facturacion);
             if(obj.tipo_id_tercer){

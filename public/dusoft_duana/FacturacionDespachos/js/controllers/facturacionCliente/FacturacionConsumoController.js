@@ -186,7 +186,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             {
                 nombre_tercero: entity.mostrarTerceros()[0].getNombre(),
                 tipo_id_tercero: entity.mostrarTerceros()[0].getTipoId(),
-                tercero_id: entity.mostrarTerceros()[0].getId()
+                tercero_id: entity.mostrarTerceros()[0].getId(),
+                contrato_cliente_id: entity.mostrarTerceros()[0].getContratoClienteId()
             }); 
             $state.go("GuardarFacturaConsumo");
         };

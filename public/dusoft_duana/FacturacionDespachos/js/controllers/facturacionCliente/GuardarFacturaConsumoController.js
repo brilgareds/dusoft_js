@@ -330,14 +330,14 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         empresa_id:$scope.root.documento.get_empresa(),
                         tipoTerceroId: $scope.root.cliente.getTipoId(),
                         terceroId:$scope.root.cliente.getId(),
-                        contratoClienteId: $scope.root.cliente.contratoClienteId,
+                        contratoClienteId: $scope.root.cliente.getContratoClienteId(),
                     }
                 }
             };
-            
+           
             facturacionClientesService.obtenerDetallePorFacturar(obj,function(respuesta){
                 if(respuesta.status === 200){
-                    console.log("respuesta.obj.detalle ", respuesta.obj.detalle)
+                    
                     $scope.root.documento.vaciarDetalle();
                     that.listarDetalleTmpFacturaConsumo();
                     var _documentos = respuesta.obj.detalle;
@@ -461,16 +461,18 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para ingresar a la aplicacion", tipo: "warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
-                            var lsTemp = localStorageService.get("facturaTemporalCabecera");
-                            if(lsTemp){
-                                that.listarCliente(lsTemp.nombre_tercero);
-                                console.log($scope.root.cliente);//.setNombre("DIOS ES BUENO")
-                                $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 
-                                lsTemp.tipo_id_tercero, 
-                                lsTemp.tercero_id,
-                                "",
-                                "")
-                            }
+                        var lsTemp = localStorageService.get("facturaTemporalCabecera");
+                        if(lsTemp){
+                            that.listarCliente(lsTemp.nombre_tercero);
+                            console.log("lsTemp:: ",lsTemp);//.setNombre("DIOS ES BUENO")
+                            $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 
+                            lsTemp.tipo_id_tercero, 
+                            lsTemp.tercero_id,
+                            "",
+                            "");
+                            $scope.root.cliente.setContratoClienteId(lsTemp.contrato_cliente_id)
+
+                        }
                     }
                 }
             }

@@ -561,6 +561,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 datos[i].tercero_id,
                                 datos[i].direccion,
                                 datos[i].telefono||'');
+                                _terceroDespacho.setContratoClienteId(datos[i].contrato_cliente_id);
                                 
                             _documento.setId(datos[i].id_factura_xconsumo);                          
                             _documento.setEmpresa(datos[i].nombre_empresa);                          

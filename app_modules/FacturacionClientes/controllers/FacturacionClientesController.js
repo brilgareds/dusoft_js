@@ -1269,7 +1269,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
          
         if(resultado.length > 0){
-            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo
+            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             def.resolve();
         }else{
          
@@ -1347,7 +1347,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             
         }else{
             
-            throw {msj:'Consulta sin resultados Detalleee', status: 404}; 
+            throw {msj:'Consulta sin resultados Detalle', status: 404}; 
             return;
         }
      

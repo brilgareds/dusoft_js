@@ -27,6 +27,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
                 vistaFacturacion:"",
                 facturasTemporales: "",
+                itemsFacturasTemporales: 0,
                 vistas : [
                     {
                         id : 1,
@@ -79,37 +80,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
        };
        
-       /* $scope.listarFacturasConsumo = {
-            data: 'root.facturas_proceso',
-            enableColumnResize: true,
-            enableRowSelection: false,
-            enableCellSelection: true,
-            enableHighlighting: true,
-            columnDefs: [
-
-                {field: 'Factura',  cellClass: "ngCellText", width: "15%", displayName: 'Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_prefijo()}}- {{row.entity.get_numero()}}</p></div>'},
-                {field: 'Empresa',  cellClass: "ngCellText", width: "15%", displayName: 'Empresa', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_empresa()}}</p></div>'},
-                {field: 'Fecha creacion',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha creacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_fecha_registro()}}</p></div>'},
-                {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha Inicial', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
-                {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha final', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},               
-                {displayName: "Opc", cellClass: "txt-center dropdown-button",
-                cellTemplate: '\
-                <div class="btn-group">\
-                    <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
-                    <ul class="dropdown-menu dropdown-options">\
-                        <li ng-if="row.entity.get_numero() > 0 ">\
-                            <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,1)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
-                        </li>\
-                    </ul>\
-                </div>'
-                },
-                {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
-                cellTemplate: '<div class="col-xs-16 ">\n\
-                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
-                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
-            ]
-        };*/
-        
+       
          /**
          * @author Cristian Ardila
          * @fecha 2017-08-25
@@ -126,7 +97,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 data: {
                     listar_facturas_temporal: {
                         tipo_id_tercero: '',
-                        tercero_id: ''
+                        tercero_id: '',
+                        paginaactual:$scope.paginaactual
                         
                     }
                 }
@@ -137,6 +109,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 
                 if(data.status === 200){
                     $scope.root.facturasTemporales = facturacionClientesService.renderCabeceraTmpFacturaConsumo(data.obj.listar_facturas_temporal);
+                    $scope.root.itemsFacturasTemporales = data.obj.listar_facturas_temporal.length;
                 }else{
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
@@ -201,6 +174,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 
         $scope.onBtnGenearFactura = function(){
             $state.go("GuardarFacturaConsumo");
+        };
+        
+        /*
+         * funcion para paginar anterior
+         * @returns {lista datos}
+         */
+        $scope.paginaAnterior = function () {
+            if ($scope.paginaactual === 1)
+                return;
+            $scope.paginaactual--;
+            that.listarFacturasTemporal();
+        };
+
+
+        /*
+         * funcion para paginar siguiente
+         * @returns {lista datos}
+         */
+        $scope.paginaSiguiente = function () {
+            $scope.paginaactual++;
+            that.listarFacturasTemporal();
         };
         
         /**

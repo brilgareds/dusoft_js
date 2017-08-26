@@ -7,10 +7,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         "$filter",
         "localStorageService",
         "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho","webNotification",
-        "TerceroDespacho","FacturaConsumo","FacturaDetalleConsumo","DocumentoDetalleConsumo",
+        "TerceroDespacho","FacturaConsumo","FacturaDetalleConsumo","DocumentoDetalleConsumo","DocumentoDespacho",
     function ($scope, $rootScope, Request, API, AlertService, Usuario,
             $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho,webNotification,
-            TerceroDespacho, FacturaConsumo, FacturaDetalleConsumo, DocumentoDetalleConsumo) {
+            TerceroDespacho, FacturaConsumo, FacturaDetalleConsumo, DocumentoDetalleConsumo, DocumentoDespacho) {
  
         var that = this;
  
@@ -367,6 +367,14 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 return;
             }
                         
+            that.listarDocumento(busqueda, function(data){
+                
+            });
+                
+        };
+        
+        that.listarDocumento = function(busqueda, callback){
+            
             var obj = {
                 session: $scope.session,
                 data: {
@@ -380,8 +388,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         
             facturacionClientesService.listarDocumentos(obj, function(data){
                 if(data.status === 200){
-                    var _documentos = data.obj.facturas_consumo;
                     
+                    var _documentos = data.obj.facturas_consumo;
+                    callback(_documentos)
                     
                     for(var i in _documentos){
                         var _documento = _documentos[i];
@@ -396,9 +405,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     }
                 }
             });
-                
-        };
-        
+        }
         
         /**
         * @author Eduar Garcia
@@ -411,11 +418,13 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 return;
             }
             
-            that.listarCliente(busqueda);
+            that.listarCliente(busqueda, function(estado){
+                
+            });
             
         };
         
-        that.listarCliente = function(busqueda){
+        that.listarCliente = function(busqueda, callback){
             
             var empresa =  Usuario.getUsuarioActual().getEmpresa();
             var obj = {
@@ -436,7 +445,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 console.log("respuesta ", respuesta);
                 if(respuesta.status === 200){
                     $scope.root.clientes = facturacionClientesService.renderTerceroDespacho(respuesta.obj.listar_clientes);
-
+                    callback(true);
                 }
             });
         };
@@ -463,15 +472,24 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     } else {
                         var lsTemp = localStorageService.get("facturaTemporalCabecera");
                         if(lsTemp){
-                            that.listarCliente(lsTemp.nombre_tercero);
-                            console.log("lsTemp:: ",lsTemp);//.setNombre("DIOS ES BUENO")
-                            $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 
-                            lsTemp.tipo_id_tercero, 
-                            lsTemp.tercero_id,
-                            "",
-                            "");
-                            $scope.root.cliente.setContratoClienteId(lsTemp.contrato_cliente_id)
-
+                            that.listarCliente(lsTemp.nombre_tercero, function(estado){
+                                if(estado){
+                                    $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 
+                                    lsTemp.tipo_id_tercero, 
+                                    lsTemp.tercero_id,
+                                    "",
+                                    "");
+                                    $scope.root.cliente.setContratoClienteId(lsTemp.contrato_cliente_id)
+                                    
+                                    that.listarDocumento("", function(data){
+                                        console.log("data -------***>", data)
+                                        $scope.root.documento = DocumentoDespacho.get(data[0].pedido_cliente_id, 
+                                        data[0].prefijo,data[0].numero,data[0].fecha_registro,data[0].empresa_id);
+                                        $scope.root.documento.set_empresa(data[0].empresa_id);
+                                        $scope.onDocumentoSeleccionado();
+                                    });                                                                      
+                                }
+                            });             
                         }
                     }
                 }

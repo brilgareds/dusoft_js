@@ -15,6 +15,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.valorTotal = '';
                 this.valorSubTotal = '';
                 this.tipoPago = '';
+                this.tipoPagoId = 0;
                 this.fechaCorte = '';
                 this.usuario = '';
             }
@@ -74,6 +75,14 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             FacturaConsumo.prototype.getTipoPago = function(){
                 return this.tipoPago;
+            };
+            
+            FacturaConsumo.prototype.setTipoPagoId = function(tipoPagoId){
+                this.tipoPagoId = tipoPagoId;
+            };
+            
+            FacturaConsumo.prototype.getTipoPagoId = function(){
+                return this.tipoPagoId;
             };
             
             FacturaConsumo.prototype.setUsuario = function(usuario){

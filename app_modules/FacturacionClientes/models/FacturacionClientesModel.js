@@ -1282,6 +1282,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
        G.knex.raw("case when a.tipo_pago_id=1 then 'Efectivo' \
         when a.tipo_pago_id=2 then 'Cheque'\
         when a.tipo_pago_id=3 then 'Credito' end as descripcion_tipo_pago"),
+        "a.tipo_pago_id",
         G.knex.raw("(SELECT e.razon_social FROM empresas as e WHERE e.empresa_id = a.empresa_id) as nombre_empresa"),
         G.knex.raw("(SELECT s.nombre FROM system_usuarios as s WHERE s.usuario_id = a.usuario_id) as nombre_usuario"),
         G.knex.raw("COALESCE(cntrtos.contrato_cliente_id,(SELECT contrato_cliente_id FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1')) as contrato_cliente_id")

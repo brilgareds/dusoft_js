@@ -48,6 +48,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             
             callback();
         };
+        $scope.disabledDropDownCliente = false;
         
         /**
          * +Descripcion Grid que lista el detalle del efc seleccionado
@@ -360,21 +361,20 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         };
         
         
-        $scope.listarDocumentos = function(busqueda){
+        //$scope.listarDocumentos = function(busqueda){
             
-            
-            if(busqueda.length < 3){
+            /*if(busqueda.length < 1){
                 return;
-            }
+            }*/
                         
-            that.listarDocumento(busqueda, function(data){
+          /*  that.listarDocumento(busqueda, function(data){
                 
             });
                 
-        };
+        };*/
         
         that.listarDocumento = function(busqueda, callback){
-            
+            console.log("busqueda ", busqueda)
             var obj = {
                 session: $scope.session,
                 data: {
@@ -387,10 +387,11 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             };
                         
             facturacionClientesService.listarDocumentos(obj, function(data){
+                $scope.root.documentos = [];
                 if(data.status === 200){
                     
                     var _documentos = data.obj.facturas_consumo;
-                    callback(_documentos)
+                    callback(_documentos);
                     
                     for(var i in _documentos){
                         var _documento = _documentos[i];
@@ -405,7 +406,14 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     }
                 }
             });
-        }
+        };
+        
+        $scope.onListarDocumentosClientes = function(){
+            
+            that.listarDocumento("", function(data){
+                    
+            });
+        };
         
         /**
         * @author Eduar Garcia
@@ -442,7 +450,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             };
 
             facturacionClientesService.listarClientes(obj ,function(respuesta){
-                console.log("respuesta ", respuesta);
+                
                 if(respuesta.status === 200){
                     $scope.root.clientes = facturacionClientesService.renderTerceroDespacho(respuesta.obj.listar_clientes);
                     callback(true);
@@ -456,7 +464,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          *              de empresa, centro de utilidad y bodega
          */
         that.init(function () {
-
+                         
             if (!Usuario.getUsuarioActual().getEmpresa()) {
                 $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para ingresar a la aplicacion", tipo: "warning"});
                 AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
@@ -472,6 +480,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     } else {
                         var lsTemp = localStorageService.get("facturaTemporalCabecera");
                         if(lsTemp){
+                            $scope.disabledDropDownCliente = true;
+                            $scope.tipoPagoFacturaConsumo = lsTemp.tipo_pago;
+                            $scope.root.observacion = lsTemp.observaciones;
                             that.listarCliente(lsTemp.nombre_tercero, function(estado){
                                 if(estado){
                                     $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 
@@ -495,8 +506,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 }
             }
         });
-        
- 
+         
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {            
             socket.remove(['onNotificarFacturacionTerminada']);  
             $scope.$$watchers = null;

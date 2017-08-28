@@ -1269,7 +1269,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             parametros.direccion_ip = ip;
             
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',
-            {tipo_id_tercero:parametros.tipoIdTercero, tercero_id: parametros.terceroId, sw_facturacion:0});
+            {tipo_id_tercero:parametros.tipoIdTercero, tercero_id: parametros.terceroId, sw_facturacion:0, paginaActual:1});
              
              
         }else{
@@ -1405,9 +1405,16 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
     
     var that = this;
     var args = req.body.data;
-     var usuario = req.session.user.usuario_id;    
+    var usuario = req.session.user.usuario_id;    
+      
+    if (args.listar_facturas_temporal.paginaActual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {imprimir_reporte_factura: []}));
+        return;
+    }
      
-    var parametros = {tipo_id_tercero:'', tercero_id: '', sw_facturacion:0};
+    var paginaActual = args.listar_facturas_temporal.paginaActual;
+    
+    var parametros = {tipo_id_tercero:'', tercero_id: '', sw_facturacion:0, paginaActual: paginaActual};
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
         
         if(resultado.length >0){
@@ -1491,7 +1498,8 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     var parametros =  {
         tipo_id_tercero:args.generar_factura_consumo.tipoTerceroId, 
         tercero_id: args.generar_factura_consumo.terceroId, 
-        sw_facturacion:0
+        sw_facturacion:0,
+        paginaActual: 1
     };
     var parametrosDetalle = {
         tipoIdTercero:args.generar_factura_consumo.tipoTerceroId, 

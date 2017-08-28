@@ -1302,9 +1302,11 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
                 .andWhere("a.tercero_id",obj.tercero_id)               
             }
         });     
+   
     
-    query.then(function(resultado){    
-       
+     
+    
+    query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     

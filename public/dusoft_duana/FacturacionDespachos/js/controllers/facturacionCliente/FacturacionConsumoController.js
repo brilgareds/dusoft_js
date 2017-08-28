@@ -98,7 +98,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     listar_facturas_temporal: {
                         tipo_id_tercero: '',
                         tercero_id: '',
-                        paginaactual:$scope.paginaactual
+                        paginaActual:$scope.paginaactual
                         
                     }
                 }

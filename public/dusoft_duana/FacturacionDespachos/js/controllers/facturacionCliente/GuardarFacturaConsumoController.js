@@ -33,7 +33,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 factura:null,
                 documentos:[], 
                 documento:null,
-                detalleDocumentoTmp: [],
+                detalleDocumentoTmp: null,
                 valorFacturaTemporal: {
                     valorTotal: 0,
                     valorSubTotal: 0,
@@ -109,7 +109,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          * +Descripcion Grid que lista el detalle del efc seleccionado
          */
         $scope.listaDetalleDocumentoTmp = {
-            data: 'root.detalleDocumentoTmp[0]',
+            data: 'root.detalleDocumentoTmp',
             enableColumnResize: true,
             enableRowSelection: false,
             enableCellSelection: true,
@@ -175,6 +175,45 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 }
                 
             });
+        };
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de eliminar todo el detalle del temporal
+         * @fecha 2017-08-28
+         */
+        $scope.eliminarTemporalCliente = function(){
+             
+            if(!$scope.root.detalleDocumentoTmp){
+                AlertService.mostrarMensaje("warning", "No hay productos en el temporal"); 
+                return;
+            }
+            var obj = {
+                session: $scope.session,
+                data: {
+                    eliminar_total_tmp: {
+                        id: $scope.root.detalleDocumentoTmp[0].id
+                        
+                    }
+                }
+            };
+            
+            AlertService.mostrarVentanaAlerta("Eliminar temporal", "Confirma que eliminara el detalle del temporal ? ",
+              function (estadoConfirm) {
+                  if (estadoConfirm) {
+                    facturacionClientesService.eliminarTotalTemporalFacturaConsumo(obj,function(data){
+
+                        if(data.status === 200){
+                            AlertService.mostrarMensaje("success", data.msj);
+                            that.listarDetalleTmpFacturaConsumo();
+                            $scope.onDocumentoSeleccionado();
+                        }else{
+                            AlertService.mostrarMensaje("warning", data.msj);
+                        }
+
+                    });           
+                  }
+              })
         };
         /**
          * @author Cristian Ardila
@@ -256,6 +295,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             $state.go('Despacho');     
         };
         
+        
+        
         $scope.generarFacturaXConsumo = function(){
             
             if(!$scope.root.documento){
@@ -302,7 +343,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         };
         
         that.listarDetalleTmpFacturaConsumo = function(){
-            $scope.root.detalleDocumentoTmp = [];
+            $scope.root.detalleDocumentoTmp = null;
             var obj = {
                 session: $scope.session,
                 data: {
@@ -322,7 +363,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     $scope.root.valorFacturaTemporal.valorSubTotal = data.obj.procesar_factura_cosmitet[0].valor_sub_total;
                     $scope.root.valorFacturaTemporal.valorTotalIva = data.obj.procesar_factura_cosmitet[0].valor_total_iva;
                     
-                    $scope.root.detalleDocumentoTmp.push(facturacionClientesService.renderDetalleTmpFacturaConsumo(data.obj.procesar_factura_cosmitet));
+                    $scope.root.detalleDocumentoTmp = facturacionClientesService.renderDetalleTmpFacturaConsumo(data.obj.procesar_factura_cosmitet);
                     
                 }else{
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -378,19 +419,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 
             });
         };
-        
-        
-        //$scope.listarDocumentos = function(busqueda){
-            
-            /*if(busqueda.length < 1){
-                return;
-            }*/
-                        
-          /*  that.listarDocumento(busqueda, function(data){
-                
-            });
-                
-        };*/
+         
         
         that.listarDocumento = function(busqueda, callback){
             
@@ -432,7 +461,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         
         $scope.onListarDocumentosClientes = function(){
             $scope.root.documento = null;
-            $scope.root.detalleDocumentoTmp = [];
+            $scope.root.detalleDocumentoTmp = null;
             that.listarDocumento("", function(data){
                     
             });

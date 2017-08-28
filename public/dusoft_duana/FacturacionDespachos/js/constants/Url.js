@@ -29,6 +29,7 @@ define(["angular"], function(angular) {
                  "GENERAR_TMP_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/generarTemporalFacturaConsumo",
                  "CONSULTAR_DETALLE_TMP_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/consultarDetalleTemporalFacturaConsumo",
                  "ELIMINAR_PRODUCTO_TEMPORAL_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/eliminarProductoTemporalFacturaConsumo",
+                 "ELIMINAR_TOTAL_TEMPORAL_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/eliminarTotalTemporalFacturaConsumo",
                  "GENERAR_FACTURA_POR_CONSUMO" : BASE_URL + "/FacturacionClientes/generarFacturaXConsumo",
                  "LISTAR_FACTURAS_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasTemporales"
             },   

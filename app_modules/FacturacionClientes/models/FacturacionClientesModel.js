@@ -766,7 +766,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
     if(obj.estado === 1){
         parametros.push(G.knex.raw("distinct on (a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario) a.prefijo"))
         parametros.push(G.knex.raw("round(sum(a.cantidad))::integer as cantidad_despachada")),
-        parametros.push(G.knex.raw("round(sum(a.cantidad_pendiente_por_facturar))::integer as cantidad_pendiente_por_facturar")),
+        parametros.push(G.knex.raw("round(sum(coalesce(a.cantidad_pendiente_por_facturar, 0)))::integer as cantidad_pendiente_por_facturar")),
         parametros.push(G.knex.raw("split_part(coalesce(fc_precio_producto_contrato_cliente('"+obj.contratoClienteId+"', a.codigo_producto, '"+obj.empresa_id+"' ),'0'), '@', 1) as valor_unitario")),       
         parametros.push(G.knex.raw("coalesce((SELECT sum(cantidad_despachada)\
             FROM inv_facturas_xconsumo_tmp_d as tmp\
@@ -787,7 +787,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
     parametros.push("c.porc_iva")
 
     if(obj.estado === 0){
-       parametros.push(G.knex.raw("(round(a.cantidad) - a.cantidad_facturada) as cantidad"));
+       parametros.push(G.knex.raw("(round(a.cantidad) - coalesce(a.cantidad_facturada, 0)) as cantidad"));
        parametros.push("a.numero_caja");
        parametros.push("a.movimiento_id");
        parametros.push("a.prefijo");
@@ -804,7 +804,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
             .andWhere("a.prefijo", obj.prefijo_documento)
             .andWhere("a.numero", obj.numero_documento);
         if(obj.estado === 0){
-             this.andWhere(G.knex.raw("round(a.cantidad) > a.cantidad_facturada"))
+             this.andWhere(G.knex.raw("round(a.cantidad) > coalesce(a.cantidad_facturada, 0)"))                 
         }
     }).as("a")
     
@@ -824,6 +824,8 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         G.knex.raw("case when  a.cantidad_pendiente_por_facturar = 0 then 0 else 1 end as estado_entrega") ])).from(query)
          
     }
+    
+    console.log("query2 /////a///a ", query2.toSQL());
     query2.then(function(resultado){
         console.log("resultado >>>>>> ", resultado);
         callback(false, resultado);   

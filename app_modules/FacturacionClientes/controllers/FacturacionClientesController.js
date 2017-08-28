@@ -940,6 +940,61 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
       
 };
 
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de consultar el detalle de la factura temporal
+ * @fecha 2017-08-10 YYYY-MM-DD
+ */
+FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function(req, res){
+   
+   console.log("***********FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo ***************");
+   console.log("***********FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo ***************");
+   console.log("***********FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo ***************");
+   
+    var that = this;
+    var args = req.body.data;
+    
+    if (args.eliminar_total_tmp === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {eliminar_producto_tmp: []}));
+        return;
+    }
+    
+    if (!args.eliminar_total_tmp.id) {
+        res.send(G.utils.r(req.url, 'Se requiere el id', 404, {eliminar_producto_tmp: []}));
+        return;
+    }
+    
+     
+    var parametro = {
+        id_factura_xconsumo: args.eliminar_total_tmp.id
+    };
+    var usuario = req.session.user.usuario_id;
+    
+    G.Q.ninvoke(that.m_facturacion_clientes,'eliminarProductoTemporalFacturaConsumo',parametro).then(function(resultado){
+        
+        if(resultado >0){
+            return res.send(G.utils.r(req.url, "Se elimina el detalle del temporal satisfactoriamente", 200, {eliminar_producto_tmp:resultado}));
+        }else{
+            throw {msj:'No se elimino ningun producto', status: 404}; 
+        }
+            
+    }).fail(function(err){  
+        logger.error("-----------------------------------");
+        logger.error({"metodo":"FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo",
+            "usuario_id": usuario,
+            "parametros: ": parametro,
+            "resultado: ":err});
+        logger.error("-----------------------------------");
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done();
+};
+
 /**
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de consultar el detalle de la factura temporal
@@ -1425,7 +1480,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
             
     }).fail(function(err){
        logger.error("-----------------------------------");
-        logger.error({"metodo":"FacturacionClientes.prototype.generarFacturaXConsumo",
+        logger.error({"metodo":"FacturacionClientes.prototype.listarFacturasTemporales",
             "usuario_id": usuario,
             "parametros: ": parametros,
             "resultado: ":err});
@@ -1614,11 +1669,13 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
           
     }).then(function(resultado){
         
+        console.log("QUE ESTA LLEGANDO A QUI ? ", resultado);
         resultadoFacturasXConsumo = resultado;       
         return G.Q.nfcall(__obtenerDetallePorFacturar,that,0,resultado,[]);                   
         
     }).then(function(resultado){
         
+        console.log("resultado ", resultado);
         if(resultado.length > 0){
             return G.Q.nfcall(__distribuirUnidadesFacturadas,that,0,0,resultadoFacturasXConsumo,resultado, []);   
         }else{
@@ -1788,6 +1845,7 @@ function __obtenerDetallePorFacturar(that, index, datos, detallePorFacturar, cal
      
     G.Q.ninvoke(that.m_facturacion_clientes,'obtenerDetallePorFacturar',{ 
     empresa_id: dato.empresa_id, estado: 0, prefijo_documento: dato.prefijo_documento, numero_documento: dato.numeracion_documento}).then(function(resultado){
+    
        detallePorFacturar.push(resultado);
         
     }).fail(function(err){

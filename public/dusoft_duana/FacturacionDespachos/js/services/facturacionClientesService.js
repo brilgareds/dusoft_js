@@ -235,6 +235,20 @@ define(["angular", "js/services"], function (angular, services) {
                         });
                     };
                     
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invocar el path 
+                     *              para todo el detalle de un temporal
+                     *              
+                     */
+                    self.eliminarTotalTemporalFacturaConsumo = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.ELIMINAR_TOTAL_TEMPORAL_FACTURA_CONSUMO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
                     /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY

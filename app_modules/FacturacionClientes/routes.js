@@ -84,6 +84,11 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.eliminarProductoTemporalFacturaConsumo(req, res);
     });
     
+    
+    app.post('/api/FacturacionClientes/eliminarTotalTemporalFacturaConsumo', function(req, res) {       
+        c_facturacion_clientes.eliminarTotalTemporalFacturaConsumo(req, res);
+    });
+    
     app.post('/api/FacturacionClientes/consultarDetalleTemporalFacturaConsumo', function(req, res) {       
         c_facturacion_clientes.consultarDetalleTemporalFacturaConsumo(req, res);
     });

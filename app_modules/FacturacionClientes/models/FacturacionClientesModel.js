@@ -1299,12 +1299,14 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
         }).where(function(resuldado){
             
             this.andWhere("sw_facturacion",obj.sw_facturacion);
-            if(obj.tipo_id_tercer){
-                this.andWhere("tipo_id_tercero",obj.tipo_id_tercero)
-                .andWhere("tercero_id",obj.tercero_id)               
+            if(obj.tipo_id_tercero){
+                this.andWhere("a.tipo_id_tercero",obj.tipo_id_tercero)
+                .andWhere("a.tercero_id",obj.tercero_id)               
             }
         });     
- 
+    
+    console.log("LOS PARAME ", obj)
+    console.log("query DEL DETASHHEE ", query.toSQL());
     query.then(function(resultado){    
        
         callback(false, resultado);

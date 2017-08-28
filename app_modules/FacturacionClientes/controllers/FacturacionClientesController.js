@@ -287,7 +287,11 @@ FacturacionClientes.prototype.listarDocumentosPorFacturar = function(req, res){
     
     G.Q.ninvoke(that.m_facturacion_clientes,'listarDocumentosPorFacturar',args.facturas_consumo).then(function(resultado){
         
-        return res.send(G.utils.r(req.url, 'Consulta lista de documentos', 200, {facturas_consumo:resultado}));
+        if(resultado.length > 0){
+            return res.send(G.utils.r(req.url, 'Consulta lista de documentos', 200, {facturas_consumo:resultado}));
+        }else{
+            throw 'No hay documentos disponibles para este cliente';
+        }
         
     }).
     fail(function(err){   

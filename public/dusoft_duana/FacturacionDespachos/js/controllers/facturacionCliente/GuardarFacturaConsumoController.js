@@ -49,6 +49,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             callback();
         };
         $scope.disabledDropDownCliente = false;
+        $scope.disabledDropDownDocumento = true;
         
         /**
          * +Descripcion Grid que lista el detalle del efc seleccionado
@@ -249,6 +250,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         
         $scope.generarFacturaXConsumo = function(){
             
+            if(!$scope.root.documento){
+                AlertService.mostrarMensaje("warning", "Para realizar la facturacion, debe seleccionar el cliente y el documento"); 
+                return;
+            }
             var obj = {
                 session: $scope.session,
                 data: {
@@ -388,8 +393,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         
             facturacionClientesService.listarDocumentos(obj, function(data){
                 $scope.root.documentos = [];
+                
                 if(data.status === 200){
-                    
+                    $scope.disabledDropDownDocumento = false;
                     var _documentos = data.obj.facturas_consumo;
                     callback(_documentos);
                     
@@ -404,12 +410,15 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         ));
                               
                     }
+                }else{
+                    $scope.disabledDropDownDocumento = true;
                 }
             });
         };
         
         $scope.onListarDocumentosClientes = function(){
-            
+            $scope.root.documento = null;
+            $scope.root.detalleDocumentoTmp = [];
             that.listarDocumento("", function(data){
                     
             });

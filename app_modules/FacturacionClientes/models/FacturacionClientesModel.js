@@ -1305,8 +1305,6 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
             }
         });     
     
-    console.log("LOS PARAME ", obj)
-    console.log("query DEL DETASHHEE ", query.toSQL());
     query.then(function(resultado){    
        
         callback(false, resultado);

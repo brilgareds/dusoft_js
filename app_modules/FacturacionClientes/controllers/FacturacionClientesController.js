@@ -1186,6 +1186,12 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     var subTotalValorProductos = 0;
     var totalValorIva = 0;
     
+    if(parametros.documentos.cantidadNueva <= 0){
+       
+        res.send(G.utils.r(req.url, 'La cantidad debe ser mayor a Cero (0)', 404, {procesar_factura_cosmitet: []}));
+        return;
+    }
+    
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametrosDetalleTmp).then(function(resultado){
          
         if(resultado.length >0){
@@ -1385,6 +1391,12 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
 };
 
 
+/**
+ * 
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de listar las facturas que se encuentran
+ *              en la tabla de temporal
+ */
 FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
     
     console.log("**********FacturacionClientes.prototype.listarFacturasTemporales*******************");
@@ -1420,6 +1432,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
     }).done(); 
     
 }
+
 /*
  * @author Cristian Ardila
  * @fecha 12/08/2017

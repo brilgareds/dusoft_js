@@ -110,8 +110,7 @@
 <div  class="table-responsive" style="clear:both;">
     <div class="gridFacturasConsumo grid-responsive" ng-grid="listaDetalleDocumentoTmp" ></div>
 </div>
-
-<label>Productos : 4</label>
+ 
 <div class="row">
     <div class="col-md-2">
         <label>Subtotal : {{root.valorFacturaTemporal.valorSubTotal}}</label>
@@ -140,7 +139,7 @@
    <!-- <button class="btn btn-warning">
         Eliminar temporal <i class="glyphicon glyphicon-trash"></i>
     </button> //-->
-    <button class="btn btn-success" ng-click="generarFacturaXConsumo()">
+    <button class="btn btn-success" ng-click="generarFacturaXConsumo()" ng-disabled="root.detalleDocumentoTmp.length === 0">
         Facturar <i class="glyphicon glyphicon-duplicate"></i>
     </button>
 </p>

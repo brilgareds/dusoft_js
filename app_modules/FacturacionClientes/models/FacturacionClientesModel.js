@@ -1275,8 +1275,6 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
  * @fecha 2017-15-05 YYYY-DD-MM        
  */          
 FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(obj, callback){
-    
-    
 
     var query = G.knex.select(["a.*","b.*",
        G.knex.raw("case when a.tipo_pago_id=1 then 'Efectivo' \
@@ -1378,6 +1376,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         "b.factura_fiscal",
         "b.observacion",
         "b.codigo_producto",
+        G.knex.raw("fc_descripcion_producto(b.codigo_producto) as descripcion"),
         G.knex.raw("to_char(b.fecha_vencimiento, 'yyyy-mm-dd') as fecha_vencimiento"),
         "b.lote",
         "b.porc_iva",

@@ -60,15 +60,19 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
+            showFooter: true,
+            showFilter: true,
+            filterOptions: $scope.filtroGrid,
             columnDefs: [
 
-                {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
-                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a despachar'},
-                {field: 'cantidadTmpDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant Facturada'},
-                {field: 'cantidadPendientePorFacturar',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar'},
-                {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},
+                {field: 'producto',  cellClass: "ngCellText", width: "8%", displayName: 'Producto'},
+                {field: 'descripcionProducto',  cellClass: "ngCellText", width: "35%", displayName: 'Descripcion'},
+                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "8%", displayName: 'Cant a despachar'},
+                {field: 'cantidadTmpDespachada',  cellClass: "ngCellText", width: "8%", displayName: 'Cant.Facturada'},
+                {field: 'cantidadPendientePorFacturar',  cellClass: "ngCellText", width: "8%", displayName: 'Cant x Facturar'},
+                {field: 'lote',  cellClass: "ngCellText", width: "8%", displayName: 'Lote'},
                 {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "10%", displayName: 'Fecha vto'},
-                {displayName: 'Cantidad', width: "10%", 
+                {displayName: 'Cantidad', width: "8%", 
                          cellTemplate: '<div class="col-xs-12 " cambiar-foco> \
                                        <input type="text" \
                                         validacion-numero-entero \
@@ -79,7 +83,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                                         id="" \
                                         /> </div>'},
                                 
-                {width: "5%", displayName: "Opcion", cellClass: "txt-center",
+                {displayName: "Opc", cellClass: "txt-center",
                 cellTemplate: '<button\
                     ng-disabled="row.entity.cantidadDespachada === row.entity.cantidadTmpDespachada " \n\
                     class="btn btn-default btn-xs" \n\
@@ -110,13 +114,17 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
+            showFooter: true,
+            showFilter: true,
+            filterOptions: $scope.filtroGrid,
             columnDefs: [
 
-                {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
-                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a despachar'},
-                {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},
+                {field: 'producto',  cellClass: "ngCellText", width: "8%", displayName: 'Producto'},
+                {field: 'descripcionProducto',  cellClass: "ngCellText", width: "35%", displayName: 'Producto'},
+                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "8%", displayName: 'Cant a despachar'},
+                {field: 'lote',  cellClass: "ngCellText", width: "8%", displayName: 'Lote'},
                 {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha vto'},
-                {field: 'valorUnitario',  cellClass: "ngCellText", width: "10%", displayName: 'Valor unitario'},
+                {field: 'valorUnitario',  cellClass: "ngCellText", width: "15%", displayName: 'Valor unitario'},
                 
                 { displayName: "Opcion", cellClass: "txt-center",
                 cellTemplate: '<button\
@@ -254,6 +262,11 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 AlertService.mostrarMensaje("warning", "Para realizar la facturacion, debe seleccionar el cliente y el documento"); 
                 return;
             }
+            
+            if($scope.root.detalleDocumentoTmp.length <= 0){
+                AlertService.mostrarMensaje("warning", "Debe seleccionar los productos a facturar"); 
+                return;
+            }
             var obj = {
                 session: $scope.session,
                 data: {
@@ -352,6 +365,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                      
                         var documento = DocumentoDetalleConsumo.get(_documento.codigo_producto, _documento.cantidad_despachada, _documento.lote, _documento.fecha_vencimiento);
                             
+                            documento.setDescripcionProducto(_documento.descripcion);                          
                             documento.setValorUnitario(_documento.valor_unitario);                          
                             documento.setCantidadPendientePorFacturar(_documento.cantidad_pendiente_por_facturar);                          
                             documento.setPorcIva(_documento.porc_iva);                          
@@ -379,7 +393,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         };*/
         
         that.listarDocumento = function(busqueda, callback){
-            console.log("busqueda ", busqueda)
+            
             var obj = {
                 session: $scope.session,
                 data: {

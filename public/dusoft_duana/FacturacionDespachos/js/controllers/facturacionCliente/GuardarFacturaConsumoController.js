@@ -21,6 +21,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          * @returns {void}
          */
         that.init = function (callback) {
+            
             $scope.paginaactual = 1;
             var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
             var fecha_actual = new Date();

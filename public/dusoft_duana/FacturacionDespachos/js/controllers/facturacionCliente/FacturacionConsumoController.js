@@ -19,9 +19,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          */
         that.init = function (callback) {
             $scope.paginaactual = 1;
+            $scope.columnaSizeBusqueda = "col-md-3";
             var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
             var fecha_actual = new Date();
             $scope.root = {
+                termino_busqueda: '',
+                visibleBuscador:true,
+                visibleBotonBuscador: true,
                 fechaInicialPedidosCosmitet: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
                 fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),            
                 opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
@@ -49,7 +53,64 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             callback();
         };
         
-      /**
+        $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
+        $scope.columnaSizeBusqueda = "col-md-3";
+        
+        $scope.filtros = [
+            {tipo: '', descripcion: "Todos"},
+            {tipo: 'Nombre', descripcion: "Nombre"}
+        ];
+        $scope.filtro = $scope.root.filtros[0];
+        
+        $scope.onColumnaSize = function(tipo){
+ 
+        };
+        /**
+         * +Descripcion Metodo encargado de visualizar en el boton del dropdwn
+         *              el tipo de documento seleccionado
+         * @param {type} filtro
+         * @returns {undefined}
+         */
+        $scope.onSeleccionFiltro = function (filtro) {
+
+            $scope.filtro = filtro;
+            $scope.root.termino_busqueda = '';
+        };
+        
+        
+        $scope.buscarClienteFacturaTemporal = function(event){
+             
+            if (event.which === 13 || event.which === 1) {
+
+                that.listarFacturasTemporal();
+            }
+             
+        };
+        
+        /**
+         * +Descripcion Metodo encargado de invocar el servicio que listara 
+         *              los tipos de terceros
+         * @author Cristian Ardila
+         * @fecha 02/05/2017 DD/MM/YYYY
+         * @returns {undefined}
+         */
+        that.listarTiposTerceros = function () {
+
+            var obj = {
+                session: $scope.session,
+                data: {listar_tipo_terceros:{}}
+            };
+
+            facturacionClientesService.listarTiposTerceros(obj, function (data) {
+
+                if (data.status === 200) {
+                    $scope.tipoTercero = facturacionClientesService.renderListarTipoTerceros(data.obj.listar_tipo_terceros);
+                } else {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }
+            });
+        };
+       /**
         * @author Eduar Garcia
         * @fecha 11/07/2016
         * +Descripcion Funcion que permitira desplegar el popup datePicker
@@ -91,13 +152,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             console.log("*******that.listarFacturasTemporal************");
             console.log("*******that.listarFacturasTemporal************");
             console.log("*******that.listarFacturasTemporal************");
-            
+               
             var obj = {
                 session: $scope.session,
                 data: {
                     listar_facturas_temporal: {
-                        tipo_id_tercero: '',
-                        tercero_id: '',
+                        filtro: $scope.filtro,
+                        terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
                         paginaActual:$scope.paginaactual
                         
                     }
@@ -217,7 +278,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para ingresar a la aplicacion", tipo: "warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
-  
+                        that.listarTiposTerceros();
                         that.listarFacturasTemporal();
                     }
                 }

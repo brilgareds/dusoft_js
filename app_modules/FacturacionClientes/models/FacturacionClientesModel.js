@@ -824,8 +824,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         G.knex.raw("case when  a.cantidad_pendiente_por_facturar = 0 then 0 else 1 end as estado_entrega") ])).from(query)
          
     }
-    
-    console.log("query2 /////a///a ", query2.toSQL());
+   
     query2.then(function(resultado){
         console.log("resultado >>>>>> ", resultado);
         callback(false, resultado);   
@@ -1297,8 +1296,18 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
                 .on('a.empresa_id', "cntrtos.empresa_id")
                  
         }).where(function(resuldado){
-            
+                                             
             this.andWhere("sw_facturacion",obj.sw_facturacion);
+            if(obj.filtro){
+                if ((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !== "") {
+                    this.andWhere(G.knex.raw("b.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
+                        .andWhere("b.tipo_id_tercero",obj.filtro.tipo)
+                }
+                if ((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !== "") {
+                    this.andWhere(G.knex.raw("b.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
+                }
+            }
+            
             if(obj.tipo_id_tercero){
                 this.andWhere("a.tipo_id_tercero",obj.tipo_id_tercero)
                 .andWhere("a.tercero_id",obj.tercero_id)               
@@ -1437,7 +1446,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
 FacturacionClientesModel.prototype.consultarEstadoPedido = function(obj, callback){
     
     var campos = [ 
-        G.knex.raw("sum(cantidad_facturada)::integer as total_cantidad_facturada"),
+        G.knex.raw("sum(coalesce(cantidad_facturada, 0))::integer as total_cantidad_facturada"),
         G.knex.raw("sum(cantidad)::integer as total_cantidad")
     ];
     var query = G.knex.column(campos)
@@ -1476,18 +1485,18 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
             lote: obj.lote,
             numero_caja: obj.numero_caja})
         .update({cantidad_facturada:
-            G.knex.select([G.knex.raw('cantidad_facturada+'+obj.cantidad_facturada)]) 
+            G.knex.select([G.knex.raw('coalesce(cantidad_facturada, 0)+'+obj.cantidad_facturada)]) 
             .from('inv_bodegas_movimiento_d')
             .where({prefijo: obj.prefijo, 
                 numero: obj.numero,
                 codigo_producto: obj.codigo_producto,
                 lote: obj.lote,
                 numero_caja: obj.numero_caja
-            }),
+            }),                                             
             cantidad_pendiente_por_facturar: 
-            G.knex.select([G.knex.raw('CASE WHEN cantidad_pendiente_por_facturar = 0\
+            G.knex.select([G.knex.raw('CASE WHEN coalesce(cantidad_pendiente_por_facturar, 0) = 0\
             THEN cantidad-'+obj.cantidad_facturada+' ELSE\
-            cantidad_pendiente_por_facturar-'+obj.cantidad_facturada+' END as cantidad_des')]) //cantidad-cantidad_facturada
+            coalesce(cantidad_pendiente_por_facturar, 0)-'+obj.cantidad_facturada+' END as cantidad_des')])
             .from('inv_bodegas_movimiento_d')      
             .where({prefijo: obj.prefijo, 
                 numero: obj.numero,

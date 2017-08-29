@@ -1324,7 +1324,11 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             parametros.direccion_ip = ip;
             
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',
-            {tipo_id_tercero:parametros.tipoIdTercero, tercero_id: parametros.terceroId, sw_facturacion:0, paginaActual:1});
+            {tipo_id_tercero:parametros.tipoIdTercero, 
+            tercero_id: parametros.terceroId, 
+            sw_facturacion:0, 
+            paginaActual:1, terminoBusqueda: '',filtro: ''});
+            
              
              
         }else{
@@ -1466,10 +1470,17 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {imprimir_reporte_factura: []}));
         return;
     }
-     
+    
+    var terminoBusqueda = args.listar_facturas_temporal.terminoBusqueda;
+    var filtro = args.listar_facturas_temporal.filtro;     
     var paginaActual = args.listar_facturas_temporal.paginaActual;
     
-    var parametros = {tipo_id_tercero:'', tercero_id: '', sw_facturacion:0, paginaActual: paginaActual};
+    var parametros = {tipo_id_tercero:'', 
+        tercero_id: '', 
+        sw_facturacion:0, 
+        paginaActual: paginaActual,
+        terminoBusqueda: terminoBusqueda,
+        filtro: filtro};
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
         
         if(resultado.length >0){
@@ -1554,7 +1565,9 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         tipo_id_tercero:args.generar_factura_consumo.tipoTerceroId, 
         tercero_id: args.generar_factura_consumo.terceroId, 
         sw_facturacion:0,
-        paginaActual: 1
+        paginaActual: 1,
+        terminoBusqueda: '',
+        filtro: ''
     };
     var parametrosDetalle = {
         tipoIdTercero:args.generar_factura_consumo.tipoTerceroId, 
@@ -1669,13 +1682,13 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
           
     }).then(function(resultado){
         
-        console.log("QUE ESTA LLEGANDO A QUI ? ", resultado);
+        //console.log("QUE ESTA LLEGANDO A QUI ? ", resultado);
         resultadoFacturasXConsumo = resultado;       
         return G.Q.nfcall(__obtenerDetallePorFacturar,that,0,resultado,[]);                   
         
     }).then(function(resultado){
         
-        console.log("resultado ", resultado);
+        //console.log("resultado [__obtenerDetallePorFacturar]:: ", resultado);
         if(resultado.length > 0){
             return G.Q.nfcall(__distribuirUnidadesFacturadas,that,0,0,resultadoFacturasXConsumo,resultado, []);   
         }else{
@@ -1684,6 +1697,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         
     }).then(function(resultado){
         
+        //console.log("resultado [__distribuirUnidadesFacturadas]:: ", resultado)
         productosActualizados = [];  
         
         if(resultado.length > 0){

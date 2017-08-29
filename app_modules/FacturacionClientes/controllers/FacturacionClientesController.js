@@ -1192,17 +1192,12 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {procesar_factura_cosmitet: []}));
         return;
     }
- 
-    /*
-    if (!args.facturas_consumo.observacion) {
-        res.send(G.utils.r(req.url, 'Se requiera la observacion', 404, {procesar_factura_cosmitet: []}));
-        return;
-    }*/
     
     if (!args.facturas_consumo.fechaCorte) {
         res.send(G.utils.r(req.url, 'Se requiera la fecha del corte de facturacion', 404, {procesar_factura_cosmitet: []}));
         return;
     }
+    
     var documentoFacturacion;
     var consultarTerceroContrato;
     var consultarParametrosRetencion;
@@ -1353,7 +1348,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
              
         if(resultado){
-            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo
+            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
         }
         
         
@@ -1581,6 +1576,10 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     var usuario = req.session.user.usuario_id;    
     var parametroBodegaDocId = {variable:"documento_factura_"+args.generar_factura_consumo.empresa_id, tipoVariable:1, modulo:'FacturasDespacho'};
     
+    that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada({generar_factura_consumo: ''},'Facturando...', 200,usuario); 
+    res.send(G.utils.r(req.url, 'Generando facturacion X consumo...', 200, {generar_factura_consumo: ''}));     
+    //that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada:''},'Facturacion en proceso, tardara unos minutos',201,usuario); 
+            
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
         
         
@@ -1737,10 +1736,16 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         return G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);       
          
     }).then(function(resultado){
-         
-        return res.send(G.utils.r(req.url, 'Se genera la factura por consumo satisfactoriamente', 200,{generar_factura_consumo:documentoFacturacion,
+            
+            console.log("resultado [onNotificarFacturacionXConsumoTerminada]]:: ", resultado);
+            that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada(
+            resultado.param,
+            resultado.resultado,
+            201,
+            usuario);
+       /* return res.send(G.utils.r(req.url, 'Se genera la factura por consumo satisfactoriamente', 200,{generar_factura_consumo:documentoFacturacion,
             resultado_sincronizacion_ws: resultado
-        }));
+        }));*/
         
     }).fail(function(err){ 
      
@@ -1750,12 +1755,13 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
             "parametros: ": parametros,
             "resultado: ":err});
         logger.error("-----------------------------------");
-        if(!err.status){
+        /*if(!err.status){
             err = {};
             err.status = 500;
             err.msj = "Se ha generado un error..";
         }
-       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));*/
+        that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada({generar_factura_consumo: ''},'Se ha presentado errores en el proceso', 500,usuario); 
     }).done(); 
 };
 

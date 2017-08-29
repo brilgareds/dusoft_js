@@ -223,7 +223,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 tercero_id: entity.mostrarTerceros()[0].getId(),
                 contrato_cliente_id: entity.mostrarTerceros()[0].getContratoClienteId(),
                 tipo_pago: entity.getTipoPagoId(),
-                observaciones: entity.getObservaciones()
+                observaciones: entity.getObservaciones(),
+                fecha_registro: entity.getFechaRegistro()
             }); 
             $state.go("GuardarFacturaConsumo");
         };
@@ -258,6 +259,58 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             that.listarFacturasTemporal();
         };
         
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Funcion encargada de crear una ventana de notificaciones
+         *              cuando la factura de cosmitet ya esta lista, al presionar click
+         *              sobre la notificacion se abrira en una nueva pestaña el
+         *              reporte de la factura
+         * @fecha 2017-14-16
+         */        
+        that.notificarSolicitud = function(title, body, parametros) {
+             
+            webNotification.showNotification(title, {
+                body: body,
+                icon: '/images/logo.png',
+                onClick: function onNotificationClicked() {},
+                autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+            }, function onShow(error, hide) {
+                if (error) {
+                    window.alert('Error interno: ' + error.message);
+                } else {
+
+                    setTimeout(function hideNotification() {
+
+                        hide(); //manually close the notification (you can skip this if you use the autoClose option)
+                    }, 90000);
+                }
+            });
+        };
+        
+        socket.on("onNotificarFacturacionXConsumoTerminada", function(datos) {
+             
+            console.log("datos [onNotificarFacturacionXConsumoTerminada]:: ", datos);
+            console.log("datos [.msj.mensaje_bd]:: ", datos.msj.mensaje_bd);
+            console.log("datos [.msj.mensaje_ws]:: ", datos.msj.mensaje_ws);
+            console.log("datos [datos.obj[2]]:: ", datos.obj[2]);
+            console.log("datos [datos.obj[1]]:: ", datos.obj[1]);
+             
+            if(datos.status === 201){
+                 
+                that.notificarSolicitud("#Factura " + datos.obj[1]+" - " +datos.obj[2], 
+                datos.msj.mensaje_bd + " - " + datos.msj.mensaje_ws
+                );
+                that.listarFacturasTemporal();
+            }
+            
+            if(datos.status === 500){   
+                AlertService.mostrarMensaje("danger", datos.msj); 
+                that.listarFacturasTemporal();
+            }
+                 
+                
+        });
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones
@@ -287,7 +340,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
  
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {            
-            socket.remove(['onNotificarFacturacionTerminada']);  
+            socket.remove(['onNotificarFacturacionTerminada','onNotificarFacturacionXConsumoTerminada']);  
             $scope.$$watchers = null;
             $scope.root.activarTabFacturasGeneradas = false;
             localStorageService.add("listaFacturaDespachoGenerada",null);

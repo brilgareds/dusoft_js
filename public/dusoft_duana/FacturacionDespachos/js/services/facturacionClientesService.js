@@ -583,7 +583,7 @@ define(["angular", "js/services"], function (angular, services) {
                             _documento.setTipoPago(datos[i].descripcion_tipo_pago);                          
                             _documento.setTipoPagoId(datos[i].tipo_pago_id);                          
                             _documento.setUsuario(datos[i].nombre_usuario);                          
-                            _documento.setFechaRegistro(datos[i].fecha_registro);                          
+                            _documento.setFechaRegistro(datos[i].fecha_registro_corte);                          
                             _documento.setValorTotal(datos[i].valor_total);                          
                             _documento.setValorSubTotal(datos[i].valor_sub_total);                          
                             _documento.setObservaciones(datos[i].observaciones);                          

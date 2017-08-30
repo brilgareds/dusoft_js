@@ -32,7 +32,7 @@ define(["angular", "js/controllers",
                         $scope.rootSeparacion.existenciaTotal;
                         $scope.filtros = [
                             {nombre: "Seleccionar", id: 0},
-                            {nombre: "Justificar", id: 1},
+                            {nombre: "Justificación / Observación", id: 1},
                             {nombre: "Listar productos", id: 2},
                             {nombre: "Refrescar", id: 3},
                             {nombre: "Modificar lotes", id:4}
@@ -101,6 +101,7 @@ define(["angular", "js/controllers",
                             backdropClick: true,
                             dialogFade: true,
                             keyboard: true,
+                            size:'lg',
                             templateUrl: 'views/separacionpedidos/separacionProductosPendientes.html',
                             scope: $scope,
                             controller: "SeparacionProductosPendientesController",

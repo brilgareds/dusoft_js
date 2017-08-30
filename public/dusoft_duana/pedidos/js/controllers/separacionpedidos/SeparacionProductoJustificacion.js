@@ -61,6 +61,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             self.justificar = function(justificacion){
                 var url = API.SEPARACION_PEDIDOS.JUSTIFICACION_PENDIENTES;
                 var producto = pedido.getProductoSeleccionado();
+              
                 
                 var obj = {
                     session: $scope.rootJustificacion.session,
@@ -71,6 +72,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                             existencia : 0,
                             doc_tmp_id : pedido.getTemporalId(),
                             justificacion : justificacion.descripcion,
+                            justificacion_sw_pendientes : justificacion.sw_pendientes,
                             justificacion_auditor : "",
                             observacion_justificacion_separador:$scope.rootJustificacion.observacionJustificacion
                             
@@ -100,10 +102,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 columnDefs: [
                     {field: 'descripcion', displayName: 'Motivo'},
                     {field: '', displayName: "", cellClass: "txt-center", width: "50",
-                     cellTemplate: ' <input-check ng-model="row.entity.selected" ng-click="onSeleccionJustificacion(row.entity)"  />'}
+                     cellTemplate: ' <input-check ng-disabled="deshabilitarSeleccion(row)" ng-model="row.entity.selected" ng-click="onSeleccionJustificacion(row.entity)"  />'}
                 ]
             };
             
+            
+            $scope.deshabilitarSeleccion = function(row){
+                if(row.entity.sw_pendientes === '0' && $scope.rootJustificacion.observacionJustificacion.length === 0){
+                    return true;
+                }
+                
+                return false;
+            };
             
            /**
              * @author Eduar garcia

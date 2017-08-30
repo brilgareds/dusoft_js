@@ -836,8 +836,8 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
         return;
     }
 
-    if (parseInt(args.documento_temporal.cantidad_pendiente) <= 0) {
-        res.send(G.utils.r(req.url, 'La cantidad_pendiente debe ser mayor a cero', 404, {}));
+    if (parseInt(args.documento_temporal.cantidad_pendiente) < 0) {
+        res.send(G.utils.r(req.url, 'La cantidad_pendiente es inválida', 404, {}));
         return;
     }
 
@@ -1189,8 +1189,12 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
             res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion_auditor o existencia estan vacíos', 404, {}));
             return;
         }
+        
+        
+        
+        var validarPendientes = (args.documento_temporal.justificacion.validar_pendientes !== undefined && args.documento_temporal.justificacion.validar_pendientes !== null) ? Boolean(parseInt(args.documento_temporal.justificacion.validar_pendientes)) : true   
 
-        if (parseInt(args.documento_temporal.justificacion.cantidad_pendiente) <= 0) {
+        if (parseInt(args.documento_temporal.justificacion.cantidad_pendiente) <= 0 && validarPendientes) {
             res.send(G.utils.r(req.url, 'La cantidad_pendiente debe ser mayor a cero', 404, {}));
             return;
         }

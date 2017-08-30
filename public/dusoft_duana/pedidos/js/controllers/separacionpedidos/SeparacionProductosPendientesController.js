@@ -21,7 +21,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                $scope.rootListaProductos.pedido = pedido;
                $scope.rootListaProductos.productos = angular.copy(pedido.getProductos());
                $scope.rootListaProductos.filtro = { codigoBarras : false, termino : "" };
-               
+              
+                console.log("productos ", $scope.rootListaProductos.productos);
            } ;
             
             
@@ -60,7 +61,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 showFilter: true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo', width:100},
-                    {field: 'descripcion', displayName: 'Descripcion'}
+                    {field: 'descripcion', displayName: 'Descripcion'},
+                    {field: 'cantidad_solicitada', displayName:"Solic", width:100},
+                    {field: 'cantidad_pendiente', displayName:"Pend", width:100},
+                    {field: 'justificacion', displayName:"Justificacion", width:150}
                      
                 ]
                
@@ -72,6 +76,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 var productos = $filter('filter')($scope.rootListaProductos.productos, {codigo_producto:$scope.rootListaProductos.filtro.termino});
                 
                 $scope.rootListaProductos.productos = productos;
+                
+               
               
             };
             

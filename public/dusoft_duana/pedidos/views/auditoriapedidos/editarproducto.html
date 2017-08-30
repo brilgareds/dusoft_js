@@ -20,7 +20,7 @@
             <div class="row">
                 <div class ="col-md-3"><div class="lbl_editar_producto">Ingresado / Pendiente</div><span ng-bind="rootEditarProducto.producto.obtenerCantidadSeleccionada()"></span> / <span ng-bind="rootEditarProducto.producto.cantidad_pendiente"></span></div>
                 <div class ="col-md-3"><div class="lbl_editar_producto">Justificación  Separador</div><div><span ng-bind="rootEditarProducto.producto.lote.justificacion_separador"></span></div></div>
-                <div class ="col-md-3" ng-if="rootEditarProducto.producto.getObservacionJustificacionSeparador().length > 0"><div class="lbl_editar_producto">Observación justificación</div><div><span ng-bind="rootEditarProducto.producto.observacionJustificacionSeparador"></span></div></div>
+                <div class ="col-md-3" ng-if="rootEditarProducto.producto.getObservacionJustificacionSeparador().length > 0"><div class="lbl_editar_producto">Observación justificación</div><div class="observacionJustificacion"><span ng-bind="rootEditarProducto.producto.observacionJustificacionSeparador"></span></div></div>
             </div>
         </div>
     </div>

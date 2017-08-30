@@ -1472,7 +1472,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
     
     var parametros = {tipo_id_tercero:'', 
         tercero_id: '', 
-        sw_facturacion:0, 
+        sw_facturacion:'', 
         paginaActual: paginaActual,
         terminoBusqueda: terminoBusqueda,
         filtro: filtro};
@@ -1578,8 +1578,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     
     that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada({generar_factura_consumo: ''},'Facturando...', 200,usuario); 
     res.send(G.utils.r(req.url, 'Generando facturacion X consumo...', 200, {generar_factura_consumo: ''}));     
-    //that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada:''},'Facturacion en proceso, tardara unos minutos',201,usuario); 
-            
+          
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
         
         
@@ -1593,13 +1592,25 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
        
     }).then(function(resultado){
         
-        if(resultado.length >0){
-            
+        if(resultado.length >0){           
             datosDocumentosXConsumo.detalle = resultado;
             datosDocumentosXConsumo.temporal = resultado;
-            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
+            return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
+            {id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,estado: 1, sw_facturacion: 2});
+       
         }else{
             throw {msj:'No hay productos en temporal', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+        
+        
+        //that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada({generar_factura_consumo: ''},'Facturando...', 203,usuario); 
+        if(resultado >0){
+            console.log("ESTO ASI ", resultado);
+            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
+        }else{
+            throw {msj:'No se actualizo el estado del temporal', status: 404}; 
         }
         // console.log("resultado [datosDocumentosXConsumo]:", datosDocumentosXConsumo);
          
@@ -1761,7 +1772,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
             err.msj = "Se ha generado un error..";
         }
        res.send(G.utils.r(req.url, err.msj, err.status, {}));*/
-        that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada({generar_factura_consumo: ''},'Se ha presentado errores en el proceso', 500,usuario); 
+       // that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada({generar_factura_consumo: ''},'Se ha presentado errores en el proceso', 500,usuario); 
     }).done(); 
 };
 

@@ -586,7 +586,9 @@ define(["angular", "js/services"], function (angular, services) {
                             _documento.setFechaRegistro(datos[i].fecha_registro_corte);                          
                             _documento.setValorTotal(datos[i].valor_total);                          
                             _documento.setValorSubTotal(datos[i].valor_sub_total);                          
-                            _documento.setObservaciones(datos[i].observaciones);                          
+                            _documento.setObservaciones(datos[i].observaciones);  
+                            _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
+                            _documento.setEstadoFacturacion(datos[i].sw_facturacion);
                             
                             _documento.agregarTerceros(_terceroDespacho);
                             cabeceraFacturaTmp.push(_documento);

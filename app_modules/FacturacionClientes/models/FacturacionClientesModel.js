@@ -1287,6 +1287,10 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
         G.knex.raw("(SELECT s.nombre FROM system_usuarios as s WHERE s.usuario_id = a.usuario_id) as nombre_usuario"),
         G.knex.raw("COALESCE(cntrtos.contrato_cliente_id,(SELECT contrato_cliente_id FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1')) as contrato_cliente_id"),
         G.knex.raw("to_char(a.fecha_registro, 'yyyy-mm-dd') as fecha_registro_corte"),
+        G.knex.raw("case when a.sw_facturacion=0 then 'Sin facturar' \
+        when a.sw_facturacion=1 then 'Terminado'\
+        when a.sw_facturacion=2 then 'Facturando'\
+        when a.sw_facturacion=3 then 'Error' end as descripcion_estado_facturacion"),
     ]) 
         .from('inv_facturas_xconsumo_tmp as a')
         .innerJoin("terceros as b", function(resultado){
@@ -1299,7 +1303,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
                  
         }).where(function(resuldado){
                                              
-            this.andWhere("sw_facturacion",obj.sw_facturacion);
+            
             if(obj.filtro){
                 if ((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !== "") {
                     this.andWhere(G.knex.raw("b.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
@@ -1312,7 +1316,8 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
             
             if(obj.tipo_id_tercero){
                 this.andWhere("a.tipo_id_tercero",obj.tipo_id_tercero)
-                .andWhere("a.tercero_id",obj.tercero_id)               
+                .andWhere("a.tercero_id",obj.tercero_id)     
+                .andWhere("sw_facturacion",obj.sw_facturacion);
             }
         });     
    
@@ -1516,6 +1521,7 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
         callback({err:err, msj: "Error al actualizar la cantidad facturada en el movimiento"});   
     });  
 };
+
 /*
  * @autor : Cristian Ardila
  * Descripcion : SQL encargado de eliminar los productos que estan en temporal
@@ -1534,6 +1540,7 @@ FacturacionClientesModel.prototype.eliminarProductoTemporalFacturaConsumo = func
         callback({err:err, msj: "Error al eliminar los temporales"});   
     });  
 };
+
 
 
 /*

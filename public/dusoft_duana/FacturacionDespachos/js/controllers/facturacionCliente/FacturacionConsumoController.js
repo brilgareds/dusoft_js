@@ -10,7 +10,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho,webNotification) {
  
         var that = this;
-        
+        $scope.notificarFacturaConsumo = 0;
         /*
          * Inicializacion de variables
          * @param {type} empresa
@@ -41,6 +41,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         id : 2,
                         descripcion : "Facturas Temporales"
                     }
+                ],
+                estadoBotones: ["glyphicon glyphicon-edit",
+                    "glyphicon glyphicon-ok",
+                    "fa fa-spinner fa-spin",
+                    "glyphicon glyphicon-remove"
                 ]
             };
             $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
@@ -197,9 +202,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarTerceros()[0].getTipoId()}}- {{row.entity.mostrarTerceros()[0].getId()}}: {{ row.entity.mostrarTerceros()[0].getNombre()}}</p></div>'},
                 {field: 'empresa',  cellClass: "ngCellText", width: "10%", displayName: 'Empresa'},
                 {field: 'observaciones',  cellClass: "ngCellText", width: "15%", displayName: 'Observacion'},
-                {field: 'fechaRegistro',  cellClass: "ngCellText", width: "15%", displayName: 'F. Reg'},
+                {field: 'fechaRegistro',  cellClass: "ngCellText", width: "10%", displayName: 'F. Reg'},
                 {field: 'tipoPago',  cellClass: "ngCellText", width: "5%", displayName: 'Tipo pago'},
-                {field: 'usuario',  cellClass: "ngCellText", width: "15%", displayName: 'Usuario'},
+                {field: 'usuario',  cellClass: "ngCellText", width: "10%", displayName: 'Usuario'},
                 {field: 'valorSubTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Sub Total'},
                 {field: 'valorTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Total'},
                 {displayName: "Opc", width: "5%", cellClass: "txt-center dropdown-button",
@@ -210,8 +215,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             <span class="glyphicon glyphicon-list"></span> Ingresar</button>\
                       </div>'
                 },
+                {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
+                cellTemplate: '<div class="col-xs-16 ">\n\
+                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
+                <span ng-class="agregar_clase_facturacion(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
                  
             ]
+        };
+        
+        $scope.agregar_clase_facturacion = function(index) {
+            return $scope.root.estadoBotones[index];
         };
         
         $scope.detalleFacturaTemporal = function(entity){           
@@ -301,7 +314,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 that.notificarSolicitud("#Factura " + datos.obj[1]+" - " +datos.obj[2], 
                 datos.msj.mensaje_bd + " - " + datos.msj.mensaje_ws
                 );
+                $scope.notificarFacturaConsumo++; 
                 that.listarFacturasTemporal();
+            }
+            
+            if(datos.status === 203){
+                 
+               AlertService.mostrarMensaje("warning", datos.msj); 
+               that.listarFacturasTemporal();
             }
             
             if(datos.status === 500){   

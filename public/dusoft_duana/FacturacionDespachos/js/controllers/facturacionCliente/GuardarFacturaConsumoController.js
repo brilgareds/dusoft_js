@@ -327,6 +327,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
 
                             if(data.status === 200){
                                 AlertService.mostrarMensaje("success", data.msj); 
+                                $state.go('Despacho');                     
                                 /*localStorageService.add("listaFacturaDespachoGenerada",
                                 {
                                     active:true,  
@@ -516,7 +517,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          *              emitira el estado en proceso y se cambiara de vista
          *              a la vista principal
          */
-        socket.on("onNotificarFacturacionXConsumoTerminada", function(datos) {
+        /*socket.on("onNotificarFacturacionXConsumoTerminada", function(datos) {
            
             if(datos.status === 200){
                 AlertService.mostrarMensaje("warning", datos.msj); 
@@ -526,8 +527,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     datos: '',
                     mensaje: ''
                 });*/
-                $state.go('Despacho');                     
-            }
+                //$state.go('Despacho');                     
+            /*}
              
         });
         

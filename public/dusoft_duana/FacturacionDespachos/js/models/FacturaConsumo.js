@@ -18,6 +18,8 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.tipoPagoId = 0;
                 this.fechaCorte = '';
                 this.usuario = '';
+                this.descripcionEstadoFacturacion;
+                this.estadoFacturacion;
             }
             
             FacturaConsumo.prototype = Object.create(Documento.getClass().prototype);
@@ -91,6 +93,22 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             FacturaConsumo.prototype.getUsuario = function(){
                 return this.usuario;
+            };
+            
+            FacturaConsumo.prototype.setDescripcionEstadoFacturacion = function(descripcionEstadoFacturacion){
+                this.descripcionEstadoFacturacion = descripcionEstadoFacturacion;
+            };
+            
+            FacturaConsumo.prototype.getDescripcionEstadoFacturacion = function(){
+                return this.descripcionEstadoFacturacion;
+            };
+            
+            FacturaConsumo.prototype.setEstadoFacturacion = function(estadoFacturacion){
+                this.estadoFacturacion = estadoFacturacion;
+            };
+            
+            FacturaConsumo.prototype.getEstadoFacturacion = function(){
+                return this.estadoFacturacion;
             };
             
             FacturaConsumo.prototype.agregarTerceros = function(terceros){

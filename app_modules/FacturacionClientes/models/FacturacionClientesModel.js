@@ -1511,10 +1511,9 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
                 lote: obj.lote,
                 numero_caja: obj.numero_caja
             }) 
-        })  
+        }) 
      
     query.then(function(resultado){  
-         
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [actualizarCantidadFacturadaXConsumo]: ", err);        

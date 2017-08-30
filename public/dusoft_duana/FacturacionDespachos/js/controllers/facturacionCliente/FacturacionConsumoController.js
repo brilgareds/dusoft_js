@@ -19,13 +19,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          */
         that.init = function (callback) {
             $scope.paginaactual = 1;
+            $scope.columnaSizeBusqueda = "col-md-3";
             var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
             var fecha_actual = new Date();
             $scope.root = {
+                termino_busqueda: '',
+                visibleBuscador:true,
+                visibleBotonBuscador: true,
                 fechaInicialPedidosCosmitet: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
                 fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),            
                 opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
                 vistaFacturacion:"",
+                facturasTemporales: "",
+                itemsFacturasTemporales: 0,
                 vistas : [
                     {
                         id : 1,
@@ -47,7 +53,64 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             callback();
         };
         
-      /**
+        $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
+        $scope.columnaSizeBusqueda = "col-md-3";
+        
+        $scope.filtros = [
+            {tipo: '', descripcion: "Todos"},
+            {tipo: 'Nombre', descripcion: "Nombre"}
+        ];
+        $scope.filtro = $scope.root.filtros[0];
+        
+        $scope.onColumnaSize = function(tipo){
+ 
+        };
+        /**
+         * +Descripcion Metodo encargado de visualizar en el boton del dropdwn
+         *              el tipo de documento seleccionado
+         * @param {type} filtro
+         * @returns {undefined}
+         */
+        $scope.onSeleccionFiltro = function (filtro) {
+
+            $scope.filtro = filtro;
+            $scope.root.termino_busqueda = '';
+        };
+        
+        
+        $scope.buscarClienteFacturaTemporal = function(event){
+             
+            if (event.which === 13 || event.which === 1) {
+
+                that.listarFacturasTemporal();
+            }
+             
+        };
+        
+        /**
+         * +Descripcion Metodo encargado de invocar el servicio que listara 
+         *              los tipos de terceros
+         * @author Cristian Ardila
+         * @fecha 02/05/2017 DD/MM/YYYY
+         * @returns {undefined}
+         */
+        that.listarTiposTerceros = function () {
+
+            var obj = {
+                session: $scope.session,
+                data: {listar_tipo_terceros:{}}
+            };
+
+            facturacionClientesService.listarTiposTerceros(obj, function (data) {
+
+                if (data.status === 200) {
+                    $scope.tipoTercero = facturacionClientesService.renderListarTipoTerceros(data.obj.listar_tipo_terceros);
+                } else {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }
+            });
+        };
+       /**
         * @author Eduar Garcia
         * @fecha 11/07/2016
         * +Descripcion Funcion que permitira desplegar el popup datePicker
@@ -78,66 +141,92 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
        };
        
-        $scope.listarFacturasConsumo = {
-            data: 'root.facturas_proceso',
+       
+         /**
+         * @author Cristian Ardila
+         * @fecha 2017-08-25
+         * +Descripcion Metodo encargado de invocar el servicio que consultara  
+         *              las facturas en temporal
+         */
+        that.listarFacturasTemporal = function(){
+            console.log("*******that.listarFacturasTemporal************");
+            console.log("*******that.listarFacturasTemporal************");
+            console.log("*******that.listarFacturasTemporal************");
+               
+            var obj = {
+                session: $scope.session,
+                data: {
+                    listar_facturas_temporal: {
+                        filtro: $scope.filtro,
+                        terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
+                        paginaActual:$scope.paginaactual
+                        
+                    }
+                }
+            };
+            
+            facturacionClientesService.listarFacturasTemporal(obj,function(data){
+                
+                
+                if(data.status === 200){
+                    $scope.root.facturasTemporales = facturacionClientesService.renderCabeceraTmpFacturaConsumo(data.obj.listar_facturas_temporal);
+                    $scope.root.itemsFacturasTemporales = data.obj.listar_facturas_temporal.length;
+                }else{
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+                
+                console.log("data >>>> ", $scope.root.facturasTemporales)
+            });
+            
+            
+        };
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Grid que listara todos los temporales de las facturas
+         * @fecha 25/08/2017
+         */
+        $scope.listarFacturasConsumoTemporales = {
+            data: 'root.facturasTemporales',
             enableColumnResize: true,
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
             columnDefs: [
-
-                {field: 'Factura',  cellClass: "ngCellText", width: "15%", displayName: 'Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_prefijo()}}- {{row.entity.get_numero()}}</p></div>'},
-                {field: 'Empresa',  cellClass: "ngCellText", width: "15%", displayName: 'Empresa', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_empresa()}}</p></div>'},
-                {field: 'Fecha creacion',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha creacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_fecha_registro()}}</p></div>'},
-                {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha Inicial', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
-                {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha final', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},               
-                {displayName: "Opc", cellClass: "txt-center dropdown-button",
-                cellTemplate: '\
-                <div class="btn-group">\
-                    <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
-                    <ul class="dropdown-menu dropdown-options">\
-                        <li ng-if="row.entity.get_numero() > 0 ">\
-                            <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,1)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
-                        </li>\
-                    </ul>\
-                </div>'
+                {cellClass: "ngCellText", width: "25%", displayName: 'Cliente', 
+                cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarTerceros()[0].getTipoId()}}- {{row.entity.mostrarTerceros()[0].getId()}}: {{ row.entity.mostrarTerceros()[0].getNombre()}}</p></div>'},
+                {field: 'empresa',  cellClass: "ngCellText", width: "10%", displayName: 'Empresa'},
+                {field: 'observaciones',  cellClass: "ngCellText", width: "15%", displayName: 'Observacion'},
+                {field: 'fechaRegistro',  cellClass: "ngCellText", width: "15%", displayName: 'F. Reg'},
+                {field: 'tipoPago',  cellClass: "ngCellText", width: "5%", displayName: 'Tipo pago'},
+                {field: 'usuario',  cellClass: "ngCellText", width: "15%", displayName: 'Usuario'},
+                {field: 'valorSubTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Sub Total'},
+                {field: 'valorTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Total'},
+                {displayName: "Opc", width: "5%", cellClass: "txt-center dropdown-button",
+                    cellTemplate: '<div class="btn-group">\
+                           <button ng-click="detalleFacturaTemporal(row.entity)" \n\
+                                class="btn btn-default btn-xs dropdown-toggle" \n\
+                                data-toggle="dropdown" title="Ver detalle">\n\
+                            <span class="glyphicon glyphicon-list"></span> Ingresar</button>\
+                      </div>'
                 },
-                {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
-                cellTemplate: '<div class="col-xs-16 ">\n\
-                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
-                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
+                 
             ]
         };
         
-        $scope.listarFacturasConsumoTemporales = {
-            data: 'root.facturas_proceso',
-            enableColumnResize: true,
-            enableRowSelection: false,
-            enableCellSelection: true,
-            enableHighlighting: true,
-            columnDefs: [
-
-                {field: 'Factura',  cellClass: "ngCellText", width: "15%", displayName: 'Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_prefijo()}}- {{row.entity.get_numero()}}</p></div>'},
-                {field: 'Empresa',  cellClass: "ngCellText", width: "15%", displayName: 'Empresa', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_empresa()}}</p></div>'},
-                {field: 'Fecha creacion',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha creacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_fecha_registro()}}</p></div>'},
-                {field: 'Fecha Inicial',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha Inicial', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaInicial()}}</p></div>'},
-                {field: 'Fecha final',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha final', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaFinal()}}</p></div>'},               
-                {displayName: "Opc", cellClass: "txt-center dropdown-button",
-                cellTemplate: '\
-                <div class="btn-group">\
-                    <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
-                    <ul class="dropdown-menu dropdown-options">\
-                        <li ng-if="row.entity.get_numero() > 0 ">\
-                            <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,1)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
-                        </li>\
-                    </ul>\
-                </div>'
-                },
-                {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 
-                cellTemplate: '<div class="col-xs-16 ">\n\
-                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
-                <span ng-class="agregar_clase_formula(row.entity.getEstadoFacturacion())"></span></p></div>'}, 
-            ]
+        $scope.detalleFacturaTemporal = function(entity){           
+            
+            localStorageService.add("facturaTemporalCabecera",
+            {
+                nombre_tercero: entity.mostrarTerceros()[0].getNombre(),
+                tipo_id_tercero: entity.mostrarTerceros()[0].getTipoId(),
+                tercero_id: entity.mostrarTerceros()[0].getId(),
+                contrato_cliente_id: entity.mostrarTerceros()[0].getContratoClienteId(),
+                tipo_pago: entity.getTipoPagoId(),
+                observaciones: entity.getObservaciones(),
+                fecha_registro: entity.getFechaRegistro()
+            }); 
+            $state.go("GuardarFacturaConsumo");
         };
         
         $scope.onCambiarVista = function(vista){
@@ -149,6 +238,79 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $state.go("GuardarFacturaConsumo");
         };
         
+        /*
+         * funcion para paginar anterior
+         * @returns {lista datos}
+         */
+        $scope.paginaAnterior = function () {
+            if ($scope.paginaactual === 1)
+                return;
+            $scope.paginaactual--;
+            that.listarFacturasTemporal();
+        };
+
+
+        /*
+         * funcion para paginar siguiente
+         * @returns {lista datos}
+         */
+        $scope.paginaSiguiente = function () {
+            $scope.paginaactual++;
+            that.listarFacturasTemporal();
+        };
+        
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Funcion encargada de crear una ventana de notificaciones
+         *              cuando la factura de cosmitet ya esta lista, al presionar click
+         *              sobre la notificacion se abrira en una nueva pestaña el
+         *              reporte de la factura
+         * @fecha 2017-14-16
+         */        
+        that.notificarSolicitud = function(title, body, parametros) {
+             
+            webNotification.showNotification(title, {
+                body: body,
+                icon: '/images/logo.png',
+                onClick: function onNotificationClicked() {},
+                autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+            }, function onShow(error, hide) {
+                if (error) {
+                    window.alert('Error interno: ' + error.message);
+                } else {
+
+                    setTimeout(function hideNotification() {
+
+                        hide(); //manually close the notification (you can skip this if you use the autoClose option)
+                    }, 90000);
+                }
+            });
+        };
+        
+        socket.on("onNotificarFacturacionXConsumoTerminada", function(datos) {
+             
+            console.log("datos [onNotificarFacturacionXConsumoTerminada]:: ", datos);
+            console.log("datos [.msj.mensaje_bd]:: ", datos.msj.mensaje_bd);
+            console.log("datos [.msj.mensaje_ws]:: ", datos.msj.mensaje_ws);
+            console.log("datos [datos.obj[2]]:: ", datos.obj[2]);
+            console.log("datos [datos.obj[1]]:: ", datos.obj[1]);
+             
+            if(datos.status === 201){
+                 
+                that.notificarSolicitud("#Factura " + datos.obj[1]+" - " +datos.obj[2], 
+                datos.msj.mensaje_bd + " - " + datos.msj.mensaje_ws
+                );
+                that.listarFacturasTemporal();
+            }
+            
+            if(datos.status === 500){   
+                AlertService.mostrarMensaje("danger", datos.msj); 
+                that.listarFacturasTemporal();
+            }
+                 
+                
+        });
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones
@@ -169,8 +331,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para ingresar a la aplicacion", tipo: "warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
-  
-                        
+                        that.listarTiposTerceros();
+                        that.listarFacturasTemporal();
                     }
                 }
             }
@@ -178,10 +340,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
  
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {            
-            socket.remove(['onNotificarFacturacionTerminada']);  
+            socket.remove(['onNotificarFacturacionTerminada','onNotificarFacturacionXConsumoTerminada']);  
             $scope.$$watchers = null;
             $scope.root.activarTabFacturasGeneradas = false;
             localStorageService.add("listaFacturaDespachoGenerada",null);
+            localStorageService.add("localStorageService",null);
             $scope.root = null;
         });
     }]);

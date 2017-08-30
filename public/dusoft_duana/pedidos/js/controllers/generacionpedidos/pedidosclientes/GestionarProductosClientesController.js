@@ -466,8 +466,8 @@ define(["angular", "js/controllers",
             };
 
             $scope.validar_seleccion_producto = function() {
-
-                if ($scope.Pedido.get_productos().length >= 25)
+                 
+                if ($scope.Pedido.get_productos().length >= 60)
                     return true;
 
             };

@@ -79,18 +79,25 @@ module.exports = function(app, di_container) {
     app.post('/api/FacturacionClientes/generarTemporalFacturaConsumo', function(req, res) {       
         c_facturacion_clientes.generarTemporalFacturaConsumo(req, res);
     });
-    
-    
+       
     app.post('/api/FacturacionClientes/eliminarProductoTemporalFacturaConsumo', function(req, res) {       
         c_facturacion_clientes.eliminarProductoTemporalFacturaConsumo(req, res);
+    });
+    
+    
+    app.post('/api/FacturacionClientes/eliminarTotalTemporalFacturaConsumo', function(req, res) {       
+        c_facturacion_clientes.eliminarTotalTemporalFacturaConsumo(req, res);
     });
     
     app.post('/api/FacturacionClientes/consultarDetalleTemporalFacturaConsumo', function(req, res) {       
         c_facturacion_clientes.consultarDetalleTemporalFacturaConsumo(req, res);
     });
-    
-    
+        
     app.post('/api/FacturacionClientes/generarFacturaXConsumo', function(req, res) {       
         c_facturacion_clientes.generarFacturaXConsumo(req, res);
+    });
+    
+    app.post('/api/FacturacionClientes/listarFacturasTemporales', function(req, res) {       
+        c_facturacion_clientes.listarFacturasTemporales(req, res);
     });
 };

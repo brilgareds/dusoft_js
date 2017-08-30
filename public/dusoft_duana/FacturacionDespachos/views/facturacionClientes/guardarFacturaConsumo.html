@@ -8,13 +8,13 @@
                     <span >Seleccionar tipo de pago: </span>
                 </label>
                 <label class="btn btn-default" ng-class="{'btn-success' : tipoPagoFacturaConsumo == '1'}">
-                    <input type="radio"  ng-click="seleccionarTipoPagoConsumo('1')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-success">Efectivo</span>
+                    <input type="radio" ng-disabled ="disabledDropDownCliente"   ng-click="seleccionarTipoPagoConsumo('1')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-success">Efectivo</span>
                 </label>
                 <label class="btn btn-default"  ng-class="{'btn-warning' : tipoPagoFacturaConsumo == '2'}">
-                    <input type="radio"  ng-click="seleccionarTipoPagoConsumo('2')"   class="ng-pristine ng-untouched ng-valid"><span class="label label-warning">Cheque</span>
+                    <input type="radio" ng-disabled ="disabledDropDownCliente"  ng-click="seleccionarTipoPagoConsumo('2')"   class="ng-pristine ng-untouched ng-valid"><span class="label label-warning">Cheque</span>
                 </label>
                 <label class="btn btn-default" ng-class="{'btn-danger' : tipoPagoFacturaConsumo == '3'}">
-                    <input type="radio"  ng-click="seleccionarTipoPagoConsumo('3')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-danger">Credito</span>
+                    <input type="radio" ng-disabled ="disabledDropDownCliente"  ng-click="seleccionarTipoPagoConsumo('3')"  class="ng-pristine ng-untouched ng-valid"><span class="label label-danger">Credito</span>
                 </label>
 
             </p>
@@ -23,8 +23,11 @@
         <div class="col-md-2">
             
             <p class="input-group contenedorDropdown">            
-                <input type="text" class="form-control"  
-                       ng-model="root.observacion" placeholder="Observacion" name="observacion" /> 
+                <input type="text" class="form-control"
+                       ng-disabled ="disabledDropDownCliente" 
+                       ng-model="root.observacion" 
+                       placeholder="Observacion" 
+                       name="observacion" /> 
             </p>
         </div>
         
@@ -46,17 +49,19 @@
                        toggle-weeks-text="#"  />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-default" ng-click="abrir_fecha_corte($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                    <button class="btn btn-default" ng-click="abrir_fecha_corte($event);" ng-disabled ="disabledDropDownCliente" ><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
             </p>
         </div>
-        
-        <div class="col-md-2">
+      
+        <div class="col-md-3">
              
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.cliente"  
+                           ng-disabled ="disabledDropDownCliente" 
                            theme="select2" 
                            name="cliente"
+                           ng-change= "onListarDocumentosClientes()"
                            class="form-control selectgeneral pull-left ui-select-z-index-11 {{formularios.formularioFactura.sumitedWithErrors}}" 
                            append-to-body = "true"
                            title="Se requiere el cliente" 
@@ -77,6 +82,7 @@
                            theme="select2" 
                            name="documento"
                            ng-change="onDocumentoSeleccionado()"
+                           ng-disabled = "disabledDropDownDocumento"
                            class="form-control selectgeneral pull-left ui-select-z-index-11 {{formularios.formularioTerceros.sumitedWithErrors}}" 
                            append-to-body = "true"
                            title="Se requiere el documento" 
@@ -104,8 +110,7 @@
 <div  class="table-responsive" style="clear:both;">
     <div class="gridFacturasConsumo grid-responsive" ng-grid="listaDetalleDocumentoTmp" ></div>
 </div>
-
-<label>Productos : 4</label>
+ 
 <div class="row">
     <div class="col-md-2">
         <label>Subtotal : {{root.valorFacturaTemporal.valorSubTotal}}</label>
@@ -128,13 +133,13 @@
 </div>
 <br>
 <p class="pull-right">
-    <button class="btn btn-default" ng-click="onBtnVolver()">
+    <button class="btn btn-default" ng-click="onBtnVolverListaClientes()">
         Volver
     </button>
-    <button class="btn btn-warning">
+    <button class="btn btn-warning"  ng-click="eliminarTemporalCliente()" >
         Eliminar temporal <i class="glyphicon glyphicon-trash"></i>
     </button>
-    <button class="btn btn-success" ng-click="generarFacturaXConsumo()">
+    <button class="btn btn-success" ng-click="generarFacturaXConsumo()" ng-disabled="root.detalleDocumentoTmp.length === 0">
         Facturar <i class="glyphicon glyphicon-duplicate"></i>
     </button>
 </p>

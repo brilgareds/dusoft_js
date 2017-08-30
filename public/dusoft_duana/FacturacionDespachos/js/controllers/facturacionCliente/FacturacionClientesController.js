@@ -16,6 +16,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
         var fecha_actual = new Date();
         $scope.notificarFacturaGeneradaCosmitet = 0;
+        $scope.activarTabFacturasConsumo =  false;
         $scope.root = {
             fechaInicialPedidosCosmitet: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
             fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),            
@@ -44,7 +45,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 "fa fa-gear fa-spin"
             ],
             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
-            activarTabFacturasGeneradas: false
+            activarTabFacturasGeneradas: false,
+            
         };
         $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
         $scope.session = {
@@ -492,6 +494,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         $scope.limpiarLocalStorageFacturaGenerada = function(){
             $scope.notificarFacturaGeneradaCosmitet = 0;
             localStorageService.add('listaFacturaDespachoGenerada', null); 
+            localStorageService.add('listaFacturasConsumo', null); 
         };
         
         /**
@@ -533,12 +536,23 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         if ($state.is("Despacho") === true) {
             
             var storageListaFacturaDespachoGenerada = localStorageService.get('listaFacturaDespachoGenerada');     
+            var storageListaFacturasConsumo = localStorageService.get('listaFacturasConsumo');  
+            
+            console.log("storageListaFacturaDespachoGenerada ", storageListaFacturaDespachoGenerada);
+            console.log("storageListaFacturasConsumo ", storageListaFacturasConsumo);
             if(storageListaFacturaDespachoGenerada){
-                console.log("storageListaFacturaDespachoGenerada ", storageListaFacturaDespachoGenerada);
+                
                 $scope.root.activarTabFacturasGeneradas = storageListaFacturaDespachoGenerada.active;                
                 that.listarFacturasGeneradas(storageListaFacturaDespachoGenerada.datos.numeracion,{tipo: 'ME', descripcion: "ME"});              
                 that.mensajeSincronizacion(storageListaFacturaDespachoGenerada.mensaje.mensaje_bd,storageListaFacturaDespachoGenerada.mensaje.mensaje_ws);
             }
+            
+                        
+            if(storageListaFacturasConsumo){
+                $scope.root.activarTabFacturasGeneradas = false;
+                $scope.activarTabFacturasConsumo = storageListaFacturasConsumo.active; 
+            }
+            
         };
         
        
@@ -626,6 +640,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         $scope.listarPedidosCosmitet = function(){
             
             localStorageService.add('listaFacturaDespachoGenerada', null); 
+            localStorageService.add('listaFacturasConsumo', null); 
             $scope.notificarFacturaGeneradaCosmitet = 0;   
             
             var obj = {
@@ -1242,7 +1257,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
         
         $scope.facturasProceso = function(){
-            localStorageService.add('listaFacturaDespachoGenerada', null); 
+            localStorageService.add('listaFacturasConsumo', null); 
             that.facturasEnProceso();
         };
         /**
@@ -1319,6 +1334,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         $scope.limpiarLocalStorageNotificacion = function(){
             
             localStorageService.add('listaFacturaDespachoGenerada', null); 
+            localStorageService.add('listaFacturasConsumo', null); 
             
         };
         /**
@@ -1353,7 +1369,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             socket.remove(['onNotificarFacturacionTerminada']);  
             $scope.$$watchers = null;
             $scope.root.activarTabFacturasGeneradas = false;
+            $scope.activarTabFacturasConsumo = false;
             localStorageService.add("listaFacturaDespachoGenerada",null);
+            localStorageService.add("listaFacturasConsumo",null);
             $scope.root = null;
         });
     }]);

@@ -234,7 +234,7 @@ define(["angular", "js/controllers",
 
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
                 
-                console.log("ESTOAOSOAOS ", $scope.Pedido.get_numero_cotizacion())
+                 
                 $scope.datos_view.filtro_actual_cotizacion = $scope.datos_view.filtro;
                 localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(),
                     cartera: '0',

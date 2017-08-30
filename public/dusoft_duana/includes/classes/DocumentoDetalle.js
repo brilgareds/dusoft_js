@@ -14,6 +14,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.cantidadTmpDespachada = 0;
             this.cantidadPendientePorFacturar = 0;
             this.estadoEntrega = 0;
+            this.descripcionProducto = '';
         };
         
         DocumentoDetalle.prototype.setId = function(id) {
@@ -23,6 +24,15 @@ define(["angular", "js/models"], function(angular, models) {
         
         DocumentoDetalle.prototype.getId = function() {
             return this.id;
+        };
+        
+        DocumentoDetalle.prototype.setDescripcionProducto = function(descripcionProducto) {
+            this.descripcionProducto = descripcionProducto;
+            return this;
+        };
+        
+        DocumentoDetalle.prototype.getDescripcionProducto = function() {
+            return this.descripcionProducto;
         };
         
         DocumentoDetalle.prototype.setProducto = function(producto) {

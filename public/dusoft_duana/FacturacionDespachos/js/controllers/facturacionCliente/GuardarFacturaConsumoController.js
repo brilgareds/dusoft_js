@@ -7,10 +7,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
         "$filter",
         "localStorageService",
         "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho","webNotification",
-        "TerceroDespacho","FacturaConsumo","FacturaDetalleConsumo","DocumentoDetalleConsumo",
+        "TerceroDespacho","FacturaConsumo","FacturaDetalleConsumo","DocumentoDetalleConsumo","DocumentoDespacho",
     function ($scope, $rootScope, Request, API, AlertService, Usuario,
             $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho,webNotification,
-            TerceroDespacho, FacturaConsumo, FacturaDetalleConsumo, DocumentoDetalleConsumo) {
+            TerceroDespacho, FacturaConsumo, FacturaDetalleConsumo, DocumentoDetalleConsumo, DocumentoDespacho) {
  
         var that = this;
  
@@ -21,6 +21,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          * @returns {void}
          */
         that.init = function (callback) {
+            
             $scope.paginaactual = 1;
             var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
             var fecha_actual = new Date();
@@ -33,7 +34,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 factura:null,
                 documentos:[], 
                 documento:null,
-                detalleDocumentoTmp: [],
+                detalleDocumentoTmp: null,
                 valorFacturaTemporal: {
                     valorTotal: 0,
                     valorSubTotal: 0,
@@ -48,6 +49,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             
             callback();
         };
+        $scope.disabledDropDownCliente = false;
+        $scope.disabledDropDownDocumento = true;
         
         /**
          * +Descripcion Grid que lista el detalle del efc seleccionado
@@ -58,20 +61,17 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
+            showFooter: true,
+            showFilter: true,
+            filterOptions: $scope.filtroGrid,
             columnDefs: [
 
-                {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
-                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a despachar'},
-                /*{filed: 'Estado', 
-                    cellClass: "ngCellText", 
-                    width: "5%", 
-                    displayName: 'Estado',//CantidadPendientePorFacturar
-                    cellTemplate: '<div class="col-xs-16 ">{{row.entity.getCantidadDespachada()}} \n\
-                                   <span class="glyphicon glyphicon-saved" ng-if="row.entity.cantidadDespachada() === row.entity.CantidadPendientePorFacturar"></span><div>'},//
-                */
-                {field: 'cantidadTmpDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant Facturada'},
-                {field: 'cantidadPendientePorFacturar',  cellClass: "ngCellText", width: "15%", displayName: 'Cant por facturar'},
-                {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},
+                {field: 'producto',  cellClass: "ngCellText", width: "8%", displayName: 'Producto'},
+                {field: 'descripcionProducto',  cellClass: "ngCellText", width: "35%", displayName: 'Descripcion'},
+                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "8%", displayName: 'Cant a despachar'},
+                {field: 'cantidadTmpDespachada',  cellClass: "ngCellText", width: "8%", displayName: 'Cant.Facturada'},
+                {field: 'cantidadPendientePorFacturar',  cellClass: "ngCellText", width: "7%", displayName: 'Cant x Facturar'},
+                {field: 'lote',  cellClass: "ngCellText", width: "8%", displayName: 'Lote'},
                 {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "10%", displayName: 'Fecha vto'},
                 {displayName: 'Cantidad', width: "10%", 
                          cellTemplate: '<div class="col-xs-12 " cambiar-foco> \
@@ -84,7 +84,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                                         id="" \
                                         /> </div>'},
                                 
-                {width: "5%", displayName: "Opcion", cellClass: "txt-center",
+                {displayName: "Opc", cellClass: "txt-center",
                 cellTemplate: '<button\
                     ng-disabled="row.entity.cantidadDespachada === row.entity.cantidadTmpDespachada " \n\
                     class="btn btn-default btn-xs" \n\
@@ -110,20 +110,24 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          * +Descripcion Grid que lista el detalle del efc seleccionado
          */
         $scope.listaDetalleDocumentoTmp = {
-            data: 'root.detalleDocumentoTmp[0]',
+            data: 'root.detalleDocumentoTmp',
             enableColumnResize: true,
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
+            showFooter: true,
+            showFilter: true,
+            filterOptions: $scope.filtroGrid,
             columnDefs: [
 
-                {field: 'producto',  cellClass: "ngCellText", width: "15%", displayName: 'Producto'},
-                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "15%", displayName: 'Cant a despachar'},
-                {field: 'lote',  cellClass: "ngCellText", width: "15%", displayName: 'Lote'},
+                {field: 'producto',  cellClass: "ngCellText", width: "8%", displayName: 'Producto'},
+                {field: 'descripcionProducto',  cellClass: "ngCellText", width: "35%", displayName: 'Producto'},
+                {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "8%", displayName: 'Cant a despachar'},
+                {field: 'lote',  cellClass: "ngCellText", width: "8%", displayName: 'Lote'},
                 {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha vto'},
-                {field: 'valorUnitario',  cellClass: "ngCellText", width: "10%", displayName: 'Valor unitario'},
+                {field: 'valorUnitario',  cellClass: "ngCellText", width: "15%", displayName: 'Valor unitario'},
                 
-                { displayName: "Opcion", cellClass: "txt-center",
+                { displayName: "Opc", cellClass: "txt-center",
                 cellTemplate: '<button\
                     class="btn btn-default btn-xs" \n\
                     ng-validate-events="{{ habilitar_seleccion_producto() }}" \n\
@@ -172,6 +176,45 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 }
                 
             });
+        };
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de eliminar todo el detalle del temporal
+         * @fecha 2017-08-28
+         */
+        $scope.eliminarTemporalCliente = function(){
+             
+            if(!$scope.root.detalleDocumentoTmp){
+                AlertService.mostrarMensaje("warning", "No hay productos en el temporal"); 
+                return;
+            }
+            var obj = {
+                session: $scope.session,
+                data: {
+                    eliminar_total_tmp: {
+                        id: $scope.root.detalleDocumentoTmp[0].id
+                        
+                    }
+                }
+            };
+            
+            AlertService.mostrarVentanaAlerta("Eliminar temporal", "Confirma que eliminara el detalle del temporal ? ",
+              function (estadoConfirm) {
+                  if (estadoConfirm) {
+                    facturacionClientesService.eliminarTotalTemporalFacturaConsumo(obj,function(data){
+
+                        if(data.status === 200){
+                            AlertService.mostrarMensaje("success", data.msj);
+                            that.listarDetalleTmpFacturaConsumo();
+                            $scope.onDocumentoSeleccionado();
+                        }else{
+                            AlertService.mostrarMensaje("warning", data.msj);
+                        }
+
+                    });           
+                  }
+              })
         };
         /**
          * @author Cristian Ardila
@@ -248,8 +291,24 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             $state.go("GuardarFacturaConsumo");
         };
         
+        $scope.onBtnVolverListaClientes = function(){
+            localStorageService.add("listaFacturasConsumo",{active:true});                      
+            $state.go('Despacho');     
+        };
+        
+        
+        
         $scope.generarFacturaXConsumo = function(){
             
+            if(!$scope.root.documento){
+                AlertService.mostrarMensaje("warning", "Para realizar la facturacion, debe seleccionar el cliente y el documento"); 
+                return;
+            }
+             
+            if(!($scope.root.detalleDocumentoTmp) || $scope.root.detalleDocumentoTmp.length <= 0){
+                AlertService.mostrarMensaje("warning", "Debe seleccionar los productos a facturar"); 
+                return;
+            }
             var obj = {
                 session: $scope.session,
                 data: {
@@ -261,21 +320,31 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     }
                 }
             };
-            facturacionClientesService.generarFacturaXConsumo(obj, function(data){
-                
-                if(data.status === 200){
-                     
-                    
-                }else{
-                    AlertService.mostrarMensaje("warning", data.msj);
-                }
-                    
-            });
+            AlertService.mostrarVentanaAlerta("Generar factura por consumo", "Confirma que realizara la facturacion por consumo ? ",
+                function (estadoConfirm) {
+                    if (estadoConfirm) {
+                        facturacionClientesService.generarFacturaXConsumo(obj, function(data){
+
+                            if(data.status === 200){
+                                AlertService.mostrarMensaje("success", data.msj); 
+                                /*localStorageService.add("listaFacturaDespachoGenerada",
+                                {
+                                    active:true,  
+                                    datos: data.obj.generar_factura_consumo[0],
+                                    mensaje: data.obj.resultado_sincronizacion_ws.resultado
+                                });                 */
+                                //$state.go('Despacho');                       
+                            }else{
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                        });           
+                    }
+                });
             
         };
         
         that.listarDetalleTmpFacturaConsumo = function(){
-            $scope.root.detalleDocumentoTmp = [];
+            $scope.root.detalleDocumentoTmp = null;
             var obj = {
                 session: $scope.session,
                 data: {
@@ -295,7 +364,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     $scope.root.valorFacturaTemporal.valorSubTotal = data.obj.procesar_factura_cosmitet[0].valor_sub_total;
                     $scope.root.valorFacturaTemporal.valorTotalIva = data.obj.procesar_factura_cosmitet[0].valor_total_iva;
                     
-                    $scope.root.detalleDocumentoTmp.push(facturacionClientesService.renderDetalleTmpFacturaConsumo(data.obj.procesar_factura_cosmitet));
+                    $scope.root.detalleDocumentoTmp = facturacionClientesService.renderDetalleTmpFacturaConsumo(data.obj.procesar_factura_cosmitet);
                     
                 }else{
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -322,14 +391,14 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         empresa_id:$scope.root.documento.get_empresa(),
                         tipoTerceroId: $scope.root.cliente.getTipoId(),
                         terceroId:$scope.root.cliente.getId(),
-                        contratoClienteId: $scope.root.cliente.contratoClienteId,
+                        contratoClienteId: $scope.root.cliente.getContratoClienteId(),
                     }
                 }
             };
-            
+           
             facturacionClientesService.obtenerDetallePorFacturar(obj,function(respuesta){
                 if(respuesta.status === 200){
-                    console.log("respuesta.obj.detalle ", respuesta.obj.detalle)
+                    
                     $scope.root.documento.vaciarDetalle();
                     that.listarDetalleTmpFacturaConsumo();
                     var _documentos = respuesta.obj.detalle;
@@ -338,6 +407,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                      
                         var documento = DocumentoDetalleConsumo.get(_documento.codigo_producto, _documento.cantidad_despachada, _documento.lote, _documento.fecha_vencimiento);
                             
+                            documento.setDescripcionProducto(_documento.descripcion);                          
                             documento.setValorUnitario(_documento.valor_unitario);                          
                             documento.setCantidadPendientePorFacturar(_documento.cantidad_pendiente_por_facturar);                          
                             documento.setPorcIva(_documento.porc_iva);                          
@@ -350,15 +420,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 
             });
         };
+         
         
-        
-        $scope.listarDocumentos = function(busqueda){
+        that.listarDocumento = function(busqueda, callback){
             
-            
-            if(busqueda.length < 3){
-                return;
-            }
-                        
             var obj = {
                 session: $scope.session,
                 data: {
@@ -371,9 +436,12 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             };
                         
             facturacionClientesService.listarDocumentos(obj, function(data){
+                $scope.root.documentos = [];
+                
                 if(data.status === 200){
+                    $scope.disabledDropDownDocumento = false;
                     var _documentos = data.obj.facturas_consumo;
-                    
+                    callback(_documentos);
                     
                     for(var i in _documentos){
                         var _documento = _documentos[i];
@@ -386,11 +454,19 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         ));
                               
                     }
+                }else{
+                    $scope.disabledDropDownDocumento = true;
                 }
             });
-                
         };
         
+        $scope.onListarDocumentosClientes = function(){
+            $scope.root.documento = null;
+            $scope.root.detalleDocumentoTmp = null;
+            that.listarDocumento("", function(data){
+                    
+            });
+        };
         
         /**
         * @author Eduar Garcia
@@ -403,8 +479,15 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 return;
             }
             
-            var empresa =  Usuario.getUsuarioActual().getEmpresa();
+            that.listarCliente(busqueda, function(estado){
+                
+            });
             
+        };
+        
+        that.listarCliente = function(busqueda, callback){
+            
+            var empresa =  Usuario.getUsuarioActual().getEmpresa();
             var obj = {
                 session: $scope.session,
                 data: {
@@ -418,25 +501,43 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     }
                 }
             };
-                        
+
             facturacionClientesService.listarClientes(obj ,function(respuesta){
-               
+                
                 if(respuesta.status === 200){
                     $scope.root.clientes = facturacionClientesService.renderTerceroDespacho(respuesta.obj.listar_clientes);
-                    
+                    callback(true);
                 }
-                
             });
-            
         };
-
+        
+        /**
+         * +Descripcion Cuando se realice la facturacion del temporal el socket
+         *              emitira el estado en proceso y se cambiara de vista
+         *              a la vista principal
+         */
+        socket.on("onNotificarFacturacionXConsumoTerminada", function(datos) {
+           
+            if(datos.status === 200){
+                AlertService.mostrarMensaje("warning", datos.msj); 
+                /*localStorageService.add("listaFacturaDespachoGenerada",
+                {
+                    active:true,  
+                    datos: '',
+                    mensaje: ''
+                });*/
+                $state.go('Despacho');                     
+            }
+             
+        });
+        
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones
          *              de empresa, centro de utilidad y bodega
          */
         that.init(function () {
-
+                         
             if (!Usuario.getUsuarioActual().getEmpresa()) {
                 $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para ingresar a la aplicacion", tipo: "warning"});
                 AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
@@ -450,19 +551,40 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para ingresar a la aplicacion", tipo: "warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
-  
-                        
+                        var lsTemp = localStorageService.get("facturaTemporalCabecera");
+                        if(lsTemp){
+                            $scope.disabledDropDownCliente = true;
+                            $scope.tipoPagoFacturaConsumo = lsTemp.tipo_pago;
+                            $scope.root.observacion = lsTemp.observaciones;
+                            that.listarCliente(lsTemp.nombre_tercero, function(estado){
+                                if(estado){
+                                    $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 
+                                    lsTemp.tipo_id_tercero, lsTemp.tercero_id,"", "");
+                                    $scope.root.fecha_corte = lsTemp.fecha_registro;
+                                    
+                                    $scope.root.cliente.setContratoClienteId(lsTemp.contrato_cliente_id)
+                                    
+                                    that.listarDocumento("", function(data){
+                                        console.log("data -------***>", data)
+                                        $scope.root.documento = DocumentoDespacho.get(data[0].pedido_cliente_id, 
+                                        data[0].prefijo,data[0].numero,data[0].fecha_registro,data[0].empresa_id);
+                                        $scope.root.documento.set_empresa(data[0].empresa_id);
+                                        $scope.onDocumentoSeleccionado();
+                                    });                                                                      
+                                }
+                            });             
+                        }      
                     }
                 }
             }
         });
-        
- 
+         
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {            
-            socket.remove(['onNotificarFacturacionTerminada']);  
+            socket.remove(['onNotificarFacturacionTerminada','onNotificarFacturacionXConsumoTerminada']);  
             $scope.$$watchers = null;
             $scope.root.activarTabFacturasGeneradas = false;
-            localStorageService.add("listaFacturaDespachoGenerada",null);
+            //localStorageService.add("listaFacturaDespachoGenerada",null);
+            localStorageService.add("facturaTemporalCabecera",null);
             $scope.root = null;
         });
     }]);

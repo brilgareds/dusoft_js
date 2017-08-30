@@ -7,8 +7,8 @@ var FacturacionClientesEvents = function(socket, m_facturacion_clientes) {
 
 /**
  * @author Cristian Ardila
- * +Descripcion Evento invocado en el momento en que se realice el proceso que permite
- *              dejar la formula en estado Todo pendiente
+ * +Descripcion Evento invocado en el momento en que se realice el proceso de facturas
+ *              en estado de espera
  * @fecha 2017-02-08
  */
 FacturacionClientesEvents.prototype.onNotificarFacturacionTerminada = function(result,msj, status,usuario) {
@@ -16,6 +16,20 @@ FacturacionClientesEvents.prototype.onNotificarFacturacionTerminada = function(r
     var that = this;
     var response = G.utils.r('onNotificarFacturacionTerminada', msj, status, result);   
     __enviarNotificacion(that,usuario,response,"onNotificarFacturacionTerminada");
+     
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Evento invocado en el momento en que se realice el proceso de facturas
+ *              en estado de espera
+ * @fecha 2017-02-08
+ */
+FacturacionClientesEvents.prototype.onNotificarFacturacionXConsumoTerminada = function(result,msj, status,usuario) {
+    
+    var that = this;
+    var response = G.utils.r('onNotificarFacturacionXConsumoTerminada', msj, status, result);   
+    __enviarNotificacion(that,usuario,response,"onNotificarFacturacionXConsumoTerminada");
      
 };
 

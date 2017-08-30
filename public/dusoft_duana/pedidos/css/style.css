@@ -437,3 +437,11 @@ button.btnTipo{
     width: 585px;
     height: 200px;
 }
+
+.observacionJustificacion{
+    width: 422px;
+    overflow: auto;
+    max-height: 70px;
+    padding: 0px;
+    
+}

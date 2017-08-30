@@ -327,6 +327,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
 
                             if(data.status === 200){
                                 AlertService.mostrarMensaje("success", data.msj); 
+                                localStorageService.add("listaFacturasConsumo",{active:true});         
                                 $state.go('Despacho');                     
                                 /*localStorageService.add("listaFacturaDespachoGenerada",
                                 {

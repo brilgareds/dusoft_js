@@ -34,7 +34,7 @@
                         <br> 
                         <div ng-include="'views/facturacionClientes/listarFacturasEnProceso.html'"></div>  
                     </tab> 
-                    <tab  active="activarTabFacturasConsumo" class="dropdown" ng-controller="FacturacionConsumoController">
+                    <tab  active="activarTabFacturasConsumo" class="dropdown" ng-controller="FacturacionConsumoController" ng-click="buscarClienteFacturaTemporal($event)">
                         <tab-heading>
                             <tab-heading >
                                 <i class=""></i>  Fact. Consumo

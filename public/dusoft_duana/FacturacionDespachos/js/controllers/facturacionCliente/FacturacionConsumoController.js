@@ -84,13 +84,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
         
         $scope.buscarClienteFacturaTemporal = function(event){
-             
+             console.log(" event ", event.which )
             if (event.which === 13 || event.which === 1) {
 
                 that.listarFacturasTemporal();
             }
              
         };
+        
         
         /**
          * +Descripcion Metodo encargado de invocar el servicio que listara 
@@ -157,7 +158,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             console.log("*******that.listarFacturasTemporal************");
             console.log("*******that.listarFacturasTemporal************");
             console.log("*******that.listarFacturasTemporal************");
-               
+            $scope.notificarFacturaConsumo = 0;   
             var obj = {
                 session: $scope.session,
                 data: {
@@ -209,9 +210,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'valorTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Total'},
                 {displayName: "Opc", width: "5%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
-                           <button ng-click="detalleFacturaTemporal(row.entity)" \n\
-                                class="btn btn-default btn-xs dropdown-toggle" \n\
-                                data-toggle="dropdown" title="Ver detalle">\n\
+                           <button ng-disabled = "row.entity.getEstadoFacturacion() !=0" \
+                                ng-click="detalleFacturaTemporal(row.entity)" \
+                                class="btn btn-default btn-xs dropdown-toggle" \
+                                data-toggle="dropdown" title="Ver detalle">\
                             <span class="glyphicon glyphicon-list"></span> Ingresar</button>\
                       </div>'
                 },
@@ -227,7 +229,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             return $scope.root.estadoBotones[index];
         };
         
+        /**
+         * +Descripcion Cristian Ardila
+         * @fecha 2017-08-30
+         * +Descripcion Metodo encargado de llevar al usuario a la vista donde 
+         *              se agregaran productos al detalle del temporal de facturacion
+         *              y posteriormente facturar
+         */
         $scope.detalleFacturaTemporal = function(entity){           
+            console.log("entity.getEstadoFacturacion()  ", entity.getEstadoFacturacion() );
+            if(entity.getEstadoFacturacion() !=="0"){
+                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El temporal ya ha sido facturado");
+                return;
+            };
             
             localStorageService.add("facturaTemporalCabecera",
             {
@@ -328,9 +342,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 AlertService.mostrarMensaje("danger", datos.msj); 
                 that.listarFacturasTemporal();
             }
-                 
                 
         });
+        
+        if ($state.is("Despacho") === true) {
+             
+            var storageListaFacturasConsumo = localStorageService.get('listaFacturasConsumo');  
+            console.log("**********************************ESTO S SS");
+            console.log("**********************************ESTO S SS");
+            console.log("**********************************ESTO S SS");
+            console.log(" listaFacturasConsumo ", storageListaFacturasConsumo); 
+            if(storageListaFacturasConsumo){
+                that.listarFacturasTemporal();
+            }
+        }
         /**
          * +Descripcion Metodo principal, el cual cargara el modulo
          *              siempre y cuando se cumplan las restricciones
@@ -352,7 +377,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
                         that.listarTiposTerceros();
-                        that.listarFacturasTemporal();
+                        //that.listarFacturasTemporal();
                     }
                 }
             }

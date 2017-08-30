@@ -1760,19 +1760,30 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         
     }).fail(function(err){ 
      
+        G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
+            {id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,estado: 1, sw_facturacion: 3}).then(function(resultado){
+             /*return ;*/
+        }).fail(function (err) {
+            logger.error("-----------------------------------");
+            logger.error({"metodo":"FacturacionClientes.prototype.generarFacturaXConsumo",
+                "usuario_id": usuario,
+                "parametros: ": parametros,
+                "resultado: ":err});
+            logger.error("-----------------------------------");    
+        });
         logger.error("-----------------------------------");
         logger.error({"metodo":"FacturacionClientes.prototype.generarFacturaXConsumo",
             "usuario_id": usuario,
             "parametros: ": parametros,
             "resultado: ":err});
         logger.error("-----------------------------------");
-        /*if(!err.status){
+        if(!err.status){
             err = {};
             err.status = 500;
             err.msj = "Se ha generado un error..";
         }
-       res.send(G.utils.r(req.url, err.msj, err.status, {}));*/
-       // that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada({generar_factura_consumo: ''},'Se ha presentado errores en el proceso', 500,usuario); 
+       //res.send(G.utils.r(req.url, err.msj, err.status, {}));*/
+        that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada({generar_factura_consumo: ''},'Se ha presentado errores en el proceso', 500,usuario); 
     }).done(); 
 };
 

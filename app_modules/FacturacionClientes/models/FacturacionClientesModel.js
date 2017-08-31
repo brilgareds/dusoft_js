@@ -1405,6 +1405,9 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         "a.valor_total",
         "a.valor_sub_total",
         "a.valor_total_iva",
+        "a.porcentaje_rtf",
+        "a.porcentaje_ica",
+        "a.porcentaje_reteiva",
         "b.pedido_cliente_id"
         
     ];
@@ -1432,7 +1435,10 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.empresa_id",
         "b.prefijo", "b.factura_fiscal", "b.observacion",
         "b.codigo_producto","b.fecha_vencimiento","b.lote", "b.porc_iva","b.valor_unitario",
-        "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva", "b.pedido_cliente_id")
+        "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva",
+        "a.porcentaje_rtf",
+        "a.porcentaje_ica",
+        "a.porcentaje_reteiva", "b.pedido_cliente_id")
         
     query.then(function(resultado){  
         
@@ -1555,6 +1561,15 @@ FacturacionClientesModel.prototype.actualizarValorTotalTemporalFacturaConsumo = 
     
     if(obj.estado === 1){
         parametros = {sw_facturacion: obj.sw_facturacion}
+    }
+    
+    if(obj.estado === 2){
+        parametros = {
+            sw_facturacion: obj.sw_facturacion,
+            prefijo: obj.prefijo,
+            factura_fiscal: obj.factura_fiscal,
+            documento_id: obj.documento_id
+        };
     }
     
     var query = G.knex('inv_facturas_xconsumo_tmp')

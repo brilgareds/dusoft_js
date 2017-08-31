@@ -571,7 +571,7 @@ define(["angular", "js/services"], function (angular, services) {
                         var cabeceraFacturaTmp = [];
                         for (var i in datos) {
                             
-                            var _documento = FacturaConsumo.get('','0',1,1);
+                            var _documento = FacturaConsumo.get(datos[i].documento_id,datos[i].prefijo,datos[i].factura_fiscal,1);
                             var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
                                 datos[i].tercero_id,
                                 datos[i].direccion,
@@ -579,6 +579,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 _terceroDespacho.setContratoClienteId(datos[i].contrato_cliente_id);
                                 
                             _documento.setId(datos[i].id_factura_xconsumo);                          
+                            _documento.setEmpresaId(datos[i].empresa_id);                          
                             _documento.setEmpresa(datos[i].nombre_empresa);                          
                             _documento.setTipoPago(datos[i].descripcion_tipo_pago);                          
                             _documento.setTipoPagoId(datos[i].tipo_pago_id);                          

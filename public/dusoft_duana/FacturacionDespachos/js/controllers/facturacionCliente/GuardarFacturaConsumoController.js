@@ -38,7 +38,10 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 valorFacturaTemporal: {
                     valorTotal: 0,
                     valorSubTotal: 0,
-                    valorTotalIva: 0
+                    valorTotalIva: 0,
+                    porcentajeRtf: 0,
+                    porcentajeIca: 0,
+                    porcentajeReteIva: 0
                 }
             };
             $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
@@ -360,11 +363,15 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 }
             };
             facturacionClientesService.consultarDetalleTemporalFacturaConsumo(obj, function(data){
-                
+                console.log("ESTE ES EL DETALLE DEL TOTOALES ", data) 
+                    
                 if(data.status === 200){
                     $scope.root.valorFacturaTemporal.valorTotal = data.obj.procesar_factura_cosmitet[0].valor_total;
                     $scope.root.valorFacturaTemporal.valorSubTotal = data.obj.procesar_factura_cosmitet[0].valor_sub_total;
                     $scope.root.valorFacturaTemporal.valorTotalIva = data.obj.procesar_factura_cosmitet[0].valor_total_iva;
+                    $scope.root.valorFacturaTemporal.porcentajeRtf = data.obj.procesar_factura_cosmitet[0].porcentaje_rtf;
+                    $scope.root.valorFacturaTemporal.porcentajeIca = data.obj.procesar_factura_cosmitet[0].porcentaje_ica;
+                    $scope.root.valorFacturaTemporal.porcentajeReteIva = data.obj.procesar_factura_cosmitet[0].porcentaje_reteiva;
                     
                     $scope.root.detalleDocumentoTmp = facturacionClientesService.renderDetalleTmpFacturaConsumo(data.obj.procesar_factura_cosmitet);
                     

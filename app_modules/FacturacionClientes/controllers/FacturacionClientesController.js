@@ -1714,8 +1714,16 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         
     }).then(function(resultado){
          
+        /*return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
+        {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1});*/
         return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
-        {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1});
+            {id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
+                estado: 2, 
+                sw_facturacion: 1, 
+                prefijo: documentoFacturacion[0].id,
+                factura_fiscal:documentoFacturacion[0].numeracion,
+                documento_id: documentoFacturacion[0].documento_id
+            });
         
     }).then(function(resultado){
         
@@ -2293,7 +2301,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function(req, res)
     
     var that = this;
     var args = req.body.data;
-    var def = G.Q.defer();
+    var def = G.Q.defer();          
     
     var that = this;
     var args = req.body.data;

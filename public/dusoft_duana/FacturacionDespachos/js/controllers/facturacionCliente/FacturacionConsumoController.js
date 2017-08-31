@@ -189,6 +189,34 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
         /**
          * @author Cristian Ardila
+         * +Descripcion Funcion encargada de generar el reporte de la factura
+         * @fecha 15/06/2017
+         * 
+         */
+        $scope.imprimirReporteFactura = function(entity){
+           
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_factura:{
+                        empresaId:  entity.empresaId,
+                        prefijo: entity.prefijo,
+                        numero: entity.numero,
+                        paginaActual: 1
+                    }
+                }
+            };
+                                   
+            facturacionClientesService.imprimirReporteFactura(obj,function(data){
+              
+                if (data.status === 200) {
+                    var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;     
+                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");          
+                }
+            });         
+        };
+        /**
+         * @author Cristian Ardila
          * +Descripcion Grid que listara todos los temporales de las facturas
          * @fecha 25/08/2017
          */
@@ -199,22 +227,28 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             enableCellSelection: true,
             enableHighlighting: true,
             columnDefs: [
+                {cellClass: "ngCellText", width: "5%", displayName: 'Factura', 
+                cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_prefijo()}}- {{row.entity.get_numero()}}</p></div>'},
                 {cellClass: "ngCellText", width: "25%", displayName: 'Cliente', 
                 cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarTerceros()[0].getTipoId()}}- {{row.entity.mostrarTerceros()[0].getId()}}: {{ row.entity.mostrarTerceros()[0].getNombre()}}</p></div>'},
                 {field: 'empresa',  cellClass: "ngCellText", width: "10%", displayName: 'Empresa'},
                 {field: 'observaciones',  cellClass: "ngCellText", width: "15%", displayName: 'Observacion'},
-                {field: 'fechaRegistro',  cellClass: "ngCellText", width: "10%", displayName: 'F. Reg'},
+                {field: 'fechaRegistro',  cellClass: "ngCellText", width: "5%", displayName: 'F. Reg'},
                 {field: 'tipoPago',  cellClass: "ngCellText", width: "5%", displayName: 'Tipo pago'},
                 {field: 'usuario',  cellClass: "ngCellText", width: "10%", displayName: 'Usuario'},
                 {field: 'valorSubTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Sub Total'},
-                {field: 'valorTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Total'},
-                {displayName: "Opc", width: "5%", cellClass: "txt-center dropdown-button",
+                {field: 'valorTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Total'},               
+                {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
-                           <button ng-disabled = "row.entity.getEstadoFacturacion() !=0" \
-                                ng-click="detalleFacturaTemporal(row.entity)" \
-                                class="btn btn-default btn-xs dropdown-toggle" \
-                                data-toggle="dropdown" title="Ver detalle">\
-                            <span class="glyphicon glyphicon-list"></span> Ingresar</button>\
+                           <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                           <ul class="dropdown-menu dropdown-options">\
+                                <li ng-if="row.entity.getEstadoFacturacion() == 0">\n\
+                                   <a href="javascript:void(0);" ng-click="detalleFacturaTemporal(row.entity)" class= "glyphicon glyphicon-edit"> Modificar </a>\
+                                </li>\
+                                <li ng-if="row.entity.getEstadoFacturacion() == 1 ">\
+                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity)" class = "glyphicon glyphicon-print"> factura </a>\
+                                </li>\
+                           </ul>\
                       </div>'
                 },
                 {field: 'Estado facturacion',  cellClass: "ngCellText",  displayName: 'Estado facturacion', 

@@ -641,7 +641,11 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
  * @fecha 2017-10-05
  */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
-      
+     
+   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes********************************");
+   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes********************************");
+   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes********************************");
+    
     var formato = 'YYYY-MM-DD';
       
     var columnQuery = [
@@ -684,6 +688,8 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                 .on("a.vendedor_id","d.vendedor_id")
         })
         .where(function () {
+            
+            this.andWhere('estado_factura_fiscal','not in',2)
             if(obj.tipoIdTercero !== ""){
                 this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)
                 .andWhere('a.tercero_id',obj.terceroId); 
@@ -701,8 +707,8 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
         query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)
     }
     
-    console.log("query ", query.toSQL());
-    
+    console.log("query >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> //////////////////", query.toSQL());
+    //inv_facturas_xconsumo_tmp_d
     query.then(function (resultado) {      
         callback(false, resultado)
     }).catch(function (err) {
@@ -742,7 +748,7 @@ FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, 
     then(function (resultado) {      
         callback(false, resultado);
     }).catch(function (err) {
-        console.log("err [listarPedidosClientes] ", err);
+        console.log("err [listarDocumentosPorFacturar] ", err);
         callback({err:err, msj: "Error al consultar la lista de los pedidos"});   
     });
 };
@@ -1253,7 +1259,7 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
     
     var query = G.knex("ventas_ordenes_pedidos")
         .where(parametros)            
-        .update({estado_factura_fiscal: '1'});
+        .update({estado_factura_fiscal: obj.estado_factura_fiscal});
     
     if(transaccion) query.transacting(transaccion);    
     query.then(function(resultado){        
@@ -1808,7 +1814,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
                                         fecha_vencimiento: rowDetalle.fecha_vencimiento,
                                         porcentaje_gravamen: rowDetalle.porcentaje_gravamen,
                                         prefijo_documento: null,
-                                        numeracion_documento: null
+                                        numeracion_documento: null,
+                                        estado_factura_fiscal: '1'
                                     };                                                                
                                     parametrosInsertaFacturaAgrupadaDetalle.push(parametrosFacturasAgrupadas);                            
                                 });
@@ -2173,7 +2180,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
                 tipo_id_tercero: obj.consultar_tercero_contrato[0].tipo_id_tercero,
                 tercero_id: obj.consultar_tercero_contrato[0].tercero_id,
                 tipo_id_vendedor:obj.parametros.pedido.pedidos[0].vendedor[0].tipo_id_tercero, 
-                vendedor_id: obj.parametros.pedido.pedidos[0].vendedor[0].id
+                vendedor_id: obj.parametros.pedido.pedidos[0].vendedor[0].id,
+                estado_factura_fiscal: '1'
             };
           
             return G.Q.ninvoke(that,'actualizarEstadoFacturaPedido',parametros, transaccion);

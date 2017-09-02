@@ -1236,6 +1236,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     var subTotalValorProductos = 0;
     var totalValorIva = 0;
     
+        
     if(parametros.documentos.cantidadNueva <= 0){
        
         res.send(G.utils.r(req.url, 'La cantidad debe ser mayor a Cero (0)', 404, {procesar_factura_cosmitet: []}));
@@ -1415,6 +1416,15 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             return;
         }
      
+    }).then(function(resultado){
+        
+        if(resultado > 0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarEstadoFacturaPedido',{pedido_cliente_id: parametros.pedidos.pedido, estado_factura_fiscal: '2'},{});
+        }else{
+            throw {msj:'No se actualizo el estado del pedido', status: 404}; 
+            return;
+        }
+        
     }).then(function(resultado){
         
         if(resultado > 0){
@@ -1806,7 +1816,7 @@ function __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback){
     
     if(dato.estado_pedido === 1){
         console.log("ESTOS SON LOS QUE ", dato);
-        G.Q.ninvoke(that.m_facturacion_clientes,'actualizarEstadoFacturaPedido',{pedido_cliente_id: dato.pedido_cliente_id},{}).then(function(resultado){
+        G.Q.ninvoke(that.m_facturacion_clientes,'actualizarEstadoFacturaPedido',{pedido_cliente_id: dato.pedido_cliente_id, estado_factura_fiscal: '1'},{}).then(function(resultado){
             
             return G.Q.ninvoke(that.m_facturacion_clientes,"actualizarDespacho", {empresa_id:dato.empresa_id,prefijo:dato.prefijo,numero: dato.numeracion},{});
            

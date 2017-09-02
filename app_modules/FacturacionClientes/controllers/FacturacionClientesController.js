@@ -1681,7 +1681,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         }
         
     }).then(function(){
-         
+         //CAMBIAR LA CONSULTA PARA QUE VAYA A LA TEMPORAL
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           
     }).then(function(resultado){
@@ -1701,9 +1701,9 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
             throw {msj:'[Detalle de productos por facturar]: Consulta sin resultados', status: 404};          
         }
         
-    }).then(function(resultado){
+    }).then(function(resultado){   
          
-        productosActualizados = [];  
+        productosActualizados = [];       
         //Se sugiere insertar desde esta parte en una transaccion mejor
         if(resultado.length > 0){
             return G.Q.nfcall(__actualizarCantidadFacturadaXConsumo,that,0,resultado); 
@@ -1714,8 +1714,6 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         
     }).then(function(resultado){
          
-        /*return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
-        {id_factura_xconsumo: datosDocumentosXConsumo.detalle[0].id_factura_xconsumo,estado: 1, sw_facturacion: 1});*/
         return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',
             {id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
                 estado: 2, 

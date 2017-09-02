@@ -1385,6 +1385,7 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
         callback({err:err, msj: "Error al consultar los pedidos de la factura agrupada]"});   
     }); 
 };
+
 /**
  * +Descripcion Metodo encargado de consultar el detalle del temporal de la factura de
  *              consumo
@@ -1392,7 +1393,7 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
  * @fecha 2017-15-05 YYYY-DD-MM
  */
 FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
-        
+       
     var campos = [
         G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
         "b.tipo_id_vendedor",
@@ -1424,18 +1425,23 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
             this.on("a.id_factura_xconsumo", "b.id_factura_xconsumo")
         })
         .where(function(){
-            this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
-            .andWhere("a.tercero_id", obj.terceroId)           
-            .andWhere("b.empresa_id", obj.empresaId)
-            .andWhere("a.sw_facturacion",0)
-            
-            if(obj.estado !== 2){
-                this.andWhere("b.prefijo", obj.prefijo)
-                .andWhere("b.factura_fiscal", obj.numero)
-            }
-            if(obj.estado === 1){
-                this.andWhere("b.codigo_producto", obj.codigo_producto)
-                .andWhere("b.lote",obj.lote)
+        
+            if(obj.estado !== 3){
+                this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
+                .andWhere("a.tercero_id", obj.terceroId)           
+                .andWhere("b.empresa_id", obj.empresaId)
+                .andWhere("a.sw_facturacion",0)
+
+                if(obj.estado !== 2){
+                    this.andWhere("b.prefijo", obj.prefijo)
+                    .andWhere("b.factura_fiscal", obj.numero)
+                }
+                if(obj.estado === 1){
+                    this.andWhere("b.codigo_producto", obj.codigo_producto)
+                    .andWhere("b.lote",obj.lote)
+                }
+            }else{
+                this.andWhere("b.pedido_cliente_id", obj.pedido_cliente_id)
             }
         })
         .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.empresa_id",
@@ -1542,7 +1548,8 @@ FacturacionClientesModel.prototype.eliminarProductoTemporalFacturaConsumo = func
     
    var query = G.knex('inv_facturas_xconsumo_tmp_d')
         .where(obj)
-        .del();    
+        .del()
+        .returning('pedido_cliente_id');
       
     query.then(function(resultado){                
         callback(false, resultado);

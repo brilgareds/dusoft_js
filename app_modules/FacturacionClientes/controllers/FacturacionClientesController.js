@@ -964,21 +964,26 @@ FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function(req
         res.send(G.utils.r(req.url, 'Se requiere el id', 404, {eliminar_producto_tmp: []}));
         return;
     }
-    
-     
+    var def = G.Q.defer();  
     var parametro = {
         id_factura_xconsumo: args.eliminar_total_tmp.id
     };
     var usuario = req.session.user.usuario_id;
     
     G.Q.ninvoke(that.m_facturacion_clientes,'eliminarProductoTemporalFacturaConsumo',parametro).then(function(resultado){
-        
-        if(resultado >0){
-            return res.send(G.utils.r(req.url, "Se elimina el detalle del temporal satisfactoriamente", 200, {eliminar_producto_tmp:resultado}));
+        console.log("resultado ", resultado.length);
+        if(resultado.length >0){
+            
+            return G.Q.nfcall(__consultarTemporaldetalleFactura,that,def,0,resultado);  
+            
         }else{
             throw {msj:'No se elimino ningun producto', status: 404}; 
         }
             
+    }).then(function(resultado){
+        
+        return res.send(G.utils.r(req.url, "Se elimina el detalle del temporal satisfactoriamente", 200, {eliminar_producto_tmp:''}));
+        
     }).fail(function(err){  
         logger.error("-----------------------------------");
         logger.error({"metodo":"FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo",
@@ -994,6 +999,42 @@ FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function(req
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
 };
+
+ function __consultarTemporaldetalleFactura(that,def,index, pedidos, callback){
+     
+    var pedido = pedidos[index];
+    console.log("LOS PEDIDOS OKO ", pedido);
+    if(!pedido){
+        callback(false);
+        return;
+    }
+    index++;
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',{pedido_cliente_id: pedido,estado: 3}).then(function(resultado){
+        console.log("<) resultado ", resultado)
+        if(resultado.length ===0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarEstadoFacturaPedido',{pedido_cliente_id: pedido, estado_factura_fiscal: '0'},{});
+        }else{
+            def.resolve();
+        }    
+            
+           
+    }).then(function(resultado){
+         console.log("2) resultado ", resultado)
+        var timer = setTimeout(function() {
+            clearTimeout(timer);
+            __consultarTemporaldetalleFactura(that,def,index,pedidos,callback) 
+        }, 0);
+
+    }).fail(function(err){
+        console.log("err (/fail) [__actualizarEstadoFacturaPedidoDespacho]: ", err);     
+    }).done();
+    
+    
+    var timer = setTimeout(function() {
+        clearTimeout(timer);
+         __consultarTemporaldetalleFactura(that,def,index,pedidos,callback)   
+    }, 0);
+ }
 
 /**
  * @author Cristian Ardila
@@ -1042,27 +1083,47 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function(
         fecha_vencimiento: args.eliminar_producto_tmp.fechaVencimiento
     };
     var usuario = req.session.user.usuario_id;
-    
+    var numeroPedido;
+    var def = G.Q.defer(); 
     G.Q.ninvoke(that.m_facturacion_clientes,'eliminarProductoTemporalFacturaConsumo',parametro).then(function(resultado){
-        console.log("resultado [eliminarProductoTemporalFacturaConsumo]::: ", resultado);
-        if(resultado >0){
-            return res.send(G.utils.r(req.url, "Se elimina el producto satisfactoriamente", 200, {eliminar_producto_tmp:resultado}));
+         
+        if(resultado.length >0){
+            numeroPedido = resultado[0];
+            var parametros = {
+                pedido_cliente_id: resultado[0],
+                estado: 3
+            }; 
+            return  G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametros);//return res.send(G.utils.r(req.url, "Se elimina el producto satisfactoriamente", 200, {eliminar_producto_tmp:resultado}));
         }else{
             throw {msj:'No se elimino ningun producto', status: 404}; 
         }
             
-    }).fail(function(err){  
-        logger.error("-----------------------------------");
-        logger.error({"metodo":"FacturacionClientes.prototype.sincronizarFactura",
-            "usuario_id": usuario,
-            "parametros: ": parametro,
-            "resultado: ":err});
-        logger.error("-----------------------------------");
-        if(!err.status){
-            err = {};
-            err.status = 500;
-            err.msj = "Se ha generado un error..";
+    }).then(function(resultado){
+         
+        if(resultado.length ===0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarEstadoFacturaPedido',{pedido_cliente_id: numeroPedido, estado_factura_fiscal: '0'},{});
+        }else{
+            def.resolve();
         }
+            
+        
+    }).then(function(resultado){
+        
+        return res.send(G.utils.r(req.url, "Se elimina el producto del temporal satisfactoriamente", 200, {eliminar_producto_tmp:''}));
+        
+    }).fail(function(err){  
+        
+    logger.error("-----------------------------------");
+    logger.error({"metodo":"FacturacionClientes.prototype.sincronizarFactura",
+        "usuario_id": usuario,
+        "parametros: ": parametro,
+        "resultado: ":err});
+    logger.error("-----------------------------------");
+    if(!err.status){
+        err = {};
+        err.status = 500;
+        err.msj = "Se ha generado un error..";
+    }
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
 };

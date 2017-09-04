@@ -261,7 +261,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
                                                                 callback) {
 
     var estado = "";
-
+    console.log("el filtro ", filtro);
 
     if (filtro !== undefined) {
 
@@ -369,7 +369,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
         "d.estado as estado_separacion",
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro"),
         "f.descripcion as descripcion_tipo_producto",
-        G.knex.raw("'1' as tipo_pedido")        
+        G.knex.raw("'1' as tipo_pedido"),
+        "a.observacion"
     ];
       
             
@@ -380,13 +381,12 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     }).leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as d", "a.pedido_cliente_id", "d.pedido_cliente_id").where(function() {
         this.where("a.empresa_id", empresa_id)
         
+        console.log("fecha inicial ", fecha_inicial , " fecha_final ", fecha_final);
         if (fecha_inicial !== undefined) {
+            
              this.where(G.knex.raw("a.fecha_registro between '"+ fecha_inicial + "' and '"+ fecha_final +"'"));
         }
        
-        if (estado !== "") {
-            this.where("a.estado_pedido", estado);
-        }
     }).
     innerJoin("inv_tipo_producto as f", "a.tipo_producto", "f.tipo_producto_id").         
     andWhere(function() {
@@ -404,6 +404,12 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
             if (filtro.tipo_busqueda === 2) {
                 this.where("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%").
                         orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%")
+            }
+           
+            
+            if (estado !== "") {
+                console.log("buscar por estado pedidod ", estado);
+                this.where("a.estado_pedido", estado);
             }
         }
     });
@@ -427,7 +433,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
         G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
         subQuery
     ]).from(query).
-    leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");   
+    leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");
     
     queryPrincipal.then(function(rows) {
 

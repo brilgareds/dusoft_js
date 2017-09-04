@@ -9,8 +9,9 @@ define(["angular",
         '$scope', '$rootScope', 'Request',
         '$modal', 'EmpresaPedido', 'ClientePedido',
         'PedidoAuditoria', 'API', "socket", "$timeout",
-        "AlertService", "Usuario", "localStorageService", "$state",
-        function($scope, $rootScope, Request, $modal, Empresa, Cliente, PedidoAuditoria, API, socket, $timeout, AlertService, Usuario, localStorageService, $state) {
+        "AlertService", "Usuario", "localStorageService", "$state", "$filter",
+        function($scope, $rootScope, Request, $modal, Empresa, Cliente, PedidoAuditoria, API, socket, $timeout, AlertService, Usuario, localStorageService,
+        $state, $filter) {
             $scope.Empresa = Empresa;
             Empresa.setNombre("Duana");
 
@@ -25,7 +26,12 @@ define(["angular",
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
             
-            $scope.rootSeleccionPedido = {};
+            var fecha_actual = new Date();
+            
+            $scope.rootSeleccionPedido = {
+                fecha_inicial_pedidos: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
+                fecha_final_pedidos: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+            };
             $scope.rootSeleccionPedido.filtros = [
                 {nombre: "Numero", tipo_busqueda: 0},
                 {nombre: "Cliente", tipo_busqueda: 1},
@@ -56,7 +62,9 @@ define(["angular",
                             pagina_actual: $scope.paginaactual,
                             empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             filtro: {},
-                            filtros: $scope.rootSeleccionPedido.filtro
+                            filtros: $scope.rootSeleccionPedido.filtro,
+                            fecha_inicial: $filter('date')($scope.rootSeleccionPedido.fecha_inicial_pedidos, "yyyy-MM-dd") + " 00:00:00",
+                            fecha_final: $filter('date')($scope.rootSeleccionPedido.fecha_final_pedidos, "yyyy-MM-dd") + " 23:59:00",
                         }
                     }
                 };
@@ -158,7 +166,7 @@ define(["angular",
                     {field: 'numero_pedido', displayName: 'Pedido', width: "80"},
                     {field: 'descripcionTipoPedido', displayName: 'Tipo Productos', width: "110"},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
-                    {field: 'nombre_vendedor', displayName: 'Vendedor', width: "25%"},
+                    {field: 'observacion', displayName: 'Observacion', width: "25%"},
                     {field: 'nombreSeparador', displayName:"Separador"},
                     {field: 'descripcion_estado', displayName: "Estado", width: "10%"},
                     {field: 'fecha_registro', displayName: "Fecha Registro", width: "10%"},
@@ -447,6 +455,26 @@ define(["angular",
                 $scope.Empresa.vaciarPedidos();
                 $scope.$$watchers = null;
             });
+            
+            $scope.abrir_fecha_inicial = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.rootSeleccionPedido.datepicker_fecha_inicial = true;
+                $scope.rootSeleccionPedido.datepicker_fecha_final = false;
+
+            };
+
+            $scope.abrir_fecha_final = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.rootSeleccionPedido.datepicker_fecha_inicial = false;
+                $scope.rootSeleccionPedido.datepicker_fecha_final = true;
+
+            };
 
 
 

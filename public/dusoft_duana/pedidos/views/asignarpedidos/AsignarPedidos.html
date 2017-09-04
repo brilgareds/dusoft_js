@@ -16,7 +16,7 @@
                 </div>
            
             <div class="col-md-2">
-                    <p >
+                    <p>
                         <fieldset>                           
                            <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
                                <ui-select-match  placeholder="Seleccionar Estado Pedido"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
@@ -26,6 +26,32 @@
                            </ui-select>
                         </fieldset>  
                       </p>
+                </div>
+                
+                
+                <div class="col-md-2">
+                    <p></p>
+                    <p class="input-group">
+
+                        <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="rootSeleccionPedido.fecha_inicial_pedidos" is-open="rootSeleccionPedido.datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
+
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
+                </div>
+
+                <div class="col-md-2">
+                    <p></p>
+                    <p class="input-group">
+
+                        <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="rootSeleccionPedido.fecha_final_pedidos" is-open="rootSeleccionPedido.datepicker_fecha_final" min="datos_view.fecha_inicial"  readonly  close-text="Cerrar"
+                               clear-text="Borrar"  placeholder="Fecha Final" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                        <span class="input-group-btn">
+
+                            <button class="btn btn-default"  ng-click="abrir_fecha_final($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
                 </div>
          
                  <div class="col-md-3 pull-right">

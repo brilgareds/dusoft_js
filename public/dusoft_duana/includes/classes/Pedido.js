@@ -23,6 +23,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.tipoPedido = "";
             this.nombreSeparador = "";
             this.estadoMultiplePedido = "";
+            this.observacion = "";
         }
 
         // Pedidos
@@ -37,8 +38,18 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado_separacion = datos.estado_separacion || null;
             this.descripcionTipoPedido = datos.descripcion_tipo_producto || "";
             this.nombreSeparador = datos.nombre_separador || "";
+            this.observacion = datos.observacion || "";
         };
         
+        
+        Pedido.prototype.setObservacion = function(observacion){
+            this.observacion = observacion;
+            return this;
+        };
+        
+        Pedido.prototype.getObservacion = function(){
+            return this.observacion;
+        };
         
         Pedido.prototype.setDescripcionTipoPedido = function(descripcionTipoPedido){
             this.descripcionTipoPedido = descripcionTipoPedido;

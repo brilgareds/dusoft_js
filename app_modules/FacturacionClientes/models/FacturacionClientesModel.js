@@ -759,7 +759,11 @@ FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, 
  * +Descripcion Permite traer el documento con datos de facturacion de consumo
  */
 FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, callback){
-     
+    
+    console.log("**************FacturacionClientesModel.prototype.obtenerDetallePorFacturar***************");
+    console.log("**************FacturacionClientesModel.prototype.obtenerDetallePorFacturar***************");
+    console.log("**************FacturacionClientesModel.prototype.obtenerDetallePorFacturar***************");
+    
     var parametros = [];
     
     var parametrosGrup = ["a.codigo_producto", 
@@ -1327,9 +1331,6 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
             }
         });     
    
-    
-     
-    
     query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){
@@ -1337,9 +1338,8 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
         callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
     }); 
 };
-
-
-
+    
+    
 /**
  * +Descripcion Metodo encargado de obtener los pedidos agrupados en una sola
  *              factura
@@ -1393,7 +1393,11 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
  * @fecha 2017-15-05 YYYY-DD-MM
  */
 FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
-       
+   
+    console.log("***---------------FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo--------------------****");
+    console.log("***---------------FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo--------------------****");
+    console.log("***---------------FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo--------------------****");
+    
     var campos = [
         G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
         "b.tipo_id_vendedor",
@@ -1413,11 +1417,31 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         "a.valor_sub_total",
         "a.valor_total_iva",
         "a.porcentaje_rtf",
-        "a.porcentaje_ica",
+        "a.porcentaje_ica",                                  
         "a.porcentaje_reteiva",
-        "b.pedido_cliente_id"
-        
+        "b.pedido_cliente_id"       
     ];
+    var camposGroupBy = ["b.tipo_id_vendedor","b.vendedor_id","b.empresa_id",
+        "b.prefijo", "b.factura_fiscal", "b.observacion",
+        "b.codigo_producto","b.fecha_vencimiento","b.lote", "b.porc_iva","b.valor_unitario",
+        "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva",
+        "a.porcentaje_rtf",
+        "a.porcentaje_ica",
+        "a.porcentaje_reteiva", "b.pedido_cliente_id"];
+    
+    if(obj.estado === 4){
+        //distinct on 
+                 
+        campos.push(G.knex.raw("round(((((b.valor_unitario * cantidad_despachada) * (SELECT DISTINCT (mov.porcentaje_gravamen)\
+        FROM inv_bodegas_movimiento_d as mov \
+        WHERE mov.prefijo = b.prefijo\
+        AND mov.numero = b.factura_fiscal\
+        AND mov.empresa_id = b.empresa_id\
+        AND mov.codigo_producto = b.codigo_producto\
+        AND mov.lote = b.lote ))) / 100 ),2) as porc_iva_total"));   
+        
+        camposGroupBy.push("porc_iva_total")
+    }
     
     var query = G.knex.select(campos)
         .from('inv_facturas_xconsumo_tmp as a')
@@ -1426,7 +1450,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         })
         .where(function(){
         
-            if(obj.estado !== 3){
+             if(obj.estado === 0 || obj.estado === 1 || obj.estado === 2){//if(obj.estado !== 3){
                 this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
                 .andWhere("a.tercero_id", obj.terceroId)           
                 .andWhere("b.empresa_id", obj.empresaId)
@@ -1440,20 +1464,25 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
                     this.andWhere("b.codigo_producto", obj.codigo_producto)
                     .andWhere("b.lote",obj.lote)
                 }
-            }else{
+            }
+            if(obj.estado === 3){
                 this.andWhere("b.pedido_cliente_id", obj.pedido_cliente_id)
             }
+            
+            if(obj.estado === 4){
+                this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
+                .andWhere("a.tercero_id", obj.terceroId)           
+                .andWhere("b.empresa_id", obj.empresaId)
+                .andWhere("a.sw_facturacion",0)
+            }
+            if(obj.estado === 5){
+                this.andWhere("a.id_factura_xconsumo",obj.id_factura_xconsumo)               
+            }
         })
-        .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.empresa_id",
-        "b.prefijo", "b.factura_fiscal", "b.observacion",
-        "b.codigo_producto","b.fecha_vencimiento","b.lote", "b.porc_iva","b.valor_unitario",
-        "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva",
-        "a.porcentaje_rtf",
-        "a.porcentaje_ica",
-        "a.porcentaje_reteiva", "b.pedido_cliente_id")
+        .groupBy(camposGroupBy);
         
     query.then(function(resultado){  
-        
+        //console.log("resultado [consultarTemporalFacturaConsumo]: ", resultado);   
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
@@ -1713,20 +1742,22 @@ FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj,
     datosAdicionalesAgrupados = [];
     parametrosActualizarEstadoFactura = [];
     parametrosInsertaFacturaAgrupadaDetalle = [];
-     
-    if (obj.consultar_parametros_retencion.sw_rtf === '1' || obj.consultar_parametros_retencion.sw_rtf === '3')
+    
+    if (obj.consultar_parametros_retencion[0].sw_rtf === '1' || obj.consultar_parametros_retencion[0].sw_rtf === '3')
         porcentajeRtf = obj.consultar_tercero_contrato[0].porcentaje_rtf;
-    if (obj.consultar_parametros_retencion.sw_ica === '1' || obj.consultar_parametros_retencion.sw_ica === '3')
+    if (obj.consultar_parametros_retencion[0].sw_ica === '1' || obj.consultar_parametros_retencion[0].sw_ica === '3')
         porcentajeIca = obj.consultar_tercero_contrato[0].porcentaje_ica;
-    if (obj.consultar_parametros_retencion.sw_reteiva === '1' || obj.consultar_parametros_retencion.sw_reteiva === '3')
+    if (obj.consultar_parametros_retencion[0].sw_reteiva === '1' || obj.consultar_parametros_retencion[0].sw_reteiva === '3')
         porcentajeReteiva = obj.consultar_tercero_contrato[0].porcentaje_reteiva;
-  
-    G.Q.ninvoke(that,'insertarFacturaConsumo',
-    {parametros:obj, porcentaje_rtf:porcentajeRtf, porcentaje_ica: porcentajeIca, 
-    porcentaje_reteiva: porcentajeReteiva, porcentaje_cree: porcentajeCree, usuario: obj.parametros.usuario, 
-    tipoPago: obj.parametros.tipoPago
-
-    }).then(function(resultado){         
+    
+    var parametroInsertarFactura = {parametros:obj, porcentaje_rtf:porcentajeRtf, 
+        porcentaje_ica: porcentajeIca, porcentaje_reteiva: porcentajeReteiva, 
+        porcentaje_cree: porcentajeCree, usuario: obj.parametros.usuario, 
+        tipoPago: obj.parametros.tipoPago
+    };
+    
+    //console.log("parametroInsertarFactura >>>>>>>>>>>>>>>>>>>>>>>> ", parametroInsertarFactura);
+    G.Q.ninvoke(that,'insertarFacturaConsumo',parametroInsertarFactura).then(function(resultado){         
 
         callback(false, resultado);
         

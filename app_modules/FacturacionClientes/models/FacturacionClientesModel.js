@@ -641,7 +641,11 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
  * @fecha 2017-10-05
  */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
-      
+     
+   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes********************************");
+   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes********************************");
+   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes********************************");
+    
     var formato = 'YYYY-MM-DD';
       
     var columnQuery = [
@@ -684,6 +688,8 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                 .on("a.vendedor_id","d.vendedor_id")
         })
         .where(function () {
+            
+            this.andWhere('estado_factura_fiscal','not in',2)
             if(obj.tipoIdTercero !== ""){
                 this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)
                 .andWhere('a.tercero_id',obj.terceroId); 
@@ -701,8 +707,8 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
         query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)
     }
     
-    console.log("query ", query.toSQL());
-    
+    console.log("query >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> //////////////////", query.toSQL());
+    //inv_facturas_xconsumo_tmp_d
     query.then(function (resultado) {      
         callback(false, resultado)
     }).catch(function (err) {
@@ -742,7 +748,7 @@ FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, 
     then(function (resultado) {      
         callback(false, resultado);
     }).catch(function (err) {
-        console.log("err [listarPedidosClientes] ", err);
+        console.log("err [listarDocumentosPorFacturar] ", err);
         callback({err:err, msj: "Error al consultar la lista de los pedidos"});   
     });
 };
@@ -1253,7 +1259,7 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
     
     var query = G.knex("ventas_ordenes_pedidos")
         .where(parametros)            
-        .update({estado_factura_fiscal: '1'});
+        .update({estado_factura_fiscal: obj.estado_factura_fiscal});
     
     if(transaccion) query.transacting(transaccion);    
     query.then(function(resultado){        
@@ -1287,6 +1293,10 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
         G.knex.raw("(SELECT s.nombre FROM system_usuarios as s WHERE s.usuario_id = a.usuario_id) as nombre_usuario"),
         G.knex.raw("COALESCE(cntrtos.contrato_cliente_id,(SELECT contrato_cliente_id FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1')) as contrato_cliente_id"),
         G.knex.raw("to_char(a.fecha_registro, 'yyyy-mm-dd') as fecha_registro_corte"),
+        G.knex.raw("case when a.sw_facturacion=0 then 'Sin facturar' \
+        when a.sw_facturacion=1 then 'Terminado'\
+        when a.sw_facturacion=2 then 'Facturando'\
+        when a.sw_facturacion=3 then 'Error' end as descripcion_estado_facturacion"),
     ]) 
         .from('inv_facturas_xconsumo_tmp as a')
         .innerJoin("terceros as b", function(resultado){
@@ -1299,7 +1309,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
                  
         }).where(function(resuldado){
                                              
-            this.andWhere("sw_facturacion",obj.sw_facturacion);
+            
             if(obj.filtro){
                 if ((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !== "") {
                     this.andWhere(G.knex.raw("b.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
@@ -1312,7 +1322,8 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
             
             if(obj.tipo_id_tercero){
                 this.andWhere("a.tipo_id_tercero",obj.tipo_id_tercero)
-                .andWhere("a.tercero_id",obj.tercero_id)               
+                .andWhere("a.tercero_id",obj.tercero_id)     
+                .andWhere("sw_facturacion",obj.sw_facturacion);
             }
         });     
    
@@ -1374,6 +1385,7 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
         callback({err:err, msj: "Error al consultar los pedidos de la factura agrupada]"});   
     }); 
 };
+
 /**
  * +Descripcion Metodo encargado de consultar el detalle del temporal de la factura de
  *              consumo
@@ -1381,7 +1393,7 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
  * @fecha 2017-15-05 YYYY-DD-MM
  */
 FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
-        
+       
     var campos = [
         G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
         "b.tipo_id_vendedor",
@@ -1400,6 +1412,9 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         "a.valor_total",
         "a.valor_sub_total",
         "a.valor_total_iva",
+        "a.porcentaje_rtf",
+        "a.porcentaje_ica",
+        "a.porcentaje_reteiva",
         "b.pedido_cliente_id"
         
     ];
@@ -1410,24 +1425,32 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
             this.on("a.id_factura_xconsumo", "b.id_factura_xconsumo")
         })
         .where(function(){
-            this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
-            .andWhere("a.tercero_id", obj.terceroId)           
-            .andWhere("b.empresa_id", obj.empresaId)
-            .andWhere("a.sw_facturacion",0)
-            
-            if(obj.estado !== 2){
-                this.andWhere("b.prefijo", obj.prefijo)
-                .andWhere("b.factura_fiscal", obj.numero)
-            }
-            if(obj.estado === 1){
-                this.andWhere("b.codigo_producto", obj.codigo_producto)
-                .andWhere("b.lote",obj.lote)
+        
+            if(obj.estado !== 3){
+                this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
+                .andWhere("a.tercero_id", obj.terceroId)           
+                .andWhere("b.empresa_id", obj.empresaId)
+                .andWhere("a.sw_facturacion",0)
+
+                if(obj.estado !== 2){
+                    this.andWhere("b.prefijo", obj.prefijo)
+                    .andWhere("b.factura_fiscal", obj.numero)
+                }
+                if(obj.estado === 1){
+                    this.andWhere("b.codigo_producto", obj.codigo_producto)
+                    .andWhere("b.lote",obj.lote)
+                }
+            }else{
+                this.andWhere("b.pedido_cliente_id", obj.pedido_cliente_id)
             }
         })
         .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.empresa_id",
         "b.prefijo", "b.factura_fiscal", "b.observacion",
         "b.codigo_producto","b.fecha_vencimiento","b.lote", "b.porc_iva","b.valor_unitario",
-        "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva", "b.pedido_cliente_id")
+        "a.id_factura_xconsumo", "a.valor_total","a.valor_sub_total", "a.valor_total_iva",
+        "a.porcentaje_rtf",
+        "a.porcentaje_ica",
+        "a.porcentaje_reteiva", "b.pedido_cliente_id")
         
     query.then(function(resultado){  
         
@@ -1506,16 +1529,16 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
                 lote: obj.lote,
                 numero_caja: obj.numero_caja
             }) 
-        })  
+        }) 
      
     query.then(function(resultado){  
-         
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [actualizarCantidadFacturadaXConsumo]: ", err);        
         callback({err:err, msj: "Error al actualizar la cantidad facturada en el movimiento"});   
     });  
 };
+
 /*
  * @autor : Cristian Ardila
  * Descripcion : SQL encargado de eliminar los productos que estan en temporal
@@ -1525,7 +1548,8 @@ FacturacionClientesModel.prototype.eliminarProductoTemporalFacturaConsumo = func
     
    var query = G.knex('inv_facturas_xconsumo_tmp_d')
         .where(obj)
-        .del();    
+        .del()
+        .returning('pedido_cliente_id');
       
     query.then(function(resultado){                
         callback(false, resultado);
@@ -1534,6 +1558,7 @@ FacturacionClientesModel.prototype.eliminarProductoTemporalFacturaConsumo = func
         callback({err:err, msj: "Error al eliminar los temporales"});   
     });  
 };
+
 
 
 /*
@@ -1549,6 +1574,15 @@ FacturacionClientesModel.prototype.actualizarValorTotalTemporalFacturaConsumo = 
     
     if(obj.estado === 1){
         parametros = {sw_facturacion: obj.sw_facturacion}
+    }
+    
+    if(obj.estado === 2){
+        parametros = {
+            sw_facturacion: obj.sw_facturacion,
+            prefijo: obj.prefijo,
+            factura_fiscal: obj.factura_fiscal,
+            documento_id: obj.documento_id
+        };
     }
     
     var query = G.knex('inv_facturas_xconsumo_tmp')
@@ -1787,7 +1821,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
                                         fecha_vencimiento: rowDetalle.fecha_vencimiento,
                                         porcentaje_gravamen: rowDetalle.porcentaje_gravamen,
                                         prefijo_documento: null,
-                                        numeracion_documento: null
+                                        numeracion_documento: null,
+                                        estado_factura_fiscal: '1'
                                     };                                                                
                                     parametrosInsertaFacturaAgrupadaDetalle.push(parametrosFacturasAgrupadas);                            
                                 });
@@ -2152,7 +2187,8 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
                 tipo_id_tercero: obj.consultar_tercero_contrato[0].tipo_id_tercero,
                 tercero_id: obj.consultar_tercero_contrato[0].tercero_id,
                 tipo_id_vendedor:obj.parametros.pedido.pedidos[0].vendedor[0].tipo_id_tercero, 
-                vendedor_id: obj.parametros.pedido.pedidos[0].vendedor[0].id
+                vendedor_id: obj.parametros.pedido.pedidos[0].vendedor[0].id,
+                estado_factura_fiscal: '1'
             };
           
             return G.Q.ninvoke(that,'actualizarEstadoFacturaPedido',parametros, transaccion);

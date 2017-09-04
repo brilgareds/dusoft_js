@@ -9,6 +9,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.documentos = [];
                 this.id =0;
                 this.empresa = '';
+                this.empresaId = '';
                 this.terceros = [];
                 this.fechaRegistro = '';
                 this.observaciones = '';
@@ -18,6 +19,8 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.tipoPagoId = 0;
                 this.fechaCorte = '';
                 this.usuario = '';
+                this.descripcionEstadoFacturacion;
+                this.estadoFacturacion;
             }
             
             FacturaConsumo.prototype = Object.create(Documento.getClass().prototype);
@@ -35,6 +38,14 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             FacturaConsumo.prototype.getEmpresa = function(){
                 return this.empresa;
+            };
+            
+            FacturaConsumo.prototype.setEmpresaId = function(empresaId){
+                this.empresaId = empresaId;
+            };
+            
+            FacturaConsumo.prototype.getEmpresaId = function(){
+                return this.empresaId;
             };
             
             FacturaConsumo.prototype.setFechaRegistro = function(fechaRegistro){
@@ -91,6 +102,22 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             FacturaConsumo.prototype.getUsuario = function(){
                 return this.usuario;
+            };
+            
+            FacturaConsumo.prototype.setDescripcionEstadoFacturacion = function(descripcionEstadoFacturacion){
+                this.descripcionEstadoFacturacion = descripcionEstadoFacturacion;
+            };
+            
+            FacturaConsumo.prototype.getDescripcionEstadoFacturacion = function(){
+                return this.descripcionEstadoFacturacion;
+            };
+            
+            FacturaConsumo.prototype.setEstadoFacturacion = function(estadoFacturacion){
+                this.estadoFacturacion = estadoFacturacion;
+            };
+            
+            FacturaConsumo.prototype.getEstadoFacturacion = function(){
+                return this.estadoFacturacion;
             };
             
             FacturaConsumo.prototype.agregarTerceros = function(terceros){

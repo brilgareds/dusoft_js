@@ -34,33 +34,15 @@
                         <br> 
                         <div ng-include="'views/facturacionClientes/listarFacturasEnProceso.html'"></div>  
                     </tab> 
-                    <tab  active="activarTabFacturasConsumo" class="dropdown" ng-controller="FacturacionConsumoController">
+                    <tab  active="activarTabFacturasConsumo" class="dropdown" ng-controller="FacturacionConsumoController" ng-click="buscarClienteFacturaTemporal($event)">
                         <tab-heading>
-                                    Fact. Consumo
-                                <!--ul class="dropdown-menu">
-                                    <li><a href="javascript:void(0);" ng-click="onCambiarVista(0)">Generadas</a></li>
-                                    <li><a href="javascript:void(0);" ng-click="onCambiarVista(1)">Temporales</a></li>
-                                </ul-->
-
-
+                            <tab-heading >
+                                <i class=""></i>  Fact. Consumo
+                                <span ng-show = "notificarFacturaConsumo >0" class="badge">{{notificarFacturaConsumo}}</span>
+                            </tab-heading>                                
                         </tab-heading>
                         <div ng-include="'views/facturacionClientes/listarFacturasConsumo.html'"></div> 
                     </tab>
-                    <!--tab ng-click="onFacturacionConsumoClick($event)"  class="dropdown" disabled="true"  ng-controller="FacturacionConsumoController">
-                        <tab-heading>
-                            
-                                <span class="dropdown-toggle" data-toggle="dropdown"  role="button" aria-haspopup="true" aria-expanded="false">
-                                    Fact. Consumo <span class="caret"></span>
-                                </span>
-                                <ul class="dropdown-menu">
-                                    <li><a href="javascript:void(0);" ng-click="onCambiarVista(root.vistas[2], true)"><span>Generadas</span></a></li>
-                                    <li><a href="javascript:void(0);" ng-click="onCambiarVista(root.vistas[3], true)"><span>Temporal</span></a></li>
-                                </ul>
-                            
-                        </tab-heading>
-                        <br> 
-                        <div ng-include="'views/facturacionClientes/listarFacturasConsumo.html'"></div>  
-                    </tab--> 
                     
                 </tabset>                                      
             </div>

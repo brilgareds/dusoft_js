@@ -537,9 +537,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             
             var storageListaFacturaDespachoGenerada = localStorageService.get('listaFacturaDespachoGenerada');     
             var storageListaFacturasConsumo = localStorageService.get('listaFacturasConsumo');  
-            
-            console.log("storageListaFacturaDespachoGenerada ", storageListaFacturaDespachoGenerada);
-            console.log("storageListaFacturasConsumo ", storageListaFacturasConsumo);
+             
             if(storageListaFacturaDespachoGenerada){
                 
                 $scope.root.activarTabFacturasGeneradas = storageListaFacturaDespachoGenerada.active;                

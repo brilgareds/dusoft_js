@@ -1015,32 +1015,27 @@ FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function(req
 
 
          
- function __consultarTemporaldetalleFactura(that,def,index, pedidos, callback){
+ function __consultarTemporaldetalleFactura(that,def,index,pedidos,callback){
      
     var pedido = pedidos[index];
-    console.log("LOS PEDIDOS OKO ", pedido);
+    
     if(!pedido){
         callback(false);
         return;
     }
     index++;
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',{pedido_cliente_id: pedido,estado: 3}).then(function(resultado){
-        console.log("<) resultado ", resultado)
-        if(resultado.length ===0){
-            return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarEstadoFacturaPedido',{pedido_cliente_id: pedido, estado_factura_fiscal: '0'},{});
-        }else{
-            def.resolve();
-        }    
+        
+        if(resultado.length === 0){
+          G.Q.ninvoke(that.m_facturacion_clientes,'actualizarEstadoFacturaPedido',{pedido_cliente_id: pedido, estado_factura_fiscal: '0'},{}).then(function(resultado){
+
+            }).fail(function(err){
+            console.log("err (/fail) [__actualizarEstadoFacturaPedidoDespacho]: ", err);     
+            }).done();
+        }
             
            
-    }).then(function(resultado){
-         console.log("2) resultado ", resultado)
-        var timer = setTimeout(function() {
-            clearTimeout(timer);
-            __consultarTemporaldetalleFactura(that,def,index,pedidos,callback) 
-        }, 0);
-
-    }).fail(function(err){
+    }) .fail(function(err){
         console.log("err (/fail) [__actualizarEstadoFacturaPedidoDespacho]: ", err);     
     }).done();
     
@@ -1594,6 +1589,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
         paginaActual: paginaActual,
         terminoBusqueda: terminoBusqueda,
         filtro: filtro};
+    
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
         
         if(resultado.length >0){

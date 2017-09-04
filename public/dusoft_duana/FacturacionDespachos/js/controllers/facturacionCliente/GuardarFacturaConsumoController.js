@@ -207,9 +207,15 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
               function (estadoConfirm) {
                   if (estadoConfirm) {
                     facturacionClientesService.eliminarTotalTemporalFacturaConsumo(obj,function(data){
-
+                         
                         if(data.status === 200){
                             AlertService.mostrarMensaje("success", data.msj);
+                            $scope.root.valorFacturaTemporal.valorTotal = 0;
+                            $scope.root.valorFacturaTemporal.valorSubTotal = 0;
+                            $scope.root.valorFacturaTemporal.valorTotalIva = 0;//data.obj.procesar_factura_cosmitet[0].valor_total_iva;
+                            $scope.root.valorFacturaTemporal.porcentajeRtf = 0;
+                            $scope.root.valorFacturaTemporal.porcentajeIca = 0;
+                            $scope.root.valorFacturaTemporal.porcentajeReteIva = 0;
                             that.listarDetalleTmpFacturaConsumo();
                             $scope.onDocumentoSeleccionado();
                         }else{

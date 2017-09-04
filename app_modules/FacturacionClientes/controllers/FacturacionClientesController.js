@@ -981,6 +981,19 @@ FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function(req
         }
             
     }).then(function(resultado){
+          
+        var parametrosTotalValor = {
+            id_factura_xconsumo:args.eliminar_total_tmp.id,     
+            valor_sub_total: 0,
+            valor_total: 0,
+            valor_total_iva: 0,
+            estado: 3
+        };
+         
+        return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosTotalValor); 
+        
+         
+    }).then(function(resultado){
         
         return res.send(G.utils.r(req.url, "Se elimina el detalle del temporal satisfactoriamente", 200, {eliminar_producto_tmp:''}));
         
@@ -999,6 +1012,8 @@ FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function(req
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
 };
+
+
          
  function __consultarTemporaldetalleFactura(that,def,index, pedidos, callback){
      
@@ -1112,7 +1127,7 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function(
             
         
     }).then(function(resultado){
-        console.log("AQ UI ", resultado)
+        
         return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',{id_factura_xconsumo: args.eliminar_producto_tmp.id, estado: 5});
         
     }).then(function(resultado){
@@ -1132,7 +1147,7 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function(
                 valor_total: totalValorProductos.toFixed(2),
                 valor_total_iva: totalValorIva,
                 estado: 3
-            }
+            };
          
             return G.Q.ninvoke(that.m_facturacion_clientes,'actualizarValorTotalTemporalFacturaConsumo',parametrosTotalValor); 
         }else{

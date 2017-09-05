@@ -15,7 +15,18 @@ define(["angular", "js/models"], function(angular, models) {
             this.cantidadPendientePorFacturar = 0;
             this.estadoEntrega = 0;
             this.descripcionProducto = '';
+            this.porcIvaTotal = 0;
         };
+        
+        DocumentoDetalle.prototype.setPorcIvaTotal = function(porcIvaTotal) {
+            this.porcIvaTotal = porcIvaTotal;
+            return this;
+        };
+        
+        DocumentoDetalle.prototype.getPorcIvaTotal = function() {
+            return this.porcIvaTotal;
+        };
+        
         
         DocumentoDetalle.prototype.setId = function(id) {
             this.id = id;

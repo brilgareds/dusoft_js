@@ -557,6 +557,7 @@ define(["angular", "js/services"], function (angular, services) {
                             
                             _documento.setValorUnitario(datos[i].valor_unitario);                          
                             _documento.setPorcIva(datos[i].porc_iva);                          
+                            _documento.setPorcIvaTotal(datos[i].porc_iva_total);                          
                             _documento.setId(datos[i].id_factura_xconsumo); 
                             _documento.setDescripcionProducto(datos[i].descripcion);
                             

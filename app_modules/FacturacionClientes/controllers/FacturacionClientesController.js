@@ -1018,9 +1018,9 @@ FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function(req
  function __consultarTemporaldetalleFactura(that,def,index,pedidos,callback){
      
     var pedido = pedidos[index];
-    
+      
     if(!pedido){
-        callback(false);
+        callback(false);            
         return;
     }
     index++;

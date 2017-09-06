@@ -112,17 +112,17 @@ PedidosCliente.prototype.listarPedidosClientes = function (req, res) {
         return;
     }
 
-    if (args.pedidos_clientes.filtros) {
+    if (args.pedidos_clientes.filtro) {
         
         var extend = require('util')._extend;
 
-        args.pedidos_clientes.filtro = extend(args.pedidos_clientes.filtro, args.pedidos_clientes.filtros); 
+        args.pedidos_clientes.filtros = extend(args.pedidos_clientes.filtro, args.pedidos_clientes.filtros); 
         
     }
     
-    console.log("filtro ", args.pedidos_clientes.filtro );
+    console.log("filtrosssssss>>>>>>>>>>>>>>>>>>>>> ", args.pedidos_clientes.filtros );
     
-    var filtro = args.pedidos_clientes.filtro;
+    var filtro = args.pedidos_clientes.filtros;
 
     this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id,
             termino_busqueda,

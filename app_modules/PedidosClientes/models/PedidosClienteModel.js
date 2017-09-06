@@ -392,6 +392,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     andWhere(function() {
 
         if (filtro) {
+            
+
             if (filtro.tipo_busqueda === 0) {
                 this.where(G.knex.raw("a.pedido_cliente_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
             }
@@ -406,16 +408,18 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
                         orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%")
             }
            
-            
-            if (estado !== "") {
-                console.log("buscar por estado pedidod ", estado);
-                this.where("a.estado_pedido", estado);
-            }
         }
+        
     });
-
+    
+    
     if (estadoPedido) {
         query.andWhere('a.estado', G.constants.db().LIKE, "%" + estadoPedido + "%");
+    }
+    
+    if (estado !== "") {
+            console.log("buscar por estado pedidod ", estado);
+            query.where("a.estado_pedido", estado);
     }
 
     if (estadoSolicitud) {

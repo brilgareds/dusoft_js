@@ -117,8 +117,8 @@
     </div>
     <div class="col-md-2">
         <label>Iva :  <span id='number-default'>{{root.valorFacturaTemporal.valorTotalIva | number}}</span></label>
-    </div>
-    <div class="col-md-2">
+    </div> 
+    <div class="col-md-2"> 
         <label>RetFte :  <span id='number-default'>{{root.valorFacturaTemporal.porcentajeRtf | number}}</span></label>
     </div>
     <div class="col-md-2">
@@ -128,9 +128,10 @@
         <label>RetIva :  <span id='number-default'>{{root.valorFacturaTemporal.porcentajeReteIva | number}}</span></label>
     </div>
     <div class="col-md-2">
-         <label>Total : <span id='number-default'>{{root.valorFacturaTemporal.valorTotal | number}}</span><br> </label>
-    </div>
+         <label>Total : <span id='number-default'>{{root.valorFacturaTemporal.valorTotal}}</span><br> </label>
+    </div>  
 </div>
+
 <br>
 <p class="pull-right">
     <button class="btn btn-default" ng-click="onBtnVolverListaClientes()">

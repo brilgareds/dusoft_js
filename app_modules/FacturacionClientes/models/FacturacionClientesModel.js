@@ -1450,11 +1450,14 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         })
         .where(function(){
         
-             if(obj.estado === 0 || obj.estado === 1 || obj.estado === 2){//if(obj.estado !== 3){
+            if(obj.estado === 0 || obj.estado === 1 || obj.estado === 2){
                 this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
                 .andWhere("a.tercero_id", obj.terceroId)           
                 .andWhere("b.empresa_id", obj.empresaId)
-                .andWhere("a.sw_facturacion",0)
+                
+                if(obj.estado === 0 || obj.estado === 2){
+                    this.andWhere("a.sw_facturacion",0)
+                }
 
                 if(obj.estado !== 2){
                     this.andWhere("b.prefijo", obj.prefijo)

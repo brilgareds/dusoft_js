@@ -170,7 +170,33 @@
                 </div>
                 
                 
-                <div class="col-md-2 pull-right">
+                <div class="col-md-2">
+                    <p></p>
+                    <p class="input-group">
+
+                        <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_inicial_pedidos" is-open="datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
+
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
+                </div>
+
+                <div class="col-md-2">
+                    <p></p>
+                    <p class="input-group">
+
+                        <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_final_pedidos" is-open="datepicker_fecha_final" min="datos_view.fecha_inicial"  readonly  close-text="Cerrar"
+                               clear-text="Borrar"  placeholder="Fecha Final" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                        <span class="input-group-btn">
+
+                            <button class="btn btn-default"  ng-click="abrir_fecha_final($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
+                </div>
+                
+                
+                <!--div class="col-md-2 pull-right">
                     <p> 
                      <div class="input-group">
                     <input type="text" class="form-control"
@@ -187,7 +213,44 @@
                    
                   </div>
              
-            </div>
+            </div-->
+            <div class="col-md-3 pull-right">
+                    <p> 
+                   
+                 <div class="input-group">
+                   <div class="input-group-btn">                
+                       <button type="button" class="btn btn-default dropdown-toggle" 
+                               data-toggle="dropdown" 
+                               aria-haspopup="true" 
+                               aria-expanded="false"><span ng-bind="filtroBusqueda.nombre"></span> <span class="caret"></span></button>
+                       <ul class="dropdown-menu">
+                           <li ng-repeat="filtro in filtros">
+                               <a href="javascript:void(0)" ng-click="onSeleccionFiltroPedido(filtro)"><span ng-bind="filtro.nombre"></span></a>
+                           </li>
+                           <li>
+                       </ul>     
+                   </div><!-- /btn-group -->
+                   
+                   <input type="text" class="form-control"
+                           ng-keypress="onKeyPress($event, termino_busqueda)" 
+                           ng-model="termino_busqueda" 
+                           placeholder="Buscar" 
+                           name="srch-term" 
+                           id="srch-term"
+                           ng-model="rootSeleccionPedido.termino_busqueda_pedidos">
+                  
+
+
+                   <div class="input-group-btn" >
+                       <button class="btn btn-default" 
+                            type="submit" 
+                            ng-click="onKeyPress({which:13}, termino_busqueda)">
+                    <i class="glyphicon glyphicon-search"></i></button>
+                   </div>
+               </div>
+          
+             
+            </div> 
                 
             
             </div>

@@ -9,8 +9,8 @@ define(["angular",
         '$scope', '$rootScope', 'Request',
         '$modal', 'EmpresaPedido', 'Farmacia',
         'PedidoAuditoria', 'API', 'socket',
-        'AlertService', "Usuario",
-        function($scope, $rootScope, Request, $modal, Empresa, Farmacia, PedidoAuditoria, API, socket, AlertService, Usuario) {
+        'AlertService', "Usuario", "$filter",
+        function($scope, $rootScope, Request, $modal, Empresa, Farmacia, PedidoAuditoria, API, socket, AlertService, Usuario, $filter) {
 
             $scope.Empresa = Empresa;
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
@@ -27,6 +27,22 @@ define(["angular",
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
+            
+            var fecha_actual = new Date();
+            $scope.fecha_inicial_pedidos = $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
+            $scope.fecha_final_pedidos = $filter('date')(fecha_actual, "yyyy-MM-dd");
+            
+            $scope.filtros = [
+                {nombre: "Número", tipo_busqueda:0},
+                {nombre: "Zona", tipo_busqueda: 1},
+                {nombre: "Bodega", tipo_busqueda: 2}
+            ];
+            
+            $scope.filtroBusqueda = $scope.filtros[0];
+            
+            $scope.onSeleccionFiltroPedido = function(filtro) {
+                $scope.filtroBusqueda = filtro;
+            }; 
 
 
             $scope.buscarPedidosFarmacias = function(termino, paginando) {
@@ -44,7 +60,11 @@ define(["angular",
                             termino_busqueda: termino,
                             empresa_id: $scope.seleccion.getCodigo(),
                             pagina_actual: $scope.paginaactual,
-                            filtro: {}
+                            filtro: {
+                                fecha_inicial: $filter('date')($scope.fecha_inicial_pedidos, "yyyy-MM-dd") + " 00:00:00",
+                                fecha_final: $filter('date')($scope.fecha_final_pedidos, "yyyy-MM-dd") + " 23:59:00",
+                                busqueda:$scope.filtroBusqueda
+                            }
                         }
                     }
                 };
@@ -85,8 +105,8 @@ define(["angular",
                     {field: 'numero_pedido', displayName: 'Pedido', width: "80"},
                     {field: 'nombreSeparador', displayName:"Separador"},
                     {field: 'descripcionTipoPedido', displayName: 'Tipo Productos', width: "110"},
-                    {field: 'farmacia.zona', displayName: 'Zona', width: "27%"},
-                    {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
+                    {field: 'farmacia.zona', displayName: 'Zona', width: "14%"},
+                    {field: 'observacion', displayName: 'Observación'},
                     {field: 'farmacia.nombre_bodega', displayName: 'Bodega', width: "10%"},
                     {field: 'fecha_registro', displayName: "Fecha Registro", width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button", width:100,
@@ -172,6 +192,27 @@ define(["angular",
                     clase = "glyphicon glyphicon-lock";
 
                 return clase;
+            };
+            
+            
+            $scope.abrir_fecha_inicial = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.datepicker_fecha_inicial = true;
+                $scope.datepicker_fecha_final = false;
+
+            };
+
+            $scope.abrir_fecha_final = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.datepicker_fecha_inicial = false;
+                $scope.datepicker_fecha_final = true;
+
             };
 
 

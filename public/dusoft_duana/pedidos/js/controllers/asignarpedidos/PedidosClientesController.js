@@ -30,7 +30,7 @@ define(["angular",
             
             $scope.rootSeleccionPedido = {
                 fecha_inicial_pedidos: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
-                fecha_final_pedidos: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+                fecha_final_pedidos: $filter('date')(fecha_actual, "yyyy-MM-dd")
             };
             $scope.rootSeleccionPedido.filtros = [
                 {nombre: "Numero", tipo_busqueda: 0},
@@ -64,7 +64,7 @@ define(["angular",
                             filtro: {},
                             filtros: $scope.rootSeleccionPedido.filtro,
                             fecha_inicial: $filter('date')($scope.rootSeleccionPedido.fecha_inicial_pedidos, "yyyy-MM-dd") + " 00:00:00",
-                            fecha_final: $filter('date')($scope.rootSeleccionPedido.fecha_final_pedidos, "yyyy-MM-dd") + " 23:59:00",
+                            fecha_final: $filter('date')($scope.rootSeleccionPedido.fecha_final_pedidos, "yyyy-MM-dd") + " 23:59:00"
                         }
                     }
                 };

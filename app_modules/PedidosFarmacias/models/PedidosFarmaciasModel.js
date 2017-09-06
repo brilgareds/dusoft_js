@@ -615,24 +615,53 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         this.where("a.farmacia_id", empresa_id);
         this.orWhere("a.farmacia_id", '03');
         
-        if (estado !== "") {
-            this.where("a.estado", estado);
-        }
     }).
     andWhere(function() {
-       if(filtro && filtro.usuario){
+        
+       //filtro para el modulo de asignacion
+       if(filtro && filtro.busqueda){
            
-            this.where("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
-            
-       } else if(filtro && filtro.razonSocial){
+           if(filtro.busqueda.tipo_busqueda === 0){
+               this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+               
+           } else if(filtro.busqueda.tipo_busqueda === 1){
+               this.where(G.knex.raw("h.descripcion :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+           } else {
+               this.where(G.knex.raw("c.descripcion :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+           }
            
-            this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
-       } else if (filtro && filtro.descripcionBodega){
            
-            this.where("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");
        } else {
-           this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+                  //filtros para el modulo de pedidos
+            if(filtro && filtro.usuario){
+
+                 this.where("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+
+            } else if(filtro && filtro.razonSocial){
+
+                 this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            } else if (filtro && filtro.descripcionBodega){
+
+                 this.where("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            } else {
+
+
+
+                this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            }
+       
        }
+       
+        if (estado !== "") {
+            console.log("buscar por filtro >>>>>>>>>>>>>>>> ", estado);
+            this.where("a.estado", estado);
+        }
+        
+        
+        if (filtro.fecha_inicial !== undefined) {
+            
+             this.where(G.knex.raw("a.fecha_registro between '"+ filtro.fecha_inicial + "' and '"+ filtro.fecha_final +"'"));
+        }
        
     }).
     orderByRaw("1 DESC").

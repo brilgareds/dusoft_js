@@ -1018,9 +1018,9 @@ FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function(req
  function __consultarTemporaldetalleFactura(that,def,index,pedidos,callback){
      
     var pedido = pedidos[index];
-    
+      
     if(!pedido){
-        callback(false);
+        callback(false);            
         return;
     }
     index++;
@@ -1346,6 +1346,10 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         return;
     }
     
+    /**
+    * +Descripcion Se valida la cantidad temporal hasta el momento que se ha facturado
+    *              del efc del producto
+    */
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametrosDetalleTmp).then(function(resultado){
          
         if(resultado.length >0){

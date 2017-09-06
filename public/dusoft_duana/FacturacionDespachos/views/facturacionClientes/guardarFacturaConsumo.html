@@ -113,24 +113,25 @@
  
 <div class="row">
     <div class="col-md-2">
-        <label>Subtotal : {{root.valorFacturaTemporal.valorSubTotal}}</label>
+        <label>Subtotal : <span id='number-default'>{{root.valorFacturaTemporal.valorSubTotal | number}}</span><br> </label>
     </div>
     <div class="col-md-2">
-        <label>Iva : {{root.valorFacturaTemporal.valorTotalIva}}</label>
+        <label>Iva :  <span id='number-default'>{{root.valorFacturaTemporal.valorTotalIva | number}}</span></label>
+    </div> 
+    <div class="col-md-2"> 
+        <label>RetFte :  <span id='number-default'>{{root.valorFacturaTemporal.porcentajeRtf | number}}</span></label>
     </div>
     <div class="col-md-2">
-        <label>RetFte : {{root.valorFacturaTemporal.porcentajeRtf}}</label>
+        <label>RetIca : <span id='number-default'>{{root.valorFacturaTemporal.porcentajeIca | number}}</span></label>
     </div>
     <div class="col-md-2">
-        <label>RetIca : {{root.valorFacturaTemporal.porcentajeIca}}</label>
+        <label>RetIva :  <span id='number-default'>{{root.valorFacturaTemporal.porcentajeReteIva | number}}</span></label>
     </div>
     <div class="col-md-2">
-        <label>RetIva : {{root.valorFacturaTemporal.porcentajeReteIva}}</label>
-    </div>
-    <div class="col-md-2">
-        <label>Total : {{root.valorFacturaTemporal.valorTotal}}</label>
-    </div>
+         <label>Total : <span id='number-default'>{{root.valorFacturaTemporal.valorTotal}}</span><br> </label>
+    </div>  
 </div>
+
 <br>
 <p class="pull-right">
     <button class="btn btn-default" ng-click="onBtnVolverListaClientes()">

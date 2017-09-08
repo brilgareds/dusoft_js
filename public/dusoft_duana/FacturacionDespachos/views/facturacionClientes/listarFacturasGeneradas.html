@@ -36,15 +36,15 @@
 
             <div class="input-group-btn">                                                                      
                 <button type="button" class="btn btn-default dropdown-toggle" 
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtro.descripcion}} <span class="caret"></span></button>
-                <ul class="dropdown-menu" ng-selected="onColumnaSize(root.filtro.tipo)">
-                    <li ng-repeat="filtro in root.filtros">
-                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.descripcion}}</a>
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtroDocumento.descripcion}} <span class="caret"></span></button>
+                <ul class="dropdown-menu" ng-selected="onColumnaSize(root.filtroDocumento.tipo)">
+                    <li ng-repeat="filtro in root.filtrosDocumentos">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltroDocumentos(filtro)">{{filtro.descripcion}}</a>
                     </li>
                     <li role="separator" class="divider"></li>
 
                     <li ng-repeat="tipoTercero in tipoTercero">
-                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(tipoTercero)">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltroDocumentos(tipoTercero)">
                             {{tipoTercero.descripcion}}
                         </a>
                     </li>
@@ -92,7 +92,7 @@
                    class="form-control" 
                    ng-keypress="buscarFacturaGenerada($event);"  
                    ng-model="root.termino_busqueda_prefijo" 
-                   placeholder="Prefijo" name="" id="" />
+                   placeholder="numero" name="" id="" />
            
         </div>   
 

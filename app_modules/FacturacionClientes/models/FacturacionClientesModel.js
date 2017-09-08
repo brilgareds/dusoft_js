@@ -447,7 +447,9 @@ function __camposListaFacturasGeneradas() {
  * @fecha 17/05/2017
  */
 function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
- 
+    
+    console.log("estado >>>>>>>>>>>>>>>>>>>", estado);
+    console.log("filtro >>>>>>>>>>>>>>>>>>>", filtro);
     var consulta = G.knex.select(columna)
         .from(tabla1)
         .join('terceros as c', function () {
@@ -484,19 +486,29 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
             .on("a.documento_id", "i.documento_id")
         }).where(function () {
             this.andWhere('a.empresa_id', filtro.empresa_id)
-            .andWhere('c.nombre_tercero', G.constants.db().LIKE, "%" + filtro.nombreTercero + "%")
-            .andWhere('a.tercero_id', G.constants.db().LIKE, "%" + filtro.terceroId + "%");//
+            
+            //
             if (filtro.factura_fiscal !== "") {
                 this.andWhere('a.factura_fiscal', filtro.factura_fiscal);
             }
             if (filtro.prefijo !== "") {
                 this.andWhere('a.prefijo', filtro.prefijo);
             }
-            if (filtro.tipoIdTercero !== "") {
-                this.andWhere('a.tipo_id_tercero', filtro.tipoIdTercero)
+            if (filtro.terceroId !== "") {
+                
+                this.andWhere('a.tercero_id', G.constants.db().LIKE, "%" + filtro.terceroId + "%");
+                if(filtro.tipoIdTercero !== ""){
+                    this.andWhere('a.tipo_id_tercero', filtro.tipoIdTercero)
+                }
             }
-            if (filtro.pedidoClienteId !== "") {
-                this.andWhere('a.pedido_cliente_id', filtro.pedidoClienteId);
+            if (filtro.nombreTercero !== "") {
+                this.andWhere('c.nombre_tercero', G.constants.db().LIKE, "%" + filtro.nombreTercero + "%")
+            }
+            
+            if (estado === 0) {
+                if (filtro.pedidoClienteId !== "") {
+                    this.andWhere('pedi.pedido_cliente_id', filtro.pedidoClienteId);
+                }
             }
         });
        
@@ -592,6 +604,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
+        console.log("resultado [listarFacturasGeneradas] ", resultado);
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarFacturasGeneradas] ", err);

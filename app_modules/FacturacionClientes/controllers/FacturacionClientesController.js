@@ -163,23 +163,35 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function(req, res){
         res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
         return;
     }
-     
+    console.log("args.listar_facturas_generadas ", args.listar_facturas_generadas);
+   /* console.log("args.listar_facturas_generadas.pedidoClienteId ", args.listar_facturas_generadas.pedidoClienteId);
+    console.log("args.listar_facturas_generadas.terminoBusqueda ", args.listar_facturas_generadas.terminoBusqueda);
+    console.log("args.listar_facturas_generadas.nombreTercero ", args.listar_facturas_generadas.nombreTercero);*/
+    if(args.listar_facturas_generadas.numero === "" && 
+            args.listar_facturas_generadas.pedidoClienteId === "" && 
+            args.listar_facturas_generadas.terminoBusqueda === "" &&
+            args.listar_facturas_generadas.nombreTercero === ""){
+        
+        res.send(G.utils.r(req.url, 'Debe diligenciar un criterio de busqueda', 404, {listar_facturas_generadas: []}));
+        return;
+    }
     var empresaId = args.listar_facturas_generadas.empresaId;
     var terminoBusqueda = args.listar_facturas_generadas.terminoBusqueda;
     var paginaActual = args.listar_facturas_generadas.paginaActual;
     var filtro = args.listar_facturas_generadas.filtro;
+    var filtroTipoIdTercero = args.listar_facturas_generadas.tipoIdTercero;
     var prefijo = args.listar_facturas_generadas.prefijo;
     var numero = args.listar_facturas_generadas.numero;
     var usuario = req.session.user.usuario_id;
     var nombreTercero = args.listar_facturas_generadas.nombreTercero;
-    
+    var numeroPedido = args.listar_facturas_generadas.pedidoClienteId;
    
     var parametros = {
         empresa_id:empresaId,
         factura_fiscal:numero,
         prefijo:prefijo.tipo,
-        tipoIdTercero:filtro.tipo,
-        pedidoClienteId:'',
+        tipoIdTercero:filtroTipoIdTercero.tipo,
+        pedidoClienteId:numeroPedido,
         terceroId: terminoBusqueda,
         nombreTercero: nombreTercero,
         paginaActual:paginaActual

@@ -111,11 +111,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
         $scope.root.filtrosPrefijos = [
             {tipo: '', descripcion: "Todos"},
-            {tipo: 'Nombre', descripcion: "Nombre"}
+            //{tipo: 'Nombre', descripcion: "Nombre"}
+        ];
+        $scope.root.filtrosDocumentos = [
+            {tipo: '', descripcion: "Todos"},
         ];
 
         $scope.root.filtro = $scope.root.filtros[0];
         $scope.root.filtroPrefijo = $scope.root.filtrosPrefijos[0];
+        $scope.root.filtroDocumento = $scope.root.filtrosDocumentos[0];
         
         $scope.onColumnaSize = function (tipo) {
  
@@ -144,7 +148,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.root.filtroPrefijo = filtroPrefijo;
             //$scope.root.termino_busqueda_fg = '';       
         };
+        
+        
+        $scope.onSeleccionFiltroDocumentos = function (filtroDocumento) {
 
+            $scope.root.filtroDocumento = filtroDocumento;
+            //$scope.root.termino_busqueda_fg = '';       
+        };
         /**
          * +Descripcion Metodo encargado de invocar el servicio que listara 
          *              los tipos de terceros
@@ -256,14 +266,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         paginaActual: $scope.paginaactualFacturasGeneradas,
                         numero: numero > 0 ? numero : $scope.root.termino_busqueda_prefijo.length > 0 ? $scope.root.termino_busqueda_prefijo: '', //52146
                         prefijo: numero > 0 ? prefijo:$scope.root.filtroPrefijo,
-                        tipoIdTercero: $scope.root.filtro,
+                        tipoIdTercero: $scope.root.filtroDocumento,
                         pedidoClienteId: $scope.root.termino_busqueda_pedido.length > 0 ? $scope.root.termino_busqueda_pedido: '',
                         nombreTercero: $scope.root.termino_busqueda_nombre.length > 0 ? $scope.root.termino_busqueda_nombre: '',
 
                     }
                 }
             };
-             //console.log("obj [listarFacturasGeneradas]: ", obj)
+             console.log("obj [listarFacturasGeneradas]: ", obj)
             facturacionClientesService.listarFacturasGeneradas(obj, function (data) {
                 //console.log("listarFacturasGeneradas =  ", data)
                 $scope.root.facturas_generadas = [];
@@ -344,22 +354,29 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Cliente', cellClass: "ngCellText", displayName: 'Cliente', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].getNombre()}}</p></div>'},
 
-                {field: 'Ubicacion', width: "10%",  cellClass: "ngCellText",displayName: 'Ubicacion', 
+                /*{field: 'Ubicacion', width: "10%",  cellClass: "ngCellText",displayName: 'Ubicacion', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].getPais()}} - {{ row.entity.mostrarFacturasDespachadas()[0].getDepartamento()}} - {{ row.entity.mostrarFacturasDespachadas()[0].getMunicipio()}} - {{ row.entity.mostrarFacturasDespachadas()[0].getDireccion()}}</p></div>'},
-
-                {displayName: 'Telefono', width: "8%", cellClass: "ngCellText", 
+                /*
+               /* {displayName: 'Telefono', width: "8%", cellClass: "ngCellText", 
                     cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].getTelefono()}}</p></div>'},
-
-                {field: 'Vendedor', width: "13%", cellClass: "ngCellText", displayName: 'Vendedor', 
+                    */
+                {field: 'Vendedor', width: "18%", cellClass: "ngCellText", displayName: 'Vendedor', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 
                 {field: 'F.Factura', width: "10%", cellClass: "ngCellText", displayName: 'F.Factura', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaFactura()}} </p></div>'},
 
-                {field: 'F.Ven', width: "5%", cellClass: "ngCellText", displayName: 'F.Ven', 
+               /* {field: 'F.Ven', width: "5%", cellClass: "ngCellText", displayName: 'F.Ven', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaVencimientoFactura()}} </p></div>'},
+                */
+                //{field: 'Valor/saldo',  cellClass: "ngCellText",width: "12%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} / {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
+                
+                {field: 'Valor', width: "7%", cellClass: "ngCellText", displayName: 'Valor', 
+                    cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} </p></div>'},
+                
+                {field: 'Saldo', width: "7%", cellClass: "ngCellText", displayName: 'Valor', 
+                    cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
 
-                {field: 'Valor/saldo',  cellClass: "ngCellText",width: "12%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} / {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
 
                 {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
                 

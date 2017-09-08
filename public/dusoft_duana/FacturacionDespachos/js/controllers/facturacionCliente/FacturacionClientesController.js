@@ -374,7 +374,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Valor', width: "7%", cellClass: "ngCellText", displayName: 'Valor', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} </p></div>'},
                 
-                {field: 'Saldo', width: "7%", cellClass: "ngCellText", displayName: 'Valor', 
+                {field: 'Saldo', width: "7%", cellClass: "ngCellText", displayName: 'Saldo', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
 
 

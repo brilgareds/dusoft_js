@@ -1494,11 +1494,11 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             
         
     }).then(function(resultado){
-        
-        console.log("resultado [insertarDetalleFacturaConsumo]:: ", resultado);
+         
         if(resultado.rowCount > 0){
-            parametrosDetalleTmp.estado = 0;
-            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametrosDetalleTmp);
+          
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',
+            {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo});
         }else{
             throw {msj:'No se registro ninguna unidad', status: 404}; 
             return;
@@ -1506,7 +1506,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         
     }).then(function(resultado){
         
-        console.log("resultado [consultarDetalleTemporalFacturaConsumo]: ", resultado);
+        console.log("resultado [consultarDetalleTemporalFacturaConsumo]: QUI OJO PUES ", resultado);
         if(resultado.length > 0){    
             
             resultado.forEach(function(row){

@@ -604,7 +604,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
-        console.log("resultado [listarFacturasGeneradas] ", resultado);
+        
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarFacturasGeneradas] ", err);

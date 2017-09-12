@@ -2699,7 +2699,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
                     
                     return 0;
                 });
-                
+               
                 __generarPdfDespacho(datos_documento, function(nombre_pdf) {
                     
                     res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200,{

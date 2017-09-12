@@ -1111,7 +1111,8 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido,\
                 '1' as tipo_pedido,\
                 '' as farmacia_id,\
-                j.observacion as descripcion_pedido\
+                j.observacion as descripcion_pedido, \
+                (SELECT terc.direccion FROM terceros as terc WHERE terc.tipo_id_tercero = j.tipo_id_tercero AND terc.tercero_id = j.tercero_id) as direccion\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -1143,7 +1144,8 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido,\
                 '2' as tipo_pedido,\
                 j.farmacia_id,\
-                j.observacion as descripcion_pedido\
+                j.observacion as descripcion_pedido,\
+                '' as direccion\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -1163,6 +1165,7 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("err ", err)
        callback(err);
     });
     

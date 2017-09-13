@@ -923,7 +923,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         "g.nombre as responsable_pedido",
         "f.fecha as fecha_asignacion_pedido", 
         "i.fecha_registro as fecha_separacion_pedido",
-        "j.descripcion as zona"
+        "j.descripcion as zona",
+        "a.observacion"
     ];
     
     var query = G.knex("solicitud_productos_a_bodega_principal as a").

@@ -858,7 +858,8 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         "d.responsable_id",
         "e.nombre as responsable_pedido",
         "d.fecha as fecha_asignacion_pedido",
-        "g.fecha_registro as fecha_separacion_pedido"
+        "g.fecha_registro as fecha_separacion_pedido",
+        "a.observacion"
     ];
 
     var query = G.knex.column(columnas).from("ventas_ordenes_pedidos as a").innerJoin("terceros as b", function() {

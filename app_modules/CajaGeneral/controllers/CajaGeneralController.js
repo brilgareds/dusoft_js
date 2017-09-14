@@ -906,7 +906,7 @@ CajaGeneral.prototype.listarNotas = function(req, res) {
  * @fecha 2017-06-13 (YYYY-MM-DD)
  */
 CajaGeneral.prototype.imprimirNota = function(req, res) {
-console.log("*************imprimirNota*****************");
+console.log("*************ESTA IMPRIMIO OK imprimirNota*****************");
     var that = this;
     var args = req.body.data;
     var impuesto;
@@ -984,6 +984,8 @@ console.log("*************imprimirNota*****************");
 	    archivoHtml: 'notaFactura.html',
 	    impuesto: impuesto
 	};
+        
+        console.log("informacion POR A QUI ", informacion)
 	return G.Q.nfcall(__generarPdf, informacion);
 	
     }).then(function(result) {
@@ -1056,7 +1058,10 @@ function __generarPdf(datos, callback) {
     }, function(err, response) {
 
 	response.body(function(body) {
-	var nombreTmp = "factura_conceptocredito" + datos.parametros.prefijo + "" + datos.parametros.factura + ".html";
+        var fecha = new Date();
+        //var nombreTmp = datos.reporte + fecha.getTime() + ".html";
+             
+	var nombreTmp = "factura_conceptocredito" + datos.parametros.prefijo + "" + datos.parametros.factura +"-" + fecha.getTime() + ".html";
 
 	G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
 	    if (err) {

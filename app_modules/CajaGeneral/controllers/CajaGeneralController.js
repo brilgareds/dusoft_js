@@ -984,8 +984,7 @@ console.log("*************ESTA IMPRIMIO OK imprimirNota*****************");
 	    archivoHtml: 'notaFactura.html',
 	    impuesto: impuesto
 	};
-        
-        console.log("informacion POR A QUI ", informacion)
+      
 	return G.Q.nfcall(__generarPdf, informacion);
 	
     }).then(function(result) {

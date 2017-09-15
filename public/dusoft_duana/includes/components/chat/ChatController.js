@@ -425,7 +425,7 @@ define(["angular",
                         _conversacion.mensaje, _conversacion.archivo_adjunto,
                         _conversacion.fecha_mensaje
                 );
-        
+                conversacion.setNombreUsuario(_conversacion.nombre_usuario)
                 if(_conversacion.error){
                     conversacion.setMensaje("<span style='color:red'>"+conversacion.getMensaje()+"</span>");
                 }

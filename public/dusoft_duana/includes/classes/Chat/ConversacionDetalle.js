@@ -6,11 +6,20 @@ define(["angular", "js/models"], function(angular, models) {
         function ConversacionDetalle(id, usuario, mensaje, archivo,  fechaCreacion) {
             this.id = id || 0;
             this.usuario = usuario || "";
+            this.nombreUsuario = "";
             this.mensaje = mensaje;
             this.fechaCreacion = fechaCreacion;
             this.archivo = archivo || "";
         };
         
+         ConversacionDetalle.prototype.setNombreUsuario = function(nombreUsuario) {
+            this.nombreUsuario = nombreUsuario;
+            return this;
+        };
+        
+        ConversacionDetalle.prototype.getNombreUsuario = function() {
+            return this.nombreUsuario;
+        };
         
         ConversacionDetalle.prototype.setUsuario = function(usuario) {
             this.usuario = usuario;

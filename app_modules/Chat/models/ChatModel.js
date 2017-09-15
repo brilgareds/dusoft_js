@@ -465,6 +465,7 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
         "a.mensaje",
         "a.archivo_adjunto",
         "a.fecha_mensaje as fecha_registro",
+        "b.nombre as nombre_usuario",
         G.knex.raw("to_char(a.fecha_mensaje, 'dd-Mon HH:MI am') as fecha_mensaje")
     ];
     
@@ -495,10 +496,11 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
     orderBy("a.fecha_mensaje", "desc");
     query.then(function(resultado){
         
+        console.log("obtenerDetalleConversacion: ", resultado);
         callback(false, resultado);
         
     }).catch(function(err){
-        
+        console.log("obtenerDetalleConversacion [resultado]: ", err);
         callback(err);       
     });
     

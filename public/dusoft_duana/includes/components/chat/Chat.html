@@ -139,7 +139,7 @@
                     <div id="{{detalle.getId()}}" ng-repeat="detalle in root.conversacionSeleccionada.detalle" class="contenedorDetalle" ng-class="($index % 2 == 0) ? 'detallePar' : 'detalleInpar'">
                         <div>
                             <label ng-if="detalle.getUsuario() == root.usuarioActual.getNombreUsuario()">Yo</label>
-                            <label ng-if="detalle.getUsuario() != root.usuarioActual.getNombreUsuario()">{{detalle.getUsuario()}}</label>
+                            <label ng-if="detalle.getUsuario() != root.usuarioActual.getNombreUsuario()">{{detalle.getNombreUsuario()}}</label>
                             <span class="pull-right" style="font-size: 11px">{{detalle.getFechaCreacion()}}</span>
                         </div>
                         <p ng-if="detalle.getArchivo().length == 0">

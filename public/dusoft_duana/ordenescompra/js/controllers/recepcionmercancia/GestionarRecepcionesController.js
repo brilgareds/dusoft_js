@@ -30,6 +30,7 @@ define(["angular", "js/controllers"
 
             $scope.datos_view = {
                 seleccionarOtros: '',
+                seleccionarFactura: '',
                 hstep: 1,
                 mstep: 1,
                 ismeridian: false,
@@ -206,6 +207,9 @@ define(["angular", "js/controllers"
                     recepcion.orden_compra = OrdenCompra.get(recepcion.orden_compra_txf, 1, "Orden de compra (Otras salidas)", "24-04-2017");
                 }
                 
+                if($scope.datos_view.seleccionarFactura){
+                    recepcion.numero_factura = "R-"+recepcion.numero_factura;
+                }
                
                 var obj = {
                     session: $scope.session,
@@ -216,7 +220,7 @@ define(["angular", "js/controllers"
                         }
                     }
                 };
-            
+               
                 Request.realizarRequest(API.ORDENES_COMPRA.INGRESAR_RECEPCION_MERCANCIA, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);

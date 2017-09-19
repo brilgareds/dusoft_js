@@ -142,8 +142,29 @@
                                     <legend class="medium-letter">No. Factura</legend> 
                                     <div class="row">
                                         <div class="col-md-12">  
+                                        <div class="input-group">
+                                            
                                             <input ng-disabled="recepcion.disabled_btn" ng-model="recepcion.numero_factura" class="form-control" type="text">
+                                            <span class="input-group-addon" >
+                                                <input type="checkbox" 
+                                                               ng-model="datos_view.seleccionarFactura" 
+                                                               ng-disabled="recepcion.disabled_btn"
+                                                               ng-change ="crear_recepcion(1,{})">   
+                                                  
+                                            </span>
+                                          </div>
+                                          </div>
+                                       <!-- <div class="col-lg-6">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <input type="radio" aria-label="">
+                                            </span>
+                                            <div class="col-md-10">  
+                                                <input ng-disabled="recepcion.disabled_btn" ng-model="recepcion.numero_factura" class="form-control" type="text">
+                                            </div>
+                                            
                                         </div>
+                                        </div> //-->
                                     </div>
                                 </fieldset>
                             </div>
@@ -222,7 +243,7 @@
                                         <legend class="medium-letter">Observacion</legend> 
                                         <div class="row">
                                                 <div class="col-md-12">                                          
-                                                    <textarea  ng-model="recepcion.observacion" g-disabled="recepcion.disabled_btn" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
+                                                    <textarea  ng-model="recepcion.observacion" ng-disabled="recepcion.disabled_btn" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
                                                 </div>
                                         </div>
                                     </fieldset>

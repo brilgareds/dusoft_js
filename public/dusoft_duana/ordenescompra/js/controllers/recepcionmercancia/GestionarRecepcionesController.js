@@ -204,12 +204,13 @@ define(["angular", "js/controllers"
                 
                 recepcion.fecha_ingreso = $filter('date')(recepcion.fecha_ingreso, "dd-MM-yyyy")
                 if($scope.datos_view.seleccionarOtros){
+                    recepcion.setSeleccionarOtros($scope.datos_view.seleccionarOtros);
                     recepcion.orden_compra = OrdenCompra.get(recepcion.orden_compra_txf, 1, "Orden de compra (Otras salidas)", "24-04-2017");
                 }
                 
                 if($scope.datos_view.seleccionarFactura){
                     recepcion.numero_factura = "F-"+recepcion.numero_factura;
-                }
+                }                    
                
                 var obj = {
                     session: $scope.session,
@@ -302,6 +303,7 @@ define(["angular", "js/controllers"
                     
                     return;
                 }   
+                console.log("recepcion [crear_recepcion", recepcion)
                 var validacion = recepcion.validar_campos_ingreso();
 
                 if (validacion.continuar) {

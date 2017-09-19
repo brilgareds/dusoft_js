@@ -21,6 +21,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.hora_ingreso = new Date();
                 this.fecha_ingreso = $filter('date')(new Date(), "dd-MM-yyyy");
                 this.fecha_registro = fecha_registro || '';
+                this.seleccionarOtros = '';
             }
 
             this.get = function(empresa_id, numero_recepcion, fecha_registro, estado) {
@@ -30,6 +31,11 @@ define(["angular", "js/models"], function(angular, models) {
             RecepcionMercancia.prototype.set_numero_recepcion = function(numero_recepcion) {
                 this.numero_recepcion = numero_recepcion;
             };
+            
+            RecepcionMercancia.prototype.setSeleccionarOtros = function(seleccionarOtros) {
+                this.seleccionarOtros = seleccionarOtros;
+            };
+
 
             RecepcionMercancia.prototype.set_empresa_id = function(empresa_id) {
                 this.empresa_id = empresa_id;
@@ -98,7 +104,10 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
 
-
+            RecepcionMercancia.prototype.getSeleccionarOtros = function() {
+                return this.seleccionarOtros;
+            };
+            
             RecepcionMercancia.prototype.get_numero_recepcion = function() {
                 return this.numero_recepcion;
             };
@@ -177,13 +186,13 @@ define(["angular", "js/models"], function(angular, models) {
                 var msj = '';
                 var msj = [];
 
-                if (this.proveedor === '' || this.orden_compra === '' || this.transportadora === '') {
+                if ((this.proveedor === '' || this.orden_compra === '' || this.transportadora === '') && this.seleccionarOtros === 1) {
                     continuar = false;
                     msj.push('Seleccionar un proveedor');
                 }
-                if (this.orden_compra === '') {
+                if (this.orden_compra === '' && this.seleccionarOtros === 1) {
                     continuar = false;
-                    msj.push('Seleccionar una orden de compra');
+                    msj.push('Seleccionar una orden de compra ---->>>>');
                 }
                 if (this.transportadora === '') {
                     continuar = false;

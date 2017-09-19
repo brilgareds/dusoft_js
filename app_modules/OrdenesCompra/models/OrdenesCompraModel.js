@@ -1172,8 +1172,9 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
                     contiene_dispositivos,\
                     usuario_id,\
                     fecha_recepcion,\
-                    hora_recepcion\
-                ) values ( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15 ) returning id; ";
+                    hora_recepcion,\
+                    observacion\
+                ) values ( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16 ) returning id; ";
 
     var parametros = {
         1:recepcion_mercancia.empresa_id,
@@ -1190,7 +1191,8 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
         12:recepcion_mercancia.contiene_dispositivos,
         13:recepcion_mercancia.usuario_id,
         14:recepcion_mercancia.fecha_ingreso,
-        15:recepcion_mercancia.hora_ingreso
+        15:recepcion_mercancia.hora_ingreso,
+        16:recepcion_mercancia.observacion
     };
     
     

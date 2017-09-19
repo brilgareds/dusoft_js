@@ -1346,7 +1346,7 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
                     var i = lista_productos.length;
 
                     lista_productos.forEach(function(_producto) {
-                        console.log("_producto ", _producto)
+                        
                         var producto = {
                             recepcion_mercancia_id: numero_recepcion,
                             novedades_recepcion_id: null,

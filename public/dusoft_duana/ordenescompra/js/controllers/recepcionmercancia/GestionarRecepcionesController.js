@@ -208,7 +208,7 @@ define(["angular", "js/controllers"
                 }
                 
                 if($scope.datos_view.seleccionarFactura){
-                    recepcion.numero_factura = "R-"+recepcion.numero_factura;
+                    recepcion.numero_factura = "F-"+recepcion.numero_factura;
                 }
                
                 var obj = {
@@ -227,7 +227,7 @@ define(["angular", "js/controllers"
 
                     if (data.status === 200) {
                         recepcion.set_numero_recepcion(data.obj.ordenes_compras.numero_recepcion);
-                        //$scope.datos_view.response = data;
+                        
                         callback(true);
                     } else {
                         callback(false);

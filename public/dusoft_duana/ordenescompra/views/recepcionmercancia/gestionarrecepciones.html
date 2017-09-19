@@ -13,12 +13,24 @@
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <p class="input-group">
                                 <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="datos_view.disabled_agregar_eliminar_registro" ng-click="agregar_eliminar_registro()">
                                     <span class="glyphicon glyphicon-{{datos_view.btn_agregar_eliminar_registro ? 'plus' : 'minus'}}"></span> {{datos_view.btn_agregar_eliminar_registro ? 'Agregar Registro' : 'Remover Registro'}}
                                 </button>
                             </p>
+                        </div>
+                        <div class="col-md-2">
+                                                           
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" 
+                                           ng-model="datos_view.seleccionarOtros" 
+                                           ng-disabled="recepcion.disabled_btn"
+                                           ng-change ="crear_recepcion(1,{})"><h4>Seleccionar otras salidas</h4>   
+                                </label>
+                            </div>
+                        
                         </div>
                     </div>                    
                     <div class="" ng-repeat="recepcion in datos_view.recepciones">      
@@ -91,7 +103,45 @@
                                         </div>
                                     </fieldset>
                             </div>
-                            <div class="col-md-4">
+                                
+                               <div class="col-md-4">
+                                        
+ 
+                                <fieldset>
+                                    <legend class="medium-letter">No. Orden</legend>
+                                     
+                                    <div class="row">
+                                        <div class="col-md-12">  
+                                            <input type="text" 
+                                                    ng-disabled="recepcion.disabled_btn" 
+                                                    class="form-control"  
+                                                    ng-model="recepcion.orden_compra_txf" 
+                                                    placeholder="Prefijo" 
+                                                    name="" id=""
+                                                    ng-show ="datos_view.seleccionarOtros"/>
+                                        </div>
+                                        
+                                        <div class="col-md-12">  
+                                            <ui-select ng-disabled="recepcion.disabled_btn" 
+                                                       ng-model="recepcion.orden_compra" 
+                                                       theme="select2" class="form-control selectgeneral pull-left" 
+                                                       ng-change="seleccionar_orden_compra(recepcion)"
+                                                       ng-show ="!datos_view.seleccionarOtros">
+                                                <ui-select-match  placeholder="Seleccionar Orden Compra">{{ $select.selected.get_numero_orden() }}</ui-select-match>
+                                                <ui-select-choices repeat="orden in Empresa.get_ordenes_compras() | filter:$select.search">
+                                                    {{ orden.get_numero_orden() }}
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                </fieldset>
+
+
+
+
+
+                                    </div>
+                           <!-- <div class="col-md-4">
                                 <fieldset>
                                     <legend class="medium-letter">No. Orden</legend> 
                                     <div class="row">
@@ -105,7 +155,7 @@
                                         </div>
                                     </div>
                                 </fieldset>
-                            </div>
+                            </div> //-->
                             <div class="col-md-4">
                                 <fieldset>
                                     <legend class="medium-letter">No. Factura</legend> 
@@ -194,7 +244,7 @@
                                                 <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="recepcion.disabled_btn" ng-click="recepcion.fn_btn_add(recepcion)">
                                                     <span class="{{recepcion.class_btn_add}}"></span>
                                                 </button>
-                                                <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="recepcion.disabled_btn" ng-click="crear_recepcion(recepcion)">
+                                                <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="recepcion.disabled_btn" ng-click="crear_recepcion(0,recepcion)">
                                                     <span class="glyphicon glyphicon-ok"></span>
                                                 </button>
                                             </div>

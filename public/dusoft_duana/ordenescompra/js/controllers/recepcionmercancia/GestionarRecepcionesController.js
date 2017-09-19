@@ -29,6 +29,7 @@ define(["angular", "js/controllers"
             // Variables
 
             $scope.datos_view = {
+                seleccionarOtros: '',
                 hstep: 1,
                 mstep: 1,
                 ismeridian: false,
@@ -199,18 +200,23 @@ define(["angular", "js/controllers"
 
             //======== Ingresar Recepcion Mercancia =========
             that.ingresar_recepcion_mercancia = function(recepcion, callback) {
-
+                
                 recepcion.fecha_ingreso = $filter('date')(recepcion.fecha_ingreso, "dd-MM-yyyy")
-
+                if($scope.datos_view.seleccionarOtros){
+                    recepcion.orden_compra = OrdenCompra.get(recepcion.orden_compra_txf, 1, "Orden de compra (Otras salidas)", "24-04-2017");
+                }
+                
+               
                 var obj = {
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
-                            recepcion_mercancia: recepcion
+                            recepcion_mercancia: recepcion,
+                            seleccionarOtros: $scope.datos_view.seleccionarOtros
                         }
                     }
                 };
-
+            
                 Request.realizarRequest(API.ORDENES_COMPRA.INGRESAR_RECEPCION_MERCANCIA, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -286,8 +292,12 @@ define(["angular", "js/controllers"
                 $scope.datos_view.disabled_agregar_eliminar_registro = true;
             };
 
-            $scope.crear_recepcion = function(recepcion) {
-
+            $scope.crear_recepcion = function(seleccionarOtros,recepcion) {
+                if(seleccionarOtros === 1){
+                    recepcion.orden_compra = OrdenCompra.get("", "", "", "");
+                    
+                    return;
+                }   
                 var validacion = recepcion.validar_campos_ingreso();
 
                 if (validacion.continuar) {

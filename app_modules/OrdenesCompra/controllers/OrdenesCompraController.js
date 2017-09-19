@@ -1295,7 +1295,11 @@ OrdenesCompra.prototype.consultarRecepcionMercancia = function(req, res) {
 
 // Insertar recepciones de mercancia
 OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
-
+    
+    console.log("*****************OrdenesCompra.prototype.insertarRecepcionMercancia *****************************");
+    console.log("*****************OrdenesCompra.prototype.insertarRecepcionMercancia *****************************");
+    console.log("*****************OrdenesCompra.prototype.insertarRecepcionMercancia *****************************");
+    
     var that = this;
 
     var args = req.body.data;
@@ -1313,7 +1317,9 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
     var recepcion_mercancia = args.ordenes_compras.recepcion_mercancia;
     var usuario_id = req.session.user.usuario_id;
     recepcion_mercancia.usuario_id = usuario_id;
-
+    var seleccionarOtros = args.ordenes_compras.seleccionarOtros;
+    
+     
     that.m_ordenes_compra.insertar_recepcion_mercancia(recepcion_mercancia, function(err, response) {
 
         if (err || response.length === 0) {
@@ -1322,7 +1328,8 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
             res.send(G.utils.r(req.url, 'Error insertando la recepcion ' + msj, 500, {ordenes_compras: []}));
             return;
         } else {
-
+            
+            if(!seleccionarOtros){
             // Notificacion Real Time de las Ordenes que fueron actualizadas
             var numero_orden = recepcion_mercancia.orden_compra.numero_orden_compra;
             that.e_ordenes_compra.onNotificarOrdenesComprasActualizados({numero_orden: numero_orden});
@@ -1358,8 +1365,12 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
                     });
                 }
             });
+            }else{
+                res.send(G.utils.r(req.url, 'Recepcion mercancia insertada correctamente', 200, {ordenes_compras: response[0].id}));
+                return;
+            }
         }
-    });
+    }); 
 };
 
 // Insertar recepciones de mercancia

@@ -1525,8 +1525,11 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(dato
 
 // Insertar productos Recepcion mercancia
 OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
-
-
+    console.log("********insertar_productos_recepcion_mercancia***********");
+    console.log("********insertar_productos_recepcion_mercancia***********");
+    console.log("********insertar_productos_recepcion_mercancia***********");
+    
+    var that = this;
     var sql = " insert into recepcion_mercancia_detalle  ( recepcion_mercancia_id, novedades_recepcion_id, codigo_producto, cantidad_recibida, usuario_id ) \
                 values ( :1, :2, :3, :4, :5 ) ; ";
 
@@ -1537,12 +1540,26 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
         4:producto_mercancia.cantidad_recibida,
         5:producto_mercancia.usuario_id
     };
-
+    
     G.knex.raw(sql, parametros).then(function(resultado){
-       callback(false, resultado.rows, resultado);
+        console.log("producto_mercancia ", producto_mercancia)
+        var estado = '3'; // Recibida
+        if(producto_mercancia.cantidad_pendiente > 0){
+            estado = '1';
+        }
+         
+        that.actualizar_estado_orden_compra(producto_mercancia.recepcion_mercancia, estado, function(_err, _rows, _result) {
+
+            callback(false, resultado.rows, resultado);
+        });
     }).catch(function(err){
        callback(err);
     });
+    /*G.knex.raw(sql, parametros).then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
+    });*/
 };
 
 

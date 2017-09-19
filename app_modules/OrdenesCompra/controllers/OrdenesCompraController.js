@@ -1346,13 +1346,15 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
                     var i = lista_productos.length;
 
                     lista_productos.forEach(function(_producto) {
-
+                        console.log("_producto ", _producto)
                         var producto = {
                             recepcion_mercancia_id: numero_recepcion,
                             novedades_recepcion_id: null,
                             codigo_producto: _producto.codigo_producto,
                             cantidad_recibida: 0,
-                            usuario_id: usuario_id
+                            usuario_id: usuario_id,
+                            cantidad_pendiente: _producto.cantidadpendiente,
+                            recepcion_mercancia: recepcion_mercancia.orden_compra.numero_orden_compra
                         };
 
                         that.m_ordenes_compra.insertar_productos_recepcion_mercancia(producto, function(err) {

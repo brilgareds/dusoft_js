@@ -1572,14 +1572,14 @@ define([
                 enableHighlighting: true,
                 showFilter: true,
                 columnDefs: [
-                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "8%", enableCellEdit: false},
-                    {field: 'getDescripcion()', displayName: 'Descripcion', width: "40%", enableCellEdit: false},
+                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "6%", enableCellEdit: false},
+                    {field: 'getDescripcion()', displayName: 'Descripcion', width: "30%", enableCellEdit: false},
                     {field: 'get_cantidad_solicitada() | number : "0" ', displayName: 'Cantidad', width: "5%", enableCellEdit: false},
-                    {displayName: 'Cant. Recibida', width: "7%", enableCellEdit: false,
+                    {displayName: 'Cant. Recibida', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco> <input type="text" ng-disabled="validarTmp(row.entity)"  value="{{row.entity.cantidad_solicitada}}" ng-model="row.entity.cantidadActual" validacion-numero-entero class="form-control grid-inline-input" name="cantidad" id="cantidad" /></div>'},
-                    {displayName: 'Lote', width: "7%", enableCellEdit: false,
+                    {displayName: 'Lote', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-disabled="validarTmp(row.entity)"  ng-model="row.entity.lote" class="form-control grid-inline-input" name="lote" id="lote" /> </div>'},
-                    {displayName: 'Localización', width: "5%", enableCellEdit: false,
+                    {displayName: 'Localización', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-disabled="validarTmp(row.entity)"  ng-model="row.entity.localizacion" class="form-control grid-inline-input" name="localizacion" id="localizacion" /> </div>'},
                     {displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false, cellClass: "dropdown-button",
                         cellTemplate: ' <div class="col-xs-12" cambiar-foco >\
@@ -1594,7 +1594,7 @@ define([
                                         </div>'},
                     {field: 'nombre', displayName: 'Valor Unitario', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco><input type="text" ng-model="row.entity.valor_unitario_ingresado" ng-disabled="validarTmp(row.entity)" validacion-numero-decimal class="form-control grid-inline-input" name="valorUnitario" id="valorUnitario" /> </div>'},
-                    {width: "8%", displayName: "Opcion", cellClass: "txt-center",
+                    {width: "5%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group" cambiar-foco >\
                                             <div ng-if="!validarAutorz(row.entity)" cambiar-foco>\
                                                 <button  class="btn btn-danger btn-xs btnClick" ng-disabled="validarTmp(row.entity)"  ><span class="glyphicon glyphicon-time"></span></button>\

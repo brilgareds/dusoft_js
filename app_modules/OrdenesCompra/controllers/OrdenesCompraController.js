@@ -1318,7 +1318,10 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
     recepcion_mercancia.usuario_id = usuario_id;
     var seleccionarOtros = args.ordenes_compras.seleccionarOtros;
-    
+    if(!recepcion_mercancia.observacion){
+        recepcion_mercancia.observacion = "";
+    }
+   
      
     that.m_ordenes_compra.insertar_recepcion_mercancia(recepcion_mercancia, function(err, response) {
 

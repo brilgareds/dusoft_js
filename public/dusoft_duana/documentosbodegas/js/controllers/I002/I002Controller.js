@@ -1224,6 +1224,7 @@ define([
             };
 
             $scope.btn_eliminar_producto = function(fila) {
+                console.log("fila ", fila)
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -1242,7 +1243,7 @@ define([
                                     <button class="btn btn-primary" ng-click="confirmar_eliminar_producto()" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                     controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar_eliminar_producto = function() {
                             $scope.eliminar_producto(fila.item_id);
@@ -1253,7 +1254,7 @@ define([
                             $modalInstance.close();
                         };
 
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

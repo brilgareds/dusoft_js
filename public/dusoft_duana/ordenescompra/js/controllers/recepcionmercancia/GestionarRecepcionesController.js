@@ -37,6 +37,7 @@ define(["angular", "js/controllers"
                 datepicker: false,
                 format: 'dd-MM-yyyy',
                 termino_busqueda_proveedores: '',
+                termino_busqueda_ordenes: '',
                 btn_agregar_eliminar_registro: true,
                 disabled_agregar_eliminar_registro: true,
                 recepciones: []
@@ -128,7 +129,19 @@ define(["angular", "js/controllers"
             };
 
             $scope.seleccionar_proveedor = function(recepcion) {
+               
                 // Buscar Ordenes Compra del Proveedor Seleccionado
+                //that.buscar_ordenes_compra(recepcion);
+            };
+            
+            $scope.buscar_ordenes_compra = function(termino_busqueda, recepcion) {
+                 
+                if (termino_busqueda.length < 3) {
+                    return;
+                }
+                 
+                $scope.datos_view.termino_busqueda_ordenes = termino_busqueda;
+
                 that.buscar_ordenes_compra(recepcion);
             };
 
@@ -139,11 +152,12 @@ define(["angular", "js/controllers"
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
-                            codigo_proveedor_id: recepcion.get_proveedor().get_codigo_proveedor()
+                            codigo_proveedor_id: recepcion.get_proveedor().get_codigo_proveedor(),
+                            termino_busqueda:$scope.datos_view.termino_busqueda_ordenes
                         }
                     }
                 };
-
+                
                 Request.realizarRequest(API.ORDENES_COMPRA.LISTAR_ORDENES_COMPRAS_PROVEEDOR, "POST", obj, function(data) {
 
                     if (data.status === 200) {

@@ -128,7 +128,8 @@
                                                        ng-change="seleccionar_orden_compra(recepcion)"
                                                        ng-show ="!datos_view.seleccionarOtros">
                                                 <ui-select-match  placeholder="Seleccionar Orden Compra">{{ $select.selected.get_numero_orden() }}</ui-select-match>
-                                                <ui-select-choices repeat="orden in Empresa.get_ordenes_compras() | filter:$select.search">
+                                                <ui-select-choices refresh="buscar_ordenes_compra($select.search, recepcion)" refresh-delay="0"
+                                                                   repeat="orden in Empresa.get_ordenes_compras() | filter:$select.search">
                                                     {{ orden.get_numero_orden() }}
                                                 </ui-select-choices>
                                             </ui-select>

@@ -59,8 +59,10 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 
 // Listar las Ordenes de Compra de un Proveedor
 OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
- 
     
+    console.log("*************OrdenesCompra.prototype.listarOrdenesCompraProveedor*****************");
+    console.log("*************OrdenesCompra.prototype.listarOrdenesCompraProveedor*****************");
+    console.log("*************OrdenesCompra.prototype.listarOrdenesCompraProveedor*****************");
     
     var that = this;
 
@@ -99,7 +101,8 @@ OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
                 bloquearestado : bloquearestado,
                 empresaId : args.ordenes_compras.empresaId,
                 centroUtilidad : args.ordenes_compras.centroUtilidad,
-                bodega : args.ordenes_compras.bodega
+                bodega : args.ordenes_compras.bodega,
+                termino_busqueda : (args.ordenes_compras.termino_busqueda  === undefined ? "" : args.ordenes_compras.termino_busqueda)
             };
 
     that.m_ordenes_compra.listar_ordenes_compra_proveedor(paremetros, function(err, lista_ordenes_compras) {

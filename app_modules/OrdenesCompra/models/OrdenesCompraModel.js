@@ -132,9 +132,19 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
 // Listar las Ordenes de Compra de un Proveedor
 OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetros, callback) {
 
+ 
     // Falta realizar un tipo de filtro, para dejar esta funcion mas global
     // se debe filtrar por el estado. ESTA ACTIVIDAD ESTA PENDIENTE
-   var where = " a.estado in('1', '6') and a.sw_orden_compra_finalizada = '1' ";
+    //\a.estado in('1', '6') and a.sw_orden_compra_finalizada = '1' \
+                 //compras_ordenes_pedidos    
+   var where = " (SELECT (copdt.total_unidades - copdt.total_unidades_recibidas) as pendientes\
+                    FROM (\
+                    SELECT SUM(copd.numero_unidades) as total_unidades, \
+                    SUM(COALESCE(copd.numero_unidades_recibidas,0)) as total_unidades_recibidas\
+                    FROM compras_ordenes_pedidos_detalle copd \
+                    WHERE copd.orden_pedido_id = a.orden_pedido_id\
+                    ) as copdt ) > 0 AND a.orden_pedido_id ilike '%"+ paremetros.termino_busqueda +"%' \
+                ";
     if(paremetros.bloquearestado===true){
       where=" a.orden_pedido_id NOT IN \
                 ( \
@@ -145,6 +155,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
                 and a.empresa_id_pedido = '"+paremetros.empresaId+"' and a.centro_utilidad_pedido = '"+paremetros.centroUtilidad+"' and a.bodega_pedido = '"+paremetros.bodega+"' \
               ";  
     }
+
     var sql = " SELECT \
                 a.orden_pedido_id as numero_orden,\
                 a.empresa_id,\

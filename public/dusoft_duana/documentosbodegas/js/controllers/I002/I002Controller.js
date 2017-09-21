@@ -458,6 +458,7 @@ define([
              * createUpdate 0-crear, 1-Modificar
              */
             that.guardarModificarDetalleOrdenCompra = function(parametros, createUpdate, cantidadIngresada) {
+                console.log("************that.guardarModificarDetalleOrdenCompra****************")
                 var ordenes_compras = {
                     numero_orden: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
                     codigo_producto: parametros.codigo_producto,
@@ -476,6 +477,7 @@ define([
                 };
 
                 Request.realizarRequest(API.I002.CREAR_DETALLE_ORDEN_COMPRA, "POST", obj, function(data) {
+                  
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
                         that.refrescarVista();
@@ -485,6 +487,10 @@ define([
                     }
 
                     if (data.status === 404) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                    
+                    if (data.status === 403) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
@@ -1372,9 +1378,10 @@ define([
                                     <button class="btn btn-primary" ng-click="crearNuevoLote(producto,0,cantidadIngresada)" ng-disabled="validarNumeroIngresado(producto.cantidad_solicitada)" >Agregar</button>\
                                 </div>',
                     scope: $scope,
-                     controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
-
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+                             
                         $scope.confirmar = function() {
+                            
                             $scope.eliminar_documento();
                             $modalInstance.close();
                         };
@@ -1398,6 +1405,7 @@ define([
                         };
 
                         $scope.crearNuevoLote = function(producto, createUpdate, cantidadIngresada) {
+                            
                             that.guardarModificarDetalleOrdenCompra(producto, createUpdate, cantidadIngresada);
                             $modalInstance.close();
                         };

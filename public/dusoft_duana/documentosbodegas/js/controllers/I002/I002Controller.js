@@ -1283,7 +1283,7 @@ define([
                                     <button class="btn btn-primary" ng-click="confirmar_guardar_producto()" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar_guardar_producto = function() {
                             fila.valor_unit = fila.valor_unitario_ingresado;
@@ -1295,7 +1295,7 @@ define([
                             $modalInstance.close();
                         };
 
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
@@ -1319,7 +1319,7 @@ define([
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
                             $scope.eliminar_documento();
@@ -1330,7 +1330,7 @@ define([
                             $modalInstance.close();
                         };
 
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
@@ -1372,7 +1372,7 @@ define([
                                     <button class="btn btn-primary" ng-click="crearNuevoLote(producto,0,cantidadIngresada)" ng-disabled="validarNumeroIngresado(producto.cantidad_solicitada)" >Agregar</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                     controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
                             $scope.eliminar_documento();
@@ -1401,7 +1401,7 @@ define([
                             that.guardarModificarDetalleOrdenCompra(producto, createUpdate, cantidadIngresada);
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

@@ -551,6 +551,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             
             
             $rootScope.$on("onAbrirChat",function(e, conversacionId){
+               console.log("AQUI RECIBO EL CHAT OK ", conversacionId)
                localStorageService.set("mensajeNotificacion", {id_conversacion:conversacionId});
                self.abrirChat(); 
             });
@@ -559,9 +560,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 
                 var chat =  localStorageService.get("chat");
                 console.log("estado chat ", chat);
-                $rootScope.$emit("onToogleChat", {forzarAbrir:true});
+                
                 
                 if(chat && chat.estado === '1'){
+                    var storageConversacion = localStorageService.get("mensajeNotificacion");
+                    $rootScope.$emit("onCargarOtraConversacion",storageConversacion.id_conversacion);
                     return;
                 }
                 
@@ -589,7 +592,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 }, function() {
                     localStorageService.set("chat", {estado:'0'});
                 });
-                
+                $rootScope.$emit("onToogleChat", {forzarAbrir:true});
                 localStorageService.set("chat", {estado:'1'});
             };
             

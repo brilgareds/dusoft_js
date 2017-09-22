@@ -367,15 +367,16 @@ define(["angular",
                         }
                     }
                 };
-                Request.realizarRequest(URL.CONSTANTS.API.CHAT.GUARDAR_CONVERSACION, "POST", obj, function(data) {
-                    
-                    if(data.status === 200){
-                        $modalInstance.close();
+                console.log("EL OBJETO ", obj)
+;                Request.realizarRequest(URL.CONSTANTS.API.CHAT.GUARDAR_CONVERSACION, "POST", obj, function(data) {
+                    console.log("AQUI SE GUARDA LA CONVERSACION OK OK OK ", data)
+                    if(data.status === 200){                
+                        
                         $timeout(function(){
                             
                             $rootScope.$emit("onAbrirChat", data.obj.conversacionId);
                         },1000)
-
+                        $modalInstance.close();
                         
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error iniciando la conversación");

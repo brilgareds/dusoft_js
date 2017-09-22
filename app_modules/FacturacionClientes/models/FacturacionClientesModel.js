@@ -772,10 +772,7 @@ FacturacionClientesModel.prototype.listarDocumentosPorFacturar = function (obj, 
  * +Descripcion Permite traer el documento con datos de facturacion de consumo
  */
 FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, callback){
-    
-    console.log("**************FacturacionClientesModel.prototype.obtenerDetallePorFacturar***************");
-    console.log("**************FacturacionClientesModel.prototype.obtenerDetallePorFacturar***************");
-    console.log("**************FacturacionClientesModel.prototype.obtenerDetallePorFacturar***************");
+     
     
     var parametros = [];
     

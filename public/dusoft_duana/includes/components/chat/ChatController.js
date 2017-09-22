@@ -64,6 +64,7 @@ define(["angular",
                     
                     if(row.selected){
                         $rootScope.removerNotificacion(row.entity.getId());
+                        console.log("2) listaConversaciones");
                         self.listarDetalleConversacion(row.entity);
                     }
                     
@@ -261,6 +262,7 @@ define(["angular",
             
             $scope.cargarMasDetalle = function(callback){
                 $scope.root.pagina++;
+                console.log("1) cargarMasDetalle");
                 self.listarDetalleConversacion($scope.root.conversacionSeleccionada, callback);
             };
             
@@ -357,12 +359,15 @@ define(["angular",
                 socket.remove(["onNotificarMensaje"]);
             });
             
+            
           /**
             * @author Eduar Garcia
             * +Descripcion Realiza peticion al API para traer el detalle de una conversacion
             * @fecha 2016-09-05
             */
             self.listarDetalleConversacion = function(conversacion, callback){
+                
+                console.log("=======listarDetalleConversacion====================");
                $scope.root.conversacionSeleccionada = conversacion;
                $rootScope.conversacionSeleccionada = conversacion;
                
@@ -433,12 +438,27 @@ define(["angular",
                $scope.root.conversacionSeleccionada.agregarDetalle(conversacion, agregarAlFinal);
             };
             
+            $rootScope.$on("onCargarOtraConversacion", function(e, conversacionId){
+                $scope.root.mensajeNotificacion = {id_conversacion:0}     
+                $scope.root.mensajeNotificacion.id_conversacion = conversacionId;
+                $scope.root.conversacionSeleccioanda = true;
+                console.log("===========onCargarOtraConversacion================== ", $scope.root.mensajeNotificacion.id_conversacion);
+
+                self.onTraerConversaciones(function(){
+                })
+                    
+            });
+                
             /*
              * @Author: Eduar
              * @param {function} callback
              * +Descripcion: Hace peticion para obtener las conversaciones del usuario
              */
             self.onTraerConversaciones = function(callback){
+                                                                         
+                                                                         
+                console.log("3) onTraerConversaciones");
+               
                 
                 var obj = {
                     session: $scope.root.session,
@@ -450,9 +470,10 @@ define(["angular",
                         }
                     }
                 };
-
+                
+                console.log("obj [OBTENER_CONVERSACIONES]:::  ", obj)
                 Request.realizarRequest(URL.CONSTANTS.API.CHAT.OBTENER_CONVERSACIONES, "POST", obj, function(data) {
-                                        
+                    console.log("EL RESULTADO ", data);       
                     if(data.status === 200){
                         $scope.root.conversaciones = [];
                         var _conversaciones = data.obj.conversaciones;
@@ -462,7 +483,7 @@ define(["angular",
                             var conversacion = Conversacion.get(_conversacion.id_conversacion, _conversacion.titulo, _conversacion.fecha_creacion);
                             
                             $scope.root.conversaciones.push(conversacion);
-                            
+                            console.log("$scope.root.mensajeNotificacion ", $scope.root.mensajeNotificacion);  
                             //Verifica si hay un mensaje pendiente al dar click en la notificacion web
                             if($scope.root.mensajeNotificacion && $scope.root.mensajeNotificacion.id_conversacion === conversacion.getId()){
                                 self.listarDetalleConversacion(conversacion);

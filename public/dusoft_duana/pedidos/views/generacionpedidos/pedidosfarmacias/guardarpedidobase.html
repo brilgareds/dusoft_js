@@ -100,8 +100,8 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         </br>
-                                        <h4 class="h4MarginTopBottom">Farmacia: </h4>
-
+                                        <h4 class="h4MarginTopBottom">Farmacia:</h4>
+                                                    
 
                                         <ui-select  ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" ng-model="root.pedido.farmaciaDestino" theme="select2" class="form-control selectgeneral pull-left" ng-change="onEmpresaDestinoSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'" >
                                             <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>

@@ -222,7 +222,10 @@ define(["angular", "js/controllers",
                     console.log("no se pudo obtener el centro con los argumenos ", arguments);
                     return false;
                 }
-                
+                console.log("esDestino ", esDestino);
+                console.log("empresa ", empresa);
+                console.log("centro ", centro);
+                console.log("bodega ", bodega);
                 if(esDestino){
                     $scope.root.pedido.setFarmaciaDestino(empresa);
                     $scope.root.pedido.getFarmaciaDestino().setCentroUtilidadSeleccionado(centro).getCentroUtilidadSeleccionado().
@@ -395,7 +398,7 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-
+                console.log("obj [[generarPdf]].::: ", obj);
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         var nombre = data.obj.reporte_pedido.nombre_reporte;

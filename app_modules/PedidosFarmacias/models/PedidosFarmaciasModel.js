@@ -792,6 +792,7 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
     where("a.solicitud_prod_a_bod_ppal_id", numero_pedido).
     orderByRaw("1 desc").
     then(function(rows){
+       console.log("CONSULTAR CABECERA PEDIDO ", rows);
        callback(false, rows);
     }).
     catch(function(err){

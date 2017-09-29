@@ -166,7 +166,6 @@ ValidacionDespachosModel.prototype.listarEmpresas = function (empresaNombre,call
     }).done();
 };
 
-
 ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj ,callback) {
     
     //Para el caso de otras salidas se valida que las cantidades pasadas por despacho sean menores a las aprobadas por seguridad

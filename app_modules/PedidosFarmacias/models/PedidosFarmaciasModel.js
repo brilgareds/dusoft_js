@@ -792,7 +792,6 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
     where("a.solicitud_prod_a_bod_ppal_id", numero_pedido).
     orderByRaw("1 desc").
     then(function(rows){
-       console.log("CONSULTAR CABECERA PEDIDO ", rows);
        callback(false, rows);
     }).
     catch(function(err){
@@ -881,7 +880,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
    query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
-       console.log("eroro >", err); 
+       console.log("ERROR [consultar_detalle_pedido] >", err); 
        callback(err);
    });
 

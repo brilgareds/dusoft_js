@@ -36,15 +36,17 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
+ 
+    
+    var parametros = {fecha_inicial:args.ordenes_compras.fecha_inicial, 
+	fecha_final:args.ordenes_compras.fecha_final, 
+	termino_busqueda:args.ordenes_compras.termino_busqueda, 
+	pagina_actual:args.ordenes_compras.pagina_actual, 
+	filtro:args.ordenes_compras.filtro || undefined,
+	sw_recepcion: args.ordenes_compras.sw_recepcion 
+    };
 
-    var fecha_inicial = args.ordenes_compras.fecha_inicial;
-    var fecha_final = args.ordenes_compras.fecha_final;
-    var termino_busqueda = args.ordenes_compras.termino_busqueda;
-    var pagina_actual = args.ordenes_compras.pagina_actual;
-    var filtro = args.ordenes_compras.filtro || undefined;
-    
-    
-    G.Q.ninvoke(that.m_ordenes_compra, "listar_ordenes_compra",fecha_inicial, fecha_final, termino_busqueda, pagina_actual, filtro).
+    G.Q.ninvoke(that.m_ordenes_compra, "listar_ordenes_compra",parametros).
     then(function(resultado){
         
         res.send(G.utils.r(req.url, 'Lista Ordenes Compras', 200, {ordenes_compras: resultado}));
@@ -96,13 +98,16 @@ OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
 
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
     var bloquearestado = args.ordenes_compras.bloquearEstados;
+    var filtraUnidadNegocio=args.ordenes_compras.filtraUnidadNegocio;
+    
     var paremetros = {
                 codigo_proveedor_id : codigo_proveedor_id,
                 bloquearestado : bloquearestado,
                 empresaId : args.ordenes_compras.empresaId,
                 centroUtilidad : args.ordenes_compras.centroUtilidad,
                 bodega : args.ordenes_compras.bodega,
-                termino_busqueda : (args.ordenes_compras.termino_busqueda  === undefined ? "" : args.ordenes_compras.termino_busqueda)
+                termino_busqueda : (args.ordenes_compras.termino_busqueda  === undefined ? "" : args.ordenes_compras.termino_busqueda),
+	        filtraUnidadNegocio: filtraUnidadNegocio
             };
 
     that.m_ordenes_compra.listar_ordenes_compra_proveedor(paremetros, function(err, lista_ordenes_compras) {
@@ -575,7 +580,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
     var valor = args.ordenes_compras.valor;
     var iva = args.ordenes_compras.iva;
     var modificar = args.ordenes_compras.modificar || false;
-    var entar;  
+    var entrar;  
     var item_id=''; 
 
 
@@ -590,16 +595,21 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
             orden_compra = orden_compra[0];
             
 
-//            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
-//               entar=true; 
-//            }else{
-//               entar=args.ordenes_compras.estado_documento;                
-//               item_id=args.ordenes_compras.item_id;                
-//            }
-//            
-//            if (entar) {
-
-            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
+            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+               entrar=true; 
+            }else{
+               entrar=args.ordenes_compras.estado_documento;                
+               item_id=args.ordenes_compras.item_id;                
+            }
+	    
+	    /*
+	    * @Andres mauricio gonzalez
+	    * +descripcion: se comento la validacion de los estados y se valida con la entrada
+	    */
+		
+            if (entrar) {
+		
+//            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
 
 
                 if (!modificar) {

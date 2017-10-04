@@ -4,8 +4,8 @@ var OrdenesCompraModel = function(m_unidad_negocio, m_proveedores) {
 };
 
 // Listar las Ordenes de Compra 
-OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, filtro, callback) {
- 
+OrdenesCompraModel.prototype.listar_ordenes_compra = function(obj, callback) {
+
     var subQueryTmp = G.knex.column("aa.orden_pedido_id").
                        from("inv_bodegas_movimiento_tmp_ordenes_compra as aa").as("g");
                
@@ -47,9 +47,13 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         G.knex.raw("coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado"),
         G.knex.raw("CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal"),
         G.knex.raw("COALESCE(CASE WHEN  (date_part('day',age(now(), a.fecha_orden)) > 5) AND (a.fecha_ingreso IS NULL) THEN '1' END , '0') as alerta_ingreso"),
-        "h.descripcion as nombre_bodega", 
-        "i.id as recepcion_id"
+        "h.descripcion as nombre_bodega"
     ];
+    
+    if(obj.sw_recepcion !== 0){     
+      columns.push("i.id as recepcion_id");
+    }
+   
     
     var query = G.knex.column(columns).
     from("compras_ordenes_pedidos  as a").
@@ -67,39 +71,41 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         this.on("h.empresa_id", "a.empresa_id_pedido").
         on("h.centro_utilidad", "a.centro_utilidad_pedido").
         on("h.bodega", "a.bodega_pedido");
-    }).
-    leftJoin("recepcion_mercancia as i", "i.orden_pedido_id", "a.orden_pedido_id").
-    whereBetween('a.fecha_orden', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")]).
+    });
+    if(obj.sw_recepcion !== 0){
+	query.leftJoin("recepcion_mercancia as i", "i.orden_pedido_id", "a.orden_pedido_id");
+    }
+    query.whereBetween('a.fecha_orden', [G.knex.raw("('" + obj.fecha_inicial + "')"), G.knex.raw("('" + obj.fecha_final + "')")]).
     where({
            "a.sw_unificada"  : '0'
     }).
     andWhere(function() {
         
-        if(filtro && filtro.sin_ingreso){
+        if(obj.filtro && obj.filtro.sin_ingreso){
             this.whereRaw("date_part('day',age(now(), a.fecha_orden)) > 5 AND a.fecha_ingreso IS NULL").
             andWhere(function(){
-                this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+                this.where("c.tercero_id", G.constants.db().LIKE, "%" + obj.termino_busqueda + "%").
+                orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + obj.termino_busqueda + "%").
+                orWhere("d.razon_social", G.constants.db().LIKE, "%" + obj.termino_busqueda + "%").
+                orWhere(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + obj.termino_busqueda + "%");
             })
         } else {
-            if (filtro && filtro.proveedor){
-                this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            if (obj.filtro && obj.filtro.proveedor){
+                this.where("c.tercero_id", G.constants.db().LIKE, "%" + obj.termino_busqueda + "%").
+                orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + obj.termino_busqueda + "%");
     
-            } else if (filtro && filtro.empresa){
-                this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            } else if (obj.filtro && obj.filtro.empresa){
+                this.where("d.razon_social", G.constants.db().LIKE, "%" + obj.termino_busqueda + "%");
 
             } else {
-                this.where(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+                this.where(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + obj.termino_busqueda + "%");
             }
         }
         
 
     }).
     limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).
+    offset((obj.pagina - 1) * G.settings.limit).
     orderByRaw("1 DESC").as("a");
     
     var queryPrincipal = G.knex.column([
@@ -116,7 +122,6 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         ) as total_archivos"),
     ]).from(query);
     
-    //console.log("query ", queryPrincipal.toSQL());
     /*callback(true, query.toSQL());
     return;*/
     queryPrincipal.then(function(rows){
@@ -154,6 +159,11 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
                 ) \
                 and a.empresa_id_pedido = '"+paremetros.empresaId+"' and a.centro_utilidad_pedido = '"+paremetros.centroUtilidad+"' and a.bodega_pedido = '"+paremetros.bodega+"' \
               ";  
+    }
+    
+    var join="";
+    if(paremetros.filtraUnidadNegocio !== undefined){
+	where+=" AND a.codigo_unidad_negocio = "+paremetros.filtraUnidadNegocio+"  ";
     }
 
     var sql = " SELECT \
@@ -197,7 +207,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
                 left join (\
                     select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
-                WHERE "+where+" AND a.codigo_proveedor_id = :1  order by 1 DESC ";
+                WHERE "+where+" AND a.codigo_proveedor_id = :1  \
+                order by 1 DESC ";
 
     G.knex.raw(sql, {1:paremetros.codigo_proveedor_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);

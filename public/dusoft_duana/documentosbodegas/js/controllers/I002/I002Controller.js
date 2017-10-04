@@ -182,6 +182,13 @@ define([
              * +Descripcion Metodo encargado realizar la busqueda de orden de compra
              */
             that.buscar_ordenes_compra = function() {
+		
+		var unidadNegocio=undefined;
+		if(datos_documento.prefijo === 'ICC'){
+		    unidadNegocio='4';
+		}else if(datos_documento.prefijo === 'ICD'){
+		    unidadNegocio='0';
+		}
 
                 var obj = {
                     session: $scope.session,
@@ -191,7 +198,8 @@ define([
                             centroUtilidad: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.codigo,
                             bodega: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo,
                             codigo_proveedor_id: $scope.DocumentoIngreso.get_proveedor().get_codigo(),
-                            bloquearEstados: true
+                            bloquearEstados: true,
+			    filtraUnidadNegocio: unidadNegocio
                         }
                     }
                 };

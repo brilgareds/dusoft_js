@@ -105,11 +105,12 @@ define(["angular", "js/controllers",
                             fecha_final: $filter('date')($scope.fecha_final, "yyyy-MM-dd") + " 23:59:00",
                             termino_busqueda: termino,
                             pagina_actual: $scope.pagina_actual,
-                            filtro:$scope.filtro
+                            filtro:$scope.filtro, 
+			    sw_recepcion:0//cero para que no tenga en cuenta la recepcion_id
+		    
                         }
                     }
                 };
-
                 Request.realizarRequest(API.ORDENES_COMPRA.LISTAR_ORDENES_COMPRAS, "POST", obj, function(data) {
 
                     $scope.ultima_busqueda = $scope.termino_busqueda;

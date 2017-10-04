@@ -432,7 +432,7 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
             }
 
         }).then(function(result) {
-
+console.log(">>>>>>>>>>>>>>>> ",result);
             parametros.porcentaje_rtf = result[0].porcentaje_rtf;
             parametros.porcentaje_ica = result[0].porcentaje_ica;
             parametros.porcentaje_cree = 0;

@@ -70,6 +70,7 @@ I002Controller.prototype.newDocTemporal = function(req, res) {
         }).then(function(movimiento_temporal_id) {
             res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {movimiento_temporal_id: movimiento_temporal_id}));
         }). catch (function(err) {
+	    console.log("EROR ",err);
             res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
         }).done();
 
@@ -372,6 +373,7 @@ I002Controller.prototype.listarGetDocTemporal = function(req, res) {
     G.Q.ninvoke(that.m_I002, "listarGetDocTemporal", parametros).then(function(result) {
         res.send(G.utils.r(req.url, 'Lista Documento Temporal', 200, {listarGetDocTemporal: result}));
     }).fail(function(err) {
+	console.log(">>>>>>>>>>>>>>>>>>> ",err);
         res.send(G.utils.r(req.url, 'Error al Listar Documento Temporal', 500, {err: err}));
     }).done();
 };
@@ -404,7 +406,9 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
     var docTmpId = args.movimientos_bodegas.doc_tmp_id;
     var resultadoProducto;
     parametros.ordenPedidoId = ordenPedidoId;
+    parametros.orden_pedido_id = ordenPedidoId;
     parametros.usuarioId = usuarioId;
+    parametros.usuario_id = usuarioId;
     parametros.docTmpId = docTmpId;
     var cabecera = [];
     var detalle = [];
@@ -426,18 +430,18 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
         }).then(function(result) {
 
             if (result.rowCount >= 1) {
-                return G.Q.ninvoke(that.m_I002, "listarInvBodegasMovimientoTmpOrden", parametros);
+                return G.Q.ninvoke(that.m_I002, "listarGetDocTemporal", parametros);//listarInvBodegasMovimientoTmpOrden
             } else {
                 throw 'agregarBodegasMovimientoOrdenesCompras Fallo';
             }
 
         }).then(function(result) {
-console.log(">>>>>>>>>>>>>>>> ",result);
+
             parametros.porcentaje_rtf = result[0].porcentaje_rtf;
             parametros.porcentaje_ica = result[0].porcentaje_ica;
             parametros.porcentaje_cree = 0;
             parametros.porcentaje_reteiva = result[0].porcentaje_reteiva;
-
+//throw 'agregarBodegasMovimientoOrdenesCompras Fallo';
             return G.Q.ninvoke(that.m_I002, "updateInvBodegasMovimiento", parametros, transaccion);
 
         }).then(function(result) {
@@ -534,6 +538,7 @@ console.log(">>>>>>>>>>>>>>>> ",result);
 
             if (result >= 1) {
                 transaccion.commit();
+//transaccion.rollback();
                 return false;
             } else {
                 throw ' Fallo ';
@@ -660,15 +665,15 @@ I002Controller.prototype.crearHtmlDocumento = function(req, res) {
         numeracionDocumento: args.numeracion
     };
 
-    try {
-        var nomb_pdf = "documentoI002" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
-        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
-            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
-            return;
-        }
-    } catch (e) {
-        console.log("NO EXISTE ARCHIVO  ");
-    }
+//    try {
+//        var nomb_pdf = "documentoI002" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
+//        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
+//            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
+//            return;
+//        }
+//    } catch (e) {
+//        console.log("NO EXISTE ARCHIVO  ");
+//    }
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros).then(function(result) {
         cabecera = result;
@@ -750,22 +755,39 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
     var producto = productos[index];
     if (!producto) {
 
+console.log("_____________________________________________");
+console.log("index ",index);
+console.log("productos ",productos);
+console.log("impuesto ",impuesto);
+console.log("resultado  ",resultado);
+console.log("cabecera  ",cabecera);
+console.log("_____________________________________________");
         if (impuesto.sw_rtf === '2' || impuesto.sw_rtf === '3')
-            if (resultado.subtotal >= parseInt(impuesto.base_rtf)) {
-                resultado.valorRetFte = Math.round(resultado.subtotal * (cabecera.valorRetFte / 100));
+            if (resultado.subtotal >= parseInt(impuesto.base_rtf)) {		
+                resultado.valorRetFte = Math.round(resultado.subtotal * (cabecera.porcentaje_rtf / 100));//cabecera.valorRetFte
+		console.log("resultado.subtotal  ",resultado.subtotal);
+		console.log("impuesto.base_rtf  ",impuesto.base_rtf);
+		console.log("cabecera.porcentaje_rtf ",cabecera.porcentaje_rtf);
             } else {
                 resultado.valorRetFte = 0;
+		console.log("b______________",resultado.valorRetFte);
             }
 
-        if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3')
+        if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3'){
+	    console.log("impuesto.sw_ica ",impuesto.sw_ica);
+	    console.log("resultado.subtotal ",resultado.subtotal);
+	    console.log("impuesto.base_ica ",impuesto.base_ica);
+	    console.log("========= ",Math.round(resultado.subtotal * (cabecera.porcentaje_ica / 1000)));
             if (resultado.subtotal >= parseInt(impuesto.base_ica)) {
-                resultado.valorRetIca = Math.round(resultado.subtotal * (cabecera.valorRetIca / 1000));
+                resultado.valorRetIca = Math.round(resultado.subtotal * (cabecera.porcentaje_ica / 1000));//cabecera.valorRetIca
             } else {
                 resultado.valorRetIca = 0;
             }
+	 } 
         if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3')
             if (resultado.subtotal >= parseInt(impuesto.base_reteiva)) {
-                resultado.valorRetIva = Math.round(resultado.IvaTotal * (cabecera.valorRetIva / 100));
+		
+                resultado.valorRetIva = Math.round(resultado.IvaTotal * (cabecera.porcentaje_reteiva / 100));//cabecera.valorRetIva
             } else {
                 resultado.valorRetIva = 0;
             }
@@ -785,9 +807,9 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
     resultado.IvaTotal = Math.round(resultado.IvaTotal + (resultado.IvaProducto));
     resultado.subtotal += parseInt(resultado.ValorSubTotal);
 
-    var time = setTimeout(function() {
+    setTimeout(function() {
         __impuestos(that, index, productos, impuesto, resultado, cabecera, callback);
-	clearTimeout(time);
+//	clearTimeout(time);
     }, 0);
 }
 ;

@@ -60,10 +60,6 @@ MovimientosBodegasModel.prototype.modificar_detalle_movimiento_bodega_temporal =
 
     __obtenerItemDocumentoTemporal(item_id, function(err, detalle_documento_temporal) {
 
-
-        console.log("modificar_detalle_movimiento_bodega_temporal >>>>>>>>>>>>");
-        console.log(detalle_documento_temporal);
-
         if (detalle_documento_temporal.length > 0) {
             var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET  cantidad = :2, lote = :3, fecha_vencimiento = :4, total_costo = :5   \
                        WHERE item_id = :1 RETURNING item_id; ";
@@ -165,7 +161,6 @@ MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = 
 
 
 MovimientosBodegasModel.prototype.borrarJustificacionAuditor = function(usuario_id, doc_tmp_id, codigo_producto, callback) {
-    console.log("borrarJustificacionAuditor usuario_id >>>>>>>>>>>>>>>>>> ", usuario_id, " doc_tmp_id ", doc_tmp_id, " codigo producto ", codigo_producto)
     var sql = " UPDATE  inv_bodegas_movimiento_tmp_justificaciones_pendientes SET justificacion_auditor = '' WHERE usuario_id = :1 and doc_tmp_id = :2\
                 and codigo_producto = :3 ";
 
@@ -250,14 +245,11 @@ MovimientosBodegasModel.prototype.consultar_productos_auditados = function(docum
 };
 
 MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal_por_termino = function(documento_temporal_id, usuario_id, filtro, callback) {
-    console.log("consultar_detalle_movimiento_bodega_temporal_por_termino >>>>>>>>>>>>>");
-
-
+  
     var sql_aux = "";
     var termino = "%" + filtro.termino_busqueda + "%";
 
     if (filtro.codigo_barras) {
-        console.log(documento_temporal_id, usuario_id, filtro.termino_busqueda);
         termino = filtro.termino_busqueda;
         sql_aux = " where a.auditado = '0' and a.codigo_barras = :3";
 
@@ -353,7 +345,6 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuari
 
 // Actualizar bodegas_doc_id en documento temporal.
 MovimientosBodegasModel.prototype.actualizar_tipo_documento_temporal = function(documento_temporal_id, usuario_id, bodegas_doc_id, callback) {
-    console.log(documento_temporal_id, " ", usuario_id, " ", bodegas_doc_id, " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
     var sql = " update inv_bodegas_movimiento_tmp set bodegas_doc_id = :3 where doc_tmp_id = :1  and usuario_id = :2 ";
     
@@ -376,7 +367,6 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
             callback(err);
             return;
         } else {
-            console.log("documento temporal>>>>>>>>>>>>>>>>>>>>>>>> ", documento_temporal, documento_temporal.documento_id);
             var documento_id = documento_temporal.documento_id;
 
             var empresa_id = documento_temporal.empresa_id;
@@ -386,7 +376,6 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
             
             // Consultar detalle del docuemnto temporal
             __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
-                console.log("__consultar_detalle_movimiento_bodega_temporal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 if (err || detalle_documento_temporal.length === 0) {
                     console.log('Se ha generado un error o el documento está vacío...');
                     callback(err);
@@ -415,7 +404,6 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
                             var numeracion_documento = numeracion[0].numeracion;
                             var observacion = documento_temporal.observacion;
 
-                            console.log("resultado de numetacion ", numeracion.rows, result);
 
                             // Ingresar Cabecera Documento temporal
                             __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo_documento, numeracion_documento, observacion, usuario_id, transaccion, function(err, result) {
@@ -660,7 +648,7 @@ MovimientosBodegasModel.prototype.isExistenciaEnBodegaDestino = function(paramet
         .andWhere('a.centro_utilidad', parametros.centroUtilidad)
         .andWhere('a.bodega', parametros.bodega)
         .then(function(resultado){
-    console.log("resultado:: ",resultado);
+//    console.log("resultado:: ",resultado);
             callback(false, resultado);
         }).catch(function(err){
             console.log("error sql",err);
@@ -693,7 +681,7 @@ MovimientosBodegasModel.prototype.ordenTercero = function(parametros, callback){
         .andWhere('a.prefijo', parametros.prefijoDocumento)
         .andWhere('a.numero', parametros.numeracionDocumento)
         .then(function(resultado){
-    console.log("resultado:: ",resultado);
+//    console.log("resultado:: ",resultado);
             callback(false, resultado);
         }).catch(function(err){
             console.log("error sql",err);
@@ -799,7 +787,7 @@ MovimientosBodegasModel.prototype.getDoc = function(parametros, callback){
                 inner join bodegas as f on (y.empresa_id=f.empresa_id and y.centro_utilidad=f.centro_utilidad and f.bodega=y.bodega)\
                 inner join system_usuarios k on (k.usuario_id=y.usuario_id)\
                 group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,24,25,26; ";
-    
+//    console.log("parametros________ "  ,parametros);
      G.knex.raw(sql, {1:parametros.empresaId, 2:parametros.prefijoDocumento , 3:parametros.numeracionDocumento}).
     then(function(resultado){
        callback(false, resultado.rows);
@@ -842,7 +830,7 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function(parametr
 		JOIN system_usuarios as SU ON (t.usuario_id = SU.usuario_id) \
                 "+inner+"\
 		WHERE TRUE AND a.empresa_id = :1 AND a.centro_utilidad = :2 AND a.bodega = :3 AND b.tipo_doc_general_id = :4 AND c.inv_tipo_movimiento = :5 "+where;
-    console.log("as",sql);
+//    console.log("as",sql);
     var datos ={1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento};
     var query = G.knex.select(G.knex.raw(sql, datos)).
     limit(G.settings.limit).

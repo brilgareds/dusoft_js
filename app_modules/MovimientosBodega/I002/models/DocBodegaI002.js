@@ -97,6 +97,7 @@ DocumentoBodegaI002.prototype.ingresoAutorizacion = function(parametros, transac
         query.transacting(transaccion);
 
     query.then(function(resultado) {
+	
         callback(false, resultado);
     }). catch (function(err) {
         console.log("Error ingresoAutorizacion", err);
@@ -106,7 +107,7 @@ DocumentoBodegaI002.prototype.ingresoAutorizacion = function(parametros, transac
 };
 
 DocumentoBodegaI002.prototype.listarDocumentoTempIngresoCompras = function(parametros, callback) {
-    console.log("*****parametros********", parametros);
+
     var columna = [
         "a.usuario_id",
         "a.doc_tmp_id",
@@ -151,7 +152,7 @@ DocumentoBodegaI002.prototype.listarDocumentoTempIngresoCompras = function(param
 };
 
 DocumentoBodegaI002.prototype.listarIngresosAutorizados = function(parametros, callback) {
-    console.log("*****parametros********", parametros);
+  
     var columna = [
         "orden_pedido_id",
         "codigo_producto",
@@ -296,9 +297,12 @@ DocumentoBodegaI002.prototype.agregarItemFOC = function(parametros, callback) {
 DocumentoBodegaI002.prototype.agregarBodegasMovimientoOrdenesCompras = function(parametros, transaccion, callback) {
 
     var query = G.knex("inv_bodegas_movimiento_ordenes_compra").
-            insert({empresa_id: parametros.empresaId, prefijo: parametros.prefijoDocumento,
-        numero: parametros.numeracionDocumento, orden_pedido_id: parametros.ordenPedidoId
-    });
+            insert({
+		    empresa_id: parametros.empresaId, 
+		    prefijo: parametros.prefijoDocumento,
+		    numero: parametros.numeracionDocumento, 
+		    orden_pedido_id: parametros.ordenPedidoId
+		    });
     if (transaccion)
         query.transacting(transaccion);
     query.then(function(resultado) {
@@ -310,13 +314,15 @@ DocumentoBodegaI002.prototype.agregarBodegasMovimientoOrdenesCompras = function(
 };
 
 DocumentoBodegaI002.prototype.updateInvBodegasMovimiento = function(parametros, transaccion, callback) {
-
     var query = G.knex('inv_bodegas_movimiento')
             .where('prefijo', parametros.prefijoDocumento)
             .andWhere('empresa_id', parametros.empresaId)
             .andWhere('numero', parametros.numeracionDocumento)
-            .update({porcentaje_rtf: parametros.compras_ordenes_pedidos_productosfoc, porcentaje_ica: parametros.porcentaje_ica,
-        porcentaje_cree: parametros.porcentaje_cree, porcentaje_reteiva: parametros.porcentaje_reteiva});
+            .update({	porcentaje_rtf: parametros.porcentaje_rtf, 
+			porcentaje_ica: parametros.porcentaje_ica,
+			porcentaje_cree: parametros.porcentaje_cree, 
+			porcentaje_reteiva: parametros.porcentaje_reteiva
+		    });
     if (transaccion)
         query.transacting(transaccion);
     query.then(function(resultado) {
@@ -387,7 +393,6 @@ DocumentoBodegaI002.prototype.valorCantidad = function(parametros, callback) {
 }
 
 DocumentoBodegaI002.prototype.updateComprasOrdenesPedidosDetalles = function(parametros, transaccion, callback) {
-    console.log("*****updateComprasOrdenesPedidosDetalles********");
 
     var query = G.knex('compras_ordenes_pedidos_detalle')
             .where('orden_pedido_id', parametros.orden_pedido_id)
@@ -473,7 +478,7 @@ DocumentoBodegaI002.prototype.eliminar_documento_temporal = function(parametros,
 ;
 
 DocumentoBodegaI002.prototype.listarInvBodegasMovimientoTmpOrden = function(parametros, callback) {
-    console.log("*****parametros********", parametros);
+
     var columna = ["a.usuario_id",
         "a.doc_tmp_id",
         "orden_pedido_id",
@@ -508,8 +513,10 @@ DocumentoBodegaI002.prototype.listarInvBodegasMovimientoTmpOrden = function(para
 
 DocumentoBodegaI002.prototype.listarParametrosRetencion = function(parametros, callback) {
     var now = new Date();
+    if(parametros.fecha !== undefined){
+	now = parametros.fecha;
+    }
     var anio = G.moment(now).format('YYYY');
-    console.log("*****parametrosRetencion********", G.moment(now).format('YYYY'));
 
     var columna = ["anio",
         "base_rtf",
@@ -532,7 +539,6 @@ DocumentoBodegaI002.prototype.listarParametrosRetencion = function(parametros, c
             .where('a.estado', '1')
             .andWhere('a.empresa_id', parametros.empresa_id)
             .andWhere('a.anio', anio);
-
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
@@ -544,8 +550,7 @@ DocumentoBodegaI002.prototype.listarParametrosRetencion = function(parametros, c
 
 DocumentoBodegaI002.prototype.listarGetItemsDocTemporal = function(parametros, callback) {
 
-    console.log("*****listarGetItemsDocTemporal********", parametros);
-
+    
     var columna = [
         "a.item_id",
         "a.usuario_id",
@@ -613,8 +618,7 @@ DocumentoBodegaI002.prototype.listarGetItemsDocTemporal = function(parametros, c
 
 DocumentoBodegaI002.prototype.listarGetDocTemporal = function(parametros, callback) {
 
-    console.log("*****parametrosRetencion********", parametros);
-
+    
     var columna = [
         "a.usuario_id",
         "a.doc_tmp_id",
@@ -667,7 +671,6 @@ DocumentoBodegaI002.prototype.listarGetDocTemporal = function(parametros, callba
             .from(subQuery)
             .where('a.usuario_id', parametros.usuario_id)
             .andWhere('a.orden_pedido_id ', parametros.orden_pedido_id);
-
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
@@ -679,8 +682,7 @@ DocumentoBodegaI002.prototype.listarGetDocTemporal = function(parametros, callba
 
 DocumentoBodegaI002.prototype.listarProductosPorAutorizar = function(parametros, callback) {
 
-    console.log("*****parametrosRetencion********", parametros);
-
+    
     var columna = [
         "c.codigo_producto",
         "c.doc_tmp_id",

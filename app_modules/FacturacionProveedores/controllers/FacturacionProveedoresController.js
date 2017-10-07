@@ -265,6 +265,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         valor_descuento: args.facturaProveedor.parmetros.totalDescuento,
         fecha_factura: args.facturaProveedor.parmetros.fechaVencimiento,
         fecha_radicacion_factura: args.facturaProveedor.parmetros.fechaFactura,
+        fecha: args.facturaProveedor.parmetros.fechaFactura,
         usuario_id: usuario,
         usuario: usuario,
         terminoBusqueda: "",
@@ -274,34 +275,40 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         host: req.get('host')
 
     };
+    
+     var parametroRetencion;
+     
+    G.knex.transaction(function(transaccion) { 
  
-        G.knex.transaction(function(transaccion) { 
-            
-            G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', parametros).then(function(resultado) {
+	G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', parametros).then(function(resultado) {
+	 parametroRetencion=resultado[0];
+	 
+	 return G.Q.ninvoke(that.m_facturacion_proveedores, 'consultarTerceroProveedor', parametros);
 
-                return G.Q.nfcall(__impuestoProveedor, resultado[0], args.facturaProveedor.parmetros.recepciones[0], {});
+	}).then(function(resultado) {
+    
+	    return G.Q.nfcall(__impuestoProveedor, parametroRetencion, resultado[0], {});
+	    
+	}).then(function(resultado) {
+	    parametros.porc_ica = resultado.ica;
+	    parametros.porc_rtf = resultado.rtf;
+	    parametros.porc_rtiva = resultado.iva;
 
-            }).then(function(resultado) {
+	    return G.Q.ninvoke(that.m_facturacion_proveedores, 'ingresarFacturaCabecera', parametros,transaccion);
 
-                parametros.porc_ica = resultado.ica;
-                parametros.porc_rtf = resultado.rtf;
-                parametros.porc_rtiva = resultado.iva;
+	}).then(function(resultado) {
 
-                return G.Q.ninvoke(that.m_facturacion_proveedores, 'ingresarFacturaCabecera', parametros,transaccion);
+	    return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones, parametros,transaccion);
 
-            }).then(function(resultado) {
-console.log("args.facturaProveedor.parmetros.recepciones ::::",args.facturaProveedor.parmetros.recepciones);
-                return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones, parametros,transaccion);
+	}).then(function(resultado) {
 
-            }).then(function(resultado) {
-                
-                transaccion.commit();
+	    transaccion.commit();
 
-            }).fail(function(err) {
-                
-                transaccion.rollback(err);
-               
-            }).done();
+	}).fail(function(err) {
+
+	    transaccion.rollback(err);
+
+	}).done();
             
     }).then(function(){
         var paramt = [];
@@ -311,7 +318,9 @@ console.log("args.facturaProveedor.parmetros.recepciones ::::",args.facturaProve
         var param = {param: paramt,funcion:'cuentas_x_pagar_fi'};
       
         return  G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);
+	
     }).then(function(resultado) {
+	
         respuestaFI = resultado;
         return G.Q.nfcall(__reporteFactura, parametros);
 
@@ -320,7 +329,7 @@ console.log("args.facturaProveedor.parmetros.recepciones ::::",args.facturaProve
         res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: resultado, respuestaFI: respuestaFI})); 
         
     }).catch(function(err){
-        console.log("ERROR",err);
+        console.log("ERRORiiiiii",err);
        res.send(G.utils.r(req.url, err, 500, {err: err}));
     }).done();     
 
@@ -630,11 +639,11 @@ function __impuestoProveedor(impuesto, impuestoProveedor, resultado, callback) {
     resultado.ica = 0;
     resultado.iva = 0;
     if (impuesto.sw_rtf === '2' || impuesto.sw_rtf === '3')
-        resultado.rtf = impuestoProveedor.porcentaje_rtf;
+        resultado.rtf = impuestoProveedor.porcentaje_rtf;//impuestoProveedor.porcentaje_rtf
     if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3')
-        resultado.ica = impuestoProveedor.porcentaje_ica;
+        resultado.ica = impuestoProveedor.porcentaje_ica;//impuestoProveedor.porcentaje_ica
     if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3')
-        resultado.iva = impuestoProveedor.porcentaje_reteiva;
+        resultado.iva = impuestoProveedor.porcentaje_reteiva;//impuestoProveedor.porcentaje_reteiva
     callback(false, resultado);
     return;
 }
@@ -649,34 +658,43 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
 
     var producto = productos[index];
     if (!producto) {
-
+     
         if (impuesto.sw_rtf === '2' || impuesto.sw_rtf === '3')
             if (resultado._subTotal >= parseInt(impuesto.base_rtf)) {
-                resultado.valorRetFte = Math.round(resultado._subTotal * (cabecera.porcentajeRtf / 100));
+                resultado.valorRetFte = Math.round(resultado._subTotal * (cabecera.porcentajertf / 100));
             } else {
                 resultado.valorRetFte = 0;
             }
 
-        if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3')
+        if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3'){
             if (resultado._subTotal >= parseInt(impuesto.base_ica)) {
-                resultado.valorRetIca = Math.round(resultado._subTotal * (cabecera.porcentajeIca / 1000));
+                resultado.valorRetIca = Math.round(resultado._subTotal * (cabecera.porcentajeica / 1000));
             } else {
                 resultado.valorRetIca = 0;
             }
-        if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3')
-            if (resultado.subtotal >= parseInt(impuesto.base_reteiva)) {
-                resultado.valorRetIva = Math.round(resultado._iva * (cabecera.porcentajeReteiva / 100));
+	}
+        if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3'){
+            if (resultado._subTotal >= parseInt(impuesto.base_reteiva)) {
+                resultado.valorRetIva = Math.round(resultado._iva * (cabecera.porcentajereteiva / 100));
             } else {
                 resultado.valorRetIva = 0;
             }
-
-        if (cabecera.porcentajeCree > 0) {
-            resultado.impuesto_cree = ((cabecera.porcentajeCree / 100) * resultado._subTotal);
+	  }
+        if (cabecera.porcentajecree > 0) {
+            resultado.impuesto_cree = ((cabecera.porcentajecree / 100) * resultado._subTotal);
         } else {
             resultado.impuesto_cree = 0;
         }
+	console.log("____________*****____________________");
+	console.log("resultado._subTotal ",resultado._subTotal);
+	console.log("resultado._iva ",resultado._iva);
+	console.log("resultado.valorRetFte ",resultado.valorRetFte);
+	console.log("resultado.valorRetIca ",resultado.valorRetIca);
+	console.log("resultado.valorRetIva ",resultado.valorRetIva);
+	console.log("resultado.impuesto_cree ",resultado.impuesto_cree);
+	console.log("____________*****____________________");
         resultado.total = (((((resultado._subTotal + resultado._iva) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva) - resultado.impuesto_cree);
-
+   
         callback(false, [resultado]);
         return;
     }
@@ -690,6 +708,7 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
     resultado.Cantidad += parseInt(producto.cantidad);
     resultado._subTotal += (producto.valor * parseInt(producto.cantidad)) / ((producto.porc_iva / 100) + 1);
     resultado._iva += (producto.valor * parseInt(producto.cantidad)) - (producto.valor * parseInt(producto.cantidad)) / ((producto.porc_iva / 100) + 1);
+    
 
     setTimeout(function() {
         __impuestos(that, index, productos, impuesto, resultado, cabecera, callback);

@@ -678,7 +678,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         subQuery
     ]).from(query).
     leftJoin("inv_bodegas_movimiento_despachos_farmacias as g", "a.numero_pedido", "g.solicitud_prod_a_bod_ppal_id ");
-               
+           console.log(queryPrincipal.toSQL());    
     queryPrincipal.then(function(rows){
         callback(false, rows);
     }).

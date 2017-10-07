@@ -184,6 +184,7 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
     }).andWhere('a.empresa_id', obj.empresaId)
       .whereNull('c.prefijo_nota');
             
+//	    console.log("Query ",query.toSQL());
 //    query.limit(G.settings.limit).
 //            offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function(resultado) {
@@ -193,6 +194,42 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
         callback(err);
     });
 };
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de consultar tercero Proveedor
+ * @fecha 2017-02-05 YYYY-DD-MM
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+ FacturacionProveedoresModel.prototype.consultarTerceroProveedor = function(obj, callback) {
+    var columnas = [
+        "b.porcentaje_rtf",
+        "b.porcentaje_ica",
+        "b.porcentaje_reteiva"
+    ];
+    
+    var query = G.knex.select(columnas)
+            .from('terceros as a')
+                .innerJoin('terceros_proveedores as b', function() {
+            this.on("a.tercero_id", "b.tercero_id")
+                .on("a.tipo_id_tercero", "b.tipo_id_tercero")
+           }).where(function() {
+        
+	    if (obj.codigo_proveedor_id !== undefined) {
+		this.andWhere("b.codigo_proveedor_id",obj.codigo_proveedor_id)
+	    }
+	});
+      
+
+    query.then(function(resultado) {
+//	console.log("query",query.toSQL());
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err [consultarFacturaProveedorDetalle]:", err);
+        callback(err);
+    });
+ }
 /**
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de consultar detalle facturas Proveedor detalle
@@ -256,7 +293,7 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
       
 
     query.then(function(resultado) {
-	console.log("query",query.toSQL());
+//	console.log("query",query.toSQL());
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [consultarFacturaProveedorDetalle]:", err);
@@ -340,7 +377,7 @@ FacturacionProveedoresModel.prototype.listarParametrosRetencion = function(param
             .andWhere('a.anio', anio);
 
     query.then(function(resultado) {
-	console.log(" query ",query.toSQL());
+//	console.log(" Retencion query ",query.toSQL());
         callback(false, resultado);
     }). catch (function(error) {
         console.log("error [parametrosRetencion]: ", error);

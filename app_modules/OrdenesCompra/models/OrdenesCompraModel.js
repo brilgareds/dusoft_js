@@ -105,7 +105,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(obj, callback) {
 
     }).
     limit(G.settings.limit).
-    offset((obj.pagina - 1) * G.settings.limit).
+    offset((obj.pagina_actual - 1) * G.settings.limit).
     orderByRaw("1 DESC").as("a");
     
     var queryPrincipal = G.knex.column([
@@ -121,7 +121,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(obj, callback) {
                     WHERE aaa.orden_pedido_id = a.numero_orden\
         ) as total_archivos"),
     ]).from(query);
-    
+
     /*callback(true, query.toSQL());
     return;*/
     queryPrincipal.then(function(rows){

@@ -84,7 +84,6 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
     orderByRaw("1 DESC").
-    
     /*callback(true, query.toSQL());
     return;*/
     then(function(rows){

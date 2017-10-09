@@ -740,7 +740,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
                 inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id\
                 inner join system_usuarios e on a.usuario_id = e.usuario_id\
                 where a.empresa_id = :1 and b.codigo_producto = :2 and b.numero_unidades <> COALESCE(b.numero_unidades_recibidas,0)\
-                and a.estado in('1', '6'); ";
+                and a.estado in('1', '6', '3'); ";
 
     
     G.knex.raw(sql, {1:empresa_id, 2:codigo_producto}).then(function(resultado){

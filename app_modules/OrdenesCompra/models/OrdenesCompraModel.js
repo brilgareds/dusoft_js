@@ -157,8 +157,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
                 FROM compras_ordenes_pedidos \
                 WHERE estado = '0' \
                 ) \
-                and a.empresa_id_pedido = '"+paremetros.empresaId+"' and a.centro_utilidad_pedido = '"+paremetros.centroUtilidad+"' and a.bodega_pedido = '"+paremetros.bodega+"' \
-              ";  
+                and a.empresa_id_pedido = '"+paremetros.empresaId+"' and a.centro_utilidad_pedido = '"+paremetros.centroUtilidad+"'  \
+              ";  //and a.bodega_pedido = '"+paremetros.bodega+"'
     }
     
     var join="";
@@ -573,6 +573,22 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
         resultado.accion=accion;
         resultado.anterior=dato;
         callback(false, resultado);
+	
+    }).catch(function(err){
+       console.log("error [guardarDestinoOrden]: ", err);
+       callback({msj: "Error al guardar el destino de la orden", status: 500});
+    });
+     
+};
+
+OrdenesCompraModel.prototype.listOrdenCompraDestino = function(parametros, callback) {
+
+    var sql = " SELECT * FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
+   console.log("---------------------->>>>>>>>>",parametros);
+    G.knex.raw(sql, {1:parametros.orden_compra_id}).then(function(resultado){
+	
+     callback(false, resultado.rows);
+	
     }).catch(function(err){
        console.log("error [guardarDestinoOrden]: ", err);
        callback({msj: "Error al guardar el destino de la orden", status: 500});
@@ -581,6 +597,7 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
 };
 
 OrdenesCompraModel.prototype.borrarBodegaOrden = function(orden, callback) {
+
     var sql = " DELETE  FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
     
     G.knex.raw(sql, {1:orden}).then(function(resultado){

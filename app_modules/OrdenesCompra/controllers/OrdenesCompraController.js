@@ -344,14 +344,17 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
 	 * Fecha: 09-10-2017
 	 * +Descripcion: se modifica para realizar el log del modulo
 	 */
-	console.log("resultado.modificado ",resultado.anterior);
+	 console.log("resultado.modificado ",resultado.anterior);
 	 parametro.accion = resultado.accion;
 	 parametro.anterior = JSON.stringify(resultado.anterior);
+	 
+	 
 	 if(parametro.accion==='2'){
 	 bodegaDestino.descripcionAccion = 'Modifica Orden de Compra Destino '; 
 	 parametro.tabla = 'compras_ordenes_destino';
 	 parametro.detalle=JSON.stringify(bodegaDestino);
 	 }
+	 
          return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);  
 	 
 	}).then(function(resultado) {    
@@ -362,12 +365,19 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
     } else if (borrarBodega) {
 
         G.Q.nfcall(that.m_ordenes_compra.borrarBodegaOrden, bodegaDestino.ordenCompraId).then(function(resultado) {
+	    
+	  return G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro);
+	  
+	}).then(function(resultado) {   
 	/*
 	 * @Andres M. Gonzalez
 	 * Fecha: 09-10-2017
 	 * +Descripcion: se modifica para realizar el log del modulo
 	 */
+	console.log("resultadoresultadoresultado",resultado);
 	 parametro.accion = '0';
+	 parametro.tabla = 'compras_ordenes_destino';
+	 parametro.anterior = JSON.stringify(resultado);
 	 bodegaDestino.descripcionAccion ='Elimina Orden de Compra Destino';
 	 
 	 parametro.detalle=JSON.stringify(bodegaDestino);

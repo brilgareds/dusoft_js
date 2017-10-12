@@ -157,8 +157,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
                 FROM compras_ordenes_pedidos \
                 WHERE estado = '0' \
                 ) \
-                and a.empresa_id_pedido = '"+paremetros.empresaId+"' and a.centro_utilidad_pedido = '"+paremetros.centroUtilidad+"' and a.bodega_pedido = '"+paremetros.bodega+"' \
-              ";  
+                and a.empresa_id_pedido = '"+paremetros.empresaId+"' and a.centro_utilidad_pedido = '"+paremetros.centroUtilidad+"'  \
+              ";  //and a.bodega_pedido = '"+paremetros.bodega+"'
     }
     
     var join="";

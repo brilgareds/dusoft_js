@@ -184,10 +184,13 @@ define([
             that.buscar_ordenes_compra = function() {
 		
 		var unidadNegocio=undefined;
+		var bodega='';
 		if(datos_documento.prefijo === 'ICC'){
 		    unidadNegocio='4';
+		    bodega='06';
 		}else if(datos_documento.prefijo === 'ICD'){
 		    unidadNegocio='0';
+		    bodega='03';
 		}
 
                 var obj = {
@@ -196,7 +199,7 @@ define([
                         ordenes_compras: {
                             empresaId: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             centroUtilidad: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.codigo,
-                            bodega: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo,
+                            bodega: bodega,//Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo,
                             codigo_proveedor_id: $scope.DocumentoIngreso.get_proveedor().get_codigo(),
                             bloquearEstados: true,
 			    filtraUnidadNegocio: unidadNegocio

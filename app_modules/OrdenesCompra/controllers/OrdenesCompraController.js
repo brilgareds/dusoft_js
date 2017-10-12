@@ -330,9 +330,31 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
         res.send(G.utils.r(req.url, 'La bodega destino no esta definida', 404, {}));
         return;
     }
+    
+    var parametro={
+	  orden_compra_id : bodegaDestino.ordenCompraId ,
+          usuario_id : req.session.user.usuario_id,	  
+	  fecha : new Date()
+	};
 
     if (bodegaDestino && !borrarBodega) {
         G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino).then(function(resultado) {
+	/*
+	 * @Andres M. Gonzalez
+	 * Fecha: 09-10-2017
+	 * +Descripcion: se modifica para realizar el log del modulo
+	 */
+	console.log("resultado.modificado ",resultado.anterior);
+	 parametro.accion = resultado.accion;
+	 parametro.anterior = JSON.stringify(resultado.anterior);
+	 if(parametro.accion==='2'){
+	 bodegaDestino.descripcionAccion = 'Modifica Orden de Compra Destino '; 
+	 parametro.tabla = 'compras_ordenes_destino';
+	 parametro.detalle=JSON.stringify(bodegaDestino);
+	 }
+         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);  
+	 
+	}).then(function(resultado) {    
             res.send(G.utils.r(req.url, 'Se ha modificado la bodega correctamente', 200, {}));
         }).catch (function(err) {
             res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {}));
@@ -340,6 +362,18 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
     } else if (borrarBodega) {
 
         G.Q.nfcall(that.m_ordenes_compra.borrarBodegaOrden, bodegaDestino.ordenCompraId).then(function(resultado) {
+	/*
+	 * @Andres M. Gonzalez
+	 * Fecha: 09-10-2017
+	 * +Descripcion: se modifica para realizar el log del modulo
+	 */
+	 parametro.accion = '0';
+	 bodegaDestino.descripcionAccion ='Elimina Orden de Compra Destino';
+	 
+	 parametro.detalle=JSON.stringify(bodegaDestino);
+         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);  
+	 
+	}).then(function(resultado) { 
             res.send(G.utils.r(req.url, 'Se ha eliminado la bodega destino correctamente', 200, {}));
         }).catch (function(err) {
             res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {}));
@@ -426,7 +460,12 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
 
 // Modificar la unidad de negocio de una orden de compra 
 OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
-
+        console.log("********************************");
+        console.log("********************************");
+        console.log("********************************");
+        console.log("*****modificarUnidadNegocio*****");
+        console.log("********************************");
+        console.log("********************************");
     var that = this;
 
     var args = req.body.data;
@@ -468,10 +507,29 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
                         res.send(G.utils.r(req.url, 'No se pudo actualizar la unidad de negocio', 500, {orden_compra: []}));
                         return;
                     } else {
-
+			
+			var parametros = {
+			    unidad_negocio : unidad_negocio,
+			    numero_orden : numero_orden,
+			    descripcion : 'modificar_unidad_negocio',
+			    descripcionAccion : 'modifico unidad de negocio'
+			};
+			
+			var parametro={
+			    orden_compra_id : numero_orden ,
+			    usuario_id : req.session.user.usuario_id,
+			    tabla : 'compras_ordenes_pedidos',
+			    accion : '2',
+			    detalle: JSON.stringify(parametros) ,
+			    fecha : new Date()
+			  };
+			  
+                      that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) {
                         res.send(G.utils.r(req.url, 'Unidad de negocio actualizada correctamente', 200, {orden_compra: []}));
                         return;
-                    }
+                      });
+		      
+		    }
                 });
 
             } else {
@@ -528,9 +586,27 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
                         res.send(G.utils.r(req.url, 'No se pudo actualizar la observacion', 500, {orden_compra: []}));
                         return;
                     } else {
-
-                        res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {orden_compra: []}));
-                        return;
+			var parametros = {
+			    observacion : observacion,
+			    numero_orden : numero_orden,
+			    descripcion : 'modificar_observacion',
+			    estado : orden_compra.estado,
+			    tiene_ingreso_temporal: orden_compra.tiene_ingreso_temporal,
+			    descripcionAccion : 'modifico observacion'
+			};
+			
+			var parametro={
+			    orden_compra_id : numero_orden ,
+			    usuario_id : req.session.user.usuario_id,
+			    tabla : 'compras_ordenes_pedidos',
+			    accion : '2',
+			    detalle: JSON.stringify(parametros) ,
+			    fecha : new Date()
+			  };
+			 that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) {    
+			    res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {orden_compra: []}));
+			    return;
+			 });
                     }
                 });
             } else {
@@ -641,9 +717,29 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
                             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
                             return;
                         } else {
-                           
-                                res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
-                                return;
+                            	var parametros = {
+				    numero_orden : numero_orden,
+				    codigo_producto : codigo_producto,
+				    cantidad_solicitada : cantidad_solicitada,
+				    valor : valor,
+				    descripcion : 'modificar_detalle_orden_compra',
+				    descripcionAccion : 'modifico (unidad y/o valor)'
+				    
+				};
+			
+				var parametro={
+				    orden_compra_id : numero_orden ,
+				    usuario_id : req.session.user.usuario_id,
+				    codigo_producto : codigo_producto,
+				    tabla : 'compras_ordenes_pedidos_detalle',
+				    accion : '2',
+				    detalle: JSON.stringify(parametros) ,
+				    fecha : new Date()
+				  };
+				that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) { 
+				    res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
+				    return;
+				});
                         }
                     });
                 }
@@ -695,8 +791,27 @@ OrdenesCompra.prototype.cambiarEstado = function(req, res) {
                         res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
                         return;
                     } else {
-                        res.send(G.utils.r(req.url, 'Orden de Compra modificada correctamente', 200, {ordenes_compras: []}));
-                        return;
+			
+			var parametros = {
+				    numero_orden : numero_orden,
+				    estado : estado,
+				    descripcion : 'actualizar_estado_orden_compra',
+				    descripcionAccion : 'modifico estado de la orden de compra'
+				};
+			
+			var parametro={
+			    orden_compra_id : numero_orden ,
+			    usuario_id : req.session.user.usuario_id,
+			    tabla : 'compras_ordenes_pedidos',
+			    accion : '2',
+			    detalle: JSON.stringify(parametros) ,
+			    fecha : new Date()
+			  };
+			  
+			that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) { 
+			    res.send(G.utils.r(req.url, 'Orden de Compra modificada correctamente', 200, {ordenes_compras: []}));
+			    return;
+			});
                     }
                 });
             } else {
@@ -756,8 +871,28 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
                                     res.send(G.utils.r(req.url, 'Error Eliminado el producto', 500, {ordenes_compras: []}));
                                     return;
                                 } else {
-                                    res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {ordenes_compras: []}));
-                                    return;
+				    
+				    var parametros = {
+				    numero_orden : numero_orden,
+				    codigo_producto : codigo_producto,
+				    descripcion : 'eliminar_producto_orden_compra',
+				    descripcionAccion : 'elimino producto'
+				    };
+			
+				    var parametro={
+					orden_compra_id : numero_orden ,
+					codigo_producto : codigo_producto,
+					usuario_id : req.session.user.usuario_id,
+					tabla : 'compras_ordenes_pedidos_detalle',
+					accion : '0',
+					detalle: JSON.stringify(parametros) ,
+					fecha : new Date()
+				      };
+			  
+				    that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) { 
+					res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {ordenes_compras: []}));
+					return;
+				    });
                                 }
                             });
                         } else {
@@ -847,6 +982,24 @@ OrdenesCompra.prototype.eliminarNovedad = function(req, res) {
 
 
     G.Q.ninvoke(that.m_ordenes_compra, 'eliminarRegistroNovedad', {novedadId: novedadId}).then(function(resultado) {
+	
+	/*
+	 * @Andres M. Gonzalez
+	 * Fecha: 09-10-2017
+	 * +Descripcion: se modifica para realizar el log del modulo
+	 */
+	var parametro={
+          usuario_id : req.session.user.usuario_id,
+          tabla : 'consultar_archivo_novedad_producto',
+	  accion : '0',
+	  detalle: JSON.stringify({novedadId: novedadId,descripcion:'eliminarRegistroNovedad',descripcionAccion : 'elimino registro de novedad'}) ,
+	  fecha : new Date()
+	};
+	
+         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);	
+	 
+    }).then(function (resultado) { 
+	
         res.send(G.utils.r(req.url, 'Novedad eliminado correctamente', 200, {}));
     }).fail(function(err) {
         res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {}));
@@ -1418,8 +1571,22 @@ OrdenesCompra.prototype.modificarRecepcionMercancia = function(req, res) {
             res.send(G.utils.r(req.url, 'Error modificando la recepcion ' + msj, 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Recepcion mercancia modificada correctamente', 200, {ordenes_compras: recepcion_mercancia}));
-            return;
+	        
+		recepcion_mercancia.descripcion = 'modificar_recepcion_mercancia';
+		recepcion_mercancia.descripcionAccion = 'modifico la recepcion de mercancias';
+		
+		var parametro={
+		    usuario_id : req.session.user.usuario_id,
+		    tabla : 'recepcion_mercancia',
+		    accion : '2',
+		    detalle: JSON.stringify(recepcion_mercancia) ,
+		    fecha : new Date()
+		  };
+			  
+	     that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) { 
+		res.send(G.utils.r(req.url, 'Recepcion mercancia modificada correctamente', 200, {ordenes_compras: recepcion_mercancia}));
+		return;
+	     });
         }
     });
 };
@@ -1526,12 +1693,33 @@ OrdenesCompra.prototype.modificarProductosRecepcionMercancia = function(req, res
             }else{
                 estadoOrdenDeCompra = '3';
             }
-        
-        return G.Q.ninvoke(that.m_ordenes_compra,"actualizar_estado_orden_compra", recepcion_mercancia.orden_compra.numero_orden_compra, estadoOrdenDeCompra)   
+	/*
+	 * @Andres M. Gonzalez
+	 * Fecha: 09-10-2017
+	 * +Descripcion: se modifica para realizar el log del modulo
+	 */
+	
+	args.ordenes_compras.descripcion = 'modificar_productos_recepcion_mercancia';
+	args.ordenes_compras.descripcionAccion  = 'modifico productos de recepcion mercancia';
+	   
+	var parametro={
+          usuario_id : req.session.user.usuario_id,
+          tabla : 'consultar_archivo_novedad_producto',
+	  codigo_producto : producto_mercancia,
+	  accion : '2',
+	  detalle: JSON.stringify(args.ordenes_compras) ,
+	  fecha : new Date()
+	};
+	
+         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);
             
         }else{
             throw 'Error modificando productos a la recepcion ';
         }
+    }).then(function(resultado){
+	
+	return G.Q.ninvoke(that.m_ordenes_compra,"actualizar_estado_orden_compra", recepcion_mercancia.orden_compra.numero_orden_compra, estadoOrdenDeCompra);
+	
     }).then(function(resultado){
        
         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: []}));
@@ -1659,7 +1847,48 @@ OrdenesCompra.prototype.modificarAutorizacionCompras = function(req, res) {
     }
 
     G.Q.ninvoke(that.m_ordenes_compra, 'modificarAutorizacionOrdenCompras', args).then(function(result) {
+	/*
+	 * @Andres M. Gonzalez
+	 * Fecha: 09-10-2017
+	 * +Descripcion: se modifica para realizar el log del modulo
+	 */
+	args.descripcion='modificarAutorizacionOrdenCompras';
+	args.insertar_orden_compra_logs='modifico Autorizacion Orden de Compras';
+	
+	var parametro={
+	  orden_compra_id : args.orden ,
+          usuario_id : req.session.user.usuario_id,
+          tabla : 'compras_ordenes_pedidos_productosfoc',
+	  accion : '2',
+	  detalle: JSON.stringify(args) ,
+	  fecha : new Date()
+	};
+	
+         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);
+	
+    }).then(function (resultado) {
+	
         res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: result}));
+	
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra', 500, {ordenes_compras: []}));
+    }).done();
+};
+
+OrdenesCompra.prototype.listarLogOrdenCompra = function(req, res) {
+
+    var that = this;
+    var args = req.body.data.ordenesCompras;
+
+    if (args.numeroOrden === undefined) {
+        res.send(G.utils.r(req.url, 'empresa  no esta definidas', 404, {}));
+        return;
+    }
+
+    G.Q.ninvoke(that.m_ordenes_compra, 'listarLogsOrdenesCompras', args).then(function(result) {
+	
+        res.send(G.utils.r(req.url, 'Listar logs ordenes de compra', 200, {logOrdenesCompras: result}));
+	
     }).fail(function(err) {
         res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra', 500, {ordenes_compras: []}));
     }).done();
@@ -2032,7 +2261,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
  * @fecha 03/02/2017 (DD/MM/YYYY)
  */
 OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) {
-    
+
     //cotizacion, pedidoGenerado
     var that = this;     
     var numero_orden;
@@ -2059,9 +2288,28 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
             def.resolve();
         }
         
+    }).then(function (resultado) { 
+	console.log("resultadoresultadoresultado",resultado);
+	/*
+	 * @Andres M. Gonzalez
+	 * Fecha: 09-10-2017
+	 * +Descripcion: se modifica para realizar el log del modulo
+	 */
+	parametros.descripcionAccion = 'modifico destino de la orden de compra';
+	var parametro={
+	  orden_compra_id : numero_orden ,
+          usuario_id : parametros.usuario_id,
+          tabla : 'compras_ordenes_pedidos',
+	  accion : '0',
+	  detalle: JSON.stringify(parametros) ,
+	  fecha : new Date()
+	};
+	
+         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);
+	
     }).then(function (resultado) {
          
-            callback(false, {status: 200, msj: 'Orden de compra registrada correctamente', data: {numero_orden: numero_orden}});
+         callback(false, {status: 200, msj: 'Orden de compra registrada correctamente', data: {numero_orden: numero_orden}});
         
 
     }).fail(function (err) {

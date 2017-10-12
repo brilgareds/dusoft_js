@@ -209,7 +209,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
                 WHERE "+where+" AND a.codigo_proveedor_id = :1  \
                 order by 1 DESC ";
-
+console.log("///////////////////////////////////////////",sql);
     G.knex.raw(sql, {1:paremetros.codigo_proveedor_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
@@ -499,6 +499,25 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
 
 }
 
+/*
+ * @autor Andres M. Gonzalez 
+ * @param {type} parametros
+ * @param {type} callback
+ * @returns {undefined} 
+ * @Descripcion Metodo que almacena el log de las ordenes de compra*/
+OrdenesCompraModel.prototype.insertar_orden_compra_logs = function(parametros, callback) {
+   
+    var query = G.knex("log_ordenes_compra").insert(parametros);
+ 
+    query.then(function(resultado){
+        console.log("insertar_orden_compra_logs ****", resultado);
+       callback(false, resultado);
+    }).catch(function(err){
+       console.log("erro (/catch) [insertar_orden_compra_logs]: ", err);
+       callback(err);
+    });     
+};
+
 // Ingresar Cabecera Orden de Compra
 OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, empresa_pedido, centro_utilidad_pedido, bodega_pedido, terminar_orden, transaccion, callback) {
 
@@ -534,22 +553,25 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
 };
 
 OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback) {
-
-    var sql = " SELECT id FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
-     
+    var accion='';
+    var sql = " SELECT id,empresa_id,centro_utilidad,bodega FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
+    var dato={}; 
     G.knex.raw(sql, {1:parametros.ordenCompraId}).then(function(resultado){
-       
+       dato=resultado.rows;
        if(resultado.rows.length > 0){
+	   accion='2';
            sql = "UPDATE compras_ordenes_destino set empresa_id = :2, centro_utilidad = :3, bodega = :4 WHERE orden_compra_id = :1 ";
            return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
        } else {
+	   accion='1';
            sql = "INSERT INTO compras_ordenes_destino (orden_compra_id, empresa_id, centro_utilidad, bodega)\
                   VALUES( :1, :2, :3, :4 )";
            return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
        }
        
     }).then(function(resultado){
-        
+        resultado.accion=accion;
+        resultado.anterior=dato;
         callback(false, resultado);
     }).catch(function(err){
        console.log("error [guardarDestinoOrden]: ", err);
@@ -1400,6 +1422,38 @@ OrdenesCompraModel.prototype.listarAutorizacionCompras = function(autorizacion, 
         callback(error);
      }).done();
 };
+
+/*
+* funcion que realiza consulta a la tabla de logs de las ordenes
+* @param {type} callback
+* @returns {datos de consulta}
+*/
+OrdenesCompraModel.prototype.listarLogsOrdenesCompras = function(parametros, callback) {
+
+    var column = [
+        "orden_compra_id",
+        "codigo_producto",
+        G.knex.raw("case when a.codigo_producto!='' then a.codigo_producto else 'N/A' end as producto"),
+        G.knex.raw("case when accion=0 then 'DELETE' when accion=1 then 'INSERT' when accion=2 then 'UPDATE' end as accion"),
+	"detalle",
+	"b.nombre",
+	G.knex.raw("to_char(fecha,'dd-MM-yyyy HH:MM:ss')as fecha"),
+	"tabla"
+    ];
+
+    var query = G.knex.column(column)
+    .select()
+    .from('log_ordenes_compra as a')
+    .innerJoin('system_usuarios as b', 'a.usuario_id', 'b.usuario_id')
+    .where({'a.orden_compra_id': parametros.numeroOrden})
+    .then(function(rows) {
+        callback(false, rows);
+     }).catch (function(error) {
+         console.log("ERROR listarLogsOrdenesCompras ",error);
+        callback(error);
+     }).done();
+};
+
 /*
 * funcion que realiza el Update a compras_ordenes_pedidos_productosfoc
 * @param {type} callback

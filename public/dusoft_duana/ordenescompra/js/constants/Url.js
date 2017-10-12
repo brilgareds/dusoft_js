@@ -39,7 +39,8 @@ define(["angular"], function(angular) {
                 'ELIMINAR_NOVEDAD' : BASE_URL + '/OrdenesCompra/eliminarNovedad',
                 'SUBIR_ARCHIVO_ORDENES_COMPRA' : BASE_URL + '/OrdenesCompra/subirArchivoOrdenes',
                 'GENERAR_ORDEN_COMPRA_AUDITORIA' : BASE_URL + '/OrdenesCompra/generarOrdenDeCompraAuditado',
-                'OBTENER_ARCHIVOS_NOVEDADES' : BASE_URL + '/OrdenesCompra/obtenerArchivosNovedades'
+                'OBTENER_ARCHIVOS_NOVEDADES' : BASE_URL + '/OrdenesCompra/obtenerArchivosNovedades',
+                'LISTAR_LOGS_ORDENES_COMPRA' : BASE_URL + '/OrdenesCompra/listarLogOrdenCompra'
 
             },
             'PROVEEDORES': {

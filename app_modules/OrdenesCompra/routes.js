@@ -171,6 +171,9 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/obtenerArchivosNovedades', function(req, res) {
         c_ordenes_compra.obtenerArchivosNovedades(req, res);
     });
+    app.post('/api/OrdenesCompra/listarLogOrdenCompra', function(req, res) {
+        c_ordenes_compra.listarLogOrdenCompra(req, res);
+    });
     
     
     /**

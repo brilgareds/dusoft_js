@@ -11,7 +11,8 @@ define(["angular", "js/controllers",
     "models/UsuarioOrdenCompra",
     "controllers/genererarordenes/VentanaArchivoOrdenesController",
     "controllers/genererarordenes/ListaPendientesController",
-    "controllers/genererarordenes/ListaArchivosController"
+    "controllers/genererarordenes/ListaArchivosController",
+    "controllers/genererarordenes/ListarLogsOrdenCompraController"
 ], function(angular, controllers) {
 
     controllers.controller('ListarOrdenesController', [
@@ -161,6 +162,24 @@ define(["angular", "js/controllers",
 
 
             };
+	    
+            that.consultarLogOC = function(numeroOrden,callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenesCompras: {
+                            numeroOrden: numeroOrden
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.ORDENES_COMPRA.LISTAR_LOGS_ORDENES_COMPRA, "POST", obj, function(data) {
+                    if (data.status === 200) {
+			callback(data.obj.logOrdenesCompras);
+                    }
+                });
+            };
 
             that.render_ordenes_compras = function(ordenes_compras) {
 
@@ -254,10 +273,60 @@ define(["angular", "js/controllers",
                                                 <li ng-if="opciones.sw_bloquear_orden && row.entity.estado == 5"><a href="javascript:void(0);" \
                                                     ng-click="onCambiarEstadoOrden(row.entity, 1)">Desbloquear OC</a></li>\
                                                 <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="onCambiarEstadoOrden(row.entity, 2)">Anular OC</a></li>\
+                                                <li ><a href="javascript:void(0);" ng-click="onVerLogOrdenCompra(row.entity)">Logs OC</a></li>\
                                             </ul>\
                                         </div>'
                     }
                 ]
+            };
+
+	    /*
+	     * @descripcion funcion que visualiza los logs de la orden de compra
+	     * @param {type} estado
+	     * @returns {unresolved}
+	     */
+	    $scope.onVerLogOrdenCompra=function(dato){
+		that.consultarLogOC(dato.numero_orden_compra,function(resultado){
+		    __convertirJson(0,resultado,function(datos){
+			that.mostrarVentanaLogs(datos);
+		    });
+		    
+		});
+	    };
+	    
+	    function __convertirJson(index,resultado,callback){
+		
+		var result=resultado[index];
+		console.log(index+"___",result);
+		if(!result){
+		  callback(resultado);  
+		  return;
+		}
+		resultado[index].detalle=JSON.parse(result.detalle);
+		index++;
+		__convertirJson(index,resultado,callback);
+	    };
+	    
+	     that.mostrarVentanaLogs= function(productos){
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                     windowClass: 'app-modal-window-xlg',
+                    templateUrl: 'views/logs/listarLogsOC.html',
+                    scope: $scope,                  
+                    controller: "ListarLogsOrdenCompraController",
+                    resolve: {
+                        productos: function() {
+                            return productos;
+                        }
+                    }           
+                };
+                var modalInstance = $modal.open($scope.opts);   
+
+                modalInstance.result.then(function(){ 
+                },function(){});
             };
 
             // Agregar Clase de acuerdo al estado del pedido

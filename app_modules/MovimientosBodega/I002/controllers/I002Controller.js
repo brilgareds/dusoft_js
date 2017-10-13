@@ -480,7 +480,12 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
             }
 
         }).then(function(result) {
-
+console.log("****************************************");
+console.log("****************************************");
+console.log("****************************************",resultadoProducto);
+console.log("****************************************");
+console.log("****************************************");
+console.log("________________________________________");
             if (result >= 1) {
                 return G.Q.nfcall(__modificarComprasOrdenesPedidosDetalle, that, 0, resultadoProducto, 0, transaccion);
             } else {
@@ -835,7 +840,7 @@ function __modificarComprasOrdenesPedidosDetalle(that, index, parametros, result
         }, 0);
 
     }).fail(function(err) {
-        consol.log("recursiva__modificarComprasOrdenesPedidosDetalle:::::::", err);
+        console.log("recursiva__modificarComprasOrdenesPedidosDetalle:::::::", err);
         callback(true, err);
         return;
     }).done();

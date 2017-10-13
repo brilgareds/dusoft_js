@@ -383,9 +383,10 @@ DocumentoBodegaI002.prototype.valorCantidad = function(parametros, callback) {
                 .andWhere("codigo_producto", parametros.codigo_producto)
                 .andWhere("item_id", parametros.item_id_compras)
     });
-
+      
     coalesce.then(function(resultado) {
-        callback(false, resultado[0].valores);
+	console.log("resultado----->>>>",resultado);
+        callback(false, resultado);
     }). catch (function(err) {
         console.log("err (/catch) [valorCantidad]: ", err);
         callback("Error al actualizar el tipo de formula");
@@ -415,16 +416,21 @@ DocumentoBodegaI002.prototype.updateComprasOrdenesPedidosDetalles = function(par
 };
 
 DocumentoBodegaI002.prototype.updateComprasOrdenesPedidosDetalle = function(parametros, transaccion, callback) {
+console.log("__________________updateComprasOrdenesPedidosDetalle________________________");
     var that = this;
     G.Q.ninvoke(that, 'valorCantidad', parametros).then(function(dato) {
-        parametros.dato = dato;
-        return G.Q.ninvoke(that, 'updateComprasOrdenesPedidosDetalles', parametros, transaccion);
-
+	
+	if(dato.length===0){
+          return 1; 
+	}else{
+	  parametros.dato = dato[0].valores;
+          return G.Q.ninvoke(that, 'updateComprasOrdenesPedidosDetalles', parametros, transaccion); 
+	}
     }).then(function(resultado) {
         callback(false, resultado);
     }).fail(function(err) {
         console.log("Error updateComprasOrdenesPedidosDetalle ", err);
-        callback(error);
+        callback(err);
     }).done();
 };
 

@@ -835,7 +835,7 @@ function __modificarComprasOrdenesPedidosDetalle(that, index, parametros, result
         }, 0);
 
     }).fail(function(err) {
-        consol.log("recursiva__modificarComprasOrdenesPedidosDetalle:::::::", err);
+        console.log("recursiva__modificarComprasOrdenesPedidosDetalle:::::::", err);
         callback(true, err);
         return;
     }).done();

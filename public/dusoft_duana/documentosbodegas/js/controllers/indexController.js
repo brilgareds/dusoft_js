@@ -217,9 +217,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 enableHighlighting: true,
                 showFilter: true,
                 columnDefs: [
-                    {field: 'tipo', displayName: 'Tipo Movimiento', width: "8%"},
-                    {field: 'tipo_movimiento', displayName: 'Doc Bod ID', width: "10%"},
-                    {field: 'bodegas_doc_id', displayName: 'Doc ID', width: "10%"},
+                    {field: 'tipo', displayName: 'Tipo Movimiento', width: "7%"},
+                    {field: 'tipo_movimiento', displayName: 'Doc Bod ID', width: "7%"},
+                    {field: 'bodegas_doc_id', displayName: 'Doc ID', width: "7%"},
                     {field: 'prefijoNumero', displayName: 'Número', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripción', width: "25%"},
                     {field: 'observaciones', displayName: "Observación", width: "25%"},
@@ -228,6 +228,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         cellTemplate: '<div class="btn-group">\
                                            <div ">\
                                             <button class="btn btn-default btn-xs" ng-click="btn_imprimir(row.entity)">Imprimir <span class="glyphicon glyphicon-print"></span></button>\
+                                           </div>\
+                                        </div>'},
+                    {width: "7%", displayName: "Autorizacion", cellClass: "txt-center",
+                        cellTemplate: '<div class="btn-group">\
+                                           <div ">\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_imprimirAutorizacion(row.entity)">Imprimir <span class="glyphicon glyphicon-print"></span></button>\
                                            </div>\
                                         </div>'}
                 ]
@@ -254,10 +260,42 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     });
             };
+	    
+            that.crearHtmlAutorizacion=function(documentos,callback){
+
+                var obj = {
+                        session: $scope.session,
+                        data: {
+                                  empresaId : Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                                  prefijo:documentos.prefijo,
+                                  numeracion:documentos.numero
+                           }
+                    };
+
+                    Request.realizarRequest(API.I002.CREAR_HTML_AUTORIZACION, "POST", obj, function(data) {  
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+            };
              
             $scope.btn_imprimir = function(documentos){
                  
                   that.crearHtmlDocumento(documentos,function(respuesta){
+                      if(respuesta !== false){
+                        $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
+                      }                      
+                  });  
+                  
+             };
+	     
+            $scope.btn_imprimirAutorizacion = function(documentos){
+                 console.log("btn_imprimirAutorizacion ");
+                  that.crearHtmlAutorizacion(documentos,function(respuesta){
                       if(respuesta !== false){
                         $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
                       }                      

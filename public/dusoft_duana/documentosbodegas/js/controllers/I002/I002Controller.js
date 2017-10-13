@@ -1503,7 +1503,7 @@ define([
             };
 
             $scope.ingresar_producto = function(productos) {
-
+console.log("***********************************");
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
                 var fecha_vencimiento = $filter('date')(new Date(productos.fecha_vencimiento), "dd/MM/yyyy");
@@ -1563,7 +1563,7 @@ define([
                     return;
                 }
 
-                var total_costo_ped = productos.cantidadActual * (productos.valor_unitario_ingresado + (productos.valor_unitario_ingresado * productos.iva) / 100);
+                var total_costo_ped = productos.cantidadActual * (parseInt(productos.valor_unitario_ingresado) + ((parseInt(productos.valor_unitario_ingresado) * productos.iva) / 100));
                 var movimientos_bodegas = {
                     doc_tmp_id: $scope.doc_tmp_id,
                     bodegas_doc_id: datos_documento.bodegas_doc_id,
@@ -1578,8 +1578,7 @@ define([
                     valor_unitario: '0',
                     usuario_id: $scope.session.usuario_id,
                     item_id_compras: productos.item_id,
-                };
-
+                }; 
                 that.additemDocTemporal(movimientos_bodegas);
             };
 

@@ -641,6 +641,53 @@ console.log("________________________________________");
     }).done();
 };
 
+I002Controller.prototype.crearHtmlAutorizacion = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var cabecera=[];
+    var detalle=[];
+    
+    if (args.empresaId === '' || args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.prefijo === '' || args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo esta vacío', 404, {}));
+        return;
+    }
+    if (args.numeracion === '' || args.numeracion === undefined) {
+        res.send(G.utils.r(req.url, 'El numeracion esta vacío', 404, {}));
+        return;
+    }
+    var parametros = {
+	empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        prefijoDocumento: args.prefijo,
+        numeracionDocumento: args.numeracion
+    };
+    G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros).then(function(result) {
+	cabecera=result;
+	console.log("2)----------------------",cabecera);
+     return  G.Q.ninvoke(that.m_I002, "consultarAutorizacionesIngreso", parametros);
+	
+    }).then(function(resultado) {
+	detalle=resultado;
+       console.log("2)----------------------",resultado);
+       
+       __generarPdfAutorizacion({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecera: cabecera[0],
+                detalle: detalle,
+                archivoHtml: 'autorizacionDocumentoI002.html',
+                reporte: "autorizacionI002"}, function(nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+       
+    }).catch (function(err) {
+	console.log("crearHtmlDocumento>>>>", err);
+	res.send(G.utils.r(req.url, 'Error al Crear el html del Documento', 500, {err: err}));
+    }).done();	 
+};
+
 I002Controller.prototype.crearHtmlDocumento = function(req, res) {
     var that = this;
     var args = req.body.data;
@@ -670,15 +717,15 @@ I002Controller.prototype.crearHtmlDocumento = function(req, res) {
         numeracionDocumento: args.numeracion
     };
 
-//    try {
-//        var nomb_pdf = "documentoI002" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
-//        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
-//            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
-//            return;
-//        }
-//    } catch (e) {
-//        console.log("NO EXISTE ARCHIVO  ");
-//    }
+    try {
+        var nomb_pdf = "documentoI002" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
+        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
+            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
+            return;
+        }
+    } catch (e) {
+        console.log("NO EXISTE ARCHIVO  ");
+    }
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros).then(function(result) {
         cabecera = result;
@@ -922,6 +969,42 @@ function __generarPdf(datos, callback) {
             var fecha = new Date();
 
             var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + ".html";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
+                if (err) {
+                    console.log("err [__generarPdf]: ", err);
+                    callback(true, err);
+                    return;
+                } else {
+
+                    callback(nombreTmp);
+                    return;
+                }
+            });
+        });
+    });
+}
+
+function __generarPdfAutorizacion(datos, callback) {
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
+	    helpers: G.fs.readFileSync('app_modules/MovimientosBodega/I002/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function(err, response) {
+
+        response.body(function(body) {
+            var fecha = new Date();
+
+            var nombreTmp = datos.reporte + datos.cabecera.prefijo + datos.cabecera.numero + ".html";
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
                 if (err) {

@@ -71,6 +71,53 @@ DocumentoBodegaI002.prototype.insertarRecepcionParcialDetalle = function(paramet
     }).done();
 
 };
+/*
+ * @Andres M. Gonzalez. 
+ * @param {type} parametros
+ * @param {type} transaccion
+ * @param {type} callback
+ * @returns {undefined} */
+DocumentoBodegaI002.prototype.consultarAutorizacionesIngreso = function(parametros,callback) {
+
+    var columna = [
+        "empresa_id",
+	"numero",
+	"prefijo",
+	"orden_pedido_id",
+	"codigo_producto",
+	"lote",
+	"fecha_vencimiento",
+	"usuario_id_autorizador",
+	"usuario_id_autorizador_2",
+	"observacion_autorizacion",
+	"porcentaje_gravamen",
+	"valor_unitario_compra",
+	"valor_unitario_factura",
+	"justificacion_ingreso",
+	"cantidad",
+	"total_costo",
+	"fecha_solicitud",
+	"autorizados_id",
+	G.knex.raw("fc_descripcion_producto(codigo_producto) as descripcion_producto")
+    ];
+
+    var subQuery = G.knex.select(columna)
+            .from("inv_bodegas_movimiento_ordenes_compra_prod_autorizados as a")
+            .as("a");
+
+    var query = G.knex(G.knex.raw("a.*")).from(subQuery)
+            .where('empresa_id', parametros.empresaId)
+            .andWhere('prefijo', parametros.prefijoDocumento)
+            .andWhere('numero', parametros.numeracionDocumento);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [consultarAutorizacionesIngreso]: ", error);
+        callback(error);
+    });
+
+};
 
 DocumentoBodegaI002.prototype.ingresoAutorizacion = function(parametros, transaccion, callback) {
 

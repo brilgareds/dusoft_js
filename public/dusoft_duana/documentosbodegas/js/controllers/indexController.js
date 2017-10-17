@@ -276,6 +276,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         if (data.status === 200) {
                             callback(data);
                         }
+			if (data.status === 201) {
+			    AlertService.mostrarMensaje("warning", data.msj);
+			    callback(false);
+			}
                         if (data.status === 500) {
                             AlertService.mostrarMensaje("warning", data.msj);
                             callback(false);
@@ -294,7 +298,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              };
 	     
             $scope.btn_imprimirAutorizacion = function(documentos){
-                 console.log("btn_imprimirAutorizacion ");
                   that.crearHtmlAutorizacion(documentos,function(respuesta){
                       if(respuesta !== false){
                         $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");

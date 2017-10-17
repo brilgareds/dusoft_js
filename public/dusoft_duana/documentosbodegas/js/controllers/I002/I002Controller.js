@@ -53,7 +53,10 @@ define([
                 descripcionFactura: "",
                 pedidosSeleccionados: [],
             };
-
+            $scope.root.claseDocumentos = [
+             {tipo: 'I', descripcion: "Ingreso"},
+             {tipo: 'E', descripcion: "Egreso"}
+            ];
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
 
@@ -433,19 +436,19 @@ define([
             that.renderListarParametros = function(parametros) {
 
                 if (parametros[0].sw_rtf === '2' || parametros[0].sw_rtf === '3')
-                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_rtf)) {
+                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_rtf)) {
                         $scope.valorRetFte = $scope.valorSubtotal * ($scope.valorRetFte / 100);
                     } else {
                         $scope.valorRetFte = 0;
                     }
                 if (parametros[0].sw_ica === '2' || parametros[0].sw_ica === '3')
-                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_ica)) {
+                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_ica)) {
                         $scope.valorRetIca = $scope.valorSubtotal * ($scope.valorRetIca / 1000);
                     } else {
                         $scope.valorRetIca = 0;
                     }
                 if (parametros[0].sw_reteiva === '2' || parametros[0].sw_reteiva === '3')
-                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_reteiva)) {
+                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_reteiva)) {
                         $scope.valorRetIva = $scope.gravamen * ($scope.valorRetIva / 100);
                     } else {
                         $scope.valorRetIva = 0;
@@ -469,7 +472,6 @@ define([
              * createUpdate 0-crear, 1-Modificar
              */
             that.guardarModificarDetalleOrdenCompra = function(parametros, createUpdate, cantidadIngresada) {
-                console.log("************that.guardarModificarDetalleOrdenCompra****************")
                 var ordenes_compras = {
                     numero_orden: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
                     codigo_producto: parametros.codigo_producto,
@@ -593,11 +595,13 @@ define([
                         that.buscar_ordenes_compra();
                         that.refrescarVista();
                         $scope.DocumentoIngreso.orden_compra = "";
-                        var nombre = data.obj.nomb_pdf;
-                        setTimeout(function() {
-                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                        }, 4000);
+			
+			    var nombre = data.obj.nomb_pdf;
+			    setTimeout(function() {
+				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+			    }, 4000);
                     }
+		    
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
@@ -1241,7 +1245,6 @@ define([
             };
 
             $scope.btn_eliminar_producto = function(fila) {
-                console.log("fila ", fila)
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -1503,7 +1506,7 @@ define([
             };
 
             $scope.ingresar_producto = function(productos) {
-console.log("***********************************");
+		
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
                 var fecha_vencimiento = $filter('date')(new Date(productos.fecha_vencimiento), "dd/MM/yyyy");
@@ -1541,7 +1544,7 @@ console.log("***********************************");
                 }
 
 
-                if (productos.valor_unitario_ingresado > (productos.valor_unitario + 0.999) || diferencia >= 0 && diferencia <= 45) {
+                if (productos.valor_unitario_ingresado > (productos.valor_unitario + 0.999) || diferencia >= 0 && diferencia <= 45 || productos.valor_unitario_ingresado < (productos.valor_unitario - 0.999) ) {
                     var mensaje = "";
                     var validacionprecio = false;
                     var validacionfecha = false;
@@ -1563,7 +1566,7 @@ console.log("***********************************");
                     return;
                 }
 
-                var total_costo_ped = productos.cantidadActual * (parseInt(productos.valor_unitario_ingresado) + ((parseInt(productos.valor_unitario_ingresado) * productos.iva) / 100));
+                var total_costo_ped = productos.cantidadActual * (parseFloat(productos.valor_unitario_ingresado) + ((parseFloat(productos.valor_unitario_ingresado) * productos.iva) / 100));
                 var movimientos_bodegas = {
                     doc_tmp_id: $scope.doc_tmp_id,
                     bodegas_doc_id: datos_documento.bodegas_doc_id,
@@ -1787,7 +1790,7 @@ console.log("***********************************");
 
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-                var valor = parseInt(producto.valor_unit);
+                var valor = parseFloat(producto.valor_unit);
                 var porcentaje = ((valor * producto.iva) / 100);
                 var valorMasPorcentaje = valor + porcentaje;
                 var total_costo = valorMasPorcentaje * producto.cantidad_solicitada;

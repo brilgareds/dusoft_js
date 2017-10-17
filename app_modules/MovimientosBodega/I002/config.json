@@ -28,6 +28,11 @@
                     "module": "Pedidos",
                     "model": "PedidosModel",
                     "alias": "m_pedidos"
+                },
+                "kardex_model": {
+                    "module": "Kardex",
+                    "model": "KardexModel",
+                    "alias": "m_kardex"
                 }
             }],
         "events": [{

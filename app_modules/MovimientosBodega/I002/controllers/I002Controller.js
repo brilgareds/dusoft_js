@@ -1,5 +1,5 @@
 
-var I002Controller = function(movimientos_bodegas, m_I002, e_I002, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos) {
+var I002Controller = function(movimientos_bodegas, m_I002, e_I002, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos,kardex) {
 
     console.log("Modulo I002 Cargado ");
 
@@ -16,6 +16,7 @@ var I002Controller = function(movimientos_bodegas, m_I002, e_I002, pedidos_clien
 
     this.m_terceros = terceros;
     this.m_pedidos = m_pedidos;
+    this.m_kardex = kardex;
 };
 
 
@@ -646,6 +647,7 @@ I002Controller.prototype.crearHtmlAutorizacion = function(req, res) {
     var args = req.body.data;
     var cabecera=[];
     var detalle=[];
+    var adicional=[];
     
     if (args.empresaId === '' || args.empresaId === undefined) {
         res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
@@ -667,21 +669,31 @@ I002Controller.prototype.crearHtmlAutorizacion = function(req, res) {
     };
     G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros).then(function(result) {
 	cabecera=result;
-	console.log("2)----------------------",cabecera);
-     return  G.Q.ninvoke(that.m_I002, "consultarAutorizacionesIngreso", parametros);
-	
+     return  G.Q.ninvoke(that.m_I002, "consultarAutorizacionesIngreso", parametros);	
+    
     }).then(function(resultado) {
-	detalle=resultado;
-       console.log("2)----------------------",resultado);
-       
+        detalle=resultado;
+     return  G.Q.ninvoke(that.m_I002, "consultarAutorizacionesProveedor",parametros);
+    }).then(function(resultado) {
+	
+       adicional=resultado[0];
+	var today = new Date();
+	var formato = 'YYYY-MM-DD';
+	var fechaToday = G.moment(today).format(formato);
+       cabecera[0].usuario=req.session.user.nombre_usuario;
+       cabecera[0].fechaActual=fechaToday;
+       if(detalle.length > 0){
        __generarPdfAutorizacion({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecera: cabecera[0],
                 detalle: detalle,
+                adicional: adicional,
                 archivoHtml: 'autorizacionDocumentoI002.html',
                 reporte: "autorizacionI002"}, function(nombre_pdf) {
-                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero,autorizado:1}));
             });
-       
+       }else{
+	  res.send(G.utils.r(req.url, 'NO TIENE PRODUCTOS AUTORIZADOS', 201, {autorizado:0}));  
+       }
     }).catch (function(err) {
 	console.log("crearHtmlDocumento>>>>", err);
 	res.send(G.utils.r(req.url, 'Error al Crear el html del Documento', 500, {err: err}));
@@ -1021,6 +1033,6 @@ function __generarPdfAutorizacion(datos, callback) {
     });
 }
 
-I002Controller.$inject = ["m_movimientos_bodegas", "m_i002", "e_i002", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos"];
+I002Controller.$inject = ["m_movimientos_bodegas", "m_i002", "e_i002", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos","m_kardex"];
 
 module.exports = I002Controller;

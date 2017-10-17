@@ -87,7 +87,8 @@ DocumentoBodegaI002.prototype.consultarAutorizacionesIngreso = function(parametr
 	"codigo_producto",
 	"lote",
 	"fecha_vencimiento",
-	"usuario_id_autorizador",
+	G.knex.raw("(select nombre from system_usuarios where usuario_id = usuario_id_autorizador)  as usuario_id_autorizadors_1"),
+	G.knex.raw("(select nombre from system_usuarios where usuario_id = usuario_id_autorizador_2)  as usuario_id_autorizadors_2"),
 	"usuario_id_autorizador_2",
 	"observacion_autorizacion",
 	"porcentaje_gravamen",
@@ -109,6 +110,49 @@ DocumentoBodegaI002.prototype.consultarAutorizacionesIngreso = function(parametr
             .where('empresa_id', parametros.empresaId)
             .andWhere('prefijo', parametros.prefijoDocumento)
             .andWhere('numero', parametros.numeracionDocumento);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [consultarAutorizacionesIngreso]: ", error);
+        callback(error);
+    });
+
+};
+/*
+ * @Andres M. Gonzalez. 
+ * @param {type} parametros
+ * @param {type} transaccion
+ * @param {type} callback
+ * @returns {undefined} */
+DocumentoBodegaI002.prototype.consultarAutorizacionesProveedor = function(parametros,callback) {
+
+    var columna = [
+        G.knex.raw("a.orden_pedido_id"),
+	G.knex.raw("d.tipo_id_tercero || ' ' || d.tercero_id || ' : '|| d.nombre_tercero as proveedor")
+    ];
+
+    var subQuery = G.knex.select(columna)
+            .from("inv_bodegas_movimiento_ordenes_compra as a")
+            .innerJoin("compras_ordenes_pedidos as b",
+            function() {
+                this.on("a.orden_pedido_id", "b.orden_pedido_id")
+            })
+            .innerJoin("terceros_proveedores as c",
+            function() {
+                this.on("b.codigo_proveedor_id", "c.codigo_proveedor_id")
+            })
+            .innerJoin("terceros as d",
+            function() {
+                this.on("c.tipo_id_tercero", "d.tipo_id_tercero")
+                this.on("c.tercero_id", "d.tercero_id")
+            })
+	    .where('a.empresa_id', parametros.empresaId)
+            .andWhere('a.prefijo', parametros.prefijoDocumento)
+            .andWhere('a.numero', parametros.numeracionDocumento)
+            .as("a");
+
+    var query = G.knex(G.knex.raw("a.*")).from(subQuery);
 
     query.then(function(resultado) {
         callback(false, resultado);

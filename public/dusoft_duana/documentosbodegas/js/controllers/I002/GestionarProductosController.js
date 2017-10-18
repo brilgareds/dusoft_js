@@ -174,7 +174,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 		   AlertService.mostrarMensaje("warning", "Debe crear primero el temporal");
                    return; 
 		}
-		console.log("scope.doc_tmp_id ",$scope.doc_tmp_id);
 
                 var valor = parseFloat(producto.valor_unit);
                 var porcentaje = ((valor * producto.iva) / 100);

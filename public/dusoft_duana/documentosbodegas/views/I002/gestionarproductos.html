@@ -41,7 +41,9 @@
                                 <div class=" col-sm-3 col-md-3 col-lg-3  pull-right">                                
                                      <div class="input-group">
                                         <div class="input-group-btn"> <!--ng-click="listarAutorizaciones();"-->
-                                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
+                                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+						 {{filtroNombre.nombre}} 
+					   <span class="caret"></span></button>
                                             <ul class="dropdown-menu">
                                                 <li ng-repeat="filtro in filtros">
                                                     <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>

@@ -47,6 +47,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             } else if (!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
                 $rootScope.$emit("onIrAlHome", {mensaje: "Documentos Bodegas : Se debe seleccionar una Bodega", tipo: "warning"});
             }
+	    
+	    $scope.claseDocumentos = [
+             {tipo: 'I', descripcion: " Ingreso "},
+             {tipo: 'E', descripcion: " Egreso "}
+            ];
+	    $scope.selecciontipo=' Seleccionar Clase Documento ';
 
             // Variables de Sesion
             $scope.session = {
@@ -261,6 +267,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     });
             };
 	    
+	    
             that.crearHtmlAutorizacion=function(documentos,callback){
 
                 var obj = {
@@ -272,19 +279,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                            }
                     };
 
-                    Request.realizarRequest(API.I002.CREAR_HTML_AUTORIZACION, "POST", obj, function(data) {  
-                        if (data.status === 200) {
-                            callback(data);
-                        }
-			if (data.status === 201) {
-			    AlertService.mostrarMensaje("warning", data.msj);
-			    callback(false);
-			}
-                        if (data.status === 500) {
-                            AlertService.mostrarMensaje("warning", data.msj);
-                            callback(false);
-                        }
-                    });
+		GeneralService.crearHtmlAutorizacion(obj, function(data) {
+                    if (data.status === 200) {
+			callback(data);
+		    }
+		    if (data.status === 201) {
+			AlertService.mostrarMensaje("warning", data.msj);
+			callback(false);
+		    }
+		    if (data.status === 500) {
+			AlertService.mostrarMensaje("warning", data.msj);
+			callback(false);
+		    }
+                    
+                });
             };
              
             $scope.btn_imprimir = function(documentos){
@@ -375,7 +383,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 return disabled;
             };
             
-            $scope.onBuscar = function(claseDoc){
+            $scope.onBuscar = function(claseDoc,descripDoc){
+              $scope.selecciontipo=" "+descripDoc+" ";
               that.getTiposDocumentosBodegaEmpresa(claseDoc);
               $scope.claseDoc=claseDoc;
             };

@@ -62,6 +62,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              * @returns {undefined}
              */
             that.listarProductosParaAsignar = function(parametros) {
+		console.log("parametros->>>>>>>>>>>>>>>>>>",parametros);
                 var obj = {
                     session: $scope.session,
                     data: parametros
@@ -91,6 +92,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 if (laboratorio !== undefined)
                     $scope.laboratorio_id = laboratorio.get_id();
             };
+	    $scope.filtroNombre= {nombre:"Seleccionar",id:-1};
+	    
+	    $scope.onSeleccionFiltro=function(filtro){
+		console.log("Filtro:::::::",filtro);
+		$scope.filtroNombre.nombre=filtro.nombre;
+		$scope.filtroNombre.id=filtro.id;
+	    };
 
             /*
              *
@@ -111,7 +119,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     bodega: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.bodega.codigo,
                     doc_tmp_id: $scope.doc_tmp_id,
                     descripcion: termino_busqueda,
-                    tipoFiltro: '0',
+                    tipoFiltro: $scope.filtroNombre.id,
                     fabricante_id: $scope.laboratorio_id
                 };
                 if (event.which === 13)
@@ -133,10 +141,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $scope.filtros = [
-                {nombre: "Descripcion", descripcionProducto: true},
-                {nombre: "Codigo", codigoProducto: true},
-                {nombre: "Unidad venta", unidadVenta: true},
-                {nombre: "Molecula", molecula: true}
+                {nombre: "Descripcion", id: '0'},
+                {nombre: "Codigo", id: '1'}
+//                {nombre: "Unidad venta", id: true},
+//                {nombre: "Molecula", id: true}
             ];
 
             $scope.filtro = $scope.filtros[0];
@@ -152,7 +160,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
 
             $scope.guardarProducto = function(producto) {
-
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
 
@@ -162,8 +169,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     AlertService.mostrarMensaje("warning", "Producto proximo a vencer");
                     return;
                 }
+		
+		if($scope.doc_tmp_id==='00000'){
+		   AlertService.mostrarMensaje("warning", "Debe crear primero el temporal");
+                   return; 
+		}
 
-                var valor = parseInt(producto.valor_unit);
+                var valor = parseFloat(producto.valor_unit);
                 var porcentaje = ((valor * producto.iva) / 100);
                 var valorMasPorcentaje = valor + porcentaje;
                 var total_costo = valorMasPorcentaje * producto.cantidad_ingresada;
@@ -274,7 +286,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "8%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_valor_unit()', displayName: 'Valor Unitario', width: "10%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.valor_unit" validacion-numero-entero ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.valor_unit" validacion-numero-decimal ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_iva()', displayName: 'IVA', width: "5%", enableCellEdit: true,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.iva"  ng-disabled="true" class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_lote()', displayName: 'Lote', width: "5%", enableCellEdit: false,

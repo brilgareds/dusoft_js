@@ -41,7 +41,7 @@ define([
             var datos_documento = localStorageService.get("documento_bodega_I002");
             var fecha_actual = new Date();
 
-            $scope.format = 'dd-MM-yyyy'
+            $scope.format = 'dd-MM-yyyy';
             $scope.root = {
                 porFactura: 0,
                 totalFactura: 0,
@@ -53,10 +53,7 @@ define([
                 descripcionFactura: "",
                 pedidosSeleccionados: [],
             };
-            $scope.root.claseDocumentos = [
-             {tipo: 'I', descripcion: "Ingreso"},
-             {tipo: 'E', descripcion: "Egreso"}
-            ];
+            
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
 
@@ -587,24 +584,66 @@ define([
                     if (data.status === 200) {
 
                         AlertService.mostrarMensaje("warning", data.msj);
+			
                         if (datos !== undefined) {
                             that.recorreProductos(datos, data.obj.recepcion_parcial_id, function(parametros) {
+				
                                 that.insertarFacturaProveedor(parametros);
                             });
                         }
+			
+			var documentos = {prefijo: data.obj.prefijo , numero: data.obj.numero};
+			console.log("documentos->>>>>>>>>> ",documentos);
+			setTimeout(function() {
+			    that.crearHtmlAutorizacion(documentos,function(respuesta){
+				console.log("respuesta->>>>>>>>>> ",respuesta);
+			      if(respuesta !== false){
+				$scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
+			      }  
+			    });
+			}, 0);
+			
                         that.buscar_ordenes_compra();
                         that.refrescarVista();
                         $scope.DocumentoIngreso.orden_compra = "";
 			
-			    var nombre = data.obj.nomb_pdf;
-			    setTimeout(function() {
-				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-			    }, 4000);
+			var nombre = data.obj.nomb_pdf;
+			setTimeout(function() {
+			    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+			}, 4000);
                     }
 		    
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
+                });
+            };
+	    
+	     that.crearHtmlAutorizacion=function(documentos,callback){
+
+                var obj = {
+                        session: $scope.session,
+                        data: {
+                                  empresaId : Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                                  prefijo:documentos.prefijo,
+                                  numeracion:documentos.numero
+                           }
+                    };
+                   console.log("crearHtmlAutorizacion---->>>>>>>>",obj);
+		GeneralService.crearHtmlAutorizacion(obj, function(data) {
+		   console.log("data->>>>>>>>>> ",data);
+                    if (data.status === 200) {
+			callback(data);
+		    }
+		    if (data.status === 201) {
+			AlertService.mostrarMensaje("warning", data.msj);
+			callback(false);
+		    }
+		    if (data.status === 500) {
+			AlertService.mostrarMensaje("warning", data.msj);
+			callback(false);
+		    }
+                    
                 });
             };
 
@@ -1471,7 +1510,7 @@ define([
                     {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion'},
                     {field: 'get_lote()', displayName: 'Lote', width: "5%"},
-                    {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
+                    {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento.', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
                     {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad", cellFilter: "number"},
                     {field: 'get_iva()', displayName: "Valor IVA", width: "5%"},
                     {field: 'get_porcentaje_gravamen()', displayName: '% Gravament', width: "5%"},
@@ -1548,8 +1587,12 @@ define([
                     var mensaje = "";
                     var validacionprecio = false;
                     var validacionfecha = false;
-                    if (productos.valor_unitario_ingresado > productos.valor_unitario) {
+                    if (productos.valor_unitario_ingresado > (productos.valor_unitario + 0.999)) {
                         mensaje = " - El Precio Unitario es Mayor al de la Orden de Compra";
+                        validacionprecio = true;
+                    }
+                    if (productos.valor_unitario_ingresado < (productos.valor_unitario - 0.999)) {
+                        mensaje = " - El Precio Unitario es Menor al de la Orden de Compra";
                         validacionprecio = true;
                     }
                     if (diferencia >= 0 && diferencia <= 45) {

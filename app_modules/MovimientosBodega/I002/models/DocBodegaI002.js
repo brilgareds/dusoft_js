@@ -86,7 +86,7 @@ DocumentoBodegaI002.prototype.consultarAutorizacionesIngreso = function(parametr
 	"orden_pedido_id",
 	"codigo_producto",
 	"lote",
-	"fecha_vencimiento",
+	G.knex.raw("to_char(fecha_vencimiento,'DD/MM/YYYY') as fecha_vencimiento"),
 	G.knex.raw("(select nombre from system_usuarios where usuario_id = usuario_id_autorizador)  as usuario_id_autorizadors_1"),
 	G.knex.raw("(select nombre from system_usuarios where usuario_id = usuario_id_autorizador_2)  as usuario_id_autorizadors_2"),
 	"usuario_id_autorizador_2",
@@ -291,7 +291,7 @@ DocumentoBodegaI002.prototype.listarIngresosAutorizados = function(parametros, c
 };
 
 DocumentoBodegaI002.prototype.listarProductosParaAsignar = function(parametro, callback) {
-
+console.log("parametro.tipoFiltro",parametro);
     var columna = [
         G.knex.raw("distinct c.codigo_producto"),
         G.knex.raw("fc_descripcion_producto(c.codigo_producto) as descripcion"),
@@ -329,18 +329,20 @@ DocumentoBodegaI002.prototype.listarProductosParaAsignar = function(parametro, c
         if (parametro.tipoFiltro === '0') {
             this.andWhere("c.descripcion", G.constants.db().LIKE, "%" + parametro.descripcion + "%");
         } else {
-            this.andWhere("c.codigo_producto", parametro.codigo_prducto);
+            this.andWhere("c.codigo_producto", parametro.descripcion);
         }
 
         if (parametro.fabricante_id !== "-1") {
             this.andWhere("fabricante_id", parametro.fabricante_id);
         }
-    })
-            .andWhere(G.knex.raw("substring(c.codigo_producto from 1 for 2) <> 'FO' "));
+    }).andWhere(G.knex.raw("substring(c.codigo_producto from 1 for 2) <> 'FO' "));
+    
+//console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", query.toSQL());
 
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
+//	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", query.toSQL());
         console.log("Error [listarProductosParaAsignar]: ", err);
         callback("Ha ocurrido un error");
     });
@@ -379,6 +381,7 @@ DocumentoBodegaI002.prototype.agregarItemFOC = function(parametros, callback) {
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
+        console.log("Error agregarItemFOC parametros", parametros);
         console.log("Error agregarItemFOC", err);
         callback(err);
     }).done();
@@ -659,7 +662,7 @@ DocumentoBodegaI002.prototype.listarGetItemsDocTemporal = function(parametros, c
         "a.cantidad",
         "a.porcentaje_gravamen",
         "a.total_costo",
-        "a.fecha_vencimiento",
+	G.knex.raw("to_char(a.fecha_vencimiento,'DD/MM/YYYY') as fecha_vencimiento"),
         "a.lote",
         "a.local_prod",
         "a.valor_unitario",

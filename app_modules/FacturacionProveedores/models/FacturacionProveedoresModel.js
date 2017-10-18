@@ -246,7 +246,7 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
         "a.cantidad",
         "a.valor",
         "a.lote",
-        G.knex.raw("TO_CHAR(a.fecha_vencimiento,'dd-MM-yyyy') as fecha_vencimiento"),
+	G.knex.raw("to_char(a.fecha_vencimiento,'DD/MM/YYYY') as fecha_vencimiento"),
         "a.numero_factura",
         "a.item_id",
         "a.cantidad_devuelta",
@@ -319,7 +319,7 @@ FacturacionProveedoresModel.prototype.detalleRecepcionParcial = function(obj, ca
         "a.valor",
         "a.porc_iva",
         "a.lote",
-        "a.fecha_vencimiento",
+	G.knex.raw("to_char(a.fecha_vencimiento,'DD/MM/YYYY') as fecha_vencimiento"),
         G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion")
     ];
 

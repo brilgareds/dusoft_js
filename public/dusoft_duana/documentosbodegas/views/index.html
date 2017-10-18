@@ -167,15 +167,13 @@
                                     <legend>Clase Documento</legend> 
                                     <div class="row">
                                         <div class="col-md-7">   
-                                          
-					    <button type="button" class="btn btn-default dropdown-toggle" 
-						 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.descripcion}} <span class="caret"></span></button>
-					     <ul class="dropdown-menu" ng-selected="onColumnaSize(filtro.tipo)">
-						  <li ng-repeat="filtro in root.claseDocumentos">
-						      <a href="javascript:void(0)" ng-click="onBuscar(filtro.tipo)">{{filtro.descripcion}}</a>
-						  </li>
-					      </ul>
-					    
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{selecciontipo}}<span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <li ng-repeat="filtro in claseDocumentos">
+                                                    <a href="javascript:void(0)" ng-click="onBuscar(filtro.tipo,filtro.descripcion)">{{filtro.descripcion}}</a>
+                                                </li>
+                                            </ul>
                                         </div>                                 
                                     </div>
                                 </fieldset>
@@ -237,16 +235,18 @@
                             <div class="col-md-4">
                                 <fieldset>
                                     <legend>Clase Documento</legend> 
-                                    <div class="row">
-                                        <div class="col-md-7">   
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Seleccionar Clase Documento <span class="caret"></span></button>
+                                    <div class="row"> 
+					
+					<div class="col-md-7">   
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{selecciontipo}}<span class="caret"></span></button>
                                             <ul class="dropdown-menu">
-                                                <li>
-                                                    <a href="javascript:void(0)" ng-click="onBuscar('I')">Ingreso</a>
-                                                    <a href="javascript:void(0)" ng-click="onBuscar('E')">Egreso</a>
+                                                <li ng-repeat="filtro in claseDocumentos">
+                                                    <a href="javascript:void(0)" ng-click="onBuscar(filtro.tipo,filtro.descripcion)">{{filtro.descripcion}}</a>
                                                 </li>
                                             </ul>
-                                        </div>                                 
+                                        </div> 
+					
                                     </div>
                                 </fieldset>
                             </div>                        

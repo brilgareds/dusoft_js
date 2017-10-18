@@ -47,6 +47,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             } else if (!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
                 $rootScope.$emit("onIrAlHome", {mensaje: "Documentos Bodegas : Se debe seleccionar una Bodega", tipo: "warning"});
             }
+	    
+	    $scope.claseDocumentos = [
+             {tipo: 'I', descripcion: " Ingreso "},
+             {tipo: 'E', descripcion: " Egreso "}
+            ];
+	    $scope.selecciontipo=' Seleccionar Clase Documento ';
 
             // Variables de Sesion
             $scope.session = {
@@ -375,7 +381,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 return disabled;
             };
             
-            $scope.onBuscar = function(claseDoc){
+            $scope.onBuscar = function(claseDoc,descripDoc){
+              $scope.selecciontipo=" "+descripDoc+" ";
               that.getTiposDocumentosBodegaEmpresa(claseDoc);
               $scope.claseDoc=claseDoc;
             };

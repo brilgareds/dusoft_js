@@ -41,7 +41,7 @@ define([
             var datos_documento = localStorageService.get("documento_bodega_I002");
             var fecha_actual = new Date();
 
-            $scope.format = 'dd-MM-yyyy'
+            $scope.format = 'dd-MM-yyyy';
             $scope.root = {
                 porFactura: 0,
                 totalFactura: 0,
@@ -53,10 +53,7 @@ define([
                 descripcionFactura: "",
                 pedidosSeleccionados: [],
             };
-            $scope.root.claseDocumentos = [
-             {tipo: 'I', descripcion: "Ingreso"},
-             {tipo: 'E', descripcion: "Egreso"}
-            ];
+            
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
 
@@ -1471,7 +1468,7 @@ define([
                     {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion'},
                     {field: 'get_lote()', displayName: 'Lote', width: "5%"},
-                    {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
+                    {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento.', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
                     {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad", cellFilter: "number"},
                     {field: 'get_iva()', displayName: "Valor IVA", width: "5%"},
                     {field: 'get_porcentaje_gravamen()', displayName: '% Gravament', width: "5%"},

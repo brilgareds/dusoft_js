@@ -293,10 +293,7 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
     })
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit);
-    
-    console.log("query ", query.toSQL());
-    console.log("offset ",(pagina - 1) * G.settings.limit);
-    
+        
     query.then(function(rows){
       
         callback(false, rows);
@@ -391,7 +388,7 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(parametro
     var join="";
     var select="";
     if(parametros.filtro!=='' && parametros.filtro !== 'undefined' && parametros.filtro !== undefined){
-        console.log("parametros.filtro",parametros.filtro);
+       
       where=" AND (a.numero_unidades - COALESCE(numero_unidades_recibidas,0)) != 0 ";
       join ="JOIN inventarios_productos as c ON (a.codigo_producto=c.codigo_producto)";
       select=",c.estado = '1' as estadoProducto";
@@ -510,7 +507,7 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
         centro_utilidad_pedido: centro_utilidad_pedido || null, bodega_pedido:bodega_pedido || null
     };
     
-    console.log("terminar orden?????????????????????? ", terminar_orden);
+   
     if(terminar_orden){
         parametros["estado"] = '3';
         parametros["fecha_verificado"] = 'now()';
@@ -524,7 +521,7 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
     if(transaccion) query.transacting(transaccion);
      
     query.then(function(resultado){
-        console.log("resultado del insert de ordenes ******************************", resultado)
+        
        callback(false, resultado);
     }).catch(function(err){
        console.log("erro (/catch) [insertar_orden_compra]: ", err);
@@ -649,7 +646,6 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
     
     var parametros = {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva, 6:lote || null, 7:fecha_vencimiento || null};
     
-    console.log("insertar detalle de la orden de compra ", numero_orden, " parametros ", parametros);
     
     var query = G.knex.raw(sql, parametros);
     
@@ -683,7 +679,7 @@ OrdenesCompraModel.prototype.modificar_detalle_orden_compra_item = function(nume
 
     var sql = " UPDATE  compras_ordenes_pedidos_detalle SET numero_unidades = (numero_unidades - :3 ) \
                where orden_pedido_id = :1 and codigo_producto = :2 and (numero_unidades - :3) > 0 and item_id = :4 ";
-    console.log("sql ",sql);
+    
     G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:item_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
@@ -1535,7 +1531,7 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(dato
         14: datos.valorUnitario,
         15: datos.itemIdCompras
     };
-    console.log("parametros  ",parametros);
+
 
     G.knex.raw(sql, parametros).then(function(resultado) {
       
@@ -1549,10 +1545,7 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(dato
 
 // Insertar productos Recepcion mercancia
 OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
-    console.log("********insertar_productos_recepcion_mercancia***********");
-    console.log("********insertar_productos_recepcion_mercancia***********");
-    console.log("********insertar_productos_recepcion_mercancia***********");
-    
+      
     var that = this;
     var sql = " insert into recepcion_mercancia_detalle  ( recepcion_mercancia_id, novedades_recepcion_id, codigo_producto, cantidad_recibida, usuario_id ) \
                 values ( :1, :2, :3, :4, :5 ) ; ";
@@ -1566,7 +1559,7 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
     };
     
     G.knex.raw(sql, parametros).then(function(resultado){
-        console.log("producto_mercancia ", producto_mercancia)
+       
         var estado = '3'; // Recibida
         if(producto_mercancia.cantidad_pendiente > 0){
             estado = '1';
@@ -1627,10 +1620,6 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
 // Modificar productos Recepcion mercancia
 OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion, callback) {
 
-    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia MODEL**********");
-    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia MODEL**********");
-    
-    console.log("recepcion.orden_compra ", recepcion.orden_compra);
     var that = this;
     var sql = " update recepcion_mercancia set estado = '2' where  id = :1 ; ";
     

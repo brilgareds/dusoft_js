@@ -300,6 +300,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.root.productosRecepcion = facturacionProveedoresService.renderProductosRecepcion(data.obj.detalleRecepcionParcial);
 
                     $scope.root.Totales = facturacionProveedoresService.renderTotales(data.obj.detalleRecepcionParcial);
+		    	    
                     resultado['detalle'] = $scope.root.productosRecepcion;
                     resultado['total'] = $scope.root.Totales;
                     resultado['recepcion_parcial'] = dato;
@@ -540,7 +541,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
                     $scope.root.ordenProveedores = facturacionProveedoresService.renderOrdenesComprasProveedores(data.obj.listarOrdenesCompraProveedor);
                 } else {
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+		    $scope.root.ordenProveedores ="";//99
+		    $scope.ultima_busqueda ="";
+		    $scope.root.items = 0;
+                   // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
 
             });
@@ -632,7 +636,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                         <td class="right">{{root.Totales.valorRetIca | currency:"$"}}</td> \
                                                         <td class="right">{{root.Totales.valorRetIva | currency:"$"}}</td> \
                                                         <td class="right">{{root.Totales.impuestoCree | currency:"$"}}</td> \
-                                                        <td class="right">{{root.Totales.subtotal | currency:"$"}}</td> \
+                                                        <td class="right">{{root.Totales.total | currency:"$"}}</td> \
                                                     </tr>\
                                                 </tbody>\
                                             </table>\
@@ -927,7 +931,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             return;
                         }
 
-                        if (parseInt($scope.root.totalDescuento) < 0) {
+                        if (parseFloat($scope.root.totalDescuento) < 0) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No es posible valores negativos en el Descuento");
                             return;
                         }
@@ -936,12 +940,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             $scope.root.totalDescuento = 0;
                         }
 
-                        if (parseInt($scope.root.totalFactura) < 0 || $scope.root.totalFactura === "") {
+                        if (parseFloat($scope.root.totalFactura) < 0 || $scope.root.totalFactura === "") {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El valor de la factura minimo debe ser 0");
                             return;
                         }
 
-                        if (parseInt($scope.root.totalDescuento) > parseInt($scope.root.totalFactura)) {
+                        if (parseFloat($scope.root.totalDescuento) > parseFloat($scope.root.totalFactura)) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El Descuento no debe superar el valor de la Factura");
                             return;
                         }
@@ -991,6 +995,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @returns {undefined}
          */
         that.insertarFacturaProveedor = function(parametros) {
+	    
+	    console.log("insertarFacturaProveedor ",parametros);
             var empresa = Sesion.getUsuarioActual().getEmpresa().getCodigo();
             var centroUtilidad = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
             var bodega = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
@@ -1013,12 +1019,55 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd,data.obj.respuestaFI.resultado.mensaje_ws);
                     var nombre = data.obj.ingresarFactura;
                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+		    that.impresionAutorizacion(parametros);
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al Insertar la Factura");
                 }
 
             });
         };
+	
+	that.impresionAutorizacion = function(parametros) {
+	    console.log("parametros.recepciones",parametros.recepciones);
+	    parametros.recepciones.forEach(function(data) {
+		var documentos = {prefijo: data.prefijo, numero: data.numero};
+		setTimeout(function() {
+		    that.crearHtmlAutorizacion(documentos, function(respuesta) {
+			if (respuesta !== false) {
+			    $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
+			}
+		    });
+		}, 0);
+	    });
+	};
+	
+	that.crearHtmlAutorizacion=function(documentos,callback){
+
+                var obj = {
+                        session: $scope.session,
+                        data: {
+                                  empresaId : Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                                  prefijo:documentos.prefijo,
+                                  numeracion:documentos.numero
+                           }
+                    };
+                   
+		facturacionProveedoresService.crearHtmlAutorizacion(obj, function(data) {
+		   
+                    if (data.status === 200) {
+			callback(data);
+		    }
+		    if (data.status === 201) {
+			AlertService.mostrarMensaje("warning", data.msj);
+			callback(false);
+		    }
+		    if (data.status === 500) {
+			AlertService.mostrarMensaje("warning", data.msj);
+			callback(false);
+		    }
+                    
+                });
+            };
         
         
         that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
@@ -1072,7 +1121,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 that.listarRecepcionProductos(data, function(resultado) {
                     that.recepcionesId += "<label class='btn btn-success btn btn-default btn-xs'>" + data.recepcion_parcial + "</label> ";
                     that.proveedor = "<b>" + data.nombre_proveedor + "</b>";
-                    $scope.root.totalFactura += parseInt(resultado['total'].subtotal);
+                    $scope.root.totalFactura += parseFloat(resultado['total'].total);//antes del 18/10/2017  parseFloat(resultado['total'].subtotal);
                     $scope.root.descripcionFija += salto + "- " + data.get_observacion();
                     salto = "\n";
                     if ($scope.root.pedidosSeleccionados.length - 1 === i) {

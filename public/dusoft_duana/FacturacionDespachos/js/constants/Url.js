@@ -62,7 +62,11 @@ define(["angular"], function(angular) {
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",
-            }
+            },
+	    'I002':{
+	        "CREAR_HTML_AUTORIZACION": BASE_URL + '/movBodegas/I002/crearHtmlAutorizacion'
+	    }
+	    
         }
 
     };

@@ -819,57 +819,44 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
     var producto = productos[index];
     if (!producto) {
 
-console.log("_____________________________________________");
-console.log("index ",index);
-console.log("productos ",productos);
-console.log("impuesto ",impuesto);
-console.log("resultado  ",resultado);
-console.log("cabecera  ",cabecera);
-console.log("_____________________________________________");
         if (impuesto.sw_rtf === '2' || impuesto.sw_rtf === '3')
-            if (resultado.subtotal >= parseInt(impuesto.base_rtf)) {		
-                resultado.valorRetFte = Math.round(resultado.subtotal * (cabecera.porcentaje_rtf / 100));//cabecera.valorRetFte
-		console.log("resultado.subtotal  ",resultado.subtotal);
-		console.log("impuesto.base_rtf  ",impuesto.base_rtf);
-		console.log("cabecera.porcentaje_rtf ",cabecera.porcentaje_rtf);
+            if (resultado.subtotal >= parseFloat(impuesto.base_rtf)) {		
+                resultado.valorRetFte = parseFloat(resultado.subtotal * (cabecera.porcentaje_rtf / 100));//cabecera.valorRetFte
+
             } else {
                 resultado.valorRetFte = 0;
-		console.log("b______________",resultado.valorRetFte);
             }
 
         if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3'){
-	    console.log("impuesto.sw_ica ",impuesto.sw_ica);
-	    console.log("resultado.subtotal ",resultado.subtotal);
-	    console.log("impuesto.base_ica ",impuesto.base_ica);
-	    console.log("========= ",Math.round(resultado.subtotal * (cabecera.porcentaje_ica / 1000)));
-            if (resultado.subtotal >= parseInt(impuesto.base_ica)) {
-                resultado.valorRetIca = Math.round(resultado.subtotal * (cabecera.porcentaje_ica / 1000));//cabecera.valorRetIca
+            if (resultado.subtotal >= parseFloat(impuesto.base_ica)) {
+                resultado.valorRetIca = parseFloat(resultado.subtotal * (cabecera.porcentaje_ica / 1000));//cabecera.valorRetIca
             } else {
                 resultado.valorRetIca = 0;
             }
 	 } 
         if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3')
-            if (resultado.subtotal >= parseInt(impuesto.base_reteiva)) {
+//            if (resultado.subtotal >= parseInt(impuesto.base_reteiva)) {
+            if (resultado.IvaTotal >= parseFloat(impuesto.base_reteiva)) {
 		
-                resultado.valorRetIva = Math.round(resultado.IvaTotal * (cabecera.porcentaje_reteiva / 100));//cabecera.valorRetIva
+                resultado.valorRetIva = parseFloat(resultado.IvaTotal * (cabecera.porcentaje_reteiva / 100));//cabecera.valorRetIva
             } else {
                 resultado.valorRetIva = 0;
             }
 
-        resultado.total = Math.round(((((resultado.subtotal + resultado.IvaTotal) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva));
+        resultado.total = parseFloat(((((resultado.subtotal + resultado.IvaTotal) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva));
 
         callback(false, [resultado]);
         return;
     }
 
     index++;
-    resultado.valorTotal += parseInt(producto.valor_total_1);
+    resultado.valorTotal += parseFloat(producto.valor_total_1);
 
     resultado.porc_iva = (producto.porcentaje_gravamen / 100) + 1;
     resultado.ValorSubTotal = (producto.total_costo / resultado.porc_iva);
     resultado.IvaProducto = producto.total_costo - resultado.ValorSubTotal;
-    resultado.IvaTotal = Math.round(resultado.IvaTotal + (resultado.IvaProducto));
-    resultado.subtotal += parseInt(resultado.ValorSubTotal);
+    resultado.IvaTotal = parseFloat(resultado.IvaTotal + (resultado.IvaProducto));
+    resultado.subtotal += parseFloat(resultado.ValorSubTotal);
 
     setTimeout(function() {
         __impuestos(that, index, productos, impuesto, resultado, cabecera, callback);

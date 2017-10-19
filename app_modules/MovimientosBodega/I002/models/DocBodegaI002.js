@@ -291,7 +291,7 @@ DocumentoBodegaI002.prototype.listarIngresosAutorizados = function(parametros, c
 };
 
 DocumentoBodegaI002.prototype.listarProductosParaAsignar = function(parametro, callback) {
-console.log("parametro.tipoFiltro",parametro);
+
     var columna = [
         G.knex.raw("distinct c.codigo_producto"),
         G.knex.raw("fc_descripcion_producto(c.codigo_producto) as descripcion"),
@@ -337,7 +337,6 @@ console.log("parametro.tipoFiltro",parametro);
         }
     }).andWhere(G.knex.raw("substring(c.codigo_producto from 1 for 2) <> 'FO' "));
     
-//console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", query.toSQL());
 
     query.then(function(resultado) {
         callback(false, resultado);
@@ -479,7 +478,6 @@ DocumentoBodegaI002.prototype.valorCantidad = function(parametros, callback) {
     });
       
     coalesce.then(function(resultado) {
-	console.log("resultado----->>>>",resultado);
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err (/catch) [valorCantidad]: ", err);
@@ -510,7 +508,6 @@ DocumentoBodegaI002.prototype.updateComprasOrdenesPedidosDetalles = function(par
 };
 
 DocumentoBodegaI002.prototype.updateComprasOrdenesPedidosDetalle = function(parametros, transaccion, callback) {
-console.log("__________________updateComprasOrdenesPedidosDetalle________________________");
     var that = this;
     G.Q.ninvoke(that, 'valorCantidad', parametros).then(function(dato) {
 	

@@ -49,7 +49,7 @@ define(["angular", "js/services"], function(angular, services) {
                      * +Descripcion: crear impresion html 
                      */
 		    self.crearHtmlAutorizacion = function(obj, callback) {
-                         console.log(" self crearHtmlAutorizacion---->>>>>>>>",obj);
+                         
 			Request.realizarRequest(API.I002.CREAR_HTML_AUTORIZACION, "POST", obj, function(data) {			 
 			  callback(data);
 			});

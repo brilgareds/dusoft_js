@@ -593,10 +593,8 @@ define([
                         }
 			
 			var documentos = {prefijo: data.obj.prefijo , numero: data.obj.numero};
-			console.log("documentos->>>>>>>>>> ",documentos);
 			setTimeout(function() {
 			    that.crearHtmlAutorizacion(documentos,function(respuesta){
-				console.log("respuesta->>>>>>>>>> ",respuesta);
 			      if(respuesta !== false){
 				$scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
 			      }  
@@ -614,7 +612,7 @@ define([
                     }
 		    
                     if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarMensaje("warning", data.msj);2
                     }
                 });
             };
@@ -629,9 +627,9 @@ define([
                                   numeracion:documentos.numero
                            }
                     };
-                   console.log("crearHtmlAutorizacion---->>>>>>>>",obj);
+                   
 		GeneralService.crearHtmlAutorizacion(obj, function(data) {
-		   console.log("data->>>>>>>>>> ",data);
+		   
                     if (data.status === 200) {
 			callback(data);
 		    }
@@ -748,7 +746,7 @@ define([
                                                 <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <h4><b><p>Fecha Factura:</p></b></h4>\
+                                                              <h5><b><p>Fecha Factura:</p></b></h5>\
                                                              </div>\
                                                              <div class="col-sm-8">\
                                                                 <p class="input-group">\
@@ -774,7 +772,7 @@ define([
                                                 <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <h4><b>Fecha Radicación:</b></h4>\
+                                                              <h5><b>Fecha Radicación:</b></h5>\
                                                              </div>\
                                                              <div class="col-sm-8">\
                                                                 <p class="input-group">\
@@ -800,7 +798,7 @@ define([
                                                 <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <h4><b>Numero Factura:</b></h4>\
+                                                              <h5><b>Numero Factura:</b></h5>\
                                                              </div>\
                                                              <p class="col-sm-8">\
                                                                     <input type="text" ng-model="root.numeroFactura"  class="form-control" required="required" >\
@@ -810,7 +808,7 @@ define([
                                                <div class="row">\
                                                         <div class="form-group">\
                                                             <div class="col-sm-4">\
-                                                              <h4><b>Valor Total Factura:</b></h4>\
+                                                              <h5><b>Valor Total Factura:</b></h5>\
                                                              </div>\
                                                              <p class="col-sm-8">\
                                                                 <input type="text" ng-model="root.totalFactura" validacion-numero-decimal class="form-control" required="required" >\
@@ -820,7 +818,7 @@ define([
                                               <div class="row">\
                                                        <div class="form-group">\
                                                             <div class="col-sm-4" >\
-                                                               <h4><b>Total de Descuento:</b></h4>\
+                                                               <h5><b>Total de Descuento:</b></h5>\
                                                             </div>\
                                                             <p class="col-sm-8">\
                                                               <input type="text" ng-model="root.totalDescuento" validacion-numero-decimal class="form-control">\
@@ -1587,6 +1585,11 @@ define([
                     var mensaje = "";
                     var validacionprecio = false;
                     var validacionfecha = false;
+		    
+		    if(parseInt(productos.cantidadActual) !== parseInt(productos.cantidad_solicitada)){
+			productos.cantidad_solicitada=parseInt(productos.cantidadActual);
+		    }
+		    
                     if (productos.valor_unitario_ingresado > (productos.valor_unitario + 0.999)) {
                         mensaje = " - El Precio Unitario es Mayor al de la Orden de Compra";
                         validacionprecio = true;

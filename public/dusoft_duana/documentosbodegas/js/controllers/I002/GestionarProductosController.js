@@ -62,7 +62,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              * @returns {undefined}
              */
             that.listarProductosParaAsignar = function(parametros) {
-		console.log("parametros->>>>>>>>>>>>>>>>>>",parametros);
+		
                 var obj = {
                     session: $scope.session,
                     data: parametros
@@ -95,7 +95,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 	    $scope.filtroNombre= {nombre:"Seleccionar",id:-1};
 	    
 	    $scope.onSeleccionFiltro=function(filtro){
-		console.log("Filtro:::::::",filtro);
+		
 		$scope.filtroNombre.nombre=filtro.nombre;
 		$scope.filtroNombre.id=filtro.id;
 	    };

@@ -169,7 +169,7 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
             this.andWhere(G.knex.raw("f.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
         }        
         if ((obj.filtro.tipo === 'Factura') && obj.terminoBusqueda !== "") {
-            this.andWhere(G.knex.raw("a.numero_factura = " + obj.terminoBusqueda))
+            this.andWhere(G.knex.raw("a.numero_factura = '" + obj.terminoBusqueda+"'"))
         }        
         if ((obj.filtro.tipo !== 'Nombre' && obj.filtro.tipo !== 'Factura') && obj.terminoBusqueda !== "") {
             this.andWhere(G.knex.raw("f.tercero_id  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
@@ -179,14 +179,17 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
             this.andWhere("a.codigo_proveedor_id",obj.codigo_proveedor_id)
         }
         if (obj.numero_factura !== undefined) {
-            this.andWhere("a.numero_factura",obj.numero_factura)
+//            this.andWhere("a.numero_factura",obj.numero_factura)
+            this.andWhere(G.knex.raw("a.numero_factura = '"+obj.numero_factura+"'"))
         }
     }).andWhere('a.empresa_id', obj.empresaId)
       .whereNull('c.prefijo_nota');
             
 //	    console.log("Query ",query.toSQL());
-//    query.limit(G.settings.limit).
-//            offset((obj.paginaActual - 1) * G.settings.limit)
+   if(obj.paginaActual!== undefined ){
+    query.limit(G.settings.limit).
+            offset((obj.paginaActual - 1) * G.settings.limit)
+   }
     query.then(function(resultado) {
         callback(false, resultado)
     }). catch (function(err) {
@@ -223,7 +226,6 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
       
 
     query.then(function(resultado) {
-//	console.log("query",query.toSQL());
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [consultarFacturaProveedorDetalle]:", err);
@@ -293,7 +295,6 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
       
 
     query.then(function(resultado) {
-//	console.log("query",query.toSQL());
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [consultarFacturaProveedorDetalle]:", err);
@@ -377,7 +378,6 @@ FacturacionProveedoresModel.prototype.listarParametrosRetencion = function(param
             .andWhere('a.anio', anio);
 
     query.then(function(resultado) {
-//	console.log(" Retencion query ",query.toSQL());
         callback(false, resultado);
     }). catch (function(error) {
         console.log("error [parametrosRetencion]: ", error);

@@ -1798,7 +1798,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
                 porcentaje_reteiva: datosDocumentosXConsumo.cabecera[0].porcentaje_reteiva,
                 porcentaje_cree: datosDocumentosXConsumo.cabecera[0].porcentaje_cree,
                 tipo_pago_id: datosDocumentosXConsumo.cabecera[0].tipo_pago_id,
-                valor_total: datosDocumentosXConsumo.cabecera[0].valor_total,
+                //valor_total: datosDocumentosXConsumo.cabecera[0].valor_total,
                 facturacion_cosmitet: 0
                 
             }; 

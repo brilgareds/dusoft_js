@@ -590,7 +590,7 @@ OrdenesCompraModel.prototype.listOrdenCompraDestino = function(parametros, callb
      callback(false, resultado.rows);
 	
     }).catch(function(err){
-       console.log("error [guardarDestinoOrden]: ", err);
+       console.log("error [listOrdenCompraDestino]: ", err);
        callback({msj: "Error al guardar el destino de la orden", status: 500});
     });
      
@@ -638,6 +638,22 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
         console.log("actualizar_estado_orden_compra ", err)
        callback(err);
     });
+};
+
+
+
+
+// Modificar unidad de negocio de una Orden de Compra
+OrdenesCompraModel.prototype.listarComprasOrdenesPedidos = function(numero_orden,callback) {
+
+    var sql = "select * compras_ordenes_pedidos where orden_pedido_id = :1 and (estado= '1' or estado = '3' or estado = '4' or estado = '6') ";
+    
+    G.knex.raw(sql, {1:numero_orden}).then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
+    });
+    
 };
 
 // Modificar unidad de negocio de una Orden de Compra

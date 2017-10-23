@@ -1483,6 +1483,8 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
       
         callback(false, resultado.rows, resultado);
     }).catch (function(err) {
+	
+        console.log("err (/catch) [ingresarBodegaMovimientoTmp]: ", datos);
         console.log("err (/catch) [ingresarBodegaMovimientoTmp]: ", err);
         callback(err);
     });

@@ -30,6 +30,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              * @return modifica la autorizacion
              */
             $scope.autorizarOrdenCompra = function(modeloAutorizacionOrdenCompra, banderaautorizacionOrdenCompra) {
+//		console.log("modeloAutorizacionOrdenCompramodeloAutorizacionOrdenCompramodeloAutorizacionOrdenCompra",modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.usuarioIngreso);return;
                 var observacion = "";
                 var autorizador1 = "";
                 var autorizador2 = "";
@@ -121,7 +122,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     session: $scope.session,
                     data: {
                         autorizacion: {
-                            usuarioId: usuarioId,
+//                            usuarioId: usuarioId,
+			    usuarioId : modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.usuarioIngreso,     
                             docTmpId: docTmpId,
                             empresa: empresa,
                             bodega: bodega,

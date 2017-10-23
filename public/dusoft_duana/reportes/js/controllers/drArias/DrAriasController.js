@@ -97,8 +97,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * +Descripcion: Evento que actualiza la vista 
              */
            socket.on("onNotificarEstadoDescargaReporte", function(datos) {
-               if(datos.estado ==='ok'){
-                that.buscarReportesBloqueados();
+	      
+               if(datos.estado ==='ok'){                
+	
+		var timer = setTimeout(function(){
+             
+		   that.buscarReportesBloqueados();
+
+		    clearTimeout(timer);
+
+		   }, 0);	
+		
                }
             }); 
             

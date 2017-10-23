@@ -8,12 +8,13 @@ DrAriasEvents.prototype.onNotificarEstadoDescargaReporte = function(usuario_id,e
 
     var that = this;
     G.auth.getSessionsUser(usuario_id, function(err, sessions) {
-            
-         //Se recorre cada una de las sesiones abiertas por el usuario
+	var usuarioId="";
+
          sessions.forEach(function(session) {
-             console.log("emitir evento reportes ___________________________________________________");
-             //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
-             that.io.to(session.socket_id).emit('onNotificarEstadoDescargaReporte', {estado: 'ok'});
+//console.log("Emite ");
+               that.io.to(session.socket_id).emit('onNotificarEstadoDescargaReporte', {estado: 'ok'});
+	        
+
          });
 
      });

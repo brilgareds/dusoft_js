@@ -16,7 +16,6 @@ module.exports = function(app, di_container) {
     });
     
     app.post('/api/Reportes/DrArias/reportesGenerados', function(req, res) {
-        console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
         c_Reportes.reportesGenerados(req, res);
     });
 

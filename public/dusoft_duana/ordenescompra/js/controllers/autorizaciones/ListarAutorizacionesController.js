@@ -126,7 +126,7 @@ define(["angular", "js/controllers",
                     {field: 'ordenSeleccionada.productoSeleccionado.getValorUnitarioFactura()', displayName: "Valor Factura", width: "7%"},
                     {field: 'ordenSeleccionada.productoSeleccionado.getTotalCosto()', displayName: "Total", width: "7%"},
                     {field: 'ordenSeleccionada.getLocalizacion()', displayName: "Localización", width: "5%"},
-                    {field: 'ordenSeleccionada.productoSeleccionado.getNombreUsuarioIngreso()', displayName: "Usuario Solicitante", width: "7%"},
+                    {field: 'ordenSeleccionada.productoSeleccionado.getNombreUsuarioIngreso()', displayName: "Usuario Solicitante", width: "7%"},//setUsuarioIngreso
                     {field: 'ordenSeleccionada.productoSeleccionado.getJustificacionIngreso()', displayName: "Justificación", width: "14%"},
                     {displayName: "Autorización", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
@@ -262,6 +262,7 @@ define(["angular", "js/controllers",
                     producto.setValorUnitarioFactura(autorizacion[i].valor_unitario_factura);
                     producto.setValorUnitarioCompra(autorizacion[i].valor_unitario_compra);
                     producto.setLote(lote);
+		    //console.log("autorizacion[i].usuario_id ",autorizacion[i].usuario_id);
                     producto.setUsuarioIngreso(autorizacion[i].usuario_id);
                     producto.setNombreUsuarioIngreso(autorizacion[i].usuario_ingreso);
                     producto.setJustificacionIngreso(autorizacion[i].justificacion_ingreso);

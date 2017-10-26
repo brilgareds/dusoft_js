@@ -339,21 +339,33 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
 	};
 
     if (bodegaDestino && !borrarBodega) {
-        G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino).then(function(resultado) {
-	/*
+        G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro).then(function(resultado) {	    
+	  if(resultado.length>0){
+	    parametro.anterior = JSON.stringify({"bodega":resultado[0].bodega});  
+	  }else{
+	     parametro.anterior = JSON.stringify("");  
+	  }
+	  console.log("guardarBodega resultado ",resultado);
+	    
+         return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino);
+	 
+	}).then(function(resultado) {
+	
+	 parametro.accion = resultado.accion;
+	 return G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro);
+	 
+        }).then(function(resultado) {	 
+	 
+	 /*
 	 * @Andres M. Gonzalez
 	 * Fecha: 09-10-2017
 	 * +Descripcion: se modifica para realizar el log del modulo
 	 */
-	
-	 parametro.accion = resultado.accion;
-	 parametro.actual = JSON.stringify(bodegaDestino);
-	 parametro.anterior = "";
+	 parametro.actual = JSON.stringify({"bodega":resultado[0].bodega});  
 	 bodegaDestino.descripcionAccion = 'Inserta Orden de Compra Destino ';
 	 
 	 if(parametro.accion==='2'){
 	 bodegaDestino.descripcionAccion = 'Modifica Orden de Compra Destino '; 
-	 parametro.anterior = JSON.stringify(resultado.anterior);
 	 }
 	 
 	 parametro.tabla = 'compras_ordenes_destino';
@@ -371,7 +383,7 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
 	
         G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro).then(function(resultado) {
 	    
-	  ante=resultado;
+	  parametro.anterior = JSON.stringify({"bodega":+resultado[0].bodega}); 
  
 	  return G.Q.nfcall(that.m_ordenes_compra.borrarBodegaOrden, bodegaDestino.ordenCompraId);
 	  
@@ -384,13 +396,15 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
 	
 	 parametro.accion = '0';
 	 parametro.tabla = 'compras_ordenes_destino';
-	 parametro.anterior = JSON.stringify(ante);
+	  
 	 parametro.actual = "";
 	 bodegaDestino.descripcionAccion ='Elimina Orden de Compra Destino';
 	 parametro.detalle=JSON.stringify(bodegaDestino);
 	 	 
 	return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);   
 	
+	}).then(function(resultado) { 
+	    
             res.send(G.utils.r(req.url, 'Se ha eliminado la bodega destino correctamente', 200, {}));
 	    
         }).catch (function(err) {
@@ -457,7 +471,7 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
         terminar_orden : false
     };
     
-    console.log("parametros ", parametros);
+  
     G.Q.ninvoke(that, "__insertarOrdenCompra",parametros ).then(function (resultado) {  
         console.log("__insertarOrdenCompra ", resultado);
         res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
@@ -466,14 +480,10 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
         
         res.send(G.utils.r(req.url, err.msj, err.status, {lista_productos: err}));
     });
-
-
-
-
 };
 
 // Modificar la unidad de negocio de una orden de compra 
-OrdenesCompra.prototype.modificarUnidadNegocio0 = function(req, res) {
+OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
     console.log("********************************");
     console.log("********************************");
     console.log("********************************");
@@ -481,6 +491,7 @@ OrdenesCompra.prototype.modificarUnidadNegocio0 = function(req, res) {
     console.log("********************************");
     console.log("********************************");
     var that = this;
+    var orden_compra=[];
 
     var args = req.body.data;
 
@@ -504,24 +515,25 @@ OrdenesCompra.prototype.modificarUnidadNegocio0 = function(req, res) {
 
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
-    G.Q.nfcall(that.m_ordenes_compra.consultar_orden_compra, numero_orden).then(function(orden_compra) {
+    G.Q.nfcall(that.m_ordenes_compra.consultar_orden_compra, numero_orden).then(function(orden_compras) {
 
-	orden_compra = orden_compra[0];
+	orden_compra = orden_compras[0][0];
 	
-//	listarComprasOrdenesPedidos
-	
-      }).then(function(resultado) {
-	  
 	if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
 
 	    return G.Q.nfcall(that.m_ordenes_compra.modificar_unidad_negocio, numero_orden, unidad_negocio);
 
-	} else {//throw
+	} else {
 	    res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
 	    return;
 	}
 
     }).then(function(resultado) {
+	
+	return G.Q.nfcall(that.m_ordenes_compra.listarComprasOrdenesPedidos, numero_orden);
+	
+    }).then(function(resultado) {
+	var actual=resultado[0][0];
 
 	var parametros = {
 	    unidad_negocio: unidad_negocio,
@@ -535,12 +547,11 @@ OrdenesCompra.prototype.modificarUnidadNegocio0 = function(req, res) {
 	    usuario_id: req.session.user.usuario_id,
 	    tabla: 'compras_ordenes_pedidos',
 	    accion: '2',
+	    actual:JSON.stringify({"unidad_de_negocio" : actual.unidad_negocio}),
+	    anterior: JSON.stringify({"unidad_de_negocio" :orden_compra.descripcion}),
 	    detalle: JSON.stringify(parametros),
 	    fecha: new Date()
 	};
-
-	parametro.actual = JSON.stringify(bodegaDestino);
-	parametro.anterior = JSON.stringify(bodegaDestino);
 
 	return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs, parametro);
 
@@ -549,6 +560,8 @@ OrdenesCompra.prototype.modificarUnidadNegocio0 = function(req, res) {
 	res.send(G.utils.r(req.url, 'Unidad de negocio actualizada correctamente', 200, {orden_compra: []}));
 	
     }).catch (function(err) {
+	
+	console.log("ERROR ",err);
 	
 	var msj = "No se pudo actualizar la unidad de negocio";
         var status  = 500;
@@ -565,91 +578,6 @@ OrdenesCompra.prototype.modificarUnidadNegocio0 = function(req, res) {
     });
 };
 
-// Modificar la unidad de negocio de una orden de compra 
-OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
-        console.log("********************************");
-        console.log("********************************");
-        console.log("********************************");
-        console.log("*****modificarUnidadNegocio*****");
-        console.log("********************************");
-        console.log("********************************");
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.unidad_negocio === undefined) {
-        res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
-        return;
-    }
-
-    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
-        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
-        return;
-    }
-
-    if (args.ordenes_compras.unidad_negocio === '') {
-        res.send(G.utils.r(req.url, 'Se requiere la unidad de negocio', 404, {}));
-        return;
-    }
-
-    var numero_orden = args.ordenes_compras.numero_orden;
-    var unidad_negocio = args.ordenes_compras.unidad_negocio;
-
-
-    //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
-    that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
-
-        if (err || orden_compra.length === 0) {
-            res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
-            return;
-        } else {
-
-            orden_compra = orden_compra[0];
-            
-            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
-
-                that.m_ordenes_compra.modificar_unidad_negocio(numero_orden, unidad_negocio, function(err, rows, result) {
-
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'No se pudo actualizar la unidad de negocio', 500, {orden_compra: []}));
-                        return;
-                    } else {
-			
-			var parametros = {
-			    unidad_negocio : unidad_negocio,
-			    numero_orden : numero_orden,
-			    descripcion : 'modificar_unidad_negocio',
-			    descripcionAccion : 'modifico unidad de negocio'
-			};
-			
-			var parametro={
-			    orden_compra_id : numero_orden ,
-			    usuario_id : req.session.user.usuario_id,
-			    tabla : 'compras_ordenes_pedidos',
-			    accion : '2',
-			    detalle: JSON.stringify(parametros) ,
-			    fecha : new Date()
-			  };
-//			  
-//			  parametro.actual = JSON.stringify(bodegaDestino);
-//			  parametro.anterior = JSON.stringify(bodegaDestino);
-			  
-                      that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) {
-                        res.send(G.utils.r(req.url, 'Unidad de negocio actualizada correctamente', 200, {orden_compra: []}));
-                        return;
-                      });
-		      
-		    }
-                });
-
-            } else {
-                res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
-                return;
-            }
-        }
-
-    });
-};
 
 // Modificar Observacion de una orden de compra 
 OrdenesCompra.prototype.modificarObservacion = function(req, res) {
@@ -678,6 +606,7 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
 
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
+//    G.Q.nfcall(that.m_ordenes_compra.consultar_orden_compra, numero_orden).then(function(orden_compras) {
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
 
         if (err || orden_compra.length === 0) {
@@ -704,18 +633,25 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
 			    tiene_ingreso_temporal: orden_compra.tiene_ingreso_temporal,
 			    descripcionAccion : 'modifico observacion'
 			};
-			
+			console.log("orden_compraorden_compraorden_compraorden_compraorden_compraorden_compraorden_compraorden_compra",orden_compra);
 			var parametro={
 			    orden_compra_id : numero_orden ,
 			    usuario_id : req.session.user.usuario_id,
 			    tabla : 'compras_ordenes_pedidos',
 			    accion : '2',
+			    anterior: JSON.stringify({"observacion" :orden_compra.observacion}),
 			    detalle: JSON.stringify(parametros) ,
 			    fecha : new Date()
 			  };
-			 that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) {    
-			    res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {orden_compra: []}));
-			    return;
+			 that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compras) { 
+			              
+			     parametro.actual=JSON.stringify({"observacion" :orden_compras[0].observacion});
+			     
+			     that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) {    
+			        
+			     res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {orden_compra: []}));
+			     return;
+			     });
 			 });
                     }
                 });
@@ -737,27 +673,27 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
     var args = req.body.data;
 
     if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.codigo_producto === undefined) {
-        res.send(G.utils.r(req.url, 'numero_orden o codigo_producto no estan definidas', 404, {}));
-        return;
+	res.send(G.utils.r(req.url, 'numero_orden o codigo_producto no estan definidas', 404, {}));
+	return;
     }
 
     if (args.ordenes_compras.cantidad_solicitada === undefined || args.ordenes_compras.valor === undefined || args.ordenes_compras.iva === undefined) {
-        res.send(G.utils.r(req.url, 'cantidad_solicitada, valor o iva no estan definidas', 404, {}));
-        return;
+	res.send(G.utils.r(req.url, 'cantidad_solicitada, valor o iva no estan definidas', 404, {}));
+	return;
     }
 
     if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.codigo_producto === '') {
-        res.send(G.utils.r(req.url, 'numero_orden o codigo_producto  estan vacias', 404, {}));
-        return;
+	res.send(G.utils.r(req.url, 'numero_orden o codigo_producto  estan vacias', 404, {}));
+	return;
     }
 
     if (args.ordenes_compras.cantidad_solicitada === '' || args.ordenes_compras.valor === '' || args.ordenes_compras.iva === '') {
-        res.send(G.utils.r(req.url, 'cantidad_solicitada, valor o iva esta vacia', 404, {}));
-        return;
+	res.send(G.utils.r(req.url, 'cantidad_solicitada, valor o iva esta vacia', 404, {}));
+	return;
     }
-    
-    if(args.ordenes_compras.estado_documento=== undefined){
-        args.ordenes_compras.estado_documento=false;
+
+    if (args.ordenes_compras.estado_documento === undefined) {
+	args.ordenes_compras.estado_documento = false;
     }
 
     var numero_orden = args.ordenes_compras.numero_orden;
@@ -766,99 +702,110 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
     var valor = args.ordenes_compras.valor;
     var iva = args.ordenes_compras.iva;
     var modificar = args.ordenes_compras.modificar || false;
-    var entrar;  
-    var item_id=''; 
+    var entrar;
+    var item_id = '';
 
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
 
-        if (err || orden_compra.length === 0) {
-            res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
-            return;
-        } else {
+	if (err || orden_compra.length === 0) {
+	    res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
+	    return;
+	} else {
 
-            orden_compra = orden_compra[0];
-            
+	    orden_compra = orden_compra[0];
 
-            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
-               entrar=true; 
-            }else{
-               entrar=args.ordenes_compras.estado_documento;                
-               item_id=args.ordenes_compras.item_id;                
-            }
-	    
+
+	    if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+		entrar = true;
+	    } else {
+		entrar = args.ordenes_compras.estado_documento;
+		item_id = args.ordenes_compras.item_id;
+	    }
+
 	    /*
-	    * @Andres mauricio gonzalez
-	    * +descripcion: se comento la validacion de los estados y se valida con la entrada
-	    */
-		
-            if (entrar) {
-		
+	     * @Andres mauricio gonzalez
+	     * +descripcion: se comento la validacion de los estados y se valida con la entrada
+	     */
+
+	    if (entrar) {
+
 //            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
 
 
-                if (!modificar) {
+		if (!modificar) {
 
-                    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, null, null, null, function(err, rows, result) {
+		    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, null, null, null, function(err, rows, result) {
 
-                        if (err || result.rowCount === 0) {
-                            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-                            return;
-                        } else {
-                            //se reutiliza esta funcion para el ingreso de productos al I002, se envia el item_id
-                            if (item_id!==undefined && item_id!=='' ) {
-                                console.log(item_id);
-                                that.m_ordenes_compra.modificar_detalle_orden_compra_item(numero_orden, codigo_producto, cantidad_solicitada, item_id, function(err, rows, result) {
-                                    res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
-                                    return;
-                                });  
-                            }else{
-                                res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
-                                return;
-                            }
-                        }
-                    });
-
-                } else {
-                    that.m_ordenes_compra.modificar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, function(err, rows, result) {
-
-                        if (err || result.rowCount === 0) {
-                            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-                            return;
-                        } else {
-                            	var parametros = {
-				    numero_orden : numero_orden,
-				    codigo_producto : codigo_producto,
-				    cantidad_solicitada : cantidad_solicitada,
-				    valor : valor,
-				    descripcion : 'modificar_detalle_orden_compra',
-				    descripcionAccion : 'modifico (unidad y/o valor)'
-				    
-				};
-			
-				var parametro={
-				    orden_compra_id : numero_orden ,
-				    usuario_id : req.session.user.usuario_id,
-				    codigo_producto : codigo_producto,
-				    tabla : 'compras_ordenes_pedidos_detalle',
-				    accion : '2',
-				    detalle: JSON.stringify(parametros) ,
-				    fecha : new Date()
-				  };
-				that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) { 
+			if (err || result.rowCount === 0) {
+			    res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+			    return;
+			} else {
+			    //se reutiliza esta funcion para el ingreso de productos al I002, se envia el item_id
+			    if (item_id !== undefined && item_id !== '') {
+				console.log(item_id);
+				that.m_ordenes_compra.modificar_detalle_orden_compra_item(numero_orden, codigo_producto, cantidad_solicitada, item_id, function(err, rows, result) {
 				    res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
 				    return;
 				});
-                        }
-                    });
-                }
+			    } else {
+				res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
+				return;
+			    }
+			}
+		    });
 
-            } else {
-                res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
-                return;
-            }
-        }
+		} else {
+		    var lista_productos;
+		    that.m_ordenes_compra.consultar_detalle_orden_compra({numero_orden: numero_orden, termino_busqueda: codigo_producto}, function(err, lista_productos) {
+			lista_productos = lista_productos[0];
+			
+			that.m_ordenes_compra.modificar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, function(err, rows, result) {
+
+			    if (err || result.rowCount === 0) {
+				res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+				return;
+			    } else {
+				
+				var parametros = {
+				    numero_orden: numero_orden,
+				    codigo_producto: codigo_producto,
+				    cantidad_solicitada: cantidad_solicitada,
+				    valor: valor,
+				    descripcion: 'modificar_detalle_orden_compra',
+				    descripcionAccion: 'modifico (unidad y/o valor)'
+
+				};
+
+				var parametro = {
+				    orden_compra_id: numero_orden,
+				    usuario_id: req.session.user.usuario_id,
+				    codigo_producto: codigo_producto,
+				    tabla: 'compras_ordenes_pedidos_detalle',
+				    accion: '2',
+				    anterior: JSON.stringify({"cantidad_solicitada" : lista_productos.cantidad_solicitada ,"valor" :  lista_productos.valor }),
+				    detalle: JSON.stringify(parametros),
+				    fecha: new Date()
+				};
+				that.m_ordenes_compra.consultar_detalle_orden_compra({numero_orden: numero_orden, termino_busqueda: codigo_producto}, function(err, lista_productos) {
+				    lista_productos = lista_productos[0];
+				    parametro.actual = JSON.stringify({"cantidad_solicitada" : lista_productos.cantidad_solicitada , "valor" : lista_productos.valor})
+				    that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) {
+					res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
+					return;
+				    });
+				});
+			    }
+			});
+		    });
+		}
+
+	    } else {
+		res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
+		return;
+	    }
+	}
     });
 };
 
@@ -892,7 +839,7 @@ OrdenesCompra.prototype.cambiarEstado = function(req, res) {
         } else {
 
             orden_compra = orden_compra[0];
-
+	    
             if ((orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') || (estado === 1 && orden_compra.estado === '5')) {
 
                 that.m_ordenes_compra.actualizar_estado_orden_compra(numero_orden, estado, function(err, rows, result) {
@@ -901,6 +848,33 @@ OrdenesCompra.prototype.cambiarEstado = function(req, res) {
                         res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
                         return;
                     } else {
+			//Estado Orden de Compra 0 => Recibida (Ingresada en Bodega), 1 => Activa, 2 => Anulada , 3 => Recibido en bodega, 4 => Verificado en bodega, 5 => Bloqueada
+			var descripcionEstado="";
+			switch(estado) {
+			    case 0:
+				descripcionEstado="Ingresada en bodega";
+				break;
+			    case 1:
+				descripcionEstado="Activa";
+				break;
+			    case 2:
+				descripcionEstado="Anulado";
+				break;
+			    case 3:
+				descripcionEstado="Recibida en bodega";
+				break;
+			    case 4:
+				descripcionEstado="Verificada en bodega";
+				break;
+			    case 5:
+				descripcionEstado="Bloqueada";
+				break;
+			    case 6:
+				descripcionEstado="Verificado con Pdt";
+				break;
+			    default:
+				descripcionEstado="";
+			}
 			
 			var parametros = {
 				    numero_orden : numero_orden,
@@ -914,6 +888,8 @@ OrdenesCompra.prototype.cambiarEstado = function(req, res) {
 			    usuario_id : req.session.user.usuario_id,
 			    tabla : 'compras_ordenes_pedidos',
 			    accion : '2',
+			    anterior: JSON.stringify({"estado" :  orden_compra.descripcion_estado }),
+			    actual: JSON.stringify({"estado" : + descripcionEstado }),
 			    detalle: JSON.stringify(parametros) ,
 			    fecha : new Date()
 			  };
@@ -995,6 +971,8 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
 					usuario_id : req.session.user.usuario_id,
 					tabla : 'compras_ordenes_pedidos_detalle',
 					accion : '0',
+					anterior: JSON.stringify({"producto" :  codigo_producto }),
+			                actual: JSON.stringify({"producto" : "" }),
 					detalle: JSON.stringify(parametros) ,
 					fecha : new Date()
 				      };
@@ -1103,7 +1081,9 @@ OrdenesCompra.prototype.eliminarNovedad = function(req, res) {
           tabla : 'consultar_archivo_novedad_producto',
 	  accion : '0',
 	  detalle: JSON.stringify({novedadId: novedadId,descripcion:'eliminarRegistroNovedad',descripcionAccion : 'elimino registro de novedad'}) ,
-	  fecha : new Date()
+	  fecha : new Date(),
+	  anterior: JSON.stringify({novedadId : novedadId }),
+	  actual: JSON.stringify({'novedadId' : '' }),
 	};
 	
          return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);	
@@ -1682,21 +1662,21 @@ OrdenesCompra.prototype.modificarRecepcionMercancia = function(req, res) {
             return;
         } else {
 	        
-		recepcion_mercancia.descripcion = 'modificar_recepcion_mercancia';
-		recepcion_mercancia.descripcionAccion = 'modifico la recepcion de mercancias';
-		
-		var parametro={
-		    usuario_id : req.session.user.usuario_id,
-		    tabla : 'recepcion_mercancia',
-		    accion : '2',
-		    detalle: JSON.stringify(recepcion_mercancia) ,
-		    fecha : new Date()
-		  };
-			  
-	     that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) { 
+//		recepcion_mercancia.descripcion = 'modificar_recepcion_mercancia';
+//		recepcion_mercancia.descripcionAccion = 'modifico la recepcion de mercancias';
+//		
+//		var parametro={
+//		    usuario_id : req.session.user.usuario_id,
+//		    tabla : 'recepcion_mercancia',
+//		    accion : '2',
+//		    detalle: JSON.stringify(recepcion_mercancia) ,
+//		    fecha : new Date()
+//		  };
+//			  
+//	     that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function(err, rows, result) { 
 		res.send(G.utils.r(req.url, 'Recepcion mercancia modificada correctamente', 200, {ordenes_compras: recepcion_mercancia}));
 		return;
-	     });
+//	     });
         }
     });
 };
@@ -1803,26 +1783,26 @@ OrdenesCompra.prototype.modificarProductosRecepcionMercancia = function(req, res
             }else{
                 estadoOrdenDeCompra = '3';
             }
-	/*
-	 * @Andres M. Gonzalez
-	 * Fecha: 09-10-2017
-	 * +Descripcion: se modifica para realizar el log del modulo
-	 */
-	
-	args.ordenes_compras.descripcion = 'modificar_productos_recepcion_mercancia';
-	args.ordenes_compras.descripcionAccion  = 'modifico productos de recepcion mercancia';
-	   
-	var parametro={
-          usuario_id : req.session.user.usuario_id,
-          tabla : 'consultar_archivo_novedad_producto',
-	  codigo_producto : producto_mercancia,
-	  accion : '2',
-	  detalle: JSON.stringify(args.ordenes_compras) ,
-	  fecha : new Date()
-	};
-	
-         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);
-            
+//	/*
+//	 * @Andres M. Gonzalez
+//	 * Fecha: 09-10-2017
+//	 * +Descripcion: se modifica para realizar el log del modulo
+//	 */
+//	
+//	args.ordenes_compras.descripcion = 'modificar_productos_recepcion_mercancia';
+//	args.ordenes_compras.descripcionAccion  = 'modifico productos de recepcion mercancia';
+//	   
+//	var parametro={
+//          usuario_id : req.session.user.usuario_id,
+//          tabla : 'consultar_archivo_novedad_producto',
+//	  codigo_producto : producto_mercancia,
+//	  accion : '2',
+//	  detalle: JSON.stringify(args.ordenes_compras) ,
+//	  fecha : new Date()
+//	};
+//	
+//         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);
+            return true;
         }else{
             throw 'Error modificando productos a la recepcion ';
         }
@@ -1971,6 +1951,8 @@ OrdenesCompra.prototype.modificarAutorizacionCompras = function(req, res) {
           tabla : 'compras_ordenes_pedidos_productosfoc',
 	  accion : '2',
 	  detalle: JSON.stringify(args) ,
+	  anterior: JSON.stringify({'novedadId' :  novedadId }),
+	  actual: JSON.stringify({novedadId : '' }),
 	  fecha : new Date()
 	};
 	

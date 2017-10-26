@@ -529,7 +529,7 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
         centro_utilidad_pedido: centro_utilidad_pedido || null, bodega_pedido:bodega_pedido || null
     };
     
-    console.log("terminar orden?????????????????????? ", terminar_orden);
+
     if(terminar_orden){
         parametros["estado"] = '3';
         parametros["fecha_verificado"] = 'now()';
@@ -537,13 +537,12 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
         parametros["fecha_recibido"] = 'now()';
     }
     
-    
     var query = G.knex("compras_ordenes_pedidos").returning("orden_pedido_id").insert(parametros);
          
     if(transaccion) query.transacting(transaccion);
      
     query.then(function(resultado){
-        console.log("resultado del insert de ordenes ******************************", resultado)
+        
        callback(false, resultado);
     }).catch(function(err){
        console.log("erro (/catch) [insertar_orden_compra]: ", err);
@@ -583,8 +582,11 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
 
 OrdenesCompraModel.prototype.listOrdenCompraDestino = function(parametros, callback) {
 
-    var sql = " SELECT * FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
-   console.log("---------------------->>>>>>>>>",parametros);
+    var sql = " SELECT b.descripcion as bodega \
+		FROM compras_ordenes_destino as a\
+		left join bodegas b on b.bodega = a.bodega and b.empresa_id = a.empresa_id and b.centro_utilidad = a.centro_utilidad\
+                WHERE orden_compra_id = :1 ";
+  
     G.knex.raw(sql, {1:parametros.orden_compra_id}).then(function(resultado){
 	
      callback(false, resultado.rows);
@@ -646,7 +648,11 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
 // Modificar unidad de negocio de una Orden de Compra
 OrdenesCompraModel.prototype.listarComprasOrdenesPedidos = function(numero_orden,callback) {
 
-    var sql = "select * compras_ordenes_pedidos where orden_pedido_id = :1 and (estado= '1' or estado = '3' or estado = '4' or estado = '6') ";
+    var sql = "select a.*,b.*, b.descripcion as unidad_negocio\
+		from compras_ordenes_pedidos as a\
+		left join unidades_negocio as b on (a.codigo_unidad_negocio = b.codigo_unidad_negocio) \
+		where \
+		orden_pedido_id = :1 and (a.estado= '1' or a.estado = '3' or a.estado = '4' or a.estado = '6') ";
     
     G.knex.raw(sql, {1:numero_orden}).then(function(resultado){
        callback(false, resultado.rows, resultado);
@@ -1471,7 +1477,9 @@ OrdenesCompraModel.prototype.listarLogsOrdenesCompras = function(parametros, cal
 	"detalle",
 	"b.nombre",
 	G.knex.raw("to_char(fecha,'dd-MM-yyyy HH:MM:ss')as fecha"),
-	"tabla"
+	"tabla",
+	"anterior",
+	"actual"
     ];
 
     var query = G.knex.column(column)

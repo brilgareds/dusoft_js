@@ -303,6 +303,8 @@ define(["angular", "js/controllers",
 		  return;
 		}
 		resultado[index].detalle=JSON.parse(result.detalle);
+		resultado[index].anterior=JSON.parse(result.anterior);
+		resultado[index].actual=JSON.parse(result.actual);
 		index++;
 		__convertirJson(index,resultado,callback);
 	    };

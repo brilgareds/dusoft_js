@@ -111,7 +111,7 @@ define(["angular", "js/controllers",
             $scope.lista_autorizacion_compras = {
                 data: 'root.empresaOrdenCompra.listarAutorizaciones()',
                 enableColumnResize: true,
-                enableRowSelection: false,
+                enableRowSelection: true,
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [

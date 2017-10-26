@@ -23,6 +23,14 @@
                 <div class ="col-md-3"><div class="lbl_editar_producto">Valor Compra</div> {{root.rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.valorUnitarioCompra}}</div>
                 <div class ="col-md-3"><div class="lbl_editar_producto">Valor Factura</div><div>{{root.rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.valorUnitarioFactura}}</div></div>
             </div>
+	    
+            <div class="row">
+                <div class ="col-md-3"><div class="lbl_editar_producto">Justificación</div></div>
+	    </div>
+	    <div class="row">
+                <div class ="col-md-9">{{root.rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.justificacionIngreso}}</div>
+            </div>
+	    
             <fieldset disabled ng-if="root.rootAutorizacionOrdenCompra.nombreAutorizador!=NULL">
                 <legend></legend>
                 <div class="row">

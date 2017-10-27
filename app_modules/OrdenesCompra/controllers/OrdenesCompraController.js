@@ -2380,24 +2380,26 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
             def.resolve();
         }
         
-    }).then(function (resultado) { 
+    //}).then(function (resultado) { 
 	console.log("resultadoresultadoresultado",resultado);
 	/*
 	 * @Andres M. Gonzalez
 	 * Fecha: 09-10-2017
 	 * +Descripcion: se modifica para realizar el log del modulo
 	 */
-	parametros.descripcionAccion = 'modifico destino de la orden de compra';
+	/*parametros.descripcionAccion = 'modifico destino de la orden de compra';
 	var parametro={
 	  orden_compra_id : numero_orden ,
           usuario_id : parametros.usuario_id,
           tabla : 'compras_ordenes_pedidos',
-	  accion : '0',
+	  accion : resultado.accion,
 	  detalle: JSON.stringify(parametros) ,
-	  fecha : new Date()
+	  fecha : new Date(),
+          anterio:JSON.stringify(parametros),
+          actual:JSON.stringify(parametros)
 	};
 	
-         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);
+         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);*/
 	
     }).then(function (resultado) {
          

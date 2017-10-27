@@ -33,22 +33,28 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 	    if ($scope.root.productos.length > 0) {
 		var i = 0;
 		var ie = 0;
+		var mensaje="";
 		for (var ky in $scope.root.productos) {
 		    for (var k in $scope.root.productos[ie].actual) {
-
-			$scope.root.productos[i].detalleActual = k + " : " + $scope.root.productos[i].actual[k]+"\n";
+			mensaje += k + " : " + $scope.root.productos[ie].actual[k]+"\n";
 			i++;
 		    }
+		    $scope.root.productos[ie].detalleActual = mensaje;
+		     mensaje="";
+		    i=0;
 		    ie++;
 		}
 		var j = 0;
 		var ie = 0;
+		var mensajes="";
 		for (var ky in $scope.root.productos) {
 		    for (var k in $scope.root.productos[ie].anterior) {
-
-			$scope.root.productos[j].detalleAnterior = k + " : " + $scope.root.productos[j].anterior[k]+"\n";
+			mensajes += k + " : " + $scope.root.productos[ie].anterior[k]+"\n";
 			j++;
 		    }
+		    $scope.root.productos[ie].detalleAnterior=mensajes;
+		    mensajes="";
+		    j=0;
 		    ie++;
 		}
 	    } else {

@@ -2028,6 +2028,7 @@ OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
         res.send(G.utils.r(req.url, 'usuarioId  no esta definidas', 404, {}));
         return;
     }
+    
     if (args.cantidad === undefined) {
         res.send(G.utils.r(req.url, 'cantidad  no esta definidas', 404, {}));
         return;

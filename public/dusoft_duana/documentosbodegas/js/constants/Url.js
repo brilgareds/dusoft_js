@@ -34,6 +34,7 @@ define(["angular"], function(angular) {
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/crearDocumento',
                 'EXEC_CREAR_DOCUMENTOS': BASE_URL + '/movBodegas/I002/execCrearDocumento',
                 'CREAR_HTML_DOCUMENTO': BASE_URL + '/movBodegas/I002/crearHtmlDocumento',
+                'CREAR_HTML_AUTORIZACION': BASE_URL + '/movBodegas/I002/crearHtmlAutorizacion'
                                 
             },
             'I003': {

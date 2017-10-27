@@ -58,7 +58,7 @@ FacturacionProveedores.prototype.listarOrdenesCompraProveedor = function(req, re
         usuarioId: usuario,
         porFacturar:porFacturar
     };
-
+    
     G.Q.ninvoke(that.m_facturacion_proveedores, 'consultarOrdenesCompraProveedor', parametros).then(function(resultado) {
 
         if (resultado.length > 0) {
@@ -199,6 +199,8 @@ FacturacionProveedores.prototype.detalleRecepcionParcial = function(req, res) {
         return G.Q.nfcall(__impuestos, that, 0, recepcionDetalle, resultado[0], valores, parametros);
 
     }).then(function(resultado) {
+	
+	
         recepcionDetalleTotal[0] = resultado;
         recepcionDetalleTotal[1] = recepcionDetalle;
         res.send(G.utils.r(req.url, 'Consulta detalleRecepcionParcial', 200, {detalleRecepcionParcial: recepcionDetalleTotal}));
@@ -298,7 +300,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
 
 	}).then(function(resultado) {
 
-	    return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones, parametros,transaccion);
+	    return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones,parametros,0,transaccion);
 
 	}).then(function(resultado) {
 
@@ -541,8 +543,9 @@ function __generarReporteFactura(rows, callback) {
  * +Descripcion Metodo recursivo privado encargado de iterar la recepciones parciales                                                    
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */
-function __ingresarFacturaDetalle(that, index, detalle, parametros,transaccion, callback) {
 
+function __ingresarFacturaDetalle(that, index, detalle, parametros,recepcionParcialId,transaccion, callback) {
+    var recepcioParId=recepcionParcialId;
     var producto = detalle[index];
 
     if (!producto) {
@@ -553,8 +556,10 @@ function __ingresarFacturaDetalle(that, index, detalle, parametros,transaccion, 
     producto.recepcion_parcial_id = producto.recepcion_parcial;
 
     G.Q.ninvoke(that.m_facturacion_proveedores, 'detalleRecepcionParcial', producto).then(function(resultado) {
-        console.log("resultadoresultado ",resultado);
-	if(index===0){
+      
+	if(resultado[0].recepcion_parcial_id !== recepcionParcialId){
+//	if(index===0){
+            recepcioParId=resultado[0].recepcion_parcial_id;
 	    return G.Q.nfcall(__insertarDetalle, that, 0, resultado, parametros,transaccion);
 	}else{
 	    return true;    
@@ -567,7 +572,7 @@ function __ingresarFacturaDetalle(that, index, detalle, parametros,transaccion, 
 
        var time =  setTimeout(function() {
             index++;
-            __ingresarFacturaDetalle(that, index, detalle, parametros,transaccion, callback);
+            __ingresarFacturaDetalle(that, index, detalle, parametros,recepcioParId,transaccion, callback);
         }, 0);
 
     }).fail(function(err) {
@@ -655,33 +660,46 @@ function __impuestoProveedor(impuesto, impuestoProveedor, resultado, callback) {
  * @fecha 2017-05-08 (YYYY-MM-DD)
  */
 function __impuestos(that, index, productos, impuesto, resultado, cabecera, callback) {
+    if(cabecera.porcentajeRtf === undefined){
+	cabecera.porcentajeRtf=parseFloat(cabecera.porcentajertf);
+    }
+    if(cabecera.porcentajeIca === undefined){
+	cabecera.porcentajeIca=parseFloat(cabecera.porcentajeica);
+    }
+    if(cabecera.porcentajeReteiva === undefined){
+	cabecera.porcentajeReteiva=parseFloat(cabecera.porcentajereteiva);
+    }
+    if(cabecera.porcentajeCree === undefined){
+	cabecera.porcentajeCree= parseFloat(cabecera.porcentajecree);
+    }
 
     var producto = productos[index];
     if (!producto) {
      
         if (impuesto.sw_rtf === '2' || impuesto.sw_rtf === '3')
-            if (resultado._subTotal >= parseInt(impuesto.base_rtf)) {
-                resultado.valorRetFte = Math.round(resultado._subTotal * (cabecera.porcentajertf / 100));
+            if (resultado._subTotal >= parseFloat(impuesto.base_rtf)) {
+                resultado.valorRetFte = parseFloat(resultado._subTotal * (cabecera.porcentajeRtf / 100));
             } else {
                 resultado.valorRetFte = 0;
             }
 
         if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3'){
-            if (resultado._subTotal >= parseInt(impuesto.base_ica)) {
-                resultado.valorRetIca = Math.round(resultado._subTotal * (cabecera.porcentajeica / 1000));
+            if (resultado._subTotal >= parseFloat(impuesto.base_ica)) {
+                resultado.valorRetIca = parseFloat(resultado._subTotal * (cabecera.porcentajeIca / 1000));
             } else {
                 resultado.valorRetIca = 0;
             }
 	}
         if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3'){
-            if (resultado._subTotal >= parseInt(impuesto.base_reteiva)) {
-                resultado.valorRetIva = Math.round(resultado._iva * (cabecera.porcentajereteiva / 100));
+	        
+            if (resultado._iva  >= parseFloat(impuesto.base_reteiva)) {
+                resultado.valorRetIva = parseFloat(resultado._iva * (cabecera.porcentajeReteiva / 100));
             } else {
                 resultado.valorRetIva = 0;
             }
 	  }
-        if (cabecera.porcentajecree > 0) {
-            resultado.impuesto_cree = ((cabecera.porcentajecree / 100) * resultado._subTotal);
+        if (cabecera.porcentajeCree > 0) {
+            resultado.impuesto_cree = ((cabecera.porcentajeCree / 100) * resultado._subTotal);
         } else {
             resultado.impuesto_cree = 0;
         }
@@ -704,7 +722,7 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
     resultado.Total = resultado.Total + (producto.valor * parseInt(producto.cantidad));
     resultado.porcIva = (producto.porc_iva / 100) + 1;
     resultado.SubTotal = (producto.valor * parseInt(producto.cantidad));
-    resultado.Iva = resultado.Iva + (resultado.SubTotal - (resultado.SubTotal / parseInt(resultado.porcIva)));
+    resultado.Iva = resultado.Iva + (resultado.SubTotal - (resultado.SubTotal / parseFloat(resultado.porcIva)));
     resultado.Cantidad += parseInt(producto.cantidad);
     resultado._subTotal += (producto.valor * parseInt(producto.cantidad)) / ((producto.porc_iva / 100) + 1);
     resultado._iva += (producto.valor * parseInt(producto.cantidad)) - (producto.valor * parseInt(producto.cantidad)) / ((producto.porc_iva / 100) + 1);

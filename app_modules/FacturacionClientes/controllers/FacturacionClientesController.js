@@ -1506,7 +1506,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         
     }).then(function(resultado){
         
-        console.log("resultado [consultarDetalleTemporalFacturaConsumo]: QUI OJO PUES ", resultado);
+        console.log("resultado [consultarDetalleTemporalFacturaConsumo]: ", resultado);
         if(resultado.length > 0){    
             
             resultado.forEach(function(row){
@@ -1556,13 +1556,13 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
        
         
     }).fail(function(err){  
-        /*logger.error("-----------------------------------");
+        logger.error("-----------------------------------");
         logger.error({"metodo":"FacturacionClientes.prototype.generarTemporalFacturaConsumo",
             "usuario_id": usuario,
             "parametros: ": parametros,
             "parametroBodegaDocId": parametroBodegaDocId,
             "resultado: ":err});
-        logger.error("-----------------------------------");*/
+        logger.error("-----------------------------------");
         if(!err.status){
             err = {};
             err.status = 500;
@@ -1798,7 +1798,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
                 porcentaje_reteiva: datosDocumentosXConsumo.cabecera[0].porcentaje_reteiva,
                 porcentaje_cree: datosDocumentosXConsumo.cabecera[0].porcentaje_cree,
                 tipo_pago_id: datosDocumentosXConsumo.cabecera[0].tipo_pago_id,
-                valor_total: datosDocumentosXConsumo.cabecera[0].valor_total,
+                //valor_total: datosDocumentosXConsumo.cabecera[0].valor_total,
                 facturacion_cosmitet: 0
                 
             }; 

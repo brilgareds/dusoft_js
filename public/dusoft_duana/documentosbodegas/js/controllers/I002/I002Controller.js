@@ -41,7 +41,7 @@ define([
             var datos_documento = localStorageService.get("documento_bodega_I002");
             var fecha_actual = new Date();
 
-            $scope.format = 'dd-MM-yyyy'
+            $scope.format = 'dd-MM-yyyy';
             $scope.root = {
                 porFactura: 0,
                 totalFactura: 0,
@@ -53,7 +53,7 @@ define([
                 descripcionFactura: "",
                 pedidosSeleccionados: [],
             };
-
+            
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
 
@@ -199,7 +199,9 @@ define([
                         ordenes_compras: {
                             empresaId: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             centroUtilidad: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.codigo,
-                            bodega:bodega,// Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo,
+
+                            bodega: bodega,//Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo,
+
                             codigo_proveedor_id: $scope.DocumentoIngreso.get_proveedor().get_codigo(),
                             bloquearEstados: true,
 			    filtraUnidadNegocio: unidadNegocio
@@ -433,19 +435,19 @@ define([
             that.renderListarParametros = function(parametros) {
 
                 if (parametros[0].sw_rtf === '2' || parametros[0].sw_rtf === '3')
-                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_rtf)) {
+                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_rtf)) {
                         $scope.valorRetFte = $scope.valorSubtotal * ($scope.valorRetFte / 100);
                     } else {
                         $scope.valorRetFte = 0;
                     }
                 if (parametros[0].sw_ica === '2' || parametros[0].sw_ica === '3')
-                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_ica)) {
+                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_ica)) {
                         $scope.valorRetIca = $scope.valorSubtotal * ($scope.valorRetIca / 1000);
                     } else {
                         $scope.valorRetIca = 0;
                     }
                 if (parametros[0].sw_reteiva === '2' || parametros[0].sw_reteiva === '3')
-                    if ($scope.valorSubtotal >= parseInt(parametros[0].base_reteiva)) {
+                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_reteiva)) {
                         $scope.valorRetIva = $scope.gravamen * ($scope.valorRetIva / 100);
                     } else {
                         $scope.valorRetIva = 0;
@@ -469,7 +471,6 @@ define([
              * createUpdate 0-crear, 1-Modificar
              */
             that.guardarModificarDetalleOrdenCompra = function(parametros, createUpdate, cantidadIngresada) {
-                console.log("************that.guardarModificarDetalleOrdenCompra****************")
                 var ordenes_compras = {
                     numero_orden: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
                     codigo_producto: parametros.codigo_producto,
@@ -585,22 +586,64 @@ define([
                     if (data.status === 200) {
 
                         AlertService.mostrarMensaje("warning", data.msj);
+			
                         if (datos !== undefined) {
                             that.recorreProductos(datos, data.obj.recepcion_parcial_id, function(parametros) {
+				
                                 that.insertarFacturaProveedor(parametros);
                             });
                         }
+			
+			var documentos = {prefijo: data.obj.prefijo , numero: data.obj.numero};
+			setTimeout(function() {
+			    that.crearHtmlAutorizacion(documentos,function(respuesta){
+			      if(respuesta !== false){
+				$scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
+			      }  
+			    });
+			}, 0);
+			
                         that.buscar_ordenes_compra();
                         that.refrescarVista();
                         $scope.DocumentoIngreso.orden_compra = "";
-                        var nombre = data.obj.nomb_pdf;
-                        setTimeout(function() {
-                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                        }, 4000);
+			
+			var nombre = data.obj.nomb_pdf;
+			setTimeout(function() {
+			    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+			}, 4000);
                     }
+		    
                     if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarMensaje("warning", data.msj);2
                     }
+                });
+            };
+	    
+	     that.crearHtmlAutorizacion=function(documentos,callback){
+
+                var obj = {
+                        session: $scope.session,
+                        data: {
+                                  empresaId : Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                                  prefijo:documentos.prefijo,
+                                  numeracion:documentos.numero
+                           }
+                    };
+                   
+		GeneralService.crearHtmlAutorizacion(obj, function(data) {
+		   
+                    if (data.status === 200) {
+			callback(data);
+		    }
+		    if (data.status === 201) {
+			AlertService.mostrarMensaje("warning", data.msj);
+			callback(false);
+		    }
+		    if (data.status === 500) {
+			AlertService.mostrarMensaje("warning", data.msj);
+			callback(false);
+		    }
+                    
                 });
             };
 
@@ -705,7 +748,7 @@ define([
                                                 <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <h4><b><p>Fecha Factura:</p></b></h4>\
+                                                              <h5><b><p>Fecha Factura:</p></b></h5>\
                                                              </div>\
                                                              <div class="col-sm-8">\
                                                                 <p class="input-group">\
@@ -731,7 +774,7 @@ define([
                                                 <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <h4><b>Fecha Radicación:</b></h4>\
+                                                              <h5><b>Fecha Radicación:</b></h5>\
                                                              </div>\
                                                              <div class="col-sm-8">\
                                                                 <p class="input-group">\
@@ -757,7 +800,7 @@ define([
                                                 <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <h4><b>Numero Factura:</b></h4>\
+                                                              <h5><b>Numero Factura:</b></h5>\
                                                              </div>\
                                                              <p class="col-sm-8">\
                                                                     <input type="text" ng-model="root.numeroFactura"  class="form-control" required="required" >\
@@ -767,7 +810,7 @@ define([
                                                <div class="row">\
                                                         <div class="form-group">\
                                                             <div class="col-sm-4">\
-                                                              <h4><b>Valor Total Factura:</b></h4>\
+                                                              <h5><b>Valor Total Factura:</b></h5>\
                                                              </div>\
                                                              <p class="col-sm-8">\
                                                                 <input type="text" ng-model="root.totalFactura" validacion-numero-decimal class="form-control" required="required" >\
@@ -777,7 +820,7 @@ define([
                                               <div class="row">\
                                                        <div class="form-group">\
                                                             <div class="col-sm-4" >\
-                                                               <h4><b>Total de Descuento:</b></h4>\
+                                                               <h5><b>Total de Descuento:</b></h5>\
                                                             </div>\
                                                             <p class="col-sm-8">\
                                                               <input type="text" ng-model="root.totalDescuento" validacion-numero-decimal class="form-control">\
@@ -1241,7 +1284,6 @@ define([
             };
 
             $scope.btn_eliminar_producto = function(fila) {
-                console.log("fila ", fila)
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -1468,7 +1510,7 @@ define([
                     {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion'},
                     {field: 'get_lote()', displayName: 'Lote', width: "5%"},
-                    {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
+                    {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento.', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
                     {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad", cellFilter: "number"},
                     {field: 'get_iva()', displayName: "Valor IVA", width: "5%"},
                     {field: 'get_porcentaje_gravamen()', displayName: '% Gravament', width: "5%"},
@@ -1503,7 +1545,7 @@ define([
             };
 
             $scope.ingresar_producto = function(productos) {
-
+		
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
                 var fecha_vencimiento = $filter('date')(new Date(productos.fecha_vencimiento), "dd/MM/yyyy");
@@ -1541,12 +1583,21 @@ define([
                 }
 
 
-                if (productos.valor_unitario_ingresado > (productos.valor_unitario + 0.999) || diferencia >= 0 && diferencia <= 45) {
+                if (productos.valor_unitario_ingresado > (productos.valor_unitario + 0.999) || diferencia >= 0 && diferencia <= 45 || productos.valor_unitario_ingresado < (productos.valor_unitario - 0.999) ) {
                     var mensaje = "";
                     var validacionprecio = false;
                     var validacionfecha = false;
-                    if (productos.valor_unitario_ingresado > productos.valor_unitario) {
+		    
+		    if(parseInt(productos.cantidadActual) !== parseInt(productos.cantidad_solicitada)){
+			productos.cantidad_solicitada=parseInt(productos.cantidadActual);
+		    }
+		    
+                    if (productos.valor_unitario_ingresado > (productos.valor_unitario + 0.999)) {
                         mensaje = " - El Precio Unitario es Mayor al de la Orden de Compra";
+                        validacionprecio = true;
+                    }
+                    if (productos.valor_unitario_ingresado < (productos.valor_unitario - 0.999)) {
+                        mensaje = " - El Precio Unitario es Menor al de la Orden de Compra";
                         validacionprecio = true;
                     }
                     if (diferencia >= 0 && diferencia <= 45) {
@@ -1563,7 +1614,7 @@ define([
                     return;
                 }
 
-                var total_costo_ped = productos.cantidadActual * (productos.valor_unitario_ingresado + (productos.valor_unitario_ingresado * productos.iva) / 100);
+                var total_costo_ped = productos.cantidadActual * (parseFloat(productos.valor_unitario_ingresado) + ((parseFloat(productos.valor_unitario_ingresado) * productos.iva) / 100));
                 var movimientos_bodegas = {
                     doc_tmp_id: $scope.doc_tmp_id,
                     bodegas_doc_id: datos_documento.bodegas_doc_id,
@@ -1578,8 +1629,7 @@ define([
                     valor_unitario: '0',
                     usuario_id: $scope.session.usuario_id,
                     item_id_compras: productos.item_id,
-                };
-
+                }; 
                 that.additemDocTemporal(movimientos_bodegas);
             };
 
@@ -1788,7 +1838,7 @@ define([
 
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-                var valor = parseInt(producto.valor_unit);
+                var valor = parseFloat(producto.valor_unit);
                 var porcentaje = ((valor * producto.iva) / 100);
                 var valorMasPorcentaje = valor + porcentaje;
                 var total_costo = valorMasPorcentaje * producto.cantidad_solicitada;

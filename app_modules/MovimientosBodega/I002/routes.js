@@ -50,5 +50,8 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/I002/crearHtmlDocumento', function(req, res) {
         c_i002.crearHtmlDocumento(req, res);
     });
+    app.post('/api/movBodegas/I002/crearHtmlAutorizacion', function(req, res) {
+        c_i002.crearHtmlAutorizacion(req, res);
+    });
       
 };

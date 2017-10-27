@@ -1,0 +1,223 @@
+<html>
+    <head>
+        <title>&nbsp;</title>
+	<style>
+	    .detalle{
+		border: 0.5px solid black;
+	    }
+	    table {
+		border-collapse: collapse;
+	    }
+
+            .title{
+                font-weight:bold;
+                font-family:"Times New Roman", Georgia, Serif;;
+                font-size:14px;
+            }
+
+            .docInfo{
+                float:right;
+                font-size:9px;
+            }
+
+            .footer{
+                margin-top:120px;
+                width:100%;
+            }
+
+            .cantidad{
+                text-align:center;
+            }
+
+            .fecha_pedido{
+                margin-left:20px;
+            }
+	    .rhr {
+		display: block;
+		top: 80px;
+		border-top: 1px solid #0e0e0e;
+	    }
+        </style>
+        <link href="{{:serverUrl}}stylesheets/documentosbodegas/style.css" rel=stylesheet type=text/css >
+        <link href="{{:serverUrl}}stylesheets/documentosbodegas/style-print.css" rel=stylesheet type=text/css media="print">
+
+        <script>
+	    var imprimir = function() {
+
+		document.getElementById("btnImprimir").style.display = 'none';
+		window.print();
+
+	    }
+        </script>
+
+    </head>
+    <body>
+        <table width="100%" border ='0' >
+            <tr>
+                <td align="center" class='title'>
+		    <b>AUTORIZACI&Oacute;N DE PRODUCTOS OC</b>
+                </td>
+	    </tr>
+            <tr>
+                <td align="center">
+		    <hr /> 
+                </td>
+	    </tr>
+	    <tr>
+                <td align="center">                   
+		    <table width="90%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:10px"> 
+			<tr> 
+			    <td colspan='1' ><b>EMPRESA:</b><br /></td> 
+			    <td colspan='1' align="left"><b>{{:cabecera.razon_social}}</b><br /></td> 
+			    <td colspan='1' align="center"><b>CENTRO DE UTILIDAD:</b><br /></td> 
+			    <td colspan='1' align="left"><b>{{:cabecera.centro_utilidad}}</b><br /></td> 
+			    <td colspan='1' align="center"><b>BODEGA:</b><br /></td> 
+			    <td colspan='1' align="left"><b>{{:cabecera.bodega}}</b><br /></td> 
+			</tr>  
+			<tr> 
+			    <td colspan='1' ><b>TIPO MOVIMIENTO:</b><br /></td> 
+			    <td colspan='2' align="left"><b>{{:cabecera.tipo_movimiento}}</b><br /></td> 
+			    <td colspan='1' align="center"><b>DOC BOD ID:</b><br /></td> 
+			    <td colspan='2' align="left"><b>{{:cabecera.tipo_doc_bodega_id}}</b><br /></td> 
+			</tr>  
+			<tr> 
+			    <td colspan='1' ><b>DESCRIPCI&Oacute;N:</b><br /></td> 
+			    <td colspan='5' align="left"><b>{{:cabecera.descripcion}}</b><br /></td> 
+			</tr>  
+			<tr> 
+			    <td colspan='1'><b>NUMERO:</b><br /></td> 
+			    <td colspan='5' align="left"><b>{{:cabecera.prefijo}} {{:cabecera.numero}} </b><br /></td> 
+			</tr>  
+			<tr> 
+			    <td colspan='1'><b>OBSERVACI&Oacute;N:</b><br /></td> 
+			    <td colspan='5' align="left"><b>{{:cabecera.observacion}}</b><br /></td> 
+			</tr>  
+			<tr> 
+			    <td colspan='1'><b>USUARIO:</b><br /></td> 
+			    <td colspan='5' align="left"><b>{{:cabecera.usuario_id}} - {{:cabecera.nombre}}</b><br /></td> 
+			</tr>  
+		    </table> 
+                </td>
+            </tr>
+	    <tr>
+                <td align="center">
+		    <hr /> 
+                </td>
+	    </tr>
+	    <tr>
+                <td align="center">
+		    <b>DATOS ADICIONALES</b>
+                </td>
+	    </tr>
+
+	    {{for adicional}}
+
+	    <tr>
+		<td align="center">                   
+		    <table width="90%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:10px"> 
+			<tr> 
+			    <td colspan='1' ><b>ORDEN DE PEDIDO No.:</b><br /></td> 
+			    <td colspan='1' align="left"><b>{{:orden_pedido_id}}</b><br /></td>
+			</tr> 
+			<tr> 
+			    <td colspan='1'><b>PROVEEDOR:</b><br /></td> 
+			    <td colspan='1' align="left"><b>{{:proveedor}}</b><br /></td> 
+			</tr>   
+		    </table> 
+		</td>
+	    </tr>
+
+	    {{/for}}
+
+	    <tr>
+                <td align="center">
+		    <hr /> 
+                </td>
+	    </tr>
+	    <tr>
+                <td align="center">
+		    <b>PRODUCTOS QUE FUERON AUTORIZADOS</b>
+                </td>
+	    </tr>
+
+	    <tr>
+		<td align="center">                   
+		    <table width="100%"  class='detalle' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:10px"> 
+			<tr > 
+			    <td class='detalle' align="center" ><b>CODIGO</b></td> 
+			    <td class='detalle' align="center"><b>DESCRIPCI&Oacute;N</b></td>
+			    <td class='detalle' align="center"><b>FECHA VENCIMIENTO</b></td>
+			    <td class='detalle' align="center"><b>LOTE</b></td>
+			    <td class='detalle' align="center"><b>CANTIDAD</b></td>
+			    <td class='detalle' align="center"><b>V/U COMPRA</b></td>
+			    <td class='detalle' align="center"><b>V/U FACTURA</b></td>
+			</tr> 
+			{{for detalle}}
+			<tr> 
+			    <td class='detalle' ><b>{{:codigo_producto}}</b></td> 
+			    <td class='detalle' ><b>{{:descripcion_producto}}</b></td>
+			    <td class='detalle' ><b>{{:fecha_vencimiento}}</b></td>
+			    <td class='detalle' ><b>{{:lote}}</b></td>
+			    <td class='detalle' align="right" ><b>{{:cantidad}}</b></td>
+			    <td class='detalle' align="right" ><b>{{:valor_unitario_compra}}</b></td>
+			    <td class='detalle' align="right" ><b>{{:valor_unitario_factura}}</b></td>
+			</tr>  
+			<tr>  
+			    <td colspan='1' class='detalle' ><b>INFO</b></td>
+			    <td colspan='6' class='detalle' ><b>{{:justificacion_ingreso}}</b></td>
+			</tr>  
+			<tr>  
+			    <td colspan='1' class='detalle' ><b>Autorizador 1:</b></td>
+			    <td colspan='6' class='detalle' ><b>{{:usuario_id_autorizadors_1}}</b></td>
+			</tr>  
+			<tr>  
+			    <td colspan='1' class='detalle' ><b>Autorizador 2:</b></td>
+			    <td colspan='6' class='detalle' ><b>{{:usuario_id_autorizadors_2}}</b></td>
+			</tr>  
+			<tr>  
+			    <td colspan='1' class='detalle' ><b>AUTORIZACIONES:</b></td>
+			    <td colspan='6' class='detalle' ><b>{{:observacion_autorizacion}}</b></td>
+			</tr>  
+			{{/for}}
+		    </table> 
+		</td>
+	    </tr>
+	    <tr>
+                <td align="center">
+		    <hr />
+                </td>
+	    </tr>
+	    <tr>
+                <td align="center">
+		    <table width="50%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:10px" > 
+			<tr> 
+			    <td width="30%" ><b>Revisado Por :</b></td>			
+			    <td width="70%" ><hr class='rhr'/></td> 
+			</tr>   
+		    </table> 
+                </td>
+	    </tr>
+	    <tr>
+                <td align="right">
+		    <table width="40%" class="label" border ='1' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8px" > 
+			<tr> 
+			    <td width="30%" ><b>FECHA DE IMPRESION</b></td>
+			    <td width="30%" ><b>USUARIO IMPRESION</b></td>
+			</tr>   
+			<tr> 
+			   <td width="30%" ><b>{{:cabecera.fechaActual}}</b></td>
+			   <td width="30%" ><b>{{:cabecera.usuario}}</b></td>
+			</tr>   
+		    </table> 
+                </td>
+	    </tr>
+	</table>
+        <div id = "btnImprimir"><input type="button" name="imprimir" value="Imprimir" onclick="imprimir()" ></div>
+    </body>
+    <footer>
+
+    </footer>
+</HTML>
+
+
+

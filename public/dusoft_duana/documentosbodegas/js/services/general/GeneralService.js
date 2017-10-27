@@ -42,6 +42,19 @@ define(["angular", "js/services"], function(angular, services) {
                         });
 
                     };
+		    
+		     /*
+                     * @Author: Andres Mauricio Gonzalez T.
+                     * @fecha 18/10/2017
+                     * +Descripcion: crear impresion html 
+                     */
+		    self.crearHtmlAutorizacion = function(obj, callback) {
+                         
+			Request.realizarRequest(API.I002.CREAR_HTML_AUTORIZACION, "POST", obj, function(data) {			 
+			  callback(data);
+			});
+			
+		    };
 
 
                     /*

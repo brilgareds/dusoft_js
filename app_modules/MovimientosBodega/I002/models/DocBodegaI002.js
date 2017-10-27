@@ -71,6 +71,97 @@ DocumentoBodegaI002.prototype.insertarRecepcionParcialDetalle = function(paramet
     }).done();
 
 };
+/*
+ * @Andres M. Gonzalez. 
+ * @param {type} parametros
+ * @param {type} transaccion
+ * @param {type} callback
+ * @returns {undefined} */
+DocumentoBodegaI002.prototype.consultarAutorizacionesIngreso = function(parametros,callback) {
+
+    var columna = [
+        "empresa_id",
+	"numero",
+	"prefijo",
+	"orden_pedido_id",
+	"codigo_producto",
+	"lote",
+	G.knex.raw("to_char(fecha_vencimiento,'DD/MM/YYYY') as fecha_vencimiento"),
+	G.knex.raw("(select nombre from system_usuarios where usuario_id = usuario_id_autorizador)  as usuario_id_autorizadors_1"),
+	G.knex.raw("(select nombre from system_usuarios where usuario_id = usuario_id_autorizador_2)  as usuario_id_autorizadors_2"),
+	"usuario_id_autorizador_2",
+	"observacion_autorizacion",
+	"porcentaje_gravamen",
+	"valor_unitario_compra",
+	"valor_unitario_factura",
+	"justificacion_ingreso",
+	"cantidad",
+	"total_costo",
+	"fecha_solicitud",
+	"autorizados_id",
+	G.knex.raw("fc_descripcion_producto(codigo_producto) as descripcion_producto")
+    ];
+
+    var subQuery = G.knex.select(columna)
+            .from("inv_bodegas_movimiento_ordenes_compra_prod_autorizados as a")
+            .as("a");
+
+    var query = G.knex(G.knex.raw("a.*")).from(subQuery)
+            .where('empresa_id', parametros.empresaId)
+            .andWhere('prefijo', parametros.prefijoDocumento)
+            .andWhere('numero', parametros.numeracionDocumento);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [consultarAutorizacionesIngreso]: ", error);
+        callback(error);
+    });
+
+};
+/*
+ * @Andres M. Gonzalez. 
+ * @param {type} parametros
+ * @param {type} transaccion
+ * @param {type} callback
+ * @returns {undefined} */
+DocumentoBodegaI002.prototype.consultarAutorizacionesProveedor = function(parametros,callback) {
+
+    var columna = [
+        G.knex.raw("a.orden_pedido_id"),
+	G.knex.raw("d.tipo_id_tercero || ' ' || d.tercero_id || ' : '|| d.nombre_tercero as proveedor")
+    ];
+
+    var subQuery = G.knex.select(columna)
+            .from("inv_bodegas_movimiento_ordenes_compra as a")
+            .innerJoin("compras_ordenes_pedidos as b",
+            function() {
+                this.on("a.orden_pedido_id", "b.orden_pedido_id")
+            })
+            .innerJoin("terceros_proveedores as c",
+            function() {
+                this.on("b.codigo_proveedor_id", "c.codigo_proveedor_id")
+            })
+            .innerJoin("terceros as d",
+            function() {
+                this.on("c.tipo_id_tercero", "d.tipo_id_tercero")
+                this.on("c.tercero_id", "d.tercero_id")
+            })
+	    .where('a.empresa_id', parametros.empresaId)
+            .andWhere('a.prefijo', parametros.prefijoDocumento)
+            .andWhere('a.numero', parametros.numeracionDocumento)
+            .as("a");
+
+    var query = G.knex(G.knex.raw("a.*")).from(subQuery);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [consultarAutorizacionesIngreso]: ", error);
+        callback(error);
+    });
+
+};
 
 DocumentoBodegaI002.prototype.ingresoAutorizacion = function(parametros, transaccion, callback) {
 
@@ -238,18 +329,19 @@ DocumentoBodegaI002.prototype.listarProductosParaAsignar = function(parametro, c
         if (parametro.tipoFiltro === '0') {
             this.andWhere("c.descripcion", G.constants.db().LIKE, "%" + parametro.descripcion + "%");
         } else {
-            this.andWhere("c.codigo_producto", parametro.codigo_prducto);
+            this.andWhere("c.codigo_producto", parametro.descripcion);
         }
 
         if (parametro.fabricante_id !== "-1") {
             this.andWhere("fabricante_id", parametro.fabricante_id);
         }
-    })
-            .andWhere(G.knex.raw("substring(c.codigo_producto from 1 for 2) <> 'FO' "));
+    }).andWhere(G.knex.raw("substring(c.codigo_producto from 1 for 2) <> 'FO' "));
+    
 
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
+//	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", query.toSQL());
         console.log("Error [listarProductosParaAsignar]: ", err);
         callback("Ha ocurrido un error");
     });
@@ -288,6 +380,7 @@ DocumentoBodegaI002.prototype.agregarItemFOC = function(parametros, callback) {
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
+        console.log("Error agregarItemFOC parametros", parametros);
         console.log("Error agregarItemFOC", err);
         callback(err);
     }).done();
@@ -383,9 +476,11 @@ DocumentoBodegaI002.prototype.valorCantidad = function(parametros, callback) {
                 .andWhere("codigo_producto", parametros.codigo_producto)
                 .andWhere("item_id", parametros.item_id_compras)
     });
-
+      
     coalesce.then(function(resultado) {
+
 	console.log("resultado----->>>>",resultado);
+
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err (/catch) [valorCantidad]: ", err);
@@ -424,7 +519,9 @@ console.log("__________________updateComprasOrdenesPedidosDetalle_______________
           return 1; 
 	}else{
 	  parametros.dato = dato[0].valores;
-        return G.Q.ninvoke(that, 'updateComprasOrdenesPedidosDetalles', parametros, transaccion);
+
+          return G.Q.ninvoke(that, 'updateComprasOrdenesPedidosDetalles', parametros, transaccion); 
+
 	}
     }).then(function(resultado) {
         callback(false, resultado);
@@ -568,7 +665,7 @@ DocumentoBodegaI002.prototype.listarGetItemsDocTemporal = function(parametros, c
         "a.cantidad",
         "a.porcentaje_gravamen",
         "a.total_costo",
-        "a.fecha_vencimiento",
+	G.knex.raw("to_char(a.fecha_vencimiento,'DD/MM/YYYY') as fecha_vencimiento"),
         "a.lote",
         "a.local_prod",
         "a.valor_unitario",

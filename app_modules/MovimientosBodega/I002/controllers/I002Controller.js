@@ -1,5 +1,5 @@
 
-var I002Controller = function(movimientos_bodegas, m_I002, e_I002, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos) {
+var I002Controller = function(movimientos_bodegas, m_I002, e_I002, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos,kardex) {
 
     console.log("Modulo I002 Cargado ");
 
@@ -16,6 +16,7 @@ var I002Controller = function(movimientos_bodegas, m_I002, e_I002, pedidos_clien
 
     this.m_terceros = terceros;
     this.m_pedidos = m_pedidos;
+    this.m_kardex = kardex;
 };
 
 
@@ -480,7 +481,12 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
             }
 
         }).then(function(result) {
-
+console.log("****************************************");
+console.log("****************************************");
+console.log("****************************************",resultadoProducto);
+console.log("****************************************");
+console.log("****************************************");
+console.log("________________________________________");
             if (result >= 1) {
                 return G.Q.nfcall(__modificarComprasOrdenesPedidosDetalle, that, 0, resultadoProducto, 0, transaccion);
             } else {
@@ -636,6 +642,64 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
     }).done();
 };
 
+I002Controller.prototype.crearHtmlAutorizacion = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var cabecera=[];
+    var detalle=[];
+    var adicional=[];
+    
+    if (args.empresaId === '' || args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.prefijo === '' || args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo esta vacío', 404, {}));
+        return;
+    }
+    if (args.numeracion === '' || args.numeracion === undefined) {
+        res.send(G.utils.r(req.url, 'El numeracion esta vacío', 404, {}));
+        return;
+    }
+    var parametros = {
+	empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        prefijoDocumento: args.prefijo,
+        numeracionDocumento: args.numeracion
+    };
+    G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros).then(function(result) {
+	cabecera=result;
+     return  G.Q.ninvoke(that.m_I002, "consultarAutorizacionesIngreso", parametros);	
+    
+    }).then(function(resultado) {
+        detalle=resultado;
+     return  G.Q.ninvoke(that.m_I002, "consultarAutorizacionesProveedor",parametros);
+    }).then(function(resultado) {
+	
+       adicional=resultado[0];
+	var today = new Date();
+	var formato = 'YYYY-MM-DD';
+	var fechaToday = G.moment(today).format(formato);
+       cabecera[0].usuario=req.session.user.nombre_usuario;
+       cabecera[0].fechaActual=fechaToday;
+       if(detalle.length > 0){
+       __generarPdfAutorizacion({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecera: cabecera[0],
+                detalle: detalle,
+                adicional: adicional,
+                archivoHtml: 'autorizacionDocumentoI002.html',
+                reporte: "autorizacionI002"}, function(nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero,autorizado:1}));
+            });
+       }else{
+	  res.send(G.utils.r(req.url, 'NO TIENE PRODUCTOS AUTORIZADOS', 201, {autorizado:0}));  
+       }
+    }).catch (function(err) {
+	console.log("crearHtmlDocumento>>>>", err);
+	res.send(G.utils.r(req.url, 'Error al Crear el html del Documento', 500, {err: err}));
+    }).done();	 
+};
+
 I002Controller.prototype.crearHtmlDocumento = function(req, res) {
     var that = this;
     var args = req.body.data;
@@ -665,15 +729,15 @@ I002Controller.prototype.crearHtmlDocumento = function(req, res) {
         numeracionDocumento: args.numeracion
     };
 
-//    try {
-//        var nomb_pdf = "documentoI002" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
-//        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
-//            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
-//            return;
-//        }
-//    } catch (e) {
-//        console.log("NO EXISTE ARCHIVO  ");
-//    }
+    try {
+        var nomb_pdf = "documentoI002" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
+        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
+            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
+            return;
+        }
+    } catch (e) {
+        console.log("NO EXISTE ARCHIVO  ");
+    }
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros).then(function(result) {
         cabecera = result;
@@ -755,57 +819,44 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
     var producto = productos[index];
     if (!producto) {
 
-console.log("_____________________________________________");
-console.log("index ",index);
-console.log("productos ",productos);
-console.log("impuesto ",impuesto);
-console.log("resultado  ",resultado);
-console.log("cabecera  ",cabecera);
-console.log("_____________________________________________");
         if (impuesto.sw_rtf === '2' || impuesto.sw_rtf === '3')
-            if (resultado.subtotal >= parseInt(impuesto.base_rtf)) {		
-                resultado.valorRetFte = Math.round(resultado.subtotal * (cabecera.porcentaje_rtf / 100));//cabecera.valorRetFte
-		console.log("resultado.subtotal  ",resultado.subtotal);
-		console.log("impuesto.base_rtf  ",impuesto.base_rtf);
-		console.log("cabecera.porcentaje_rtf ",cabecera.porcentaje_rtf);
+            if (resultado.subtotal >= parseFloat(impuesto.base_rtf)) {		
+                resultado.valorRetFte = parseFloat(resultado.subtotal * (cabecera.porcentaje_rtf / 100));//cabecera.valorRetFte
+
             } else {
                 resultado.valorRetFte = 0;
-		console.log("b______________",resultado.valorRetFte);
             }
 
         if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3'){
-	    console.log("impuesto.sw_ica ",impuesto.sw_ica);
-	    console.log("resultado.subtotal ",resultado.subtotal);
-	    console.log("impuesto.base_ica ",impuesto.base_ica);
-	    console.log("========= ",Math.round(resultado.subtotal * (cabecera.porcentaje_ica / 1000)));
-            if (resultado.subtotal >= parseInt(impuesto.base_ica)) {
-                resultado.valorRetIca = Math.round(resultado.subtotal * (cabecera.porcentaje_ica / 1000));//cabecera.valorRetIca
+            if (resultado.subtotal >= parseFloat(impuesto.base_ica)) {
+                resultado.valorRetIca = parseFloat(resultado.subtotal * (cabecera.porcentaje_ica / 1000));//cabecera.valorRetIca
             } else {
                 resultado.valorRetIca = 0;
             }
 	 } 
         if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3')
-            if (resultado.subtotal >= parseInt(impuesto.base_reteiva)) {
+//            if (resultado.subtotal >= parseInt(impuesto.base_reteiva)) {
+            if (resultado.IvaTotal >= parseFloat(impuesto.base_reteiva)) {
 		
-                resultado.valorRetIva = Math.round(resultado.IvaTotal * (cabecera.porcentaje_reteiva / 100));//cabecera.valorRetIva
+                resultado.valorRetIva = parseFloat(resultado.IvaTotal * (cabecera.porcentaje_reteiva / 100));//cabecera.valorRetIva
             } else {
                 resultado.valorRetIva = 0;
             }
 
-        resultado.total = Math.round(((((resultado.subtotal + resultado.IvaTotal) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva));
+        resultado.total = parseFloat(((((resultado.subtotal + resultado.IvaTotal) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva));
 
         callback(false, [resultado]);
         return;
     }
 
     index++;
-    resultado.valorTotal += parseInt(producto.valor_total_1);
+    resultado.valorTotal += parseFloat(producto.valor_total_1);
 
     resultado.porc_iva = (producto.porcentaje_gravamen / 100) + 1;
     resultado.ValorSubTotal = (producto.total_costo / resultado.porc_iva);
     resultado.IvaProducto = producto.total_costo - resultado.ValorSubTotal;
-    resultado.IvaTotal = Math.round(resultado.IvaTotal + (resultado.IvaProducto));
-    resultado.subtotal += parseInt(resultado.ValorSubTotal);
+    resultado.IvaTotal = parseFloat(resultado.IvaTotal + (resultado.IvaProducto));
+    resultado.subtotal += parseFloat(resultado.ValorSubTotal);
 
     setTimeout(function() {
         __impuestos(that, index, productos, impuesto, resultado, cabecera, callback);
@@ -933,6 +984,42 @@ function __generarPdf(datos, callback) {
     });
 }
 
-I002Controller.$inject = ["m_movimientos_bodegas", "m_i002", "e_i002", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos"];
+function __generarPdfAutorizacion(datos, callback) {
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
+	    helpers: G.fs.readFileSync('app_modules/MovimientosBodega/I002/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function(err, response) {
+
+        response.body(function(body) {
+            var fecha = new Date();
+
+            var nombreTmp = datos.reporte + datos.cabecera.prefijo + datos.cabecera.numero + ".html";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
+                if (err) {
+                    console.log("err [__generarPdf]: ", err);
+                    callback(true, err);
+                    return;
+                } else {
+
+                    callback(nombreTmp);
+                    return;
+                }
+            });
+        });
+    });
+}
+
+I002Controller.$inject = ["m_movimientos_bodegas", "m_i002", "e_i002", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos","m_kardex"];
 
 module.exports = I002Controller;

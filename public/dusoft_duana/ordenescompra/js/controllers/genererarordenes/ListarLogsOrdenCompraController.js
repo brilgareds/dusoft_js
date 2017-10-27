@@ -82,6 +82,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			cellTemplate: '<div class="ngCellText">\
                                             <span class="label label-primary" >{{row.entity.detalle.descripcion}}</span>\
                                         </div>'},
+		    {field: 'producto', displayName: 'COD. PRODUCTO', width: "10%"},
 		    {field: 'detalleAnterior', displayName: 'ANTERIOR', width: "35%"},
 		    {field: 'detalleActual', displayName: 'ACTUAL', width: "35%"}
 		]

@@ -61,11 +61,7 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 
 // Listar las Ordenes de Compra de un Proveedor
 OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
-    
-    console.log("*************OrdenesCompra.prototype.listarOrdenesCompraProveedor*****************");
-    console.log("*************OrdenesCompra.prototype.listarOrdenesCompraProveedor*****************");
-    console.log("*************OrdenesCompra.prototype.listarOrdenesCompraProveedor*****************");
-    
+        
     var that = this;
 
     var args = req.body.data;
@@ -345,7 +341,6 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
 	  }else{
 	     parametro.anterior = JSON.stringify("");  
 	  }
-	  console.log("guardarBodega resultado ",resultado);
 	    
          return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino);
 	 
@@ -415,7 +410,7 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
 
 // Insertar una orden de compra 
 OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
-    
+
     var that = this;
 
     var args = req.body.data;
@@ -473,7 +468,7 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     
   
     G.Q.ninvoke(that, "__insertarOrdenCompra",parametros ).then(function (resultado) {  
-        console.log("__insertarOrdenCompra ", resultado);
+	
         res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
 
     }).fail(function (err) {
@@ -484,12 +479,6 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
 
 // Modificar la unidad de negocio de una orden de compra 
 OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
-    console.log("********************************");
-    console.log("********************************");
-    console.log("********************************");
-    console.log("*****modificarUnidadNegocio*****");
-    console.log("********************************");
-    console.log("********************************");
     var that = this;
     var orden_compra=[];
 
@@ -561,7 +550,6 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
 	
     }).catch (function(err) {
 	
-	console.log("ERROR ",err);
 	
 	var msj = "No se pudo actualizar la unidad de negocio";
         var status  = 500;
@@ -621,7 +609,7 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
                 that.m_ordenes_compra.modificar_observacion(numero_orden, observacion, function(err, rows, result) {
 
                     if (err || result.rowCount === 0) {
-                        console.log("error generado ", result, err);
+                    
                         res.send(G.utils.r(req.url, 'No se pudo actualizar la observacion', 500, {orden_compra: []}));
                         return;
                     } else {
@@ -633,7 +621,7 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
 			    tiene_ingreso_temporal: orden_compra.tiene_ingreso_temporal,
 			    descripcionAccion : 'modifico observacion'
 			};
-			console.log("orden_compraorden_compraorden_compraorden_compraorden_compraorden_compraorden_compraorden_compra",orden_compra);
+			
 			var parametro={
 			    orden_compra_id : numero_orden ,
 			    usuario_id : req.session.user.usuario_id,
@@ -744,7 +732,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 			} else {
 			    //se reutiliza esta funcion para el ingreso de productos al I002, se envia el item_id
 			    if (item_id !== undefined && item_id !== '') {
-				console.log(item_id);
+			
 				that.m_ordenes_compra.modificar_detalle_orden_compra_item(numero_orden, codigo_producto, cantidad_solicitada, item_id, function(err, rows, result) {
 				    res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
 				    return;
@@ -1177,8 +1165,7 @@ OrdenesCompra.prototype.subirArchivoOrdenes = function(req, res){
         res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
         return;
     }
-    
-    console.log("subir archivo ordenes ");
+
     var cabecera = ['unidad_negocio', 'codigo_proveedor', 'codigo_producto', 'cantidad', 'costo', 'observacion'];
     
     //Notificacion de la subida del archivo plano
@@ -1551,11 +1538,7 @@ OrdenesCompra.prototype.consultarRecepcionMercancia = function(req, res) {
 
 // Insertar recepciones de mercancia
 OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
-    
-    console.log("*****************OrdenesCompra.prototype.insertarRecepcionMercancia *****************************");
-    console.log("*****************OrdenesCompra.prototype.insertarRecepcionMercancia *****************************");
-    console.log("*****************OrdenesCompra.prototype.insertarRecepcionMercancia *****************************");
-    
+
     var that = this;
 
     var args = req.body.data;
@@ -1847,11 +1830,7 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
     var cantidadTotalPendiente = args.ordenes_compras.recepcion_mercancia.orden_compra.cantidadTotalPendiente;
     var numero_orden = recepcion.orden_compra.numero_orden_compra;
     
-    console.log("recepcion ", recepcion);
-    console.log("cantidadTotalPendiente ", cantidadTotalPendiente);
-    console.log("numero_orden ", numero_orden);
-    
-    
+ 
     that.m_ordenes_compra.finalizar_recepcion_mercancia(recepcion, function(err, result) {
 
         if (err || result.rowCount === 0) {
@@ -2308,12 +2287,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         contexto : that.m_ordenes_compra,
         filtro: {auditoria: true}
     };
-    
-    console.log("-------------------------------------------------------------");
-    console.log("1) parametros: ", parametros);
-    console.log("2) Detalle Productos: ", parametros.encabezado.detalle);
-    console.log("-------------------------------------------------------------");
-    
+        
     G.Q.ninvoke(that, "__insertarOrdenCompra",parametros.encabezado ).then(function (resultado) {
          
         parametros.encabezado.ordenId = resultado.data.numero_orden;
@@ -2327,7 +2301,6 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         
     }).then(function(resultado){
         
-        console.log("resultado [finalizar_orden_compra]: ", resultado)
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", 
             {
                 msj: "La orden de compra # " + parametros.encabezado.ordenId + " se ha generado satisfactoriamente",
@@ -2354,7 +2327,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
  * @fecha 03/02/2017 (DD/MM/YYYY)
  */
 OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) {
-
+    
     //cotizacion, pedidoGenerado
     var that = this;     
     var numero_orden;
@@ -2381,30 +2354,9 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
             def.resolve();
         }
         
-    //}).then(function (resultado) { 
-	console.log("resultadoresultadoresultado",resultado);
-	/*
-	 * @Andres M. Gonzalez
-	 * Fecha: 09-10-2017
-	 * +Descripcion: se modifica para realizar el log del modulo
-	 */
-	/*parametros.descripcionAccion = 'modifico destino de la orden de compra';
-	var parametro={
-	  orden_compra_id : numero_orden ,
-          usuario_id : parametros.usuario_id,
-          tabla : 'compras_ordenes_pedidos',
-	  accion : resultado.accion,
-	  detalle: JSON.stringify(parametros) ,
-	  fecha : new Date(),
-          anterio:JSON.stringify(parametros),
-          actual:JSON.stringify(parametros)
-	};
-	
-         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs,parametro);*/
-	
     }).then(function (resultado) {
          
-         callback(false, {status: 200, msj: 'Orden de compra registrada correctamente', data: {numero_orden: numero_orden}});
+            callback(false, {status: 200, msj: 'Orden de compra registrada correctamente', data: {numero_orden: numero_orden}});
         
 
     }).fail(function (err) {
@@ -2421,7 +2373,6 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
     }).done();
 
 };
-
 
 
 

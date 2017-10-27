@@ -178,7 +178,7 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(API.ORDENES_COMPRA.CREAR_ORDEN_COMPRA, "POST", obj, function(data) {
 
-
+console.log("undefine ",data);
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200 && data.obj.numero_orden > 0) {

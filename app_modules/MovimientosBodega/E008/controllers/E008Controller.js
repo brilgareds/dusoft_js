@@ -2094,18 +2094,18 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 };
 
 function __validarDumian(identificacion_cliente,tipo_id_cliente){
-    if((identificacion_cliente === '10102' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10103' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10110' && tipo_id_cliente === "NIT") || 
-   (identificacion_cliente === '10111' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10118' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10122' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10134' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10133' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10174' && tipo_id_cliente === "CC") ||
-   (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") || 
-   (identificacion_cliente === '10365' && tipo_id_cliente === "CE") ||
-   (identificacion_cliente === '10366' && tipo_id_cliente === "CE")){
+    if((identificacion_cliente === '10102' && tipo_id_cliente === "NIT") || //Cucuta -inversiones dumian
+   (identificacion_cliente === '10103' && tipo_id_cliente === "NIT") || //palmira -inversiones dumian
+   (identificacion_cliente === '10110' && tipo_id_cliente === "NIT") || //uci pediatrica dumian cucuta
+   (identificacion_cliente === '10111' && tipo_id_cliente === "NIT") || //uci pediatrica dumian bogota
+   (identificacion_cliente === '10118' && tipo_id_cliente === "NIT") || //uci adultos dumian pereira
+   (identificacion_cliente === '10122' && tipo_id_cliente === "NIT") || //bodega dumian cucuta
+   (identificacion_cliente === '10134' && tipo_id_cliente === "NIT") || //uci summa dumian
+   (identificacion_cliente === '10133' && tipo_id_cliente === "NIT") || //uci dumian popayan
+   (identificacion_cliente === '10174' && tipo_id_cliente === "CC") || //clinica mari angel tulua
+   (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") ||  //dumian medical sas
+   (identificacion_cliente === '10365' && tipo_id_cliente === "CE") || //clinica santa gracia buenaventura
+   (identificacion_cliente === '10366' && tipo_id_cliente === "CE")){ //clinica san rafael
      return true;
    }else{
      return false;
@@ -2152,7 +2152,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
            (tipoPedido === 1 && pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")||
            (tipoPedido === 1 && pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS")||
            (tipoPedido === 1 && pedido.identificacion_cliente === '259' && pedido.tipo_id_cliente === "AS")||
-           (tipoPedido === 1 && pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")){
+           (tipoPedido === 1 && pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")||
+	   (tipoPedido === 1 && __validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente))){
 
            
            if(tipoPedido === 1){
@@ -2242,8 +2243,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                       numero : numeroDocumento,
                       nit :'805027743',
                       productosDetalle : detalleProductos
-                 };           
-                 console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>> ",objCabecera);
+                 };
+		 
+                 console.log(" objCabecera >>>>>>>>>>>>>>>>>>>>>>>>>> ",objCabecera);
+		 
                   objRemision.parametros=objCabecera;
                  __sincronizarRemisionProductos(objRemision);
             }else{ 

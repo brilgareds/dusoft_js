@@ -709,8 +709,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          */
         $scope.ver_detalleRecepcion = function(fila) {
             that.listarRecepcionProductos(fila, function(resultado) {
+		$scope.ver_recepcion(fila);
             });
-            $scope.ver_recepcion(fila);
         };
 
         /**
@@ -728,7 +728,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 keyboard: true,
                 showFilter:true,
                 cellClass: "ngCellText",
-                template: ' <div class="modal-header">\
+               template: ' <div class="modal-header">\
                                                 <button type="button" class="close" ng-click="cerrar()">&times;</button>\
                                                 <h4 class="modal-title"><b>RECEPCIONES PARCIALES</b></h4>\
                                                 <div class="form-group">\
@@ -752,13 +752,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 <button class="btn btn-warning" ng-click="cerrar()">Cerrar</button>\
                                             </div>',
                 scope: $scope,
-                controller: function($scope, $modalInstance) {
+                controller: ['$scope', '$modalInstance',function($scope, $modalInstance) {
 
                     $scope.cerrar = function() {
                         $modalInstance.close();
                     };
 
-                }
+                }]
             };
             var modalInstance = $modal.open($scope.opts);
         };
@@ -996,7 +996,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          */
         that.insertarFacturaProveedor = function(parametros) {
 	    
-	    console.log("insertarFacturaProveedor ",parametros);
             var empresa = Sesion.getUsuarioActual().getEmpresa().getCodigo();
             var centroUtilidad = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
             var bodega = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
@@ -1028,7 +1027,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
 	
 	that.impresionAutorizacion = function(parametros) {
-	    console.log("parametros.recepciones",parametros.recepciones);
 	    parametros.recepciones.forEach(function(data) {
 		var documentos = {prefijo: data.prefijo, numero: data.numero};
 		setTimeout(function() {

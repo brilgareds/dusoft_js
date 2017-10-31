@@ -17,6 +17,5 @@ define(["angular", "js/controllers",
                     
                     var that = this;
                     var filtroPedido = localStorageService.get("verificacionDetalle");
-                    console.log(">>>>>>>>>>>>>>>",filtroPedido);
                }]);
 });

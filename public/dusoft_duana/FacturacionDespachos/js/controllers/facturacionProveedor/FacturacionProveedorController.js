@@ -911,8 +911,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 <button class="btn btn-warning" ng-click="cerrar()">Cerrar</button>\
                                             </div>',
                 scope: $scope,
-                controller: function($scope, $modalInstance) {
-
+               
+                controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
                     $scope.facturar = function() {
 
                         var fechaFactura = new Date($scope.root.fechaFactura);
@@ -981,7 +981,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $modalInstance.close();
                     };
 
-                }
+                }]
             };
             var modalInstance = $modal.open($scope.opts);
         };

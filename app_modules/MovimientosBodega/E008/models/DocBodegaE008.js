@@ -1441,7 +1441,7 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
                     to_char(((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))),'LFM9,999,999.00') as valor_total_iva_2,\
                     to_char((a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))),'LFM9,999,999.00') as valor_unitario_iva_2,\
                     to_char((a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))),'LFM9,999,999.00') as valor_unitario_iva_2,\
-                    to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario_2\
+                    to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario_2,(a.total_costo/a.cantidad) as costo\
                 FROM\
                     inv_bodegas_movimiento_d as a,\
                     inventarios_productos as b,\

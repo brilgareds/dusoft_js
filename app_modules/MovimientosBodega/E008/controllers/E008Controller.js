@@ -2231,7 +2231,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                           cantidad:item.cantidad,
                           valorUnitario:item.valor_unitario_iva,
                           valorTotal:item.valor_total_iva,
-                          porcentajeGravamen: item.porcentaje_gravamen	          
+                          porcentajeGravamen: item.porcentaje_gravamen,
+			  costo: item.costo
                       };
                       detalleProductos.push(detalle);
                   });

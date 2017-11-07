@@ -34,7 +34,7 @@ DocuemntoBodegaE008Logs.prototype.ingresarLogsSincronizacionDespachos = function
     
     var query = G.knex.raw(sql, parametros);
             
-    console.log("insertando logs ************************ ", parametros, " erorr ??????????????? ", obj.error);
+ 
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){

@@ -2184,7 +2184,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
           
             if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
            
-                console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ_AMG_ZZZZZZZZZZZZZZZZZZZZZZZZZ_000000000000000 ");
+   
                 objRemision = {
                       prefijoDocumento : prefijoDocumento,
                       numeroDocumento : numeroDocumento,
@@ -2198,7 +2198,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                 return G.Q.ninvoke(that.m_e008,"obtenerTotalDetalleDespacho",objRemision);            
                 
             }else{  
-                console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ_AMG_ZZZZZZZZZZZZZZZZZZZZZZZZZ_1111111111 ");
+
                 var obj = {
                       documentoId:documentoId,
                       prefijoDocumento : prefijoDocumento,
@@ -2218,56 +2218,61 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
         }
         
     }).then(function(resultado){
-         if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
-                var detalleProductos = [];
-                resultado.forEach(function(item) {                    
-                        var detalle = {
-                          nombre:item.nombre,
-                          codigoProducto : item.codigo_producto,
-                          lote : item.lote,
-                          codigoCum : item.codigo_cum,
-                          codigoInvima: item.codigo_invima ,
-                          fechaVencimiento:item.fecha_vencimiento,
-                          cantidad:item.cantidad,
-                          valorUnitario:item.valor_unitario_iva,
-                          valorTotal:item.valor_total_iva,
-                          porcentajeGravamen: item.porcentaje_gravamen,
-			  costo: item.costo
-                      };
-                      detalleProductos.push(detalle);
-                  });
-                var objCabecera = {
-                      nombreTercero : resultadoCabecera.nombre_cliente,
-                      tipoIdTercero : resultadoCabecera.tipo_id_cliente,
-                      terceroId : resultadoCabecera.identificacion_cliente,
-                      prefijo : prefijoDocumento,
-                      numero : numeroDocumento,
-                      nit :'805027743',
-                      productosDetalle : detalleProductos
-                 };
-		 
-                 console.log(" objCabecera >>>>>>>>>>>>>>>>>>>>>>>>>> ",objCabecera);
-		 
-                  objRemision.parametros=objCabecera;
-                 __sincronizarRemisionProductos(objRemision);
-            }else{ 
-                if(!args.documento_despacho.background){
-                    res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
+    if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
+	var detalleProductos = [];
+	resultado.forEach(function(item) {                    
+		var detalle = {
+		  nombre:item.nombre,
+		  codigoProducto : item.codigo_producto,
+		  lote : item.lote,
+		  codigoCum : item.codigo_cum,
+		  codigoInvima: item.codigo_invima ,
+		  fechaVencimiento:item.fecha_vencimiento,
+		  cantidad:item.cantidad,
+		  valorUnitario:item.valor_unitario_iva,
+		  valorTotal:item.valor_total_iva,
+		  porcentajeGravamen: item.porcentaje_gravamen,
+		  costo: item.costo
+	      };
+	      detalleProductos.push(detalle);
+	  });
+	var objCabecera = {
+	      nombreTercero : resultadoCabecera.nombre_cliente,
+	      tipoIdTercero : resultadoCabecera.tipo_id_cliente,
+	      terceroId : resultadoCabecera.identificacion_cliente,
+	      prefijo : prefijoDocumento,
+	      numero : numeroDocumento,
+	      nit :'805027743',
+	      productosDetalle : detalleProductos
+	 };
+
+	objRemision.parametros=objCabecera;
+	return G.Q.nfcall(__sincronizarRemisionProductos, objRemision);
+
+       }else{
+	   if(!args.documento_despacho.background){
+	       res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
+			      {movimientos_bodegas: {}}));
+	   }
+       }
+    }).then(function(resultado){	    
+       
+	res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
                                    {movimientos_bodegas: {}}));
-                }
-            }
-        
+	
     }).fail(function(err){
-        console.log("error generando sincronizacion de documento ", err);
-        if(!args.documento_despacho.background){
-            if(err.status){
-                res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+        console.log("Error generando sincronizacion de documento ", err.msj);
+	
+    if(!args.documento_despacho.background){
+	if(err.status){
 
-            } else {
+	 res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
 
-                res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
-            }
-        }
+	} else {
+
+	 res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
+	}
+    }
 
     }).done();
 };
@@ -2370,6 +2375,7 @@ function __sincronizarEncabezadoDocumento(obj, callback){
         
     }).fail(function(err) {
         obj.error = true;
+	console.log("ERROR CABECERA ",err);
         obj.tipo = '0';
         G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){            
             callback(err);
@@ -2377,12 +2383,12 @@ function __sincronizarEncabezadoDocumento(obj, callback){
     }).done();
 }
 
-function __sincronizarRemisionProductos(obj, callback){
-console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ_AMG_ZZZZZZZZZZZZZZZZZZZZZZZZZ_555555555");
+function __sincronizarRemisionProductos(obj, callback) {
+
     var url = G.constants.WS().DOCUMENTOS.DUMIAN.E008;
-      
+    obj.resultadoEncabezado = "";
     var resultado;
-    
+
 //    obj.parametros = {
 //        usuarioId:"4608",
 //        bodegasDoc:obj.bodegasDoc,
@@ -2390,44 +2396,45 @@ console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ_AMG_ZZZZZZZZZZZZZZZZZZZZZZZZZ_5555555
 //        documentoId:obj.documentoId
 //    };
     obj.error = false;
-    
+
     //Se invoca el ws
-    G.Q.nfcall(G.soap.createClient, url).
-    then(function(client) {
-console.log("bodegasMovimientoTmp ");
-console.log("bodegasMovimientoTmp client: ",client);
-console.log("bodegasMovimientoTmp url: ",url);
-        return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
-    }).
-    spread(function(result,raw,soapHeader){
-console.log("spread result: ",result);
-console.log("spread raw: ",raw);
-console.log("spread soapHeader: ",soapHeader);
-        obj.resultadoEncabezado = result.return.descripcion["$value"];
-        if(!result.return.estado["$value"]){
-            console.log("Se ha generado un error sincronizando el documento ");
-           throw {msj:"Se ha generado un error sincronizando el documento", status:403, obj:{}}; 
-        } else {
-            console.log("ingresarLogsSincronizacionDespachos ");
-            obj.temporal = result.return.docTmpId["$value"];
-            obj.tipo = '0';
-            //Se guarda el resultado en log
-            return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj);
-            
-        }
-        
-    }).then(function(){
-        console.log("callback callback ");
-        callback(false, obj);
-        
+    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
+
+	return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
+
+    }).spread(function(result, raw, soapHeader) {
+
+	obj.resultadoEncabezado = result.return.descripcion["$value"];
+	if (!result.return.estado["$value"]) {
+
+	    throw {msj: "Se ha generado un error sincronizando el documento", status: 403, obj: {}};
+
+	} else {
+
+	    obj.temporal = result.return.docTmpId["$value"];
+	    obj.tipo = '0';
+	    //Se guarda el resultado en log
+	    return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj);
+
+	}
+
+    }).then(function(data) {
+
+	callback(false, obj);
+
     }).fail(function(err) {
-        console.log("errerrerrerrerr ",err);
-        obj.error = true;
-        obj.tipo = '0';
-        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){
-            console.log("ingresarLogsSincronizacionDespachos ",err);
-            callback(err);
-        });
+
+	obj.error = true;
+	obj.tipo = '0';
+	obj.resultadoEncabezado = obj.resultadoEncabezado === "" ? err : obj.resultadoEncabezado;
+
+	G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj). finally(function() {
+	    obj.status = 500;
+	    obj.msj = err;//+" <br> - Url: "+url
+	    callback(obj);
+	    return;
+	});
+
     }).done();
 }
 
@@ -2509,10 +2516,12 @@ function __sincronizarDetalleDocumento(obj, callback){
         def.resolve();
         
     }).fail(function(err) {
+	console.log("ERROR888 ",err);
         callback(err);
     }).
     done(function(){
        obj.tipo = '1';
+     //  obj.resultadoEncabezado=err;
        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).then(function(){
            obj.detalle.splice(0,1);
 //           __sincronizarDetalleDocumento(obj,callback); 

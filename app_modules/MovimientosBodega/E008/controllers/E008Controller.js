@@ -2245,7 +2245,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
 	      nit :'805027743',
 	      productosDetalle : detalleProductos
 	 };
-
+console.log("Envio Dumian ",objCabecera);
 	objRemision.parametros=objCabecera;
 	return G.Q.nfcall(__sincronizarRemisionProductos, objRemision);
 

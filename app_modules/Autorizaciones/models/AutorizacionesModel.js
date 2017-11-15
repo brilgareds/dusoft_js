@@ -295,6 +295,8 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoCliente = function(obj,
 AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqueda, pagina, callback) {
 
     var parametros = {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido};
+    
+    //console.log("parametros ",parametros);
     var WHERE1 = '';
     var WHERE2 = '';
     
@@ -327,12 +329,11 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
                         a.usuario_id, \
                         a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto, \
                         c.nombre_tercero,e.nombre,f.estado as estado_productos, \
-                        b.tipo_id_tercero,b.tercero_id, \
-                            (SELECT count(pedido_id) \
-                             FROM autorizaciones_productos_pedidos \
-                             WHERE pedido_id = a.pedido_id AND \
-                                   empresa_id=a.empresa_id AND \
-                                   tipo_pedido=a.tipo_pedido AND estado = '0' ) AS poraprobacion \
+                        b.tipo_id_tercero,b.tercero_id,\
+			    CASE\
+                          WHEN a.estado='0' THEN count(pedido_id)\
+                          ELSE 0\
+                          END AS poraprobacion\
                         FROM autorizaciones_productos_pedidos AS a \
                         " + WHERE1 + "\
                         INNER JOIN ventas_ordenes_pedidos AS b ON (a.pedido_id=b.pedido_cliente_id AND autorizaciones_productos_pedidos_id=autorizaciones_productos_pedidos_id)  \
@@ -342,9 +343,10 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
                         INNER JOIN inventarios_productos as f ON (f.codigo_producto=a.codigo_producto)   \
                         WHERE true  " + WHERE2 + "\
                                AND a.tipo_pedido = :2 \
+		       GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19\
                               ) as p \
                        order by p.estado_verificado desc";
-    
+   
    var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
@@ -396,12 +398,11 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                     a.usuario_id,f.estado as estado_productos, \
                     a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto,\
                     d.descripcion AS nombre_tercero, '' AS tipo_id_tercero, '' AS tercero_id,\
-                        (SELECT count(pedido_id) \
-                        FROM autorizaciones_productos_pedidos \
-                        WHERE pedido_id = a.pedido_id AND \
-                        empresa_id=a.empresa_id AND \
-                        tipo_pedido=a.tipo_pedido AND estado = '0' ) AS poraprobacion,\
-                   b.fecha_registro AS fechaPedido,c.cantidad_solic AS numero_unidades,e.nombre\n\
+                   b.fecha_registro AS fechaPedido,c.cantidad_solic AS numero_unidades,e.nombre,\
+		     CASE\
+                          WHEN a.estado='0' THEN count(pedido_id)\
+                          ELSE 0\
+                      END AS poraprobacion\
                    FROM autorizaciones_productos_pedidos  AS a \
                    " + WHERE1 + "\
                    INNER JOIN solicitud_productos_a_bodega_principal AS b ON (a.pedido_id=b.solicitud_prod_a_bod_ppal_id)\
@@ -409,9 +410,15 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                    INNER JOIN bodegas AS d ON (b.farmacia_id=d.empresa_id AND b.centro_utilidad=d.centro_utilidad AND b.bodega=d.bodega)\
                    INNER JOIN inventarios_productos as f ON (f.codigo_producto=a.codigo_producto)   \
                    LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\
-                   WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2  ) as p \
+                   WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2  \
+		    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\
+		    ) as p \
                order by p.estado_verificado desc";
+    
    var parametros =  {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido}; 
+   
+   console.log("parametros ",parametros);
+    console.log("listarProductosBloqueados ",sql);
    var query = G.knex.select(G.knex.raw(sql, parametros)).
         limit(G.settings.limit).
         offset((pagina - 1) * G.settings.limit).

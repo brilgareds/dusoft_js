@@ -51,7 +51,7 @@ Autorizaciones.prototype.listarProductosBloqueados = function(req, res) {
         }).
           done();
     } else {
-        G.Q.nfcall(this.m_autorizaciones.listarProductosBloqueadosfarmacia, termino_busqueda, pagina_actual).
+        G.Q.ninvoke(this.m_autorizaciones,'listarProductosBloqueadosfarmacia', termino_busqueda, pagina_actual).
            then(function(listarProductosBloqueadosfarmacia) {
            res.send(G.utils.r(req.url, 'Listado de Productos Bloqueados Farmacia!!!!', 200, {listarProductosBloqueados: listarProductosBloqueadosfarmacia}));
         }).

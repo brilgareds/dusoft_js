@@ -30,6 +30,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.centroUtilidadProducto = "";
                 this.bodegaProducto = "";
                 this.mensajeError = "";
+                this.estadoInvima = "";
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
@@ -363,6 +364,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.mensajeError;
         };
 
+            ProductoPedidoCliente.prototype.setEstadoInvima = function(estadoInvima) {
+                this.estadoInvima = estadoInvima;
+            return this;
+            };
+        
+            ProductoPedidoCliente.prototype.getEstadoInvima = function() {
+                return this.estadoInvima;
+            };
             return this;
         }]);
 });

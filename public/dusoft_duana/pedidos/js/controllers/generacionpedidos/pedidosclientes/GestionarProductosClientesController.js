@@ -495,7 +495,7 @@ define(["angular", "js/controllers",
                                    <div>\
                                         <span> <strong>Producto:</strong> " + producto.getDescripcion() + " <br><strong> Estado: " + estadoInvima + "</strong></span>\
                                         <br><br>\
-                                        <center><span>Â¿Desea seleccionar el producto?</span></center>\
+                                        <center><span>¿Desea seleccionar el producto?</span></center>\
                                     </div>\
                                 </div>";
 

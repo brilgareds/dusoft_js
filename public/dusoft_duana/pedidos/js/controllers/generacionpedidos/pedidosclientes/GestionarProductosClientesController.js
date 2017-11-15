@@ -117,6 +117,9 @@ define(["angular", "js/controllers",
                     }
                 };
 
+                //valida si la cantidad solicitada del producto en la cotizacion es mayor que 0
+                if(obj.data.pedidos_clientes.cotizacion.productos[0].cantidad_solicitada > 0){
+
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
 
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -132,6 +135,9 @@ define(["angular", "js/controllers",
                         callback(false);
                     }
                 });
+                }else{
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La cantidad solicitada no puede ser menor o igual a cero");
+                }
             };
 
             // Insertar Productos a la Cotizacion
@@ -423,7 +429,6 @@ define(["angular", "js/controllers",
 
             that.render_productos = function(productos) {
 
-
                 $scope.Empresa.limpiar_productos();
 
                 productos.forEach(function(data) {
@@ -443,6 +448,7 @@ define(["angular", "js/controllers",
                     producto.setEmpresaIdProducto(data.empresa_id);
                     producto.setCentroUtilidadProducto(data.centro_utilidad);
                     producto.setBodegaProducto(data.bodega);
+                    producto.setEstadoInvima(data.estado_invima);
                     
                     $scope.Empresa.set_productos(producto);
                     
@@ -481,14 +487,19 @@ define(["angular", "js/controllers",
             $scope.solicitar_producto = function(producto) {
              
                 $scope.Pedido.limpiar_productos();
-                if(producto.precio_venta > 0){
-                    /*  var val = producto.precio_venta;
-                     /*   var clean = val.replace(/[^0-9\.]/g, '');
-                     var decimalCheck = clean.split('');*/
 
-                    // if (!angular.isUndefined(decimalCheck[1])) {
-                    // decimalCheck[1] = decimalCheck[1].slice(0, 4);
-                    //  clean = decimalCheck[0] + '.' + decimalCheck[1];
+                //mensaje a mostrar cuando el producto tiene asociado un estado invima
+                var estadoInvima =  producto.getEstadoInvima(); 
+                var mensaje = "<div class='alert alert-danger' style='margin-bottom:0px;' role='alert'>\
+                                   <div style='float: left;'><span class='glyphicon glyphicon-warning-sign' style='font-size: 5em;margin: 10px;' aria-hidden='true'></span></div>\
+                                   <div>\
+                                        <span> <strong>Producto:</strong> " + producto.getDescripcion() + " <br><strong> Estado: " + estadoInvima + "</strong></span>\
+                                        <br><br>\
+                                        <center><span>Â¿Desea seleccionar el producto?</span></center>\
+                                    </div>\
+                                </div>";
+
+                if(producto.precio_venta > 0){
 
                         $scope.datos_form.producto_seleccionado = producto;
 
@@ -506,11 +517,30 @@ define(["angular", "js/controllers",
                             if(producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0){
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No hay disponibilidad suficiente para el producto");
                             }else{
+                            //valida si el producto tiene asociado estado invima y muestra alerta {aceptar | cancelar}
+                            if(estadoInvima !== null) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje, function(respuesta){
+                                    if(respuesta){
                                 that.gestionar_pedidos();  
                             }
+                                });
+                        }else{
+                                that.gestionar_pedidos();  
+                            }
+                        }
+                    }else{
+                        //valida si el producto tiene asociado estado invima y muestra alerta {aceptar | cancelar}
+                        if(estadoInvima !== null) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje, function(respuesta){
+                                if(respuesta){
+                            that.gestionar_cotizaciones();
+                        }
+                            });
                         }else{
                             that.gestionar_cotizaciones();
                         }
+
+                    }
 
                 }else{
                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta debe ser mayor a cero (0)");

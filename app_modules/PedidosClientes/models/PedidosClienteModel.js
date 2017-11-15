@@ -1542,6 +1542,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 b.sw_regulado,\
                 c.precio_regulado,\
                 b.estado,\
+                ei.estado AS estado_invima,\
                 c.costo_ultima_compra,\
                 CASE WHEN (SELECT con.contrato_cliente_id FROM vnts_contratos_clientes con WHERE con.contrato_cliente_id = :4 AND con.porcentaje_genericos > 0) is null then false else true end as contrato\
                 ,b.unidad_medida,\
@@ -1555,6 +1556,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
                 inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
                 inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
+                left join estados_invima ei ON b.estado_invima = ei.id\
                 left join (\
                     select b.codigo_producto, coalesce(b.precio_pactado,0) as precio_pactado\
                     from vnts_contratos_clientes a\

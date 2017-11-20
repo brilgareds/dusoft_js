@@ -302,7 +302,7 @@ if (cluster.isMaster) {
      * Ruteo del Servidor
      * =========================================*/
     modulos.cargarRoutes(app, container, io);
-    modulos.cargarRoutes(app, container, io2);
+    //modulos.cargarRoutes(app, container, io2);
 
     app.get('/api/configurarRoutes', function(req, res) {
         modulos.configurarRoutes(req, res, app, container);

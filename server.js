@@ -170,12 +170,12 @@ if (cluster.isMaster) {
 
     //crea servidor http
     var app = express();
-    var server = app.listen(5000);
+    var server = app.listen(G.settings.server_port);
     var io = require('socket.io').listen(server);
     var container = intravenous.create();
 
     //crea servidor https
-    https.createServer(options, app).listen(3000);
+    https.createServer(options, app).listen(G.settings.https_server_port);
 
 
     /*=========================================

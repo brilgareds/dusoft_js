@@ -5,7 +5,6 @@ var express = require('express');
 var modulos = require('./app_modules/');
 var http = require('http');
 var https = require('https');
-var fs = require('fs');
 var path = require('path');
 var intravenous = require('intravenous');
 
@@ -159,9 +158,9 @@ if (cluster.isMaster) {
     
 } else {
 
+    //Carga de Certificados autogenerados para funcionamiento con https
     var key = G.fs.readFileSync('key.pem');
     var cert = G.fs.readFileSync( 'localhost.crt' );
-    //var ca = fs.readFileSync( 'localhost.crt' );
 
     var options = {
       key: key,
@@ -169,11 +168,14 @@ if (cluster.isMaster) {
     };
 
 
+    //crea servidor http
     var app = express();
-    //var server = app.listen(G.settings.server_port);
-    var server = https.createServer(options, app).listen(G.settings.server_port);
+    var server = app.listen(G.settings.server_port);
     var io = require('socket.io').listen(server);
     var container = intravenous.create();
+
+    //crea servidor https
+    https.createServer(options, app).listen(G.settings.https_server_port);
 
 
     /*=========================================

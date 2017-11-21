@@ -186,8 +186,8 @@ if (cluster.isMaster) {
     var io = require('socket.io').listen(server);
 
     //crea servidor https
-    var server_https = https.createServer(options, app).listen(G.settings.https_server_port);
-    var io2 = require('socket.io').listen(server_https, {log: false});
+    //var server_https = https.createServer(options, app).listen(G.settings.https_server_port);
+    //var io2 = require('socket.io').listen(server_https, {log: false});
 
 
     /*=========================================
@@ -214,7 +214,7 @@ if (cluster.isMaster) {
     };
     
     io.adapter(RedisStore(redisOptions));
-    io2.adapter(RedisStore(redisOptions));
+
     
 
 
@@ -224,7 +224,7 @@ if (cluster.isMaster) {
     container.register("emails", nodemailer);
     container.register("date_utils", date_utils);
     container.register("socket", io);
-    container.register("socket", io2);
+
 
     /*=========================================
      * Inicializacion y Conexion a la Base de Datos
@@ -302,7 +302,7 @@ if (cluster.isMaster) {
      * Ruteo del Servidor
      * =========================================*/
     modulos.cargarRoutes(app, container, io);
-    //modulos.cargarRoutes(app, container, io2);
+
 
     app.get('/api/configurarRoutes', function(req, res) {
         modulos.configurarRoutes(req, res, app, container);
@@ -364,7 +364,6 @@ if (cluster.isMaster) {
 
     process.on('SIGINT', function() {
         io.sockets.emit('onDisconnect');
-        io2.sockets.emit('onDisconnect');
 
 
         for (var id in cluster.workers) {

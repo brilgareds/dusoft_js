@@ -711,7 +711,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 		entrar = args.ordenes_compras.estado_documento;
 		item_id = args.ordenes_compras.item_id;
 	    }
-
+entrar = true;//se deja temporal la modificacion
 	    /*
 	     * @Andres mauricio gonzalez
 	     * +descripcion: se comento la validacion de los estados y se valida con la entrada

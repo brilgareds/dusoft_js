@@ -167,15 +167,27 @@ if (cluster.isMaster) {
       cert: cert
     };
 
-
-    //crea servidor http
+/*
+   //crea servidor http
     var app = express();
     var server = app.listen(G.settings.server_port);
-    var io = require('socket.io').listen(server);
     var container = intravenous.create();
 
     //crea servidor https
-    https.createServer(options, app).listen(G.settings.https_server_port);
+    var server = https.createServer(options, app).listen(G.settings.https_server_port);
+    var io = require('socket.io').listen(server, { log: false })
+
+
+*/
+    //crea servidor http
+    var app = express();
+    var server = app.listen(G.settings.server_port);
+    var container = intravenous.create();
+    var io = require('socket.io').listen(server);
+
+    //crea servidor https
+    //var server_https = https.createServer(options, app).listen(G.settings.https_server_port);
+    //var io2 = require('socket.io').listen(server_https, {log: false});
 
 
     /*=========================================
@@ -202,6 +214,7 @@ if (cluster.isMaster) {
     };
     
     io.adapter(RedisStore(redisOptions));
+
     
 
 
@@ -211,6 +224,7 @@ if (cluster.isMaster) {
     container.register("emails", nodemailer);
     container.register("date_utils", date_utils);
     container.register("socket", io);
+
 
     /*=========================================
      * Inicializacion y Conexion a la Base de Datos
@@ -288,6 +302,7 @@ if (cluster.isMaster) {
      * Ruteo del Servidor
      * =========================================*/
     modulos.cargarRoutes(app, container, io);
+
 
     app.get('/api/configurarRoutes', function(req, res) {
         modulos.configurarRoutes(req, res, app, container);

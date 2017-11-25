@@ -1043,7 +1043,7 @@ define([
                     data: {
                         orden_pedido_id: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
                         bodegas_doc_id: datos_documento.bodegas_doc_id,
-                        observacion: $scope.DocumentoIngreso.get_proveedor().get_ordenes_compras()[0].observacion
+                        observacion: $scope.DocumentoIngreso.get_orden_compra().observacion
                     }
                 };
 

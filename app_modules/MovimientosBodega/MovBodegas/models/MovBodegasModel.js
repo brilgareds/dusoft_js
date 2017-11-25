@@ -963,7 +963,7 @@ function __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad,
     var sql = " INSERT INTO inv_bodegas_movimiento (documento_id, empresa_id, centro_utilidad, bodega, prefijo, numero, observacion, sw_estado, usuario_id, fecha_registro, abreviatura ) \
                 VALUES ( :1, :2, :3, :4, :5, :6, :7, '1', :8, NOW(), NULL) ;  ";
     
-    var query = G.knex.raw(sql, {1:documento_id, 2:empresa_id, 3:centro_utilidad, 4:bodega, 5:prefijo, 6:numero, 7:observacion, 8:usuario_id});
+    var query = G.knex.raw(sql, {1:documento_id, 2:empresa_id, 3:centro_utilidad, 4:bodega, 5:prefijo, 6:numero, 7:observacion.substring(0, 253), 8:usuario_id});
     if(transaccion) query.transacting(transaccion);
             
     query.then(function(resultado){

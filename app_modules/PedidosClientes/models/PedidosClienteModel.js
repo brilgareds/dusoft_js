@@ -1152,6 +1152,43 @@ PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_
 
 };
 
+PedidosClienteModel.prototype.actualizarEstado  = function(parametros, transaccion, callback) {
+console.log("actualizarEstado ",parametros );
+var query = G.knex('ventas_ordenes_pedidos')
+	    .where('pedido_cliente_id', parametros.numeroPedido)
+	    .update({ 
+		     estado:parametros.estado 
+		   });          
+       
+    if (transaccion)
+        query.transacting(transaccion);
+    query.then(function(resultado) {     
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err [actualizarEstado]: ", err);
+        callback(err);   
+    });
+    
+};
+
+PedidosClienteModel.prototype.actualizarNumeroUnidades = function(parametro,transaccion, callback) {
+console.log("actualizarNumeroUnidades ",parametro);
+   var query =  G.knex("ventas_ordenes_pedidos_d")
+		.where({pedido_cliente_id: parametro.numeroPedido})
+		.update({numero_unidades: parametro.numeroUnidades});
+    
+     if(transaccion) query.transacting(transaccion);  
+     
+       query.then(function(resultado) {
+
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err [actualizarNumeroUnidades]: ", err);
+        callback(err);
+    });
+
+};
+
 
 /**
  * FUNCION SIN PROPOSITO ---->>> ACCIONES SOBRE ESTA FUNCION (ELIMINAR;DELETE;DROP;KILL)

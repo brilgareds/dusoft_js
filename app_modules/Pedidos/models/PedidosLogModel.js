@@ -34,8 +34,9 @@ PedidosLogModel.prototype.guardarLog = function(parametros, callback) {
  */
 PedidosLogModel.prototype.consultarLogs = function(parametros, callback) {
     
-    var sql = " SELECT a.*, b.nombre, fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                CASE  WHEN a.accion = '0' THEN 'Modificado' WHEN a.accion = '1' THEN 'Eliminado' END as descripcion_accion, \
+    var sql = " SELECT a.*, b.nombre, \
+                CASE  WHEN a.codigo_producto != '0' THEN fc_descripcion_producto(a.codigo_producto) else 'N/A' END as descripcion_producto,\
+                CASE  WHEN a.accion = '0' THEN 'Modificado' WHEN a.accion = '1' THEN 'Eliminado' else 'Pedido Anulado' END as descripcion_accion, \
                 to_char(a.fecha, 'yyyy-mm-dd hh:mi:ss AM') as fecha_registro\
                 FROM logs_pedidos as a\
                 INNER JOIN system_usuarios b ON a.usuario_responsable = b.usuario_id\

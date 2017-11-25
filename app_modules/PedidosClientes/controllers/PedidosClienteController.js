@@ -1,6 +1,6 @@
 
 var PedidosCliente = function (pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos,
-        m_terceros, emails, pedidos_farmacias, m_pedidos_clientes_log, terceros_clientes_model) {
+        m_terceros, emails, pedidos_farmacias, m_pedidos_clientes_log, terceros_clientes_model,m_pedidos_logs) {
 
 
     this.m_pedidos_clientes = pedidos_clientes;
@@ -10,6 +10,7 @@ var PedidosCliente = function (pedidos_clientes, eventos_pedidos_clientes, produ
     this.m_pedidos = m_pedidos;
     this.m_terceros = m_terceros;
     this.emails = emails;
+    this.m_pedidos_logs = m_pedidos_logs;
     this.m_pedidos_clientes_log = m_pedidos_clientes_log;
     this.terceros_clientes_model = terceros_clientes_model;
 };
@@ -52,6 +53,76 @@ PedidosCliente.prototype.listarFacturasPedido = function (req, res) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 
+
+};
+
+/**
+ * +Descripcion Actualizar estado del pedido
+ *  @author Andres Gonzalez
+ *  @fecha 2017-11-24
+ */
+PedidosCliente.prototype.actualizarEstadoPedido = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.pedidos_clientes === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {pedidos_clientes: []}));
+        return;
+    }
+
+    if (args.pedidos_clientes.numeroPedido === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de pedido', 404, {pedidos_clientes: []}));
+        return;
+    }
+    if (args.pedidos_clientes.estado === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el estado que desea actualizar', 404, {pedidos_clientes: []}));
+        return;
+    }
+   var usuario=req.session.user.usuario_id;
+    
+   var parametros ={
+                    numeroPedido: args.pedidos_clientes.numeroPedido , 
+		    estado: args.pedidos_clientes.estado,
+		    numeroUnidades:0,
+		    empresa_id:args.pedidos_clientes.empresa_id
+		   };
+
+   G.knex.transaction(function(transaccion) {
+     /*
+      * nota: al actualizar el detalle se ejecuta un trigger que coloca el estado en 3 cuando numero_unidades es 0
+      */
+	G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarNumeroUnidades',parametros,transaccion).then(function() {
+	   
+	   return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstado',parametros,transaccion );
+
+	}).then(function(resultado) {
+	    
+	     transaccion.commit();
+	    
+	}).fail(function (err) {
+	    
+	    transaccion.rollback(err);
+	    
+	}).done();
+
+    }).then(function(result) {
+	
+	 var obj = {
+            usuarioId: usuario, accion: '2', tipoPedido: '0', numeroPedido: parametros.numeroPedido,
+            empresaId: parametros.empresa_id, codigoProducto: 0,
+            cantidadSolicitada: 0, cantidadActual: 0
+        };
+
+        return G.Q.ninvoke(that.m_pedidos_logs, "guardarLog", obj);
+	
+    }).then (function(result) {
+	
+	 res.send(G.utils.r(req.url, 'actualizar Estado Pedido', 200, {pedidos: result}));
+    }). catch (function(err) {
+	 console.log("error transaccion ",err);
+         res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
 
 };
 /**
@@ -3320,6 +3391,22 @@ function __parametrosLogs(numero, productos, usuario, observacion, total, tipo, 
         };
 
     }
+    if (accion === 3) {
+
+        paramLogCliente = {
+            detalle: {
+                tipo: tipo,
+                pendiente: accion,
+                numero: numero,
+                solicitud: null,
+                fecha_solicitud: 'now()',
+                aprobacion: observacion,
+                fecha_aprobacion: null,
+                usuario_id: usuario
+            }
+        };
+
+    }
 
     return paramLogCliente;
 }
@@ -5269,6 +5356,6 @@ PedidosCliente.$inject = ["m_pedidos_clientes",
     "m_pedidos",
     "m_terceros",
     "emails",
-    "m_pedidos_farmacias", "m_pedidos_clientes_log", "terceros_clientes_model"];
+    "m_pedidos_farmacias", "m_pedidos_clientes_log", "terceros_clientes_model","m_pedidos_logs"];
 
 module.exports = PedidosCliente;

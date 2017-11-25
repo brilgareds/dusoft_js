@@ -162,7 +162,14 @@ define(["angular",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
                                 " ng-disabled='habilitar_asignacion_pedidos(row.entity) || row.entity.estado ==4'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
-                        cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>", width: "10%"},
+                        cellTemplate: '<button type="button" ng-class="agregarClase(row.entity.estado_actual_pedido)"> \
+			                 <span ng-if="row.entity.getEstado()==2" class="glyphicon glyphicon-remove-circle">\
+			                    Anulado \
+			                  </span>\
+					  <span ng-if="row.entity.getEstado()!=2" ng-class="agregarRestriccion(row.entity.estado_separacion)">\
+						{{row.entity.descripcion_estado_actual_pedido}} \
+					  </span> \
+					  </button>', width: "10%"},
                     {field: 'numero_pedido', displayName: 'Pedido', width: "80"},
                     {field: 'descripcionTipoPedido', displayName: 'Tipo Productos', width: "110"},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},

@@ -46,7 +46,6 @@ define(["angular", "js/controllers", "controllers/GuardarTutorialController"], f
                 }
             };
             
-            console.log("opcionesModulo.btnModificarCantidad} ", $scope.opcionesModulo.btnCrearTutorial)
         };
         
         $scope.buscarVideo = function(event){

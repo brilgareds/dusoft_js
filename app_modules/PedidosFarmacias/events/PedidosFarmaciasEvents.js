@@ -1,8 +1,6 @@
 
 var PedidosFarmaciasEvents = function(socket, pedidos_farmacias, terceros) {
 
-    console.log("Eventos Pedidos Farmacias  Cargado ");
-
     this.io = socket;
     this.m_pedidos_farmacias = pedidos_farmacias;
     this.m_terceros = terceros;

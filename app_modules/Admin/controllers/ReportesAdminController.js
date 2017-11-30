@@ -9,7 +9,7 @@ ReportesAdmin.prototype.obtenerConfiguracionReporte = function(req, res){
    var termino={};
 G.Q.nfcall(that.m_reportesAdmin.obtenerReportesAdmin, termino).
         then(function(obtenerReportesAdmin) {
-    console.log(">>>>>>>",obtenerReportesAdmin);
+
         res.send(G.utils.r(req.url, 'Consultar Configuracion Reportes ok!!!!', 200, {obtenerReportesAdmin: obtenerReportesAdmin}));
     }).
        fail(function(err) {

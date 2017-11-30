@@ -139,7 +139,7 @@ define(["angular",
             * @fecha 2016-09-06
             */
             self.agregarUsuarios = function(_usuarios){
-                //console.log("$scope.root.usuariosSeleccionados ", $scope.root.usuariosSeleccionados, _usuarios);
+             
                 var usuarios = $scope.root.usuariosSeleccionados;
                 var _usuario = _usuarios[0];
                 var agregar = true;
@@ -367,9 +367,8 @@ define(["angular",
                         }
                     }
                 };
-                console.log("EL OBJETO ", obj)
-;                Request.realizarRequest(URL.CONSTANTS.API.CHAT.GUARDAR_CONVERSACION, "POST", obj, function(data) {
-                    console.log("AQUI SE GUARDA LA CONVERSACION OK OK OK ", data)
+                Request.realizarRequest(URL.CONSTANTS.API.CHAT.GUARDAR_CONVERSACION, "POST", obj, function(data) {
+                
                     if(data.status === 200){                
                         
                         $timeout(function(){
@@ -401,7 +400,7 @@ define(["angular",
                     }
                 };
                 Request.realizarRequest(URL.CONSTANTS.API.CHAT.VALIDAR_USUARIO_CONVERSACION, "POST", obj, function(data) {
-                    console.log("usuario ", data);
+              
                     if(data.status === 200){
                        
                        callback(true);

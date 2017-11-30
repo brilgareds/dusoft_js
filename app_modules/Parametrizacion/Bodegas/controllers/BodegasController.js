@@ -1,8 +1,6 @@
 
 var Bodegas = function(bodegas) {
 
-    console.log("Modulo Bodegas  Cargado ");
-
     this.m_bodegas = bodegas;
 };
 

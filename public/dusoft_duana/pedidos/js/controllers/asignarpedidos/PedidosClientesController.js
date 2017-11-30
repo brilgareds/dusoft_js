@@ -103,7 +103,7 @@ define(["angular",
                 for (var i in data.pedidos_clientes) {
 
                     var obj = data.pedidos_clientes[i];
-                    //console.log(obj);
+                 
                     var pedido = that.crearPedido(obj);
 
                     $scope.Empresa.agregarPedido(
@@ -267,10 +267,7 @@ define(["angular",
             //fin delegado grid pedidos //
 
             $scope.onPedidoSeleccionado = function(check, row) {
-                /* console.log("agregar!!!!!");
-                 console.log(check);
-                 console.log(row);*/
-
+            
                 row.selected = check;
                 if (check) {
                     that.agregarPedido(row.entity);
@@ -279,7 +276,7 @@ define(["angular",
                     that.quitarPedido(row.entity);
                 }
 
-                console.log($scope.pedidosSeleccionados);
+               
             };
 
 
@@ -303,7 +300,6 @@ define(["angular",
                 }
 
                 $scope.pedidosSeleccionados.push(pedido);
-                console.log("guardando pedido ", $scope.pedidosSeleccionados);
             };
 
             $scope.buscarSeleccion = function(row) {
@@ -311,8 +307,7 @@ define(["angular",
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
                     if (_pedido.numero_pedido === pedido.numero_pedido) {
-                        //console.log("buscarSeleccion encontrado **************");
-                        //console.log(pedido);
+                  
                         row.selected = true;
                         return true;
                     }
@@ -379,7 +374,6 @@ define(["angular",
             };
 
             $scope.abrirModalAsignar = function() {
-                console.log($scope.pedidosSeleccionados, " pedidos seleccionados ", $scope.pedidosSeleccionados.length);
 
                 $scope.opts = {
                     backdrop: true,
@@ -406,7 +400,6 @@ define(["angular",
 
             //delegados del sistema
             $rootScope.$on("refrescarPedidos", function() {
-                console.log("refrescar pedidos listened");
                 $scope.pedidosSeleccionados = [];
                 // $scope.buscarPedidosCliente("");
             });
@@ -417,12 +410,9 @@ define(["angular",
             //delegados del socket io
             socket.on("onListarPedidosClientes", function(datos) {
                 
-                console.log("socket >>>>>>>>>>>>>>>>>> onListarPedidosClientes ");
                 if (datos.status === 200) {
                     var obj = datos.obj.pedidos_clientes[0];
                     var pedido = that.crearPedido(obj);
-                    console.log("objecto del socket");
-                    console.log(obj);
                     that.reemplazarPedidoEstado(pedido);
                     AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
 

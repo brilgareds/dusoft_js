@@ -7,7 +7,7 @@ define(["angular", "js/models", "js/models/Detalle"], function(angular, models) 
             }
 
             Movimiento.prototype.setDatos = function(datos) {
-                // console.log("movimiento >>>>>>>>> ",datos.detalle);
+   
                 datos.cantidad = parseInt(datos.cantidad);
                 datos.stock_actual = parseInt(datos.stock_actual);
 

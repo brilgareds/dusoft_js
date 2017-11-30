@@ -43,7 +43,6 @@ function __enviarNotificacion(that,usuario,response,socket){
     G.auth.getSessionsUser(usuario, function(err, sessions) {          
          //Se recorre cada una de las sesiones abiertas por el usuario
         sessions.forEach(function(session) {
-            console.log("emitir evento Factura en proceso generada ___________________________________________________");
              //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
             that.io.to(session.socket_id).emit(socket,response);
         });

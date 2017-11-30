@@ -231,7 +231,6 @@ define(["angular", "js/controllers",
 
                 ],
                 beforeSelectionChange: function(row, event) {
-                    //console.log("row seleccionado ", row.entity);
                     if (!row.entity || row.entity.cantidad_ingresada === 0 || row.entity.numero_caja > 0 || !row.entity.seleccionado || row.entity.item_id === 0) {
                         return false;
                     }
@@ -344,7 +343,6 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.ELIMINAR_ITEM_TEMPORAL, "POST", obj, function(data) {
 
-                    console.log("respuesta al modificar lote ", data);
                     if (data.status === 200) {
                         lote.item_id = 0;
                         that.traerDisponibles(function(data) {
@@ -354,7 +352,6 @@ define(["angular", "js/controllers",
                                 $scope.rootEditarProducto.producto.cantidad_pendiente += parseInt(lote.cantidad_ingresada);
                                 lote.cantidad_pendiente += parseInt(lote.cantidad_ingresada);
                                 $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
-                                console.log("datos retirados ", $scope.rootEditarProducto.producto);
 
                             }
 
@@ -466,7 +463,6 @@ define(["angular", "js/controllers",
                 }
 
                 if (cantidad_por_lote > lote.existencia_actual) {
-                    //console.log("cantidad "+ cantidad_por_lote, " lote ", lote.existencia_actual);
                     obj.valido = false;
                     obj.mensaje = "La cantidad ingresada, debe ser menor al stock de la bodega!!.";
                     return obj;
@@ -481,7 +477,6 @@ define(["angular", "js/controllers",
                 for (var i in $scope.lotes_producto.selectedItems) {
 
                     var lote = $scope.lotes_producto.selectedItems[i];
-                    console.log("numero de caja ", lote.numero_caja, " digitado ", $scope.rootEditarProducto.caja.getNumero());
                     if (parseInt(lote.numero_caja) === parseInt($scope.rootEditarProducto.caja.getNumero()) && parseInt(lote.numero_caja) !== 0) {
 
                         return true;
@@ -498,7 +493,6 @@ define(["angular", "js/controllers",
 
             $scope.auditarPedido = function() {
 
-              //  console.log("rootEditarProducto.producto.lote.justificacion_auditor ", $scope.rootEditarProducto.producto.lote.justificacion_auditor)
                 $scope.rootEditarProducto.validacionproducto.valido = true;
 
 
@@ -610,7 +604,6 @@ define(["angular", "js/controllers",
                 
               
                 var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[index];
-                //console.log(" lote ::::::::::______------------ ", lote);
 
                 if (lote.seleccionado){
 
@@ -925,7 +918,6 @@ define(["angular", "js/controllers",
                 var modalInstance = $modal.open($scope.opts);
                 
                 modalInstance.result.then(function() {
-                    console.log("refrescar producto");
                     that.refrescarProducto();
 
                 }, function() {

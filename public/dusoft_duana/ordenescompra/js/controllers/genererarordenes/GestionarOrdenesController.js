@@ -564,7 +564,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 Request.realizarRequest(API.ORDENES_COMPRA.GENERAR_ORDEN_COMPRA_AUDITORIA, "POST", objAuditoria, function(data) {
                     
-                    console.log("[subir_archivo_plano]: data ", data)
+                 
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                      

@@ -184,8 +184,7 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
         }
     }).andWhere('a.empresa_id', obj.empresaId)
       .whereNull('c.prefijo_nota');
-            
-//	    console.log("Query ",query.toSQL());
+
    if(obj.paginaActual!== undefined ){
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit)

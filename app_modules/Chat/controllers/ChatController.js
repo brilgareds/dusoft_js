@@ -208,7 +208,6 @@ ChatController.prototype.guardarConversacion = function(req, res) {
     var that = this;
     var args = req.body.data;
     
-    console.log("usuarios >>>>>>>>>>>>>>>>>>>>> ", args.chat.usuarios);
     
     if (!args.chat  || !args.chat.usuarios || !args.chat.usuario_id ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -468,8 +467,7 @@ ChatController.prototype.subirArchivoMensaje = function(parametros, callback) {
         return  G.Q.ninvoke(G.utils, "subirArchivo", parametros.req.files, true);
         
     }).then(function(_rutaNueva) {
-        console.log("file was moved to ", _rutaNueva, " original ", parametros.req.files.file.name);
-        
+              
         callback(false, {rutaNueva:'_rutaNueva', nombreArchivo:parametros.req.files.file.name});
         
     }).fail(function(err){
@@ -487,19 +485,14 @@ ChatController.prototype.subirArchivoMensaje = function(parametros, callback) {
 * @fecha 2016-09-07
 */
 ChatController.prototype.subirArchivoMensaje2 = function(req, res) {
-   
-    console.log("************ChatController.prototype.subirArchivoMensaje2 ******************");
-    console.log("************ChatController.prototype.subirArchivoMensaje2 ******************");
-    console.log("************ChatController.prototype.subirArchivoMensaje2 ******************");
-    
+       
     var that = this;
     var args = req.body.data;
      
     
-    //console.log("args.files ", req.files);
+
     G.Q.ninvoke(G.utils, "subirArchivo", req.files, true).then(function(_rutaNueva){
         
-        console.log("file was moved to ", _rutaNueva, " original ", req.files.file.name);
         res.send(G.utils.r(req.url, 'Se subio el fichero satisfactoriamente', 200, {conversaciones: ''}));
         
     }).fail(function(err){

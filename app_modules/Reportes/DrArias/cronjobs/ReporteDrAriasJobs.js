@@ -5,7 +5,7 @@ var ReporteDrAriasJobs = function(m_drArias) {
 
     that.m_drArias = m_drArias;
     if(ip.address()==='10.0.2.229'){
-	console.log("IP ",ip.address());
+	
 	if(G.program.prod){
 	    that.iniciar();
 	}
@@ -50,7 +50,7 @@ function __InsertarDrArias(that,swCopia){
             if(parsetInt(numeroRegistros) === 0){
               return G.Q.ninvoke(that.m_drArias, "addTemporalesReporteDrArias");
              }else{
-              console.log('para proceso __InsertarDrArias');
+             
               jobInicio.stop();
               return;
              }           
@@ -62,7 +62,7 @@ function __InsertarDrArias(that,swCopia){
         }).then(function(datos){
             var numeroRegistrosfinal=datos[0].numero;
             if(parsetInt(numeroRegistrosfinal) !== 0 && parsetInt(numeroRegistros) === 0){
-             console.log("SE CREO LA COPIA DE temporal_reporte_dr_arias CORRECTAMENTE: ",numeroRegistrosfinal);
+            
              var update={};
              update.numero=datos[0].numero;
              update.swCopia=swCopia;            

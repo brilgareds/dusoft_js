@@ -1,8 +1,6 @@
 
 var AutenticacionCronJobs = function(auth_events) {
 
-    console.log("Modulo Cron Jobs Autenticacion Cargado ");
-    
     this.cronJob = require('cron').CronJob;
     this.e_auth = auth_events;
 };

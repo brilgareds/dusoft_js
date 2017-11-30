@@ -12,7 +12,7 @@ define(["angular",
                  $modalInstance, tercero) {
                      
             var self = this;
-            console.log("tercero ", tercero)
+          
             
             $scope.root = {
                 tercero:tercero

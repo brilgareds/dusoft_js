@@ -384,12 +384,6 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
                     // Consultar numeracion del documento    
                     __obtener_numeracion_documento(empresa_id, documento_id, function(err, numeracion, result) {
 
-                        console.log('============= Obtener Numeracion ============= ');
-                        console.log(err);
-                        //console.log(numeracion);
-                       // console.log(result);
-                        console.log('============================================= ');
-
                         if (err || numeracion.length === 0) {
                             console.log('Se ha generado un error o no se pudo tener la numeracion del documento');
                             callback(err);
@@ -596,7 +590,6 @@ MovimientosBodegasModel.prototype.isBodegaDestino = function(parametros, callbac
         callback(false, resultado);
     }). catch (function(error) {
         console.log("error [isBodegaDestino]: ", error);
-        console.log("error [isBodegaDestino]: ", parametros);
         callback(error);
     });
 };
@@ -648,7 +641,6 @@ MovimientosBodegasModel.prototype.isExistenciaEnBodegaDestino = function(paramet
         .andWhere('a.centro_utilidad', parametros.centroUtilidad)
         .andWhere('a.bodega', parametros.bodega)
         .then(function(resultado){
-//    console.log("resultado:: ",resultado);
             callback(false, resultado);
         }).catch(function(err){
             console.log("error sql",err);
@@ -681,7 +673,6 @@ MovimientosBodegasModel.prototype.ordenTercero = function(parametros, callback){
         .andWhere('a.prefijo', parametros.prefijoDocumento)
         .andWhere('a.numero', parametros.numeracionDocumento)
         .then(function(resultado){
-//    console.log("resultado:: ",resultado);
             callback(false, resultado);
         }).catch(function(err){
             console.log("error sql",err);
@@ -787,7 +778,7 @@ MovimientosBodegasModel.prototype.getDoc = function(parametros, callback){
                 inner join bodegas as f on (y.empresa_id=f.empresa_id and y.centro_utilidad=f.centro_utilidad and f.bodega=y.bodega)\
                 inner join system_usuarios k on (k.usuario_id=y.usuario_id)\
                 group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,24,25,26; ";
-//    console.log("parametros________ "  ,parametros);
+
      G.knex.raw(sql, {1:parametros.empresaId, 2:parametros.prefijoDocumento , 3:parametros.numeracionDocumento}).
     then(function(resultado){
        callback(false, resultado.rows);
@@ -830,7 +821,7 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function(parametr
 		JOIN system_usuarios as SU ON (t.usuario_id = SU.usuario_id) \
                 "+inner+"\
 		WHERE TRUE AND a.empresa_id = :1 AND a.centro_utilidad = :2 AND a.bodega = :3 AND b.tipo_doc_general_id = :4 AND c.inv_tipo_movimiento = :5 "+where;
-//    console.log("as",sql);
+
     var datos ={1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento};
     var query = G.knex.select(G.knex.raw(sql, datos)).
     limit(G.settings.limit).
@@ -1130,7 +1121,6 @@ function __eliminar_movimiento_bodega_temporal(documento_temporal_id, usuario_id
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
-       // console.log("catch error________________________ ", err);
         callback(err);
     });
 

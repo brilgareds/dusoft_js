@@ -12,7 +12,7 @@ var CajaGeneral = function(m_caja_general, m_sincronizacion,m_facturacion_provee
  * @fecha 2017-06-23 (YYYY-MM-DD)
  */
 CajaGeneral.prototype.listarPrefijos = function(req, res) {
-console.log("********************listarPrefijos************************");
+
     var that = this;
     var args = req.body.data;
 
@@ -39,7 +39,7 @@ console.log("********************listarPrefijos************************");
  * @fecha 2017-06-23 (YYYY-MM-DD)
  */
 CajaGeneral.prototype.listarFacturasGeneradasNotas = function(req, res) {
-console.log("********************listarFacturasGeneradasNotas************************");
+
     var that = this;
     var args = req.body.data;
 
@@ -546,8 +546,7 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function(req, res) {
 
 	    conceptosDetalle=result;            
 	    ip=ip.replace('::ffff:', '');
-	    console.log("IP  ",ip.replace('::ffff:', ''));
-
+	   
 	    return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip});     
 
 	}).then(function(resultado){	
@@ -602,7 +601,7 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function(req, res) {
 	    }
 
 	}).then(function(result) {
-	    console.log("commit  ",result);
+	 
 	    transaccion.commit();
 
 	}).fail(function(err) {
@@ -790,7 +789,7 @@ CajaGeneral.prototype.imprimirFacturaNotas = function(req, res) {
  * @fecha 2017-06-13 (YYYY-MM-DD)
  */
 CajaGeneral.prototype.imprimirFacturaNotasDetalle = function(req, res) {
-    console.log("**********imprimirFacturaNotasDetalle**********");
+ 
     var that = this;
     var args = req.body.data;
     var total = {totalFactura: 0, totalGravamen: 0};
@@ -866,7 +865,7 @@ CajaGeneral.prototype.imprimirFacturaNotasDetalle = function(req, res) {
 	return G.Q.nfcall(__generarPdf, informacion);
 	
     }).then(function(result) {
-	console.log("result ___",result);
+	
 	res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirFacturaNotas: result}));
 
     }). catch (function(err) {
@@ -1208,9 +1207,9 @@ function __traerPorcentajeImpuestos(that, obj, callback) {
 
     var parametros;
     var retencion;
-    console.log("__traerPorcentajeImpuestos obj ",obj);
+
     G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj).then(function(resultado) {
-        console.log("__traerPorcentajeImpuestos",resultado);
+  
 	
 	if (resultado.length > 0){
 	    

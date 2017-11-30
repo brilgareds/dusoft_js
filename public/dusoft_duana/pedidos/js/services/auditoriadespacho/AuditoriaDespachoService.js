@@ -86,8 +86,8 @@ define(["angular", "js/services"], function(angular, services) {
                callback(data);
             });
         };
-
-        return this;
+        
+       return this;
     }]);
 });
 

@@ -178,7 +178,7 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-                console.log("guardarDetallePedidoTemporal>>>>>>>>>>>>>>>>>>>>>>>>>>>>",obj.data.pedidos_farmacias);
+                
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         pedido.agregarProductoSeleccionado(producto);
@@ -196,7 +196,7 @@ define(["angular", "js/controllers",
              * +Descripcion: Realiza la peticion al API para generar un pedido dsde el temporal.
              */
             self.generarPedido = function(pedidoCliente,callback){
-                console.log("generarPedido");
+              
                 var pedido = $scope.root.pedido;
                 var farmacia = pedido.getFarmaciaDestino();
                 var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_FARMACIA;
@@ -215,7 +215,7 @@ define(["angular", "js/controllers",
                     }
                 };
                 
-                console.log("objGenerarPedido ",objGenerarPedido);
+           
 
                 Request.realizarRequest(url, "POST", objGenerarPedido, function(data) {
                     if (data.status === 200) {
@@ -250,7 +250,7 @@ define(["angular", "js/controllers",
                     productos.push(producto);
                 }
             }
-           console.log("clienteFarmacia ",clienteFarmacia);
+
             if(pedido.length===productos.length){
              self.generarPedidoFarmacia=false;
             }
@@ -384,9 +384,9 @@ define(["angular", "js/controllers",
              */
             self.mostrarProductosNoValidos = function(productos, callback){
                 $scope.productosInvalidos = [];
-                 console.log("mostrarProductosNoValidos ");
+                
                 for (var i in productos) {
-                    console.log("productos ",productos[i]);
+                  
                     var _producto = productos[i];
                     var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion || "?").
                                                               setCantidadSolicitada(_producto.cantidad_solicitada).
@@ -440,7 +440,7 @@ define(["angular", "js/controllers",
              * +Descripcion: Evento que actualiza la barra de progreso
              */
            socket.on("onNotificarProgresoArchivoPlanoFarmacias", function(datos) {
-               console.log("onNotificarProgresoArchivoPlanoFarmacias ", datos);
+           
                 $scope.rootPedidoFarmaciaTemporal.progresoArchivo = datos.porcentaje;
             }); 
             
@@ -536,15 +536,14 @@ define(["angular", "js/controllers",
 
             Request.realizarRequest(url, "POST", obj, function(data) {
 
-                 console.log("data.status", data.msj);
-                 console.log("data.status", data);
+         
                 if (data.status === 200) {
-                    console.log("data.status", data.msj);
+        
                     AlertService.mostrarMensaje("warning", data.msj + " Numero " + data.obj.pedido_farmacia.pedido);
                 } if (data.status === 500) {
                     //AlertService.mostrarMensaje("warning", data.msj + " Numero " + data.obj.pedido_farmacia.msj);
                     self.consultarDetallePedidoTemporal(function(){
-                        console.log("data.obj.pedido_farmacia.productosInvalidos.length ",data.obj.pedido_farmacia.productosInvalidos);
+            
                          if(data.obj.pedido_farmacia.productosInvalidos.length > 0){
                             
                             self.mostrarProductosNoValidos(data.obj.pedido_farmacia.productosInvalidos);
@@ -579,7 +578,7 @@ define(["angular", "js/controllers",
                 
                                 
                 if($scope.root.pedido.get_numero_pedido()){
-                    console.log("el pedido fue generado, no se borrara un item");
+                
                     return;
                 }
                 
@@ -643,7 +642,7 @@ define(["angular", "js/controllers",
                     });
                 } else {
                     self.guardarDetallePedidoTemporal(function(agregado, datos) {
-                        console.log("agregado al temporal ", pedido); 
+                   
                         if(!agregado){
                             AlertService.mostrarVentanaAlerta("Error", datos.msj);
                         }

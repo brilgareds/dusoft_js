@@ -111,8 +111,8 @@ define(["angular", "js/controllers",
                 inactivarTab: false
             };
             $scope.listarFacuras = false;
-            
-            
+	    
+        
             /**
              * +Descripcion Menu desplegable para seleccionar el tipo de cotizacion
              *              que desee realizar el usario,
@@ -787,7 +787,7 @@ define(["angular", "js/controllers",
                     }
                 }; 
 		   Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_ESTADO_PEDIDO, "POST", obj, function(data) {
-		       console.log("AAAAAAAAAAAAAAAAA",data);
+		       
                     if (data.status === 200) {
 			that.buscar_pedidos('', '');
 			AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El pedido No. "+parametros.numeroPedido+" Anulado correctamente");
@@ -915,6 +915,8 @@ define(["angular", "js/controllers",
                 },function(){});  
 
             };
+	   
+	    
             /**
              * +Descripcion Servicio encargado de listar las facturas de un pedido
              * @author Cristian Manuel Ardila
@@ -976,8 +978,8 @@ define(["angular", "js/controllers",
                                                 <li ng-if="row.entity.getTieneDespacho()">\
                                                 <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
                                             </li>\
-                                             <li ng-if="row.entity.getEstado()!=2 && row.entity.getEstado()== 1">\
-                                                <a href="javascript:void(0);" ng-click="onAnularPedido(row.entity)">Anular</a>\
+                                             <li ng-if="row.entity.getEstado()!=2 && row.entity.getEstado()== 1 && row.entity.getEstadoActualPedido() == 0 && datos_view.opciones.sw_anulacion_pedidos_clientes">\
+                                                <a href="javascript:void(0);" ng-click="onAnularPedido(row.entity)">Anular Pedido</a>\
                                             </li>\
                                              <li ng-if="datos_view.opciones.sw_consultar_logs">\
                                                 <a href="javascript:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\

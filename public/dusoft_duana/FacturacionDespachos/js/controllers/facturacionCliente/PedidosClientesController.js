@@ -147,7 +147,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             pedidoClientes.forEach(function(row){                                                                                                
                                 if(resultado.pedido_cliente_id === row.pedidos[0].numero_cotizacion){
-                                    //console.log("row ", row.pedidos[0]);
+                                 
                                     row.pedidos[0].prefijoNumero += " ( " + resultado.prefijo+" - "+ resultado.numero +")";
                                      row.pedidos[0].agregarDocumentos(facturacionClientesService.renderDocumentosPrefijosClientes(
                                         row.pedidos[0].numero_cotizacion, 

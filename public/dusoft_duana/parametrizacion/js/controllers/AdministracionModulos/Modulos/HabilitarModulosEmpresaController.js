@@ -144,20 +144,20 @@ define(["angular", "js/controllers", "js/models", "includes/classes/Rol", "model
                 for (var i in moduloSeleccionado.getModulosPadre()) {
                      
                     if(empresa.getEstado()){
-                        console.log("cambiar modulo padre ",empresa.getEstado(), moduloSeleccionado.getModulosPadre()[i]);
+                  
                         self.__agregarEmpresa(empresa, moduloSeleccionado.getModulosPadre()[i],modulos_empresas_id);
                     }
                     
                 }
                 
                 //se crea una instancia empresa_modulo para el modulo seleccionado
-               // console.log("empresa ",empresa, "modulo empresa id ", modulos_empresas_id);
+            
                 self.__agregarEmpresa(empresa, moduloSeleccionado.getId(), modulos_empresas_id);
                 
             };
 
             self.__agregarEmpresa = function(empresa, modulo_id, modulos_empresas_id) {
-               // console.log("empresa seleccionada ", empresa)
+              
                  //se crea una instancia de la clase que asocia la relacion N:N entre modulos y empresas
                 //se crea una instancia nueva de modulo diferente al seleccionado porque solo interesa tener el id
                 
@@ -407,7 +407,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/Rol", "model
             
             //basado en los roles seleccionados, se envian para ser habilitardos para el modulo
             self.habilitarModulosRol = function() {
-                console.log("roles modulos seleccionados ", moduloSeleccionado.getRoles());
+              
                 var obj = {
                     session: $scope.root.session,
                     data: {
@@ -452,7 +452,6 @@ define(["angular", "js/controllers", "js/models", "includes/classes/Rol", "model
                 self.agregarEmpresa(empresa);
                 
                 
-                console.log("$scope.moduloSeleccionado.getListaEmpresas() ",$scope.moduloSeleccionado.getListaEmpresas());
                                 
                 var obj = {
                     session: $scope.root.session,
@@ -494,7 +493,6 @@ define(["angular", "js/controllers", "js/models", "includes/classes/Rol", "model
 
             $scope.onHabilitarModuloEnEmpresas = function() {
                 return;
-                console.log("modulso seleccionados ",$scope.moduloSeleccionado.getListaEmpresas());
                 var obj = {
                     session: $scope.root.session,
                     data: {

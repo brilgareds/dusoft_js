@@ -27,7 +27,7 @@ define(["angular",
                 if(self.validarNotificacion(datos)){
                     self.mostrarNotificacionWeb(datos.titulo, datos.mensaje);
                 } else {
-                    console.log("el usuario no tiene permisos para ver la notificacion ", datos);
+                    
                 }
                 
 
@@ -82,7 +82,7 @@ define(["angular",
                     autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
                 }, function onShow(error, hide) {
                     if (error) {
-                        console.log('Error interno: al mostrar ventana de web notifications ' + error.message);
+                        
                     } else {
 
                         setTimeout(function hideNotification() {
@@ -117,7 +117,7 @@ define(["angular",
                         break;
                     }
                 }
-                console.log("conversaciones remover ", conversaciones);
+          
                 
             };
             

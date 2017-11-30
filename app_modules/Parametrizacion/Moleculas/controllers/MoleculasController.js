@@ -1,8 +1,6 @@
 
 var Moleculas = function(laboratorios) {
 
-    console.log("Modulo Laboratorios Cargado ");
-
     this.m_moleculas = laboratorios;
 };
 

@@ -104,7 +104,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              de la vista Detalle de despacho aprobado
              */
             $scope.aprobarDespacho = function () {
-                console.log("$scope.documentoDespachoAprobado ", $scope.documentoDespachoAprobado);
+            
                 if ($scope.documentoDespachoAprobado.getPrefijo().length === 0 || $scope.documentoDespachoAprobado.getNumero().length === 0) {
 
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
@@ -315,7 +315,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 Request.realizarRequest(API.VALIDACIONDESPACHOS.REGISTRAR_APROBACION, "POST", obj, function (data) {
-                    console.log(">>>>>>>>>>>>>> ", data);
+             
                     if (data.status === 200) {
                         $scope.despachoId = data.obj.validacionDespachos.id_aprobacion_planillas;
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -356,7 +356,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                             if (data.status === 200) {
                                 var resultado = data.obj.validacionDespachos[0];
-                                console.log("ESTO QUE ES ", resultado);
+                            
                                 var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
                                 $scope.datos_view.empresaSeleccionada = empresa;
                                 $scope.despachoId = resultado.id_aprobacion_planillas;

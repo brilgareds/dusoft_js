@@ -207,8 +207,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
 
             self.validarIngresoProducto = function(producto, callback) {
                 var pedido = $scope.root.pedido;
-console.log("comparar temporal ",pedido);
-console.log("comparar producto ",producto);
 
                 if (pedido.esProductoSeleccionado(producto)) {
 
@@ -305,7 +303,6 @@ console.log("comparar producto ",producto);
                 $scope.$emit('cerrarSeleccionProducto', {animado: true});
                 $scope.$$watchers = null;
                 $scope.rootSeleccionProductoFarmacia = {};
-                console.log("slide de productos cerrado", $scope);
             };
 
             /*
@@ -364,10 +361,8 @@ console.log("comparar producto ",producto);
                         pedido.setProductoSeleccionado(angular.copy(producto));
 
                         self.validarIngresoProducto(producto, function(validacion) {
-                          console.log("validacion.valido ",validacion.valido);
-                          console.log("validacion.valido ",producto);
+               
                             if (validacion.valido) {
-                                console.log("validacion.valido ",validacion.valido);
                                 if (pedido.get_numero_pedido()) {
                                     $scope.$emit("insertarProductoPedido", pedido);
                                 } else {

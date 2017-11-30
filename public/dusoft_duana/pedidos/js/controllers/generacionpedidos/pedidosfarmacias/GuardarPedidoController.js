@@ -276,7 +276,7 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA;
                 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    console.log("resultado cambiar cantidad ", data);
+                 
                     if(data.status !== 200){
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         

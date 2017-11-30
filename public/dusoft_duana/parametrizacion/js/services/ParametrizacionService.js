@@ -60,7 +60,7 @@ define(["angular", "js/services"], function(angular, services) {
                             );
 
                         }
-                        //console.log("refrescar arbol code 1");
+               
                         $rootScope.$emit("datosArbolCambiados", modulos);
                         
                         if(callback){

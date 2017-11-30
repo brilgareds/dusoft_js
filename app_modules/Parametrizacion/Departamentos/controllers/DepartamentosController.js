@@ -1,8 +1,6 @@
 
 var Departamentos = function(departamentos) {
 
-    console.log("Módulo Departamentos Cargado ");
-
     this.m_departamentos = departamentos;
 };
 

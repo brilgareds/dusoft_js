@@ -701,7 +701,6 @@ OrdenesCompraModel.prototype.eliminarArchivosNovedad = function(archivos, callba
     }
     
     var sql = "DELETE FROM archivos_novedades_ordenes_compras WHERE id = :1";
-    console.log("eliminando archivo con id ", archivo.id, " con nombre ",archivo.nombre_archivo);
     G.knex.raw(sql, {1:archivo.id}).then(function(resultado){
        G.fs.unlinkSync(G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + archivo.nombre_archivo);
        archivos.splice(0,1);
@@ -813,7 +812,6 @@ OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(noved
 
     var sql = "  SELECT * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = :1 ; ";
     G.knex.raw(sql, {1:novedad_id}).then(function(resultado){
-       //console.log("archivos encontrados ", resultado);
        callback(false, resultado.rows);
     }).catch(function(err){
        //console.log("error eliminando novedad ", err);
@@ -1257,7 +1255,6 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
     };
 
     G.knex.raw(sql, parametros).then(function(resultado) {
-        console.log("resultado", resultado);
         callback(false, resultado.rows, resultado);
     }).catch (function(err) {
         console.log("error", err);
@@ -1318,7 +1315,6 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
         4:producto_mercancia.cantidad_recibida,
         5:producto_mercancia.cantidadPendiente
     };
-    console.log("parametros ", parametros)
     G.knex.raw(sql, parametros).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
@@ -1328,9 +1324,6 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
 
 // Modificar productos Recepcion mercancia
 OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion, callback) {
-    
-    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia NOTIFICACION**********");
-    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia NOTIFICACION**********");
     
     var that = this;
     var sql = " update recepcion_mercancia set estado = '2' where  id = :1 ; ";
@@ -1545,7 +1538,6 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
          throw "El producto no pudo ser registrado "+(producto.__rownum__ + 1);
       } else {
           producto.iva = _producto[0].iva;
-          //console.log("producto insertado ", producto);
           return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, producto.codigo_producto, producto.cantidad,
                              producto.costo, producto.iva, params.transaccion);
       }
@@ -1631,8 +1623,7 @@ function __validarFilaOrden(params, callback){
     var reg = /^-?\d+\.?,?\d*$/;
         
     if(!reg.test(costo) || !reg.test(cantidad) || parseInt(costo) <= 0 || parseInt(cantidad) <= 0){
-        console.log("error fila ", cantidad, " costo ", costo);
-        callback({error:true, msj:"La cantidad o costo no son validos "+ (params.orden.__rownum__ + 1)}) ;
+         callback({error:true, msj:"La cantidad o costo no son validos "+ (params.orden.__rownum__ + 1)}) ;
         return;
     }
     

@@ -35,7 +35,7 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
             });
             
             $(document).on('scroll', ".tab-content",function(){
-                console.log(' --- You scrolled - do $digest() ---')
+            
             });
             
             

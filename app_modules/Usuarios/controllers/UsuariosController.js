@@ -1,8 +1,6 @@
 
 var Usuarios = function(usuarios, m_rol, m_modulo) {
 
-    console.log("Modulo Usuarios Cargado ");
-
     this.m_usuarios = usuarios;
     this.m_rol = m_rol;
     this.m_modulo = m_modulo;
@@ -421,9 +419,7 @@ Usuarios.prototype.asignarRolUsuario = function(req, res) {
                res.send(G.utils.r(req.url, 'Se genero un error seleccionando la empresa como predeterminado', 403, {}));
                return;
            }
-           
-           console.log("cantidad de predeterminados ", rows);
-                
+                           
            //si no hay empresas predeterminadas se marca la recien asignada
            if(rows.length ===  0){
                that.m_usuarios.cambiarPredeterminadoEmpresa(empresa_id, login_id, rol_id, '1', function(){

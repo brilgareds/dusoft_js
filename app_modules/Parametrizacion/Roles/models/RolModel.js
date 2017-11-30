@@ -193,8 +193,6 @@ RolModel.prototype.insertarOpcion = function(modulo, usuario_id, callback) {
     var modulo_opcion_id = modulo.opcionAGuardar.id;
     var estado = modulo.opcionAGuardar.seleccionado;
 
-    console.log("estado >>>>>>>>>>>", typeof estado, " estado ", Number(estado), " rol_modulo_id ", rol_modulo_id, " modulo_opcion_id ", modulo_opcion_id);
-
     var sql = "INSERT INTO roles_modulos_opciones (modulo_opcion_id, rol_modulo_id, usuario_id,\
                fecha_creacion, estado) VALUES ( :1, :2, :3, :4, :5 ) RETURNING id";
 
@@ -215,8 +213,6 @@ RolModel.prototype.modificarOpcion = function(modulo, usuario_id, callback) {
     var estado = modulo.opcionAGuardar.seleccionado;
     var rol_modulo_id = modulo.rolesModulos[0].id;
     var modulo_opcion_id = modulo.opcionAGuardar.id;
-
-    console.log("modificar opcion >>>>>>>>>>>", typeof estado, " estado ", Number(estado), " rol_modulo_id ", rol_modulo_id, " modulo_opcion_id ", modulo_opcion_id);
 
     var sql = "UPDATE roles_modulos_opciones SET   usuario_id_modifica = :1,\
                estado = :2, fecha_modificacion = :3  WHERE rol_modulo_id = :4 AND modulo_opcion_id = :5";
@@ -327,7 +323,6 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
     var sql = "UPDATE roles_modulos SET estado = :3, usuario_id_modifica = :1, fecha_modificacion = now()  \
                WHERE modulos_empresas_id = :2 AND rol_id = :4 RETURNING id";
 
-    //console.log("parametros ", {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id});
     G.knex.raw(sql, {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id}).then(function(resultado){
         if (resultado.rowCount === 0) {
             sql = "INSERT INTO roles_modulos (modulos_empresas_id, rol_id, usuario_id, fecha_creacion, estado)\

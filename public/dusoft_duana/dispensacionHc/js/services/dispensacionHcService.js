@@ -440,7 +440,7 @@ define(["angular", "js/services"], function(angular, services) {
                    
                 }
                 
-                 console.log("resultado ---> ", resultado);
+             
                 return resultado;
                 
             };
@@ -518,7 +518,7 @@ define(["angular", "js/services"], function(angular, services) {
                     resultado.push(afiliados);
                 }
                 
-                 // console.log("resultado ---> ", resultado);
+           
                 return resultado;
                 
             };
@@ -535,7 +535,7 @@ define(["angular", "js/services"], function(angular, services) {
                 for(var i in producto){
                     
                     var _productos = producto[i];
-                   // console.log("_productos ", _productos)
+              
                     var Productos  = ProductosFOFO.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
                         Productos.setPerioricidadEntrega(_productos.perioricidad_entrega);
                         Productos.setTiempoTotal(_productos.tiempo_total);

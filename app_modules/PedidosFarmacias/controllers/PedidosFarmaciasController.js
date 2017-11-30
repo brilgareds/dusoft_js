@@ -1,9 +1,6 @@
 
 var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias, productos, pedidos_clientes, m_pedidos, terceros, emails,m_autorizaciones) {
 
-
-    console.log("Modulo Pedidos Farmacias  Cargado ");
-
     this.m_pedidos_farmacias = pedidos_farmacias;
     this.m_pedidos_clientes = pedidos_clientes;
     this.e_pedidos_farmacias = eventos_pedidos_farmacias;
@@ -326,7 +323,7 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedido = function(req, res) {
     that.m_pedidos_farmacias.eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, cabecera_pedido[0].empresa_destino, function(err, rows) {
 
     if (err) {
-        console.log("error");
+        console.log("error",err);
         res.send(G.utils.r(req.url, 'No se pudo eliminar el producto', 500, {error: err}));
         return;
     } else {
@@ -442,7 +439,7 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
             }
         }).spread(function(rows, responsable_estado_pedido){
             // Notificando Pedidos Actualizados en Real Time
-            console.log("rows ", rows);
+	    
             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             
             if (--i === 0) {
@@ -663,7 +660,6 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
 
         lista_pedidos_farmacias.forEach(function(pedido) {
 
-            console.log("Pedido ====>>>>", pedido)
             // Calcular el tiempo de separacion del pedido
             var fecha_separacion = 0;
             var tiempo_separacion = 0;
@@ -1650,7 +1646,6 @@ PedidosFarmacias.prototype.generarPedidoModuloCliente = function(req, res) {
     }
     
     G.Q.nfcall(__generarTemporalAutomatico, that, req).then(function(resultado) {
-        console.log("generarPedidoModuloCliente ",resultado);
         ok = resultado;
         return ok;
     }).then(function(resultado) {
@@ -1685,7 +1680,7 @@ PedidosFarmacias.prototype.generarPedidoModuloCliente = function(req, res) {
  * */
  
 function __generarPedidoAutomatico(that, req, callback) {
-console.log("***********generar pedido automatico****************");
+
         var args = req.body.data;
         var pedido_cliente = null;
 
@@ -1745,7 +1740,6 @@ console.log("***********generar pedido automatico****************");
         }
 
     }).then(function(rows) {
-        console.log("insertarDetallePedidoFarmacia rows ",rows);
         if(rows[1].rowCount > 0){
             return G.Q.ninvoke(that.m_pedidos_farmacias, "insertarDetallePedidoFarmacia", numero_pedido, empresa_id, centro_utilidad_id,
                 bodega_id, usuario_id, empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id);
@@ -1754,7 +1748,7 @@ console.log("***********generar pedido automatico****************");
         }       
       
     }).then(function(rows) {
-        console.log("rows[1].rowCount",rows);
+	
         if(rows[1].rowCount > 0){
             return G.Q.ninvoke(that.m_pedidos_farmacias, "eliminar_detalle_temporal_completo", empresa_id, centro_utilidad_id, bodega_id, usuario_id);
         }else{
@@ -1914,8 +1908,7 @@ console.log("***********generar pedido automatico****************");
         
         if (productosInvalidos.length > 0) {
             productosInvalidos = productosInvalidos.concat(productosInvalidosArchivo);
-            console.log("productosInvalidos  ",productosInvalidos);
-            console.log("productosValidados  ",productosValidados);
+	    
             throw {msj:"productosInvalidos",productosInvalidos:productosInvalidos, status: 404};
             return;
         } else {
@@ -1924,8 +1917,7 @@ console.log("***********generar pedido automatico****************");
         }
 
     }).fail(function(err) {
-    //   console.log("__generarTemporalAutomatico",err);
-    //   console.log("FAIL::::::::::: ",err);
+	
         var msj = "Error Interno";
         var status = 500;
         var productosInvalidos = [];
@@ -1937,10 +1929,9 @@ console.log("***********generar pedido automatico****************");
         }else{
            msj = err;
         }
-//        console.log("status:::",status);
-//        console.log("msj:::",msj);
+	
         callback({status:status, msj:msj, productosInvalidos: productosInvalidos});
-      // callback(true, err);
+	
 
     }).done();
 
@@ -2288,6 +2279,81 @@ PedidosFarmacias.prototype.actualizarPedido = function(req, res) {
 };
 
 /*
+ * @Author: Andres Gonzalez
+ * +Descripcion: Permite modificar el estado del pedido
+ */
+PedidosFarmacias.prototype.actualizarEstadoPedidoFarmacia = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numeroPedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido no esta definido', 404, {}));
+        return;
+    }
+    
+    if ( args.pedidos_farmacias.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido no esta definido', 404, {}));
+        return;
+    }
+      
+    
+    var usuarioId = req.session.user.usuario_id;
+    var parametros = {
+			numeroPedido: args.pedidos_farmacias.numeroPedido,
+			usuarioId: usuarioId,			    
+			empresaId: args.pedidos_farmacias.empresa_id,			    
+	             };
+ 
+    G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_estado_actual_pedido", args.pedidos_farmacias.numeroPedido,args.pedidos_farmacias.estado).then(function(respuesta) {
+
+	return G.Q.ninvoke(that.m_pedidos_farmacias, "anularCantidadPendientePedidoTrans", parametros);
+
+    }).then(function(respuesta) {
+	  res.send(G.utils.r(req.url, 'ok', 200, {resultado:respuesta}));
+    }).catch(function(err){
+	  res.send(G.utils.r(req.url, 'error', 500, {err:err}));
+    }).done(); 
+};
+
+/*
+ * @Author: Andres Gonzalez
+ * +Descripcion: Permite modificar el estado del pedido
+ */
+PedidosFarmacias.prototype.actualizarCantidadPendientePedidoFarmacia = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+   
+     if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numeroPedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido no esta definido', 404, {}));
+        return;
+    }
+    
+    if ( args.pedidos_farmacias.cantidadSolicitada === undefined) {
+        res.send(G.utils.r(req.url, 'cantidadSolicitada no esta definido', 404, {}));
+        return;
+    }
+    
+    if ( args.pedidos_farmacias.cantidadPendiente === undefined) {
+        res.send(G.utils.r(req.url, 'cantidadPendiente no esta definido', 404, {}));
+        return;
+    }
+    
+    var parametros = {
+			numeroPedido: args.pedidos_farmacias.numeroPedido,
+                        cantidadSolicitada: args.pedidos_farmacias.cantidadSolicitada,
+                        cantidadPendiente: args.pedidos_farmacias.cantidadPendiente,
+                        codigoProducto:args.pedidos_farmacias.codigo_producto
+	             };
+                     
+    G.Q.ninvoke(that.m_pedidos_farmacias, "anularCantidadPendientePedido", parametros).then(function(respuesta) {
+    
+        res.send(G.utils.r(req.url, 'ok', 200, {resultado:respuesta}));
+          
+    }).catch(function(err){
+	  res.send(G.utils.r(req.url, 'error', 500, {err:err}));
+    }).done(); 
+};
+/*
  * @Author: Eduar
  * +Descripcion: Permite insertar un producto en un pedido, se usa para la modificacion especial de los pedidos
  */
@@ -2589,7 +2655,7 @@ PedidosFarmacias.prototype.consultarProductoEnFarmacia = function(req, res) {
  * +Descripcion: Funcion recursiva que valida cada producto filtrado del archivo plano (Valida existencia en la farmacia destino) y guarda el temporal
  */
 function __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback) {
-console.log("*********************__validarProductoArchivoPlano**********************************");
+
     var productoAgrupado = productosAgrupados[index];
 
     if (!productoAgrupado) {
@@ -2791,7 +2857,7 @@ function __productosSeleccionado(that, index, productos,listaProductos, datos,co
 
               if(productos[index].disponibilidad_bodega>=control.diferenciaExis){                  
                   if(control.dosBodegas===1){  
-                        console.log("productos  2");
+		      
                     productos[index].cantidad_en_bodega=control.diferenciaExis;
                     listaProductos.push(productos[index]);
                     var cantidadBodega= productos[index].disponibilidad_bodega-(productos[index].disponibilidad_bodega%productos[index].unidad_medida);
@@ -2800,7 +2866,7 @@ function __productosSeleccionado(that, index, productos,listaProductos, datos,co
                     callback(false,listaProductos);
                     return;
                   }else{
-                        console.log("productos   1");
+		      
                     productos[index].cantidad_en_bodega=control.diferenciaExis;
                     listaProductos.push(productos[index]);
                     control.sumaTotalExis+=productos[index].disponibilidad_bodega;
@@ -2809,7 +2875,7 @@ function __productosSeleccionado(that, index, productos,listaProductos, datos,co
                     return;
                   }                                          
               }else{
-                  console.log("productos   3");
+		  
                   control.dosBodegas=1;
                   var cantidadBodega= productos[index].disponibilidad_bodega-(productos[index].disponibilidad_bodega%productos[index].unidad_medida)
                   control.diferenciaExis=control.diferenciaExis-cantidadBodega;
@@ -2889,7 +2955,7 @@ function __validar_productos_archivo_plano(contexto, filas, index, productos_val
     var producto = {codigo_producto: fila.codigo || '', cantidad_solicitada: fila.cantidad || 0};
 
     G.Q.ninvoke(that.m_productos, "validar_producto", producto.codigo_producto).then(function(resultado) {
-      //  console.log("resulado de buscar con producto ", producto, " == ");
+	
         if (resultado.length > 0 && producto.cantidad_solicitada > 0) {
 
             producto.tipoProductoId = resultado[0].tipo_producto_id;
@@ -3084,7 +3150,6 @@ function __generarReportePedido(that, req, args, callback) {
                         descripcionPedido: descripcionPedido
                     };
 
-                    //console.log("pedido ", obj);
                     _generarDocumentoPedido(obj, function(nombreTmp) {
                         callback(null, nombreTmp);
                     });

@@ -104,7 +104,7 @@ define(["angular", "js/controllers",
                     },
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:true,
                                 cellTemplate: ' <div class="col-xs-12">\n\
-                                                    <input ng-disabled="!root.servicio.opciones.sw_modificar_pedido" type="text" validacion-numero-entero class="form-control grid-inline-input"'+
+                                                    <input ng-disabled="!root.servicio.opciones.sw_modificar_pedido || onHabilitarCantidad(row.entity)" type="text" validacion-numero-entero class="form-control grid-inline-input"'+
                                                     'ng-keyup="onModificarCantidad($event, row)" ng-model="row.entity.cantidadIngresada" />\
                                                 </div>'
                     },
@@ -128,12 +128,24 @@ define(["angular", "js/controllers",
                 if(parseInt(dato.cantidadSolicitadaPendiente)>dato.cantidadPendiente){                 
                     dato.cantidadSolicitadaPendiente=dato.cantidadPendiente;
                     return true;
-                }else{             
+                }else{  
                 if (ev.which === 13)
                     {
                       self.modificarEstadoPedido(dato);
                     }
                 }
+            };
+            /*
+             * +descripcion: valida si la cantidad ingresada es mayor al pendiente, si es menor realiza la actualizacion del campo pendiente
+             * @param {type} ev
+             * @param {type} dato
+             * @returns {Boolean}
+             */
+            $scope.onHabilitarCantidad = function(dato) {
+                if((dato.cantidadSolicitada === dato.cantidadPendiente)){ 
+                    return false;
+                }
+                return true;
             };
             
             self.modificarEstadoPedido =function(parametros){
@@ -165,7 +177,7 @@ define(["angular", "js/controllers",
             };
             
             $scope.validaEdicion=function(data){
-		var valida = (data.cantidadPendiente==0)?true:false;	//cantidadSolicitada	
+		var valida = (data.cantidadPendiente===0 || data.cantidadSolicitada === data.cantidadPendiente)?true:false;	//cantidadSolicitada	
 		return valida;
 	    };
 	    

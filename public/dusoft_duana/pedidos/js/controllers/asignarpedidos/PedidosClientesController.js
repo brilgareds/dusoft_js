@@ -25,7 +25,7 @@ define(["angular",
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
-            
+            $scope.permisosEstadoAsignacion=Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_cambiar_estado_asignacion;
             var fecha_actual = new Date();
             
             $scope.rootSeleccionPedido = {
@@ -237,6 +237,10 @@ define(["angular",
                 }
 
                 if (pedido.estado === '2') {
+                    disabled = true;
+                }
+             
+                if(!$scope.permisosEstadoAsignacion){
                     disabled = true;
                 }
 

@@ -247,19 +247,30 @@ define(["angular", "js/controllers",
                 var diferencia_cantidad = 0;
                 var nuevo_pendiente = 0;
                 var producto = angular.copy(_producto);
-
-                diferencia_cantidad =  producto.getCantidadSolicitada() - producto.getCantidadIngresada();
-
-                producto.setCantidadSolicitada(producto.getCantidadIngresada());
                 
-                nuevo_pendiente = producto.getCantidadPendiente() - diferencia_cantidad;
-
-                if(nuevo_pendiente >= 0){
-                    producto.setCantidadPendiente(nuevo_pendiente);
-                    
-                } else {
-                    producto.setCantidadPendiente(0);
+                var cantidadSolicitada=0;
+                var cantidadPendiente=0;
+                
+                if(parseInt(producto.getCantidadSolicitada()) === parseInt(producto.getCantidadPendiente()) && parseInt(producto.getCantidadSolicitada()) > parseInt(producto.getCantidadIngresada())){
+                   cantidadSolicitada = producto.getCantidadIngresada();
+                   cantidadPendiente = producto.getCantidadIngresada();
+                }else{
+                    return;
                 }
+                
+//
+//                diferencia_cantidad =  producto.getCantidadSolicitada() - producto.getCantidadIngresada();
+//
+//                producto.setCantidadSolicitada(producto.getCantidadIngresada());
+//                
+//                nuevo_pendiente = producto.getCantidadPendiente() - diferencia_cantidad;
+
+//                if(nuevo_pendiente >= 0){
+                    producto.setCantidadPendiente(cantidadPendiente);
+                    
+//                } else {
+//                    producto.setCantidadPendiente(0);
+//                }
                 
                 var obj = {
                     session:$scope.root.session,
@@ -267,8 +278,8 @@ define(["angular", "js/controllers",
                         pedidos_farmacias:{
                             numero_pedido: $scope.root.pedido.get_numero_pedido(),
                             codigo_producto: producto.getCodigoProducto(),
-                            cantidad_solicitada: parseInt(producto.getCantidadSolicitada()),
-                            cantidad_pendiente: parseInt(producto.getCantidadPendiente())
+                            cantidad_solicitada: cantidadSolicitada,
+                            cantidad_pendiente: cantidadPendiente
                         }
                     }
                 };

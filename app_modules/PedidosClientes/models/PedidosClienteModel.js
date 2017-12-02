@@ -2453,7 +2453,7 @@ console.log("modificar_detalle_pedido ",producto);
 
     } else {
         cantidadDespachar = producto.cantidad_solicitada;
-        campoDespacho = "numero_unidades = :2, ";
+        campoDespacho = " numero_unidades = :2, ";
     }
 
     var sql = "UPDATE ventas_ordenes_pedidos_d SET porc_iva= :1," + campoDespacho + " valor_unitario = :3, usuario_id = :4, fecha_registro = :5 \
@@ -2461,6 +2461,11 @@ console.log("modificar_detalle_pedido ",producto);
                 returning( select numero_unidades  from ventas_ordenes_pedidos_d where\
                             pedido_cliente_id = :6 and codigo_producto = :7 \
                 ) as cantidad_solicitada_anterior";
+    
+    console.log("modificar_detalle_pedido sql ",sql);
+    console.log("modificar_detalle_pedido sql ",sql);
+    console.log("modificar_detalle_pedido sql ",sql);
+    console.log("modificar_detalle_pedido sql ",sql);
     var parametros = {
         1: producto.iva, 2: cantidadDespachar, 3: producto.precio_venta,
         4: pedido.usuario_id, 5: 'NOW()', 6: pedido.numero_pedido, 7: producto.codigo_producto

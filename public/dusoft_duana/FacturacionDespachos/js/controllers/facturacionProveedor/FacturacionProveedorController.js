@@ -14,8 +14,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
         var fecha_actual = new Date();
-      //  var fecha_actual2 = $filter('date')(new Date(fecha_actual.getDate ()+"/"+fecha_actual.getMonth()+"/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
-        console.log("-----AAA",$filter('date')(new Date(fecha_actual.getDate ()+"/"+fecha_actual.getMonth()+"/" + fecha_actual.getFullYear()), "yyyy-MM-dd"));
+    
         $scope.paginaactual = 1;
         $scope.paginaactual_factura = 1;
         that.recepcionesId = "";
@@ -969,18 +968,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var fechaFactura = new Date($scope.root.fechaFactura);
                         var fechaRadicacion = new Date($scope.root.fechaRadicacion);
                         var fechaVencimiento = new Date($scope.root.fechaVencimiento);
-                        console.log("AAAAAA",fechaFactura);
-                        console.log("BBBBBB",fechaRadicacion);
-                        console.log("CCCCCC",fechaVencimiento);
-                        
                         
                         var fFactura = new Date(fechaFactura.getFullYear() + 0, fechaFactura.getMonth() + 1, fechaFactura.getDate() + 1); //31 de diciembre de 2015
                         var fRadicacion = new Date(fechaRadicacion.getFullYear() + 0, fechaRadicacion.getMonth() + 1, fechaRadicacion.getDate() + 1); //30 de noviembre de 2014
                         var fVencimiento = new Date(fechaVencimiento.getFullYear() + 0, fechaVencimiento.getMonth() + 1, fechaVencimiento.getDate() + 1); //30 de noviembre de 2014
 
-                        console.log("AAAAAA11",fFactura);
-                        console.log("BBBBBB22",fRadicacion);
-                        console.log("CCCCCC33",fVencimiento);
 
 
                         if (fFactura > fRadicacion) {

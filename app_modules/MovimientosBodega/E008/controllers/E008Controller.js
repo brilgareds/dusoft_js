@@ -2233,35 +2233,35 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
             var fechaVencimiento = G.moment(item.fecha_vencimiento).format(formato);
 		var detalle = {
 		  //nombre:item.nombre,
-		  "codigo_producto" : item.codigo_producto,
-		  "lote" : item.lote,
-		  "codigo_cum" : item.codigo_cum,
-		  "codigo_invima": item.codigo_invima ,
-		  "fecha_vencimiento":fechaVencimiento,
-		  "cantidad":item.cantidad,
-		  "valor_unitario":item.valor_unitario_iva,
-		  "valor_total":item.valor_total_iva,
-		  "porcentaje_gravamen": item.porcentaje_gravamen,
-		  "costo": item.costo
+		  codigo_producto : item.codigo_producto,
+		  lote : item.lote,
+		  codigo_cum : item.codigo_cum,
+		  codigo_invima: item.codigo_invima ,
+		  fecha_vencimiento:fechaVencimiento,
+		  cantidad:item.cantidad,
+		  valor_unitario:item.valor_unitario_iva,
+		  valor_total:item.valor_total_iva,
+		  porcentaje_gravamen: item.porcentaje_gravamen,
+		  costo: item.costo
 	      };
 	      detalleProductos.push(detalle);
 	  });
         var fechaRemision = G.moment(resultado[0].fecha_registro).format(formato);
 	var objCabecera = {
-	      "nombre_tercero" : resultadoCabecera.nombre_cliente,
+	      nombre_tercero : resultadoCabecera.nombre_cliente,
 	     // "tipo_id_tercero" : resultadoCabecera.tipo_id_cliente,
 	     // "tercero_id" : resultadoCabecera.identificacion_cliente,
-	      "tipo_id_tercero" : 'NIT',
-	      "tercero_id" : '805027743',
-	      "prefijo" : prefijoDocumento,
-	      "numero" : numeroDocumento,
+	      tipo_id_tercero : 'NIT',
+	      tercero_id : '805027743',
+	      prefijo : prefijoDocumento,
+	      numero : numeroDocumento,
 	      //nit :'805027743',
-              "fecha_remision": fechaRemision,
+              fecha_remision: fechaRemision,
 	      //detalle : detalleProductos
 	 };
-         var envio = {"cabecera" : objCabecera, "detalle" : detalleProductos};
-	objRemision.parametros=JSON.stringify(envio);
-        console.log("ZZZZZZZZZZZZZZZZZZZ",objRemision.parametros);
+         var envio = {cabecera : objCabecera, detalle : detalleProductos};
+	 objRemision.parametros={ json_remision:envio};
+
 	return G.Q.nfcall(__sincronizarRemisionProductos, objRemision);
 
        }else{
@@ -2276,7 +2276,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                                    {movimientos_bodegas: {}}));
 	
     }).fail(function(err){
-        console.log("Error generando sincronizacion de documento ", err.msj);
+      //  console.log("Error generando sincronizacion de documento ", err.msj);
+        console.log("Error generando sincronizacion de documento ");
 	
     if(!args.documento_despacho.background){
 	if(err.status){
@@ -2399,7 +2400,6 @@ function __sincronizarEncabezadoDocumento(obj, callback){
 }
 
 function __sincronizarRemisionProductos(obj, callback) {
-console.log("__sincronizarRemisionProductos ************");
     var url = G.constants.WS().DOCUMENTOS.DUMIAN.E008;
     obj.resultadoEncabezado = "";
     var resultado;
@@ -2414,25 +2414,18 @@ console.log("__sincronizarRemisionProductos ************");
 
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).then(function(client) {
-console.log("url ",url);
-//console.log("client ",client);
-///console.log("obj.parametros ",obj.parametros);
-//	return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
-	return G.Q.ninvoke(client, "almacenarRemisionMedicamentosInsumos", obj.parametros);
+        
+	return G.Q.ninvoke(client, "almacenarRemisionMedicamentosInsumos",obj.parametros);
 
     }).spread(function(result, raw, soapHeader) {
-        console.log("***************************");
-        console.log("result ",result);
-        console.log("***************************");
 
-	obj.resultadoEncabezado = result.return.descripcion["$value"];
-	if (!result.return.estado["$value"]) {
+	if (result.success["$value"]!=='1') {
 
 	    throw {msj: "Se ha generado un error sincronizando el documento", status: 403, obj: {}};
 
 	} else {
 
-	    obj.temporal = result.return.docTmpId["$value"];
+	    obj.temporal = result.message["$value"];
 	    obj.tipo = '0';
 	    //Se guarda el resultado en log
 	    return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj);
@@ -2444,7 +2437,6 @@ console.log("url ",url);
 	callback(false, obj);
 
     }).fail(function(err) {
-
 	obj.error = true;
 	obj.tipo = '0';
 	obj.resultadoEncabezado = obj.resultadoEncabezado === "" ? err : obj.resultadoEncabezado;
@@ -2460,7 +2452,6 @@ console.log("url ",url);
 }
 
 function __sincronizarDetalleDocumento(obj, callback){
-    console.log("__sincronizarDetalleDocumento  ***************************");
     var def = G.Q.defer();  
     obj.error = false;
     var url = "";

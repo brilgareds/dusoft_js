@@ -15,8 +15,8 @@ DocuemntoBodegaE008Logs.prototype.ingresarLogsSincronizacionDespachos = function
     
     var resultado = (obj.tipo === '1') ? obj.resultadoDetalle : obj.resultadoEncabezado;
    
-    console.log("1- cabecera Responde) ",obj.resultadoEncabezado);
-    console.log("2- detalle responde) ",obj.resultadoDetalle);
+  //  console.log("1- cabecera Responde) ",obj.resultadoEncabezado);
+  //  console.log("2- detalle responde) ",obj.resultadoDetalle);
      
      
     var parametros = {

@@ -1419,6 +1419,42 @@ DocumentoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback)
 };
 
 
+DocumentoBodegaE008.prototype.obtenerBodegaMovimiento = function(obj, callback){
+        var columna = [
+        "documento_id",
+        "bodega",
+        "observacion",
+        "sw_estado",
+        "usuario_id",
+        "fecha_registro",
+        "total_costo",
+        "abreviatura",
+        "empresa_destino",
+        "sw_verificado",
+        "porcentaje_rtf",
+        "porcentaje_ica",
+        "porcentaje_reteiva",
+        "porcentaje_cree"
+    ];
+
+    var query = G.knex.select(columna)
+		.from('inv_bodegas_movimiento as a')		
+		.where(function() {
+		})
+		.andWhere('a.empresa_id', obj.empresa)
+		.andWhere('a.prefijo', obj.prefijoDocumento)
+		.andWhere('a.numero', obj.numeroDocumento);
+
+	query.then(function(resultado) {
+        callback(false, resultado);
+	
+    }). catch (function(err) {
+        console.log("err [obtenerBodegaMovimiento]:",query.toSQL());
+        console.log("err [obtenerBodegaMovimiento]:", err);
+        callback(err);
+    });
+}
+
 DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callback){
      
      var sql = "SELECT\

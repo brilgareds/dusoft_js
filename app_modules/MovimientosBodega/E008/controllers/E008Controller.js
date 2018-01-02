@@ -2123,6 +2123,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
      var empresaId = args.documento_despacho.empresa_id; 
      var pedido;
      var resultadoCabecera;
+     var resultadoDetalle=[];
      var objRemision; 
      var bodega = args.documento_despacho.bodega_destino;
      var documentoId=418;
@@ -2195,6 +2196,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                       contexto:that
                  };
                  
+                 
+                 
                 return G.Q.ninvoke(that.m_e008,"obtenerTotalDetalleDespacho",objRemision);            
                 
             }else{  
@@ -2217,36 +2220,48 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                    obj:{documento_despacho: {}}};
         }
         
+    }).then(function(resultado){//obtenerBodegaMovimiento
+        
+        resultadoDetalle=resultado;
+        return G.Q.ninvoke(that.m_e008, "obtenerBodegaMovimiento", objRemision);
+        
     }).then(function(resultado){
     if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
 	var detalleProductos = [];
-	resultado.forEach(function(item) {                    
+        var formato = 'YYYY-MM-DD';
+	resultadoDetalle.forEach(function(item) {   
+            var fechaVencimiento = G.moment(item.fecha_vencimiento).format(formato);
 		var detalle = {
-		  nombre:item.nombre,
-		  codigoProducto : item.codigo_producto,
-		  lote : item.lote,
-		  codigoCum : item.codigo_cum,
-		  codigoInvima: item.codigo_invima ,
-		  fechaVencimiento:item.fecha_vencimiento,
-		  cantidad:item.cantidad,
-		  valorUnitario:item.valor_unitario_iva,
-		  valorTotal:item.valor_total_iva,
-		  porcentajeGravamen: item.porcentaje_gravamen,
-		  costo: item.costo
+		  //nombre:item.nombre,
+		  "codigo_producto" : item.codigo_producto,
+		  "lote" : item.lote,
+		  "codigo_cum" : item.codigo_cum,
+		  "codigo_invima": item.codigo_invima ,
+		  "fecha_vencimiento":fechaVencimiento,
+		  "cantidad":item.cantidad,
+		  "valor_unitario":item.valor_unitario_iva,
+		  "valor_total":item.valor_total_iva,
+		  "porcentaje_gravamen": item.porcentaje_gravamen,
+		  "costo": item.costo
 	      };
 	      detalleProductos.push(detalle);
 	  });
+        var fechaRemision = G.moment(resultado[0].fecha_registro).format(formato);
 	var objCabecera = {
-	      nombreTercero : resultadoCabecera.nombre_cliente,
-	      tipoIdTercero : resultadoCabecera.tipo_id_cliente,
-	      terceroId : resultadoCabecera.identificacion_cliente,
-	      prefijo : prefijoDocumento,
-	      numero : numeroDocumento,
-	      nit :'805027743',
-	      productosDetalle : detalleProductos
+	      "nombre_tercero" : resultadoCabecera.nombre_cliente,
+	     // "tipo_id_tercero" : resultadoCabecera.tipo_id_cliente,
+	     // "tercero_id" : resultadoCabecera.identificacion_cliente,
+	      "tipo_id_tercero" : 'NIT',
+	      "tercero_id" : '805027743',
+	      "prefijo" : prefijoDocumento,
+	      "numero" : numeroDocumento,
+	      //nit :'805027743',
+              "fecha_remision": fechaRemision,
+	      //detalle : detalleProductos
 	 };
-console.log("Envio Dumian ",objCabecera);
-	objRemision.parametros=objCabecera;
+         var envio = {"cabecera" : objCabecera, "detalle" : detalleProductos};
+	objRemision.parametros=JSON.stringify(envio);
+        console.log("ZZZZZZZZZZZZZZZZZZZ",objRemision.parametros);
 	return G.Q.nfcall(__sincronizarRemisionProductos, objRemision);
 
        }else{
@@ -2384,7 +2399,7 @@ function __sincronizarEncabezadoDocumento(obj, callback){
 }
 
 function __sincronizarRemisionProductos(obj, callback) {
-
+console.log("__sincronizarRemisionProductos ************");
     var url = G.constants.WS().DOCUMENTOS.DUMIAN.E008;
     obj.resultadoEncabezado = "";
     var resultado;
@@ -2399,10 +2414,16 @@ function __sincronizarRemisionProductos(obj, callback) {
 
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).then(function(client) {
-
-	return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
+console.log("url ",url);
+//console.log("client ",client);
+///console.log("obj.parametros ",obj.parametros);
+//	return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
+	return G.Q.ninvoke(client, "almacenarRemisionMedicamentosInsumos", obj.parametros);
 
     }).spread(function(result, raw, soapHeader) {
+        console.log("***************************");
+        console.log("result ",result);
+        console.log("***************************");
 
 	obj.resultadoEncabezado = result.return.descripcion["$value"];
 	if (!result.return.estado["$value"]) {
@@ -2439,6 +2460,7 @@ function __sincronizarRemisionProductos(obj, callback) {
 }
 
 function __sincronizarDetalleDocumento(obj, callback){
+    console.log("__sincronizarDetalleDocumento  ***************************");
     var def = G.Q.defer();  
     obj.error = false;
     var url = "";

@@ -354,7 +354,6 @@ define(["angular",
                 var usuarioActual = Usuario.getUsuarioActual();
                 
                 //Agrega el usuario que inicia la conversacion
-                console.log("agregar usuario actual ", usuarioActual);
                 self.agregarUsuarios([usuarioActual])
                 
                 var obj = {

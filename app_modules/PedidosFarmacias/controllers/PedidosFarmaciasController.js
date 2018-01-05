@@ -2303,7 +2303,7 @@ PedidosFarmacias.prototype.actualizarEstadoPedidoFarmacia = function(req, res) {
 			usuarioId: usuarioId,			    
 			empresaId: args.pedidos_farmacias.empresa_id,			    
 	             };
- 
+ console.log("parametros ",args.pedidos_farmacias);
     G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_estado_actual_pedido", args.pedidos_farmacias.numeroPedido,args.pedidos_farmacias.estado).then(function(respuesta) {
 
 	return G.Q.ninvoke(that.m_pedidos_farmacias, "anularCantidadPendientePedidoTrans", parametros);

@@ -6,7 +6,7 @@ define(["angular","js/controllers"], function(angular, controllers){
 	  		
 	  		$scope.agencia = Empresa;
 
-	  		console.log(AgenciaFacturacion)
+	  		//console.log(AgenciaFacturacion)
 
 	  		$scope.myData = [];
 
@@ -63,7 +63,7 @@ define(["angular","js/controllers"], function(angular, controllers){
 						    $scope.abrirfechafinal = false;
 						    
 
-						    console.log($scope.fechainicial)
+						    //console.log($scope.fechainicial)
 						};
 
 						$scope.abrirFechaFinal = function($event) {
@@ -76,7 +76,7 @@ define(["angular","js/controllers"], function(angular, controllers){
 
 						$scope.fechainicialselected = function(){
 							$scope.fechafinal = $scope.fechainicial;
-							console.log($scope.fechafinal)
+							//console.log($scope.fechafinal)
 						};
 
 						$scope.fechafinalselected = function(){
@@ -105,7 +105,7 @@ define(["angular","js/controllers"], function(angular, controllers){
 		            //on ok button press 
 		        },function(){
 		            //on cancel button press
-		            console.log("Modal Closed");
+		           // console.log("Modal Closed");
 		        });
 			}
 

@@ -440,21 +440,30 @@ PedidosFarmaciasModel.prototype.anularCantidadPendientePedidoTrans = function(pa
     var that = this;
    G.knex.transaction(function(transaccion) { 
       G.Q.nfcall(__log_eliminar_pedido, parametros.numeroPedido, 0, parametros.usuarioId, transaccion).then(function(resultado){
-	  
+	console.log("1111111111");  
+          parametros.cantidadSolicitada=0;
+          parametros.cantidadPendiente=0;
 	  return G.Q.ninvoke(that, "anularCantidadPendientePedido", parametros,transaccion);
-	  
+	   console.log("333333333333555");
        }).then(function(resultado){
-	    var obj = {
-            usuarioId:parametros.usuarioId, accion:'2', tipoPedido:'1', numeroPedido:parametros.numeroPedido, 
-            empresaId:parametros.empresaId, codigoProducto:"0", 
-            cantidadSolicitada:0, cantidadActual:0,
+           console.log("22222222");
+           
+	 var obj = {
+            usuarioId:parametros.usuarioId, 
+            accion:'2', 
+            tipoPedido:'1', 
+            numeroPedido:parametros.numeroPedido, 
+            empresaId:parametros.empresaId, 
+            codigoProducto:"0", 
+            cantidadSolicitada:0, 
+            cantidadActual:0,
             transaccion: transaccion
-	    };
+	    };   
 
 	return G.Q.ninvoke(that.m_pedidos_logs, "guardarLog", obj);
 	
        }).then(function(resultado){         
-	
+	console.log("333333");
           transaccion.commit();
        }).fail(function(err){
 	   console.log("anularCantidadPendientePedidoTrans ",err);
@@ -462,25 +471,28 @@ PedidosFarmaciasModel.prototype.anularCantidadPendientePedidoTrans = function(pa
        }).done();
 	 
     }).then(function(resultado){
+        console.log("44444444");
 	    callback(false, resultado);
     }).catch(function(err){
+        console.log("1111111111");
 	    callback(err);
     }).done(); 
 };
 
-PedidosFarmaciasModel.prototype.anularCantidadPendientePedido = function(params,callback){
-
+PedidosFarmaciasModel.prototype.anularCantidadPendientePedido = function(params,transaccion,callback){
+console.log("params",params);
     var updates = {};
     
     updates.cantidad_solic=params.cantidadSolicitada;
     updates.cantidad_pendiente=params.cantidadPendiente;
     
     var query = G.knex('solicitud_productos_a_bodega_principal_detalle').
-    where('solicitud_prod_a_bod_ppal_id', '=', params.numeroPedido).
-    andWhere('codigo_producto', '=', params.codigoProducto).
+    where('solicitud_prod_a_bod_ppal_id', '=', params.numeroPedido). ////  andWhere('codigo_producto', '=', params.codigoProducto).  
     update(updates);
     
+    if(transaccion) query.transacting(transaccion);
     query.then(function(resultado){
+        console.log("resultado",resultado);
 	callback(false, resultado);
     }).catch(function(err){
         console.log("error generado ", err);
@@ -1163,6 +1175,7 @@ PedidosFarmaciasModel.prototype.actualizar_estado_actual_pedido = function(numer
  
         callback(false, resultado);
     }).catch(function(err){
+        console.log("Error actualizar_estado_actual_pedido ",err);
         callback(err);
     });
     

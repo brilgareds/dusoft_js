@@ -72,7 +72,7 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
         }));
         
     }).fail(function(err){
-        console.log("error generado ", err);
+        console.log("error generado", err);
         res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
     }).done();
     

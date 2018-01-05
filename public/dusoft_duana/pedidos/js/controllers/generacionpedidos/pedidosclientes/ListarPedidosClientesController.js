@@ -46,7 +46,7 @@ define(["angular", "js/controllers",
              */
             $scope.notificacionClientesAutorizar = 0;
             $scope.notificacionPedidoAutorizar = 0;
-
+            
             $scope.datos_view = {
                 // Paginacion Cotizaciones
                 termino_busqueda_cotizaciones: '',

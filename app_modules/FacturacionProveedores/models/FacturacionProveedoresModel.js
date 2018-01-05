@@ -190,7 +190,9 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
             offset((obj.paginaActual - 1) * G.settings.limit)
    }
     query.then(function(resultado) {
-        callback(false, resultado)
+        console.log("AAAAAAAAAAAA ",obj.empresaId);
+        console.log("AAAAAAAAAAAA ",query.toSQL());
+        callback(false, resultado);
     }). catch (function(err) {
         console.log("err [consultarFacturaProveedor]:", err);
         callback(err);

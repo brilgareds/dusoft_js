@@ -775,7 +775,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var productos = [];
                 productos.push(producto);
                 $scope.ocultarOpciones = 1;
-console.log(">>>>>>>>>>>>>>>>>>",producto);
                 //OJO VOLVER A DEJAR
                 that.validarDisponibleProductosCotizacion(0, productos, function (estado) {
                     if (estado) {

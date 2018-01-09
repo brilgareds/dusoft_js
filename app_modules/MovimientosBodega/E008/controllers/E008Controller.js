@@ -2276,7 +2276,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                                    {movimientos_bodegas: {}}));
 	
     }).fail(function(err){
-      //  console.log("Error generando sincronizacion de documento ", err.msj);
+        
         console.log("Error generando sincronizacion de documento ");
 	
     if(!args.documento_despacho.background){
@@ -2415,13 +2415,15 @@ function __sincronizarRemisionProductos(obj, callback) {
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).then(function(client) {
         
+             
 	return G.Q.ninvoke(client, "almacenarRemisionMedicamentosInsumos",obj.parametros);
 
     }).spread(function(result, raw, soapHeader) {
-
+         console.log("result ",result);
 	if (result.success["$value"]!=='1') {
+//	if (result.message["$value"]!==undefined) {
 
-	    throw {msj: "Se ha generado un error sincronizando el documento", status: 403, obj: {}};
+	    throw {msj: "Se ha generado un error sincronizando el documento. <br> - "+result.message["$value"], status: 403, obj: {}};
 
 	} else {
 
@@ -2437,13 +2439,15 @@ function __sincronizarRemisionProductos(obj, callback) {
 	callback(false, obj);
 
     }).fail(function(err) {
+     
+        console.log("ErOo",err);
 	obj.error = true;
 	obj.tipo = '0';
 	obj.resultadoEncabezado = obj.resultadoEncabezado === "" ? err : obj.resultadoEncabezado;
 
 	G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj). finally(function() {
 	    obj.status = 500;
-	    obj.msj = err;//+" <br> - Url: "+url
+	    obj.msj = err.msj;//+" <br> - Url: "+url
 	    callback(obj);
 	    return;
 	});

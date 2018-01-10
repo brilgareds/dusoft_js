@@ -2062,6 +2062,24 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
 };
 
+function __validarDumian(identificacion_cliente,tipo_id_cliente){
+    if((identificacion_cliente === '10102' && tipo_id_cliente === "NIT") || //Cucuta -inversiones dumian
+   (identificacion_cliente === '10103' && tipo_id_cliente === "NIT") || //palmira -inversiones dumian
+   (identificacion_cliente === '10110' && tipo_id_cliente === "NIT") || //uci pediatrica dumian cucuta
+   (identificacion_cliente === '10111' && tipo_id_cliente === "NIT") || //uci pediatrica dumian bogota
+   (identificacion_cliente === '10118' && tipo_id_cliente === "NIT") || //uci adultos dumian pereira
+   (identificacion_cliente === '10122' && tipo_id_cliente === "NIT") || //bodega dumian cucuta
+   (identificacion_cliente === '10134' && tipo_id_cliente === "NIT") || //uci summa dumian
+   (identificacion_cliente === '10133' && tipo_id_cliente === "NIT") || //uci dumian popayan
+   (identificacion_cliente === '10174' && tipo_id_cliente === "CC") || //clinica mari angel tulua
+   (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") ||  //dumian medical sas
+   (identificacion_cliente === '10365' && tipo_id_cliente === "CE") || //clinica santa gracia buenaventura
+   (identificacion_cliente === '10366' && tipo_id_cliente === "CE")){ //clinica san rafael
+     return true;
+   }else{
+     return false;
+   }
+}
 
 E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
      var that = this;
@@ -2073,6 +2091,9 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
      var numeroDocumento = args.documento_despacho.numero_documento; 
      var empresaId = args.documento_despacho.empresa_id; 
      var pedido;
+     var resultadoCabecera;
+     var resultadoDetalle=[];
+     var objRemision; 
      var bodega = args.documento_despacho.bodega_destino;
      var documentoId=418;
 
@@ -2091,7 +2112,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
     
     G.Q.ninvoke(modeloPedido, "consultar_pedido", numeroPedido).then(function(resultado){
         pedido = resultado[0];
-     
+        resultadoCabecera=resultado[0];
+   
         if((tipoPedido !== 1 && pedido.farmacia_id === '01') || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
@@ -2099,7 +2121,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
            (tipoPedido === 1 && pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")||
            (tipoPedido === 1 && pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS")||
            (tipoPedido === 1 && pedido.identificacion_cliente === '259' && pedido.tipo_id_cliente === "AS")||
-           (tipoPedido === 1 && pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")){
+           (tipoPedido === 1 && pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")||
+	   (tipoPedido === 1 && __validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente))){
 
            
            if(tipoPedido === 1){
@@ -2128,7 +2151,25 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                 
            }
           
+            if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
            
+   
+                objRemision = {
+                      prefijoDocumento : prefijoDocumento,
+                      numeroDocumento : numeroDocumento,
+                      empresa: empresaId,
+                      tipoPedido:tipoPedido,
+                      numeroPedido:pedido.numero_pedido,
+                      pedido:pedido,
+                      contexto:that
+                 };
+                 
+                 
+                 
+                return G.Q.ninvoke(that.m_e008,"obtenerTotalDetalleDespacho",objRemision);            
+                
+            }else{  
+
                 var obj = {
                       documentoId:documentoId,
                       prefijoDocumento : prefijoDocumento,
@@ -2140,30 +2181,82 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                       numeroPedido:pedido.numero_pedido,
                       pedido:pedido
                  };
-
                  return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
+            }
         } else {
-             
             throw {msj:"El documento no esta parametrizado para sincronizarse", status:404,
                    obj:{documento_despacho: {}}};
         }
         
-    }).then(function(){
-                if(!args.documento_despacho.background){
-                    res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
-                                   {movimientos_bodegas: {}}));
-                }
+    }).then(function(resultado){//obtenerBodegaMovimiento
         
+        resultadoDetalle=resultado;
+        return G.Q.ninvoke(that.m_e008, "obtenerBodegaMovimiento", objRemision);
+        
+    }).then(function(resultado){
+    if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
+	var detalleProductos = [];
+        var formato = 'YYYY-MM-DD';
+	resultadoDetalle.forEach(function(item) {   
+            var fechaVencimiento = G.moment(item.fecha_vencimiento).format(formato);
+		var detalle = {
+		  //nombre:item.nombre,
+		  codigo_producto : item.codigo_producto,
+		  lote : item.lote,
+		  codigo_cum : item.codigo_cum,
+		  codigo_invima: item.codigo_invima ,
+		  fecha_vencimiento:fechaVencimiento,
+		  cantidad:item.cantidad,
+		  valor_unitario:item.valor_unitario_iva,
+		  valor_total:item.valor_total_iva,
+		  porcentaje_gravamen: item.porcentaje_gravamen,
+		  costo: item.costo
+	      };
+	      detalleProductos.push(detalle);
+	  });
+        var fechaRemision = G.moment(resultado[0].fecha_registro).format(formato);
+	var objCabecera = {
+	      nombre_tercero : resultadoCabecera.nombre_cliente,
+	     // "tipo_id_tercero" : resultadoCabecera.tipo_id_cliente,
+	     // "tercero_id" : resultadoCabecera.identificacion_cliente,
+	      tipo_id_tercero : 'NIT',
+	      tercero_id : '805027743',
+	      prefijo : prefijoDocumento,
+	      numero : numeroDocumento,
+	      //nit :'805027743',
+              fecha_remision: fechaRemision,
+	      //detalle : detalleProductos
+	 };
+         var envio = {cabecera : objCabecera, detalle : detalleProductos};
+	 objRemision.parametros={ json_remision:envio};
+
+	return G.Q.nfcall(__sincronizarRemisionProductos, objRemision);
+
+       }else{
+	   if(!args.documento_despacho.background){
+	       res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
+			      {movimientos_bodegas: {}}));
+	   }
+       }
+    }).then(function(resultado){	    
+       
+	res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
+                                   {movimientos_bodegas: {}}));
+	
     }).fail(function(err){
+
         if(!args.documento_despacho.background){
             if(err.status){
                 res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
 
-            } else {
 
-                res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
-            }
-        }
+	 res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+
+	} else {
+
+	 res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
+	}
+    }
 
     }).done();
 };
@@ -2264,10 +2357,67 @@ function __sincronizarEncabezadoDocumento(obj, callback){
         
     }).fail(function(err) {
         obj.error = true;
+	console.log("ERROR CABECERA ",err);
         obj.tipo = '0';
         G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){            
             callback(err);
         });
+    }).done();
+}
+
+function __sincronizarRemisionProductos(obj, callback) {
+    var url = G.constants.WS().DOCUMENTOS.DUMIAN.E008;
+    obj.resultadoEncabezado = "";
+    var resultado;
+
+//    obj.parametros = {
+//        usuarioId:"4608",
+//        bodegasDoc:obj.bodegasDoc,
+//        observacion:obj.observacion,    
+//        documentoId:obj.documentoId
+//    };
+    obj.error = false;
+
+    //Se invoca el ws
+    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
+        
+             
+	return G.Q.ninvoke(client, "almacenarRemisionMedicamentosInsumos",obj.parametros);
+
+    }).spread(function(result, raw, soapHeader) {
+         console.log("result ",result);
+	if (result.success["$value"]!=='1') {
+//	if (result.message["$value"]!==undefined) {
+
+	    throw {msj: "Se ha generado un error sincronizando el documento. <br> - "+result.message["$value"], status: 403, obj: {}};
+
+	} else {
+
+	    obj.temporal = result.message["$value"];
+	    obj.tipo = '0';
+	    //Se guarda el resultado en log
+	    return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj);
+
+	}
+
+    }).then(function(data) {
+
+	callback(false, obj);
+
+    }).fail(function(err) {
+     
+        console.log("ErOo",err);
+	obj.error = true;
+	obj.tipo = '0';
+	obj.resultadoEncabezado = obj.resultadoEncabezado === "" ? err : obj.resultadoEncabezado;
+
+	G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj). finally(function() {
+	    obj.status = 500;
+	    obj.msj = err.msj;//+" <br> - Url: "+url
+	    callback(obj);
+	    return;
+	});
+
     }).done();
 }
 
@@ -2349,10 +2499,12 @@ function __sincronizarDetalleDocumento(obj, callback){
         def.resolve();
         
     }).fail(function(err) {
+	console.log("ERROR888 ",err);
         callback(err);
     }).
     done(function(){
        obj.tipo = '1';
+     //  obj.resultadoEncabezado=err;
        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).then(function(){
            obj.detalle.splice(0,1);
 //           __sincronizarDetalleDocumento(obj,callback); 

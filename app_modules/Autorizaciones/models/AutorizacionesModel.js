@@ -295,7 +295,7 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoCliente = function(obj,
 AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqueda, pagina, callback) {
 
     var parametros = {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido};
- 
+
     var WHERE1 = '';
     var WHERE2 = '';
     
@@ -415,7 +415,6 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                order by p.estado_verificado desc";
     
    var parametros =  {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido}; 
-
    var query = G.knex.select(G.knex.raw(sql, parametros)).
         limit(G.settings.limit).
         offset((pagina - 1) * G.settings.limit).

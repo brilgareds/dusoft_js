@@ -701,7 +701,6 @@ define(["angular", "js/controllers",
                     var justificacion = productos[i].getJustificacion(); 
                     var producto = productos[i];
 
-                    //console.log("producto pendiente ",producto.getCantidadPendiente(), " producto des ",producto.getDescripcion());
                     if(justificacion === null || justificacion === undefined || justificacion.length === 0 &&
                       producto.getCantidadPendiente() > 0){
                         _productosInvalidos.push(producto);

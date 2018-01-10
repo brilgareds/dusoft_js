@@ -74,7 +74,7 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
                         el.tooltip("destroy");
                     }
                 } else {
-                    console.log("model not found ", el.attr("name"), " with model ", ngModel)
+                
                 }
 
 

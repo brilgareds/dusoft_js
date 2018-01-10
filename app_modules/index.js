@@ -118,8 +118,6 @@ function _routes(app, di_container, io, recargar_routes, callback) {
 
 function _load_config(di_container, config, modulo, submodulo) {
 
-    //console.log(modulo, submodulo);
-
     var module = (submodulo === '' || submodulo === undefined) ? modulo : submodulo;
     var txt_module = (submodulo === '' || submodulo === undefined) ? "Modulo" : "Submodulo";
 
@@ -128,8 +126,6 @@ function _load_config(di_container, config, modulo, submodulo) {
         if (config.module === module) {
 
             if (config.dependency.hasOwnProperty('controllers') && config.dependency.hasOwnProperty('models') && config.dependency.hasOwnProperty('events') && config.dependency.hasOwnProperty('cronJobs')) {
-
-                //console.log('=== Cargando Archivos de Configuración del ' + txt_module + ' ' + module + ' ========');
 
                 var controllers = config.dependency.controllers;
                 var models = config.dependency.models;
@@ -144,7 +140,6 @@ function _load_config(di_container, config, modulo, submodulo) {
                             var module = data[obj].module;
                             var controller = data[obj].controller;
 
-                            //var url = (submodulo === '' || submodulo === undefined) ? __dirname + '/' + module + '/controllers/' + controller : __dirname + '/' + modulo + '/' + module + '/controllers/' + controller;
                             var url = __dirname + '/' + module + '/controllers/' + controller;
 
                             di_container.register(alias, require(url));

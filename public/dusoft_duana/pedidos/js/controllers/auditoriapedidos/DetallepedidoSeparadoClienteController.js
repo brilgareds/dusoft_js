@@ -42,7 +42,7 @@ define(["angular", "js/controllers",
 
             $scope.$on("detalleClienteCompleto", function(e, datos) {
 
-                console.log("detalle cliente completo mostrando >>>>>>>>>> ");
+ 
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal(that.obtenerParametros(), false, 1, that.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
@@ -98,7 +98,6 @@ define(["angular", "js/controllers",
                 $scope.seleccion = {};
                 $scope.items = data.lista_productos.length;
 
-                //console.log("resultadoBusquedaDocumento ========================== ", $scope.DocumentoTemporal)
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
                     if ($scope.paginaactual > 1) {
@@ -141,7 +140,6 @@ define(["angular", "js/controllers",
             };
 
             that.resultasdoListadoDocumentosUsuario = function(data) {
-                console.log("resultadod listado ******************", data);
                 if (data.obj.movimientos_bodegas !== undefined) {
                     $scope.documentos_usuarios = data.obj.movimientos_bodegas;
                 }
@@ -258,7 +256,6 @@ define(["angular", "js/controllers",
                 if (!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id))
                     return;
                 if (ev.which === 13) {
-                    console.log("search with code " + buscarcodigodebarras);
                     $scope.filtro.codigo_barras = buscarcodigodebarras;
                     $scope.filtro.descripcion_producto = !buscarcodigodebarras;
 
@@ -297,7 +294,6 @@ define(["angular", "js/controllers",
                     return;
                 }
                 
-                //console.log("valor seleccionado  manual >>>>>>>>>>>>>>>", manual, " seleccion ", $scope.seleccion);
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -327,7 +323,6 @@ define(["angular", "js/controllers",
                 bodega_doc_id = parseInt(bodega_doc_id);
                 for (var i in $scope.documentos_usuarios) {
                     var doc = $scope.documentos_usuarios[i];
-                   // console.log("seleccionando documento para el usuario con doc id",bodega_doc_id, " en  ", doc.bodegas_doc_id);
                     
                     if (bodega_doc_id === doc.bodegas_doc_id) {
                         $scope.documento_despacho = doc;

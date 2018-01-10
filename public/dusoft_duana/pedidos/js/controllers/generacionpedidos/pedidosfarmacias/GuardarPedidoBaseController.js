@@ -95,22 +95,96 @@ define(["angular", "js/controllers",
                     {field: 'descripcion', displayName: 'Descripción', width: "50%"},
                     {field: 'getNombreBodega()', displayName: 'Bodega', width:"10%"},
                     {field: 'getCantidadSolicitada()', displayName: 'Solicitado'},
-                    {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
+                 //   {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
+                    {field: 'getCantidadSolicitadaPendiente()', displayName: 'Cantidad Pendiente',visible:true,
+                                cellTemplate: ' <div class="col-xs-12">\n\
+                                                    <input ng-disabled="!root.servicio.opciones.sw_modificar_pedido ||  validaEdicion(row.entity)" type="text" validacion-numero-entero class="form-control grid-inline-input"'+
+                                                    'ng-keyup="onModificarCantidadPendiente($event, row.entity)" ng-model="row.entity.cantidadSolicitadaPendiente" />\
+                                                </div>'
+                    },
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:true,
                                 cellTemplate: ' <div class="col-xs-12">\n\
-                                                    <input ng-disabled="!root.servicio.opciones.sw_modificar_pedido" type="text" validacion-numero-entero class="form-control grid-inline-input"'+
+                                                    <input ng-disabled="!root.servicio.opciones.sw_modificar_pedido || onHabilitarCantidad(row.entity)" type="text" validacion-numero-entero class="form-control grid-inline-input"'+
                                                     'ng-keyup="onModificarCantidad($event, row)" ng-model="row.entity.cantidadIngresada" />\
                                                 </div>'
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "5%",
                             cellTemplate: ' <div class="row">\
-                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity, row.rowIndex)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnEliminarPedidoTemporal}}">\
+                                                <button class="btn btn-default btn-xs" ng-disabled="validaEliminacion(row.entity)" ng-click="onEliminarProducto(row.entity, row.rowIndex)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnEliminarPedidoTemporal}}">\
                                                     <span class="glyphicon glyphicon-remove"></span>\n\
                                                 </button>\
                                             </div>'
                         }
                 ]
             };
+            
+            /*
+             * +descripcion: valida si la cantidad ingresada es mayor al pendiente, si es menor realiza la actualizacion del campo pendiente
+             * @param {type} ev
+             * @param {type} dato
+             * @returns {Boolean}
+             */
+            $scope.onModificarCantidadPendiente = function(ev, dato) {
+                if(parseInt(dato.cantidadSolicitadaPendiente)>dato.cantidadPendiente){                 
+                    dato.cantidadSolicitadaPendiente=dato.cantidadPendiente;
+                    return true;
+                }else{  
+                if (ev.which === 13)
+                    {
+                      self.modificarEstadoPedido(dato);
+                    }
+                }
+            };
+            /*
+             * +descripcion: valida si la cantidad ingresada es mayor al pendiente, si es menor realiza la actualizacion del campo pendiente
+             * @param {type} ev
+             * @param {type} dato
+             * @returns {Boolean}
+             */
+            $scope.onHabilitarCantidad = function(dato) {
+                if((dato.cantidadSolicitada === dato.cantidadPendiente)){ 
+                    return false;
+                }
+                return true;
+            };
+            
+            self.modificarEstadoPedido =function(parametros){
+                var pedido = $scope.root.pedido;
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numeroPedido : pedido.get_numero_pedido(),
+                            cantidadSolicitada: parametros.cantidadSolicitada,
+                            cantidadPendiente: parametros.cantidadSolicitadaPendiente,
+                            codigo_producto: parametros.codigo_producto
+                        }
+                    }
+                };
+    
+                Request.realizarRequest(
+                    API.PEDIDOS.FARMACIAS.ACTUALIZAR_CANTIDAD_PENDIENTE_PEDIDO_FARMACIA,
+                    "POST",
+                    obj,
+                    function(data) {
+                        if (data.status === 200) {  
+                            self.buscarProductos(function(disponible) {
+                            });
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El pedido No. "+pedido.get_numero_pedido()+" modificado correctamente");
+                        }
+                    }
+                );	
+            };
+            
+            $scope.validaEdicion=function(data){
+		var valida = (data.cantidadPendiente===0 || data.cantidadSolicitada === data.cantidadPendiente)?true:false;	//cantidadSolicitada	
+		return valida;
+	    };
+	    
+	    $scope.validaEliminacion=function(data){		
+		var valida = (data.cantidadPendiente<data.cantidadSolicitada)?true:false;
+		return valida;
+	    };
 
             /*
              * @Author: Eduar
@@ -139,7 +213,8 @@ define(["angular", "js/controllers",
                             setNombreBodega(_producto.nombre_bodega).
                             setEmpresaOrigenProducto(_producto.empresa_origen_producto).
                             setCentroUtilidadOrigenProducto(_producto.centro_utilidad_origen_producto).
-                            setBodegaOrigenProducto(_producto.bodega_origen_producto);
+                            setBodegaOrigenProducto(_producto.bodega_origen_producto).
+                            setCantidadSolicitadaPendiente(_producto.cantidad_pendiente);
                     
                     $scope.root.pedido.setTipoPedido(_producto.tipo_producto_id);
                     $scope.root.pedido.agregarProductoSeleccionado(producto);
@@ -161,7 +236,7 @@ define(["angular", "js/controllers",
                 );
                     
                 empresa.setCentrosUtilidad($scope.root.pedido.getFarmaciaOrigen().getCentrosUtilidad());
-                console.log("empresa ", empresa);
+           
                 $scope.root.pedido.setFarmaciaOrigen(empresa);
                 
             };
@@ -190,7 +265,7 @@ define(["angular", "js/controllers",
              */
             
             $scope.onBodegaSeleccionada = function(){
-                console.log("bodega seleccionada ");
+             
                 $scope.root.pedido.setValido($scope.habilitarIncluirProductos());
                 
                 //El evento que se dispara es escuchado por el controlador de pedido temporal
@@ -219,7 +294,7 @@ define(["angular", "js/controllers",
                 
                 
                 if(!centro){
-                    console.log("no se pudo obtener el centro con los argumenos ", arguments);
+                
                     return false;
                 }
                 
@@ -289,7 +364,7 @@ define(["angular", "js/controllers",
                 var centro = $scope.obtenerCentroUtilidad(esDestino, empresaId, centroId);
                 
                 if(!centro){
-                    console.log("no se pudo obtener el centro con los argumenos ", arguments);
+                    
                     return false;
                 }
                 
@@ -490,10 +565,10 @@ define(["angular", "js/controllers",
              */
             self.onConfirmarEliminarProducto = function(producto, index){
                 if($scope.root.pedido.getEsTemporal()){
-                    console.log("eliminar temporal ");
+                
                     $scope.$broadcast('onEliminarProductoTemporal', producto, index);
                 } else if($scope.root.pedido.get_numero_pedido()) {
-                    console.log("eliminar pedido real");
+                
                     $scope.$broadcast('onEliminarProducto', producto, index);
                 }
             };
@@ -553,7 +628,7 @@ define(["angular", "js/controllers",
             if (ev.which === 13)
             {
                 self.buscarProductos(function(disponible) {
-                    console.log("$scope.root.disponibilidad  ", disponible);
+                   
                     if (row.entity.getCantidadIngresada() > disponible) {
                         self.mostrarAlertaSeleccionProducto("Diponibilidad del Producto", "<p align='justify'> La cantidad ingresada " + row.entity.getCantidadIngresada() + " es mayor a <br> la disponible " + disponible + "</p>");
                         row.entity.setCantidadIngresada(0);
@@ -615,7 +690,6 @@ define(["angular", "js/controllers",
                 $scope.root.mostrarSeleccionProductoCompleto();
                 $scope.$$watchers = null;
                 $scope.root = {};
-                console.log("eliminando base");
 
             });
 

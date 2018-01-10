@@ -15,7 +15,7 @@ define(["angular","js/controllers", "treemenu"], function(angular, controllers){
 	  			//se valida si es un padre
 	  			if(isNaN(parent)){
 		  			url = "../"+url;
-		  			console.log(url)
+		  			//console.log(url)
 		  			$scope.changelocation(url);
 		  		} else {
 		  			//si no posee la propiedad parentname se coloca por default el nombre del modulo actual

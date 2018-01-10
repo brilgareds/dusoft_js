@@ -562,7 +562,6 @@ ModuloModel.prototype.listarModulosEmpresaPorRol = function(rol_id, callback) {
 
 
 ModuloModel.prototype.listarModulosUsuario = function(rol_id, empresa_id, login_id, aliasModulos, callback) {
-    //console.log("rol_id ", rol_id, " empresa id ",empresa_id, " login_id ", login_id, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     
     var sqlAux = "";
     
@@ -873,7 +872,6 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, ca
     var empresa_id = empresas_modulos[0].empresa.codigo;
     var modulo_id = empresas_modulos[0].modulo.modulo_id;
     var estado = Number(empresas_modulos[0].empresa.estado);
-    console.log("va a actualizar con estado ", estado);
     
     var sql = "UPDATE modulos_empresas SET estado = :4, usuario_id_modifica = :1, fecha_modificacion = now()  WHERE \
                modulo_id = :2 and empresa_id = :3 RETURNING id";

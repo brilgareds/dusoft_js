@@ -98,12 +98,10 @@ PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCot
 };
 
 // Notificacion al Clientes que esta conectado al socket
-PedidosClientesEvents.prototype.onConnected = function(socket_id) {    
-    console.log('== SocletConectado == ' + socket_id);
+PedidosClientesEvents.prototype.onConnected = function(socket_id) {
     this.io.to(socket_id).emit('onConnected', {socket_id: socket_id});
 };
 PedidosClientesEvents.prototype.onActualizarSesion = function(datos) { 
-    console.log('== Evento Actualizando Sesion == ' + JSON.stringify(datos));
     G.auth.update(datos, function(){
         
     });

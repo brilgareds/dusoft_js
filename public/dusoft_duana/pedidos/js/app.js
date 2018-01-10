@@ -101,7 +101,7 @@ define([
     pedidos.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
 
             // For any unmatched url, send to /route1
-            //console.log($httpProvider, "http provider");
+   
             //intercepta los http para validar el usuario
             $httpProvider.interceptors.push('HttpInterceptor');
 

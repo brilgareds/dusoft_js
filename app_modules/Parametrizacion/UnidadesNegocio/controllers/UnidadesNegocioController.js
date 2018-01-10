@@ -1,8 +1,6 @@
 
 var UnidadesNegocio = function(unidades_negocio) {
 
-    console.log("Modulo Unidades Negocio Cargado ");
-
     this.m_unidades_negocio = unidades_negocio;
 };
 

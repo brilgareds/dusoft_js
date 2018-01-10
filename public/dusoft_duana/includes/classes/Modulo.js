@@ -235,7 +235,7 @@ define(["angular", "js/models"], function(angular, models) {
                     var empresa = this.empresasModulos[i];
                     if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()
                             && empresa_modulo.getModulo().getId() === empresa.getModulo().getId()) {
-                        console.log("changing empresa codigo to ", empresa_modulo.getEmpresa().getEstado(), " module ", empresa.getModulo().getId());
+                       
                         this.empresasModulos[i] = empresa_modulo;
                         return;
                     }

@@ -37,7 +37,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
             };
             
-            console.log("opciones de asignacion ", $scope.opcionesModulo);
             
         }]);
 });

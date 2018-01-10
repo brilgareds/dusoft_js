@@ -171,7 +171,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                         self.asignarEmpresasFarmacias(obj.centros_utilidad);
                         localStorageService.set("chat", {estado:'0'});
-                        //console.log("empresa usuario ", $scope.Usuario.getEmpresa())
+                     
                         callback(obj);
                     } else {
                         $scope.cerraSesion(function() {
@@ -551,7 +551,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             
             
             $rootScope.$on("onAbrirChat",function(e, conversacionId){
-               console.log("AQUI RECIBO EL CHAT OK ", conversacionId)
+               
                localStorageService.set("mensajeNotificacion", {id_conversacion:conversacionId});
                self.abrirChat(); 
             });
@@ -559,8 +559,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             self.abrirChat = function(){
                 
                 var chat =  localStorageService.get("chat");
-                console.log("estado chat ", chat);
-                
+               
                 
                 if(chat && chat.estado === '1'){
                     var storageConversacion = localStorageService.get("mensajeNotificacion");
@@ -610,7 +609,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             };
 
             socket.on("onCerrarSesion", function() {
-                console.log("onCerrarSesion");
+         
                 $scope.cerraSesion(function() {
                     window.location = "../pages/403.html";
                 });
@@ -637,8 +636,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     if(!socketArray){
                         return;
                     }
-                    
-                    console.log("array de sockets a revisar ", socketArray, " con socket actual ", $rootScope.socketId);
+       
                     
                     if($rootScope.socketId === socketArray[0]){
                         
@@ -657,7 +655,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                             autoClose: 30000 //auto close the notification after 2 seconds (you can manually close it via hide function)
                         }, function onShow(error, hide) {
                             if (error) {
-                                console.log('Error interno: al mostrar ventana de web notifications ' + error.message);
+                                
                             } else {
                                  onHide =  hide;
                                 setTimeout(function hideNotification() {
@@ -711,7 +709,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     var index = socketArray.indexOf($rootScope.socketId);
                     
                     if(index !== -1){
-                        console.log("remove index ", socketArray.indexOf($rootScope.socketId), " socke ", $rootScope.socketId);
+                        
                         socketArray.splice(socketArray.indexOf($rootScope.socketId),1);
                         localStorageService.set("socketsIds", JSON.stringify(socketArray));
                         

@@ -14,10 +14,10 @@ var TemporalesCronjob = function() {
 TemporalesCronjob.prototype.iniciar = function(){
     var that = this;
     //El cronjob correra todos los dias a media noche
-    console.log("corriendo crontab para borrar temporales code 1 >>>>>>>>>>>>>>>>>>>>>>");
+    
    // var job = new G.cronJob('*/59 */59 */23 * * *', function () {
     var job = new G.cronJob('00 00 00 * * *', function () {
-        console.log("corriendo crontab para borrar temporales code 2 >>>>>>>>>>>>>>>>>>>>>>");
+        
         G.utils.limpiarDirectorio(G.dirname + "/public/reports/");
         G.utils.limpiarDirectorio(G.dirname + "/files/tmp/");
         
@@ -36,7 +36,7 @@ TemporalesCronjob.prototype.backuptExistencias = function(){
                     SELECT * FROM existencias_bodegas where empresa_id in ('03', 'FD') AND existencia > 0;"
         
         G.knex.raw(sql).then(function(){
-            console.log("backup realizado en existencias_bodegas_backup");
+          
         }).catch(function(err){
             console.log("error generado en backup existencias bodega", err);
         });

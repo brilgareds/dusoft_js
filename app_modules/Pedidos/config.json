@@ -33,6 +33,11 @@
                     "module": "Autorizaciones",
                     "model": "AutorizacionesModel",
                     "alias": "m_autorizaciones"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
                 }
             }],
         "events": [],

@@ -181,6 +181,14 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosFarmacias/generarPedidoModuloCliente', function(req, res) {
         c_pedidos_farmacias.generarPedidoModuloCliente(req, res);
     });
+    
+    app.post('/api/PedidosFarmacias/actualizarEstadoPedidoFarmacia', function(req, res) {
+        c_pedidos_farmacias.actualizarEstadoPedidoFarmacia(req, res);
+    });
+    
+    app.post('/api/PedidosFarmacias/actualizarCantidadPendientePedidoFarmacia', function(req, res) {
+        c_pedidos_farmacias.actualizarCantidadPendientePedidoFarmacia(req, res);
+    });
 
     // ================= GET =======================
 

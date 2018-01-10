@@ -1,8 +1,6 @@
 
 var Ciudades = function(ciudades) {
 
-    console.log("Modulo Ciudades Cargado ");
-
     this.m_ciudades = ciudades;
 };
 

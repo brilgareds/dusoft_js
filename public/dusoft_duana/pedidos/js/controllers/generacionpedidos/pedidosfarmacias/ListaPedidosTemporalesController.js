@@ -80,7 +80,7 @@ define(["angular",
                 };
 
                 self.consultarEncabezadosPedidos(obj, function(data) {
-                    console.log("datos encontrados ", data);
+             
                     if (data.status === 200) {
 
                         /*las empresas del usuario (de la session) son de tipo Empresa, por lo tanto se requiere asegurar 
@@ -168,14 +168,14 @@ define(["angular",
                 Request.realizarRequest(url_eliminar_detalle, "POST", obj_detalle, function(data) {
 
                     if (data.status === 200) {
-                        console.log("Eliminación del detalle Exitosa: ", data.msj);
+                       
                         //Eliminación encabezado temporal
                        self.buscarPedidos();
 
                     }
                     else
                     {
-                        console.log("Eliminación del detalle Fallida: ", data.msj);
+                        
                     }
                 });
             };
@@ -186,7 +186,7 @@ define(["angular",
              */
 
             $scope.onBuscarPedidos = function() {
-                console.log("on buscar pedidos");
+       
                 $scope.rootPedidosTempFarmacias.paginaactual = 1;
                 self.buscarPedidos();
             };

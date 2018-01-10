@@ -22,7 +22,7 @@ define(["angular","js/services"], function(angular, services){
 
             if(msg){
                 this.mostrandoMensaje = true;
-                console.log(msg);
+      
                 that.el.html("<p class='alertcontenido alert alert-"+msg.tipo+"'>\
                                 "+msg.msg+"</p>").show();
 
@@ -37,8 +37,6 @@ define(["angular","js/services"], function(angular, services){
 
 
             } else {
-              console.log(this.colaEjecucion);
-              console.log("no hay mensajes pendientes");
             }
 
         }

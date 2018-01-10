@@ -1,8 +1,6 @@
 
 var Modulos = function(m_modulo) {
 
-    console.log("Modulo parametrizacion modulos  Cargado ******************* ");
-
     this.m_modulo = m_modulo;
 };
 
@@ -100,7 +98,6 @@ Modulos.prototype.guardarModulo = function(req, res) {
             modulo.id = rows[0].id;
         }
 
-        console.log("modulo a regresar ", modulo);
         res.send(G.utils.r(req.url, "Modulo creado con exito", 200, {parametrizacion_modulo: {modulo: modulo}}));
     });
 };
@@ -133,7 +130,6 @@ Modulos.prototype.guardarOpcion = function(req, res) {
             opcion.id = rows[0].id;
         }
 
-        console.log("opcion a regresar ", opcion);
         res.send(G.utils.r(req.url, "Opcion guardada con exito", 200, {parametrizacion_modulo: {opcion: opcion}}));
     });
 };

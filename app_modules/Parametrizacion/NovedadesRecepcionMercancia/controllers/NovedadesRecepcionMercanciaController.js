@@ -1,8 +1,6 @@
 
 var NovedadesRecepcion = function(novedades_mercancia) {
 
-    console.log("Modulo Novedades Mercancia Cargado ");
-
     this.m_novedades_mercancia = novedades_mercancia;
 };
 

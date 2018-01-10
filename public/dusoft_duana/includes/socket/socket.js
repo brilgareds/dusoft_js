@@ -1,6 +1,6 @@
 define(["angular","js/services", "socket"], function(angular, services, io){
     services.factory('socket', ["$rootScope", function ($rootScope) {
-      //console.log("io socket ", io);
+     
       //var socket = io.connect(window.location.origin, {port:window.location.port});
       var socket = io.connect({transports: ['websocket'], upgrade: false});
       

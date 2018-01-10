@@ -1,7 +1,7 @@
 
 var AutenticacionEvents = function(socket, pedidos_farmacias, m_auth) {
 
-    console.log("Eventos Pedidos Cliente  Cargado ");
+
 
     this.io = socket;
     this.m_auth = m_auth;
@@ -10,14 +10,14 @@ var AutenticacionEvents = function(socket, pedidos_farmacias, m_auth) {
 
 // Notificacion al Clientes que esta conectado al socket
 AutenticacionEvents.prototype.onConnected = function(socket_id) {    
-    console.log('== SocletConectado == ' + socket_id);
+
     this.io.to(socket_id).emit('onConnected', {socket_id: socket_id});
 };
 
 
 AutenticacionEvents.prototype.guardarTokenPush = function(datos) {    
     var that = this;
-    console.log("datos >>>>>>>>>>>>>>>>>>>> ", datos);
+
     G.Q.ninvoke(that.m_auth,'guardarTokenPush', datos).then(function() {
       
     }).fail(function(err) {
@@ -27,7 +27,7 @@ AutenticacionEvents.prototype.guardarTokenPush = function(datos) {
 
 // Actualizar La sesion del usuario con el socket asignado
 AutenticacionEvents.prototype.onActualizarSesion = function(datos) { 
-    console.log('== Evento Actualizando Sesion == ' + JSON.stringify(datos));
+   
     var that = this;
     G.auth.update(datos, function(){
         that.io.to(datos.socket_id).emit('onSesionActualizada', datos);

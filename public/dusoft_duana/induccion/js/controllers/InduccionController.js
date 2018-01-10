@@ -264,7 +264,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             Request.realizarRequest(url, "POST", obj, function(data) {
                                 if (data.status === 200) {
                                     var nombre_reporte = data.obj.imprimir_productos.nombre_reporte;
-                                    console.log("reporte generado")
+                                
                                     $scope.visualizarReporte("/reports/" + nombre_reporte, nombre_reporte, "download");
                                 } else {
 
@@ -314,7 +314,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.onSeleccionarProducto = function($event) {
                         $scope.paginaactual = 1;
-                        console.log("evento: ", $event);
+                  
                         if ($event.which === 13) {
                             producto = 1;
                             that.listarProducto(function() {
@@ -331,7 +331,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
 
                     that.init(empresa, function() {
-                        console.log("empresa_init::::: ", $scope.seleccionada);
+                    
                         that.listarEmpresas(function(estado) {
                             if (estado) {
                             }

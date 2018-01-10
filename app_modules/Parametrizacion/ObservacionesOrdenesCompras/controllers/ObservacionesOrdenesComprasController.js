@@ -1,8 +1,6 @@
 
 var ObservacionesOrdenes = function(observaciones) {
 
-    console.log("Modulo Observaciones Ordenes Compra Cargado ");
-
     this.m_observaciones = observaciones;
 };
 

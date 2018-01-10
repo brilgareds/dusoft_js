@@ -312,8 +312,6 @@ define(["angular", "js/controllers",
 
             that.buscar_productos_clientes = function() {
                 
-                console.log("ESTOAOSOAOS get_numero_cotizacion ", $scope.Pedido.get_numero_cotizacion())
-                console.log("ESTOAOSOAOS get_numero_pedido ", $scope.Pedido.get_numero_pedido())
                 that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
                  
                  if($scope.Pedido.estadoMultiplePedido){
@@ -321,7 +319,6 @@ define(["angular", "js/controllers",
                         that.estadoMultipleCotizacion.multiple_pedido = parseInt($scope.Pedido.estadoMultiplePedido);
                     }
                 }
-                console.log("that.estadoMultipleCotizacion B ", that.estadoMultipleCotizacion)
                 var obj = {};
                 $scope.rootSeleccionProducto.filtro.numero = [$scope.Pedido.get_numero_pedido()];
                 $scope.rootSeleccionProducto.filtro.tipo = 2;

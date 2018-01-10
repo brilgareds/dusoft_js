@@ -1,8 +1,6 @@
 
 var Proveedores = function(proveedores) {
 
-    console.log("Modulo Proveedores  Cargado ");
-
     this.m_proveedores = proveedores;
 };
 

@@ -34,11 +34,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var cantidadLios = parseInt($scope.root.cantidadLios);
                 var cantidadNeveras = parseInt($scope.root.cantidadNeveras);
                 
-                console.log("cantidad cajas ", cantidadCajas, " cantidadLios ", cantidadLios, " neveras " , cantidadNeveras);
+                //console.log("cantidad cajas ", cantidadCajas, " cantidadLios ", cantidadLios, " neveras " , cantidadNeveras);
                 
                 if(isNaN(cantidadCajas) || isNaN(cantidadLios) || isNaN(cantidadNeveras) || cantidadLios === 0 || cantidadCajas < 0 || cantidadNeveras < 0
                    || (cantidadCajas === 0 && cantidadNeveras === 0)){
-                    //console.log("cantidad cajas ", isNaN(cantidadCajas), " cantidadLios ", cantidadLios);
+                   
                     return false;
                 } else if(!isNaN(cantidadCajas) && !isNaN(cantidadLios) &&
                          ((cantidadCajas > 0 && cantidadLios  > cantidadCajas) || (cantidadNeveras > 0 && cantidadLios > cantidadNeveras))) {
@@ -51,7 +51,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $modalInstance.opened.then(function() {
-                console.log("documentos ", documentos);
+               
 
             });
 
@@ -59,7 +59,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.root.documentos = [];
                 $scope.root = null;
                 $rootScope.$emit("onLiosRegistrados");
-                console.log("on lio creado");
+              
             }, function() {
             });
             

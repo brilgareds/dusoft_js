@@ -25,7 +25,7 @@ define([
             $scope.opcionesListaModulos = {
                 minimumInputLength: 3,
                 query: function (query) {
-                    console.log("query list ", query);
+             
 
                    function querySucceeded(response) {
                         // give the {results:data-array} to the query callback
@@ -82,7 +82,7 @@ define([
             };
             
             $scope.onBorrarVariable = function(variable) {
-                //console.log("opcion a eliminar ", opcion);
+           
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -285,7 +285,7 @@ define([
                             }
                         }
 
-                        // console.log(modulos);
+                      
                         callback();
                         
                     }
@@ -400,7 +400,6 @@ define([
 
                 delete modulo_guardar.nodo_principal;
 
-               // console.log(JSON.stringify(modulo_guardar));
 
 
                 var obj = {
@@ -425,7 +424,7 @@ define([
                                 $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
                                 
                                 $scope.$on("arbolRefrescado",function(){
-                                    console.log("arbol refrescado code 2")
+                                
                                     $scope.$broadcast("onseleccionarnodo", modulo_guardar.id, modulo_guardar.parent);
                                 });
                                 
@@ -497,7 +496,7 @@ define([
             $scope.onModuloPadreSeleccionado = function() {
 
                 if ($scope.rootModulos.moduloAGuardar && $scope.rootModulos.moduloAGuardar.modulo_id === $scope.rootModulos.moduloPadre.modulo_id) {
-                    console.log("modulo padre seleccionado ", $scope.rootModulos.moduloPadre);
+                   
                     delete $scope.rootModulos.moduloPadre;
                 }
             };
@@ -553,7 +552,7 @@ define([
                             for (var i in  modulos) {
 
                                 if (modulos[i].id === _modulo.parent) {
-                                    //console.log("modulos select ", modulos[i].id);
+                                 
 
                                     $scope.rootModulos.moduloPadre = modulos[i];
                                     break;

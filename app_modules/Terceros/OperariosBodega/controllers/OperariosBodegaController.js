@@ -1,8 +1,6 @@
 
 var OperariosBodega = function(operarios, pedidos_clientes, pedidos_farmacias) {
 
-    console.log("Modulo Terceros  Cargado ");
-
     this.m_operarios = operarios;
     this.m_pedidos_clientes = pedidos_clientes;
     this.m_pedidos_farmacias = pedidos_farmacias;
@@ -37,8 +35,7 @@ OperariosBodega.prototype.listarOperariosBodega = function(req, res) {
             var i = lista_operarios.length;
 
             lista_operarios.forEach(function(operario_bodega) {
-                console.log("id del operario >>>>>>>>>>>>>>>>>>>>", operario_bodega.usuario_id);
-
+              
                 that.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega.usuario_id, '', {asignados:true}, 1, 1, function(err, rows, total_registros_clientes) {
 
                     total_pedidos_clientes = (err) ? 0 : parseInt(total_registros_clientes);

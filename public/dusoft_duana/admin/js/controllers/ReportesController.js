@@ -36,7 +36,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         obj,
                         function(data) {
                             if (data.status === 200) {
-                                console.log("OBTENER_CONFIGURACION_REPORTE",data);
+                              
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }

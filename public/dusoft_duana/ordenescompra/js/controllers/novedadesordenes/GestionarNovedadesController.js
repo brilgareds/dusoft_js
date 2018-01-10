@@ -311,7 +311,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.onEliminarNovedad = function(producto){
                 
                 AlertService.mostrarVentanaAlerta("Eliminar", "Desea eliminar la novedad?", function(aceptar){
-                    console.log("aceptar ", aceptar);
+                  
                     if(aceptar){
                         var obj = {
                             session: $scope.session,

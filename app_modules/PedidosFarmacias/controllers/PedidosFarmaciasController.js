@@ -2345,7 +2345,7 @@ PedidosFarmacias.prototype.actualizarCantidadPendientePedidoFarmacia = function(
                         codigoProducto:args.pedidos_farmacias.codigo_producto
 	             };
                      
-    G.Q.ninvoke(that.m_pedidos_farmacias, "anularCantidadPendientePedido", parametros).then(function(respuesta) {
+    G.Q.ninvoke(that.m_pedidos_farmacias, "anularCantidadPendientePedido", parametros,false).then(function(respuesta) {
     
         res.send(G.utils.r(req.url, 'ok', 200, {resultado:respuesta}));
           

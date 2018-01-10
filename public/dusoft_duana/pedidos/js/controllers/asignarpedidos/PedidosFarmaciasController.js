@@ -17,6 +17,7 @@ define(["angular",
             $scope.pedidosSeleccionados = [];
             $scope.empresas = [];
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
+            $scope.permisosEstadoAsignacion=Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_cambiar_estado_asignacion;
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -169,6 +170,10 @@ define(["angular",
                 }
 
                 if (pedido.estado === '2') {
+                    disabled = true;
+                }
+                
+                if(!$scope.permisosEstadoAsignacion){
                     disabled = true;
                 }
 

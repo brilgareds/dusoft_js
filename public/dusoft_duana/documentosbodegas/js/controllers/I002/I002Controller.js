@@ -41,11 +41,12 @@ define([
             var datos_documento = localStorageService.get("documento_bodega_I002");
             var fecha_actual = new Date();
 
-            $scope.format = 'dd-MM-yyyy';
+           // $scope.format = 'dd-MM-yyyy';
             $scope.root = {
                 porFactura: 0,
                 totalFactura: 0,
                 totalDescuento: 0,
+                fechaRadicacion: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                 fechaVencimiento: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                 fechaFactura: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                 numeroFactura: "",
@@ -771,10 +772,36 @@ define([
                                                              </div>\
                                                         </div>\
                                                 </div>\
-                                                <div class="row">\
+                                               <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
                                                               <h5><b>Fecha Radicación:</b></h5>\
+                                                             </div>\
+                                                             <div class="col-sm-8">\
+                                                                <p class="input-group">\
+                                                                    <input type="text" class="form-control readonlyinput" \
+                                                                     datepicker-popup="{{format}}" \
+                                                                     ng-model="root.fechaRadicacion"\ is-open="root.datepicker_fechaRadicacion" \
+                                                                     min="minDate"   \
+                                                                     readonly  close-text="Cerrar" \
+                                                                     ng-change="" \
+                                                                     clear-text="Borrar" \
+                                                                     current-text="Hoy" \
+                                                                     placeholder="Fecha Radicacion" \
+                                                                     show-weeks="false" \
+                                                                     toggle-weeks-text="#"  />\
+                                                                        <span class="input-group-btn">\
+                                                                               <button class="btn btn-default" ng-click="abrir_fechaRadicacion($event);"> \
+                                                                               <i class="glyphicon glyphicon-calendar"></i></button>\
+                                                                        </span>\
+                                                                </p>\
+                                                             </div>\
+                                                        </div>\
+                                                </div>\
+                                                <div class="row">\
+                                                        <div class="form-group">\
+                                                             <div class="col-sm-4">\
+                                                              <h5><b>Fecha Vencimiento:</b></h5>\
                                                              </div>\
                                                              <div class="col-sm-8">\
                                                                 <p class="input-group">\
@@ -852,11 +879,18 @@ define([
 
                             var fechaFactura = new Date($scope.root.fechaFactura);
                             var fechaVencimiento = new Date($scope.root.fechaVencimiento);
+                            var fechaRadicacion = new Date($scope.root.fechaRadicacion);
 
                             var fFactura = new Date(fechaFactura.getFullYear() + 0, fechaFactura.getMonth() + 1, fechaFactura.getDate() + 1); //31 de diciembre de 2015
                             var fVencimiento = new Date(fechaVencimiento.getFullYear() + 0, fechaVencimiento.getMonth() + 1, fechaVencimiento.getDate() + 1); //30 de noviembre de 2014
+                            var fRadicacion = new Date(fechaRadicacion.getFullYear() + 0, fechaRadicacion.getMonth() + 1, fechaRadicacion.getDate() + 1); //30 de noviembre de 2014
 
                             if (fFactura > fVencimiento) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Fecha de Vencimiento no puede ser menor a la Fecha Factura");
+                                return;
+                            }
+                            
+                            if (fFactura > fRadicacion) {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Fecha de Radicacion no puede ser menor a la Fecha Factura");
                                 return;
                             }
@@ -902,6 +936,7 @@ define([
                                 recepciones: productos,
                                 fechaFactura: $scope.root.fechaFactura,
                                 fechaVencimiento: $scope.root.fechaVencimiento,
+                                fechaRadicacion: $scope.root.fechaRadicacion,
                                 totalFactura: $scope.root.totalFactura,
                                 numeroFactura: $scope.root.numeroFactura,
                                 totalDescuento: $scope.root.totalDescuento,
@@ -951,6 +986,24 @@ define([
                 $scope.root.datepicker_fecha_final = false;
                 $scope.root.datepicker_fechaFactura = false;
                 $scope.root.datepicker_fechaVencimiento = true;
+                $scope.root.datepicker_fechaRadicacion = false;
+
+            };
+            /**
+             * @author Andres Mauricio Gonzalez
+             * @fecha  17/05/2017
+             * +Descripcion Funcion que permitira desplegar el popup datePicker
+             *               de la fecha final
+             * @param {type} $event
+             */
+            $scope.abrir_fechaRadicacion = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.root.datepicker_fecha_inicial = false;
+                $scope.root.datepicker_fecha_final = false;
+                $scope.root.datepicker_fechaFactura = false;
+                $scope.root.datepicker_fechaVencimiento = false;
+                $scope.root.datepicker_fechaRadicacion = true;
 
             };
 
@@ -968,6 +1021,7 @@ define([
                 $scope.root.datepicker_fecha_final = false;
                 $scope.root.datepicker_fechaFactura = true;
                 $scope.root.datepicker_fechaVencimiento = false;
+                $scope.root.datepicker_fechaRadicacion = false;
 
             };
 
@@ -1043,7 +1097,7 @@ define([
                     data: {
                         orden_pedido_id: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
                         bodegas_doc_id: datos_documento.bodegas_doc_id,
-                        observacion: $scope.DocumentoIngreso.get_proveedor().get_ordenes_compras()[0].observacion
+                        observacion: $scope.DocumentoIngreso.get_orden_compra().observacion
                     }
                 };
 

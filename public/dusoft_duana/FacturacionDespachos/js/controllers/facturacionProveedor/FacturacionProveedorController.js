@@ -14,17 +14,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
         var fecha_actual = new Date();
+    
         $scope.paginaactual = 1;
         $scope.paginaactual_factura = 1;
         that.recepcionesId = "";
         that.total = 0;
-        $scope.format = 'dd-MM-yyyy'
+        //$scope.format = 'dd-MM-yyyy'
         $scope.root = {
             porFactura:0,
             totalFactura: 0,
             totalDescuento: 0,
-            fechaVencimiento: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+            fechaRadicacion: $filter('date')(fecha_actual, "yyyy-MM-dd"),
             fechaFactura: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+            fechaVencimiento: $filter('date')(fecha_actual, "yyyy-MM-dd"),
             numeroFactura: "",
             descripcionFija: "",
             descripcionFactura: "",
@@ -150,6 +152,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.root.datepicker_fecha_inicial = true;
             $scope.root.datepicker_fecha_final = false;
             $scope.root.datepicker_fechaFactura = false;
+            $scope.root.datepicker_fechaRadicacion = false;
             $scope.root.datepicker_fechaVencimiento = false;
 
         };
@@ -168,6 +171,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.root.datepicker_fecha_inicial = false;
             $scope.root.datepicker_fecha_final = true;
             $scope.root.datepicker_fechaFactura = false;
+            $scope.root.datepicker_fechaRadicacion = false;
             $scope.root.datepicker_fechaVencimiento = false;
 
         };
@@ -184,6 +188,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.root.datepicker_fecha_inicial = false;
             $scope.root.datepicker_fecha_final = false;
             $scope.root.datepicker_fechaFactura = true;
+            $scope.root.datepicker_fechaRadicacion = false;
+            $scope.root.datepicker_fechaVencimiento = false;
+
+        };
+        /**
+         * @author Andres Mauricio Gonzalez
+         * @fecha  17/05/2017
+         * +Descripcion Funcion que permitira desplegar el popup datePicker
+         *               de la fecha final
+         * @param {type} $event
+         */
+        $scope.abrir_fechaRadicacion = function($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.root.datepicker_fecha_inicial = false;
+            $scope.root.datepicker_fecha_final = false;
+            $scope.root.datepicker_fechaFactura = false;
+            $scope.root.datepicker_fechaRadicacion = true;
             $scope.root.datepicker_fechaVencimiento = false;
 
         };
@@ -200,6 +222,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.root.datepicker_fecha_inicial = false;
             $scope.root.datepicker_fecha_final = false;
             $scope.root.datepicker_fechaFactura = false;
+            $scope.root.datepicker_fechaRadicacion = false;
             $scope.root.datepicker_fechaVencimiento = true;
 
         };
@@ -814,13 +837,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <h4><b><p>Fecha Factura:</p></b></h4>\
+                                                              <h5><b><p>Fecha Factura:</p></b></h5>\
                                                              </div>\
                                                              <div class="col-sm-8">\
                                                                 <p class="input-group">\
                                                                     <input type="text" class="form-control readonlyinput" \
                                                                      datepicker-popup="{{format}}" \
-                                                                     ng-model="root.fechaFactura"\ is-open="root.datepicker_fechaFactura" \
+                                                                     ng-model="root.fechaFactura"\
+                                                                     is-open="root.datepicker_fechaFactura" \
                                                                      min="minDate"   \
                                                                      readonly  close-text="Cerrar" \
                                                                      ng-change="" \
@@ -840,7 +864,33 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <h4><b>Fecha Radicación:</b></h4>\
+                                                              <h5><b>Fecha Radicación:</b></h5>\
+                                                             </div>\
+                                                             <div class="col-sm-8">\
+                                                                <p class="input-group">\
+                                                                    <input type="text" class="form-control readonlyinput" \
+                                                                     datepicker-popup="{{format}}" \
+                                                                     ng-model="root.fechaRadicacion"\ is-open="root.datepicker_fechaRadicacion" \
+                                                                     min="minDate"   \
+                                                                     readonly  close-text="Cerrar" \
+                                                                     ng-change="" \
+                                                                     clear-text="Borrar" \
+                                                                     current-text="Hoy" \
+                                                                     placeholder="Fecha Radicacion" \
+                                                                     show-weeks="false" \
+                                                                     toggle-weeks-text="#"  />\
+                                                                        <span class="input-group-btn">\
+                                                                               <button class="btn btn-default" ng-click="abrir_fechaRadicacion($event);"> \
+                                                                               <i class="glyphicon glyphicon-calendar"></i></button>\
+                                                                        </span>\
+                                                                </p>\
+                                                             </div>\
+                                                        </div>\
+                                                </div>\
+                                                <div class="row">\
+                                                        <div class="form-group">\
+                                                             <div class="col-sm-4">\
+                                                              <h5><b>Fecha Vencimiento:</b></h5>\
                                                              </div>\
                                                              <div class="col-sm-8">\
                                                                 <p class="input-group">\
@@ -866,7 +916,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 <div class="row">\
                                                         <div class="form-group">\
                                                              <div class="col-sm-4">\
-                                                              <h4><b>Numero Factura:</b></h4>\
+                                                              <h5><b>Numero Factura:</b></h5>\
                                                              </div>\
                                                              <p class="col-sm-8">\
                                                                     <input type="text"  ng-model="root.numeroFactura"  class="form-control" required="required" >\
@@ -876,7 +926,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                <div class="row">\
                                                         <div class="form-group">\
                                                             <div class="col-sm-4">\
-                                                              <h4><b>Valor Total Factura:</b></h4>\
+                                                              <h5><b>Valor Total Factura:</b></h5>\
                                                              </div>\
                                                              <p class="col-sm-8">\
                                                                 <input type="text" ng-model="root.totalFactura" validacion-numero-decimal class="form-control" required="required" >\
@@ -886,7 +936,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                               <div class="row">\
                                                        <div class="form-group">\
                                                             <div class="col-sm-4" >\
-                                                               <h4><b>Total de Descuento:</b></h4>\
+                                                               <h5><b>Total de Descuento:</b></h5>\
                                                             </div>\
                                                             <p class="col-sm-8">\
                                                               <input type="text" ng-model="root.totalDescuento" validacion-numero-decimal class="form-control">\
@@ -916,13 +966,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.facturar = function() {
 
                         var fechaFactura = new Date($scope.root.fechaFactura);
+                        var fechaRadicacion = new Date($scope.root.fechaRadicacion);
                         var fechaVencimiento = new Date($scope.root.fechaVencimiento);
-
+                        
                         var fFactura = new Date(fechaFactura.getFullYear() + 0, fechaFactura.getMonth() + 1, fechaFactura.getDate() + 1); //31 de diciembre de 2015
+                        var fRadicacion = new Date(fechaRadicacion.getFullYear() + 0, fechaRadicacion.getMonth() + 1, fechaRadicacion.getDate() + 1); //30 de noviembre de 2014
                         var fVencimiento = new Date(fechaVencimiento.getFullYear() + 0, fechaVencimiento.getMonth() + 1, fechaVencimiento.getDate() + 1); //30 de noviembre de 2014
 
-                        if (fFactura > fVencimiento) {
+
+
+                        if (fFactura > fRadicacion) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Fecha de Radicacion no puede ser menor a la Fecha Factura");
+                            return;
+                        }
+                        
+                        if (fFactura > fVencimiento) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La Fecha de Vencimiento no puede ser menor a la Fecha Factura");
                             return;
                         }
 
@@ -963,6 +1022,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var parametros = {
                             recepciones: $scope.root.pedidosSeleccionados,
                             fechaFactura: $scope.root.fechaFactura,
+                            fechaRadicacion: $scope.root.fechaRadicacion,
                             fechaVencimiento: $scope.root.fechaVencimiento,
                             totalFactura: $scope.root.totalFactura,
                             numeroFactura: $scope.root.numeroFactura,
@@ -1010,7 +1070,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 }
             };
-
+console.log("insertt   ",obj.data.facturaProveedor);
             facturacionProveedoresService.insertarFactura(obj, function(data) {
 
                 if (data.status === 200) {
@@ -1141,6 +1201,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.root.pedidosSeleccionados = [];
             $scope.root.pedidosSeleccionados = [];
             $scope.root.fechaFactura = $filter('date')(fecha_actual, "yyyy-MM-dd");
+            $scope.root.fechaRadicacion = $filter('date')(fecha_actual, "yyyy-MM-dd");
             $scope.root.fechaVencimiento = $filter('date')(fecha_actual, "yyyy-MM-dd");
             $scope.root.totalFactura = "";
             $scope.root.numeroFactura = "";

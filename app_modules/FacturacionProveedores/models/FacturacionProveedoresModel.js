@@ -408,7 +408,8 @@ FacturacionProveedoresModel.prototype.ingresarFacturaCabecera = function(obj,tra
         valor_descuento: obj.valor_descuento,
         fecha_factura: obj.fecha_factura,
         fecha_radicacion_factura: obj.fecha_radicacion_factura,
-        usuario_id: obj.usuario_id
+        usuario_id: obj.usuario_id,
+        fecha_vencimiento: obj.fecha_vencimiento
 
     });
     if(transaccion) query.transacting(transaccion); 

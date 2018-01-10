@@ -2,12 +2,14 @@
 
     <div class="col-md-2">
         <p class="input-group">
-            <input type="text" class="form-control readonlyinput" 
+            <input type="text" 
+                   class="form-control readonlyinput" 
                    datepicker-popup="{{format}}" 
                    ng-model="root.fecha_inicial_facturas" 
                    is-open="root.datepicker_fecha_inicial" 
                    min="minDate"   
-                   readonly  close-text="Cerrar" 
+                   readonly  
+                   close-text="Cerrar" 
                    ng-change="" 
                    clear-text="Borrar" 
                    current-text="Hoy" 

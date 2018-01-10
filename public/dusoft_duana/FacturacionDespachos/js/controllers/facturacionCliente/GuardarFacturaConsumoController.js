@@ -370,7 +370,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 }
             };
             facturacionClientesService.consultarDetalleTemporalFacturaConsumo(obj, function(data){
-                console.log("ESTE ES EL DETALLE DEL TOTOALES ", data);
+           
                 var sumTotalIva = 0;
                 if(data.status === 200){
                     
@@ -400,7 +400,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          * 
          */
         $scope.onDocumentoSeleccionado = function(){
-            console.log("root >>> ", $scope.root.documento);
+         
             
             var obj = {
                 session: $scope.session,
@@ -585,7 +585,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                                     $scope.root.cliente.setContratoClienteId(lsTemp.contrato_cliente_id)
                                     
                                     that.listarDocumento("", function(data){
-                                        console.log("data -------***>", data)
+                                 
                                         $scope.root.documento = DocumentoDespacho.get(data[0].pedido_cliente_id, 
                                         data[0].prefijo,data[0].numero,data[0].fecha_registro,data[0].empresa_id);
                                         $scope.root.documento.set_empresa(data[0].empresa_id);

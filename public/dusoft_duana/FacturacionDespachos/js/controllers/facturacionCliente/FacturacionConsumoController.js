@@ -84,7 +84,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
         
         $scope.buscarClienteFacturaTemporal = function(event){
-             console.log(" event ", event.which )
+         
             if (event.which === 13 || event.which === 1) {
 
                 that.listarFacturasTemporal();
@@ -155,9 +155,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          *              las facturas en temporal
          */
         that.listarFacturasTemporal = function(){
-            console.log("*******that.listarFacturasTemporal************");
-            console.log("*******that.listarFacturasTemporal************");
-            console.log("*******that.listarFacturasTemporal************");
             $scope.notificarFacturaConsumo = 0;   
             var obj = {
                 session: $scope.session,
@@ -181,7 +178,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
                 
-                console.log("data >>>> ", $scope.root.facturasTemporales)
             });
             
             
@@ -271,7 +267,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          *              y posteriormente facturar
          */
         $scope.detalleFacturaTemporal = function(entity){           
-            console.log("entity.getEstadoFacturacion()  ", entity.getEstadoFacturacion() );
             if(entity.getEstadoFacturacion() !=="0"){
                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El temporal ya ha sido facturado");
                 return;
@@ -291,7 +286,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
         
         $scope.onCambiarVista = function(vista){
-            console.log("cambiar vista ", vista)
             $scope.root.vistaFacturacion = vista;
         };
                 
@@ -350,13 +344,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
         
         socket.on("onNotificarFacturacionXConsumoTerminada", function(datos) {
-             
-            console.log("datos [onNotificarFacturacionXConsumoTerminada]:: ", datos);
-            console.log("datos [.msj.mensaje_bd]:: ", datos.msj.mensaje_bd);
-            console.log("datos [.msj.mensaje_ws]:: ", datos.msj.mensaje_ws);
-            console.log("datos [datos.obj[2]]:: ", datos.obj[2]);
-            console.log("datos [datos.obj[1]]:: ", datos.obj[1]);
-             
+                          
             if(datos.status === 201){
                  
                 that.notificarSolicitud("#Factura " + datos.obj[1]+" - " +datos.obj[2], 
@@ -382,10 +370,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         if ($state.is("Despacho") === true) {
              
             var storageListaFacturasConsumo = localStorageService.get('listaFacturasConsumo');  
-            console.log("**********************************ESTO S SS");
-            console.log("**********************************ESTO S SS");
-            console.log("**********************************ESTO S SS");
-            console.log(" listaFacturasConsumo ", storageListaFacturasConsumo); 
+      
             if(storageListaFacturasConsumo){
                 that.listarFacturasTemporal();
             }

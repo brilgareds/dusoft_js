@@ -117,7 +117,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     
                     if(_usuario.getId() === usuario.getId()){
-                        console.log("usuario existente usuario ", _usuario, _usuario.getSeleccionado());
+                    
                         return;
                     
                     }

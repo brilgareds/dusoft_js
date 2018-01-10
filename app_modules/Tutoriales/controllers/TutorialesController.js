@@ -41,7 +41,7 @@ Tutoriales.prototype.listarVideos = function(req, res){
     var parametros = {filtro: args.lista_video_tutoriales.filtro,
                     termino_busqueda: args.lista_video_tutoriales.termino_busqueda,
                     pagina_actual: args.lista_video_tutoriales.paginaActual};
-         console.log("parametros ", parametros)        
+               
     G.Q.ninvoke(that.m_tutoriales, "listarVideos",parametros).then(function(resultado){
 
         if(resultado.length > 0){
@@ -117,7 +117,6 @@ Tutoriales.prototype.guardarTutorial = function(req, res){
  */
 Tutoriales.prototype.subirArchivoTutorial = function(req, res){
     
-    console.log("subirArchivoTutorial code 1");
     var that = this;
     var args = req.body.data;
     
@@ -139,7 +138,7 @@ Tutoriales.prototype.subirArchivoTutorial = function(req, res){
         return G.Q.ninvoke(that.m_tutoriales, "guardarTutorial", {tutorial : args.tutoriales.tutorial});
         
     }).then(function(resultado){
-        console.log("subirArchivoTutorial code 2");
+        
         res.send(G.utils.r(req.url,"Lista de video tutoriales", 200,{tutorial:resultado}));
  
     }).fail(function(err){

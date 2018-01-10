@@ -136,7 +136,6 @@ define(["angular", "js/services"], function(angular, services) {
                 tercero.agregarContacto(contacto);
             }
             
-            console.log("tercero ", data);
                 
             
         };

@@ -1,8 +1,6 @@
 
 var Terceros = function(terceros) {
 
-    console.log("Modulo Terceros  Cargado ");
-
     this.mTerceros = terceros;
 };
 

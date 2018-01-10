@@ -103,7 +103,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             */
             $scope.onArchivoSeleccionado = function(files) {
                 
-                console.log("on subir archivo ", files);
+               
                 $scope.root.files = files;
                 
             };

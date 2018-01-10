@@ -2825,8 +2825,7 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
         
     
     }).then(function(resultado){
-        
-        console.log("A QUI [__insertarBodegasDocumentosDetalle] ", resultado)
+     
         setTimeout(function() {
             __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback);
         }, 300);
@@ -3717,7 +3716,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                        
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){  
-        //console.log("resultado model [consultarDispensacionEstadosFormula]:", resultado)  
+        
         return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion);
             
     }).then(function(resultado){       
@@ -3761,7 +3760,7 @@ DispensacionHcModel.prototype.insertarDispensacionEstadosFormula = function(obj,
                    
     if(transaccion) 
         query.transacting(transaccion).then(function(resultado) {   
-            console.log("resultado model [insertarDispensacionEstadosFormula]:", resultado)  
+            
             callback(false, resultado);
         }).catch (function(err) {
              console.log("err (/catch) [insertarDispensacionEstadosFormula]: ", err);  
@@ -3931,7 +3930,7 @@ DispensacionHcModel.prototype.eliminarFormulasSinMovimiento = function(callback)
     var sql = "DELETE FROM dispensacion_estados  \
                 WHERE numero_entrega_actual = 0 AND sw_refrendar is null or sw_refrendar = 0 AND sw_pendiente is null or sw_pendiente = 0 AND sw_pendiente is null or sw_pendiente = 0 AND fecha_ultima_entrega is null";
     G.knex.raw(sql).then(function(resultado){   
-        console.log("resultado [eliminarFormulasSinMovimiento]: ", resultado)
+      
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [eliminarFormulasSinMovimiento]: ", err);        

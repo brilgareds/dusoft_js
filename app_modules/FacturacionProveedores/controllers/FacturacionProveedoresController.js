@@ -704,14 +704,7 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
         } else {
             resultado.impuesto_cree = 0;
         }
-	console.log("____________*****____________________");
-	console.log("resultado._subTotal ",resultado._subTotal);
-	console.log("resultado._iva ",resultado._iva);
-	console.log("resultado.valorRetFte ",resultado.valorRetFte);
-	console.log("resultado.valorRetIca ",resultado.valorRetIca);
-	console.log("resultado.valorRetIva ",resultado.valorRetIva);
-	console.log("resultado.impuesto_cree ",resultado.impuesto_cree);
-	console.log("____________*****____________________");
+
         resultado.total = (((((resultado._subTotal + resultado._iva) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva) - resultado.impuesto_cree);
    
         callback(false, [resultado]);

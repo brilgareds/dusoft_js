@@ -22,7 +22,7 @@ NotificacionesController.prototype.init = function(){
  * +Descripcion: Realiza un emit del evento a las aplicaciones cliente
  */
 NotificacionesController.prototype.onRealizarNotificacionWeb = function(parametros){
-    console.log("notificacion onRealizarNotificacionWeb onRealizarNotificacionWeb onRealizarNotificacionWeb onRealizarNotificacionWeb onRealizarNotificacionWeb ");
+
     this.io.sockets.emit('onRealizarNotificacionWeb', parametros);
 };
 

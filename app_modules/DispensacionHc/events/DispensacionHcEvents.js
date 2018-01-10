@@ -20,7 +20,6 @@ var DispensacionHcEvents = function(socket, dispensacion) {
  */
 DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(result,msj, status,usuario) {
   
-    console.log("*******************onNotificarEntregaFormula************");
     var that = this;
     var response = G.utils.r('onNotificarEntregaFormula', msj, status, result);  
      __enviarNotificacion(that,usuario,response,"onNotificarEntregaFormula"); 
@@ -35,7 +34,6 @@ DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(result,msj, 
  */
 DispensacionHcEvents.prototype.onNotificarCabeceraFormula = function(result,msj, status,usuario) {
   
-    console.log("*******************onNotificarCabeceraFormula************");
     var that = this;
     var response = G.utils.r('onNotificarCabeceraFormula', msj, status, result);   
     __enviarNotificacion(that,usuario,response,"onNotificarCabeceraFormula"); 
@@ -50,7 +48,6 @@ DispensacionHcEvents.prototype.onNotificarCabeceraFormula = function(result,msj,
  */
 DispensacionHcEvents.prototype.onNotificarTodoPendienteFormula = function(result,msj, status,usuario) {
     
-    console.log("*******************onNotificarTodoPendienteFormula************");
     var that = this;
     var response = G.utils.r('onNotificarTodoPendienteFormula', msj, status, result);   
     __enviarNotificacion(that,usuario,response,"onNotificarTodoPendienteFormula");
@@ -69,7 +66,7 @@ function __enviarNotificacion(that,usuario,response,socket){
     G.auth.getSessionsUser(usuario, function(err, sessions) {          
          //Se recorre cada una de las sesiones abiertas por el usuario
         sessions.forEach(function(session) {
-            console.log("emitir evento reportes ___________________________________________________");
+     
              //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
             that.io.to(session.socket_id).emit(socket,response);
         });

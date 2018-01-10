@@ -1,8 +1,6 @@
 
 var ChatEvents = function(socket, m_chat) {
 
-    console.log("Eventos Chat cargado ");
-
     this.io = socket;
     this.m_chat = m_chat;
 };
@@ -33,7 +31,6 @@ ChatEvents.prototype.onNotificarMensaje = function(mensaje, usuarios, usuarioEmi
                         usuariosANotificar.push(_usuario.usuario_id);
                     }
                     
-                    //console.log("enviando notificacion ", _session);
                 }
                 
             }
@@ -67,10 +64,10 @@ ChatEvents.prototype.enviarNotificacionPush = function(parametros) {
         
         if(resultado.length === 0){
             def.resolve();
-            console.log("no se pudo obtener el device id para el usuario ", usuario);
+        
             
         } else {        
-            console.log("enviar notificacion a ", usuario, " con token ", resultado[0].device_id);
+          
             var mensaje = {
                 to: resultado[0].device_id,
                 collapse_key: parametros.mensaje.id_conversacion+"", 

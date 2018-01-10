@@ -1,8 +1,6 @@
 
 var I002Controller = function(movimientos_bodegas, m_I002, e_I002, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos,kardex) {
 
-    console.log("Modulo I002 Cargado ");
-
     this.m_movimientos_bodegas = movimientos_bodegas;
 
     this.m_I002 = m_I002;
@@ -304,7 +302,6 @@ I002Controller.prototype.eliminarGetDocTemporal = function(req, res) {
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
 
-    console.log("*********eliminarGetDocTemporal*****************");
 
     if (usuarioId === undefined) {
         res.send(G.utils.r(req.url, 'EL usuario_id NO esta definido', 404, {}));
@@ -481,12 +478,6 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
             }
 
         }).then(function(result) {
-console.log("****************************************");
-console.log("****************************************");
-console.log("****************************************",resultadoProducto);
-console.log("****************************************");
-console.log("****************************************");
-console.log("________________________________________");
             if (result >= 1) {
                 return G.Q.nfcall(__modificarComprasOrdenesPedidosDetalle, that, 0, resultadoProducto, 0, transaccion);
             } else {
@@ -780,12 +771,10 @@ I002Controller.prototype.crearHtmlDocumento = function(req, res) {
             return G.Q.nfcall(__impuestos, that, 0, detalle[0], impuesto[0], valores, cabecera[0]);
 
         } else {
-            console.log("Consulta listarParametrosRetencion sin resultados ");
             throw 'Consulta listarParametrosRetencion sin resultados';
         }
 
     }).then(function(resultado) {
-	console.log("impuesto",resultado);
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
@@ -804,7 +793,6 @@ I002Controller.prototype.crearHtmlDocumento = function(req, res) {
                 res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
             });
         } else {
-            console.log("Consulta listarParametrosRetencion sin resultados ");
             throw 'Consulta listarParametrosRetencion sin resultados';
         }
 
@@ -866,7 +854,6 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
 ;
 
 function __modificarComprasOrdenesPedidosDetalle(that, index, parametros, resultado, transaccion, callback) {
-    console.log("*****************__modificarComprasOrdenesPedidosDetalle*****************************");
     var productos = parametros[index];
 
     if (!productos) {

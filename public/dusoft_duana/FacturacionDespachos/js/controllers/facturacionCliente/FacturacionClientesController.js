@@ -273,9 +273,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 }
             };
-             console.log("obj [listarFacturasGeneradas]: ", obj)
+
             facturacionClientesService.listarFacturasGeneradas(obj, function (data) {
-                //console.log("listarFacturasGeneradas =  ", data)
+
                 $scope.root.facturas_generadas = [];
                 if (data.status === 200) {
                   
@@ -474,7 +474,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 }    
             };    
-              console.log("obj ", obj);
+
             facturacionClientesService.consultaFacturaGeneradaDetalle(obj,function(data){
 
                 if (data.status === 200) {
@@ -681,7 +681,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var pedidoClientes = [];
                 
                 if (data.status === 200) {
-                    console.log("data.obj.listar_pedidos_clientes.length ", data.obj.listar_pedidos_clientes.length);
+                  
                     $scope.root.items_pedidos_cosmitet = data.obj.listar_pedidos_clientes.length;
                     
                     pedidoClientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
@@ -1305,7 +1305,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         
         socket.on("onNotificarFacturacionTerminada", function(datos) {
              
-            console.log("datos [onNotificarFacturacionTerminada]:: ", datos)
+       
             if(datos.status === 200){
                 var resultado = datos.obj.generar_factura_agrupada[0];
                 that.notificarSolicitud(datos.msj, "Factura " + resultado.id+" - " +resultado.numeracion, 

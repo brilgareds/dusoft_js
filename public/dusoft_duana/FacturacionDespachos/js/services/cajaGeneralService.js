@@ -127,7 +127,7 @@ define(["angular", "js/services"], function(angular, services) {
                     self.eliminarTmpDetalleConceptos = function(parametros, callback) {
 
                         Request.realizarRequest(API.CAJA_GENERAL.ELIMINAR_TMP_DETALLE_CONCEPTOS, "POST", parametros, function(data) {
-                            console.log("data:::", data);
+                     
                             callback(data);
 
                         });
@@ -242,7 +242,7 @@ define(["angular", "js/services"], function(angular, services) {
                             _concepto.agregarToltales(totales);
                             concepto.push(_concepto);
                         });
-                        console.log("concepto", concepto);
+                   
                         return concepto;
                     };
 
@@ -267,7 +267,7 @@ define(["angular", "js/services"], function(angular, services) {
                             _grupo.setDescripcionConcepto(dato.descripcion_concepto);
                             grupos.push(_grupo);
                         });
-                        console.log("grupo", grupos);
+                     
                         return grupos;
                     };
 		    

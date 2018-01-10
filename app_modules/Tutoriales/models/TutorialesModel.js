@@ -31,7 +31,6 @@ TutorialesModel.prototype.listarVideos = function(obj, callback){
 
 TutorialesModel.prototype.guardarTutorial = function(parametros, callback){
     var tutorial = parametros.tutorial;
-    console.log("tutorti ", tutorial)
     
     if(!tutorial.tipo || !tutorial.descripcion || !tutorial.tag || !tutorial.titulo ){
         callback({msj: 'Algunos Datos Obligatorios No Estan Definidos', status: 404});    

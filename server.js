@@ -2,8 +2,10 @@
  * Modulos y Dependecias
  * =========================================*/
 var express = require('express');
+var compression = require('compression');
 var modulos = require('./app_modules/');
 var http = require('http');
+var https = require('https');
 var path = require('path');
 var intravenous = require('intravenous');
 
@@ -15,7 +17,6 @@ var multipart = require('connect-multiparty');
 
 var accounting = require("accounting");
 var cacheKey = "dusoft";
-
 
 if(process.argv.indexOf("cacheKey") !== -1){ 
     cacheKey = process.argv[process.argv.indexOf("cacheKey") + 1]; 
@@ -157,11 +158,36 @@ if (cluster.isMaster) {
     
 } else {
 
+    //Carga de Certificados autogenerados para funcionamiento con https
+    var key = G.fs.readFileSync('key.pem');
+    var cert = G.fs.readFileSync( 'localhost.crt' );
 
+    var options = {
+      key: key,
+      cert: cert
+    };
+
+/*
+   //crea servidor http
     var app = express();
     var server = app.listen(G.settings.server_port);
-    var io = require('socket.io').listen(server);
     var container = intravenous.create();
+
+    //crea servidor https
+    var server = https.createServer(options, app).listen(G.settings.https_server_port);
+    var io = require('socket.io').listen(server, { log: false })
+
+
+*/
+    //crea servidor http
+    var app = express();    
+    var server = app.listen(G.settings.server_port);
+    var container = intravenous.create();
+    var io = require('socket.io').listen(server);
+
+    //crea servidor https
+    //var server_https = https.createServer(options, app).listen(G.settings.https_server_port);
+    //var io2 = require('socket.io').listen(server_https, {log: false});
 
 
     /*=========================================
@@ -188,6 +214,7 @@ if (cluster.isMaster) {
     };
     
     io.adapter(RedisStore(redisOptions));
+
     
 
 
@@ -197,6 +224,7 @@ if (cluster.isMaster) {
     container.register("emails", nodemailer);
     container.register("date_utils", date_utils);
     container.register("socket", io);
+
 
     /*=========================================
      * Inicializacion y Conexion a la Base de Datos
@@ -209,7 +237,7 @@ if (cluster.isMaster) {
     app.use(express.compress({
         threshold : 0
     }));
-    
+    app.use(compression());
     var tiempo = 10800000;
     
     app.set('port', process.env.PORT || G.settings.server_port);
@@ -274,6 +302,7 @@ if (cluster.isMaster) {
      * Ruteo del Servidor
      * =========================================*/
     modulos.cargarRoutes(app, container, io);
+
 
     app.get('/api/configurarRoutes', function(req, res) {
         modulos.configurarRoutes(req, res, app, container);

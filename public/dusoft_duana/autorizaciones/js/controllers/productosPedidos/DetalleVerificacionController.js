@@ -136,7 +136,7 @@ define(["angular", "js/controllers",
                     listaAutorizacion.push(producto);
                 }
                 $scope.listarPedido = listaAutorizacion;
-                console.log("sss",$scope.listarPedido);
+              
             };
 
             /**

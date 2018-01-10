@@ -1,6 +1,6 @@
 
 var DrAriasEvents = function(socket) {
-    console.log("Eventos Estado Descarga Reporte ");
+  
     this.io = socket;
 };
 
@@ -11,7 +11,7 @@ DrAriasEvents.prototype.onNotificarEstadoDescargaReporte = function(usuario_id,e
 	var usuarioId="";
 
          sessions.forEach(function(session) {
-//console.log("Emite ");
+
                that.io.to(session.socket_id).emit('onNotificarEstadoDescargaReporte', {estado: 'ok'});
 	        
 

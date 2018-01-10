@@ -387,7 +387,6 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             var cantidad = 0;
             for(var i in this.lotesSeleccionados){
                 var lote = this.lotesSeleccionados[i];
-                //console.log("lote.fecha_vencimiento ", lote.fecha_vencimiento, " fechaVencimiento ", fechaVencimiento);
                 if(lote.seleccionado && lote.codigo_lote === codigo_lote && lote.fecha_vencimiento === fechaVencimiento){
                       cantidad += parseInt(this.lotesSeleccionados[i].cantidad_ingresada);
                 }

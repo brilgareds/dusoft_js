@@ -109,7 +109,7 @@ CajaGeneralModel.prototype.listarCajaGeneral = function(obj, callback) {
  * @returns {callback}
  */
 CajaGeneralModel.prototype.listarNotasGeneradas = function(obj, callback) {
-console.log("********************listarNotasGeneradas************************");
+
 
     var columna_a = [
 	"a.documento_id as documento_nota",
@@ -180,7 +180,7 @@ console.log("********************listarNotasGeneradas************************");
 	query.limit(obj.limit);
      }
 	query.then(function(resultado) {
-	    console.log("resultado ",resultado);
+	
         callback(false, resultado);
     }). catch (function(err) {
 	
@@ -195,7 +195,7 @@ console.log("********************listarNotasGeneradas************************");
  * @returns {callback}
  */
 CajaGeneralModel.prototype.listarFacturasGeneradas = function(obj, callback) {
-console.log("********************listarFacturasGeneradas************************");
+
 
     var columna_a = [
 	G.knex.raw("distinct a.factura_fiscal"), 

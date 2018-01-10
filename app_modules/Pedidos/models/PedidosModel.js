@@ -100,18 +100,6 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                     disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
                                     
-                                    console.log('============ Here =================');
-                                    console.log("empresa ", empresa_id);
-                                    console.log("stock real ", stock_producto);
-                                    console.log("codigo producto ", codigo_producto);
-                                    console.log('stock', stock);
-                                    console.log("cantidad_total_pendiente ", cantidad_total_pendiente);
-                                    console.log('cantidad_despachada', cantidad_despachada);
-                                    console.log('disponible_bodega', disponible_bodega);
-                                    console.log("cantidad_reservada_temporales", cantidad_reservada_temporales);
-                                    console.log('fecha_registro', fecha_registro_pedido);
-                                    console.log('===================================');
-
                                     callback(err, {
                                         codigo_producto: codigo_producto,
                                         disponible_bodega: disponible_bodega,
@@ -202,17 +190,6 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     
                                     disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                     disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
-
-
-                                    console.log('============ Here =================');
-                                    console.log("codigo producto ", codigo_producto);
-                                    console.log('stock', stock);
-                                    console.log("cantidad_total_pendiente ", cantidad_total_pendiente);
-                                    console.log('cantidad_despachada', cantidad_despachada);
-                                    console.log('fecha_registro', fecha_registro_pedido);
-                                    console.log('disponible_bodega', disponible_bodega);
-                                    console.log("cantidad_reservada_temporales", cantidad_reservada_temporales);
-                                    console.log('===================================');
 
                                     callback(err, {
                                         codigo_producto: codigo_producto,

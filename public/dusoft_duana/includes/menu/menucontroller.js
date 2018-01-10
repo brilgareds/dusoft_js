@@ -35,11 +35,11 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                             $rootScope.$emit("cerrarslide", {animado:false});
                             
                         } else {
-                            console.log("la carpeta raiz del modulo no es valida");
+                           
                         }
                     }
                 } else {
-                    console.log("No se encontro el url");
+                   
                 }
             });
 
@@ -54,7 +54,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
             };
             
             $rootScope.$on("modulosUsuario", function(e){
-                console.log("modulos del sistema >>>>>>>>>>>>>",Usuario.getUsuarioActual().getModulos());
+                
                 $scope.Usuario = Usuario.getUsuarioActual();
                 $scope.treedata = $scope.Usuario.getModulos();
                 
@@ -65,9 +65,6 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                 }, 500);
             });
             
-            
-
-            console.log("usuarios ><>>>>>>>>>>>> ",Usuario.usuario_id);
             
             /*Request.realizarRequest("../pages/tree.json","GET",{},function(data) {
                 $scope.treedata = data;

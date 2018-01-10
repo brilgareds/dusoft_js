@@ -167,12 +167,12 @@ define([
             };
             
             $scope.onEditarOpcion = function(opcion){
-               // console.log("editar opcion ", opcion);
+         
                 $scope.rootModulos.moduloAGuardar.opcionAGuardar = opcion;
             };
 
             $scope.onBorrarOpcion = function(opcion) {
-                //console.log("opcion a eliminar ", opcion);
+                
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -217,7 +217,7 @@ define([
             
             //este evento escucha al scope principal para traer las opciones e inicializar la opcion a guardar
             $scope.$on("traerOpcionesModulo", function(e, datos) {
-               // console.log("data opciones >>>>>>>>>>>>>>>>>>>> ",datos);
+          
                 
                 //trae los datos por defecto
                 if(datos !== undefined){
@@ -259,9 +259,7 @@ define([
 
                 Request.realizarRequest(API.MODULOS.GUARDAR_OPCION, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        console.log("opcion guardada con exito ", data);
-                        console.log("modulo a guardar ",$scope.rootModulos.moduloAGuardar);
-                        console.log("opcion a guardar ",$scope.rootModulos.moduloAGuardar.getOpcionAGuardar());
+                       
                         var id = data.obj.parametrizacion_modulo.opcion.id;
                         if (id) {
                             $scope.rootModulos.moduloAGuardar.getOpcionAGuardar().setId(id);

@@ -3,7 +3,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('Logincontroller', ['$scope', "Request", "localStorageService","$state",
         function($scope, Request, localStorageService, $state) {
 
-            console.log("init login controller");
+   
             $scope.usuario = "";
             $scope.clave = "";
             $scope.mostrarmensaje = false;

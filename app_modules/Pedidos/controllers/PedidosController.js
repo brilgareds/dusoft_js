@@ -1,14 +1,11 @@
 var Pedidos = function(pedidos, productos, m_pedidos_logs, j_pedidos, m_autorizaciones) {
 
-    console.log("Modulo Pedidos Cargado ");
-
     this.m_pedidos = pedidos;
     this.m_productos = productos;
     this.m_pedidos_logs = m_pedidos_logs;
     this.m_autorizaciones = m_autorizaciones;
-};
-
-
+};     
+    
 Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
 
     var that = this;
@@ -75,7 +72,7 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
         }));
         
     }).fail(function(err){
-        console.log("error generado ", err);
+        console.log("error generado", err);
         res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
     }).done();
     

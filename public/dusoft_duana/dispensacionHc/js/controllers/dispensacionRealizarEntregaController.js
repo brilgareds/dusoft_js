@@ -369,7 +369,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          */        
         that.notificarSolicitud = function(title, body, parametros) {
              
-            webNotification.showNotification(title, {
+            that.consultaMedicamentosPendientes(parametros); 
+            that.consultaMedicamentosDispensados(parametros,0);
+            /*webNotification.showNotification(title, {
                 body: body,
                 icon: '/images/logo.png',
                 onClick: function onNotificationClicked() {
@@ -387,7 +389,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         hide(); //manually close the notification (you can skip this if you use the autoClose option)
                     }, 90000);
                 }
-            });
+            });*/
         }
         
             /**

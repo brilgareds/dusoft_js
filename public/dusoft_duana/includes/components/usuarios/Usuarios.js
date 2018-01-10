@@ -17,10 +17,8 @@ define(["angular","js/directive", "includes/components/usuarios/UsuariosControll
         directive.controller = "UsuariosController";
 
         directive.link = function(scope, element, attrs, ngModel){
-            console.log("chat loaded >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+           
            /* element.on("click",function(){
-                //console.log("init with ",scope.checked)
-                //console.log("on click" ,!scope.checked )
                 scope.checked = !scope.checked;
                 directive.setClass(element, scope);
                // ngModel.$setViewValue(scope.checked);
@@ -34,7 +32,6 @@ define(["angular","js/directive", "includes/components/usuarios/UsuariosControll
            scope.$watch(function () {
               return ngModel.$modelValue;
            }, function(newValue) {
-              console.log("on model change "+newValue)
                scope.checked = newValue;
                directive.setClass(element, scope);
            });

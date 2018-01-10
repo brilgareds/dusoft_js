@@ -209,7 +209,6 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
                 WHERE "+where+" AND a.codigo_proveedor_id = :1  \
                 order by 1 DESC ";
-console.log("///////////////////////////////////////////",sql);
     G.knex.raw(sql, {1:paremetros.codigo_proveedor_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
@@ -507,7 +506,6 @@ OrdenesCompraModel.prototype.insertar_orden_compra_logs = function(parametros, c
     var query = G.knex("log_ordenes_compra").insert(parametros);
  
     query.then(function(resultado){
-        console.log("insertar_orden_compra_logs ****", resultado);
        callback(false, resultado);
     }).catch(function(err){
        console.log("erro (/catch) [insertar_orden_compra_logs]: ", err);
@@ -1048,7 +1046,6 @@ OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(noved
 
     var sql = "  SELECT * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = :1 ; ";
     G.knex.raw(sql, {1:novedad_id}).then(function(resultado){
-       //console.log("archivos encontrados ", resultado);
        callback(false, resultado.rows);
     }).catch(function(err){
        console.log("err (/catch) [consultar_archivo_novedad_producto]: ", err);
@@ -1578,7 +1575,6 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
         callback(false, resultado.rows, resultado);
     }).catch (function(err) {
 	
-        console.log("err (/catch) [ingresarBodegaMovimientoTmp]: ", datos);
         console.log("err (/catch) [ingresarBodegaMovimientoTmp]: ", err);
         callback(err);
     });
@@ -2047,7 +2043,7 @@ function __validarFilaOrden(params, callback){
     var reg = /^-?\d+\.?,?\d*$/;
         
     if(!reg.test(costo) || !reg.test(cantidad) || parseInt(costo) <= 0 || parseInt(cantidad) <= 0){
-        console.log("error fila ", cantidad, " costo ", costo);
+
         callback({error:true, msj:"La cantidad o costo no son validos." + error}) ;
         return;
     }

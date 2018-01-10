@@ -140,7 +140,7 @@ define(["angular", "js/controllers",
                     
                     if (data.status === 200) {
                       
-                      console.log("usuarios del grupo ", data);
+        
                       callback(data.obj.usuarios);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -266,7 +266,7 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.CHAT.CAMBIAR_ESTADO_USUARIO_GRUPO, "POST", obj, function(data) {
-                    console.log("grupos guardados ", data);
+             
                     if (data.status === 200) {
                                                 
                         usuario.setEstado(

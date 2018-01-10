@@ -381,7 +381,7 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
     query.limit(G.settings.limit).
         offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
-        console.log("resultado [listarClientes]:", resultado);
+       
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarClientes]:", err);
@@ -448,8 +448,6 @@ function __camposListaFacturasGeneradas() {
  */
 function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
     
-    console.log("estado >>>>>>>>>>>>>>>>>>>", estado);
-    console.log("filtro >>>>>>>>>>>>>>>>>>>", filtro);
     var consulta = G.knex.select(columna)
         .from(tabla1)
         .join('terceros as c', function () {
@@ -654,10 +652,6 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
  * @fecha 2017-10-05
  */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
-     
-   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes********************************");
-   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes********************************");
-   console.log("************FacturacionClientesModel.prototype.listarPedidosClientes********************************");
     
     var formato = 'YYYY-MM-DD';
       
@@ -720,7 +714,6 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
         query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)
     }
     
-    console.log("query >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> //////////////////", query.toSQL());
     //inv_facturas_xconsumo_tmp_d
     query.then(function (resultado) {      
         callback(false, resultado)
@@ -846,7 +839,6 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
     }
    
     query2.then(function(resultado){
-        console.log("resultado >>>>>> ", resultado);
         callback(false, resultado);   
     }).catch(function(err) { 
         console.log("err ", err);
@@ -911,9 +903,6 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
    query.then(function(resultado) {      
         callback(false, resultado);
     }).catch(function (err) {
-        console.log("__________________ ");
-        console.log(query.toSQL());
-	console.log("__________________ ");
         console.log("err [consultarTerceroContrato] ", err);
         callback({err:err, msj: "Error al consultar el contrato de terceros"});   
     });
@@ -977,7 +966,7 @@ FacturacionClientesModel.prototype.consultarFacturaAgrupada = function (obj,call
  * @author Cristian Ardila
  */
 FacturacionClientesModel.prototype.consultarDireccionIp = function(obj, callback){
- console.log("obj.direccionIp",obj.direccionIp);
+
     G.knex.select('*')
     .from('pc_crea_facturacion')
     .where("ip", obj.direccionIp)
@@ -1055,7 +1044,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(estado,obj
     
     if(transaccion) query.transacting(transaccion);
     query.then(function(resultado){     
-        console.log("resultado [insertarFacturaAgrupada]: ", resultado);
+        
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
@@ -1221,7 +1210,6 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
      
    if(transaccion) query.transacting(transaccion);     
     query.then(function(resultado){
-        console.log("resultado [__insertarFacturaAgrupadaDetalle]-->", resultado);
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [insertarFacturaAgrupadaDetalle]: ", err);     
@@ -1245,7 +1233,6 @@ FacturacionClientesModel.prototype.actualizarNumeracion = function(obj,transacci
     var query = G.knex('documentos').where(parametros).increment('numeracion', '1' );         
     if(transaccion) query.transacting(transaccion);    
     query.then(function(resultado){    
-        console.log("resultado [actualizarNumeracion]:", resultado);
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [actualizarNumeracion]: ", err);       
@@ -1277,7 +1264,6 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
     
     if(transaccion) query.transacting(transaccion);    
     query.then(function(resultado){        
-        console.log("resultado [actualizarEstadoFacturaPedido]: ", resultado); 
         callback(false, resultado);
     }).catch(function(err){   
         console.log("err (/catch) [actualizarEstadoFacturaPedido]: ", err);        
@@ -1404,10 +1390,6 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
  */
 FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
    
-    console.log("***---------------FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo--------------------****");
-    console.log("***---------------FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo--------------------****");
-    console.log("***---------------FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo--------------------****");
-    
     var campos = [
         G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
         "b.tipo_id_vendedor",
@@ -1494,8 +1476,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
         })
         .groupBy(camposGroupBy);
         
-    query.then(function(resultado){  
-        //console.log("resultado [consultarTemporalFacturaConsumo]: ", resultado);   
+    query.then(function(resultado){    
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
@@ -1632,7 +1613,7 @@ FacturacionClientesModel.prototype.actualizarValorTotalTemporalFacturaConsumo = 
         .update(parametros);    
       
     query.then(function(resultado){ 
-        console.log("actualizarValorTotalTemporalFacturaConsumo ", resultado);
+      
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [actualizarValorTotalTemporalFacturaConsumo]: ", err);        
@@ -1660,12 +1641,10 @@ FacturacionClientesModel.prototype.insertarFacturaConsumo = function(obj, callba
         tipo_pago_id: obj.tipoPago 
     };
     
-    
-    console.log("parametros ", obj.parametros.parametros.pedidos);
     var query = G.knex('inv_facturas_xconsumo_tmp').insert(parametros).returning(['id_factura_xconsumo']);     
      
     query.then(function(resultado){      
-        console.log("resultado [insertarFacturaConsumo]::>>  ", resultado);
+       
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [insertarFacturaConsumo]: ", err);     
@@ -1703,7 +1682,7 @@ FacturacionClientesModel.prototype.generarFacturaXConsumo = function(obj, callba
 {   
     var that = this;
     var def = G.Q.defer();
-    //console.log("obj ", obj);
+
     G.knex.transaction(function(transaccion) {
         
         G.Q.ninvoke(that,'insertarFacturaAgrupada',1,obj.parametrosCabecera,transaccion).then(function(){ 
@@ -1741,10 +1720,7 @@ FacturacionClientesModel.prototype.generarFacturaXConsumo = function(obj, callba
  * @returns {undefined}
  */
 FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj, callback){   
-    console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
-    console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");  
-    console.log("*********FacturacionClientesModel.prototype.generarTemporalFacturaConsumo***************");
-   
+
     var that = this;
     var def = G.Q.defer();
     var porcentajeRtf = '0';
@@ -1768,8 +1744,7 @@ FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj,
         porcentaje_cree: porcentajeCree, usuario: obj.parametros.usuario, 
         tipoPago: obj.parametros.tipoPago
     };
-    
-    //console.log("parametroInsertarFactura >>>>>>>>>>>>>>>>>>>>>>>> ", parametroInsertarFactura);
+
     G.Q.ninvoke(that,'insertarFacturaConsumo',parametroInsertarFactura).then(function(resultado){         
 
         callback(false, resultado);
@@ -2026,7 +2001,7 @@ FacturacionClientesModel.prototype.actualizarDespacho = function(obj,transaccion
  
     if(transaccion) query.transacting(transaccion);    
     query.then(function(resultado){ 
-        console.log("resultado [__actualizarDespacho]: ", resultado);
+  
         callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__actualizarDespacho]: ", err);

@@ -96,7 +96,7 @@ Induccion.prototype.listarProducto = function(req, res) {
     var bodegaId = args.listarProducto.bodegaId;
     var nombreProducto = args.listarProducto.nombreProducto;
     var pagina = args.listarProducto.pagina;
-    console.log("paginaactual",args.listarProducto);
+
     if (empresaIds === undefined || centroUtilidadId === undefined || bodegaId === undefined || nombreProducto === undefined  ) { 
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
@@ -123,7 +123,7 @@ Induccion.prototype.imprimirRotulo = function(req, res) {
     var nombreProducto = args.documento_temporal.nombreProducto;
     var pdf = args.documento_temporal.pdf;
     var pagina = args.documento_temporal.pagina;
-    console.log("paginaactual",args.documento_temporal);
+  
     if (empresaIds === undefined || centroUtilidadId === undefined || bodegaId === undefined || nombreProducto === undefined  ) { 
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
@@ -144,7 +144,7 @@ Induccion.prototype.imprimirRotulo = function(req, res) {
             detalle : rows,
             serverUrl : req.protocol + '://' + req.get('host')+ "/"
         };
-        console.log(pdf);
+  
          _generarInforme(obj,pdf ,function(nombreTmp) {
             res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {imprimir_productos: {nombre_reporte: nombreTmp}}));
         });
@@ -164,7 +164,7 @@ function _generarInforme(obj,pdf,callback) {
         recips="text";
         extencion="txt";
     }
-    console.log("_generarInforme: "+pdf)
+    
         G.jsreport.render({
             template: {
                 content: G.fs.readFileSync('app_modules/Induccion/reports/rotulos.html', 'utf8'),

@@ -33,7 +33,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.fecha_inicial = $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
             $scope.datepickerFechaInicial = false;
             
-            console.log("fecha minima ", $scope.fechaMinima);
+        
           
             that.buscar_observaciones = function() {
 
@@ -146,7 +146,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             that.render_observaciones = function(observaciones) {
-                console.log("observaciones novedad ", observaciones);
+                
                 $scope.Empresa.limpiar_observaciones();
 
                 observaciones.forEach(function(data) {
@@ -181,7 +181,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 $scope.datepickerFechaInicial = true;
                 
-                console.log("datepicker_fecha_inicial ", $scope.datepickerFechaInicial);
+               
 
             };
             
@@ -195,12 +195,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
             
             $scope.onDescargarArchivo = function(archivo){
-                console.log("onDescargarArchivo ", archivo);
+
                 $scope.visualizarReporte("/OrdenesCompras/Novedades/" + archivo.descripcion, archivo.descripicion, "blank");
             };
             
             $scope.onSeleccionarNovedad = function(){
-                console.log("on seleccionar novedad ", $scope.producto.novedad);
+             
                 
                 if($scope.producto.novedad.observacion.getTipoEntrada() === '0'){
                       $scope.producto.get_novedad().setDescripcionEntrada($filter('date')(new Date(), "yyyy-MM-dd"));

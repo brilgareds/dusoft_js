@@ -44,7 +44,7 @@ define(["angular", "js/services"], function(angular, services) {
                                     data: obj
                                 },
                             function(data) {   
-                                console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA22",data);
+                             
                                 callback(data);  
                             }
                         );

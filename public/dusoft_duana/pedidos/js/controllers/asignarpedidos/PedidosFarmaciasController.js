@@ -17,6 +17,7 @@ define(["angular",
             $scope.pedidosSeleccionados = [];
             $scope.empresas = [];
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
+            $scope.permisosEstadoAsignacion=Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_cambiar_estado_asignacion;
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -171,6 +172,10 @@ define(["angular",
                 if (pedido.estado === '2') {
                     disabled = true;
                 }
+                
+                if(!$scope.permisosEstadoAsignacion){
+                    disabled = true;
+                }
 
                 return disabled;
             };
@@ -229,7 +234,6 @@ define(["angular",
                     $scope.quitarPedido(row.entity);
                 }
 
-                console.log($scope.pedidosSeleccionados);
             },
                     $scope.quitarPedido = function(pedido) {
                 for (var i in $scope.pedidosSeleccionados) {
@@ -257,8 +261,7 @@ define(["angular",
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
                     if (_pedido.numero_pedido === pedido.numero_pedido) {
-                        //console.log("buscarSeleccion encontrado **************");
-                        //console.log(pedido);
+                        
                         row.selected = true;
                         return true;
                     }
@@ -269,7 +272,7 @@ define(["angular",
 
 
             $scope.renderPedidosFarmacias = function(data, paginando) {
-                // console.log(data);
+           
                 $scope.items = data.pedidos_farmacias.length;
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
@@ -309,7 +312,6 @@ define(["angular",
 
                     if (pedido.numero_pedido === _pedido.numero_pedido) {
 
-                        console.log(pedido.numero_pedido);
                         _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
                         _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
                         _pedido.estado_separacion = pedido.estado_separacion;
@@ -343,7 +345,6 @@ define(["angular",
 
                         $scope.cambiar_estado_pedido = function() {
 
-                            console.log('======== cambiar estado farmacias =========');
 
                             var obj = {
                                 session: $scope.session,
@@ -411,7 +412,7 @@ define(["angular",
 
             //delegados del sistema
             $rootScope.$on("refrescarPedidos", function() {
-                console.log("refrescar pedidos listened");
+           
                 $scope.pedidosSeleccionados = [];
                 // $scope.buscarPedidosCliente("");
             });
@@ -419,13 +420,10 @@ define(["angular",
 
             //delegados del socket io
             socket.on("onListarPedidosFarmacias", function(datos) {
-                //console.log(datos);
-                console.log("socket >>>>>>>>>>>>>>>>>> onListarPedidosFarmacias ");
+       
                 if (datos.status === 200) {
                     var obj = datos.obj.pedidos_farmacias[0];
-                    var pedido = $scope.crearPedido(obj);
-                    console.log("objecto del socket");
-                    console.log(pedido);
+                    var pedido = $scope.crearPedido(obj);                    
                     $scope.reemplazarPedidoEstado(pedido);
                     AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
                 }

@@ -37,7 +37,7 @@ ChatModel.prototype.guardarGrupo = function(parametros, callback) {
    G.Q.ninvoke(that, "modificarGrupo", parametros).then(function(resultado){
        
        var def = G.Q.defer();
-       console.log("resultado modificacion ", resultado);
+  
        if(resultado === 0){
            return G.Q.ninvoke(that, "insertarGrupo", parametros);
        } else {
@@ -45,7 +45,7 @@ ChatModel.prototype.guardarGrupo = function(parametros, callback) {
        }
        
    }).then(function(resultado){
-       console.log("grupo insertado ", resultado);
+  
        callback(false, resultado);
        
    }).fail(function(err){
@@ -262,9 +262,7 @@ ChatModel.prototype.guardarConversacion = function(parametros, callback) {
     G.Q.nfcall(__verificarConversacionPorUsuarios, parametros).then(function(conversacion){
         
         usuariosExistentes = (conversacion.length === 0) ? false : true; 
-        
-        console.log("id conversacion ", parametros.id_conversacion, " usuarios existentens ", usuariosExistentes);
-        
+                
         if(parseInt(parametros.id_conversacion) === 0 && !usuariosExistentes){
             promesa = G.Q.ninvoke(that, "insertarConversacion", parametros);
         } else {
@@ -286,7 +284,7 @@ ChatModel.prototype.guardarConversacion = function(parametros, callback) {
         return promesa;
         
     }).then(function(resultado){
-        console.log("resultado despues de validar ", resultado);
+    
         parametros.conversacionId = resultado[0];
         
         if(usuariosExistentes){
@@ -496,7 +494,7 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
     orderBy("a.fecha_mensaje", "desc");
     query.then(function(resultado){
         
-        console.log("obtenerDetalleConversacion: ", resultado);
+  
         callback(false, resultado);
         
     }).catch(function(err){
@@ -549,11 +547,11 @@ ChatModel.prototype.guardarMensajeConversacion = function(parametros, callback) 
         return G.Q.ninvoke(that, "modificarConversacion", obj );
         
     }).then(function(resultado){
-        console.log("ultimo insertado ", resultado);
+  
         return G.Q.ninvoke(that, "obtenerDetalleConversacion",{id_conversacion:parametros.id_conversacion, detalle_id:id});
         
     }).then(function(resultado){
-        console.log("ultimo registro ", resultado);
+      
         callback(false, resultado);
         
     }).catch(function(err){
@@ -663,7 +661,7 @@ function __obtenerTituloConversaciones(parametros, callback){
             parametros.index ++;
             __obtenerTituloConversaciones(parametros, callback);
         }).fail(function(err){
-            //console.log("error generado ", err);
+       
             callback(err);
         });
     },0);
@@ -682,7 +680,7 @@ function __insertarUsuariosEnConversacion(parametros, callback){
     
     G.Q.ninvoke(parametros.contexto, "obtenerUsuariosConversacion",{usuario_id:usuario.id, conversacion:{id_conversacion:parametros.conversacionId}}).then(function(resultado){
         //Inserta el usuario solo si no existe en la conversacion
-        console.log("buscando usuario ", resultado);
+
         if(resultado.length === 0){
             return G.knex("chat_conversacion_usuarios").
                    insert({"id_conversacion":parametros.conversacionId, "usuario_id":usuario.id});

@@ -341,7 +341,6 @@ DocumentoBodegaI002.prototype.listarProductosParaAsignar = function(parametro, c
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-//	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", query.toSQL());
         console.log("Error [listarProductosParaAsignar]: ", err);
         callback("Ha ocurrido un error");
     });
@@ -380,7 +379,6 @@ DocumentoBodegaI002.prototype.agregarItemFOC = function(parametros, callback) {
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-        console.log("Error agregarItemFOC parametros", parametros);
         console.log("Error agregarItemFOC", err);
         callback(err);
     }).done();
@@ -479,8 +477,6 @@ DocumentoBodegaI002.prototype.valorCantidad = function(parametros, callback) {
       
     coalesce.then(function(resultado) {
 
-	console.log("resultado----->>>>",resultado);
-
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err (/catch) [valorCantidad]: ", err);
@@ -511,7 +507,6 @@ DocumentoBodegaI002.prototype.updateComprasOrdenesPedidosDetalles = function(par
 };
 
 DocumentoBodegaI002.prototype.updateComprasOrdenesPedidosDetalle = function(parametros, transaccion, callback) {
-console.log("__________________updateComprasOrdenesPedidosDetalle________________________");
     var that = this;
     G.Q.ninvoke(that, 'valorCantidad', parametros).then(function(dato) {
 	

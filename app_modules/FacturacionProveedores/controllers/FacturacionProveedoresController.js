@@ -242,8 +242,8 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere la observacion', 404, {ingresarFactura: []}));
         return;
     }
-    if (args.facturaProveedor.parmetros.fechaVencimiento === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere la fecha Vencimiento', 404, {ingresarFactura: []}));
+    if (args.facturaProveedor.parmetros.fechaRadicacion === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la fecha de Radicacion', 404, {ingresarFactura: []}));
         return;
     }
     if (args.facturaProveedor.parmetros.fechaFactura === undefined) {
@@ -265,8 +265,9 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         codigo_proveedor_id: args.facturaProveedor.parmetros.recepciones[0].proveedor,
         observaciones: ' '+args.facturaProveedor.parmetros.descripcionFactura + ' ' + args.facturaProveedor.parmetros.descripcionFija,
         valor_descuento: args.facturaProveedor.parmetros.totalDescuento,
-        fecha_factura: args.facturaProveedor.parmetros.fechaVencimiento,
-        fecha_radicacion_factura: args.facturaProveedor.parmetros.fechaFactura,
+        fecha_factura: args.facturaProveedor.parmetros.fechaFactura,
+        fecha_radicacion_factura: args.facturaProveedor.parmetros.fechaRadicacion,
+        fecha_vencimiento: args.facturaProveedor.parmetros.fechaVencimiento,
         fecha: args.facturaProveedor.parmetros.fechaFactura,
         usuario_id: usuario,
         usuario: usuario,
@@ -277,7 +278,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         host: req.get('host')
 
     };
-    
+  
      var parametroRetencion;
      
     G.knex.transaction(function(transaccion) { 
@@ -331,7 +332,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         res.send(G.utils.r(req.url, 'ingresarFactura ok', 200, {ingresarFactura: resultado, respuestaFI: respuestaFI})); 
         
     }).catch(function(err){
-        console.log("ERRORiiiiii",err);
+        console.log("ERROR ingresarFactura ",err);
        res.send(G.utils.r(req.url, err, 500, {err: err}));
     }).done();     
 
@@ -703,14 +704,7 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
         } else {
             resultado.impuesto_cree = 0;
         }
-	console.log("____________*****____________________");
-	console.log("resultado._subTotal ",resultado._subTotal);
-	console.log("resultado._iva ",resultado._iva);
-	console.log("resultado.valorRetFte ",resultado.valorRetFte);
-	console.log("resultado.valorRetIca ",resultado.valorRetIca);
-	console.log("resultado.valorRetIva ",resultado.valorRetIva);
-	console.log("resultado.impuesto_cree ",resultado.impuesto_cree);
-	console.log("____________*****____________________");
+
         resultado.total = (((((resultado._subTotal + resultado._iva) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva) - resultado.impuesto_cree);
    
         callback(false, [resultado]);

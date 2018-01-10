@@ -50,23 +50,49 @@
                 <p class="input-group">
                     <input type="text" class="form-control readonlyinput" 
                            datepicker-popup="{{format}}" 
-                           ng-model="root.fechaVencimiento" is-open="root.datepicker_fechaVencimiento" 
+                           ng-model="root.fechaRadicacion" is-open="root.datepicker_fechaRadicacion" 
                            min="minDate"   
                            readonly  close-text="Cerrar" 
                            ng-change="" 
                            clear-text="Borrar" 
                            current-text="Hoy" 
-                           placeholder="Fecha Vencimiento" 
+                           placeholder="Fecha Radicacion" 
                            show-weeks="false" 
                            toggle-weeks-text="#"  />
                     <span class="input-group-btn">
-                        <button class="btn btn-default" ng-click="abrir_fechaVencimiento($event);"> 
+                        <button class="btn btn-default" ng-click="abrir_fechaRadicacion($event);"> 
                             <i class="glyphicon glyphicon-calendar"></i></button>
                     </span>
                 </p>
             </div>
         </div>
     </div>
+        <div class="row">
+            <div class="form-group">
+                 <div class="col-sm-4">
+                  <h5><b>Fecha Vencimiento:</b></h5>
+                 </div>
+                 <div class="col-sm-8">
+                    <p class="input-group">
+                        <input type="text" class="form-control readonlyinput" 
+                         datepicker-popup="{{format}}" 
+                         ng-model="root.fechaVencimiento" is-open="root.datepicker_fechaVencimiento" 
+                         min="minDate"   
+                         readonly  close-text="Cerrar" 
+                         ng-change="" 
+                         clear-text="Borrar" 
+                         current-text="Hoy" 
+                         placeholder="Fecha Vencimiento" 
+                         show-weeks="false" 
+                         toggle-weeks-text="#"  />
+                            <span class="input-group-btn">
+                                   <button class="btn btn-default" ng-click="abrir_fechaVencimiento($event);"> 
+                                   <i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                    </p>
+                 </div>
+            </div>
+        </div>
     <div class="row">
         <div class="form-group">
             <div class="col-sm-4">

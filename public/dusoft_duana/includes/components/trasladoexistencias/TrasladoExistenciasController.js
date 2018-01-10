@@ -18,7 +18,7 @@ define(["angular",
 
             var self = this;
             var fechaActual = new Date();
-            console.log(" producto ", producto, " centroUtilidad ", centroUtilidad, " bodega ", bodega, " empresaId ", empresaId);
+            
             
             /*
              * @Author: Eduar
@@ -75,7 +75,7 @@ define(["angular",
                 $event.preventDefault();
                 $event.stopPropagation();
                 $scope.rootExistencias.abrirFecha = true;
-                console.log("abrir fecha ", $scope.rootExistencias.abrirFecha);
+             
             };
             
             /*
@@ -208,7 +208,7 @@ define(["angular",
              * +Descripcion: Libera recursos del watch de angular
              */
             self.finalizar = function(){
-               console.log("finalizando ventana");
+           
                //Timer para no impedir la animacion de la ventana
                $timeout(function(){
                     $scope.rootExistencias = {};

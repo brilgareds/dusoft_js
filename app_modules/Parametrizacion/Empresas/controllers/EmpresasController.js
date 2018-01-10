@@ -1,8 +1,6 @@
 
 var Empresas = function(empresas) {
 
-    console.log("Modulo Empresas Cargado ");
-
     this.m_empresas = empresas;
 };
 

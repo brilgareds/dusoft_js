@@ -17,7 +17,7 @@ define(["angular",
                 empresaId,  $filter, $timeout, tipoPedido, Producto) {
 
             var self = this;
-            console.log("producto ",Producto);
+
             /*
              * @Author: Eduar
              * +Descripcion: Definicion del objeto que contiene los parametros del controlador
@@ -104,7 +104,7 @@ define(["angular",
              * +Descripcion: Libera recursos del watch de angular
              */
             self.finalizar = function(){
-               console.log("finalizando ventana");
+             
                //Timer para no impedir la animacion de la ventana
                $timeout(function(){
                     $scope.rootLogsPedidos = {};

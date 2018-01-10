@@ -209,8 +209,7 @@ ProductosModel.prototype.validarUnidadMedidaProducto = function(obj, callback) {
    then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
-       console.log("validarUnidadMedidaProducto obj.cantidad ",obj.cantidad);
-       console.log("validarUnidadMedidaProducto obj.cantidad ",obj.codigo_producto);
+       console.log("validarUnidadMedidaProducto  ",err);
        callback(err);
    });
 };
@@ -226,7 +225,7 @@ ProductosModel.prototype.validarUnidadMedidaProducto = function(obj, callback) {
 * +Descripcion: Permite consultar las existencias de lotes de un producto por empresa, bodega y centro de utilidad
 */
 ProductosModel.prototype.consultar_existencias_producto = function(empresaId, codigoProducto, centroUtilidad, bodega, filtro, callback) {
-    console.log("arguments ", arguments);
+ 
     var sqlAux = "";
     var obj = {1 : empresaId, 2 : codigoProducto, 3 :centroUtilidad, 4 :bodega};
     
@@ -323,7 +322,6 @@ ProductosModel.prototype.guardarExistenciaBodega = function(params, callback) {
                                                        
     then(function(existencia){
         if(existencia.length > 0){
-           /// console.log("existencias ", existencia);
             //temporalmente regresar error
             callback(true);
             return;
@@ -444,7 +442,6 @@ function __validarExistenciasProducto(params, callback){
     
     G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto, {activo:false, validarBodega:true}).
     then(function(resultado){
-        console.log("existencia ",parseInt(resultado[0].existencia), " total ", totalExistencias);
         
         //Se valida que las cantidades sean numericas y sean iguales
         if(parseInt(resultado[0].existencia) !== totalExistencias || isNaN(totalExistencias) || isNaN(resultado[0].existencia)){

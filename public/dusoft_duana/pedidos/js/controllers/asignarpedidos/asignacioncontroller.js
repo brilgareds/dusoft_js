@@ -16,10 +16,6 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
             $scope.operario;
             var that = this;
             
-            console.log('=== Pedidos seleccionados ======');
-            console.log($scope.pedidosSeleccionados);
-            //return
-
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -29,12 +25,12 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
                 //on ok button press 
             }, function() {
                 //on cancel button press
-                console.log("Modal Closed");
+               
             });
 
 
             $scope.valorSeleccionado = function() {
-                console.log($scope.operario);
+  
                 $scope.noAsignar = false;
             };
 
@@ -45,7 +41,7 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
 
             $scope.realizarAsignacion = function() {
 
-                //console.log($scope.pedidosSeleccionados);
+      
                 var pedidos = [];
 
                 //recolectar array de pedidos seleccionados para enviar solo los ids

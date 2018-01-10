@@ -133,7 +133,7 @@ define(["angular",
                 
                 GestionTercerosService.obtenerParametrizacionTerceros(parametros,function(respuesta){
                     if(respuesta.status === 200){
-                       // console.log("obtenerParametrizacion terceros ", respuesta);
+                   
                         var data = respuesta.obj.parametrizacion;
                         self.gestionarParametrosTercero(data);
                         
@@ -149,7 +149,7 @@ define(["angular",
                 
                 GestionTercerosService.obtenerPaises(parametros,function(respuesta){
                     if(respuesta.status === 200){
-                        //console.log("obtenerParametrizacion paises ", respuesta);
+                 
                         var data = respuesta.obj.ciudades;
                         self.gestionarPaises(data);
                     } else {
@@ -647,7 +647,7 @@ define(["angular",
             };  
             
             $scope.onCambiarNaturaleza = function(){
-                console.log("tipo naturaleza ", $scope.root.tipoNaturaleza);
+              
             };
             
             /**

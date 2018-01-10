@@ -230,7 +230,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 };
 
                 Request.realizarRequest(API.USUARIOS.OBTENER_USUARIO_POR_ID, "POST", obj, function(data) {
-                    //  console.log("informacion del usuario ",data);
+                   
                     if (data.status === 200) {
                         var _usuario = data.obj.parametrizacion_usuarios.usuario;
 
@@ -492,7 +492,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 };
 
                 ParametrizacionService.traerModulos(parametros, $scope.rootUsuario.empresaSeleccionada, self.esModuloSeleccionado, function() {
-                    // console.log("modulos del rol ",$scope.rootUsuario.rolAGuardar.getModulos() 
+                   
                     callback();
                 });
 
@@ -518,7 +518,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     if (success) {
                         /*var modulos = $scope.rootUsuario.rolAGuardar.getModulos();
                          for(var i in modulos){
-                         console.log("id modulo ", modulos[i].getModulo().getId(), modulos[i].getModulo().getEstado())
+                       
                          }*/
                         callback();
                     }
@@ -529,7 +529,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             //se busca en el rol los modulo que le pertenecen
             self.esModuloSeleccionado = function(modulo) {
                 var modulos = $scope.rootUsuario.rolAGuardar.getModulos();
-                //console.log("modulos del rol ",modulos);
+             
                 for (var i in modulos) {
                     if (modulos[i].getModulo().getId() === modulo.getId() && modulos[i].getModulo().getEstado()) {
                         return modulos[i];
@@ -554,7 +554,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
                 Request.realizarRequest(API.USUARIOS.ASIGNAR_ROL_USUARIO, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        console.log("rol asignado ", data);
+                       
                         var login_empresa_id = data.obj.parametrizacion_usuarios.login_empresa_id;
                         $scope.rootUsuario.empresaSeleccionada.setLoginEmpresaId(login_empresa_id);
                         callback();
@@ -590,7 +590,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
                 Request.realizarRequest(API.USUARIOS.HABILITAR_MODULOS_USUARIO, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        console.log("moduolos asignados ", data);
+                      
                         AlertService.mostrarMensaje("success", "El modulo se habilito en el rol correctamente");
                         var rol = $scope.rootUsuario.rolAGuardar;
                         var ids = data.obj.parametrizacion_usuarios.ids;
@@ -601,7 +601,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
                             for (var ii in modulos) {
                                 if (modulos[ii].getModulo().getId() === ids[i].modulo_id) {
-                                    // console.log("buscando en ",modulos[ii].getModulo().getId(), " con ",ids[i].modulo_id, " login_modulos_empresas ",ids[i].login_modulos_empresas_id );
+                                  
                                     modulos[ii].setUsuarioEmpresaId(ids[i].login_modulos_empresas_id);
                                     break;
                                 }
@@ -948,8 +948,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
 
             $scope.$on("modulosDeshabilitados", function(e, modulos_seleccionados) {
-                //console.log("modulos a deshabilitar ", modulos_seleccionados);
-
+      
                 //$scope.rootUsuario.rolAGuardar.vaciarModulos();
                 //determina el nodo que se va a guardar, de esta forma solo se envia los modulos del nodo
                 var nodo = [];
@@ -999,7 +998,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     nodo.push(modulo);
 
                     self.habilitarModulosRol(nodo, function() {
-                        console.log("deshabilitado padre >>>>>>>>>>>>>>>>>>>>>> ", padre, " hijos ", hijos);
+                     
                     });
                 }
             });
@@ -1037,9 +1036,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             });
 
             $scope.onGuardarUsuario = function() {
-                console.log("usuario a guardar ", $scope.rootUsuario.usuarioAGuardar);
-                console.log("confirmar clave ", $scope.confirmarClave);
-
+              
                 var validacion = self.__validarCreacionUsuario();
 
                 if (!validacion.valido) {

@@ -8,8 +8,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.root = {
                 conexiones : conexiones
             };
-            
-            console.log("conexiones ", $scope.root.conexiones)
+           
             
             $scope.listaConexiones = {
                 data: 'root.conexiones',

@@ -110,7 +110,7 @@ AutorizacionesModel.prototype.verificarNumeroAutorizaciones = function(obj, call
                 GROUP BY codigo_producto,pedido_id \
                 HAVING count(*) > 1 \
                   ;";
-    //console.log("verificarPedido >>>>>>>>>>>>>>",sql);
+
     G.knex.raw(sql, {1: obj.pedido_id}).then(function(resultado) {
         callback(false, resultado.rows);
     }).catch (function(err) {
@@ -132,7 +132,7 @@ AutorizacionesModel.prototype.verificarPedido = function(obj, callback) {
                FROM \
                autorizaciones_productos_pedidos \
                WHERE pedido_id = :1 ;";
-   // console.log("verificarPedido >>>>>>>>>>>>>>",sql);
+
     G.knex.raw(sql, {1: obj.pedido_id}).then(function(resultado) {
         callback(false, resultado.rows);
     }).catch (function(err) {
@@ -173,7 +173,7 @@ AutorizacionesModel.prototype.modificaProductoDeAutorizaciones = function(obj, c
 AutorizacionesModel.prototype.eliminaProductosRepetidosAutorizados = function(obj, callback) {
     var sql ="";    
     obj.forEach(function (item) {
-       //     console.log("QQQQQQQQQQQQQQQQQQ ",item);
+   
                 sql += " delete from autorizaciones_productos_pedidos \
                          where autorizaciones_productos_pedidos_id in ( \
                          select \
@@ -182,9 +182,9 @@ AutorizacionesModel.prototype.eliminaProductosRepetidosAutorizados = function(ob
                          autorizaciones_productos_pedidos \
                          where \
                          pedido_id = "+item.pedido_id+" and codigo_producto = '"+item.codigo_producto+"' limit "+(item.count-1)+" ); ";
-//            console.log("222QQQQQQQQQQQQQQQQQQ ",sql);
+
           });
-//console.log("33QQQQQQQQQQQQQQQQQQ ",sql);
+
      var query = G.knex.raw(sql);
     query.then(function(resultado) {
        callback(false, resultado.rows);
@@ -295,8 +295,7 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoCliente = function(obj,
 AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqueda, pagina, callback) {
 
     var parametros = {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido};
-    
-    //console.log("parametros ",parametros);
+
     var WHERE1 = '';
     var WHERE2 = '';
     
@@ -416,9 +415,6 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                order by p.estado_verificado desc";
     
    var parametros =  {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido}; 
-   
-   console.log("parametros ",parametros);
-    console.log("listarProductosBloqueados ",sql);
    var query = G.knex.select(G.knex.raw(sql, parametros)).
         limit(G.settings.limit).
         offset((pagina - 1) * G.settings.limit).
@@ -429,7 +425,6 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
             callback(err);       
         });
 };
-
 /**
 * @author Andres M. Gonzalez
 * +Descripcion consulta todas los productos bloqueados de un pedido de farmacia

@@ -71,7 +71,7 @@ define(["angular",
             
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs",
                 "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs",
-                "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-warning btn-xs"];
+                "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-warning btn-xs","btn btn-danger btn-xs"];
 
             $scope.rootPedidosFarmacias.lista_pedidos_farmacias = {
                 data: 'rootPedidosFarmacias.empresaSeleccionada.obtenerPedidos()',
@@ -80,7 +80,12 @@ define(["angular",
                 enableHighlighting:true,
                 columnDefs: [
                     {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center", visible: $scope.rootPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos, width: "8%",
-                        cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
+                        cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> \
+					<span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span>\
+					   <span ng-class='agregarIcon(row.entity.estado_actual_pedido)'>\
+					    {{row.entity.descripcion_estado_actual_pedido}}\
+					    </span>\
+					 </button>"},
                     {field: 'numero_pedido', displayName: 'PF - PC', cellClass: "txt-center", width: "8%", 
                         cellTemplate: "<div>{{row.entity.numero_pedido}}<a ng-if='row.entity.getNumeroPedidoCliente()>0' title='Numero Pedido Cliente'> - {{row.entity.getNumeroPedidoCliente()}}</a></div>"},
                    
@@ -93,15 +98,18 @@ define(["angular",
                     cellTemplate: '<div class="btn-group">\
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
-                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)">\n\
+                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)">\
                                                 <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'1\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}" >Modificar</a>\
                                             </li>\
-                                            <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'2\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnVerPedido}}">Ver</a></li>\
+                                            <li  ng-if="row.entity.estado_actual_pedido != 11 "><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'2\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnVerPedido}}">Ver</a></li>\
                                             <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null) ||  row.entity.estado_actual_pedido == 8 || row.entity.estado_actual_pedido == 10">\
                                                 <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'3\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificacionEspecial}}" >Modificación Especial</a>\
                                             </li>\
                                             <li ng-if="row.entity.getTieneDespacho()">\
                                                 <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
+                                            </li>\
+					     <li ng-if="row.entity.estado_actual_pedido== 0 && rootPedidosFarmacias.opciones.sw_anulacion_pedidos_farmacia">\
+                                                <a href="javascript:void(0);" ng-click="onAnularPedido(row.entity)">Anular</a>\
                                             </li>\
                                             <li ng-if="false">\
                                                 <a href="javascript:void(0);" ng-click="ventanaEnviarEmail(row.entity)">Enviar Email</a>\
@@ -116,6 +124,51 @@ define(["angular",
                 ]
 
             };
+	    
+	$scope.agregarIcon=function(dato){
+	
+	 var icon="";
+	    if(dato === '11'){
+		icon="glyphicon glyphicon-remove-circle";
+	    }
+	    return icon;
+	}    
+	    
+	/*
+	 * +Descripcion: Anula el pedido solo si esta en estado 'No Asignado' 
+	 * @param {type} dato
+	 * @returns {estado}
+	 */    
+	$scope.onAnularPedido = function(dato) {
+	    var parametros = {estado : 11 , numeroPedido : dato.numero_pedido};
+	    self.modificarEstadoPedido(parametros);
+	};
+	
+	self.modificarEstadoPedido =function(parametros){
+	      var obj = {
+                    session: $scope.rootPedidosFarmacias.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numeroPedido : parametros.numeroPedido,
+			    estado : parametros.estado,
+			    empresa_id: Usuario.getUsuarioActual().getEmpresa().codigo
+                        }
+                    }
+                };
+		
+		  Request.realizarRequest(
+                        API.PEDIDOS.FARMACIAS.ACTUALIZAR_ESTADO_PEDIDO_FARMACIA,
+                        "POST",
+                        obj,
+                        function(data) {
+                            if (data.status === 200) {  
+				self.buscarPedidos();
+				AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El pedido No. "+parametros.numeroPedido+" Anulado correctamente");
+                            }
+                        }
+                );
+	};
+           
             
             /*
              * @Author: Eduar
@@ -262,7 +315,7 @@ define(["angular",
                 var modalInstance = $modal.open($scope.opts);
                 
                 modalInstance.result.then(function() {
-                    console.log("refrescar producto");
+                 
 
                 }, function() {
                     
@@ -404,7 +457,7 @@ define(["angular",
             socket.on("onListarPedidosFarmacias", function(datos) {
 
                 if (datos.status === 200) {
-                    console.log("pedido del socket ", datos);
+            
                     var pedido = datos.obj.pedidos_farmacias[0];
                     self.reemplazarPedidoEstado(pedido);
 

@@ -23,10 +23,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             };
 
             OrdenCompraKardex.prototype.setDatos = function(datos) {
-                
-                console.log('==== Datos ====');
-                console.log(datos);
-                
+                                
                 this.proveedor = datos.proveedor || null;
                 this.cantidad_solicitada = datos.cantidad_solicitada || null;
                 this.cantidad_pendiente = datos.cantidad_pendiente || null;

@@ -160,7 +160,6 @@ define(["angular", "js/controllers",
                 var items = data.documentos_temporales.length;
                 var evento = (tipo === 1) ? "Cliente" : "Farmacia";
 
-               // console.log("documentos de ", evento, data.documentos_temporales);
 
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && items === 0) {
@@ -587,7 +586,6 @@ define(["angular", "js/controllers",
            
             
             $scope.generarDocumento = function(documento) {
-                console.log("sincronizar documentos  code>>>>>>>>>>>> ", documento);
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
@@ -676,7 +674,6 @@ define(["angular", "js/controllers",
                                      * @author Cristian Ardila
                                      */
                                     localStorageService.set("DocumentoDespachoImprimir",detallado);
-                                    console.log("sincronizar documentos >>>>>>>>>>>> ", documento);
                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                                    
                                    that.sincronizarDocumento(documento, $scope.documento_generado);

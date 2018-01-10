@@ -9,8 +9,8 @@ define(["angular","js/models"], function(angular, models){
 			this.apellido = apellido;
 			this.id = id;
 
-			console.log("este es el modelo de clientes facturacion con datos!!!!!!");
-			console.log(nombre + " " +apellido + " " +id);
+			//console.log("este es el modelo de clientes facturacion con datos!!!!!!");
+			//console.log(nombre + " " +apellido + " " +id);
 		}
 
 		Cliente.prototype.asignarCredencial = function(){

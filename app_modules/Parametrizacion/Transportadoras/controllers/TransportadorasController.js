@@ -1,8 +1,6 @@
 
 var Transportadoras = function(transportadoras) {
 
-    console.log("Modulo Transportadoras Cargado ");
-
     this.m_transportadoras = transportadoras;
 };
 

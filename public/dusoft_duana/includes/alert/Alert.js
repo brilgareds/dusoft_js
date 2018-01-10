@@ -1,6 +1,6 @@
 define(["angular","js/services"], function(angular, services){
 
-    var Alert = services.service('AlertService',["$modal", function($modal) {
+    var Alert = services.service('AlertService',["$modal", "$sce", function($modal, $sce) {
       var that = this;
       this.el;
       this.colaEjecucion = [];
@@ -22,7 +22,7 @@ define(["angular","js/services"], function(angular, services){
 
             if(msg){
                 this.mostrandoMensaje = true;
-                console.log(msg);
+      
                 that.el.html("<p class='alertcontenido alert alert-"+msg.tipo+"'>\
                                 "+msg.msg+"</p>").show();
 
@@ -37,8 +37,6 @@ define(["angular","js/services"], function(angular, services){
 
 
             } else {
-              console.log(this.colaEjecucion);
-              console.log("no hay mensajes pendientes");
             }
 
         }
@@ -55,16 +53,16 @@ define(["angular","js/services"], function(angular, services){
                             <button type="button" class="close" ng-click="close()">&times;</button>\
                             <h4 class="modal-title">{{titulo}}</h4>\
                         </div>\
-                        <div class="modal-body">\
+                        <div class="modal-body" ng-bind-html="mensaje">\
                             <h4>{{mensaje}}</h4>\
                         </div>\
-                        <div class="modal-footer">\
+                        <div class="modal-footer" style="margin-top: 0px">\
                             <button class="btn btn-primary" ng-click="close()" ng-if="!callback">Cerrar</button>\
                             <button class="btn btn-warning" ng-click="onBtnModal(true)" ng-if="callback">Aceptar</button>\
                             <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-if="callback">Cancelar</button>\
                         </div>',
             controller: ["$scope", "$modalInstance", "titulo", "mensaje", "callback", function($scope, $modalInstance, titulo, mensaje, callback) {
-                $scope.mensaje = mensaje;
+                $scope.mensaje = $sce.trustAsHtml(mensaje);
                 $scope.titulo  = titulo;
                 $scope.callback = callback;
                 $scope.close = function() {

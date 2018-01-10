@@ -18,7 +18,6 @@ Roles.prototype.listar_roles = function(req, res) {
     var termino = args.parametrizacion_perfiles.termino || "";
     var pagina = args.parametrizacion_perfiles.pagina_actual;
 
-    console.log("argumentos ", args);
 
     if (empresa_id === undefined || empresa_id.length === 0) {
         res.send(G.utils.r(req.url, 'La empresa no es valida.', 403, {parametrizacion_perfiles: {}}));
@@ -115,7 +114,6 @@ Roles.prototype.guardarRol = function(req, res) {
             rol.id = rows[0].id;
         }
 
-        console.log("rol a regresar ", rol);
         res.send(G.utils.r(req.url, "Rol guardado con exito", 200, {parametrizacion_perfiles: {rol: rol}}));
     });
 };

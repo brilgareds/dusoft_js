@@ -252,7 +252,7 @@ MovBodegasController.prototype.crearDocumento=function(req,res){
     G.Q.ninvoke(that.m_I002, "listarGetItemsDocTemporal", parametros).then(function(result) {
         
         if (result.length > 0) {
-          console.log("result::: ",result);  
+          
           return G.Q.ninvoke(that.m_movimientos_bodegas,"consultarDocumentoBodegaTemporal",docTmpId, usuarioId);                
         }else{
           throw {msj:"No hay datos en listarGetItemsDocTemporal.", status:403};   
@@ -262,7 +262,7 @@ MovBodegasController.prototype.crearDocumento=function(req,res){
         if (result.length === 0) {
            throw {msj:"DATOS ADICIONALES DEL DOCUMENTO NO ESTAN LLENOS.", status:403};        
         }else{
-          console.log("result::: ",result);
+          
           res.send(G.utils.r(req.url, 'crearDocumento', 200, {crearDocumento: result})); 
         }
     }).fail(function(err) {
@@ -298,7 +298,7 @@ MovBodegasController.prototype.obtenerDocumetosTemporales=function(req,res){
     if(args.numeroDocumento === undefined){
         args.numeroDocumento='';
     }
-    console.log("paginaActual",args.paginaActual);
+  
    var parametros = {
                         empresaId: args.empresaId, 
                         centroUtilidadId: args.centroUtilidadId, 
@@ -377,7 +377,6 @@ MovBodegasController.prototype.getTiposDocumentosBodegaUsuario=function(req,res)
   
    var args = req.body.data;
    
-   console.log();
     
     var parametros = {empresaId: args.empresa_id, centroUtilidadId: args.centro_utilidad_id, bodegaId:args.bodega_id,invTipoMovimiento:args.invTipoMovimiento}; 
     
@@ -395,7 +394,6 @@ MovBodegasController.prototype.getTiposDocumentosBodegaEmpresa=function(req,res)
   
    var args = req.body.data;
    
-   console.log();
     
     var parametros = {empresaId: args.empresa_id, centroUtilidadId: args.centro_utilidad_id, bodegaId:args.bodega_id,invTipoMovimiento:args.invTipoMovimiento}; 
     
@@ -455,7 +453,6 @@ MovBodegasController.prototype.execCrearDocumento=function(req,res){
        callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
         
     }).catch(function(err){
-        //console.log("error generado >>>>>>>>>>>>", err);
         callback(err);
     }).
     done();

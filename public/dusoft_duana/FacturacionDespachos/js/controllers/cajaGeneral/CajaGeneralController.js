@@ -167,7 +167,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         };
                         cajaGeneralService.listarFacturasGeneradas(obj, function(data) {
                             if (data.status === 200) {
-				console.log("listarFacturasGeneradas");
+				
 //                                $scope.root.listarFacturasGeneradasNotas=data.obj.listarFacturasGeneradas;
 				$scope.root.listarFacturasGeneradasNotas=cajaGeneralService.renderFacturasProveedores(data.obj.listarFacturasGeneradas);
 				
@@ -208,7 +208,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                               data.obj.factura=$scope.root.listarFacturasGeneradasNotas[0];
 			      $scope.root.listarImpuestos=data.obj;
 //			      that.traerPorcentajeImpuestosNotas(data.obj,function(datas){
-//				  console.log("Data ",datas);
+//				
 //			      });
 				
 			    } else {
@@ -247,7 +247,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 				valorSubtotal:0,
 				valorSubtotalFactura:0
 			    };
-			    console.log("saldo",obj.getSaldo());
+			 
 			    impuestos.valorSubtotalFactura = obj.getSaldo();
 			//    impuestos.valorSubtotalFactura = obj.totalFactura - obj.totalGravamen;
 
@@ -312,7 +312,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {undefined}
                      */
                     that.listarFacConceptosNotasDetalle = function(parametros) {
-			console.log("listarFacConceptosNotasDetalle parametros:: ",parametros);
+			
 			$scope.root.totalesNotaCredito=0;
 			$scope.root.totalesNotaDebito=0;
 			
@@ -386,7 +386,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @fecha 2017-06-01
                      */
                     that.listarTerceros = function(callback) {
-			console.log("____",$scope.root.termino_busqueda_tercero);
+			
                         if($scope.root.termino_busqueda_tercero===undefined){
 			    $scope.root.termino_busqueda_tercero='';
 			}
@@ -1108,8 +1108,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 		     * nota : 0-debito 1-credito
                      */
                     that.verNota = function(nota,datos) {
-			console.log("nota ",nota);
-			console.log("datos ",datos);
+			
 			$scope.root.impuestos="";
                         $scope.opts = {
                             backdrop: true,
@@ -1203,7 +1202,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.onSeleccionFiltro = function() {
 			
-			console.log("____________________");
                     };
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -1243,7 +1241,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			
                             validar = true;
                         }
-//			console.log("validarConcepto 2 ",validar);
                         return validar;
                     };
                     /**
@@ -1274,7 +1271,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Concepto');
                             return;
                         }
-			console.log("$scope.root.pago ",$scope.root.pago);
+			
                         if ($scope.root.pago === undefined) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Tipo de Pago');
                             return;
@@ -1367,7 +1364,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.checkearEstadoPago = function(check) {
-			console.log("checkearEstadoPago ",check);
+			
                         $scope.root.pago = check;
                         switch (check) {
                             case 1:
@@ -1400,7 +1397,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.tipoFactura = function(tipo) {
-			console.log("tipoFactura ",tipo);
+		
                         $scope.root.pagoCreditoModel = false;
                         $scope.root.pagoEfectivoModel = false;
 			
@@ -1468,7 +1465,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
 		    $scope.buscarNota=function(event){
 			 if (event.which === 13) {
-			     console.log("$scope.root.prefijoBusquedaNota ",$scope.root.prefijoBusquedaNota);
+			
 			     if($scope.root.prefijoBusquedaNota!=='seleccionar' && $scope.root.numeroBusquedaNota!==''){
 			     var parametros = {
 				prefijo:$scope.root.prefijoBusquedaNota,
@@ -1477,7 +1474,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 			     };
 			     that.listarNotas(parametros);
 			     }else{
-				 console.log("Debe seleccionar el prefijo");
+				
 			     }
 			 }
 		    };
@@ -1506,7 +1503,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 					  if($scope.root.prefijo.prefijo==='Prefijo'){
 					     AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe seleccionar un prefijo");  
 					  }else{
-//					  console.log("Prefijo ",$scope.root.prefijo.prefijo);
 					    that.listarFacturasGeneradas(1,function(data){
 					       if(data!==false){
 						that.listarFacConceptosNotasDetalle(data[0]);

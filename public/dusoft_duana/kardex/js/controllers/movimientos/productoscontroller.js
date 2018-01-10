@@ -233,7 +233,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             
             $scope.onSelect = function(row){
-                console.log(">>>>>>>>>>>>>>>>>>", row);
+         
             };
             
             $scope.saveGroupState = function () {
@@ -277,7 +277,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var modalInstance = $modal.open($scope.opts);
                 
                 modalInstance.result.then(function() {
-                    console.log("refrescar producto");
+                  
 
                 }, function() {
                     
@@ -412,7 +412,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 Request.realizarRequest(API.KARDEX.CENTROS_UTILIDAD_EMPRESAS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        console.log("centros de utilidad ", data);
+                        
                         for (var i in data.obj.centros_utilidad) {
                             var centroUtilidad = CentroUtilidad.get(
                                     data.obj.centros_utilidad[i].descripcion,
@@ -487,8 +487,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.abrirfechainicial = true;
                 $scope.abrirfechafinal = false;
 
-
-                console.log($scope.fechainicial);
             };
 
             $scope.abrirFechaFinal = function($event) {
@@ -501,7 +499,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.fechainicialselected = function() {
                 if ($scope.fechainicial > $scope.fechafinal) {
-                    console.log($scope.fechafinal);
+            
                     $scope.fechafinal = $scope.fechainicial;
                 }
 

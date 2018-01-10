@@ -184,14 +184,15 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
         }
     }).andWhere('a.empresa_id', obj.empresaId)
       .whereNull('c.prefijo_nota');
-            
-//	    console.log("Query ",query.toSQL());
+
    if(obj.paginaActual!== undefined ){
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit)
    }
     query.then(function(resultado) {
-        callback(false, resultado)
+        console.log("AAAAAAAAAAAA ",obj.empresaId);
+        console.log("AAAAAAAAAAAA ",query.toSQL());
+        callback(false, resultado);
     }). catch (function(err) {
         console.log("err [consultarFacturaProveedor]:", err);
         callback(err);
@@ -407,7 +408,8 @@ FacturacionProveedoresModel.prototype.ingresarFacturaCabecera = function(obj,tra
         valor_descuento: obj.valor_descuento,
         fecha_factura: obj.fecha_factura,
         fecha_radicacion_factura: obj.fecha_radicacion_factura,
-        usuario_id: obj.usuario_id
+        usuario_id: obj.usuario_id,
+        fecha_vencimiento: obj.fecha_vencimiento
 
     });
     if(transaccion) query.transacting(transaccion); 

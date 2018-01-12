@@ -2244,18 +2244,15 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                                    {movimientos_bodegas: {}}));
 	
     }).fail(function(err){
-
+         console.log("Error sincronizarDocumentoDespacho: ",err);
         if(!args.documento_despacho.background){
             if(err.status){
-                res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+            res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
 
+           } else {
 
-	 res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
-
-	} else {
-
-	 res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
-	}
+            res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
+           }
     }
 
     }).done();
@@ -2291,6 +2288,7 @@ function __sincronizarDocumentoDespacho(obj, callback){
         callback(false);
         
     }).fail(function(err){
+        console.log("Error __sincronizarDocumentoDespacho",err);
         callback(err);
     }).done();
 
@@ -2406,7 +2404,7 @@ function __sincronizarRemisionProductos(obj, callback) {
 
     }).fail(function(err) {
      
-        console.log("ErOo",err);
+        console.log("Error __sincronizarRemisionProductos ",err);
 	obj.error = true;
 	obj.tipo = '0';
 	obj.resultadoEncabezado = obj.resultadoEncabezado === "" ? err : obj.resultadoEncabezado;
@@ -2499,7 +2497,7 @@ function __sincronizarDetalleDocumento(obj, callback){
         def.resolve();
         
     }).fail(function(err) {
-	console.log("ERROR888 ",err);
+	console.log("ERROR __sincronizarDetalleDocumento ",err);
         callback(err);
     }).
     done(function(){

@@ -181,8 +181,12 @@ define(["angular", "js/controllers",
 		return valida;
 	    };
 	    
-	    $scope.validaEliminacion=function(data){		
+	    $scope.validaEliminacion=function(data){	
+                var pedido = $scope.root.pedido;
+                var valida =false;
+                if(pedido.get_numero_pedido()!==undefined){
 		var valida = (data.cantidadPendiente<data.cantidadSolicitada)?true:false;
+               }
 		return valida;
 	    };
 

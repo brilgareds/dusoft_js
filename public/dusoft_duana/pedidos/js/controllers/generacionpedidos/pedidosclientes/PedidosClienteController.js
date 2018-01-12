@@ -970,7 +970,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div>\
                                         <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" || disabledCheckModificarProducto(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"  ><span class="glyphicon glyphicon-ok"></span></button>\
-					<button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || validaEliminacion(row.entity)" ><span class="glyphicon glyphicon-remove"></span></button>\
+					<button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="(habilitar_eliminacion_producto() || validaEliminacion(row.entity)) && validarCotizacion()" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]
@@ -981,9 +981,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 		return valida;
 	    };
 	    
-	    $scope.validaEliminacion=function(data){		
-		var valida = (data.cantidadPendiente<data.cantidad_solicitada)?true:false;
-		return valida;
+//	
+	    $scope.validarCotizacion=function(){	
+                var pedido = $scope.Pedido.get_numero_cotizacion();
+                var estado=true;
+                if(pedido !== 0){
+		  estado=false;
+                }
+                console.log("estado",estado);
+                return estado;
+	    };
+            
+	    $scope.validaEliminacion=function(data){	
+                    var valida = (data.cantidadPendiente<data.cantidad_solicitada)?true:false;
+                    return valida; 
 	    };
             /**
              * +Descripcion: Metodo encargado de insertar la cantidad en el detalle

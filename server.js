@@ -253,13 +253,13 @@ if (cluster.isMaster) {
     });
 
     //socket para consultar estadisticas de rendimiento del sistema
-    io.on('connection', function(socket) {
+    /*io.on('connection', function(socket) {
         var socket_id = socket.id;
         setInterval(function() {
                 var response = G.utils.r('onEstaditicasSistema', 'estadisticas sistema', 200, {peticiones: G.stats.toJSON(), memoria: Math.round(gauge._readFn() / 1024 / 1024)});
                 io.sockets.emit('onEstaditicasSistema', response);
         }, 10000);
-    });
+    });*/
 
 
     /*=========================================

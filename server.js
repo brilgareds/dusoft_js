@@ -8,6 +8,7 @@ var http = require('http');
 var https = require('https');
 var path = require('path');
 var intravenous = require('intravenous');
+var Measured = require('measured');
 
 var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
@@ -43,8 +44,32 @@ G.moment = require("moment");
 G.jsonQuery = require('jinq');
 G.json2csv = require('json2csv');
 G.fcmPush = require('fcm-push');
+G.sqlformatter = require('sqlformatter');
 var events = require('events');
 G.eventEmitter = new events.EventEmitter();
+G.logError =  function logError(texto) {  
+      //hora y guardas separadoras entre errores
+      var f=new Date();
+      var cad= f.getHours()+":"+f.getMinutes()+":"+f.getSeconds(); 
+      var guardaInicio = '\n================================================================================ ERROR '+cad+' ================================================================================\n\n';
+      var guardaFin = '\n\n********************************************************************************************************************************************************************************\n\n\n\n';
+      var f = new Date();
+      var nombreArchivo = f.getFullYear() + '' + ("0" + (f.getMonth() + 1)).slice(-2) + '' + f.getDate();
+      var file = './public/logs/error_'+ nombreArchivo +'.log';
+
+      try {
+          G.fs.statSync(file);
+      } catch(e) {
+          fs.writeFile(file, '', { flag: 'w' }, function (err) {
+              if (err) {
+                throw err
+              }
+          });
+      }
+      G.fs.appendFile(file, guardaInicio + texto + guardaFin, function(err){
+      });
+  };
+
 
 //G.moment = G.moment().format();
 G.sqlformatter = require('sqlformatter');
@@ -205,6 +230,13 @@ if (cluster.isMaster) {
     ));*/
     
     
+
+    //Se usa la libreria Measured para registrar estadisticas de peticiones.
+    G.stats = Measured.createCollection();
+    app.use(function(req, res, next) {
+        G.stats.meter('requestsPerSecond').mark();
+        next();
+    });
     
     var redisOptions = {
         pubClient: pub,
@@ -215,7 +247,19 @@ if (cluster.isMaster) {
     
     io.adapter(RedisStore(redisOptions));
 
-    
+    //Medida de uso de memoria
+    var gauge = new Measured.Gauge(function() {
+        return process.memoryUsage().rss;
+    });
+
+    //socket para consultar estadisticas de rendimiento del sistema
+    io.on('connection', function(socket) {
+        var socket_id = socket.id;
+        setInterval(function() {
+                var response = G.utils.r('onEstaditicasSistema', 'estadisticas sistema', 200, {peticiones: G.stats.toJSON(), memoria: Math.round(gauge._readFn() / 1024 / 1024)});
+                io.sockets.emit('onEstaditicasSistema', response);
+        }, 10000);
+    });
 
 
     /*=========================================
@@ -224,7 +268,6 @@ if (cluster.isMaster) {
     container.register("emails", nodemailer);
     container.register("date_utils", date_utils);
     container.register("socket", io);
-
 
     /*=========================================
      * Inicializacion y Conexion a la Base de Datos
@@ -273,8 +316,13 @@ if (cluster.isMaster) {
      * =========================================*/
     if (app.get('env') === 'development') {
         app.use(function(err, req, res, next) {
+            //registra en log de errores
+            var url = '\nURL: ' + req.originalUrl + '\n';
+            G.logError(url + err);
+
             res.status(err.status || 500);
             console.log(err);
+
             res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1  ', 500, {msj: err}));
         });
     }
@@ -284,6 +332,7 @@ if (cluster.isMaster) {
      * no stacktraces leaked to user
      * =========================================*/
     app.use(function(err, req, res, next) {
+        G.logError(err);
         res.status(err.status || 500);
         console.log(err);
         res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {msj: err}));
@@ -302,7 +351,6 @@ if (cluster.isMaster) {
      * Ruteo del Servidor
      * =========================================*/
     modulos.cargarRoutes(app, container, io);
-
 
     app.get('/api/configurarRoutes', function(req, res) {
         modulos.configurarRoutes(req, res, app, container);

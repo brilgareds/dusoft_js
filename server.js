@@ -47,7 +47,7 @@ var events = require('events');
 G.eventEmitter = new events.EventEmitter();
 
 //G.moment = G.moment().format();
-
+G.sqlformatter = require('sqlformatter');
 G.soap = require('soap');
 G.program = require('commander');
 /**

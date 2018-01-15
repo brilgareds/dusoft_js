@@ -2150,11 +2150,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                 }              
                 
            }
-          
-            if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
            
-   
-                objRemision = {
+          objRemision = {
                       prefijoDocumento : prefijoDocumento,
                       numeroDocumento : numeroDocumento,
                       empresa: empresaId,
@@ -2162,9 +2159,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                       numeroPedido:pedido.numero_pedido,
                       pedido:pedido,
                       contexto:that
-                 };
-                 
-                 
+                };
+                
+            if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
+           
                  
                 return G.Q.ninvoke(that.m_e008,"obtenerTotalDetalleDespacho",objRemision);            
                 
@@ -2232,14 +2230,18 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
 
 	return G.Q.nfcall(__sincronizarRemisionProductos, objRemision);
 
-       }else{
-	   if(!args.documento_despacho.background){
-	       res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
-			      {movimientos_bodegas: {}}));
-	   }
-       }
-    }).then(function(resultado){	    
+       } 
        
+        //se comenta porque genera error al retornar la peticion (retorna la peticion dos veces aqui y en el siguiente then)
+//       else{
+//           console.log("Error sincronizarDocumentoDespacho EE ");
+//	   if(!args.documento_despacho.background){
+//	       res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
+//			      {movimientos_bodegas: {}}));
+//                            
+//	   }
+//       }
+    }).then(function(resultado){	    
 	res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
                                    {movimientos_bodegas: {}}));
 	

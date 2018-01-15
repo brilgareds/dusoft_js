@@ -252,7 +252,7 @@ if (cluster.isMaster) {
         return process.memoryUsage().rss;
     });
 
-    //socket para consultar estadisticas de rendimiento del sistema
+    //socket para consultar estadisticas de rendimiento del sistema pasarlo al modulo sistema
     /*io.on('connection', function(socket) {
         var socket_id = socket.id;
         setInterval(function() {

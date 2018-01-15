@@ -8,8 +8,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
         "Usuario", "socket", "$timeout",
-        "Empresa", "ParametrosBusquedaService",
-        function($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, ParametrosBusquedaService) {
+        "Empresa", 
+        function($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa) {
 
             $scope.promedio1Min = 0;
             $scope.promedio5Min = 0;

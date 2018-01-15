@@ -1,5 +1,4 @@
 var Sistema = function(m_sistema) {
-    console.log("Modulo Sistema Cargado");
     this.m_sistema = m_sistema;
 };
 

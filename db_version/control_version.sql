@@ -8,8 +8,8 @@ CREATE TABLE version (
 COMMIT TRANSACTION;
 
 -----------------------------------------------------------------------------
-------------------------------  Version 2.0.0  ------------------------------
+------------------------------  Version 2.00.00  ------------------------------
 -----------------------------------------------------------------------------
 BEGIN TRANSACTION;
-INSERT INTO version (version, modulo, comentario) VALUES ('2.0.0', 'BASE', 'Inicia control de versión Dusoft');
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.00', 'BASE', 'Inicia control de versión Dusoft');
 COMMIT TRANSACTION;

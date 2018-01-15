@@ -25,7 +25,7 @@ define(["angular",
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
-            
+            $scope.permisosEstadoAsignacion=Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_cambiar_estado_asignacion;
             var fecha_actual = new Date();
             
             $scope.rootSeleccionPedido = {
@@ -103,7 +103,7 @@ define(["angular",
                 for (var i in data.pedidos_clientes) {
 
                     var obj = data.pedidos_clientes[i];
-                    //console.log(obj);
+                 
                     var pedido = that.crearPedido(obj);
 
                     $scope.Empresa.agregarPedido(
@@ -162,7 +162,14 @@ define(["angular",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
                                 " ng-disabled='habilitar_asignacion_pedidos(row.entity) || row.entity.estado ==4'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
-                        cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>", width: "10%"},
+                        cellTemplate: '<button type="button" ng-class="agregarClase(row.entity.estado_actual_pedido)"> \
+			                 <span ng-if="row.entity.getEstado()==2" class="glyphicon glyphicon-remove-circle">\
+			                    Anulado \
+			                  </span>\
+					  <span ng-if="row.entity.getEstado()!=2" ng-class="agregarRestriccion(row.entity.estado_separacion)">\
+						{{row.entity.descripcion_estado_actual_pedido}} \
+					  </span> \
+					  </button>', width: "10%"},
                     {field: 'numero_pedido', displayName: 'Pedido', width: "80"},
                     {field: 'descripcionTipoPedido', displayName: 'Tipo Productos', width: "110"},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
@@ -232,6 +239,10 @@ define(["angular",
                 if (pedido.estado === '2') {
                     disabled = true;
                 }
+             
+                if(!$scope.permisosEstadoAsignacion){
+                    disabled = true;
+                }
 
                 return disabled;
             };
@@ -260,10 +271,7 @@ define(["angular",
             //fin delegado grid pedidos //
 
             $scope.onPedidoSeleccionado = function(check, row) {
-                /* console.log("agregar!!!!!");
-                 console.log(check);
-                 console.log(row);*/
-
+            
                 row.selected = check;
                 if (check) {
                     that.agregarPedido(row.entity);
@@ -272,7 +280,7 @@ define(["angular",
                     that.quitarPedido(row.entity);
                 }
 
-                console.log($scope.pedidosSeleccionados);
+               
             };
 
 
@@ -296,7 +304,6 @@ define(["angular",
                 }
 
                 $scope.pedidosSeleccionados.push(pedido);
-                console.log("guardando pedido ", $scope.pedidosSeleccionados);
             };
 
             $scope.buscarSeleccion = function(row) {
@@ -304,8 +311,7 @@ define(["angular",
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
                     if (_pedido.numero_pedido === pedido.numero_pedido) {
-                        //console.log("buscarSeleccion encontrado **************");
-                        //console.log(pedido);
+                  
                         row.selected = true;
                         return true;
                     }
@@ -372,7 +378,6 @@ define(["angular",
             };
 
             $scope.abrirModalAsignar = function() {
-                console.log($scope.pedidosSeleccionados, " pedidos seleccionados ", $scope.pedidosSeleccionados.length);
 
                 $scope.opts = {
                     backdrop: true,
@@ -399,7 +404,6 @@ define(["angular",
 
             //delegados del sistema
             $rootScope.$on("refrescarPedidos", function() {
-                console.log("refrescar pedidos listened");
                 $scope.pedidosSeleccionados = [];
                 // $scope.buscarPedidosCliente("");
             });
@@ -410,12 +414,9 @@ define(["angular",
             //delegados del socket io
             socket.on("onListarPedidosClientes", function(datos) {
                 
-                console.log("socket >>>>>>>>>>>>>>>>>> onListarPedidosClientes ");
                 if (datos.status === 200) {
                     var obj = datos.obj.pedidos_clientes[0];
                     var pedido = that.crearPedido(obj);
-                    console.log("objecto del socket");
-                    console.log(obj);
                     that.reemplazarPedidoEstado(pedido);
                     AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
 

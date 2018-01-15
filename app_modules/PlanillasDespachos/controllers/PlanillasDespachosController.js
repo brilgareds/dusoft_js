@@ -1,8 +1,6 @@
 
 var PlanillasDespachos = function(planillas_despachos, e008, pedidos_farmacias, eventos_pedidos_farmacias, pedidos_clientes, eventos_pedidos_clientes, emails) {
 
-    console.log("Modulo Planillas Despachos Cargado ");
-
     this.m_planillas_despachos = planillas_despachos;
 
     this.m_e008 = e008;
@@ -924,9 +922,7 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
     var status = {};
   
     G.Q.ninvoke(that.m_planillas_despachos,'gestionarLios', args.planillas_despachos).then(function(resultado){ 
- 
-        console.log("resultado ", resultado);
-     
+      
         var def = G.Q.defer();  
      
         if(parseInt(resultado[0].totalcajas) === totalCajas && parseInt(resultado[0].totalneveras) === totalNeveras){

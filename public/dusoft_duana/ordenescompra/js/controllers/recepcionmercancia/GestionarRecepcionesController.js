@@ -317,7 +317,7 @@ define(["angular", "js/controllers"
                     
                     return;
                 }   
-                console.log("recepcion [crear_recepcion", recepcion)
+               
                 var validacion = recepcion.validar_campos_ingreso();
 
                 if (validacion.continuar) {

@@ -6,7 +6,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
 
           link:function(scope, element, attrs) {
              
-             //console.log(attrs)
+            
           },
           
           /*scope: {
@@ -81,7 +81,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
               var parent = $(".contenidoPrincipal");
               var width  = parent.width();
               var height = parent.height();
-              //console.log("configure slide with width "+width);
+            
               $element.width(width +25);
               contenedor.height(document.body.scrollHeight);
           },
@@ -90,7 +90,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
             $element.css({"display":"block"});
             contenedor.show();
             $element.transition({ x: '0px', duration:1000}, function(){
-                //console.log("open callback completo ", $attrs.openCallback);
+              
                 scope.$emit($attrs.openCallback+"Completo", datos);
             });
            

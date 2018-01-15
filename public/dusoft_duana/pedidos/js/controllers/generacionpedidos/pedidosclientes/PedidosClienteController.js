@@ -775,7 +775,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var productos = [];
                 productos.push(producto);
                 $scope.ocultarOpciones = 1;
-
                 //OJO VOLVER A DEJAR
                 that.validarDisponibleProductosCotizacion(0, productos, function (estado) {
                     if (estado) {
@@ -797,6 +796,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             <h5> {{ datos_view.producto_seleccionado.getDescripcion() }} </h5>\
                                             <h4>Cantidad.</h4>\
                                             <h5> {{ datos_view.producto_seleccionado.get_cantidad_solicitada() }} </h5>\
+                                            <h4>Cantidad Modificada</h4>\
+                                            <h5> {{ datos_view.producto_seleccionado.getCantidadPendienteDespachar() }} </h5>\
                                         </div>\
                                         <div class="modal-footer">\
                                             <button class="btn btn-warning" ng-click="close()">No</button>\
@@ -892,7 +893,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.filtroGrid = {filterText: '', useExternalFilter: false};
-            // Lista Productos Seleccionados
+          
             $scope.lista_productos = {
                 data: 'Pedido.get_productos()',
                 enableColumnResize: true,
@@ -940,9 +941,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                   name="" id="" /> </div>'},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad pendiente", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12"> \n\
-                                       <input type="text" ng-disabled="Pedido.getEstadoSolicitud() != 8 " \n\
+                                       <input type="text" ng-disabled="Pedido.getEstadoSolicitud() != 8 || validaEdicion(row.entity)" \n\
                                         ng-model="row.entity.cantidadPendienteDespachar" \n\
-                                        validacion-numero-entero \n\
+                                        validacion-numero-entero \
                                         ng-keyup="validarCantidadInicialCantidadNueva(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"\
                                         class="form-control grid-inline-input" \n\
                                         name="" id="" /> </div>'},
@@ -969,12 +970,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div>\
                                         <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" || disabledCheckModificarProducto(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"  ><span class="glyphicon glyphicon-ok"></span></button>\
-                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-remove"></span></button>\
+					<button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="(habilitar_eliminacion_producto() || validaEliminacion(row.entity)) && validarCotizacion()" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]
             };
-
+	    
+	    $scope.validaEdicion=function(data){
+		var valida = (data.cantidadPendiente==0)?true:false;
+		return valida;
+	    };
+	    
+//	
+	    $scope.validarCotizacion=function(){	
+                var pedido = $scope.Pedido.get_numero_cotizacion();
+                var estado=true;
+                if(pedido !== 0){
+		  estado=false;
+                }
+                console.log("estado",estado);
+                return estado;
+	    };
+            
+	    $scope.validaEliminacion=function(data){	
+                    var valida = (data.cantidadPendiente<data.cantidad_solicitada)?true:false;
+                    return valida; 
+	    };
             /**
              * +Descripcion: Metodo encargado de insertar la cantidad en el detalle
              *               de un producto de un pedido
@@ -1134,7 +1155,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.datos_view.productosInvalidosSinRepetir = removeDuplicates($scope.datos_view.productosInvalidos, "codigo_producto")
 
                     if ($scope.datos_view.productosInvalidosSinRepetir.length > 0) {
-                        console.log("datos_view.productosInvalidosSinRepetir ", $scope.datos_view.productosInvalidosSinRepetir)
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -2007,8 +2027,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if (data.status === 200) {
 
                        that.consultarDetalleProductosCotizacion('1',bodegaCotizacion,function (estado, resultado) {
-                              console.log("estado ", estado);                                  
-                              console.log("resultado ", resultado);                                  
+                                                             
                             if (estado && resultado[0].estado_multiple_pedido === "1") {                            
                                 that.generarPedidoModuloCliente(1,resultado,0,0)                               
                             }else{
@@ -2026,11 +2045,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             
             that.generarPedidoModuloCliente = function(funcion,resultado,aprobado, denegar){
-                
-                console.log("************generarPedidoModuloCliente*******************");
-                console.log("************generarPedidoModuloCliente*******************");
-                console.log("************generarPedidoModuloCliente*******************");
-                
+                                
                 var obj = {
                     session: $scope.session,
                     data: {

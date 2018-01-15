@@ -776,7 +776,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
 	filtro = {1: obj.filtro.fecha_inicial + ' 00:00:00 ', 4: obj.filtro.fecha_final + ' 23:59:59 ', 3: obj.filtro.inicioFechaConsultaReporte + ' 00:00:00 ', 2: obj.filtro.finFechaTablaReporte + ' 23:59:59 '};
 
     }
-    console.log("QQQQQQQQQQQQQQQQQQQQQQQ",sql);
+   
     var query = G.knex.raw(sql, filtro);
     query.then(function(resultado) {
 	callback(false, resultado);

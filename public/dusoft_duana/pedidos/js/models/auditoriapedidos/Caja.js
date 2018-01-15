@@ -6,7 +6,6 @@ define(["angular", "js/models"], function(angular, models) {
 
 
         function Caja(numero, tipo) {
-            console.log("caja argumento ", tipo);
             this.valida = false;
             this.numero = numero || 0;
             this.tipo = tipo || 0;

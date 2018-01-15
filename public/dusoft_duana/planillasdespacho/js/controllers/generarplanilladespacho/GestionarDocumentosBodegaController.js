@@ -273,7 +273,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 Request.realizarRequest(API.PLANILLAS.LISTAR_DOCUMENTOS_FARMACIAS, "POST", obj, function(data) {
                     
                     if (data.status === 200) {
-                        console.log(data.obj.planillas_despachos);
+                    
                         that.render_documentos(data.obj.planillas_despachos);
                     }
                 });
@@ -427,7 +427,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 var modalInstance = $modal.open($scope.opts);
                 
                 /*modalInstance.result.then(function() {
-                    console.log(">>>>>>>>>>>>>>>>>>>>>> cerrando ventana");
+             
                     $scope.buscar_documentos_bodega();
                 }, function() {
                 });*/
@@ -555,9 +555,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 var modalInstance = $modal.open($scope.opts);
                 
                 modalInstance.result.then(function() {
-                   console.log("ventana cerrada ");
+               
                 }, function() {
-                    console.log("ventana cerrada ");
+               
                 });
             };
             
@@ -721,7 +721,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-                console.log("state change start");
+         
             });
         }]);
 });

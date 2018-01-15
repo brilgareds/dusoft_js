@@ -4,7 +4,7 @@ define(["angular","js/controllers", 'models/Usuario', 'models/Cliente', 'models/
     var fo = controllers.controller('pedidoscontroller', ['$scope','$http','$modal', 'Usuario', 'Cliente', 'Pedido',
 	  function ($scope, $http, $modal, Usuario, Cliente, Pedido) {
 	  		
-	  		console.log(Pedido)
+	  		//console.log(Pedido)
 	  		$scope.myData = [];
 	  		$scope.termino_busqueda = "";
 
@@ -100,7 +100,7 @@ define(["angular","js/controllers", 'models/Usuario', 'models/Cliente', 'models/
 						    $scope.abrirfechafinal = false;
 						    
 
-						    console.log($scope.fechainicial)
+						   // console.log($scope.fechainicial)
 						};
 
 						$scope.abrirFechaFinal = function($event) {
@@ -113,7 +113,7 @@ define(["angular","js/controllers", 'models/Usuario', 'models/Cliente', 'models/
 
 						$scope.fechainicialselected = function(){
 							$scope.fechafinal = $scope.fechainicial;
-							console.log($scope.fechafinal)
+							//console.log($scope.fechafinal)
 						};
 
 						$scope.fechafinalselected = function(){
@@ -142,7 +142,7 @@ define(["angular","js/controllers", 'models/Usuario', 'models/Cliente', 'models/
 		            //on ok button press 
 		        },function(){
 		            //on cancel button press
-		            console.log("Modal Closed");
+		            //console.log("Modal Closed");
 		        });
 			}
 

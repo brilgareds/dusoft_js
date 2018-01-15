@@ -1,5 +1,4 @@
 var CronjobModel = function() {
-    console.log("cronjob model >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 };
 
 CronjobModel.prototype.obtenerRolesPorId = function(ids, callback) {

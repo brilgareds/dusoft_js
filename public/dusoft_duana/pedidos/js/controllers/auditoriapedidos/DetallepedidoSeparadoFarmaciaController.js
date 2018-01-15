@@ -40,7 +40,6 @@ define(["angular", "js/controllers",
             };
 
             $scope.$on("detalleFarmaciaCompleto", function(e, datos) {
-                console.log("detalle farmacia completo mostrando >>>>>>>>>> ");
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 2, $scope.resultadoBusquedaDocumento);
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;

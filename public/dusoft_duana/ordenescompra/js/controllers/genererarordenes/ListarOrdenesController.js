@@ -297,7 +297,7 @@ define(["angular", "js/controllers",
 	    function __convertirJson(index,resultado,callback){
 		
 		var result=resultado[index];
-		console.log(index+"___",result);
+		
 		if(!result){
 		  callback(resultado);  
 		  return;

@@ -10,10 +10,8 @@ define(["angular","js/directive"], function(angular, directive){
                 element = $(element);
 
                $rootScope.$on("datosrecibidos",function(e,datos,operario){
-                  //console.log(datos);
                   for(var i in datos){
                       var obj = datos[i];
-                      //console.log(d[i])
                       element.append("<option ng-value='"+obj.id+"' >"+obj.nombre_usuario+"-"+obj.usuario +"</option>")
                   }
                })

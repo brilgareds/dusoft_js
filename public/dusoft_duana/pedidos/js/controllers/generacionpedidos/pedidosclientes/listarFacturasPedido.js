@@ -24,7 +24,6 @@ define(["angular", "js/controllers",
             var that = this;
 
                 
-            console.log("numeroPedidoTipo ",pedido);
             $scope.facturas = pedido;
             $scope.listaFacturasPedido = {
                 data: 'facturas',

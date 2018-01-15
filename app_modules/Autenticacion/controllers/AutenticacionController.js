@@ -1,8 +1,6 @@
 
 var Autenticacion = function(usuarios, emails, m_auth) {
-
-    console.log("Modulo Autenticacion Cargado ");
-
+ 
     this.m_usuarios = usuarios;
     this.emails = emails;
     this.m_auth = m_auth;
@@ -157,7 +155,7 @@ Autenticacion.prototype.guardarTokenPush = function(req, res) {
     var that = this;
     var args = req.body.data;
     
-    console.log("arguments >>>>>>>>>>>>>> ", args.autenticacion);
+
 
     G.Q.ninvoke(that.m_auth,'guardarTokenPush', args.autenticacion).then(function() {
         
@@ -190,7 +188,7 @@ Autenticacion.prototype.lockScreen = function(req, res) {
 Autenticacion.prototype.sessions = function(req, res) {
 
     var that = this;
-    console.log("app id here ", req.body);
+
     var args = req.body.data;
 
     var usuario = req.session.user;

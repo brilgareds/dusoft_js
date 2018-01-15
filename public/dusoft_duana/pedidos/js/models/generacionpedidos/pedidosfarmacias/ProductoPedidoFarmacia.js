@@ -17,6 +17,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.totalExistenciasFarmacias = 0;
             this.disponibilidadBodega = 0;
             this.cantidadSolicitada = 0;
+            this.cantidadSolicitadaPendiente = 0;
             this.estado;
             this.enFarmaciaSeleccionada = false;
             this.cantidadPendiente = 0;
@@ -127,6 +128,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         
         ProductoPedidoFarmacia.prototype.getCantidadSolicitada = function() {
             return parseInt(this.cantidadSolicitada);
+        };
+        
+        ProductoPedidoFarmacia.prototype.setCantidadSolicitadaPendiente = function(cantidadSolicitadaPendiente) {
+            this.cantidadSolicitadaPendiente = cantidadSolicitadaPendiente;
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getCantidadSolicitadaPendiente = function() {
+            return parseInt(this.cantidadSolicitadaPendiente);
         };
         
         ProductoPedidoFarmacia.prototype.setCantidadPendiente = function(cantidadPendiente) {

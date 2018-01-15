@@ -27,7 +27,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     controller: function($scope, $modalInstance, mensaje) {
                         $scope.mensaje = mensaje;
                         $scope.close = function() {
-                            console.log("on close dashboard");
+                      
                             localStorageService.set("mensajeDashboard", undefined);
                             $modalInstance.close();
                         };

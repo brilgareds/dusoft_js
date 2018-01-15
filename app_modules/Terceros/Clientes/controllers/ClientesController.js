@@ -1,8 +1,6 @@
 
 var Clientes = function(clientes) {
 
-    console.log("Modulo Clientes  Cargado ");
-
     this.m_clientes = clientes;
 };
 

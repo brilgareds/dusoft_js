@@ -29,7 +29,7 @@ define(["angular", "js/controllers", "controllers/SetupController"], function(an
 
 
                 Request.realizarRequest('/api/logout', "POST", {session: $scope.session, data: {}}, function(data) {
-                    //console.log(data)
+             
                     localStorage.removeItem("ls.session");
                     callback();
 

@@ -13,12 +13,6 @@ var DocumentoBodegaE008 = function(movientos_bodegas, m_pedidos_clientes, m_pedi
  */
 DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback){
     
-   /* console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
-    console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
-    console.log("********DocumentoBodegaE008.prototype.consultarDatosAdicionales*************");
-     
-    console.log("obj ", obj); 
-     */
     var columnSubQueryA = [
         G.knex.raw("'CLIENTES' as tipo_despacho"),
         G.knex.raw("a.tipo_id_tercero || ' ' || a.tercero_id || ' : '|| b.nombre_tercero as farmacia_cliente "),
@@ -78,7 +72,6 @@ DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback
             });
     
    query.then(function(resultado) {
-        //console.log("query ", query.toSQL());
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [consultarDatosAdicionales] ", err);
@@ -131,11 +124,7 @@ function __camposObtenerDocumentoBodega(observacion, tablaPedidos){
  * @fecha 2017/05/15 YYYY/MM/DD
  */
 DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
-    
-    /*console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
-    console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
-    console.log("************DocumentoBodegaE008.prototype.obtenerDocumentoBodega*************");
-    */
+   
     var column = ["y.documento_id",
                 "y.empresa_id",  
                 G.knex.raw("(SELECT e.razon_social FROM empresas as e WHERE e.empresa_id = y.empresa_id) as nombre_empresa"),
@@ -201,7 +190,6 @@ DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
             .groupBy(G.knex.raw("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25"));
     
     query.then(function(resultado) {
-       console.log("resultado [obtenerDocumentoBodega]: ", resultado);
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [obtenerDocumentoBodega] ", err);
@@ -404,7 +392,6 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
     then(function(resultado){
-        console.log(resultado);
         callback(false, resultado);
     }).catch(function(err){
         console.log("errror ", err);
@@ -493,7 +480,6 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
     then(function(resultado){
-        console.log(resultado);
         callback(false, resultado);
     }).catch(function(err){
         console.log("errror ", err);
@@ -728,12 +714,6 @@ DocumentoBodegaE008.prototype.gestionar_justificaciones_temporales_pendientes = 
 
     that.consultar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, function(err, justificaciones) {
 
-        /*console.log('======================= JUSTIFICACIONES ==============');
-         console.log(err);
-         console.log(justificaciones);
-         console.log('======================================================');
-         return*/
-
         if (err) {
             callback(err, justificaciones);
             return;
@@ -754,7 +734,6 @@ DocumentoBodegaE008.prototype.gestionar_justificaciones_temporales_pendientes = 
 // Consultar Justificacion de Productos Pendientes
 DocumentoBodegaE008.prototype.consultar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, callback) {
 
-    console.log('========= consultar_justificaciones_temporales_pendientes =========');
 
     var sql = " SELECT * FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes a\
                 WHERE a.doc_tmp_id = :1 and a.usuario_id = :2 and a.codigo_producto = :3 ;";
@@ -772,7 +751,6 @@ DocumentoBodegaE008.prototype.consultar_justificaciones_temporales_pendientes = 
 DocumentoBodegaE008.prototype.ingresar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente,
 justificacion, existencia, justificacion_auditor, observacionSeparador, observacionAuditor, callback) {
 
-    console.log('========= ingresar_justificaciones_temporales_pendientes =========');
 
     var sql = " INSERT INTO inv_bodegas_movimiento_tmp_justificaciones_pendientes ( doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, observacion, existencia, justificacion_auditor,observacion_justificacion_separador, observacion_justificacion_auditor ) \
                 VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 ); ";
@@ -790,7 +768,6 @@ justificacion, existencia, justificacion_auditor, observacionSeparador, observac
 DocumentoBodegaE008.prototype.actualizar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente,
     existencia, justificacion, justificacion_auditor, observacionSeparador, observacionAuditor, callback) {
 
-    console.log('========= actualizar_justificaciones_temporales_pendientes =========');
     var sqlAux = "";
     var params = {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto, 4:cantidad_pendiente, 5:existencia, 6:justificacion, 7:justificacion_auditor};
     
@@ -898,7 +875,7 @@ DocumentoBodegaE008.prototype.consultarNumeroMayorRotulo = function(documento_id
 
 // Consultar el rotulo de una caja 
 DocumentoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, numero_pedido, tipoPedido, callback) {
-    console.log("arguments  consultar_rotulo_caja() ",arguments);
+ 
     var sql = " select * from inv_rotulo_caja a where  a.documento_temporal_id = :1 and  numero_caja = :2 and solicitud_prod_a_bod_ppal_id = :3 and (sw_despachado = '0' or sw_despachado is null) and tipo_pedido = :4; ";
 
         
@@ -914,7 +891,7 @@ DocumentoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, num
 // Inserta el rotulo de una caja
 DocumentoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numero_pedido, cliente, direccion, cantidad, ruta,
                                                              contenido, numero_caja, usuario_id, tipo, tipoPedido, callback) {
-    console.log("arguments  generar_rotulo_caja() ",arguments);
+    
     var sql = " INSERT INTO inv_rotulo_caja (documento_id, solicitud_prod_a_bod_ppal_id, cliente, direccion, cantidad, ruta, contenido, usuario_registro, fecha_registro, numero_caja, tipo, documento_temporal_id, tipo_pedido) \
                 VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, NOW(), :9, :10, :1, :11 ) ;";
     
@@ -947,7 +924,7 @@ DocumentoBodegaE008.prototype.validarTemporal = function(doc_tmp_id, usuario_id,
 
 DocumentoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento_id, numero_pedido, tipoPedido, callback) {
     var sql = " UPDATE inv_rotulo_caja SET sw_despachado='1' WHERE documento_temporal_id = :1 and solicitud_prod_a_bod_ppal_id = :2 and tipo_pedido = :3  ";
-    console.log("arguments  marcar_cajas_como_despachadas() ",arguments);
+    
     G.knex.raw(sql, {1:documento_id, 2:numero_pedido, 3:tipoPedido}).
     then(function(resultado){
        callback(false, resultado.rows, resultado);
@@ -959,7 +936,7 @@ DocumentoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento
 
 // Cierra la caja
 DocumentoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, tipo, tipoPedido, callback) {
-    console.log("arguments  cerrar_caja() ",arguments);
+
     var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='0' WHERE documento_temporal_id = :1 and numero_caja = :2 and tipo = :3  and tipo_pedido = :4; ";
       
     G.knex.raw(sql, {1:documento_id, 2:numero_caja, 3:tipo, 4:tipoPedido}).
@@ -1032,7 +1009,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
        callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
         
     }).catch(function(err){
-        //console.log("error generado >>>>>>>>>>>>", err);
+        console.log("error generado >>>>>>>>>>>>", err);
         callback(err);
     }).
     done();   
@@ -1074,7 +1051,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
             transaccion.commit();
         }).
         fail(function(err){
-            //console.log("error generado >>>>>>>>>>>>", err);
+            console.log("error generado >>>>>>>>>>>>", err);
             transaccion.rollback(err);
         }).
         done();
@@ -1084,7 +1061,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
        callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
         
     }).catch(function(err){
-        //console.log("error generado >>>>>>>>>>>>", err);
+        console.log("error generado >>>>>>>>>>>>", err);
         callback(err);
     }).
     done();        
@@ -1419,6 +1396,42 @@ DocumentoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback)
 };
 
 
+DocumentoBodegaE008.prototype.obtenerBodegaMovimiento = function(obj, callback){
+        var columna = [
+        "documento_id",
+        "bodega",
+        "observacion",
+        "sw_estado",
+        "usuario_id",
+        "fecha_registro",
+        "total_costo",
+        "abreviatura",
+        "empresa_destino",
+        "sw_verificado",
+        "porcentaje_rtf",
+        "porcentaje_ica",
+        "porcentaje_reteiva",
+        "porcentaje_cree"
+    ];
+
+    var query = G.knex.select(columna)
+		.from('inv_bodegas_movimiento as a')		
+		.where(function() {
+		})
+		.andWhere('a.empresa_id', obj.empresa)
+		.andWhere('a.prefijo', obj.prefijoDocumento)
+		.andWhere('a.numero', obj.numeroDocumento);
+
+	query.then(function(resultado) {
+        callback(false, resultado);
+	
+    }). catch (function(err) {
+        console.log("err [obtenerBodegaMovimiento]:",query.toSQL());
+        console.log("err [obtenerBodegaMovimiento]:", err);
+        callback(err);
+    });
+}
+
 DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callback){
      
      var sql = "SELECT\
@@ -1441,7 +1454,7 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
                     to_char(((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))),'LFM9,999,999.00') as valor_total_iva_2,\
                     to_char((a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))),'LFM9,999,999.00') as valor_unitario_iva_2,\
                     to_char((a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))),'LFM9,999,999.00') as valor_unitario_iva_2,\
-                    to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario_2\
+                    to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario_2,(a.total_costo/a.cantidad) as costo\
                 FROM\
                     inv_bodegas_movimiento_d as a,\
                     inventarios_productos as b,\

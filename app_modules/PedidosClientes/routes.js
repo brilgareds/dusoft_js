@@ -238,5 +238,13 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.consultarEstadoAutorizacion(req, res);
     });
     
+    /**
+     *@author Andres Gonzalez
+     * +Descripcion: Servicio encargado de actualizar el estado del pedido
+    */
+    app.post('/api/PedidosClientes/actualizarEstadoPedido', function(req, res) {
+        c_pedidos_clientes.actualizarEstadoPedido(req, res);
+    });
+    
      
 };

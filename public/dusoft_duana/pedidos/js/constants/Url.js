@@ -80,7 +80,8 @@ define(["angular"], function(angular) {
                     'GENERAR_PEDIDO_BODEGA_FARMACIA': BASE_URL +'/PedidosClientes/generarPedidoBodegaFarmacia',
  
                     'ACTUALIZAR_PRODUCTO_COTIZACION_COSMITET': BASE_URL +'/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet',
-                    'CONSULTAR_ESTADO_AUTORIZACION': BASE_URL +'/PedidosClientes/consultarEstadoAutorizacion'
+                    'CONSULTAR_ESTADO_AUTORIZACION': BASE_URL +'/PedidosClientes/consultarEstadoAutorizacion',
+                    'ACTUALIZAR_ESTADO_PEDIDO': BASE_URL +'/PedidosClientes/actualizarEstadoPedido'
                     
                 },
                 FARMACIAS :{
@@ -105,7 +106,9 @@ define(["angular"], function(angular) {
                     'GENERAR_PDF_PEDIDO': BASE_URL + '/PedidosFarmacias/generarPdfPedido',
                     'ENVIAR_EMAIL':BASE_URL + '/PedidosFarmacias/enviarEmailPedido',
                     'ANULAR_PENDIENTE_PRODUCTO': BASE_URL +'/PedidosFarmacias/anularPendienteProducto',
-                    'GENERAR_PEDIDO_MODULO_CLIENTE': BASE_URL +'/PedidosFarmacias/generarPedidoModuloCliente'
+                    'GENERAR_PEDIDO_MODULO_CLIENTE': BASE_URL +'/PedidosFarmacias/generarPedidoModuloCliente',
+                    'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA': BASE_URL +'/PedidosFarmacias/actualizarEstadoPedidoFarmacia',
+                    'ACTUALIZAR_CANTIDAD_PENDIENTE_PEDIDO_FARMACIA': BASE_URL +'/PedidosFarmacias/actualizarCantidadPendientePedidoFarmacia'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
@@ -126,7 +129,7 @@ define(["angular"], function(angular) {
                 'LISTAR_PRODUCTOS': BASE_URL + '/Productos/listarProductos', 
                 'EXISTE_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroDetalleTemporal',
                 'ELIMINAR_REGISTRO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroEncabezadoTemporal',
-                'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarEstadoActualPedido',
+              //  'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarEstadoActualPedido',
                 'LISTADO_PEDIDOS_TEMPORALES_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarPedidosTemporalesFarmacias',
                 'ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarRegistroEncabezadoTemporal',
                 'CONSULTA_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/estadoCotizacion',

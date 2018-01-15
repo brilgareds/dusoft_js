@@ -22,7 +22,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                $scope.rootListaProductos.productos = angular.copy(pedido.getProductos());
                $scope.rootListaProductos.filtro = { codigoBarras : false, termino : "" };
               
-                console.log("productos ", $scope.rootListaProductos.productos);
            } ;
             
             

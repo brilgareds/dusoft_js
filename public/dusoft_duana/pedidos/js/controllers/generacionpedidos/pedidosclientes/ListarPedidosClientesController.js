@@ -46,7 +46,7 @@ define(["angular", "js/controllers",
              */
             $scope.notificacionClientesAutorizar = 0;
             $scope.notificacionPedidoAutorizar = 0;
-
+            
             $scope.datos_view = {
                 // Paginacion Cotizaciones
                 termino_busqueda_cotizaciones: '',
@@ -111,8 +111,8 @@ define(["angular", "js/controllers",
                 inactivarTab: false
             };
             $scope.listarFacuras = false;
-            
-            
+	    
+        
             /**
              * +Descripcion Menu desplegable para seleccionar el tipo de cotizacion
              *              que desee realizar el usario,
@@ -502,8 +502,8 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'get_descripcion_estado_cotizacion()', displayName: "Estado Actual", cellClass: "txt-center", width: "10%",
-                        cellTemplate: "<button type='button' \n\
-                                        ng-class='agregar_clase_cotizacion(row.entity.get_estado_cotizacion())'> \n\
+                        cellTemplate: "<button type='button' \
+                                        ng-class='agregar_clase_cotizacion(row.entity.get_estado_cotizacion())'> \
                                         <span ng-class=''></span> {{ row.entity.get_descripcion_estado_cotizacion() }} </button>"},
                     {field: 'get_numero_cotizacion()', displayName: 'No. Cotización', width: "10%"},
                     {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
@@ -770,8 +770,31 @@ define(["angular", "js/controllers",
                 });
             };
             
-            
-
+            /*
+	     * @param {type} estado
+	     * @param {type} estadoSolicitud
+	     * @returns {void}
+	     */
+             that.modificarEstadoPedido=function(parametros){
+		var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            estado: parametros.estado,
+			    numeroPedido:parametros.numeroPedido,
+			    empresa_id: $scope.Pedido.get_empresa_id(),
+                        }
+                    }
+                }; 
+		   Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_ESTADO_PEDIDO, "POST", obj, function(data) {
+		       
+                    if (data.status === 200) {
+			that.buscar_pedidos('', '');
+			AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El pedido No. "+parametros.numeroPedido+" Anulado correctamente");
+                        return;
+                    }
+                });
+	     };
 
             /**
              * +Descripcion: Funcion encargada de consultar los pedidos
@@ -892,6 +915,8 @@ define(["angular", "js/controllers",
                 },function(){});  
 
             };
+	   
+	    
             /**
              * +Descripcion Servicio encargado de listar las facturas de un pedido
              * @author Cristian Manuel Ardila
@@ -926,7 +951,15 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'get_descripcion_estado_actual_pedido()', displayName: "Estado Actual", cellClass: "txt-center", width: "10%",
-                        cellTemplate: "<button type='button' ng-class='agregar_clase_pedido(row.entity.estado_actual_pedido)'> <span ng-class='agregar_restricion_pedido(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
+                        cellTemplate: '<button type="button" ng-class="agregar_clase_pedido(row.entity.estado_actual_pedido)">\
+					  <span ng-if="row.entity.getEstado()==2" class="glyphicon glyphicon-remove-circle">\
+			                    Anulado \
+			                  </span>\
+					  <span ng-if="row.entity.getEstado()!=2" ng-class="agregar_restricion_pedido(row.entity.estado_separacion)">\
+			                   {{row.entity.descripcion_estado_actual_pedido}} \
+			                  </span>\
+                                        </button>\
+					'},
                     {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
                     {field: 'getFacturaFiscal()', displayName: 'Factura', width:  "10%", visible:  true},
                     {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
@@ -936,14 +969,17 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
-                                                <li ng-if="row.entity.getEstadoActualPedido() == \'0\' || row.entity.getEstadoActualPedido() == \'8\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_modificar_pedidos }}" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_reporte_pedidos }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_email_pedidos }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
+                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
+                                                <li ng-if="(row.entity.getEstadoActualPedido() == \'0\' || row.entity.getEstadoActualPedido() == \'8\') && row.entity.getEstado()!= 2 " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_modificar_pedidos }}" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
+                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_reporte_pedidos }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
+                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_email_pedidos }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                                 <li ng-if="row.entity.getEstadoFacturaFiscal() == 1"><a href="javascript:void(0);" ng-click="ventanaFacturasPedido(row.entity)" >Listar facturas</a></li>\
                                                 <li ng-if="row.entity.getTieneDespacho()">\
                                                 <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
+                                            </li>\
+                                             <li ng-if="row.entity.getEstado()!=2 && row.entity.getEstado()== 1 && row.entity.getEstadoActualPedido() == 0 && datos_view.opciones.sw_anulacion_pedidos_clientes">\
+                                                <a href="javascript:void(0);" ng-click="onAnularPedido(row.entity)">Anular Pedido</a>\
                                             </li>\
                                              <li ng-if="datos_view.opciones.sw_consultar_logs">\
                                                 <a href="javascript:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
@@ -953,6 +989,15 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
+	/*
+	 * +Descripcion: Anula el pedido solo si esta en estado 'No Asignado' 
+	 * @param {type} dato
+	 * @returns {estado}
+	 */    
+	$scope.onAnularPedido = function(dato) {
+	    var parametros = {estado : 2 , numeroPedido : dato.numero_pedido}
+	    that.modificarEstadoPedido(parametros);
+	};
              
             $scope.onTraerLogsPedidos = function(pedido) {
 

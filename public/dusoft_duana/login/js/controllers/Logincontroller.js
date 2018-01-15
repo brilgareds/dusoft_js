@@ -5,7 +5,7 @@ define(["angular", "js/controllers", "controllers/ConexionesController"], functi
         function($scope, Usuario, Request, localStorageService, 
         $modal, AlertService, ConexionesController) {
 
-            console.log("init login controller");
+            
             var that = this;
             $scope.usuario = "";
             $scope.clave = "";
@@ -42,7 +42,7 @@ define(["angular", "js/controllers", "controllers/ConexionesController"], functi
             );
 
             $scope.autenticar = function(usuario, clave) {
-                console.log("usuario ", usuario, " clave ", clave)
+                
                 $scope.usuario = usuario;
                 $scope.clave = clave;
                 if (usuario.length === 0 || clave === 0) {
@@ -120,7 +120,7 @@ define(["angular", "js/controllers", "controllers/ConexionesController"], functi
             };
             
             $scope.abrirVentanaLogin = function(){
-                console.log("abrirVentanaLogin ");
+              
                     $scope.opts = {
                     backdrop: true,
                     backdropClick: true,

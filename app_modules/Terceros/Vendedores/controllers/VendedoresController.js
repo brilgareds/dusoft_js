@@ -1,8 +1,6 @@
 
 var Vendedores = function(vendedores, pedidos_clientes) {
 
-    console.log("Modulo Terceros  Cargado ");
-
     this.m_vendedores = vendedores;
     this.m_pedidos_clientes = pedidos_clientes;
 

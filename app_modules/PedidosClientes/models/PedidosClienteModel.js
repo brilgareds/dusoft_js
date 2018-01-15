@@ -42,7 +42,6 @@ PedidosClienteModel.prototype.actualizarProductoCotizacionBodegaCosmitet = funct
         pedido_farmacia: 1
         
     }).then(function(resultado) {
-         console.log("resultado [actualizarProductoCotizacionBodegaCosmitet]: ", resultado);
         callback(false, resultado);
     }). catch (function(error) {
         console.log("err [actualizarProductoCotizacionBodegaCosmitet]: ", error);
@@ -162,12 +161,8 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                     fc_descripcion_producto(a.codigo_producto) ilike :2 \
                 ) ;";
     
-    console.log("termino_busqueda ", parametros);
-    console.log("termino_busqueda.termino_busqueda ", termino_busqueda.termino_busqueda);
-    console.log("andSql ", sql);
-
     G.knex.raw(sql, parametros ).then(function(resultado) {
-        console.log("resultado.rows [consultar_detalle_cotizacion]: ", resultado.rows);
+       
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
         console.log("err [consultar_detalle_cotizacion]: ", err);
@@ -261,7 +256,6 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
                                                                 callback) {
 
     var estado = "";
-    console.log("el filtro ", filtro);
 
     if (filtro !== undefined) {
 
@@ -381,7 +375,6 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     }).leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as d", "a.pedido_cliente_id", "d.pedido_cliente_id").where(function() {
         this.where("a.empresa_id", empresa_id)
         
-        console.log("fecha inicial ", fecha_inicial , " fecha_final ", fecha_final);
         if (fecha_inicial !== undefined) {
             
              this.where(G.knex.raw("a.fecha_registro between '"+ fecha_inicial + "' and '"+ fecha_final +"'"));
@@ -418,7 +411,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     }
     
     if (estado !== "") {
-            console.log("buscar por estado pedidod ", estado);
+         
             query.where("a.estado_pedido", estado);
     }
 
@@ -480,7 +473,7 @@ PedidosClienteModel.prototype.listarFacturasPedido = function(obj,callback){
                         .where('fac.pedido_cliente_id',obj.pedido);
                 
     query.then(function(resultado){ 
-        //console.log("resultado [listarFacturasPedido]:", resultado);     
+            
         callback(false, resultado);
     }).catch(function(err){    
         console.log("err [listarFacturasPedido]:", err);
@@ -1152,6 +1145,43 @@ PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_
 
 };
 
+PedidosClienteModel.prototype.actualizarEstado  = function(parametros, transaccion, callback) {
+
+var query = G.knex('ventas_ordenes_pedidos')
+	    .where('pedido_cliente_id', parametros.numeroPedido)
+	    .update({ 
+		     estado:parametros.estado 
+		   });          
+       
+    if (transaccion)
+        query.transacting(transaccion);
+    query.then(function(resultado) {     
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err [actualizarEstado]: ", err);
+        callback(err);   
+    });
+    
+};
+
+PedidosClienteModel.prototype.actualizarNumeroUnidades = function(parametro,transaccion, callback) {
+
+   var query =  G.knex("ventas_ordenes_pedidos_d")
+		.where({pedido_cliente_id: parametro.numeroPedido})
+		.update({numero_unidades: parametro.numeroUnidades});
+    
+     if(transaccion) query.transacting(transaccion);  
+     
+       query.then(function(resultado) {
+
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err [actualizarNumeroUnidades]: ", err);
+        callback(err);
+    });
+
+};
+
 
 /**
  * FUNCION SIN PROPOSITO ---->>> ACCIONES SOBRE ESTA FUNCION (ELIMINAR;DELETE;DROP;KILL)
@@ -1450,7 +1480,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1: empresa, 2: centro_utilidad_id, 3: bodega_id, 4: contrato_cliente_id};
-     //console.log("parametros [listar_productos]: ", parametros)
+
     if (filtroAvanzado.tipoBusqueda === 0) {
 
         if (tipo_producto !== undefined && tipo_producto !== '') {
@@ -1481,7 +1511,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                  
                 parametros["5"] = termino_busqueda;
             }
-             //console.log("EL ARREGLO ", filtros.numero[0]);
+         
             if(filtros.numero[0] !== null){
                 if(filtros.tipo === 1){
                     filtroNumeroCotizacion = "AND a.pedido_cliente_id_tmp NOT IN ( :6 )";
@@ -1618,11 +1648,6 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
  */
 PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callback) {
     
-    console.log("**********PedidosClienteModel.prototype.insertar_cotizacion****************");
-    console.log("**********PedidosClienteModel.prototype.insertar_cotizacion****************");
-    console.log("**********PedidosClienteModel.prototype.insertar_cotizacion****************");
-    
-    //console.log("cotizacion ",cotizacion);
     var parametros = {
         1: cotizacion.empresa_id,
         2: cotizacion.cliente.tipo_id_tercero,
@@ -1643,7 +1668,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
         17: cotizacion.estadoMultiplePedido
    
     };
-    console.log("parametros ", parametros);
+  
     var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
                 empresa_id,\
                 tipo_id_tercero,\
@@ -1670,7 +1695,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     G.knex.raw(sql, parametros).
     then(function(resultado) { 
-        //console.log("resultado [insertar_cotizacion]: ", resultado)
+     
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
         console.log("err [insertar_cotizacion]", err);
@@ -1689,8 +1714,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
  *                 PedidosClienteController __insertarDetalleCotizacion()
  */
 PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion, producto, callback) {
-   //console.log("cotizacion ", producto);
-    //console.log("producto ", producto);
+   
     var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, \n\
                 codigo_producto, \
                 porc_iva, \
@@ -1986,8 +2010,7 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion
  */
 PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizacion, callback)
 {   
-    console.log("observacion_cartera_cotizacion > ", arguments);
-
+   
     var sql_aux = '4'; // Estado Activo
 
     if (cotizacion.aprobado_cartera === 1)
@@ -2420,17 +2443,17 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
  */
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
     var that = this;
-
+console.log("modificar_detalle_pedido ",producto);
     var cantidadDespachar;
     var campoDespacho = "";
     if (pedido.estadoSolicitud === '8') {
-        cantidadDespachar = producto.cantidadPendienteDespachar;
-        campoDespacho = "cantidad_despachada = '0' , numero_unidades = :2,";
+        cantidadDespachar = parseInt(producto.cantidadPendienteDespachar) + (producto.cantidad_inicial - producto.cantidadPendiente);
+        campoDespacho = " numero_unidades = :2,";
 
 
     } else {
         cantidadDespachar = producto.cantidad_solicitada;
-        campoDespacho = "numero_unidades = :2, ";
+        campoDespacho = " numero_unidades = :2, ";
     }
 
     var sql = "UPDATE ventas_ordenes_pedidos_d SET porc_iva= :1," + campoDespacho + " valor_unitario = :3, usuario_id = :4, fecha_registro = :5 \
@@ -2438,6 +2461,11 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
                 returning( select numero_unidades  from ventas_ordenes_pedidos_d where\
                             pedido_cliente_id = :6 and codigo_producto = :7 \
                 ) as cantidad_solicitada_anterior";
+    
+    console.log("modificar_detalle_pedido sql ",sql);
+    console.log("modificar_detalle_pedido sql ",sql);
+    console.log("modificar_detalle_pedido sql ",sql);
+    console.log("modificar_detalle_pedido sql ",sql);
     var parametros = {
         1: producto.iva, 2: cantidadDespachar, 3: producto.precio_venta,
         4: pedido.usuario_id, 5: 'NOW()', 6: pedido.numero_pedido, 7: producto.codigo_producto
@@ -2630,10 +2658,7 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
  * @fecha: 04/12/2015 2:43 pm
  */
 function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callback) {
-    console.log("*******__generar_detalle_pedido_cliente************");
-    console.log("*******__generar_detalle_pedido_cliente************");
-    console.log("*******__generar_detalle_pedido_cliente************");
-    
+
     var parametros = {1: pedido.numero_pedido, 
                       2: cotizacion.numero_cotizacion, 
                       3: cotizacion.empresa_id, 
@@ -2669,8 +2694,7 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
                     AND bodega_origen_producto = :5 \
                     AND pedido_farmacia = '0'\
                 ) ;";                            
-                
-    console.log("parametros ", parametros);
+   
     var query = G.knex.raw(sql, parametros);
 
     if (transaccion)

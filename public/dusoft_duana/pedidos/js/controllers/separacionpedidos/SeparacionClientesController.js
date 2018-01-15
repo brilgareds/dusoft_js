@@ -41,11 +41,9 @@ define(["angular", "js/controllers",
                     bodega:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                 };
                 
-                console.log("filtro pára buascar cliente ", filtro);
                 SeparacionService.traerPedidosAsignadosClientes($scope.root.session, filtro,
                 $scope.rootSeparacionClientes.paginaActual, $scope.rootSeparacionClientes.terminoBusqueda, function(pedidos){
                     if(pedidos && pedidos.length > 0){
-                        //console.log("$scope.rootSeparacionClientes.empresa", $scope.rootSeparacionClientes.empresa);
                         EmpresaPedido.setPedidos(pedidos);
                         
                      

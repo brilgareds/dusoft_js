@@ -2,6 +2,7 @@
  * Modulos y Dependecias
  * =========================================*/
 var express = require('express');
+var compression = require('compression');
 var modulos = require('./app_modules/');
 var http = require('http');
 var https = require('https');
@@ -17,10 +18,6 @@ var multipart = require('connect-multiparty');
 
 var accounting = require("accounting");
 var cacheKey = "dusoft";
-
-
-
-//console.log(gauge._readFn());
 
 if(process.argv.indexOf("cacheKey") !== -1){ 
     cacheKey = process.argv[process.argv.indexOf("cacheKey") + 1]; 
@@ -208,7 +205,7 @@ if (cluster.isMaster) {
 
 */
     //crea servidor http
-    var app = express();
+    var app = express();    
     var server = app.listen(G.settings.server_port);
     var container = intravenous.create();
     var io = require('socket.io').listen(server);
@@ -283,7 +280,7 @@ if (cluster.isMaster) {
     app.use(express.compress({
         threshold : 0
     }));
-    
+    app.use(compression());
     var tiempo = 10800000;
     
     app.set('port', process.env.PORT || G.settings.server_port);

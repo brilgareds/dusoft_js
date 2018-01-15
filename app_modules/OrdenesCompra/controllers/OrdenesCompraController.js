@@ -1170,7 +1170,6 @@ OrdenesCompra.prototype.subirArchivoOrdenes = function(req, res){
     
     //Notificacion de la subida del archivo plano
     var notificacionArchivoPlano =  function(index, longitud){
-        //console.log("notificacion de archivo plano ", index,  " longitud ", longitud);
         var porcentaje = (index * 100) / longitud;
         that.e_ordenes_compra.onNotificarProgresoArchivoPlanoOrdenes(req.session.user.usuario_id, porcentaje);
     };
@@ -1182,7 +1181,7 @@ OrdenesCompra.prototype.subirArchivoOrdenes = function(req, res){
     }).then(function(resultado){
         res.send(G.utils.r(req.url, 'Archivo cargado correctamente', 200, {pdf:resultado}));
     }).fail(function(err){
-        //console.log("se ha generado un error ", err);
+        console.log("se ha generado un error ", err);
         res.send(G.utils.r(req.url, err, 500, {ordenes_compras: []}));
     });
     

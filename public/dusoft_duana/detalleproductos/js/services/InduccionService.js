@@ -5,7 +5,7 @@ define(["angular", "js/services"], function(angular, services) {
         function($rootScope, Request, API, AlertService) {
 
             /* $rootScope.$on("evento", function(e, data){
-             console.log("esto es un evento", data);
+        
              });*/
             var self = this;
 

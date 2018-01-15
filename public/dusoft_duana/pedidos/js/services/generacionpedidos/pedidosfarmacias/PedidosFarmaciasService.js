@@ -221,7 +221,7 @@ define(["angular", "js/services"], function(angular, services) {
                 };
                 var modalInstance = $modal.open(opts);
             };
-
+            
             return this;
         }]);
 });

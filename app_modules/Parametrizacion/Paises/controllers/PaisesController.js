@@ -1,8 +1,6 @@
 
 var Paises = function(paises) {
 
-    console.log("Modulo Paises Cargado ");
-
     this.m_paises = paises;
 };
 

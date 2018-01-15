@@ -20,7 +20,7 @@ define(["angular", "js/directive", "includes/menu/treeSearch"], function(angular
                     //observador para cuando los datos del arbol se carguen del servidor
 
                     $rootScope.$on("inicializarDatosArbol", function(e) {
-                        console.log("cambio de datos>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                      
                         var data = localStorage.getItem("tree");
 
                         if (data) {
@@ -45,11 +45,11 @@ define(["angular", "js/directive", "includes/menu/treeSearch"], function(angular
 
                         for (var i in scope.$parent.treedata) {
                             var obj = scope.$parent.treedata[i];
-                            //  console.log("url object " + obj.state + " current state" + $state.current.name)
+                          
                             if (obj.state !== undefined && obj.state !== "") {
 
                                 if (obj.state === $state.current.name) {
-                                    //console.log(obj.id)
+                              
                                     data.state.core.selected = [obj.id];
 
                                     localStorage.setItem("tree", JSON.stringify(data));

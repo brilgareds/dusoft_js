@@ -104,7 +104,7 @@ TercerosModel.prototype.listarTerceros = function(parametros, callback) {
 
     query.limit(G.settings.limit).
             offset((parametros.tercero.paginaActual - 1) * G.settings.limit).then(function(resultado) {
-	console.log("listarTerceros::: ",query.toSQL());
+	
         callback(false, resultado);
     }). catch (function(err) {
         console.log("Error listarTerceros ", err);

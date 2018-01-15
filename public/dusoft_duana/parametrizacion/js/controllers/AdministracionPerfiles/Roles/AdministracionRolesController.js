@@ -208,9 +208,9 @@ define(["angular", "js/controllers", "js/models",
             //se busca en el rol los modulo que le pertenecen
             self.esModuloSeleccionado = function(modulo) {
                 var modulos =  $scope.rootRoles.rolAGuardar.getModulos();
-                //console.log("modulos del rol ",modulos);
+               
                 for (var i in modulos) {
-                    //console.log("buscando en ",modulos[i].getModulo().getId(), " buscando con  ",modulo.getId(), " estado ",modulos[i].getModulo().getEstado())
+                  
                     if (modulos[i].getModulo().getId() === modulo.getId() && modulos[i].getModulo().getEstado()) {
                         return modulos[i];
                     }
@@ -340,7 +340,7 @@ define(["angular", "js/controllers", "js/models",
                 
                 self.habilitarModulosRol();
                 
-                //console.log("modulos seleccionados >>>>>>>>>>>>>>>>>>", $scope.rootRoles.rolAGuardar.getModulos());
+              
             });
             
             $rootScope.$on("onseleccionarnodo", function(e, modulo){
@@ -380,8 +380,7 @@ define(["angular", "js/controllers", "js/models",
             });
 
             $scope.$on("modulosDeshabilitados", function(e, modulos_seleccionados) {
-                //console.log("modulos a deshabilitar ", modulos_seleccionados);
-
+         
                 $scope.rootRoles.rolAGuardar.vaciarModulos();
                 var modulo = self.agregarModulo(modulos_seleccionados.seleccionado, false);
 
@@ -410,8 +409,7 @@ define(["angular", "js/controllers", "js/models",
                 $scope.rootRoles.rolAGuardar.setEmpresaId($scope.rootRoles.empresaSeleccionada.getCodigo());
                 var rol_guardar = angular.copy($scope.rootRoles.rolAGuardar);
 
-                //console.log("rol a guardar ", rol_guardar);
-
+               
                 var obj = {
                     session: $scope.rootModulos.session,
                     data: {

@@ -156,7 +156,7 @@ define(["angular", "js/controllers",
             
             
             $scope.$on("cerrarDetalleFarmacia", function(){
-                console.log("cerrar slider  farmacias");
+           
                 $scope.$emit('cerrardetallefarmacia', {animado: true});
             });
             

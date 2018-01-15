@@ -1,8 +1,6 @@
 
 var CentrosUtilidad = function(centros_utilidad) {
 
-    console.log("Modulo CentrosUtilidad  Cargado ");
-
     this.m_centros_utilidad = centros_utilidad;
 };
 

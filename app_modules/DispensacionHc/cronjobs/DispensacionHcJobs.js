@@ -7,9 +7,7 @@ var DispensacionHcJobs = function(c_dispensacion_hc) {
         that.ejecutarJobEliminarFormulasSinMovimiento();
         
     }
-    
-    console.log("Modulo Cron Jobs Dispensacion Historia Clinica Cargado... ");
-      
+   
 };
 
 DispensacionHcJobs.prototype.ejecutarJobEliminarFormulasSinMovimiento = function() {
@@ -20,7 +18,7 @@ DispensacionHcJobs.prototype.ejecutarJobEliminarFormulasSinMovimiento = function
     var job = new G.cronJob('00 30 00 * * *', function () {
         
         that.c_dispensacion_hc.eliminarFormulasSinMovimiento();  
-        console.log("INVOCANDO CONTROLADOR ejecutarJobProcesarDespachos... ");
+
     });
     job.start();
     

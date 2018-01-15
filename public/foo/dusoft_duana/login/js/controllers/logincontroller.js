@@ -13,7 +13,7 @@ define(["angular","js/controllers"], function(angular, controllers){
 	  			User.nombre = nombre;
 	  			User.password = password;
 
-	  			console.log(User.nombre + " " +User.password );
+	  			//console.log(User.nombre + " " +User.password );
 
 	  			window.location = "../pedidos/";
 	  		}

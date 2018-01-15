@@ -19,14 +19,11 @@ var PedidosCronJobs = function(m_pedidos_farmacias, m_pedidos_clientes) {
 PedidosCronJobs.prototype.iniciar = function() {
     
     var that = this;
-    console.log("iniciando crontab de pedidos code 1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     var job = new G.cronJob('00 00 00 * * *', function () {
-    //var job = new G.cronJob('*/59 */59 */23 * * *', function () {
-        console.log("iniciando crontab de pedidos code 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         G.Q.ninvoke(that, "borrarTemporalesPedidos").then(function(){
             return G.Q.ninvoke(that, "borrarReservasPedido");
         }).then(function(){
-            console.log("finaliza eliminacion de temporales y liberacion de reservas ---------------");
+	    
         }).fail(function(err){
             console.log("error borrando temporales ", err);
         });

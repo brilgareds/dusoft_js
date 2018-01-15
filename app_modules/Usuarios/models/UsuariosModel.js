@@ -78,7 +78,6 @@ UsuariosModel.prototype.cambiar_contrasenia = function(usuario, contrasenia, cal
     var sql = "UPDATE system_usuarios SET passwd=MD5( :2 ) WHERE usuario = :1";
     
     G.knex.raw(sql, {1:usuario, 2:contrasenia}).then(function(resultado){
-        console.log("resultaod ", resultado,  resultado.rows);
         callback(false, resultado);
 
     }).catch(function(err){
@@ -224,8 +223,6 @@ UsuariosModel.prototype.cambiarPredeterminadoEmpresa = function(empresa_id, usua
 
     var that = this;
 
-    console.log("cambiar predeterminado predeterminad ", predeterminado, " empresa ", empresa_id, " login id ", usuario_id, " rol id ", rol_id);
-    
     that.borrarCacheUsuario(usuario_id);
     __desmarcarPredeterminadoEmpresas(that, empresa_id, usuario_id, function(err, rows, result) {
 
@@ -273,9 +270,9 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
              return G.Q.ninvoke(that,'sobreEscribirModulosDelRol', login_id, empresa_id, rol_id, usuario_id, login_empresa_id, transaccion);
              
          }).then(function(ids){
-             //console.log("ids de los modulos ", ids);
+        
              modulos_ids = modulos_ids.concat(ids);
-            // transaccion.commit();
+   
             return G.Q.ninvoke(that,'sobreEscribirOpcionesDelRol', usuario_id, rol_id, empresa_id, ids, transaccion);
          }).then(function(resultado){
              transaccion.commit();
@@ -369,7 +366,7 @@ UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_i
         query.then(function(resultado){
             callback(false, resultado);
         }).catch(function(err){
-           // console.log("catch error________________________ ", err);
+            console.log("catch error________________________ ", err);
             callback(err);
         });
 
@@ -391,11 +388,10 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callbac
         //Mientras se arregla el bug de la cache
         if(true){
         //if(!resultado || params.limpiarCache){
-            console.log("obtener parametrizacion de usuario sin cache");
+     
             //obtiene el rol del usuario
             that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol) {
-                //console.log("usuario obtenido ", rol);
-
+              
                 //el usuario no tiene un rol asignado como predeterminado
                 if (!rol || !rol.id) {
                     callback(err, parametrizacion);
@@ -468,7 +464,7 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callbac
             });
             
         } else {
-            console.log("obteniendo parametrizacion usuario de cache con llave ", llave);  
+          
             callback(err, JSON.parse(resultado));
         }
         
@@ -486,7 +482,6 @@ function __serializarJson(modulos){
         };
         
         _modulos[modulo.alias]['opciones'] = {};
-        //console.log("opciones ", modulo.opciones);
         //Opciones del modulo
         for(var ii in modulo.opciones){
             var opcion = modulo.opciones[ii];
@@ -496,9 +491,6 @@ function __serializarJson(modulos){
         }
         
     }
-    
-    
-   // console.log("objeto de modulo ", _modulos);
     return _modulos;
 }
 
@@ -515,14 +507,13 @@ UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, 
         that.borrarCacheUsuario(usuario_id);
         callback(false, resultado);
     }).catch(function(err){
-       // console.log("catch error________________________ ", err);
+        console.log("catch error________________________ ", err);
         callback(err);
     });
 };
 
 UsuariosModel.prototype.sobreEscribirOpcionesDelRol = function(usuario_id, rol_id, empresa_id, modulos_ids, transaccion, callback) {
     var that = this;
-    // console.log(">>>>>>>>>>>>>>>>>>> ",ids);
     __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, transaccion, function(err) {
         that.borrarCacheUsuario(usuario_id);
         callback(err);
@@ -559,7 +550,7 @@ UsuariosModel.prototype.sobreEscribirModulosDelRol = function(login_id, empresa_
         }
 
         __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresa, [], transaccion, function(err, ids) {
-            //console.log("ids insertados >>>>>>> ", ids)
+            
             that.borrarCacheUsuario(usuario_id);
             callback(err, ids);
         });
@@ -639,7 +630,7 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
     }
      
     query.then(function(resultado){
-       //console.log("resultado >>>>>>>>>>>>>> ", resultado);
+       
        callback(false, resultado.rows || resultado, resultado);
     }).catch(function(err){
         console.log(">>>>>>>>>>>>>>>>>>>> ",err);
@@ -690,7 +681,7 @@ UsuariosModel.prototype.borrarParametrizacionPorUsuario = function(usuario_id, c
 
 UsuariosModel.prototype.borrarCacheUsuario = function(usuario_id){
     var llave = G.constants.llavesCache().USURIO_PARAMETRIZACION + "_" + usuario_id; 
-    console.log("borrar llave de cache ", llave);
+ 
     G.redis.del(llave);
 };
 
@@ -816,15 +807,13 @@ function __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, mod
 }
 
 function __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones, transaccion, callback) {
-    //console.log("opcion >>>>>>>>>>>>>>>>>>>>> code 1 ",opciones)
+    
     if (opciones.length === 0) {
         callback(false);
         return;
     }
 
     var _opcion = opciones[0];
-
-    // console.log("opcion >>>>>>>>>>>>>>>>>>>>> ",_opcion)
 
     var opcion = {
         id: _opcion.id,
@@ -919,7 +908,6 @@ function __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id, tra
    var sql = "UPDATE login_modulos_opciones SET estado = :4, usuario_id_modifica = :1, fecha_modificacion = now()  \
               WHERE login_modulos_empresa_id = :2 AND modulos_opcion_id = :3  RETURNING id";
 
-    //console.log("parametros ", {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id});
     G.knex.raw(sql, {1:usuario_id, 2:login_modulos_empresa_id, 3:opcion.id, 4:Number(opcion.seleccionado)}).then(function(resultado){
         if (resultado.rowCount === 0) {
             sql = "INSERT INTO login_modulos_opciones (login_modulos_empresa_id, modulos_opcion_id, usuario_id, fecha_creacion, estado)\
@@ -1153,13 +1141,13 @@ function __validarCreacionUsuario(that, usuario, callback) {
 
         //determina si el nombre de usuario esta en uso, insensible a mayusculas o espacios
         for (var i in rows) {
-            //console.log("buscando en ",rows[i].usuario , " buscando con ", nombre_usuario);
+    
             if (usuario.id !== rows[i].usuario_id) {
 
                 var _nombre_usuario = rows[i].usuario.toLowerCase().replace(/ /g, "");
 
                 if (nombre_usuario === _nombre_usuario) {
-                    console.log("nombre de usuario ", _nombre_usuario, " input ", nombre_usuario);
+                    
                     validacion.valido = false;
                     validacion.msj = "El nombre de usuario no esta disponible";
                     callback(validacion);

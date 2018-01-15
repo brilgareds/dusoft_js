@@ -166,10 +166,10 @@ define(["angular", "js/controllers",
                 var modalInstance = $modal.open($scope.opts);
 
                 modalInstance.result.then(function(result) {
-                    console.log("OK0",result);
+                  
                     that.buscarAutorizacionesCompras();
                 }, function(result) {
-                    console.log("OK1",result);
+                   
                 });
             };
 

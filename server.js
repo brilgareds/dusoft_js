@@ -72,7 +72,7 @@ G.logError =  function logError(texto) {
 
 
 //G.moment = G.moment().format();
-
+G.sqlformatter = require('sqlformatter');
 G.soap = require('soap');
 G.program = require('commander');
 /**

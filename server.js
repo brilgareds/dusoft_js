@@ -237,6 +237,11 @@ if (cluster.isMaster) {
         G.stats.meter('requestsPerSecond').mark();
         next();
     });
+
+    //Se usa la libreria Measured para medida de uso de memoria
+    G.gauge = new Measured.Gauge(function() {
+        return process.memoryUsage().rss;
+    });
     
     var redisOptions = {
         pubClient: pub,
@@ -246,21 +251,6 @@ if (cluster.isMaster) {
     };
     
     io.adapter(RedisStore(redisOptions));
-
-    //Medida de uso de memoria
-    var gauge = new Measured.Gauge(function() {
-        return process.memoryUsage().rss;
-    });
-
-    //socket para consultar estadisticas de rendimiento del sistema pasarlo al modulo sistema
-    /*io.on('connection', function(socket) {
-        var socket_id = socket.id;
-        setInterval(function() {
-                var response = G.utils.r('onEstaditicasSistema', 'estadisticas sistema', 200, {peticiones: G.stats.toJSON(), memoria: Math.round(gauge._readFn() / 1024 / 1024)});
-                io.sockets.emit('onEstaditicasSistema', response);
-        }, 10000);
-    });*/
-
 
     /*=========================================
      * Registrar dependecias en el contendorDI

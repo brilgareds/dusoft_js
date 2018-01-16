@@ -1,5 +1,6 @@
-var Sistema = function(m_sistema) {
+var Sistema = function(m_sistema, socket) {
     this.m_sistema = m_sistema;
+    this.io = socket;
 };
 
 Sistema.prototype.listarLogs = function(req, res) {
@@ -50,5 +51,5 @@ Sistema.prototype.verificarSincronizacion = function(req, res) {
     });
 };
 
-Sistema.$inject = ["m_sistema"];
+Sistema.$inject = ["m_sistema", "socket"];
 module.exports = Sistema;

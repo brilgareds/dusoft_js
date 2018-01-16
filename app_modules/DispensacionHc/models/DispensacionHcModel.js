@@ -1214,39 +1214,41 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
         //union 3       
         .union(function(){
                 this.select(colSubQueryC)                          
-        .from("bodegas_documentos AS a")
+        .from("esm_formula_externa AS d")
+        .join("esm_formulacion_despachos_medicamentos AS c", function(){
+            this.on("c.formula_id","=","d.formula_id")  
+        })
+        .join("bodegas_documentos AS a", function(){
+            this.on("c.bodegas_doc_id","=","a.bodegas_doc_id")
+            .on("c.numeracion","=","a.numeracion")
+        })
         .join("bodegas_documentos_d AS b", function(){
             this.on("a.bodegas_doc_id","=","b.bodegas_doc_id")
             .on("a.numeracion","=","b.numeracion")
         })
-        .join("esm_formulacion_despachos_medicamentos AS c", function(){
-            this.on("c.bodegas_doc_id","=","a.bodegas_doc_id")
-            .on("c.numeracion","=","a.numeracion")
-        })                           
-        .join("esm_formula_externa AS d", function(){
-            this.on("c.formula_id","=","d.formula_id")                               
-        })                                          
+        .join("inventarios_productos AS h", function(){
+            this.on("b.codigo_producto","=","h.codigo_producto")                               
+        })                                         
         .join("bodegas_doc_numeraciones AS e", function(){
             this.on("a.bodegas_doc_id","=","e.bodegas_doc_id")                               
-        })                                  
+        })    
+        .join("system_usuarios AS g", function(){
+            this.on("a.usuario_id","=","g.usuario_id")
+
+        }) 
         .join("centros_utilidad AS f", function(){
-            this.on("e.empresa_id","=","f.empresa_id")
-            .on("e.centro_utilidad","=","f.centro_utilidad")
+            this.on("d.empresa_id","=","f.empresa_id")
+            .on("d.centro_utilidad","=","f.centro_utilidad")
         })                                    
         .join("empresas AS i", function(){
             this.on("f.empresa_id","=","i.empresa_id")                             
         })                                     
-        .join("system_usuarios AS g", function(){
-            this.on("a.usuario_id","=","g.usuario_id")
-
-        })                            
-        .join("inventarios_productos AS h", function(){
-            this.on("b.codigo_producto","=","h.codigo_producto")                               
-        })
+                                   
+       
         .where(function(){
             this.where(G.knex.raw("TRUE and d.tipo_id_paciente = '"+obj.tipoIdPaciente+"'"))
             .andWhere("d.paciente_id",obj.pacienteId)
-            .andWhere("c.sw_estado",'1')
+            .andWhere("c.sw_estado",'not in',['0','2'])
             .andWhere("d.sw_estado",'in',['0','1'])
             .andWhere(G.knex.raw("a.fecha_registro >= '" +obj.fechaDia+ "'::date"))  
             .andWhere(G.knex.raw("a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date "))

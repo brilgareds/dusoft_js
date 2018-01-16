@@ -31,8 +31,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             var dta = [{key:"Uso de Memoria", values:[]}];
             var counter = 0;
+            //Se piden los datos para mostrar en el grafico de memoria y la tabla de peticiones.
+            setInterval(function() {
+                socket.emit('onObtenerEstadisticasSistema', function(datos){});
+            }, 30000);  
             //Se obtienen los datos para mostrar en el grafico de memoria y la tabla de peticiones.
-            socket.on("onEstaditicasSistema", function(datos) {
+            socket.on('OnEstadisticaSistema', function(datos){
                 if (datos.status === 200) {
                     counter += 3;
                     $scope.memoria = datos.obj.memoria;
@@ -45,7 +49,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         return [d[0], d[1]];
                     });
                     $scope.datosGrafico[0].values = values;
-                    //valores de la tabla de peticiones
+                    //fija los valores de la tabla de peticiones
                     $scope.promedio1Min = datos.obj.peticiones.requestsPerSecond["1MinuteRate"];
                     $scope.promedio5Min = datos.obj.peticiones.requestsPerSecond["5MinuteRate"];
                     $scope.promedio15Min = datos.obj.peticiones.requestsPerSecond["15MinuteRate"];

@@ -15,7 +15,12 @@
                     "alias": "m_sistema"
                 }
             }],
-        "events": [],
+        "events": [{
+                "sistema_events": {
+                    "module": "Sistema",
+                    "event": "SistemaEvents",
+                    "alias": "e_sistema"
+                }}],
         "cronJobs": []
     }
 }

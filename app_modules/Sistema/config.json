@@ -1,0 +1,26 @@
+{
+    "module": "Sistema",
+    "dependency": {
+        "controllers": [{
+                "sistema_controller": {
+                    "module": "Sistema",
+                    "controller": "SistemaController",
+                    "alias": "c_sistema"
+                }
+            }],
+        "models": [{
+                "sistema_model": {
+                    "module": "Sistema",
+                    "model": "SistemaModel",
+                    "alias": "m_sistema"
+                }
+            }],
+        "events": [{
+                "sistema_events": {
+                    "module": "Sistema",
+                    "event": "SistemaEvents",
+                    "alias": "e_sistema"
+                }}],
+        "cronJobs": []
+    }
+}

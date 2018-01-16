@@ -1,0 +1,63 @@
+ <style>
+	#scrollArea {
+	  height: 280px;
+	  overflow: auto;
+	}
+
+	#bottom {
+	  display: block;
+	  margin-top: 2000px;
+	}
+</style>
+<div class="row" ng-controller="SistemaController">
+
+	<div class="col-md-8">
+		<h3>Memoria</h3>  
+		<span>Uso actual : {{memoria}}</span> 
+        <nvd3-line-chart
+        data="datosGrafico"
+        id="uso-memoria"
+        showXAxis="true"
+        showYAxis="true"
+        objectequality="true"
+        margin="{left:100,top:50,bottom:100,right:10}"
+        tooltips="true"
+    	yAxisLabel="Memoria"
+        xAxisLabel="Tiempo"
+        width="900"
+        height="400">
+    	</nvd3-line-chart>
+	</div>	
+
+	<div class="col-md-4">
+		<h3>Peticiones</h3>  
+		<span>Promedio actual : {{promedioActual}}</span> 
+		<table class="table table-dark" style="margin-top: 2em !important;">
+			<thead>
+		    <tr>
+		      <th scope="col">Tiempo</th>
+		      <th scope="col">Promedio</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr>
+		      <th scope="row">1 Minuto</th>
+		      <td>{{promedio1Min}}</td>
+		    </tr>
+		    <tr>
+		      <th scope="row">5 Minutos</th>
+		      <td>{{promedio5Min}}</td>
+		    </tr>
+		    <tr>
+		      <th scope="row">15 Minutos</th>
+		      <td>{{promedio15Min}}</td>
+		    </tr>
+		    <tr>
+		      <th scope="row">Total</th>
+		      <td>{{promedioTotal}}</td>
+		    </tr>
+		  </tbody>
+		</table>
+	</div>
+
+</div>

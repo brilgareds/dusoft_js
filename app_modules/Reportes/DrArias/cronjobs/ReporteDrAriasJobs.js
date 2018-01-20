@@ -8,7 +8,7 @@ var ReporteDrAriasJobs = function(m_drArias) {
 	
 	if(G.program.prod){           
 	    that.iniciar();
-	}
+    }
     }
 };
 

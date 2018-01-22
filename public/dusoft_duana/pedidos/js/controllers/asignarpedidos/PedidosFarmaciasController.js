@@ -161,7 +161,7 @@ define(["angular",
 
                 var disabled = true;
 
-                if (pedido.estado_actual_pedido === '1') {
+                if (pedido.estado_actual_pedido === '1' || pedido.estado_actual_pedido === '8') {
                     disabled = false;
                 }
 

@@ -76,7 +76,7 @@ PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosReasignados = func
    
     // Seleccionar el Socket del Operario, si esta conectado en la Tablet.    
     this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
-
+        if(operarios_bodega !== undefined){
         operarios_bodega.forEach(function(operario) {
 
             // Selecciona la sesion del usuario para obtener conexion a los sockets.
@@ -91,6 +91,7 @@ PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosReasignados = func
 
             });
         });
+       }
     });
 };
 

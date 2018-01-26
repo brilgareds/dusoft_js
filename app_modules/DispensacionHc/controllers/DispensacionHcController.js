@@ -895,12 +895,13 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
         return;
     } 
     
+    var farmacia ={empresa:req.session.user.empresa,centro_utilidad:req.session.user.centro_utilidad,bodega:req.session.user.bodega};
     var tipoFormula = args.realizar_entrega_formula.tipoFormula;
     var evolucionId = args.realizar_entrega_formula.evolucionId;
     var usuario = req.session.user.usuario_id;
     var tipoIdPaciente = args.realizar_entrega_formula.tipoIdPaciente;
     var pacienteId = args.realizar_entrega_formula.pacienteId;
-    var parametrosGenerarDispensacion={evolucionId:evolucionId, tipoFormula:tipoFormula.tipo,usuario: usuario}
+    var parametrosGenerarDispensacion={evolucionId:evolucionId, tipoFormula:tipoFormula.tipo,usuario: usuario, farmacia:farmacia};
     var def = G.Q.defer();           
     var numeroFormula;
     var tipoFormulaEvolucion;
@@ -1210,11 +1211,12 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         
     
     }).then(function(resultado){
-       
+        var farmacia;
         var conPendientesEstado;
         if(resultado.length === 0){
             conPendientesEstado = 0;
         }else{
+            farmacia ={ empresa:req.session.user.empresa, centro_utilidad:req.session.user.centro_utilidad, bodega:req.session.user.bodega};
             conPendientesEstado = 1;
         }
         G.knex.transaction(function(transaccion) { 
@@ -1223,7 +1225,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             * +Descripcion se actualiza la tabla de estados evidenciando
             *              que la formula ya no tiene pendientes
             */          
-            return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:conPendientesEstado, evolucion:evolucionId},transaccion);
+            return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:conPendientesEstado, evolucion:evolucionId , farmacia:farmacia},transaccion);
          
         });  
     }).then(function(resultado){
@@ -1375,7 +1377,7 @@ function __fechaMaximaI(index,cantidad_dias_habiles, dias_vigencia, fechaMaximaI
  *              
  */
 DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
-    
+
     var that = this;
     var args = req.body.data;
     var usuario = req.session.user.usuario_id;

@@ -2223,6 +2223,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
 	      numero : numeroDocumento,
 	      //nit :'805027743',
               fecha_remision: fechaRemision,
+              pedido : pedido.numero_pedido,
+              observacion: pedido.observacion
 	      //detalle : detalleProductos
 	 };
          var envio = {cabecera : objCabecera, detalle : detalleProductos};

@@ -28,3 +28,11 @@ BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.02', 'SISTEMA', 'Pone en funcionamiento el socket de estadisticas del sistema');
 COMMIT TRANSACTION;
 
+
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.03  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.02', 'VALIDACION DESPACHOS', 'Se ajusta el boton adjuntar archivos para que ejecute la camara cuando se presione el boton, atributo capture.');
+COMMIT TRANSACTION;
+

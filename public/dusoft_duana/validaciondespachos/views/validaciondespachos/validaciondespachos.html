@@ -182,7 +182,7 @@
                     
                     <span >
                         <label for="files" class="btn btn-default"><i class="glyphicon glyphicon-paperclip"></i> Adjuntar imagen</label>
-                        <input type="file" id="files" style="display: none;" accept="image/*"  class="btn btn-default pull-right" ng-disabled="despachoId == 0 || documentoDespachoAprobado.obtenerImagenes().length == 4 || datos_view.estadoRegistro == 1" onchange="angular.element(this).scope().subirArchivo(this.files)"  />
+                        <input type="file" id="files" style="display: none;" accept="image/*"  class="btn btn-default pull-right" ng-disabled="despachoId == 0 || documentoDespachoAprobado.obtenerImagenes().length == 4 || datos_view.estadoRegistro == 1" onchange="angular.element(this).scope().subirArchivo(this.files)"  capture/>
                     </span>
                 </div>  
             </div>

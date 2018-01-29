@@ -334,7 +334,7 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedido = function(req, res) {
     //verifica si se debe modificar el estado del pedido
     G.Q.ninvoke(that.m_autorizaciones, "verificarProductoAutorizadoFarmacia", numero_pedido).then(function(resultado) {
 
-    if (resultado[0].numero_pendientes === null || resultado[0].numero_pendientes === '0') {
+    if ((resultado[0].numero_pendientes === null || resultado[0].numero_pendientes === '0') && cabecera_pedido[0].estado_actual_pedido !== '8') {
         var estado_pedido = 0;
         //modifica el estado del pedido
         return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_estado_actual_pedido", numero_pedido, estado_pedido);
@@ -500,7 +500,7 @@ PedidosFarmacias.prototype.eliminarResponsablesPedido = function(req, res) {
             var pedido = pedido_cliente[0];
 
 
-            if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1') && pedido.estado_separacion === null) {
+            if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1' || pedido.estado_actual_pedido === '8') && pedido.estado_separacion === null) {
 
                 that.m_pedidos_farmacias.obtener_responsables_del_pedido(numero_pedido, function(err, responsables_pedido) {
 
@@ -520,10 +520,13 @@ PedidosFarmacias.prototype.eliminarResponsablesPedido = function(req, res) {
                                 res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
                                 return;
                             } else {
-
+                                    //se coloca esta condicion ya que se pidio que cuando estuviera 'auditado con pendientes' pasara ha 'no asignado' en el modulo de asignacion
+                               if(pedido.estado_actual_pedido === '8'){
                                 // El estado del pedido es el inmediatamnte el anterior
-                                estado_pedido = responsables_pedido[1].estado;
-
+                                estado_pedido = 0;
+                               }else{
+                                   estado_pedido = responsables_pedido[1].estado;
+                               }
                                 that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows, resultado) {
 
                                     if (err) {
@@ -550,7 +553,7 @@ PedidosFarmacias.prototype.eliminarResponsablesPedido = function(req, res) {
                     }
                 });
             } else {
-                res.send(G.utils.r(req.url, 'El Pedido No puede cambbiar de estado', 200, {}));
+                res.send(G.utils.r(req.url, 'El Pedido No puede cambiar de estado', 200, {}));
             }
         }
     });

@@ -17,7 +17,7 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
     var diferenciaInicial = dateHoy.diff(dateInicial, 'days');
     var diferenciaFinalMes = dateHoy.diff(dateFinal, 'months');
     var diferenciaInicialMes = dateHoy.diff(dateInicial, 'months');
-
+    var obj={};
     if (diferenciaInicialMes > mesDiferenciaSql) {
 	callback(false, -1);
 	return;

@@ -181,11 +181,11 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_
     if(filtro.activo){
         sqlAux = " and c.estado = '1'";
     }
-    
+
     if(filtro.validarBodega){
         sqlAux += " and a.centro_utilidad = '1' and a.bodega = '03' "
     }
-    
+
     var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia, c.estado from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
@@ -439,8 +439,8 @@ function __validarExistenciasProducto(params, callback){
         }
         totalExistencias += cantidadNueva;
     }
-    
-    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto, {activo:false, validarBodega:true}).
+    //empresa_id, , bodega, centro_utilidad, codigo_producto, filtro, callback
+    G.Q.ninvoke(params.contexto, "consultar_stock_producto_kardex", params.empresaId, params.bodega, params.centroUtilidad, params.codigoProducto, {activo:false, validarBodega:true}).
     then(function(resultado){
         
         //Se valida que las cantidades sean numericas y sean iguales
@@ -454,6 +454,28 @@ function __validarExistenciasProducto(params, callback){
         callback(err);
     });
 }
+
+
+// Autor:      : Ernesto Suarez 
+// Descripcion : Consultar stock producto o existencias empresa de un producto
+// Calls       : __validarExistenciasProducto
+
+ProductosModel.prototype.consultar_stock_producto_kardex = function(empresa_id, bodega, centro_utilidad, codigo_producto, filtro, callback) {
+    
+    var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia, c.estado from existencias_bodegas a\
+                inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
+                inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
+                where a.empresa_id = :1  and a.codigo_producto = :2 and a.estado = '1' and a.centro_utilidad = :3 and a.bodega = :4  group by 2";
+    
+   G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto, 3 : centro_utilidad, 4 : bodega}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+};
+
+
 
 /*
 * @Author: Eduar

@@ -318,6 +318,77 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
 };
 
 
+// Ingresar el detalle del documento temporal CLIENTES / FARMACIAS 
+E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresada = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+
+    var validacion = __validarParametrosDetalleTemporal(args);
+    if (!validacion.valido) {
+        res.send(G.utils.r(req.url, validacion.msj, 404, {}));
+    }
+
+    if (args.documento_temporal.total_costo === undefined || args.documento_temporal.total_costo_pedido === undefined) {
+        return {valido: false, msj: 'El costo total y el costo total del pedido no están definidas'};
+    }
+
+    if (args.documento_temporal.total_costo === '' || args.documento_temporal.total_costo_pedido === '') {
+        return {valido: false, msj: 'El costo total y el costo total del pedido están vacíos'};
+    }
+
+    /*validacion = __validarCantidadSolicitadaCantidadSeparada(args, that);
+    if (!validacion.valido) {
+        res.send(G.utils.r(req.url, validacion.msj, 404, {}));
+    }*/
+
+
+    var empresa_id = args.documento_temporal.empresa_id;
+    var centro_utilidad_id = args.documento_temporal.centro_utilidad_id;
+    var bodega_id = args.documento_temporal.bodega_id;
+    var doc_tmp_id = args.documento_temporal.doc_tmp_id;
+    var codigo_producto = args.documento_temporal.codigo_producto;
+    var lote = args.documento_temporal.lote;
+    var fecha_vencimiento = args.documento_temporal.fecha_vencimiento;
+    var cantidad_ingresada = args.documento_temporal.cantidad_ingresada;
+    var valor_unitario = args.documento_temporal.valor_unitario;
+    var iva = args.documento_temporal.iva;
+    var total_costo = args.documento_temporal.total_costo;
+    var total_costo_pedido = args.documento_temporal.total_costo_pedido;
+    var usuario_id = req.session.user.usuario_id;
+
+    var cantidad_solicitada = args.documento_temporal.cantidad_solicitada;
+    var doc_tmp_id = args.documento_temporal.doc_tmp_id;
+
+    //gestionar_detalle_movimiento_bodega();
+
+    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_cantidad_total_ingresada", doc_tmp_id).then(function(resultado){
+        cantidad_total = resultado[0].cantidad_total;
+        if(cantidad_total + cantidad_ingresada > cantidad_solicitada){
+            //res.send(G.utils.r(req.url, 'Error la cantidad ingresada no puede ser mayor a la pendiente', 500, {documento_temporal: {item_id: 0}}));
+            throw {msj : 'Error la cantidad ingresada no puede ser mayor a la pendiente', status : 500};
+            //return;
+        } else {
+            return G.Q.ninvoke(that.m_movimientos_bodegas,'ingresar_detalle_movimiento_bodega_temporal', empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad_ingresada, lote, fecha_vencimiento, iva, valor_unitario, total_costo, total_costo_pedido, usuario_id);
+        }
+    }).then(function(rows){
+
+            var item_id = (rows.length > 0) ? rows[0].item_id : 0;
+
+            res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
+            return;
+    }).fail(function(err){
+        if(err.status){
+            res.send(G.utils.r(req.url, err.msj, 500, {documento_temporal: {item_id: 0}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Error interno.', 500, {documento_temporal: {item_id: 0}}));
+        }
+    }).done();
+
+};
 
 
 E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res) {

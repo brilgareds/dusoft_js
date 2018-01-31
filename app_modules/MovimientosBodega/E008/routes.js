@@ -31,6 +31,11 @@ module.exports = function(app, di_container) {
         c_e008.detalleDocumentoTemporal(req, res);
     });
 
+    // Ingresar Detalle Documento temporal de farmacias/clientes, con validacion de cantidad solicitada vs la ingresada
+    app.post('/api/movBodegas/E008/detalleDocumentoTemporalConValidacionCantidadIngresada', function(req, res) {
+        c_e008.detalleDocumentoTemporalConValidacionCantidadIngresada(req, res);
+    });
+
     // Consultar TODOS los documentos temporales de despacho clientes 
     app.post('/api/movBodegas/E008/consultarDocumentosTemporalesClientes', function(req, res) {
         c_e008.consultarDocumentosTemporalesClientes(req, res);

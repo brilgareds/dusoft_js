@@ -44,3 +44,11 @@ BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.04', 'KARDEX', 'Se ajusta en Kardex, Movimientos bodegas, Modificar lotes de productos. se crea nueva funcion en el modelo consultar_stock_producto_kardex reemplaza consultar_stock_producto');
 COMMIT TRANSACTION;
 
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.05  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.05', 'SEPARACION PEDIDOS', 'Se crea validacion en el servidor para verificar que la cantidad ingresada no sea mayor a la cantidad solicitada');
+COMMIT TRANSACTION;
+
+

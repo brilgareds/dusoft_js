@@ -150,6 +150,7 @@ define(["angular"], function(angular) {
             'SEPARACION_PEDIDOS':{
                 'CONSULTAR_DISPONIBILIDAD': BASE_URL+"/Pedidos/consultarDisponibilidad",
                 'E008_DETALLE' : BASE_URL + "/movBodegas/E008/detalleDocumentoTemporal",
+                'E008_DETALLE_VALIDACION_CANTIDAD_INGRESADA' : BASE_URL + "/movBodegas/E008/detalleDocumentoTemporalConValidacionCantidadIngresada",
                 'JUSTIFICACION_PENDIENTES' : BASE_URL + "/movBodegas/E008/justificacionPendientes",
                 'ELIMINAR_ITEM_TEMPORAL' : BASE_URL + "/movBodegas/E008/eliminarProductoDocumentoTemporal",
                 'OBTENER_JUSTIFICACIONES' : BASE_URL + "/movBodegas/E008/obtenerJustificaciones",

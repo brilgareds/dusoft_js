@@ -99,7 +99,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
              * permite Agrega un item al documento temporal
              */
             self.agregarItemADocumento = function(callback){
-               var url = API.SEPARACION_PEDIDOS.E008_DETALLE;
+               var url = API.SEPARACION_PEDIDOS.E008_DETALLE_VALIDACION_CANTIDAD_INGRESADA;
                var producto = pedido.getProductoSeleccionado();
                var cantidadIngresada = producto.getLote().getCantidadIngresada();
                              
@@ -118,19 +118,20 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                             valor_unitario : producto.getValorUnitario(),
                             iva : producto.getPorcentajeGravament(),
                             total_costo : producto.getValorUnitario() * cantidadIngresada,
-                            total_costo_pedido : producto.getValorUnitario()
+                            total_costo_pedido : producto.getValorUnitario(),
+                            cantidad_solicitada : producto.getCantidadSolicitada()
                         }
                     }
                };
-               
+
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                       var itemId = data.obj.documento_temporal.item_id || 0;
                       producto.setItemId(itemId);
                       callback(true, "Producto guardado correctamente");
-
                     } else {
-                      callback(false, "Se genero un error...");
+                      callback(false, data.msj);
+                        $modalInstance.close();
                     }
                 });
                 
@@ -172,7 +173,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                             
                             callback(false, "La caja se encuentra cerrada");
                         } else {
-                            callback(true);
+                            callback(true, "");
                         }
                     } else {
                         
@@ -307,8 +308,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     if(continuar){
                         self.onGuardarCantidad(function(continuar, msj){
                             if(continuar){
+                                console.log('conntinuar on onGuardarCantidad', continuar);
                                 self.asignarCaja(function(continuar, msj){
 
+                                    console.log('conntinuar on asignarCaja', continuar);
                                     AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
 
                                      if(continuar){

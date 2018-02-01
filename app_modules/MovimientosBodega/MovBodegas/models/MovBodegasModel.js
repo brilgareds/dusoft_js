@@ -691,9 +691,12 @@ MovimientosBodegasModel.prototype.getItemId = function(callback){
     });
 };
 
-MovimientosBodegasModel.prototype.obtener_cantidad_total_ingresada = function(doc_tmp_id, callback){
-    var sql=" select coalesce(sum(cantidad), 0) as cantidad_total from inv_bodegas_movimiento_tmp_d  where doc_tmp_id = :1 ";
-     G.knex.raw(sql, {1 : doc_tmp_id}).
+
+
+MovimientosBodegasModel.prototype.obtener_cantidad_total_ingresada = function(doc_tmp_id, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, callback){
+    //consulta debe ser por codigo_producto, empresa_id, centro_utilidad, bodega
+    var sql=" select coalesce(sum(cantidad), 0) as cantidad_total from inv_bodegas_movimiento_tmp_d  where doc_tmp_id = :1 and empresa_id = :2 and centro_utilidad = :3 and bodega = :4 and codigo_producto = :5";
+     G.knex.raw(sql, {1 : doc_tmp_id, 2 : empresa_id, 3 : centro_utilidad_id, 4 : bodega_id, 5 : codigo_producto}).
     then(function(resultado){
        callback(false, resultado.rows);
     }).catch(function(error){

@@ -700,7 +700,7 @@ MovimientosBodegasModel.prototype.obtener_cantidad_total_ingresada = function(do
     then(function(resultado){
        callback(false, resultado.rows);
     }).catch(function(error){
-       console.log("error [obtener_cantidad_total_ingresada]: ", error);
+       G.logError("error MovimientosBodegasModel [obtener_cantidad_total_ingresada]: " + error);
        callback(error);
     });
 };

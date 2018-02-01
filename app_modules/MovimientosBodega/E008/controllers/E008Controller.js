@@ -310,7 +310,7 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
         } else {
 
             var item_id = (rows.length > 0) ? rows[0].item_id : 0;
-
+            
             res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
             return;
         }
@@ -380,7 +380,6 @@ E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresada 
             res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
             return;
     }).fail(function(err){
-        console.log('error obtener_cantidad_total_ingresada', err);
         if(err.status){
             res.send(G.utils.r(req.url, err.msj, 500, {documento_temporal: {item_id: 0}}));
             return;

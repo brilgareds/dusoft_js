@@ -364,7 +364,7 @@ E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresada 
 
     //gestionar_detalle_movimiento_bodega();
 
-    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_cantidad_total_ingresada", doc_tmp_id).then(function(resultado){
+    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_cantidad_total_ingresada", doc_tmp_id, empresa_id, centro_utilidad_id, bodega_id, codigo_producto).then(function(resultado){
         cantidad_total = resultado[0].cantidad_total;
         if(cantidad_total + cantidad_ingresada > cantidad_solicitada){
             //res.send(G.utils.r(req.url, 'Error la cantidad ingresada no puede ser mayor a la pendiente', 500, {documento_temporal: {item_id: 0}}));
@@ -380,6 +380,7 @@ E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresada 
             res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
             return;
     }).fail(function(err){
+        console.log('error obtener_cantidad_total_ingresada', err);
         if(err.status){
             res.send(G.utils.r(req.url, err.msj, 500, {documento_temporal: {item_id: 0}}));
             return;

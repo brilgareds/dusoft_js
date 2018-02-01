@@ -594,6 +594,7 @@ DocumentoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
     then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
+        console.log("consultar_documento_temporal_farmacias ",err);
         callback(err);
     });
     

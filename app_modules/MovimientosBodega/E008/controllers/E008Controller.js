@@ -310,7 +310,7 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
         } else {
 
             var item_id = (rows.length > 0) ? rows[0].item_id : 0;
-
+            
             res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
             return;
         }
@@ -380,7 +380,6 @@ E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresada 
             res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
             return;
     }).fail(function(err){
-        console.log('error obtener_cantidad_total_ingresada', err);
         if(err.status){
             res.send(G.utils.r(req.url, err.msj, 500, {documento_temporal: {item_id: 0}}));
             return;
@@ -2295,6 +2294,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
 	      numero : numeroDocumento,
 	      //nit :'805027743',
               fecha_remision: fechaRemision,
+              pedido : pedido.numero_pedido,
+              observacion: pedido.observacion
 	      //detalle : detalleProductos
 	 };
          var envio = {cabecera : objCabecera, detalle : detalleProductos};
@@ -2316,6 +2317,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
     }).then(function(resultado){	    
 	res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
                                    {movimientos_bodegas: {}}));
+        return;                           
 	
     }).fail(function(err){
          console.log("Error sincronizarDocumentoDespacho: ",err);

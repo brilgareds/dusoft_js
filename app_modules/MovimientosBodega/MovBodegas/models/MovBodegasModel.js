@@ -37,7 +37,7 @@ MovimientosBodegasModel.prototype.ingresar_movimiento_bodega_temporal = function
 MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
         function(empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad, lote, fecha_vencimiento, iva, valor_unitario, total_costo, total_costo_pedido, usuario_id, callback) {
 
-
+console.log('movimiento detalle temporal', empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad, lote, fecha_vencimiento, iva, valor_unitario, total_costo, total_costo_pedido, usuario_id);
   var sql = " INSERT INTO inv_bodegas_movimiento_tmp_d (doc_tmp_id, empresa_id, centro_utilidad, bodega, codigo_producto, cantidad, \
                 porcentaje_gravamen, total_costo, fecha_vencimiento, lote, local_prod, total_costo_pedido, valor_unitario, usuario_id) \
                 VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14) RETURNING item_id; ";
@@ -687,6 +687,20 @@ MovimientosBodegasModel.prototype.getItemId = function(callback){
        callback(false, resultado.rows);
     }).catch(function(error){
        console.log("error [getItemId]: ", error);
+       callback(error);
+    });
+};
+
+
+
+MovimientosBodegasModel.prototype.obtener_cantidad_total_ingresada = function(doc_tmp_id, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, callback){
+    //consulta debe ser por codigo_producto, empresa_id, centro_utilidad, bodega
+    var sql=" select coalesce(sum(cantidad), 0) as cantidad_total from inv_bodegas_movimiento_tmp_d  where doc_tmp_id = :1 and empresa_id = :2 and centro_utilidad = :3 and bodega = :4 and codigo_producto = :5";
+     G.knex.raw(sql, {1 : doc_tmp_id, 2 : empresa_id, 3 : centro_utilidad_id, 4 : bodega_id, 5 : codigo_producto}).
+    then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(error){
+       G.logError("error MovimientosBodegasModel [obtener_cantidad_total_ingresada]: " + error);
        callback(error);
     });
 };

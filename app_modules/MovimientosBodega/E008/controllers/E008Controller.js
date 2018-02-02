@@ -2146,6 +2146,9 @@ function __validarDumian(identificacion_cliente,tipo_id_cliente){
    (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") ||  //dumian medical sas
    (identificacion_cliente === '10365' && tipo_id_cliente === "CE") || //clinica santa gracia buenaventura
    (identificacion_cliente === '10366' && tipo_id_cliente === "CE")|| //clinica san rafael
+   (identificacion_cliente === '10366' && tipo_id_cliente === "CE")|| //clinica san rafael
+   (identificacion_cliente === '900775143' && tipo_id_cliente === "NIT")|| //clinica san rafael
+   (identificacion_cliente === '890304155' && tipo_id_cliente === "NIT")|| //clinica san rafael
    (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")){ //san andres
      return true;
    }else{
@@ -2193,7 +2196,6 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
            (tipoPedido === 1 && pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")||
            (tipoPedido === 1 && pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS")||
            (tipoPedido === 1 && pedido.identificacion_cliente === '259' && pedido.tipo_id_cliente === "AS")||
-           (tipoPedido === 1 && pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")||
 	   (tipoPedido === 1 && __validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente))){
 
            
@@ -2295,7 +2297,15 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
             
             $tercero = '800179870';            
             
-        }else{
+        }else if(pedido.identificacion_cliente === '900775143'){
+            
+            $tercero = '900775143';   
+        
+        }else if(pedido.identificacion_cliente === '890304155'){
+            
+            $tercero = '890304155';            
+            
+        } else{
                         
             $tercero = '805027743';
             

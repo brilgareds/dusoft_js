@@ -713,7 +713,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
     if(obj.procesoFacturacion === 1){
         query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)
     }
-    
+    console.log(G.sqlformatter.format(query.toString()));
     //inv_facturas_xconsumo_tmp_d
     query.then(function (resultado) {      
         callback(false, resultado)

@@ -187,6 +187,8 @@ ModuloModel.prototype.insertarModulo = function(modulo, callback) {
         modulo_id = modulo.modulo_id;
     }
 
+    console.log('modulo id ', modulo_id);
+
     var sql = "INSERT INTO modulos (id, parent, nombre, url, parent_name, icon, state, observacion, usuario_id,\
                fecha_creacion, estado, carpeta_raiz, alias, sw_reporte) VALUES (" + modulo_id + ", :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, replace(LOWER( :2 ), ' ', '_'), :12 ) RETURNING id";
 

@@ -1,0 +1,31 @@
+
+<div class="row" ng-controller="radicacionController">
+ <div class="col-sm-12 col-md-12">
+	 <p class="text-right">
+ 		<button type="button" ng-click"agregar" class="btn btn-primary">Agregar Concepto</button>
+ 	</p>
+ </div>
+</div>
+<div class="row"> 
+	<div class="col-sm-4 col-md-4">
+           <label>No. Factura</label>
+            <input name="factura" type="text" ng-model="factura" required>
+	</div>
+	<div class="col-sm-4 col-md-4">
+   
+		  
+			<label class="col-md-4  control-label" for="IsSmallBusiness">Grupo</label>
+			<legend></legend>
+			<ui-select ng-model="root.grupo"
+				   theme="select2"
+				   class="form-control selectgeneral pull-left col-md-8"
+				   ng-change="onSeleccionFiltroGrupo()">
+			    <ui-select-match  placeholder="Seleccionar Grupo">{{ $select.selected.getGruposConcepto()}} - {{ $select.selected.getDescripcion()}}</ui-select-match>
+			    <ui-select-choices repeat="filtro in root.grupos | filter:$select.search">
+				{{ filtro.getGruposConcepto()}} - {{ filtro.getDescripcion()}}
+			    </ui-select-choices>
+			</ui-select>
+		  
+		
+	</div>
+</div>

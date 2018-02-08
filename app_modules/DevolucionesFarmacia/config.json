@@ -1,0 +1,21 @@
+{
+    "module": "DevolucionesFarmacia",
+    "dependency": {
+        "controllers": [{
+                "devoluciones_farmacia_controller": {
+                    "module": "DevolucionesFarmacia",
+                    "controller": "DevolucionesFarmaciaController",
+                    "alias": "c_devoluciones_farmacia"
+                }
+            }],
+        "models": [{
+                "devoluciones_farmacia_model": {
+                    "module": "DevolucionesFarmacia",
+                    "model": "DevolucionesFarmaciaModel",
+                    "alias": "m_devoluciones_farmacia"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

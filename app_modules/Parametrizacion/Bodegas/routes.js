@@ -11,4 +11,8 @@ module.exports = function(app, di_container) {
         c_bodegas.listarBodegasPorTermino(req, res);
     });
     
+    app.post('/api/Bodegas/listar_bodegas_duana_farmacias', function(req, res) {
+        c_bodegas.listar_bodegas_duana_farmacias(req, res);
+    });
+    
 };

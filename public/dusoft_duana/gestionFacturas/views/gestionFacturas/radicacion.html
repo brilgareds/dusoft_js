@@ -1,31 +1,52 @@
 
 <div class="row" ng-controller="radicacionController">
- <div class="col-sm-12 col-md-12">
-	 <p class="text-right">
- 		<button type="button" ng-click"agregar" class="btn btn-primary">Agregar Concepto</button>
- 	</p>
- </div>
+    <div class="col-sm-12 col-md-12">
+        <p class="text-right">
+           
+            <button type="button" class="btn btn-default dropdown-toggle" 
+                aria-haspopup="true" aria-expanded="false" ng-click="modalConcepto()" > Agregar Concepto
+             </button>
+        </p>
+    </div>
 </div>
 <div class="row"> 
-	<div class="col-sm-4 col-md-4">
-           <label>No. Factura</label>
-            <input name="factura" type="text" ng-model="factura" required>
-	</div>
-	<div class="col-sm-4 col-md-4">
-   
-		  
-			<label class="col-md-4  control-label" for="IsSmallBusiness">Grupo</label>
-			<legend></legend>
-			<ui-select ng-model="root.grupo"
-				   theme="select2"
-				   class="form-control selectgeneral pull-left col-md-8"
-				   ng-change="onSeleccionFiltroGrupo()">
-			    <ui-select-match  placeholder="Seleccionar Grupo">{{ $select.selected.getGruposConcepto()}} - {{ $select.selected.getDescripcion()}}</ui-select-match>
-			    <ui-select-choices repeat="filtro in root.grupos | filter:$select.search">
-				{{ filtro.getGruposConcepto()}} - {{ filtro.getDescripcion()}}
-			    </ui-select-choices>
-			</ui-select>
-		  
-		
-	</div>
+    <div class="col-sm-4 col-md-4">
+        <label>No. Factura</label>
+        <input name="factura" type="text" ng-model="factura" required>
+    </div>
+    
+    <div class="col-sm-4 col-md-4">
+
+
+        <label class="col-md-4  control-label" >Farmacia</label>
+        <legend></legend>
+        <ui-select ng-model="root.farmaciaSeleccionada"
+                   theme="select2"
+                   class="form-control selectgeneral pull-left col-md-8"
+                   ng-change="onSeleccionFarmacia()"
+                   >
+            <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.descripcion}}</ui-select-match>
+            <ui-select-choices repeat="filtro in root.farmacias | filter:$select.search">
+                {{ filtro.descripcion}}
+            </ui-select-choices>
+        </ui-select>
+
+
+    </div>
+
+    <div class="col-sm-4 col-md-4">
+        <label class="col-md-4  control-label" >Concepto</label>
+        <legend></legend>
+        <ui-select ng-model="root.conceptoSeleccionado"
+                   theme="select2"
+                   class="form-control selectgeneral pull-left col-md-8"
+                   ng-change="onSeleccionConcepto()"
+                   >
+            <ui-select-match  placeholder="Seleccionar Concepto">{{ $select.selected.observacion}}</ui-select-match>
+            <ui-select-choices repeat="filtros in root.concepto | filter:$select.search">
+                {{ filtros.observacion}}
+            </ui-select-choices>
+        </ui-select>
+    </div>
+    
 </div>

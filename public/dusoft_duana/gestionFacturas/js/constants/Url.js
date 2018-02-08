@@ -4,13 +4,15 @@ define(["angular"], function(angular) {
     var data = {
         'API': {
             'BASE_URL': BASE_URL,
-            'LOGS': {
-                "LISTAR_LOGS": BASE_URL + "/Sistema/listarLogs",
-                "LISTAR_LOGS_VERSION": BASE_URL + "/Sistema/listarLogsVersion",
+            'RADICACION': {
+             'LISTAR_CONCEPTO': BASE_URL + "/Radicacion/listarConcepto",
+             
+            'GUARDAR_CONCEPTO': BASE_URL + "/Radicacion/guardarConcepto"
             },
-            'VERSION' : {
-                "VERIFICAR_SINCRONIZACION": BASE_URL + "/Sistema/verificarSincronizacion",
+            'BODEGAS' : {
+                'LISTAR_BODEGA_DUANA_FARMACIA' : BASE_URL + "/Bodegas/listar_bodegas_duana_farmacias"
             }
+          
         }
     };
 

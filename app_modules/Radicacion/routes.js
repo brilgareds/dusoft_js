@@ -12,5 +12,7 @@ module.exports = function(app, di_container) {
        
     });
     
-    
-};
+    app.post('/api/Radicacion/factura', function(req, res){
+        c_Radicacion.factura(req, res);
+    });
+};  

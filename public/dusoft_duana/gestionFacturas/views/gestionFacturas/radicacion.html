@@ -10,14 +10,14 @@
     </div>
 </div>
 <div class="row"> 
+
     <div class="col-sm-4 col-md-4">
-        <label>No. Factura</label>
-        <input name="factura" type="text" ng-model="factura" required>
+        <label class="col-md-4  control-label" >No. factura</label>
+        <legend></legend>
+        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input">
     </div>
     
     <div class="col-sm-4 col-md-4">
-
-
         <label class="col-md-4  control-label" >Farmacia</label>
         <legend></legend>
         <ui-select ng-model="root.farmaciaSeleccionada"
@@ -30,8 +30,6 @@
                 {{ filtro.descripcion}}
             </ui-select-choices>
         </ui-select>
-
-
     </div>
 
     <div class="col-sm-4 col-md-4">
@@ -48,5 +46,42 @@
             </ui-select-choices>
         </ui-select>
     </div>
-    
 </div>
+
+            <div class="row">
+  <div class="col-md-8 col-md-offset-3">.col-md-8 .col-md-offset-4</div>
+  <label class="col-md-4  control-label" >Fecha de llegada</label>
+
+
+                         <p class="input-group">
+           <input type="text" class="form-control readonlyinput" 
+                  datepicker-popup="{{format}}" 
+                  ng-model="fecha_vencimiento" 
+                  is-open="abrir_fecha" 
+                  min="minDate"   
+                  readonly  close-text="Cerrar" 
+                  ng-change="" 
+                  clear-text="Borrar" 
+                  current-text="Hoy" 
+                  placeholder="Fecha Inicial" 
+                  show-weeks="false" 
+                  toggle-weeks-text="#"  />
+           <span class="input-group-btn">
+               <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+           </span>
+       </p>
+       </div>
+
+
+   <div class="row"> 
+
+    <div class="col-sm-4 col-md-4">
+        <label class="col-md-4  control-label" >Precio</label>
+        <legend></legend>
+        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Digite el precio.">
+    </div>
+        
+       
+     
+         
+    

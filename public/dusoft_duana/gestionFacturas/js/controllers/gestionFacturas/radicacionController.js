@@ -11,6 +11,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "Empresa", 
         function($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa) {
           var that = this;   
+            var fecha_actual = new Date();
+            $scope.abrir_fecha = false;
+            $scope.fecha_vencimiento =  $filter('date')(fecha_actual, "yyyy-MM-dd"),
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -18,6 +21,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.root={
                 farmaciaSeleccionada : "",
                 conceptoSeleccionado: ""
+            };
+            
+            $scope.abrir_fecha_inicial = function($event){
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.abrir_fecha = $scope.abrir_fecha? false : true;
+                console.log($scope.abrir_fecha);
+
             };
            
         that.consultarFarmacia = function() {

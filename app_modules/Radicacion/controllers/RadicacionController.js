@@ -29,7 +29,7 @@ Radicacion.prototype.guardarConcepto = function(req, res) {
         res.send(G.utils.r(req.url, 'Debe digitar el nombre del concepto', 404, {}));
         return;
     }
-    
+}   
 Radicacion.prototype.factura = function(req, res) {
     
     var that = this;

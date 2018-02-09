@@ -17,9 +17,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function (a
 
                         $scope.tipoPedido = 0;
                         /*$scope.EmpresasProductos = [];
-                        $scope.paginaactual = 1;
-                        $scope.paginas = 0;
-                        $scope.items = 0;*/
+                         $scope.paginaactual = 1;
+                         $scope.paginas = 0;
+                         $scope.items = 0;*/
                         $scope.listarPedido = [];
                         $scope.listarProductoEmpresa = [];
                         $scope.ultima_busqueda = "";
@@ -35,7 +35,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function (a
 
                     that.buscarEmpresas = function (callback) {
 
-                        console.log("CONTROLLER front that.buscarEmpresas");
                         var obj = {
                             session: $scope.session
                         };
@@ -47,18 +46,88 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function (a
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         });
-                    }
+                    };
 
 
 
+                    that.buscarCentroUtilidad = function (id_empresa, callback) {
+                        var obj = {
+                            session: $scope.session,
+                            empresa_id: id_empresa
+                        };
+                        DevolucionesFarmaciaService.buscarCentroUtilidad(obj, function (data) {
+                            if (data.status === 200) {
+                                console.log("Resultado ", data);
+                                callback(data.obj.listarCentrosUtilidad);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        });
+                    };
+
+                    that.buscarBodega = function (id_empresa, id_centro, callback) {
+                        var obj = {
+                            session: $scope.session,
+                            empresa_id: id_empresa,
+                            centro_utilidad_id: id_centro
+                        };
+                        DevolucionesFarmaciaService.buscarBodega(obj, function (data) {
+                            if (data.status === 200) {
+                                console.log("Resultado ", data);
+                                callback(data.obj.listarBodegas);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        });
+                    };
+
+
+                    /*that.renderProductosEmpresa = function (data) {
+                        console.log("RENDER PRODUCTOS EMPRESA", data);
+                        listaProEmp = [];
+                        $scope.items = data.obj.listarProductosEmpresa.length;
+                        $scope.EmpresasProductos = [];
+                        $scope.paginas = (data.obj.listarProductosEmpresa.length / 10);
+                        //$scope.items = data.obj.listarProductosEmpresa.length;
+
+                        for (var i in data.obj.listarProductosEmpresa) {
+                            var objt = data.obj.listarProductosEmpresa[i];
+                            /* var productoAutorizacion = Producto.get();
+                             var datos = {};
+                             datos.codigo_producto = objt.codigo_producto;
+                             datos.descripcion = objt.descripcion;
+                             datos.existencia = objt.existencia;
+                             datos.porc_iva = objt.porc_iva;
+                             datos.costo = objt.costo;
+                             datos.precio_venta = objt.precio_venta;
+                             productoAutorizacion.setDatos(datos);
+                             
+                             var productos = TerceroAutorizacion.get(objt.nombre_tercero, objt.tipo_id_tercero, objt.tercero_id);
+                             productos.agregarPedido(productoAutorizacion);
+                             listaProEmp.push(productos);
+                            listaProEmp.push(objt);
+                        }
+                        $scope.listarProductoEmpresa = listaProEmp;
+                    };*/
 
 
                     that.init(function () {
-                        console.log("CONTROLLER front init");
                         that.buscarEmpresas(function (data) {
                             $scope.empresas = data;
                         });
                     });
+
+                    $scope.onBuscarCentros = function () {
+                        that.buscarCentroUtilidad($scope.selectedEmpresa, function (data) {
+                            $scope.centros = data;
+                        });
+                    };
+
+                    $scope.onBuscarBodegas = function () {
+                        that.buscarBodega($scope.selectedEmpresa, $scope.selectedCentro, function (data) {
+                            $scope.bodegas = data;
+                        });
+                    };
 
                     /**
                      * +Descripcion: objeto ng-grid

@@ -9,9 +9,9 @@ define(["angular"], function(angular) {
             'BASE_URL': BASE_URL,
             'DEVOLUCIONESFARMACIA': {
                 "LISTAR_EMPRESAS": BASE_URL + "/DevolucionesFarmacia/listarempresas",
-                /*"MODIFICAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/DevolucionesFarmacia/modificarAutorizacionProductos",
-                "INSERTAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/DevolucionesFarmacia/insertarAutorizacionProductos",
-                "VERIFICAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/DevolucionesFarmacia/verificarAutorizacionProductos",
+                "LISTAR_CENTROS_UTILIDAD": BASE_URL + "/DevolucionesFarmacia/listarCentrosUtilidad",
+                "LISTAR_BODEGAS": BASE_URL + "/DevolucionesFarmacia/listarBodegas",
+                /*"VERIFICAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/DevolucionesFarmacia/verificarAutorizacionProductos",
                 "LISTAR_VERIFICACION_PRODUCTOS": BASE_URL + "/DevolucionesFarmacia/listarVerificacionProductos",*/
             }
         }

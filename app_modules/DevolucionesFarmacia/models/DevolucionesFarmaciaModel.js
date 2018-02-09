@@ -10,7 +10,7 @@ var DevolucionesFarmaciaModel = function () {
  * @returns {datos de consulta}
  */
 // json
-DevolucionesFarmaciaModel.prototype.listarEmpresas2 = function (empresaNombre, callback) {
+/*DevolucionesFarmaciaModel.prototype.listarEmpresas2 = function (empresaNombre, callback) {
 
 console.log("MODEL  listarEmpresas2");
     var column = [
@@ -29,7 +29,7 @@ console.log("MODEL  listarEmpresas2");
             .catch(function (error) {
                 callback(error);
             }).done();
-};
+};*/
 
 
 /**
@@ -45,11 +45,55 @@ DevolucionesFarmaciaModel.prototype.listarEmpresas = function (callback) {
             .select()
             .from('empresas')
             .where('sw_activa', 1);
-
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [listarEmpresas]:", err);
+        callback(err);
+    });
+};
+
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta todos los centros de utilidad que pertenezcan a la empresa
+ * seleccionada
+ * @params obj: empresa_seleccionada
+ * @fecha 2018-02-05
+ */
+DevolucionesFarmaciaModel.prototype.listarCentrosUtilidad = function (empresa_seleccionada, callback) {
+    var query = G.knex
+            .select()
+            .from('centros_utilidad')
+            .where({empresa_id: empresa_seleccionada,
+                estado: 1});
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarCentrosUtilidad]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta todas las bodegas que pertenezcan a la empresa y la bodega
+ * seleccionada
+ * @params obj: pedidoId
+ * @fecha 2018-02-05
+ */
+DevolucionesFarmaciaModel.prototype.listarBodegas = function (ids, callback) {
+    var query = G.knex
+            .select()
+            .from('bodegas')
+            .where({empresa_id: ids.empresa,
+                centro_utilidad: ids.centroUtilidad});
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarBodegas]:", err);
         callback(err);
     });
 };
@@ -61,7 +105,6 @@ DevolucionesFarmaciaModel.prototype.listarEmpresas = function (callback) {
  */
 DevolucionesFarmaciaModel.prototype.listarProductosEmpresa = function (parametros, callback) {
     
-    console.log("MODEL listarProductosEmpresa");
     var columnas = [
         "invenPro.codigo_producto",
         "invenPro.descripcion",
@@ -107,3 +150,5 @@ DevolucionesFarmaciaModel.prototype.listarProductosEmpresa = function (parametro
         callback(err);
     });
 };
+
+module.exports = DevolucionesFarmaciaModel;

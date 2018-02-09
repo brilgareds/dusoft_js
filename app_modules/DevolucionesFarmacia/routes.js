@@ -7,15 +7,15 @@ module.exports = function(app, di_container) {
         c_devoluciones_farmacia.listarEmpresas(req, res);
     });
 
-   /* app.post('/api/DevolucionesFarmacia/verificarAutorizacionProductos', function(req, res) {
-        c_devoluciones_farmacia.verificarAutorizacionProductos(req, res);
+    app.post('/api/DevolucionesFarmacia/listarCentrosUtilidad', function(req, res) {
+        c_devoluciones_farmacia.listarCentrosUtilidad(req, res);
     });
 
-    app.post('/api/DevolucionesFarmacia/modificarAutorizacionProductos', function(req, res) {
-        c_devoluciones_farmacia.modificarAutorizacionProductos(req, res);
+    app.post('/api/DevolucionesFarmacia/listarBodegas', function(req, res) {
+        c_devoluciones_farmacia.listarBodegas(req, res);
     });
 
-    app.post('/api/DevolucionesFarmacia/insertarAutorizacionProductos', function(req, res) {
+    /*app.post('/api/DevolucionesFarmacia/insertarAutorizacionProductos', function(req, res) {
         c_devoluciones_farmacia.insertarAutorizacionProductos(req, res);
     });
 

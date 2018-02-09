@@ -1,7 +1,5 @@
-var DevolucionesFarmacia = function(ordenes_devoluciones, m_productos, m_usuarios) {
-    this.m_ordenes_devoluciones = ordenes_devoluciones;
-    this.m_productos = m_productos;
-    this.m_usuarios = m_usuarios;
+var DevolucionesFarmacia = function(m_devoluciones_farmacia) {
+    this.m_devoluciones_farmacia = m_devoluciones_farmacia;
 };
 
 
@@ -44,7 +42,8 @@ DevolucionesFarmacia.prototype.listarEmpresas = function (req, res) {
     console.log("controller back listarEmpresas");
     var that = this;
     var args = req.body.data;
-    G.Q.nfcall(that.m_devoluciones_farmacia.listarEmpresas).
+    console.log("controller back listarEmpresas",args);
+  /*  G.Q.nfcall(that.m_devoluciones_farmacia.listarEmpresas).
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'Consultar listar Empresas ok!!!!', 200, {listarEmpresas: resultado}));
             }).
@@ -52,5 +51,10 @@ DevolucionesFarmacia.prototype.listarEmpresas = function (req, res) {
                 res.send(G.utils.r(req.url, 'Error al Consultar listar Empresas', 500, {listarEmpresas: {}}));
             }).
             done();
-
+*/
 };
+
+
+DevolucionesFarmacia.$inject = ["m_devoluciones_farmacia"];
+
+module.exports = DevolucionesFarmacia;

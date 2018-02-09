@@ -35,6 +35,22 @@ Bodegas.prototype.listar_bodegas_empresa = function(req, res) {
     });
 };
 
+Bodegas.prototype.listar_bodegas_duana_farmacias = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+   G.Q.ninvoke( that.m_bodegas,'listar_bodegas_duana_farmacias').then(function(resultado){
+   
+    res.send(G.utils.r(req.url, 'Lista de Bodegas', 200, {bodegas: resultado}));
+        
+    }).fail(function(err){     
+
+       res.send(G.utils.r(req.url, 'Error listado bodegas', 500, {bodegas: {}}));
+    }).done();   
+    
+};
+
 Bodegas.prototype.listarBodegasPorTermino = function(req, res) {
 
     var that = this;

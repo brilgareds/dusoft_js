@@ -29,7 +29,7 @@ define(["angular",
     "socketservice",
     "includes/http/Request",
     "uiselect2",
-    "includes/classes/CentroUtilidad",
+    //"includes/classes/CentroUtilidad",
     "services/DevolucionesFarmaciaService",
     "webNotification"
 ], function (angular) {

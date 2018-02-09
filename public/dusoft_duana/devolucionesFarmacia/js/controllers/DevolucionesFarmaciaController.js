@@ -12,10 +12,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function (a
                         $scope.root = {};
 
                         $scope.tipoPedido = 0;
-                        $scope.EmpresasProductos = [];
+                        /*$scope.EmpresasProductos = [];
                         $scope.paginaactual = 1;
                         $scope.paginas = 0;
-                        $scope.items = 0;
+                        $scope.items = 0;*/
                         $scope.listarPedido = [];
                         $scope.listarProductoEmpresa = [];
                         $scope.ultima_busqueda = "";

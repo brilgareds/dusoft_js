@@ -7,6 +7,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function (a
                         $timeout, $filter, localStorageService, $state, DevolucionesFarmaciaService) {
 
                     var that = this;
+                    $scope.session = {
+                        usuario_id: Usuario.getUsuarioActual().getId(),
+                        auth_token: Usuario.getUsuarioActual().getToken()
+                    };
 
                     that.init = function (callback) {
                         $scope.root = {};
@@ -30,7 +34,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function (a
                     };
 
                     that.buscarEmpresas = function (callback) {
-                        
+
                         console.log("CONTROLLER front that.buscarEmpresas");
                         var obj = {
                             session: $scope.session

@@ -10,8 +10,9 @@ var DevolucionesFarmaciaModel = function () {
  * @returns {datos de consulta}
  */
 // json
-DevolucionesFarmaciaModel.prototype.listarEmpresas = function (empresaNombre, callback) {
+DevolucionesFarmaciaModel.prototype.listarEmpresas2 = function (empresaNombre, callback) {
 
+console.log("MODEL  listarEmpresas2");
     var column = [
         "empresa_id",
         "razon_social"
@@ -30,12 +31,37 @@ DevolucionesFarmaciaModel.prototype.listarEmpresas = function (empresaNombre, ca
             }).done();
 };
 
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta todas las empresas
+ * @fecha 2018-02-08
+ */
+DevolucionesFarmaciaModel.prototype.listarEmpresas = function (callback) {
+    
+    console.log("MODEL  listarEmpresas");
+    console.log("modelo ");
+    var query = G.knex
+            .select()
+            .from('empresas')
+            .where('sw_activa', 1);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarEmpresas]:", err);
+        callback(err);
+    });
+};
+
 /**
  * @author German Galvis
  * +Descripcion consulta todas las productos
  * @fecha 2018-02-08
  */
 DevolucionesFarmaciaModel.prototype.listarProductosEmpresa = function (parametros, callback) {
+    
+    console.log("MODEL listarProductosEmpresa");
     var columnas = [
         "invenPro.codigo_producto",
         "invenPro.descripcion",

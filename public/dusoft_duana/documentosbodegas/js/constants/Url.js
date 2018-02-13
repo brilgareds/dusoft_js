@@ -41,6 +41,11 @@ define(["angular"], function(angular) {
             },
             'E007': {
             },
+            'E009': {
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/crearDocumento',
+                'LISTAR_BODEGAS': BASE_URL + '/movBodegas/E009/listarBodegas'
+                //'CREAR_HTML_DOCUMENTO': BASE_URL + '/movBodegas/I002/crearHtmlDocumento',
+            },
             'LABORATORIOS': {
                 'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios'
             },

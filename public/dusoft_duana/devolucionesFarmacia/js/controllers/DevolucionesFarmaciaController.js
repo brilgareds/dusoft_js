@@ -141,7 +141,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function (a
                         enableRowSelection: false,
                         enableHighlighting: true,
                         columnDefs: [
-                            {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "10%",
+                            {field: 'opciones', displayName: "Estado", cellClass: "txt-center dropdown-button", width: "10%",
                                 cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).getBoolPorAprobar()" class="btn btn-warning btn-xs" >\
                                                     <i class="glyphicon glyphicon-warning-sign"></i>\n\
@@ -153,8 +153,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function (a
                                                 </button>\
                                             </div>'
                             },
-                            {field: 'getNombre()', displayName: 'Cliente / Farmacia', width: "65%"},
-                            {field: 'obtenerPedidoPorPosiscion(0).get_numero_pedido()', displayName: 'Pedido', width: "10%"},
+                            {field: 'getNombre()', displayName: 'Documentos', width: "55%"},
+                            {field: 'getNombre()', displayName: 'Lote', width: "10%"},
+                            {field: 'obtenerPedidoPorPosiscion(0).get_numero_pedido()', displayName: 'Cantidad', width: "10%"},
                             {field: 'obtenerPedidoPorPosiscion(0).getFechasolicitud()', displayName: 'Fecha', width: "10%"},
                             {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
                                 cellTemplate: ' <div class="row">\n\

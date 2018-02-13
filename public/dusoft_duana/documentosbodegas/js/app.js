@@ -43,8 +43,11 @@ define([
     "controllers/indexController",
     "controllers/I002/I002Controller",
     "controllers/I002/GestionarProductosController",
+    "controllers/E009/E009Controller",
+    "controllers/E009/GestionarProductosController",
     "webNotification",
     "services/general/GeneralService",
+    "services/E009/E009Service",
     
 ], function(angular) {
 
@@ -105,6 +108,14 @@ define([
                     templateUrl: "views/I002/index.html",
                     parent_name : "DocumentosBodegas",
                     controller: 'I002Controller'
+                });
+                // E009
+                documentos_bodegas.stateProvider.state('E009', {
+                    url: "/E009",
+                    text: "Administración Documentos de Bodega [E009]",
+                    templateUrl: "views/E009/index.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'E009Controller'
                 });
 
 

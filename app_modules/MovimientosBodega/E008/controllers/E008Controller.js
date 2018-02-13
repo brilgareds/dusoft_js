@@ -2146,6 +2146,7 @@ function __validarDumian(identificacion_cliente,tipo_id_cliente){
    (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") ||  //dumian medical sas
    (identificacion_cliente === '10365' && tipo_id_cliente === "CE") || //clinica santa gracia buenaventura
    (identificacion_cliente === '10366' && tipo_id_cliente === "CE")|| //clinica san rafael
+   (identificacion_cliente === '10119' && tipo_id_cliente === "CE")|| //UCI MARIO CORREA- LOS CHORROS
    (identificacion_cliente === '10368' && tipo_id_cliente === "CE")|| //LABORATORIO CLINICA SAN RAFAEL DUMIAN GIRARDOT
    (identificacion_cliente === '900775143' && tipo_id_cliente === "NIT")|| //UNION TEMPORAL DUCOT 
    (identificacion_cliente === '890304155' && tipo_id_cliente === "NIT")|| //HOSPITAL UNIVERSITARIO DEL VALLE

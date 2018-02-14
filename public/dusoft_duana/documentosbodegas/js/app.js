@@ -37,6 +37,7 @@ define([
     "models/I002/OrdenCompraIngreso",
     "models/I002/DocumentoIngreso",
     "models/I002/ProveedorIngreso",
+    "models/E009/ProductoDevolucion",
     "models/Index/TipoDocumentos",
     "models/Index/EmpresaDocumento",
     "models/Index/DocumentoBodega",
@@ -44,7 +45,7 @@ define([
     "controllers/I002/I002Controller",
     "controllers/I002/GestionarProductosController",
     "controllers/E009/E009Controller",
-    "controllers/E009/GestionarProductosController",
+    "controllers/E009/E009GestionarProductosController",
     "webNotification",
     "services/general/GeneralService",
     "services/E009/E009Service",
@@ -116,6 +117,12 @@ define([
                     templateUrl: "views/E009/index.html",
                     parent_name : "DocumentosBodegas",
                     controller: 'E009Controller'
+                }).state('buscarProductos', {
+                    url: "/buscarProductos",
+                    text: "Buscador de productos",
+                    templateUrl: "views/E009/gestionarproductosE009.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'E009GestionarProductosController'
                 });
 
 

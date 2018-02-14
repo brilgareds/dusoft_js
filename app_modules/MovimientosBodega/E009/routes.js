@@ -12,5 +12,8 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E009/listarBodegas', function(req, res) {
         c_e009.listarBodegas(req, res);
     });
+    app.post('/api/movBodegas/E009/listarProductos', function(req, res) {
+        c_e009.listarProductos(req, res);
+    });
 
 };

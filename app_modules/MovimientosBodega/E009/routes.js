@@ -12,8 +12,21 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E009/listarBodegas', function(req, res) {
         c_e009.listarBodegas(req, res);
     });
+    
+    app.post('/api/movBodegas/E009/newDocTemporal', function(req, res) {
+        c_e009.newDocTemporal(req, res);
+    });
+    
     app.post('/api/movBodegas/E009/listarProductos', function(req, res) {
         c_e009.listarProductos(req, res);
+    });
+    
+    app.post('/api/movBodegas/E009/eliminarGetDocTemporal', function(req, res) {
+        c_e009.eliminarGetDocTemporal(req, res);
+    });
+    
+    app.post('/api/movBodegas/E009/agregarItem', function(req, res) {
+        c_e009.agregarItem(req, res);
     });
 
 };

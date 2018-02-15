@@ -43,6 +43,9 @@ define(["angular"], function(angular) {
             },
             'E009': {
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/crearDocumento',
+                'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/E009/newDocTemporal',
+                'CREAR_ITEM': BASE_URL + '/movBodegas/E009/agregarItem',
+                'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/E009/eliminarGetDocTemporal',
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/E009/listarBodegas',
                 'LISTAR_PRODUCTOS': BASE_URL + '/movBodegas/E009/listarProductos',
             },

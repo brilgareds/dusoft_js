@@ -9,17 +9,19 @@ define([
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state", "$filter",
         'Usuario',
-        "EmpresaIngreso",
+        "Devolucion",
         "DocumentoIngreso",
-        "ProveedorIngreso",
-        "OrdenCompraIngreso",
         "Usuario",
         "ProductoDevolucion",
         "E009Service",
         function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Usuario, Empresa, Documento, Proveedor, OrdenCompra, Sesion, Producto, E009Service) {
+                Usuario, Devolucion, Documento, Sesion, Producto, E009Service) {
 
             var that = this;
+            $scope.Devolucion = Devolucion;
+            $scope.doc_tmp_id = "00000";
+            $scope.selectedBodega = '03';
+            $scope.observacion = '';
 
 
             $scope.session = {
@@ -35,11 +37,14 @@ define([
 
             that.init = function (callback) {
                 $scope.root = {};
-                $scope.selectedBodega = '';
+                //$scope.selectedBodega = '';
                 $scope.observacion = '';
                 callback();
             };
 
+            $scope.cancelar_documento = function () {
+                $state.go('DocumentosBodegas');
+            };
 
             that.buscarBodega = function (callback) {
                 var obj = {
@@ -65,39 +70,59 @@ define([
             // Cerrar slider para gestionar productos
             $scope.cerrar_seleccion_productos = function () {
 
-                    $scope.$emit('cerrar_gestion_productos', {animado: true});
+                $scope.$emit('cerrar_gestion_productos', {animado: true});
 
                 // that.refrescarVista();
             };
 
-           /* that.refrescarVista = function () {
+            /* that.refrescarVista = function () {
+             
+             that.borarrVariables();
+             
+             $scope.buscar_productos_orden_compra();
+             $scope.Empresa.limpiar_productos();
+             $scope.DocumentoIngreso.get_orden_compra().limpiar_productos_ingresados();
+             $scope.DocumentoIngreso.get_orden_compra().limpiar_productos_seleccionados();
+             
+             that.listarGetDocTemporal(function (respuesta) {
+             
+             if (respuesta) {
+             
+             that.listarGetItemsDocTemporal(function (respuesta) {
+             
+             if (respuesta) {
+             
+             that.listarParametros();
+             that.listarProductosPorAutorizar();
+             }
+             });
+             }
+             });
+             };*/
 
-                that.borarrVariables();
 
-                $scope.buscar_productos_orden_compra();
-                $scope.Empresa.limpiar_productos();
-                $scope.DocumentoIngreso.get_orden_compra().limpiar_productos_ingresados();
-                $scope.DocumentoIngreso.get_orden_compra().limpiar_productos_seleccionados();
+/*
+             * retorna la diferencia entre dos fechas
+             */
+            $scope.restaFechas = function(f1, f2)
+            {
+                var aFecha1 = f1.split('/');
+                var aFecha2 = f2.split('/');
+                var fFecha1 = Date.UTC(aFecha1[2], aFecha1[1] - 1, aFecha1[0]);
+                var fFecha2 = Date.UTC(aFecha2[2], aFecha2[1] - 1, aFecha2[0]);
+                var dif = fFecha2 - fFecha1;
+                var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
+                return dias;
+            };
 
-                that.listarGetDocTemporal(function (respuesta) {
-
-                    if (respuesta) {
-
-                        that.listarGetItemsDocTemporal(function (respuesta) {
-
-                            if (respuesta) {
-
-                                that.listarParametros();
-                                that.listarProductosPorAutorizar();
-                            }
-                        });
-                    }
-                });
-            };*/
-
+            that.borarrVariables = function () {
+                $scope.doc_tmp_id = "00000";
+                $scope.selectedBodega = '03';
+                $scope.observacion = '';
+            };
 
             $scope.lista_productos_devolucion = {
-                data: 'Empresa.get_productos()',
+                data: 'Devolucion.get_productos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
@@ -157,9 +182,108 @@ define([
                 ]
             };
 
+            $scope.grabar_documento = function () {
+                that.guardarNewDocTmp();
+            };
 
+            /**
+             * @author German Galvis
+             * +Descripcion Metodo encargado de guardar NewDocTmp
+             * @fecha 2018-02-14
+             */
+            that.guardarNewDocTmp = function () {
 
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        bodega_seleccionada: $scope.selectedBodega,
+                        observacion: $scope.observacion
+                    }
+                };
 
+                Request.realizarRequest(API.E009.CREAR_NEW_DOCUMENTO_TEMPORAL, "POST", obj, function (data) {
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                        $scope.doc_tmp_id = data.obj.movimiento_temporal_id;
+                        $scope.isTmp();
+                    }
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                    if (data.status === 404) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
+
+            /**
+             * @author German Galvis
+             * @fecha 2018-02-14
+             * +Descripcion Metodo encargado de invocar el servicio que
+             *              borra los DocTemporal
+             */
+            that.eliminarGetDocTemporal = function () {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        doc_tmp_id: $scope.doc_tmp_id
+                    }
+                };
+                E009Service.eliminarGetDocTemporal(obj, function (data) {
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                        // that.refrescarVista();
+                        that.borarrVariables();
+                    }
+
+                    if (data.status === 404) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
+
+            $scope.eliminar_documento = function () {
+                that.eliminarGetDocTemporal();
+            };
+
+            $scope.btn_eliminar_documento = function () {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea eliminar el documento?</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+
+                            $scope.confirmar = function () {
+                                $scope.eliminar_documento();
+                                $modalInstance.close();
+                            };
+
+                            $scope.close = function () {
+                                $modalInstance.close();
+                            };
+
+                        }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
 
 
 
@@ -168,6 +292,26 @@ define([
                     $scope.bodegas = data;
                 });
             });
+
+            $scope.isNoTmp = function () {
+                var disabled = false;
+                if ($scope.doc_tmp_id === "00000") {
+                    //if ($scope.doc_tmp_id === "00000" && $scope.DocumentoIngreso.get_orden_compra() === undefined) {
+                    disabled = true;
+                }
+                //console.log("isnotmp", disabled);
+                return disabled;
+            };
+
+            $scope.isTmp = function () {
+                var disabled = false;
+
+                if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
+                    disabled = true;
+                }
+                // console.log("istmp", disabled);
+                return disabled;
+            };
 
         }]);
 });

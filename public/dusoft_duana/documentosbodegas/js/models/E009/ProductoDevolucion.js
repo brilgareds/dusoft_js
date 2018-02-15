@@ -2,7 +2,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
 
     models.factory('ProductoDevolucion', ["Producto", function (Producto) {
 
-            function ProductoDevolucion(codigo, nombre, existencia, tipoProducto, subClase, cantidad, lote, fecha_vencmiento) {
+            function ProductoDevolucion(codigo, nombre, existencia, tipoProducto, subClase, lote, fecha_vencmiento, cantidad) {
 
                 Producto.getClass().call(this, codigo, nombre, existencia);
 
@@ -16,8 +16,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
 
             ProductoDevolucion.prototype = Object.create(Producto.getClass().prototype);
 
-            this.get = function (codigo, nombre, existencia, tipoProducto, subClase , cantidad, lote, fecha_vencmiento) {
-                return new ProductoDevolucion(codigo, nombre, existencia, tipoProducto, subClase, cantidad, lote, fecha_vencmiento);
+            this.get = function (codigo, nombre, existencia, tipoProducto, subClase, lote, fecha_vencmiento, cantidad) {
+                return new ProductoDevolucion(codigo, nombre, existencia, tipoProducto, subClase, lote, fecha_vencmiento, cantidad);
             };
 
             ProductoDevolucion.prototype.setTipoProductoId = function (tipoProducto) {

@@ -28,7 +28,7 @@
                                     </div></div-->
                                 <div class="row">
                                     <div class="col-md-7">                                          
-                                        <ui-select ng-model="selectedBodega" theme="select2" class="form-control selectgeneral pull-left"  ng-disabled="validarDesdeLink" >
+                                        <ui-select ng-model="selectedBodega" theme="select2" class="form-control selectgeneral pull-left" >
                                             <ui-select-match  placeholder="Seleccionar bodega">{{ $select.selected.descripcion}}</ui-select-match>
                                             <ui-select-choices refresh="bodegas($select.search,true)" refresh-delay="0" repeat="x in bodegas | filter:$select.search">
                                                 {{ x.descripcion}}
@@ -97,7 +97,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div ng-if="true" class="modal-footer col-md-12" >
-                                            <button ng-hide="isNoTmp()" class="btn btn-default" ng-click="grabar_documento()">
+                                            <button  class="btn btn-default" ng-click="grabar_documento()">
                                                 <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
                                             </button>
                                             <button  class="btn btn-default" ng-click="cancelar_documento()">
@@ -119,7 +119,7 @@
                                         <span class="glyphicon glyphicon-ok" ></span> Crear Documento
                                     </button>                                  
                                     <button ng-hide="!isGenerarDocumento()"  class="btn btn-default" ng-click="generar_documento(1)" >
-                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento/Facturar 
+                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento 
                                     </button>                                  
                                 </div>  
                             </div>

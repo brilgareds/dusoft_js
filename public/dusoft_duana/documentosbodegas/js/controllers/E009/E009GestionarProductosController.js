@@ -29,16 +29,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             /*
              * Descripcion: lista todos los productos existentes
-             * @author Andres Mauricio Gonzalez
-             * @fecha  05/06/2017
+             * @author German Andres Galvis
+             * @fecha  12/02/2018
              * @param {type} termino
              * @returns {undefined}
              */
-            that.listarProductos = function (parametros) {
+            that.listarProductos = function (busqueda) {
 
                 var obj = {
                     session: $scope.session,
-                    data: parametros
+                    data: busqueda
                 };
 
                 Request.realizarRequest(API.E009.LISTAR_PRODUCTOS, "POST", obj, function (data) {
@@ -52,8 +52,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             that.renderProductos = function (productos) {
                 $scope.datos_form.listado_productos = [];
                 productos.forEach(function (data) {
-
-                    var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(), data.tipo_producto_id, data.subClase);
+                    var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
+                            data.tipo_producto_id, data.subClase, data.lote, data.fecha_vencimiento);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -101,14 +101,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 $scope.filtro = filtro;
             };
 
-            /*$rootScope.$on('cerrar_gestion_productosCompleto', function (e, parametros) {
-                $scope.$$watchers = null;
-            });*/
-
-
-
             $scope.guardarProducto = function (producto) {
-                console.log("guardarProducto",producto );
+
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
 
@@ -124,41 +118,28 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     return;
                 }
 
-                var valor = parseFloat(producto.valor_unit);
-                var porcentaje = ((valor * producto.iva) / 100);
-                var valorMasPorcentaje = valor + porcentaje;
-                var total_costo = valorMasPorcentaje * producto.cantidad_ingresada;
 
                 var parametro = {
                     empresaId: $scope.parametros[1].empresa.getEmpresa().getCodigo(),
                     centroUtilidad: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.codigo,
                     bodega: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.bodega.codigo,
                     codigoProducto: producto.codigo_producto,
-                    cantidad: producto.cantidad_ingresada,
+                    cantidad: producto.cantidad,
                     lote: producto.lote,
                     fechaVencimiento: producto.fecha_vencimiento,
-                    docTmpId: $scope.doc_tmp_id,
-                    porcentajeGravamen: producto.iva,
-                    fechaIngreso: fecha_actual,
-                    justificacionIngreso: producto.justificacion,
-                    ordenPedidoId: $scope.parametros[1].ordenCompra.numero_orden_compra,
-                    totalCosto: total_costo,
-                    localProd: producto.localizacion,
-                    itemId: '-1',
-                    valorUnitarioCompra: producto.valor_unit,
-                    valorUnitarioFactura: producto.valor_unit
+                    docTmpId: $scope.doc_tmp_id
                 };
-                that.insertarProductosFoc(parametro);
+                that.insertarProductos(parametro);
             };
 
-            that.insertarProductosFoc = function (parametro) {
-                var termino = termino || "";
+            that.insertarProductos = function (parametro) {
+                
                 var obj = {
                     session: $scope.session,
                     data: parametro
                 };
 
-                Request.realizarRequest(API.I002.CREAR_ITEM_FOC, "POST", obj, function (data) {
+                Request.realizarRequest(API.E009.CREAR_ITEM, "POST", obj, function (data) {
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     } else {
@@ -167,16 +148,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 });
             };
 
-            $scope.abrir_fecha_vencimiento = function (producto, $event) {
-
-                $event.preventDefault();
-                $event.stopPropagation();
-
-                producto.datepicker_fecha_inicial = true;
-            };
-
             $scope.habilitarCheck = function (producto) {
-                console.log("habilitarCheck",producto );
                 var disabled = false;
 
                 if (producto.cantidad === undefined || producto.cantidad === "" || parseInt(producto.cantidad) <= 0) {
@@ -217,20 +189,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     {field: 'existencia', displayName: 'Existencias', width: "10%", enableCellEdit: false},
                     {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "8%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'get_fecha_vencimiento()', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false, cellClass: "dropdown-button",
+                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false, cellClass: "dropdown-button",
                         cellTemplate: ' <div class="col-xs-12" cambiar-foco >\
                                             <p class="input-group" cambiar-foco >\
                                                 <input type="text" class="form-control grid-inline-input readonlyinput calendario"  \
                                                     datepicker-popup="{{format}}" ng-model="row.entity.fecha_vencimiento" is-open="row.entity.datepicker_fecha_inicial" \
                                                     min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="" show-weeks="false" toggle-weeks-text="#"/> \
-                                                <span class="input-group-btn">\
-                                                    <button class="btn btn-xs btnCalendario" style="margin-top: 3px;" ng-click="abrir_fecha_vencimiento(row.entity,$event);"><i class="glyphicon glyphicon-calendar"></i></button>\
-                                                </span>\
-                                            </p>\
+                                                </p>\
                                         </div>'},
-                    {field: 'get_lote()', displayName: 'Lote', width: "7%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.lote" class="form-control grid-inline-input"  name="" id="" /> </div>'},
-                    {width: "5%", displayName: "Opcion", cellClass: "txt-center",
+                    {field: 'lote', displayName: 'Lote', width: "7%", enableCellEdit: false},
+                    {width: "6%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="guardarProducto(row.entity)" ng-disabled="habilitarCheck(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}

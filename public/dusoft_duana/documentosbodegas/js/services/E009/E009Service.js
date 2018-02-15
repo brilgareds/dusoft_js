@@ -31,7 +31,24 @@ define(["angular", "js/services"], function(angular, services) {
 
                     };
 
+                    /**
+                     * @Author: German Galvis.
+                     * @fecha 14/02/2018
+                     * +Descripcion Metodo encargado de invocar el servicio que
+                     *              borra los DocTemporal
+                     */
+                    self.eliminarGetDocTemporal = function(parametro, callback) {
 
+                        var obj = {
+                            session: parametro.session,
+                            data: {
+                                doc_tmp_id: parametro.data.doc_tmp_id
+                            }
+                        };
+                        Request.realizarRequest(API.E009.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function(data) {
+                            callback(data);
+                        });
+                    };
                     return this;
                 }]);
 });

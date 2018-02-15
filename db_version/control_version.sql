@@ -62,4 +62,15 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.07', 'DOCUMENTOS BODEGA', 'Se agregan varios clientes para las remisiones de Dumian');
 COMMIT TRANSACTION;
-
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.08  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.08', 'DOCUMENTOS BODEGA', 'Se crea cliente uci mario correa Los chorros');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.09  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.08', 'DOCUMENTOS BODEGA', 'Se crea cliente uci mario correa Los chorros');
+COMMIT TRANSACTION;

@@ -32,6 +32,8 @@ define([
     "controllers/recepcionmercancia/GestionarRecepcionesController",
     "controllers/recepcionmercancia/VerificarRecepcionesController",
     "controllers/autorizaciones/ListarAutorizacionesController",
+    "controllers/actas/ListarActasController",
+    "controllers/actas/ActaTecnicaController",
     "includes/helpersdirectives/visualizarReporte",
     "webNotification"
 ], function(angular) {
@@ -103,7 +105,12 @@ define([
                     text: "Listar Autorizaciones",
                     templateUrl: "views/autorizaciones/listarautorizaciones.html",
                     parent_name: "ListarAutorizaciones"
-                });//ListarRecepciones
+                }).state('ListarActas', {
+                    url: "/ListarActas",
+                    text: "Actas Tecnicas Productos",
+                    templateUrl: "views/actas/listaractas.html",
+                    parent_name: "ListarActas"
+                });
 
                 if ($location.path() === "")
                     $state.go(vista_predeterminada);

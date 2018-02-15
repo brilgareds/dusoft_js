@@ -1,0 +1,342 @@
+<!--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">-->
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-10 col-sm-10 col-md-10">  
+                        <h4 class="h4MarginTopBottom"><span >Acta Tecnica Recepción de Productos</span> </h4>
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">  
+                        <div class="text-left" style="font-size: 16px;"><b>No. Orden: 0000</b></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-5 col-sm-5 col-md-4">                    
+                    <h4><div class="label label-primary" style="position: relative;">Nombre Comercial:</div>   
+                        <div class="label label-default left" >genfar</div> </h4>                     
+                </div>
+                <div class="col-xs-5 col-sm-5 col-md-4">                   
+                    <h4><div class="label label-primary" style="position: relative;">Nombre Generico:</div>   
+                        <div class="label label-default left" >genfar</div> </h4>                   
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-4">                   
+                    <h4><div class="label label-primary" style="position: relative;">Presentacion:</div>   
+                        <div class="label label-default left" >genfar</div> </h4>
+                </div>                
+            </div>
+            <legend></legend>
+            <div class="row"> 
+                    <div class="col-xs-2 col-sm-2 col-md-2">                    
+                        <div class="form-group">
+                            <label class="control-label" for="IsSmallBusiness">Lote:</label>
+                            <input type="text" class="form-control" id="lote">
+                        </div>              
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">                    
+                        <div class="form-group">
+                            <label for="lote">Vencimiento:</label>
+                            <p class="input-group">
+
+                                <input type="text" class="form-control readonlyinput" 
+                                       datepicker-popup="{{format}}" 
+                                       ng-model="root.fecha_corte" 
+                                       is-open="datepicker_fecha_corte" 
+                                       min="minDate"   
+                                       readonly  
+                                       close-text="Cerrar" 
+                                       ng-change="" 
+                                       clear-text="Borrar" 
+                                       current-text="Hoy" 
+                                       placeholder="Fecha Corte" 
+                                       show-weeks="false" 
+                                       toggle-weeks-text="#"  />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" ng-click="abrir_fecha_corte($event);" ng-disabled ="disabledDropDownCliente" ><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </p>
+                        </div>              
+                    </div>
+                    <div class="col-xs-3 col-sm-3 col-md-3">                    
+                        <div class="form-group">
+                            <label for="lote">Origen:</label>
+                            <input type="text" class="form-control" id="lote">
+                        </div>              
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">                    
+                        <div class="form-group">
+                            <label for="lote">Registro Sanitario:</label>
+                            <input type="text" class="form-control" id="lote">
+                        </div>              
+                    </div>
+                    <div class="col-xs-3 col-sm-3 col-md-3">                    
+                        <div class="form-group">
+                            <label for="lote">Fabricante:</label>
+                            <input type="text" class="form-control" id="lote">
+                        </div>              
+                    </div>
+            </div>
+            <div class="text-center" style="font-size: 10px;"><b>INFORMACION SOBRE MUESTREO</b></div>
+            <hr style="margin:5px">
+            <div class="row"> 
+                <div class="col-xs-2 col-sm-2 col-md-2">                    
+                    <div class="form-group">
+                        <label class="control-label" for="remision"># Remisión:</label>
+                        <input type="text" class="form-control" id="remision">
+                    </div>              
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2">                    
+                    <div class="form-group">
+                        <label class="control-label" for="factura"># Factura:</label>
+                        <input type="text" class="form-control" id="factura">
+                    </div>              
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-1">                    
+                    <div class="form-group">
+                        <label for="cantidad">Cantidad Recibida:</label>
+                        <input type="text" class="form-control" id="cantidad">
+                    </div>              
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-1">                    
+                    <div class="form-group">
+                        <label for="lote">Total Corrugadas:</label>
+                        <input type="text" class="form-control" id="lote">
+                    </div>              
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-1">                    
+                    <div class="form-group">
+                        <label for="lote"> UN / Corrugada:  </label>
+                        <input type="text" class="form-control" id="lote">
+                    </div>              
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-1">                    
+                    <div class="form-group">
+                        <label for="lote">Corrugada a Mst: </label>
+                        <input type="text" class="form-control" id="lote">
+                    </div>              
+                </div>
+
+                <div class="col-xs-3 col-sm-3 col-md-1">                    
+                    <div class="form-group">
+                        <label for="cantidad">UN/Corrugada Mst:</label>
+                        <input type="text" class="form-control" id="cantidad">
+                    </div>              
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-1">                    
+                    <div class="form-group">
+                        <label for="lote">Unidades a Mst:</label>
+                        <input type="text" class="form-control" id="lote">
+                    </div>              
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-2">                    
+                    <div class="form-group">
+                        <label for="lote">Unidades Adicionales a Mst: </label>
+                        <input type="text" class="form-control" id="lote" placeholder="* Diligenciar esta casilla si mustreo se amplie al doble">
+                    </div>              
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12">                    
+                    <div class="form-group">
+<!--                        <label for="lote">Unidades Adicionales a Mst: </label>-->
+                        <textarea class="form-control" rows="2" placeholder="ARGUMENTACION POR DOBLE MUESTREO" id="comment"></textarea>
+                    </div>              
+                </div>                
+            </div>
+            
+            <hr style="margin:5px">
+            <div class="row"> 
+                <div class="col-xs-12 col-sm-12 col-md-4">                    
+                    <div class="panel panel-default" style="height:430px;">
+                        <div class="panel-body">
+                            <div class="row"> 
+                                <div class="col-xs-12 col-sm-12 col-md-12">   
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-6"> 
+                                            <label style="font-size: 12px;" class="form-check-label" for="inlineRadio1"><b>EVALUACION VISUAL REALIZADA (EMBALAJE)</b></label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-3"> 
+                                            <label class="checkbox-inline">Coincide</label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-3"> 
+                                            <label class="checkbox-inline">No Coincide</label>
+                                        </div>
+                                    </div>
+                                    <legend></legend>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-8"> 
+                                            <label style="font-size: 10px;" class="form-check-label" for="inlineRadio1">APARIENCIA EXTERIOR DEL PRODUCTO</label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-2"> 
+                                            <label class="checkbox-inline"><input type="checkbox" value=""></label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-2"> 
+                                            <label class="checkbox-inline"><input type="checkbox" value=""></label>
+                                        </div>
+                                    </div>
+                                    <legend></legend>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-8"> 
+                                            <label style="font-size: 10px;" class="form-check-label" for="inlineRadio1">PRESENCIA DE ROTULO EXTERNO CON INFORMACION BASICA DEL PRODUCTO </label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-2"> 
+                                            <label class="checkbox-inline"><input type="checkbox" value=""></label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-2"> 
+                                            <label class="checkbox-inline"><input type="checkbox" value=""></label>
+                                        </div>
+                                    </div>
+                                     <legend></legend>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-8"> 
+                                            <label style="font-size: 10px;" class="form-check-label" for="inlineRadio1">EMPAQUE EXTERIOR: TIPO/MATERIAL ADECUADO PARA EL PRODUCTO </label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-2"> 
+                                            <label class="checkbox-inline"><input type="checkbox" value=""></label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-2"> 
+                                            <label class="checkbox-inline"><input type="checkbox" value=""></label>
+                                        </div>
+                                    </div>
+                                      <legend></legend>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-8"> 
+                                            <label style="font-size: 10px;" class="form-check-label" for="inlineRadio1">OTRO</label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-2"> 
+                                            <label class="checkbox-inline"><input type="checkbox" value=""></label>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-2"> 
+                                            <label class="checkbox-inline"><input type="checkbox" value=""></label>
+                                        </div>
+                                    </div>
+                                       <legend></legend>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-12"> 
+                                            <label style="font-size: 10px;" class="form-check-label" for="inlineRadio1">OBSERVACION OTRO:</label>
+                                        </div>
+                                    </div>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-2"></div>                                         
+                                        <div class="col-xs-12 col-sm-12 col-md-10"> 
+                                           <textarea class="form-control" rows="4" id="comment"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>           
+                </div>
+                
+                <div class="col-xs-12 col-sm-12 col-md-4">                    
+                    <div class="panel panel-default" style="height:430px;">
+                        <div class="panel-body">
+                            <div class="row"> 
+                                <div class="col-xs-12 col-sm-12 col-md-12">   
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-12"> 
+                                            <label style="font-size: 12px;" class="form-check-label" for="inlineRadio1"><b>RELACION DE DEFECTOS DE ACUERDO AL ANEXO 3 INSPECCION DE PRODUCTO TERMINADO DE MEDICAMENTOS</b></label>
+                                        </div>
+                                    </div>
+                                    <legend></legend>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-4"> 
+                                            <div class="form-group">
+                                                <label for="cantidad">Seleccionar:</label>
+                                                <input type="text" class="form-control" id="cantidad">
+                                            </div>  
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-4"> 
+                                           <div class="form-group">
+                                                <label for="cantidad">Cantida:</label>
+                                                <input type="text" class="form-control" id="cantidad">
+                                            </div>  
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-4"> 
+                                            <div class="form-group">
+                                                <label for="cantidad">Maximo Permitido:</label>
+                                                <input type="text" class="form-control" id="cantidad">
+                                            </div>
+                                        </div>
+                                    </div>
+                                       <legend></legend>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-12"> 
+                                            <label style="font-size: 10px;" class="form-check-label" for="inlineRadio1">OBSERVACION DEFECTUOSOS:</label>
+                                        </div>
+                                    </div>
+                                    <div class="row"> 
+                                        <div class="col-xs-2 col-sm-2 col-md-2">                                            
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-10"> 
+                                           <textarea class="form-control" rows="4" id="comment"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>           
+                </div>
+                
+                
+                <div class="col-xs-12 col-sm-12 col-md-4">                    
+                    <div class="panel panel-default" style="height:430px;">
+                        <div class="panel-body">
+                            <div class="row"> 
+                                <div class="col-xs-12 col-sm-12 col-md-12">   
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-12"> 
+                                            <label style="font-size: 12px;" class="form-check-label" for="inlineRadio1"><b>OBSERVACIONES GENERALES</b></label>
+                                        </div>
+                                    </div>
+                                    <legend></legend>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-4"> 
+                                            <div class="form-group">
+                                                <label for="cantidad">Seleccionar:</label>
+                                                <input type="text" class="form-control" id="cantidad">
+                                            </div>  
+                                        </div>
+                                    </div>
+                                       <legend></legend>
+                                    <div class="row"> 
+                                        <div class="col-xs-12 col-sm-12 col-md-12"> 
+                                            <label style="font-size: 10px;" class="form-check-label" for="inlineRadio1">OBSERVACION CONCEPTO DE CALIDAD:</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">  
+                                            <div class="col-xs-12 col-sm-12 col-md-2"></div>
+                                            <div class="col-xs-12 col-sm-12 col-md-10"> 
+                                                <textarea class="form-control" rows="4" id="comment"></textarea>
+                                            </div>
+                                    </div>
+                                       <br>
+                                        <legend></legend>
+                                    <div class="row">                                         
+                                        <div class="col-xs-12 col-sm-12 col-md-12"> 
+                                            <label style="font-size: 10px;" class="form-check-label" for="inlineRadio1">DILIGENCIAR (CONDICIONES DE TRANSPORTE, EMBALAJE, MATERIAL DE EMPAQUE Y ENVASE, CONDICIONES ADMINISTRATIVAS, TECNICAS DE NEGOCIACION)</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">  
+                                        <div class="col-xs-12 col-sm-12 col-md-2"></div> 
+                                        <div class="col-xs-12 col-sm-12 col-md-10"> 
+                                           <textarea class="form-control" rows="4" id="comment"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>           
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+
+                           <!--<button type="button" class="btn btn-warning" ng-click="descartarProductoPendiente()" ng-disabled="">Aceptar</button>-->
+                            <button type="button" class="btn btn-primary" ng-click="cerrarVentana()">Cancelar</button>
+        </div>
+    </div>
+</div> 

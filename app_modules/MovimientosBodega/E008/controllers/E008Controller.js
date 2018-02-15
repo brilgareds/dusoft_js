@@ -2143,6 +2143,7 @@ function __validarDumian(identificacion_cliente,tipo_id_cliente){
    (identificacion_cliente === '10134' && tipo_id_cliente === "NIT") || //uci summa dumian
    (identificacion_cliente === '10133' && tipo_id_cliente === "NIT") || //uci dumian popayan
    (identificacion_cliente === '10174' && tipo_id_cliente === "CC") || //clinica mari angel tulua
+   (identificacion_cliente === '10176' && tipo_id_cliente === "CC") || //laboratorio clinica mari angel tulua
    (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") ||  //dumian medical sas
    (identificacion_cliente === '10365' && tipo_id_cliente === "CE") || //clinica santa gracia buenaventura
    (identificacion_cliente === '10366' && tipo_id_cliente === "CE")|| //clinica san rafael
@@ -2483,7 +2484,6 @@ function __sincronizarRemisionProductos(obj, callback) {
 //        documentoId:obj.documentoId
 //    };
     obj.error = false;
-
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).then(function(client) {
         
@@ -2595,7 +2595,7 @@ function __sincronizarDetalleDocumento(obj, callback){
     spread(function(result,raw,soapHeader){
         obj.resultadoDetalle = result.return.descripcion["$value"];
         obj.error = false;
-        
+      
         //Asi fallen los productos se debe continuar con el proceso
         if(!result.return.estado["$value"]){
            //throw {msj:"Resultado sincronización: "+result.return.descripcion["$value"], status:403, obj:{}}; 

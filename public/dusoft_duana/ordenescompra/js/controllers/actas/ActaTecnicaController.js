@@ -6,15 +6,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             "$filter",
             "localStorageService",
             "$state",
-            "$modalInstance","socket",
+            "$modalInstance","socket","identificadorProductoPendiente",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,$modalInstance,socket) {
+                $timeout, $filter,localStorageService,$state,$modalInstance,socket,identificadorProductoPendiente) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
         var seleccionTipoJustificacion;
         $scope.root = { observacion:''}; 
-        
+        console.log("SSSSSSSSSSSSSSSSS",identificadorProductoPendiente);
      
         /*
          * Inicializacion de variables

@@ -268,9 +268,9 @@ define(["angular", "js/controllers",
             };
             
             
-            $scope.onAbrirVentana=function(){
+            $scope.onAbrirVentana=function(entity){
                 console.log("onAbrirVentana");
-                that.ventanaActaTecnica();
+                that.ventanaActaTecnica(entity);
             };
             
                  /**
@@ -290,12 +290,8 @@ define(["angular", "js/controllers",
                         resolve: {
                                 identificadorProductoPendiente: function() {
                                     return entity;
-                                },
-                                evolucion: function(){
-                                   return entity;
                                 }
                             }
-
                     };
                     var modalInstance = $modal.open($scope.opts);   
 
@@ -303,8 +299,7 @@ define(["angular", "js/controllers",
                           //  that.listarFormulasMedicas({estado:0}); 
                            // that.listarFormulasMedicasPendientes();
                             
-                        },function(){});                          
-
+                        },function(){});  
                 };
 
 

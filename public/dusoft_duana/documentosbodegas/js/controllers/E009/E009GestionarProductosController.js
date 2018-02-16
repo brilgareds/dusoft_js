@@ -31,8 +31,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
              * Descripcion: lista todos los productos existentes
              * @author German Andres Galvis
              * @fecha  12/02/2018
-             * @param {type} termino
-             * @returns {undefined}
              */
             that.listarProductos = function (busqueda) {
 

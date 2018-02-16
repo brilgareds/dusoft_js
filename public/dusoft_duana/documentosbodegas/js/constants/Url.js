@@ -42,12 +42,14 @@ define(["angular"], function(angular) {
             'E007': {
             },
             'E009': {
-                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/crearDocumento',
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/E009/crearDocumento',
                 'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/E009/newDocTemporal',
                 'CREAR_ITEM': BASE_URL + '/movBodegas/E009/agregarItem',
                 'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/E009/eliminarGetDocTemporal',
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/E009/listarBodegas',
                 'LISTAR_PRODUCTOS': BASE_URL + '/movBodegas/E009/listarProductos',
+                'CONSULTAR_DETALLE_DEVOLUCION': BASE_URL + '/movBodegas/E009/consultarDetalleDevolucion',
+                'ELIMINAR_PRODUCTO_DEVOLUCION': BASE_URL + '/movBodegas/E009/eliminarItem',
             },
             'LABORATORIOS': {
                 'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios'

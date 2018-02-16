@@ -33,6 +33,8 @@ E009Controller.prototype.newDocTemporal = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
+    var bodega_destino = args.bodega_destino;
+    var abreviatura = args.abreviatura;
     var bodega_seleccionada = args.bodega_seleccionada;
     var observacion = args.observacion;
     var movimiento_temporal_id;
@@ -53,9 +55,10 @@ E009Controller.prototype.newDocTemporal = function (req, res) {
         G.knex.transaction(function (transaccion) {
 
             G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal,
-                    movimiento_temporal_id, usuarioId, bodega_seleccionada, observacion, transaccion).then(function () {
+                    movimiento_temporal_id, usuarioId, bodega_destino, observacion, transaccion).then(function () {
                 var parametros = {
-                    abreviatura: "EDB",
+                    abreviatura: abreviatura,
+                    bodega_destino: bodega_seleccionada,
                     doc_tmp_id: movimiento_temporal_id
                 };
                 return G.Q.nfcall(that.m_e009.insertarBodegasMovimientoDevolucionTmp, parametros, transaccion);
@@ -107,7 +110,7 @@ E009Controller.prototype.listarProductos = function (req, res) {
  * +Descripcion elimina el documento temporal
  * @fecha 2018-02-14
  */
-E009Controller.prototype.eliminarGetDocTemporal = function(req, res) {
+E009Controller.prototype.eliminarGetDocTemporal = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
@@ -127,28 +130,28 @@ E009Controller.prototype.eliminarGetDocTemporal = function(req, res) {
     var parametros = {docTmpId: docTmpId, usuarioId: usuarioId};
 
 
-    G.knex.transaction(function(transaccion) {
-        
-        G.Q.nfcall(that.m_e009.eliminarDocumentoTemporal_d,parametros, transaccion).then(function () {
+    G.knex.transaction(function (transaccion) {
 
-                return G.Q.nfcall(that.m_e009.eliminarDocumentoTemporal, parametros, transaccion);
+        G.Q.nfcall(that.m_e009.eliminarDocumentoTemporal_d, parametros, transaccion).then(function () {
 
-        }).then(function() {
+            return G.Q.nfcall(that.m_e009.eliminarDocumentoTemporal, parametros, transaccion);
+
+        }).then(function () {
 
             transaccion.commit();
 
-        }).fail(function(err) {
+        }).fail(function (err) {
 
             console.log("Error rollback ", err);
             transaccion.rollback(err);
 
         }).done();
 
-    }).then(function() {
+    }).then(function () {
 
         res.send(G.utils.r(req.url, 'SE HA BORRADO EL DOCUMENTO EXITOSAMENTE', 200, {eliminarGetDocTemporal: parametros}));
 
-    }). catch (function(err) {
+    }).catch(function (err) {
 
         console.log("eliminarGetDocTemporal>>>>", err);
         res.send(G.utils.r(req.url, 'ERROR AL BORRAR EL DOCUMENTO', 500, {err: err}));
@@ -161,7 +164,7 @@ E009Controller.prototype.eliminarGetDocTemporal = function(req, res) {
  * +Descripcion agrega productos al documento temporal
  * @fecha 2018-02-15
  */
-E009Controller.prototype.agregarItem = function(req, res) {
+E009Controller.prototype.agregarItem = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -205,17 +208,192 @@ E009Controller.prototype.agregarItem = function(req, res) {
         usuarioId: usuarioId
     };
 
-    G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaEnBodegaDestino", parametros).then(function(resultado) {
+    G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaEnBodegaDestino", parametros).then(function (resultado) {
         if (resultado.length > 0) {
             return G.Q.nfcall(that.m_e009.agregarItem, parametros);
         } else {
             throw {msj: "El producto " + parametros.codigoProducto + " no se encuentra en bodegas_existencias.", status: 403};
         }
-    }).then(function(resultado) {
+    }).then(function (resultado) {
         res.send(G.utils.r(req.url, 'producto agregado correctamente', 200, {agregarItem: resultado}));
-    }).fail(function(err) {
+    }).fail(function (err) {
         res.send(G.utils.r(req.url, err.msj, err.status, {agregarItem: []}));
     }).done();
+
+};
+
+
+/**
+ * @author German Galvis
+ * +Descripcion lista los productos del documento temporal
+ * @fecha 2018-02-15
+ */
+E009Controller.prototype.consultarDetalleDevolucion = function (req, res) {
+    var that = this;
+    var usuarioId = req.session.user.usuario_id;
+    var args = req.body.data;
+    if (args.numero_doc === undefined || args.numero_doc === '00000') {
+        res.send(G.utils.r(req.url, 'documento_id no esta definida', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        numero_doc: args.numero_doc,
+        usuario_id: usuarioId
+    };
+
+    that.m_e009.consultarDetalleDevolucion(parametros, function (err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
+            return;
+        } else {
+
+            res.send(G.utils.r(req.url, 'devolucion', 200, {lista_productos: lista_productos}));
+            return;
+        }
+    });
+};
+
+
+/**
+ * @author German Galvis
+ * +Descripcion Elimina un  producto del documento temporal
+ * @fecha 2018-02-15
+ */
+E009Controller.prototype.eliminarItem = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    console.log("eliminarItem  ", args);
+    if (args.item_id === undefined) {
+        res.send(G.utils.r(req.url, 'El item_id NO estan definido', 404, {}));
+        return;
+    }
+
+    parametros = {item_id: args.item_id,
+        docTmpId: args.docTmpId,
+        usuarioId: usuarioId};
+
+    G.Q.nfcall(that.m_e009.eliminarItem, parametros).then(function (result) {
+        res.send(G.utils.r(req.url, 'Producto Borrado Correctamente', 200, {eliminarItem: result}));
+    }).fail(function (err) {
+        console.log("eliminarItem  ", err);
+        res.send(G.utils.r(req.url, 'Error al borrar Producto', 500, {}));
+    }).done();
+};
+
+
+/**
+ * @author German Galvis
+ * +Descripcion genera el documento definitivo EDB
+ * @fecha 2018-02-15
+ */
+E009Controller.prototype.crearDocumento = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId;
+    var parametros = {};
+
+    if (args.docTmpId === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.usuario_id === '') {
+        usuarioId = req.session.user.usuario_id;
+    } else {
+        usuarioId = args.usuario_id;
+    }
+
+    var docTmpId = args.docTmpId;
+
+    G.knex.transaction(function (transaccion) {
+
+        G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
+
+console.log("lo q devuelve la consulta crear_documento ", result);
+            parametros.empresaId = result.empresa_id;
+            parametros.empresa_id = result.empresa_id;
+            parametros.prefijoDocumento = result.prefijo_documento;
+            parametros.numeracionDocumento = result.numeracion_documento;
+            parametros.numero_doc = args.docTmpId;
+            parametros.bodega_destino = args.bodega_seleccionada;
+            parametros.docTmpId = args.docTmpId;
+            parametros.usuario_id = usuarioId;
+            parametros.usuarioId = usuarioId;
+            return G.Q.nfcall(that.m_e009.consultarDetalleDevolucion, parametros);
+
+        }).then(function (result) {
+            return G.Q.nfcall(that.m_e009.modificarDocumentoDevolucion, parametros, transaccion);
+
+
+        }).then(function (result) {
+            //if (result >= 1) 
+            console.log("lo q devuelve la consulta eliminarDocumentoTemporal_d 1", result);
+            return G.Q.nfcall(that.m_e009.eliminarDocumentoTemporal_d, parametros, transaccion);
+
+
+        }).then(function (result) {
+
+            if (result >= 1) {
+                return G.Q.nfcall(that.m_e009.eliminarDocumentoTemporal, parametros, transaccion);
+            } else {
+                throw 'eliminar_documento_temporal_d Fallo';
+            }
+
+        }).then(function (result) {
+
+            if (result >= 1) {
+                transaccion.commit();
+                return false;
+            } else {
+                throw ' Fallo ';
+            }
+
+        }).fail(function (err) {
+
+            console.log("Error rollback ", err);
+            transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function () {
+        console.log("llego a getDoc ");
+        return G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros);
+
+    }).then(function (resultado) {
+console.log(" getDoc ",resultado);
+        /*    var fecha = new Date();
+         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+         var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+         
+         if (resultado.length > 0) {
+         
+         cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
+         __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+         cabecerae: cabecera[0],
+         detalle: detalle[0],
+         orden: consulta[0],
+         impresion: impresion,
+         impuestos: resultado[0],
+         archivoHtml: 'documentoI002.html',
+         reporte: "documentoI002"}, function (nombre_pdf) {
+         res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero, recepcion_parcial_id: resultadoProducto.recepcion_parcial_id}));
+         });
+         } else {
+         throw 'Consulta listarParametrosRetencion sin resultados';
+         }*/
+
+        res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {agregarItem: resultado}));
+    }).catch(function (err) {
+        console.log("execCrearDocumento>>>>", err);
+        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
+        //res.send(G.utils.r(req.url, err.msj, err.status, {agregarItem: []}));
+    }).done();
+
+
 
 };
 

@@ -2,12 +2,13 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
 
     models.factory('ProductoDevolucion', ["Producto", function (Producto) {
 
-            function ProductoDevolucion(codigo, nombre, existencia, tipoProducto, subClase, lote, fecha_vencmiento, cantidad) {
+            function ProductoDevolucion(codigo, nombre, existencia, tipoProducto, subClase, lote, fecha_vencmiento, cantidad, item_id) {
 
                 Producto.getClass().call(this, codigo, nombre, existencia);
 
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
+                this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
                 this.lote = lote || "";
                 this.subClase = subClase;
@@ -16,8 +17,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
 
             ProductoDevolucion.prototype = Object.create(Producto.getClass().prototype);
 
-            this.get = function (codigo, nombre, existencia, tipoProducto, subClase, lote, fecha_vencmiento, cantidad) {
-                return new ProductoDevolucion(codigo, nombre, existencia, tipoProducto, subClase, lote, fecha_vencmiento, cantidad);
+            this.get = function (codigo, nombre, existencia, tipoProducto, subClase, lote, fecha_vencmiento, cantidad, item_id) {
+                return new ProductoDevolucion(codigo, nombre, existencia, tipoProducto, subClase, lote, fecha_vencmiento, cantidad, item_id);
             };
 
             ProductoDevolucion.prototype.setTipoProductoId = function (tipoProducto) {
@@ -41,7 +42,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
             };
 
             ProductoDevolucion.prototype.getCantidad = function () {
-                return parseFloat(this.cantidad).toFixed();
+                return parseFloat(this.cantidad).toFixed(2);
+            };
+            
+            ProductoDevolucion.prototype.setItemId = function (item_id) {
+                this.item_id = item_id;
+            };
+
+            ProductoDevolucion.prototype.getItemId = function () {
+               return this.item_id;
             };
 
             ProductoDevolucion.prototype.get_fecha_vencimiento = function () {

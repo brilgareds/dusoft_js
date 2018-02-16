@@ -101,7 +101,7 @@
                                                 <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
                                             </button>
                                             <button  class="btn btn-default" ng-click="cancelar_documento()">
-                                                <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                                <span class="glyphicon glyphicon-remove" ></span> Volver
                                             </button>
                                         </div>
                                     </div>
@@ -110,16 +110,13 @@
                             <div ng-if="!isTmp()">    
                                 <div class="modal-footer col-md-12">
                                     <button class="btn btn-default" ng-click="cancelar_documento()">
-                                        <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                        <span class="glyphicon glyphicon-remove" ></span> Volver
                                     </button>
                                     <button ng-hide="isEliminarTmp()" class="btn btn-default" ng-click="btn_eliminar_documento()">
                                         <span class="glyphicon glyphicon-trash" ></span> Eliminar
                                     </button>
-                                    <button ng-hide="!isGenerarDocumento()"  class="btn btn-default" ng-click="generar_documento(0)" >
+                                    <button   class="btn btn-default" ng-click="generar_documento()" >
                                         <span class="glyphicon glyphicon-ok" ></span> Crear Documento
-                                    </button>                                  
-                                    <button ng-hide="!isGenerarDocumento()"  class="btn btn-default" ng-click="generar_documento(1)" >
-                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento 
                                     </button>                                  
                                 </div>  
                             </div>

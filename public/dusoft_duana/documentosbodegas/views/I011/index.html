@@ -1,0 +1,158 @@
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="pull-left">
+                        <h4 class="text-center"><strong>Prefijo {{ DocumentoIngreso.get_prefijo() }}</strong></h4>
+                    </div>
+                    <div class="pull-right">
+                        <h4 class="text-center"><strong>No. Tmp # {{doc_tmp_id}}</strong></h4>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+
+                            <fieldset>
+                                <legend>Proveedor</legend>      
+
+                                <div class="row">
+                                    <div class="col-md-7">                                          
+                                        <ui-select ng-change="seleccionar_proveedor()" ng-model="DocumentoIngreso.proveedor" theme="select2" class="form-control selectgeneral pull-left"  ng-disabled="validarDesdeLink" >
+                                            <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre_completo() }}</ui-select-match>
+                                            <ui-select-choices refresh="listar_proveedores($select.search,true)" refresh-delay="0" repeat="proveedor in  Empresa.get_proveedores() | filter:$select.search">
+                                                {{ proveedor.get_nombre_completo() }}
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-4">
+                            <fieldset>
+                                <legend>Orden Compra</legend> 
+                                <div class="row">
+                                    <div class="col-md-7">                                          
+                                        <ui-select ng-model="DocumentoIngreso.orden_compra" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_orden_compra()" ng-disabled="validarDesdeLink">
+                                            <ui-select-match  placeholder="Seleccionar Orden Compra">{{ $select.selected.get_numero_orden() }}</ui-select-match>
+                                            <ui-select-choices repeat="orden in DocumentoIngreso.get_proveedor().get_ordenes_compras() | filter:$select.search">
+                                                {{ orden.get_numero_orden() }}
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-4">
+
+                            <fieldset>
+                                <legend>Observación</legend>                                 
+                                <div class="row">  
+                                    <div class="col-md-12">
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='DocumentoIngreso.orden_compra.observacion' name="" placeholder="Ingresar Observación"></textarea>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <br> 
+                     <div class="modal-footer col-md-12">
+                         <button class="btn btn-default" ng-click="tabProductosOrden()">
+                             <span class="glyphicon glyphicon-refresh" ></span> Refrescar
+                         </button>
+                     </div>
+                    <div class="row">  
+                        <div class="col-md-12">
+
+                            <tabset>
+                                <tab >
+                                    <tab-heading ng-click="tabProductosOrden()">
+                                        Productos Ingresados
+                                    </tab-heading>
+                                    <br>
+                                    <div class="table-responsive" style="margin-top:3px;" >
+                                        <div  style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_orden" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav class="grid" > </div>
+                                    </div>
+                                </tab>                        
+                                <tab>
+                                    <tab-heading ng-click="tabProductosPorAutorizar()">
+                                        <i class="glyphicon glyphicon-time"> {{totalPorAutorizar}}</i> Pendientes X Autorizar
+                                    </tab-heading>
+
+                                    <br>
+                                    <div class="row">  
+                                        <div class="">
+                                            <div class="col-md-3">
+                                                <p class="input-group">
+                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()" ng-click="seleccionar_productos(1)">
+                                                        <span class="glyphicon glyphicon-plus"></span> Buscar Productos
+                                                    </button>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="table-responsive" style="margin-top:3px;" >
+                                        <div class="" style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_no_autorizados" > </div>                                        
+                                    </div>
+                                </tab>                                
+                            </tabset>
+                            <br>
+                            <br>
+                            <hr></hr>                            
+                            <br>
+                            <div class="row"> 
+                                <div class="col-md-12">
+                                  <div class="table-responsive" style="margin-top:3px;" > 
+                                        <div style="height: 300px" class="defaultGrid grid-responsive" ng-grid="lista_productos_ingresados" > </div> 
+                                   </div>  
+                                </div>
+                            </div>
+                            <div ng-if="isTmp()">    
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div ng-if="true" class="modal-footer col-md-12" >
+                                            <button ng-hide="isNoTmp()" class="btn btn-default" ng-click="grabar_documento()">
+                                                <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
+                                            </button>
+                                            <button  class="btn btn-default" ng-click="cancelar_documento()">
+                                                <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="!isTmp()">    
+                                <div class="modal-footer col-md-12">
+                                    <button class="btn btn-default" ng-click="cancelar_documento()">
+                                        <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                    </button>
+                                    <button ng-hide="isEliminarTmp()" class="btn btn-default" ng-click="btn_eliminar_documento()">
+                                        <span class="glyphicon glyphicon-trash" ></span> Eliminar
+                                    </button>
+                                    <button ng-hide="!isGenerarDocumento()"  class="btn btn-default" ng-click="generar_documento(0)" >
+                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento
+                                    </button>                                  
+                                    <button ng-hide="!isGenerarDocumento()"  class="btn btn-default" ng-click="generar_documento(1)" >
+                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento/Facturar 
+                                    </button>                                  
+                                </div>  
+                            </div>
+                        </div>
+                    </div>   
+                </div>
+            </div>       
+        </div>
+    </div>
+
+    <!--    <div  class="slide" slide-content open-callback="gestionar_productos_orden_compra" close-callback="cerrar_gestion_productos_orden_compra"   >
+            <div ng-include src="slideurl" ng-controller="GestionarProductosOrdenCompraController"></div>
+        </div>-->
+
+    <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
+        <div ng-include src="slideurl" ng-controller="GestionarProductosController"></div>
+    </div>
+</div>
+<visualizar-reporte></visualizar-reporte>
+

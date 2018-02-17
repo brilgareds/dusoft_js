@@ -33,12 +33,12 @@ E009Controller.prototype.newDocTemporal = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
-    var bodega_destino = args.bodega_destino;
+    var bodega_doc_id = args.bodega_doc_id;
     var abreviatura = args.abreviatura;
     var bodega_seleccionada = args.bodega_seleccionada;
     var observacion = args.observacion;
     var movimiento_temporal_id;
-
+console.log("argumentos nuevos ", args);
     if (args.observacion === undefined) {
         res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
         return;
@@ -55,7 +55,7 @@ E009Controller.prototype.newDocTemporal = function (req, res) {
         G.knex.transaction(function (transaccion) {
 
             G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal,
-                    movimiento_temporal_id, usuarioId, bodega_destino, observacion, transaccion).then(function () {
+                    movimiento_temporal_id, usuarioId, bodega_doc_id, observacion, transaccion).then(function () {
                 var parametros = {
                     abreviatura: abreviatura,
                     bodega_destino: bodega_seleccionada,
@@ -307,12 +307,14 @@ E009Controller.prototype.crearDocumento = function (req, res) {
     }
 
     var docTmpId = args.docTmpId;
+    var cabecera = [];
+    var detalle = [];
+    var devolucion = [];
 
     G.knex.transaction(function (transaccion) {
 
         G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
 
-console.log("lo q devuelve la consulta crear_documento ", result);
             parametros.empresaId = result.empresa_id;
             parametros.empresa_id = result.empresa_id;
             parametros.prefijoDocumento = result.prefijo_documento;
@@ -322,6 +324,7 @@ console.log("lo q devuelve la consulta crear_documento ", result);
             parametros.docTmpId = args.docTmpId;
             parametros.usuario_id = usuarioId;
             parametros.usuarioId = usuarioId;
+            
             return G.Q.nfcall(that.m_e009.consultarDetalleDevolucion, parametros);
 
         }).then(function (result) {
@@ -359,12 +362,19 @@ console.log("lo q devuelve la consulta crear_documento ", result);
         }).done();
 
     }).then(function () {
-        console.log("llego a getDoc ");
         return G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros);
 
+    }).then(function(resultado) {
+
+        cabecera = resultado;
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "consultar_detalle_documento_despacho", parametros.numeracionDocumento, parametros.prefijoDocumento, parametros.empresaId);
+        } else {
+            throw 'Consulta sin resultados';
+        }
+
     }).then(function (resultado) {
-console.log(" getDoc ",resultado);
-        /*    var fecha = new Date();
+         var fecha = new Date();
          var formatoFecha = fecha.toFormat('DD-MM-YYYY');
          var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
          var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
@@ -374,19 +384,17 @@ console.log(" getDoc ",resultado);
          cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
          __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
          cabecerae: cabecera[0],
-         detalle: detalle[0],
-         orden: consulta[0],
+         detalle: resultado[0],
          impresion: impresion,
-         impuestos: resultado[0],
-         archivoHtml: 'documentoI002.html',
-         reporte: "documentoI002"}, function (nombre_pdf) {
-         res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero, recepcion_parcial_id: resultadoProducto.recepcion_parcial_id}));
+         archivoHtml: 'documentoE009.html',
+         reporte: "documentoE009"}, function (nombre_pdf) {
+         res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
          });
          } else {
-         throw 'Consulta listarParametrosRetencion sin resultados';
-         }*/
+         throw 'Consulta eliminar_documento_temporal_d sin resultados';
+         }
 
-        res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {agregarItem: resultado}));
+        //res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {agregarItem: resultado}));
     }).catch(function (err) {
         console.log("execCrearDocumento>>>>", err);
         res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
@@ -396,6 +404,44 @@ console.log(" getDoc ",resultado);
 
 
 };
+
+
+
+function __generarPdf(datos, callback) {
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
+	    helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E009/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function(err, response) {
+
+        response.body(function(body) {
+            var fecha = new Date();
+
+            var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + ".html";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
+                if (err) {
+                    console.log("err [__generarPdf]: ", err);
+                    callback(true, err);
+                    return;
+                } else {
+
+                    callback(nombreTmp);
+                    return;
+                }
+            });
+        });
+    });
+}
 
 E009Controller.$inject = ["m_movimientos_bodegas", "m_e009"];
 

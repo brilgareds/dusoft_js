@@ -38,7 +38,7 @@ define([
     "models/I002/DocumentoIngreso",
     "models/I002/ProveedorIngreso",
     "models/E009/ProductoDevolucion",
-    "models/E009/Devolucion",
+    "models/E009/DocumentoDevolucion",
     "models/Index/TipoDocumentos",
     "models/Index/EmpresaDocumento",
     "models/Index/DocumentoBodega",

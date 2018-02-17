@@ -4,8 +4,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
     controllers.controller('E009GestionarProductosController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout", "$filter", "Usuario",
-        "AlertService", "localStorageService", "$state", "EmpresaIngreso", "ProductoDevolucion",
-        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, $filter, Sesion, AlertService, localStorageService, $state, Empresa, Producto) {
+        "AlertService", "localStorageService", "$state", "DocumentoDevolucion", "ProductoDevolucion",
+        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, $filter, Sesion, AlertService, localStorageService, $state, Documento, Producto) {
 
             var that = this;
             $scope.parametros = '';

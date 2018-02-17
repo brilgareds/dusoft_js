@@ -18,11 +18,6 @@
                     "module": "MovimientosBodega/E009",
                     "model": "DocBodegaE009",
                     "alias": "m_e009"
-                },
-                 "E009_log": {
-                    "module": "MovimientosBodega/E009",
-                    "model": "DocBodegaE009Logs",
-                    "alias": "log_e009"
                 }
             }],
         "events": [],

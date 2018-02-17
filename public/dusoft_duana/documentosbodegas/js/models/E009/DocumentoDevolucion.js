@@ -28,7 +28,28 @@ define(["angular", "js/models", "includes/classes/Documento"], function(angular,
             DocumentoDevolucion.prototype.get_fecha_registro = function() {
                 return this.fecha_registro;
             };
+            
+            DocumentoDevolucion.prototype.set_bodega_destino = function(orden_compra) {
+                this.bodega_destino = orden_compra;
+            };
 
+            DocumentoDevolucion.prototype.get_bodega_destino = function() {
+                return this.bodega_destino;
+            };
+
+            // Productos
+            DocumentoDevolucion.setProductos = function (producto) {
+                this.productos.push(producto);
+            };
+
+            DocumentoDevolucion.getProductos = function () {
+                return this.productos;
+            };
+
+            DocumentoDevolucion.limpiarProductos = function () {
+                this.productos = [];
+            };
+            
             this.get = function(id, prefijo, numero, fecha_registro) {
                 return new DocumentoDevolucion(id, prefijo, numero, fecha_registro);
             };

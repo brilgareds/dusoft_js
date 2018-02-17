@@ -9,20 +9,17 @@ define([
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state", "$filter",
         'Usuario',
-        "Devolucion",
-        "DocumentoIngreso",
+        "DocumentoDevolucion",
         "Usuario",
         "ProductoDevolucion",
         "E009Service",
         function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Usuario, Devolucion, Documento, Sesion, Producto, E009Service) {
+                Usuario, Documento, Sesion, Producto, E009Service) {
 
             var that = this;
             var datos_documento = localStorageService.get("documento_bodega_E009");
-            $scope.Devolucion = Devolucion;
             $scope.doc_tmp_id = "00000";
-            $scope.selectedBodega = '03';
-            $scope.observacion = '';
+            $scope.documento_devolucion = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
 
 
             $scope.session = {
@@ -37,8 +34,7 @@ define([
 
             that.init = function (callback) {
                 $scope.root = {};
-                //$scope.selectedBodega = '';
-                $scope.observacion = '';
+                $scope.documento_devolucion.set_observacion('');
                 callback();
             };
 
@@ -126,8 +122,8 @@ define([
 
             that.borarrVariables = function () {
                 $scope.doc_tmp_id = "00000";
-                $scope.selectedBodega = '03';
-                $scope.observacion = '';
+                $scope.documento_devolucion.set_observacion('');
+                $scope.documento_devolucion.set_bodega_destino(null);
                 $scope.datos_view.listado_productos = [];
             };
 
@@ -246,10 +242,10 @@ define([
                 var obj = {
                     session: $scope.session,
                     data: {
-                        bodega_destino:datos_documento.bodegas_doc_id,
-                        abreviatura: datos_documento.prefijo,
-                        bodega_seleccionada: $scope.selectedBodega,
-                        observacion: $scope.observacion
+                        bodega_doc_id:$scope.documento_devolucion.get_bodegas_doc_id(),
+                        abreviatura: $scope.documento_devolucion.get_prefijo(),
+                        bodega_seleccionada: $scope.documento_devolucion.get_bodega_destino().bodega,
+                        observacion: $scope.documento_devolucion.get_observacion()
                     }
                 };
 
@@ -353,7 +349,7 @@ define([
                     data: {
                         devolucion: {
                             doc_tmp_id: $scope.doc_tmp_id,
-                            bodega_seleccionada: $scope.selectedBodega,
+                            bodega_seleccionada: $scope.documento_devolucion.get_bodega_destino().bodega,
                             usuario_id: Sesion.getUsuarioActual().getId()
                         }
                     }
@@ -364,39 +360,22 @@ define([
 
                         AlertService.mostrarMensaje("warning", data.msj);
 
-                      /*  if (datos !== undefined) {
-                            that.recorreProductos(datos, data.obj.recepcion_parcial_id, function (parametros) {
-
-                                that.insertarFacturaProveedor(parametros);
-                            });
-                        }
-
-                      /*  var documentos = {prefijo: data.obj.prefijo, numero: data.obj.numero};
-                        setTimeout(function () {
-                            that.crearHtmlAutorizacion(documentos, function (respuesta) {
-                                if (respuesta !== false) {
-                                    $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
-                                }
-                            });
-                        }, 0);
-
-                      /*  that.buscar_ordenes_compra();
+                        that.borarrVariables();
                         that.refrescarVista();
-                        $scope.DocumentoIngreso.orden_compra = "";
-
+                      
                         var nombre = data.obj.nomb_pdf;
+                        console.log("dato nombre pdf", nombre);
                         setTimeout(function () {
                             $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                        }, 4000);*/
+                        }, 0);
                     }
 
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
-                        2
+                        
                     }
                 });
             };
-
 
 
             /**

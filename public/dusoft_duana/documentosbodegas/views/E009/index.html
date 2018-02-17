@@ -4,7 +4,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading clearfix">
                     <div class="pull-left">
-                        <h4 class="text-center"><strong>Prefijo {{ DocumentoIngreso.get_prefijo()}}</strong></h4>
+                        <h4 class="text-center"><strong>Prefijo {{ documento_devolucion.get_prefijo()}}</strong></h4>
                     </div>
                     <div class="pull-right">
                         <h4 class="text-center"><strong>No. Tmp # {{doc_tmp_id}}</strong></h4>
@@ -28,7 +28,7 @@
                                     </div></div-->
                                 <div class="row">
                                     <div class="col-md-7">                                          
-                                        <ui-select ng-model="selectedBodega" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-model="documento_devolucion.bodega_destino" theme="select2" class="form-control selectgeneral pull-left" >
                                             <ui-select-match  placeholder="Seleccionar bodega">{{ $select.selected.descripcion}}</ui-select-match>
                                             <ui-select-choices refresh="bodegas($select.search,true)" refresh-delay="0" repeat="x in bodegas | filter:$select.search">
                                                 {{ x.descripcion}}
@@ -44,7 +44,7 @@
                                 <legend>Observación</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">
-                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='observacion' name="" placeholder="Ingresar Observación"></textarea>
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='documento_devolucion.observacion' name="" placeholder="Ingresar Observación"></textarea>
                                     </div>
                                 </div>
                             </fieldset>

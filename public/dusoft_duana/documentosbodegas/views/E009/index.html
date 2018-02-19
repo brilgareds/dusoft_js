@@ -15,17 +15,7 @@
                         <div class="col-md-4">
 
                             <fieldset>
-                                <legend>Bodega Destino</legend>      
-                                <!--div class="row">
-                                    <div class="col-md-10">  
-                                        <select id="selectBodegas" 
-                                                ng-model="selectedBodega" 
-                                                class="form-control selectgeneral pull-left" >
-                                            <option ng-repeat="x in bodegas" 
-                                                    value="{{x.bodega}}">{{x.descripcion}}
-                                            </option>
-                                        </select>
-                                    </div></div-->
+                                <legend>Bodega Destino</legend>
                                 <div class="row">
                                     <div class="col-md-7">                                          
                                         <ui-select ng-model="documento_devolucion.bodega_destino" theme="select2" class="form-control selectgeneral pull-left" >
@@ -86,13 +76,6 @@
                             <br>
                             <hr></hr>                            
                             <br>
-                            <!--div class="row"> 
-                                <div class="col-md-12">
-                                  <div class="table-responsive" style="margin-top:3px;" > 
-                                        <div style="height: 300px" class="defaultGrid grid-responsive" ng-grid="lista_productos_ingresados" > </div> 
-                                   </div>  
-                                </div>
-                            </div-->
                             <div ng-if="isTmp()">    
                                 <div class="row">
                                     <div class="col-md-12">
@@ -130,5 +113,5 @@
         <div ng-include src="slideurl" ng-controller="E009GestionarProductosController"></div>
     </div>
 </div>
-<!--visualizar-reporte></visualizar-reporte-->
+<visualizar-reporte></visualizar-reporte>
 

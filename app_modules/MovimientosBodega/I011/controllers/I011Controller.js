@@ -1,18 +1,19 @@
 
-var E009Controller = function (movimientos_bodegas, m_e009) {
+var I011Controller = function (movimientos_bodegas, m_i011) {
 
     this.m_movimientos_bodegas = movimientos_bodegas;
-    this.m_e009 = m_e009;
+    this.m_i011 = m_i011;
 };
 
 /**
  * @author German Galvis
  * +Descripcion lista las bodegas
- * @fecha 2018-02-12
+ * @fecha 2018-02-17
  */
-E009Controller.prototype.listarBodegas = function (req, res) {
+I011Controller.prototype.listarBodegas = function (req, res) {
     var that = this;
-    G.Q.nfcall(that.m_e009.listarBodegas).
+    var parametro = req.session.user;
+    G.Q.nfcall(that.m_i011.listarBodegas,parametro).
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'Consultar listar bodegas ok!!!!', 200, {listarBodegas: resultado}));
             }).
@@ -25,10 +26,66 @@ E009Controller.prototype.listarBodegas = function (req, res) {
 
 /**
  * @author German Galvis
+ * +Descripcion lista las devoluciones que pertenecen a la bodega seleccionada
+ * @fecha 2018-02-19
+ */
+I011Controller.prototype.listarDevoluciones = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametro = args.bodega;
+    G.Q.nfcall(that.m_i011.listarDevoluciones,parametro).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listar bodegas ok!!!!', 200, {listarDevoluciones: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de bodegas', 500, {listarDevoluciones: {}}));
+            }).
+            done();
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion lista los productos del documento de devolución
+ * @fecha 2018-02-19
+ */
+I011Controller.prototype.consultarDetalleDevolucion = function (req, res) {
+    var that = this;
+    var usuarioId = req.session.user.usuario_id;
+    var args = req.body.data;
+    if (args.numero_doc === undefined || args.numero_doc === '00000') {
+        res.send(G.utils.r(req.url, 'documento_id no esta definida', 404, {}));
+        return;
+    }
+    if (args.prefijo === undefined || args.prefijo === '00000') {
+        res.send(G.utils.r(req.url, 'prefijo no esta definido', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        numero_doc: args.numero_doc,
+        prefijo: args.prefijo,
+        usuario_id: usuarioId
+    };
+
+    that.m_i011.consultarDetalleDevolucion(parametros, function (err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
+            return;
+        } else {
+
+            res.send(G.utils.r(req.url, 'devolucion', 200, {lista_productos: lista_productos}));
+            return;
+        }
+    });
+};
+/**
+ * @author German Galvis
  * +Descripcion crea un nuevo documento temporal
  * @fecha 2018-02-14
  */
-E009Controller.prototype.newDocTemporal = function (req, res) {
+/*E009Controller.prototype.newDocTemporal = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -86,7 +143,7 @@ console.log("argumentos nuevos ", args);
  * +Descripcion lista los productos buscados
  * @fecha 2018-02-12
  */
-E009Controller.prototype.listarProductos = function (req, res) {
+/*E009Controller.prototype.listarProductos = function (req, res) {
     var that = this;
     var args = req.body.data;
 
@@ -110,7 +167,7 @@ E009Controller.prototype.listarProductos = function (req, res) {
  * +Descripcion elimina el documento temporal
  * @fecha 2018-02-14
  */
-E009Controller.prototype.eliminarGetDocTemporal = function (req, res) {
+/*E009Controller.prototype.eliminarGetDocTemporal = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
@@ -164,7 +221,7 @@ E009Controller.prototype.eliminarGetDocTemporal = function (req, res) {
  * +Descripcion agrega productos al documento temporal
  * @fecha 2018-02-15
  */
-E009Controller.prototype.agregarItem = function (req, res) {
+/*E009Controller.prototype.agregarItem = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -222,46 +279,12 @@ E009Controller.prototype.agregarItem = function (req, res) {
 
 };
 
-
-/**
- * @author German Galvis
- * +Descripcion lista los productos del documento temporal
- * @fecha 2018-02-15
- */
-E009Controller.prototype.consultarDetalleDevolucion = function (req, res) {
-    var that = this;
-    var usuarioId = req.session.user.usuario_id;
-    var args = req.body.data;
-    if (args.numero_doc === undefined || args.numero_doc === '00000') {
-        res.send(G.utils.r(req.url, 'documento_id no esta definida', 404, {}));
-        return;
-    }
-
-    var parametros = {
-        numero_doc: args.numero_doc,
-        usuario_id: usuarioId
-    };
-
-    that.m_e009.consultarDetalleDevolucion(parametros, function (err, lista_productos) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
-            return;
-        } else {
-
-            res.send(G.utils.r(req.url, 'devolucion', 200, {lista_productos: lista_productos}));
-            return;
-        }
-    });
-};
-
-
 /**
  * @author German Galvis
  * +Descripcion Elimina un  producto del documento temporal
  * @fecha 2018-02-15
  */
-E009Controller.prototype.eliminarItem = function (req, res) {
+/*E009Controller.prototype.eliminarItem = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
@@ -284,13 +307,12 @@ E009Controller.prototype.eliminarItem = function (req, res) {
     }).done();
 };
 
-
 /**
  * @author German Galvis
  * +Descripcion genera el documento definitivo EDB
  * @fecha 2018-02-15
  */
-E009Controller.prototype.crearDocumento = function (req, res) {
+/*E009Controller.prototype.crearDocumento = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId;
@@ -405,8 +427,6 @@ E009Controller.prototype.crearDocumento = function (req, res) {
 
 };
 
-
-
 function __generarPdf(datos, callback) {
 
     G.jsreport.render({
@@ -441,8 +461,8 @@ function __generarPdf(datos, callback) {
             });
         });
     });
-}
+}*/
 
-E009Controller.$inject = ["m_movimientos_bodegas", "m_e009"];
+I011Controller.$inject = ["m_movimientos_bodegas", "m_i011"];
 
-module.exports = E009Controller;
+module.exports = I011Controller;

@@ -39,6 +39,8 @@ define([
     "models/I002/ProveedorIngreso",
     "models/E009/ProductoDevolucion",
     "models/E009/DocumentoDevolucion",
+    "models/I011/DocumentoIngresoDevolucion",
+    "models/I011/ProductoIngresoDevolucion",
     "models/Index/TipoDocumentos",
     "models/Index/EmpresaDocumento",
     "models/Index/DocumentoBodega",
@@ -47,9 +49,11 @@ define([
     "controllers/I002/GestionarProductosController",
     "controllers/E009/E009Controller",
     "controllers/E009/E009GestionarProductosController",
+    "controllers/I011/I011Controller",
     "webNotification",
     "services/general/GeneralService",
     "services/E009/E009Service",
+    "services/I011/I011Service",
     
 ], function(angular) {
 
@@ -111,6 +115,16 @@ define([
                     parent_name : "DocumentosBodegas",
                     controller: 'I002Controller'
                 });
+                
+                // I0011 
+                documentos_bodegas.stateProvider.state('I011', {
+                    url: "/I011",
+                    text: "Administración Documentos de Bodega [I011]",
+                    templateUrl: "views/I011/index.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'I011Controller'
+                });
+                
                 // E009
                 documentos_bodegas.stateProvider.state('E009', {
                     url: "/E009",

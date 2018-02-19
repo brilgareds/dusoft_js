@@ -239,6 +239,11 @@ define([
              * @fecha 2018-02-14
              */
             that.guardarNewDocTmp = function () {
+                if ($scope.documento_devolucion.get_bodega_destino() === undefined || $scope.documento_devolucion.get_bodega_destino() === "") {
+                    AlertService.mostrarMensaje("warning", "Debe Seleccionar la bodega destino");
+                    return;
+                }
+                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -408,15 +413,14 @@ define([
                 });
             });
 
-            $scope.isNoTmp = function () {
+           /* $scope.isNoTmp = function () {
                 var disabled = false;
                 if ($scope.doc_tmp_id === "00000") {
                     //if ($scope.doc_tmp_id === "00000" && $scope.DocumentoIngreso.get_orden_compra() === undefined) {
                     disabled = true;
                 }
-                //console.log("isnotmp", disabled);
                 return disabled;
-            };
+            };*/
 
             $scope.isTmp = function () {
                 var disabled = false;
@@ -425,6 +429,18 @@ define([
                     disabled = true;
                 }
                 // console.log("istmp", disabled);
+                return disabled;
+            };
+            
+            
+            $scope.habilitar_btn_productos = function() {
+
+                var disabled = false;
+
+                if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
+                    disabled = true;
+                }
+
                 return disabled;
             };
 

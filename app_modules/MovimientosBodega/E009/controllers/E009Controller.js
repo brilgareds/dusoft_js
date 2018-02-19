@@ -308,8 +308,7 @@ E009Controller.prototype.crearDocumento = function (req, res) {
 
     var docTmpId = args.docTmpId;
     var cabecera = [];
-    var detalle = [];
-    var devolucion = [];
+    var detalle = [];;
 
     G.knex.transaction(function (transaccion) {
 
@@ -374,6 +373,8 @@ E009Controller.prototype.crearDocumento = function (req, res) {
         }
 
     }).then(function (resultado) {
+        console.log("resultado para detalle ",resultado );
+        detalle = resultado;
          var fecha = new Date();
          var formatoFecha = fecha.toFormat('DD-MM-YYYY');
          var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
@@ -384,7 +385,7 @@ E009Controller.prototype.crearDocumento = function (req, res) {
          cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
          __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
          cabecerae: cabecera[0],
-         detalle: resultado[0],
+         detalle: detalle,
          impresion: impresion,
          archivoHtml: 'documentoE009.html',
          reporte: "documentoE009"}, function (nombre_pdf) {
@@ -394,11 +395,9 @@ E009Controller.prototype.crearDocumento = function (req, res) {
          throw 'Consulta eliminar_documento_temporal_d sin resultados';
          }
 
-        //res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {agregarItem: resultado}));
     }).catch(function (err) {
         console.log("execCrearDocumento>>>>", err);
         res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
-        //res.send(G.utils.r(req.url, err.msj, err.status, {agregarItem: []}));
     }).done();
 
 

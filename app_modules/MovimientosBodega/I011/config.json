@@ -1,11 +1,11 @@
 {
-    "module": "E009",
+    "module": "I011",
     "dependency": {
         "controllers": [{
-                "e009_controller": {
-                    "module": "MovimientosBodega/E009",
-                    "controller": "E009Controller",
-                    "alias": "c_e009"
+                "i011_controller": {
+                    "module": "MovimientosBodega/I011",
+                    "controller": "I011Controller",
+                    "alias": "c_i011"
                 }
             }],
         "models": [{
@@ -15,9 +15,9 @@
                     "alias": "m_movimientos_bodegas"
                 },
                 "E009_model": {
-                    "module": "MovimientosBodega/E009",
-                    "model": "DocBodegaE009",
-                    "alias": "m_e009"
+                    "module": "MovimientosBodega/I011",
+                    "model": "DocBodegaI011",
+                    "alias": "m_i011"
                 }
             }],
         "events": [],

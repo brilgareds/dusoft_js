@@ -95,7 +95,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
 
-
             that.render = function (lista, callback) {
                 var conceptos = [];
                 lista.forEach(function (data) {
@@ -170,9 +169,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                 );
             };
-            
            
-
             that.verConcepto = function () {
                 $scope.opts = {
                     backdrop: true,
@@ -201,53 +198,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var modalInstance = $modal.open($scope.opts);
             };
             
-            
-           
-            $scope.opciones_archivo = new Flow();
-            $scope.opciones_archivo.target = API.RADICACION.SUBIR_ARCHIVO_PLANO;
-            $scope.opciones_archivo.testChunks = false;
-            $scope.opciones_archivo.singleFile = true;
-            $scope.opciones_archivo.query = {
-                session: JSON.stringify($scope.session)
-            };
-            
-            $scope.cargar_archivo_plano = function($flow) {
-            console.log("aa", $flow);
-                $scope.opciones_archivo = $flow;
-            };
-
-           $scope.subir_archivo_plano = function() {
-                
-                $scope.progresoArchivo = 1; 
-               
-                if ($scope.numero_orden > 0) {
-                    // Solo Subir Plano
-                    $scope.opciones_archivo.opts.query.data = JSON.stringify({
-                        ordenes_compras: {
-                            
-                            
-                        }
-                    });
-
-                    $scope.opciones_archivo.upload();
-
-                } else {
-                    // Crear OC y subir plano
-                    $scope.opciones_archivo.opts.query.data = JSON.stringify({
-                        ordenes_compras: {
-                            //empresa_id: '03',
-                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                            numero_orden: $scope.numero_orden,
-                            codigo_proveedor_id: $scope.codigo_proveedor_id.get_codigo_proveedor()
-                        }
-                    });
-                    $scope.opciones_archivo.upload();
-                } 
-            };
-           
-           
-           
-
             /**
              * +Descripcion: objeto ng-grid
              * @author Andres M Gonzalez
@@ -306,15 +256,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ]
             };
             
-            
             $scope.modalConcepto = function () {
-                console.log("modalConcepto");
                 that.verConcepto();
             };
             
             $scope.subiArchivo = function () {
                 console.log("subirArchivo");
-                
             };
 
             $scope.onSeleccionFarmacia = function () {
@@ -322,40 +269,79 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.onSeleccionConcepto = function () {
-
             };
             //  console.log("aaaaaaa", $scope.root.conceptoSeleccionada);
 
             $scope.onSeleccionFactura = function () {
-
             };
 
             $scope.onGuardarFactura = function () {
-                //console.log("numeroFactura",$scope.root.numeroFactura);
-                if ($scope.root.numeroFactura === '') {
+                $scope.onSubirArchivo();
+                /*if ($scope.root.numeroFactura === '') {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el numero de la Factura");
                     return;
                 }
-                //console.log(" AAAAAAAAAAA", $scope.root.farmaciaSeleccionada.bodega_id);  
-                that.guardarFactura();
-                /*console.log("aaaaaaa", $scope.root.conceptoSeleccionado.concepto_radicacion_id);
-                 console.log("obj", $scope.root.precioSeleccionado);    
-                 console.log("root", $scope.root);
-                 console.log("root", $scope.root.fecha_vencimiento);*/
+                that.guardarFactura();*/
+            };
 
-            }
-            
-  
+            $scope.respuestaSubidaArchivo = function(file, message) {
+                console.log('respuesta Subida archivo', file, message);
+                var data = (message !== undefined) ? JSON.parse(message) : {};
+                $scope.root.flow.cancel();
+                if (data.status === 200) {
+                    //$scope.visualizarReporte("/reports/" + data.obj.pdf, data.obj.pdf , "download");
+                    //$modalInstance.close();
+                } else {
+                    var msj = data.msj;
+                    if(msj.msj){
+                        msj = msj.msj;
+                    }
+                    AlertService.mostrarVentanaAlerta(String.CONSTANTS.ALERTA_TITULO, msj);
+                }
+                $scope.root.progresoArchivo = 0;
+            };
+
+            $scope.cargarArchivo = function($flow) {
+                $scope.root.flow = $flow;
+                console.log($scope.root.flow);
+
+            };
+
+            $scope.onSubirArchivo = function() {
+                that.subirArchivoOrdenes();
+            };
+
+            that.subirArchivoOrdenes = function() {
+                $scope.root.flow.opts.query.data = JSON.stringify({
+                    ordenes_compras: {
+                        empresa_id : '03'
+                    }
+                });
+                $scope.root.progresoArchivo = 1;
+                $scope.root.flow.upload();
+            };
        
-            that.init = function (callback) {
+            that.init = function () {
+                $scope.root = {};
                 that.consultarFarmacia();
                 that.consultarConcepto();
                 that.listarFactura();
-                callback();
+                $scope.root.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
+                $scope.root.flow = new Flow();
+                $scope.root.flow.target = API.RADICACION.SUBIR_ARCHIVO;
+                $scope.root.flow.testChunks = false;
+                $scope.root.flow.singleFile = true;
+                $scope.root.progresoArchivo = 0;
+
+                $scope.root.flow.query = {
+                    session: JSON.stringify($scope.root.session)
+                };
             };
 
-            that.init(function () {
-            });
+            that.init();
         }])});
 
      

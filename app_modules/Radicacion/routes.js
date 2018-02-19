@@ -23,6 +23,7 @@ module.exports = function (app, di_container) {
     });
     
     app.post('/api/Radicacion/subirArchivo', function(req, res) {
-        c_Radicacion.subirArchivoPlano(req, res);
+        console.log('ejecuta cotroller');
+        c_Radicacion.subirArchivo(req, res);
     });
 };  

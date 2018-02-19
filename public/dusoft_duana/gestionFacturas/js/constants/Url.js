@@ -13,7 +13,7 @@ define(["angular"], function (angular) {
 
                 'GUARDAR_FACTURA': BASE_URL + "/Radicacion/guardarFactura",
                 
-                'SUBIR_ARCHIVO_PLANO': BASE_URL + "/Radicacion/subirArchivo"
+                'SUBIR_ARCHIVO': BASE_URL + "/Radicacion/subirArchivo"
             },
             'BODEGAS': {
                 'LISTAR_BODEGA_DUANA_FARMACIA': BASE_URL + "/Bodegas/listar_bodegas_duana_farmacias"

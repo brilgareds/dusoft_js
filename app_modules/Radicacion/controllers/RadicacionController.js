@@ -22,24 +22,30 @@ Radicacion.prototype.listarConcepto = function (req, res) {
 
 };
 
-Radicacion.prototype.subirArchivo = function (req, res) {
-    console.log("555");
+
+Radicacion.prototype.subirArchivo = function(req, res){
     var that = this;
     var args = req.body.data;
-
-    G.Q.ninvoke(that.m_radicacion, "subirArchivo").
-            then(function (resultado) {
-                res.send(G.utils.r(req.url, 'subir archivo ok!!!!', 200, {subirArchivo: resultado}));
-            }).
-            fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error al subir archivo', 500, {subirArchivo: {}}));
-            }).
-            done();
-
+    
+    //Notificacion de la subida del archivo plano
+    var notificacionArchivoPlano =  function(index, longitud){
+        var porcentaje = (index * 100) / longitud;
+        that.e_radicacion.onNotificarProgresoArchivo(req.session.user.usuario_id, porcentaje);
+    };
+    
+    G.Q.nfcall(G.utils.subirArchivo, req.files, false).then(function(resultado){
+       return resultado;
+    }).then(function(resultado){
+        res.send(G.utils.r(req.url, 'Archivo cargado correctamente', 200, {data:resultado}));
+    }).fail(function(err){
+    console.log('el errror',err); 
+        console.log("se ha generado un error ", err);
+        res.send(G.utils.r(req.url, err, 500, {ordenes_compras: []}));
+    });
+    
 };
 
 Radicacion.prototype.listarFactura = function (req, res) {
-    console.log("222");
     var that = this;
     var args = req.body.data;
 

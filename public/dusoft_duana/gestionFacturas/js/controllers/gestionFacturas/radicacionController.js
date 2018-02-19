@@ -289,8 +289,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var data = (message !== undefined) ? JSON.parse(message) : {};
                 $scope.root.flow.cancel();
                 if (data.status === 200) {
-                    //$scope.visualizarReporte("/reports/" + data.obj.pdf, data.obj.pdf , "download");
-                    //$modalInstance.close();
+                    $scope.visualizarReporte("/reports/" + data.obj.pdf, data.obj.pdf , "download");
+                    $modalInstance.close();
                 } else {
                     var msj = data.msj;
                     if(msj.msj){
@@ -322,14 +322,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
        
             that.init = function () {
-                $scope.root = {};
                 that.consultarFarmacia();
                 that.consultarConcepto();
                 that.listarFactura();
-                $scope.root.session = {
-                    usuario_id: Usuario.getUsuarioActual().getId(),
-                    auth_token: Usuario.getUsuarioActual().getToken()
-                };
+
                 $scope.root.flow = new Flow();
                 $scope.root.flow.target = API.RADICACION.SUBIR_ARCHIVO;
                 $scope.root.flow.testChunks = false;

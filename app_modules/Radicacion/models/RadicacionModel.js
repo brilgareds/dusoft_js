@@ -5,12 +5,10 @@ var RadicacionModel = function() {
 };
 
 RadicacionModel.prototype.listarConcepto = function(callback){
-       console.log("AA1111111");
-     var query = G.knex.column('concepto_radicacion_id', 'observacion')
+     var query = G.knex.column('concepto_radicacion_id', 'observacion', 'estado')
           .select()
           .from('conceptos_radicacion')
           .orderBy('observacion', 'asc');
-          
       query.then(function(resultado){ 
              console.log("AA",resultado);
         callback(false, resultado);
@@ -20,6 +18,44 @@ RadicacionModel.prototype.listarConcepto = function(callback){
     });
     
 };
+
+RadicacionModel.prototype.listarFactura = function (callback) {
+    var query = G.knex.column(
+            'a.factura_id',
+            'a.numero_factura',
+            'a.concepto_radicacion_id',
+            'a.sw_entregado',
+            'a.bodega_id',
+            'a.precio',
+            'a.fecha_entrega',
+            'a.ruta',
+            'a.fecha_vencimiento',
+            'c.observacion',
+            'b.descripcion'
+            )
+            .select()
+            .from("factura as a")
+            .innerJoin("bodegas as b",
+                    function () {
+                        this.on("a.bodega_id", "b.bodega")
+                    })
+            .innerJoin("conceptos_radicacion as c",
+                    function () {
+                        this.on("c.concepto_radicacion_id", "a.concepto_radicacion_id")
+                    })
+            .orderBy('fecha_entrega', 'asc');
+    query.then(function (resultado) {
+        console.log("AA", resultado);
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarFactura]:", err);
+        callback(err);
+    });
+
+};
+
+
+
 
 RadicacionModel.prototype.guardarConcepto = function(obj,callback){
       console.log("guardarConcepto ",obj); 
@@ -36,29 +72,39 @@ RadicacionModel.prototype.guardarConcepto = function(obj,callback){
     
 };
 
+//RadicacionModel.prototype.subirArchivo = function(obj,callback){
 
 
-RadicacionModel.prototype.Factura = function(obj,callback){
-    console.log("Fctura ",obj);
-    var query = G.Knex('factura')
-            .insert ({ numero_factura: obj.numero_factura,
-                       concepto_id: obj.concepto_id,
+
+RadicacionModel.prototype.factura = function(obj,callback){
+    console.log("factura ",obj);
+    var query = G.knex('factura')
+               .insert ({ numero_factura: obj.numeroFactura,
+                       concepto_radicacion_id: obj.concepto_radicacion_id,
                        sw_entregado: obj.sw_entregado,
                        bodega_id: obj.bodega_id,
                        precio: obj.precio,
-                       fecha_entrega: obj.fecha_entrega,
+                       fecha_entrega: 'now()',
                        ruta: obj.ruta,
-                       fecha_vencimiento: obj.fecha_vencimiento
+                       fecha_vencimiento: obj.fechaVencimiento,
+                       usuario_id: obj.usuario_id
             });
-
+            
     query.then(function(resultado){    
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err (/catch) [Factura]: ", err);
+        console.log("err (/catch) [factura]: ", err);
         callback({err:err, msj: "Error de Factura"});   
     });
     
 };
+
+
+	
+
+
+
+
 
 
 

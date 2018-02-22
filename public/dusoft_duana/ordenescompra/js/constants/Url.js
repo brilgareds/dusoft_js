@@ -43,6 +43,12 @@ define(["angular"], function(angular) {
                 'LISTAR_LOGS_ORDENES_COMPRA' : BASE_URL + '/OrdenesCompra/listarLogOrdenCompra'
 
             },
+            'ACTAS_TECNICAS': {
+                'LISTAR_ORDENES_PARA_ACTAS': BASE_URL + '/ActasTecnicas/listarOrdenesParaActas',
+                'LISTAR_PRODUCTOS_PARA_ACTAS': BASE_URL + '/ActasTecnicas/listarProductosParaActas',
+                'LISTA_PRODUCTO': BASE_URL + '/ActasTecnicas/listarProducto',
+                'GUARDAR_ACTA': BASE_URL + '/ActasTecnicas/guardarActa'
+            },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'
             },

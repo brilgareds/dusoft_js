@@ -50,6 +50,7 @@ define([
     "controllers/E009/E009Controller",
     "controllers/E009/E009GestionarProductosController",
     "controllers/I011/I011Controller",
+    "controllers/I011/ModificarProductoController",
     "webNotification",
     "services/general/GeneralService",
     "services/E009/E009Service",
@@ -123,6 +124,12 @@ define([
                     templateUrl: "views/I011/index.html",
                     parent_name : "DocumentosBodegas",
                     controller: 'I011Controller'
+                }).state('modificarProducto', {
+                    url: "/modificarProducto",
+                    text: "modificador de productos",
+                    templateUrl: "views/I011/ventanaModificacion.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'ModificarProductoController'
                 });
                 
                 // E009

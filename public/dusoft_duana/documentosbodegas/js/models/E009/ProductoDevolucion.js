@@ -28,6 +28,13 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
             ProductoDevolucion.prototype.getTipoProductoId = function () {
                 return this.tipoProducto;
             };
+            ProductoDevolucion.prototype.setNombreTipo = function (nombreTipo) {
+                this.nombreTipo = nombreTipo;
+            };
+
+            ProductoDevolucion.prototype.getNombreTipo = function () {
+                return this.nombreTipo;
+            };
             
             ProductoDevolucion.prototype.getSubClase = function () {
                 return this.subClase;

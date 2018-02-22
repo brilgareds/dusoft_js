@@ -33,6 +33,28 @@ define(["angular", "js/services"], function (angular, services) {
                     /*
                      * @Author: German Galvis.
                      * @fecha 19/02/2018
+                     * +Descripcion: lista las bodegas
+                     */
+                    self.buscarNovedades = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I011.LISTAR_NOVEDADES,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 19/02/2018
                      * +Descripcion: lista las devoluciones
                      */
                     self.buscarDevoluciones = function (obj, callback) {
@@ -42,7 +64,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 {
                                     session: obj.session,
                                     data: {
-                                        bodega:obj.bodega
+                                        bodega: obj.bodega
                                     }
                                 },
                                 function (data) {

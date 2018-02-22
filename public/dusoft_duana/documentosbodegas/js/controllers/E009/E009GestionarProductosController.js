@@ -5,12 +5,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout", "$filter", "Usuario",
         "AlertService", "localStorageService", "$state", "DocumentoDevolucion", "ProductoDevolucion",
-        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, $filter, Sesion, AlertService, localStorageService, $state, Documento, Producto) {
+        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, $filter, Sesion,
+                AlertService, localStorageService, $state, Documento, Producto) {
 
             var that = this;
             $scope.parametros = '';
-
-
+            //$scope.parametros = empresa;
+            //$scope.tipoProducto = tipoProducto;
+            $scope.tipoProducto;
             $rootScope.$on('gestionar_productosCompleto', function (e, parametros) {
 
                 $scope.datos_form = {
@@ -20,6 +22,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
                 $scope.parametros = parametros;
+                //$scope.tipoProducto = $scope.parametros[1].tipoProducto;
+                $scope.tipoProducto = parametros[1].tipoProducto;
 
                 $timeout(function () {
                     $scope.buscador_productos(true, '');
@@ -40,7 +44,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 };
 
                 Request.realizarRequest(API.E009.LISTAR_PRODUCTOS, "POST", obj, function (data) {
-
                     if (data.status === 200) {
                         that.renderProductos(data.obj.listarProductos);
                     }
@@ -51,7 +54,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 $scope.datos_form.listado_productos = [];
                 productos.forEach(function (data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
-                            data.tipo_producto_id, data.subClase, data.lote, data.fecha_vencimiento);
+                            data.tipo_producto_id, data.subClase, data.lote, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"));
+                            producto.setNombreTipo(data.nombreTipo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -67,6 +71,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
              *
              */
             $scope.buscador_productos = function (event, termino_busqueda) {
+                console.log("busca tipo",$scope.tipoProducto);
                 if (termino_busqueda !== undefined) {
                     if (termino_busqueda.length < 3) {
                         return;
@@ -78,7 +83,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     empresa_id: $scope.parametros[1].empresa.getEmpresa().getCodigo(),
                     centro_utilidad: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.codigo,
                     bodega: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.bodega.codigo,
-                    // doc_tmp_id: $scope.doc_tmp_id,
+                    /*empresa_id: $scope.parametros.getEmpresa().getCodigo(),
+                     centro_utilidad: $scope.parametros.getEmpresa().centroUtilidad.codigo,
+                     bodega: $scope.parametros.getEmpresa().centroUtilidad.bodega.codigo,*/
                     descripcion: termino_busqueda,
                     tipoFiltro: $scope.filtroNombre.id
                 };
@@ -100,6 +107,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $scope.guardarProducto = function (producto) {
+
+                if ($scope.tipoProducto === undefined || $scope.tipoProducto.id === "") {
+                    $scope.tipoProducto.id = producto.tipoProducto;
+                    $scope.tipoProducto.nombre = producto.nombreTipo;
+                } else if ($scope.tipoProducto.id !== producto.tipoProducto) {
+                    AlertService.mostrarMensaje("warning", "DEBE SELECCIONAR PRODUCTOS DEL TIPO " + " " + $scope.tipoProducto.nombre.toUpperCase());
+                    return;
+                }
 
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
@@ -131,7 +146,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             that.insertarProductos = function (parametro) {
-                
+
                 var obj = {
                     session: $scope.session,
                     data: parametro
@@ -152,12 +167,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 if (producto.cantidad === undefined || producto.cantidad === "" || parseInt(producto.cantidad) <= 0) {
                     disabled = true;
                 }
-
-                if (producto.lote === undefined || producto.lote === "") {
-                    disabled = true;
-                }
-
-                if (producto.fecha_vencimiento === undefined || producto.fecha_vencimiento === "") {
+                if (parseInt(producto.cantidad) > parseInt(producto.existencia)) {
+                    AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar las existencias");
                     disabled = true;
                 }
 
@@ -178,6 +189,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
                                                 <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
                                                 <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 6">NeA</span>\
                                                 <span ng-cell-text >{{COL_FIELD}} </span>\
                                                 <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
@@ -187,14 +199,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     {field: 'existencia', displayName: 'Existencias', width: "10%", enableCellEdit: false},
                     {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "8%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false, cellClass: "dropdown-button",
-                        cellTemplate: ' <div class="col-xs-12" cambiar-foco >\
-                                            <p class="input-group" cambiar-foco >\
-                                                <input type="text" class="form-control grid-inline-input readonlyinput calendario"  \
-                                                    datepicker-popup="{{format}}" ng-model="row.entity.fecha_vencimiento" is-open="row.entity.datepicker_fecha_inicial" \
-                                                    min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="" show-weeks="false" toggle-weeks-text="#"/> \
-                                                </p>\
-                                        </div>'},
+                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false},
                     {field: 'lote', displayName: 'Lote', width: "7%", enableCellEdit: false},
                     {width: "6%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
@@ -202,6 +207,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         </div>'}
                 ]
             };
+
+            /*$scope.onCerrar = function () {
+             $modalInstance.close($scope.tipoProducto);
+             };*/
+
 
             $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {//ng-disabled="habilitar_ingreso_producto(row.entity)"
                 $scope.$$watchers = null;

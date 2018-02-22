@@ -1,0 +1,43 @@
+<div>
+
+
+    <div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix">
+                        <div class="pull-left col-md-11">
+                            <h4 class="text-center"><strong>{{ datos_form.titulo}}</strong></h4>
+                        </div>
+                        <div class="pull-right">
+                            <div>
+                                <button ng-click="onCerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div>
+                            <div class="row text-center">
+
+                                <h4 class="text-center"><strong>Defina los lotes reales que llegaron en la devolucion para ({{rootModificar.fila.codigo_producto}})</strong>
+                                    <strong> del lote {{rootModificar.fila.lote}} con fecha de vencimiento {{rootModificar.fila.fecha_vencimiento}}.</strong></h4>
+                                <h4 class="text-center"><strong>Debe conservar las {{rootModificar.fila_cantidad}}  unidades devueltas .</strong></h4>
+                            </div>
+                            <br>
+                            <div class="gridExistencias" ng-grid="listadoModificaciones"> </div>  
+                        </div>
+                    </div>
+                </div>       
+            </div>
+            <div class="row text-center">
+                <button  ng-click="btn_adicionar_modificacion()"  class="btn btn-default" >Adicionar Fila</button>
+            </div>  
+            <br/>
+        </div>        
+    </div>
+    <div class="row text-center">
+        <button class="btn btn-primary" ng-click="onActualizarProducto()" >Actualizar</button>
+        <button class="btn btn-warning" ng-click="onCerrar()">Cancelar</button>
+
+    </div>
+</div>

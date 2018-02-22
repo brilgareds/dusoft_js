@@ -42,7 +42,9 @@ define(["angular"], function(angular) {
             'I011': {
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/I011/listarBodegas',
                 'CONSULTAR_DETALLE_DEVOLUCION': BASE_URL + '/movBodegas/I011/consultarDetalleDevolucion',
-                'LISTAR_DEVOLUCIONES': BASE_URL + '/movBodegas/I011/listarDevoluciones'
+                'LISTAR_DEVOLUCIONES': BASE_URL + '/movBodegas/I011/listarDevoluciones',
+                'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/I011/newDocTemporal',
+                'LISTAR_NOVEDADES': BASE_URL + '/movBodegas/I011/listarNovedades'
             },
             'E007': {
             },

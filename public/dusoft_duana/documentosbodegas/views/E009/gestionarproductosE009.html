@@ -6,13 +6,13 @@
             <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-heading clearfix">
-                        <!--                <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Imagen</h4>-->
                         <div class="pull-left col-md-11">
                             <h4 class="text-center"><strong>{{ datos_form.titulo}}</strong></h4>
                         </div>
                         <div class="pull-right">
                             <div>
-                                <button ng-click="cerrar_seleccion_productos()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+                                <!--button ng-click="onCerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button-->   
+                                <button ng-click="cerrar_seleccion_productos(tipoProducto)" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
                             </div> 
                         </div>
                     </div>
@@ -39,19 +39,9 @@
                                     </div>
                                 </div>
 
-
-                                <!-- div class="col-md-3 pull-right">
-                                    <p class="input-group">
-
-                                        <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);"  ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
-                                        </span>
-                                    </p>
-                                </div -->
                             </div>
                             <br>
-                            <div class="" style="height: 700px" ng-grid="lista_productos_E009"> </div>
+                            <div class="" style="height: 700px;" ng-grid="lista_productos_E009"> </div>
 
                             </br>
 

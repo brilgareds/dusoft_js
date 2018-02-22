@@ -33,19 +33,21 @@ DocumentoBodegaE009.prototype.listarProductos = function (parametros, callback) 
     var columnas = [
         "invenPro.codigo_producto",
         "invenPro.tipo_producto_id",
-        "invenPro.descripcion",
+        "tPro.descripcion as nombreTipo",
+      G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
         "exisBodega.existencia",
         "subclase.descripcion AS subClase",
         "exisLote.lote",
         "exisLote.fecha_vencimiento"
     ];
 
-    var query = G.knex.distinct('invenPro.codigo_producto')
-            .select(columnas)
-            .from("inventarios_productos AS invenPro")
-            .innerJoin("existencias_bodegas AS exisBodega ", function () {
-                this.on("invenPro.codigo_producto", "exisBodega.codigo_producto")
-            })
+    var query = G.knex.column(columnas)
+    /*.from("inventarios_productos AS invenPro")
+     .innerJoin("existencias_bodegas AS exisBodega ", function () {
+     this.on("invenPro.codigo_producto", "exisBodega.codigo_producto")
+     })*/
+            .from("existencias_bodegas as exisBodega")
+            .innerJoin("inventarios_productos as invenPro", "exisBodega.codigo_producto", "invenPro.codigo_producto")
             .innerJoin("inv_subclases_inventarios AS subclase", function () {
                 this.on("invenPro.subclase_id", "subclase.subclase_id")
                         .on("invenPro.clase_id", "subclase.clase_id")
@@ -56,6 +58,7 @@ DocumentoBodegaE009.prototype.listarProductos = function (parametros, callback) 
                         .on("exisBodega.bodega", "exisLote.bodega")
                         .on("exisBodega.codigo_producto", "exisLote.codigo_producto")
             })
+            .innerJoin("inv_tipo_producto as tPro", "invenPro.tipo_producto_id", "tPro.tipo_producto_id")
             .where("exisBodega.empresa_id", parametros.empresa_id)
             .andWhere("exisBodega.centro_utilidad", parametros.centro_utilidad)
             .andWhere("exisBodega.bodega", parametros.bodega)
@@ -68,9 +71,10 @@ DocumentoBodegaE009.prototype.listarProductos = function (parametros, callback) 
                 } else {
                     this.andWhere("invenPro.codigo_producto", parametros.descripcion);
                 }
-            })
-            .limit(G.settings.limit).offset((parametros.pagina_actual - 1) * G.settings.limit);
-
+            });
+    // .limit(G.settings.limit).offset((parametros.pagina_actual - 1) * G.settings.limit);
+    console.log("Query resultado", G.sqlformatter.format(
+            query.toString()));
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -223,7 +227,7 @@ DocumentoBodegaE009.prototype.consultarDetalleDevolucion = function (parametros,
         "invD.item_id",
         "invD.codigo_producto",
         "invenPro.tipo_producto_id",
-        "invenPro.descripcion",
+        G.knex.raw("fc_descripcion_producto(\"invD\".\"codigo_producto\") as descripcion"),
         "invD.cantidad",
         "subclase.descripcion AS subClase",
         "invD.lote",

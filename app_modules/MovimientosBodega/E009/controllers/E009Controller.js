@@ -38,7 +38,7 @@ E009Controller.prototype.newDocTemporal = function (req, res) {
     var bodega_seleccionada = args.bodega_seleccionada;
     var observacion = args.observacion;
     var movimiento_temporal_id;
-console.log("argumentos nuevos ", args);
+    console.log("argumentos nuevos ", args);
     if (args.observacion === undefined) {
         res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
         return;
@@ -99,6 +99,7 @@ E009Controller.prototype.listarProductos = function (req, res) {
     };
 
     G.Q.nfcall(that.m_e009.listarProductos, parametros).then(function (resultado) {
+        console.log("resultado",resultado);
         res.send(G.utils.r(req.url, 'Listar Productos Para Asignar', 200, {listarProductos: resultado}));
     }).fail(function (err) {
         res.send(G.utils.r(req.url, 'Error al Listar Productos Para Asignar', 500, {}));
@@ -243,7 +244,7 @@ E009Controller.prototype.consultarDetalleDevolucion = function (req, res) {
     };
 
     that.m_e009.consultarDetalleDevolucion(parametros, function (err, lista_productos) {
-
+        console.log("consultarDetalleDevolucion.lista_productos", lista_productos);
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
             return;
@@ -308,7 +309,8 @@ E009Controller.prototype.crearDocumento = function (req, res) {
 
     var docTmpId = args.docTmpId;
     var cabecera = [];
-    var detalle = [];;
+    var detalle = [];
+    ;
 
     G.knex.transaction(function (transaccion) {
 
@@ -323,7 +325,7 @@ E009Controller.prototype.crearDocumento = function (req, res) {
             parametros.docTmpId = args.docTmpId;
             parametros.usuario_id = usuarioId;
             parametros.usuarioId = usuarioId;
-            
+
             return G.Q.nfcall(that.m_e009.consultarDetalleDevolucion, parametros);
 
         }).then(function (result) {
@@ -331,8 +333,6 @@ E009Controller.prototype.crearDocumento = function (req, res) {
 
 
         }).then(function (result) {
-            //if (result >= 1) 
-            console.log("lo q devuelve la consulta eliminarDocumentoTemporal_d 1", result);
             return G.Q.nfcall(that.m_e009.eliminarDocumentoTemporal_d, parametros, transaccion);
 
 
@@ -363,7 +363,7 @@ E009Controller.prototype.crearDocumento = function (req, res) {
     }).then(function () {
         return G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros);
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         cabecera = resultado;
         if (resultado.length > 0) {
@@ -373,27 +373,27 @@ E009Controller.prototype.crearDocumento = function (req, res) {
         }
 
     }).then(function (resultado) {
-        console.log("resultado para detalle ",resultado );
+        console.log("consultar_detalle_documento",resultado);
         detalle = resultado;
-         var fecha = new Date();
-         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
-         var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
-         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
-         
-         if (resultado.length > 0) {
-         
-         cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
-         __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
-         cabecerae: cabecera[0],
-         detalle: detalle,
-         impresion: impresion,
-         archivoHtml: 'documentoE009.html',
-         reporte: "documentoE009"}, function (nombre_pdf) {
-         res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
-         });
-         } else {
-         throw 'Consulta eliminar_documento_temporal_d sin resultados';
-         }
+        var fecha = new Date();
+        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+
+        if (resultado.length > 0) {
+
+            cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
+            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecerae: cabecera[0],
+                detalle: detalle[0],
+                impresion: impresion,
+                archivoHtml: 'documentoE009.html',
+                reporte: "documentoE009"}, function (nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+        } else {
+            throw 'Consulta eliminar_documento_temporal_d sin resultados';
+        }
 
     }).catch(function (err) {
         console.log("execCrearDocumento>>>>", err);
@@ -411,7 +411,7 @@ function __generarPdf(datos, callback) {
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
-	    helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E009/reports/javascripts/rotulos.js', 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E009/reports/javascripts/rotulos.js', 'utf8'),
             recipe: "html",
             engine: 'jsrender',
             phantom: {
@@ -420,14 +420,14 @@ function __generarPdf(datos, callback) {
             }
         },
         data: datos
-    }, function(err, response) {
+    }, function (err, response) {
 
-        response.body(function(body) {
+        response.body(function (body) {
             var fecha = new Date();
 
             var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + ".html";
 
-            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {
                     console.log("err [__generarPdf]: ", err);
                     callback(true, err);

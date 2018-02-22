@@ -43,7 +43,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
             };
 
             ProductoIngresoDevolucion.prototype.getCantidad = function () {
-                return parseFloat(this.cantidad).toFixed();
+                return parseFloat(this.cantidad).toFixed(2);
             };
             
             ProductoIngresoDevolucion.prototype.setItemId = function (item_id) {

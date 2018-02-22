@@ -10,6 +10,14 @@ module.exports = function (app, di_container) {
     app.post('/api/movBodegas/I011/listarDevoluciones', function (req, res) {
         c_i011.listarDevoluciones(req, res);
     });
+
+    app.post('/api/movBodegas/I011/listarNovedades', function (req, res) {
+        c_i011.listarNovedades(req, res);
+    });
+
+    app.post('/api/movBodegas/I011/newDocTemporal', function (req, res) {
+        c_i011.newDocTemporal(req, res);
+    });
     
     app.post('/api/movBodegas/I011/consultarDetalleDevolucion', function (req, res) {
         c_i011.consultarDetalleDevolucion(req, res);

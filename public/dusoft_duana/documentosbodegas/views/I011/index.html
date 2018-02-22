@@ -20,9 +20,10 @@
                                 <div class="row">
                                     <div class="col-md-7">                                          
 
-                                        <select ng-model="documento_ingreso.bodega" 
+                                        <select ng-model="documento_ingreso.bodega"  pl
                                                 class="form-control selectgeneral pull-left"
                                                 ng-change="onBuscarDevoluciones()">
+                                            <option value="">Seleccionar bodega</option>
                                             <option ng-repeat="x in bodegas"
                                                     value="{{x.bodega}}">{{x.descripcion}}
                                             </option>
@@ -128,9 +129,9 @@
         </div>
     </div>
 
-    <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
-        <div ng-include src="slideurl" ng-controller="GestionarProductosController"></div>
-    </div>
+    <!--div  class="slide" slide-content open-callback="modificar_productos" close-callback="cerrar_modificar_productos"   >
+        <div ng-include src="slideurl" ng-controller="ModificarProductoController"></div>
+    </div-->
 </div>
 <visualizar-reporte></visualizar-reporte>
 

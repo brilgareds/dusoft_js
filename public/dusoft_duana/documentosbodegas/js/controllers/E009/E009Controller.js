@@ -19,6 +19,10 @@ define([
             var that = this;
             var datos_documento = localStorageService.get("documento_bodega_E009");
             $scope.doc_tmp_id = "00000";
+            $scope.tipoProducto = {
+                id: '',
+                nombre: ''
+            };
             $scope.documento_devolucion = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
 
 
@@ -58,15 +62,15 @@ define([
             //  Abre slider para gestionar productos
             $scope.seleccionar_productos = function () {
 
-                // $state.go('buscarProductos');
                 $scope.slideurl = "views/E009/gestionarproductosE009.html?time=" + new Date().getTime();
-                $scope.$emit('gestionar_productos', {empresa: Sesion.getUsuarioActual()});
+                $scope.$emit('gestionar_productos', {empresa: Sesion.getUsuarioActual(), tipoProducto: $scope.tipoProducto});
             };
 
             // Cerrar slider para gestionar productos
-            $scope.cerrar_seleccion_productos = function () {
+            $scope.cerrar_seleccion_productos = function (data) {
 
                 $scope.$emit('cerrar_gestion_productos', {animado: true});
+                $scope.tipoProducto = data;
                 that.listarProductosAsociados();
             };
 
@@ -101,7 +105,7 @@ define([
                 productos.forEach(function (data) {
 
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
-                            data.tipo_producto_id, data.subClase, data.lote, data.fecha_vencimiento, data.cantidad, data.item_id);
+                            data.tipo_producto_id, data.subClase, data.lote, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"), data.cantidad, data.item_id);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -122,6 +126,8 @@ define([
 
             that.borarrVariables = function () {
                 $scope.doc_tmp_id = "00000";
+                $scope.tipoProducto.id = '';
+                $scope.tipoProducto.nombre = '';
                 $scope.documento_devolucion.set_observacion('');
                 $scope.documento_devolucion.set_bodega_destino(null);
                 $scope.datos_view.listado_productos = [];
@@ -206,14 +212,7 @@ define([
                     {field: 'subClase', displayName: 'Molecula', width: "20%", enableCellEdit: false},
                     {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false, cellClass: "dropdown-button",
-                        cellTemplate: ' <div class="col-xs-12" cambiar-foco >\
-                                            <p class="input-group" cambiar-foco >\
-                                                <input type="text" class="form-control grid-inline-input readonlyinput calendario"  \
-                                                    datepicker-popup="{{format}}" ng-model="row.entity.fecha_vencimiento" is-open="row.entity.datepicker_fecha_inicial" \
-                                                    min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="" show-weeks="false" toggle-weeks-text="#"/> \
-                                                </p>\
-                                        </div>'},
+                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false},
                     {field: 'lote', displayName: 'Lote', width: "7%", enableCellEdit: false},
                     {width: "9%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
@@ -243,11 +242,11 @@ define([
                     AlertService.mostrarMensaje("warning", "Debe Seleccionar la bodega destino");
                     return;
                 }
-                
+
                 var obj = {
                     session: $scope.session,
                     data: {
-                        bodega_doc_id:$scope.documento_devolucion.get_bodegas_doc_id(),
+                        bodega_doc_id: $scope.documento_devolucion.get_bodegas_doc_id(),
                         abreviatura: $scope.documento_devolucion.get_prefijo(),
                         bodega_seleccionada: $scope.documento_devolucion.get_bodega_destino().bodega,
                         observacion: $scope.documento_devolucion.get_observacion()
@@ -360,14 +359,13 @@ define([
                     }
                 };
                 E009Service.crearDocumento(obj, function (data) {
-                    console.log("continuacion del crear documento", data);
                     if (data.status === 200) {
 
                         AlertService.mostrarMensaje("warning", data.msj);
 
                         that.borarrVariables();
                         that.refrescarVista();
-                      
+
                         var nombre = data.obj.nomb_pdf;
                         console.log("dato nombre pdf", nombre);
                         setTimeout(function () {
@@ -377,7 +375,7 @@ define([
 
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
-                        
+
                     }
                 });
             };
@@ -413,14 +411,14 @@ define([
                 });
             });
 
-           /* $scope.isNoTmp = function () {
-                var disabled = false;
-                if ($scope.doc_tmp_id === "00000") {
-                    //if ($scope.doc_tmp_id === "00000" && $scope.DocumentoIngreso.get_orden_compra() === undefined) {
-                    disabled = true;
-                }
-                return disabled;
-            };*/
+            /* $scope.isNoTmp = function () {
+             var disabled = false;
+             if ($scope.doc_tmp_id === "00000") {
+             //if ($scope.doc_tmp_id === "00000" && $scope.DocumentoIngreso.get_orden_compra() === undefined) {
+             disabled = true;
+             }
+             return disabled;
+             };*/
 
             $scope.isTmp = function () {
                 var disabled = false;
@@ -431,9 +429,9 @@ define([
                 // console.log("istmp", disabled);
                 return disabled;
             };
-            
-            
-            $scope.habilitar_btn_productos = function() {
+
+
+            $scope.habilitar_btn_productos = function () {
 
                 var disabled = false;
 

@@ -86,10 +86,12 @@ define(["angular", "js/services"], function (angular, services) {
                         var obj = {
                             session: parametro.session,
                             data: {
-                                doc_tmp_id: parametro.data.doc_tmp_id
+                                doc_tmp_id: parametro.data.doc_tmp_id,
+                                numero: parametro.data.numero,
+                                prefijo: parametro.data.prefijo
                             }
                         };
-                        Request.realizarRequest(API.E009.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {
+                        Request.realizarRequest(API.I011.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -104,11 +106,13 @@ define(["angular", "js/services"], function (angular, services) {
                             session: objs.session,
                             data: {
                                 item_id: objs.item_id,
+                                lote: objs.lote,
+                                movimiento_id: objs.movimiento_id,
                                 docTmpId: objs.docTmpId
                             }
                         };
 
-                        Request.realizarRequest(API.E009.ELIMINAR_PRODUCTO_DEVOLUCION, "POST", obj, function (data) {
+                        Request.realizarRequest(API.I011.ELIMINAR_PRODUCTO_DEVOLUCION, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

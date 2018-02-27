@@ -61,6 +61,30 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
             ProductoIngresoDevolucion.prototype.getNovedad = function () {
                return this.novedad;
             };
+            
+            ProductoIngresoDevolucion.prototype.setNovedadNombre = function (nombre) {
+                this.novedadNombre = nombre;
+            };
+
+            ProductoIngresoDevolucion.prototype.getNovedadNombre = function () {
+               return this.novedadNombre;
+            };
+            
+            ProductoIngresoDevolucion.prototype.setMovimiento = function (movimiento) {
+                this.movimiento = movimiento;
+            };
+
+            ProductoIngresoDevolucion.prototype.getMovimiento = function () {
+               return this.movimiento;
+            };
+            
+            ProductoIngresoDevolucion.prototype.setNovedadAnexa = function (novedadAnexa) {
+                this.novedadAnexa = novedadAnexa;
+            };
+
+            ProductoIngresoDevolucion.prototype.getNovedadAnexa = function () {
+               return this.novedadAnexa;
+            };
 
             ProductoIngresoDevolucion.prototype.get_fecha_vencimiento = function () {
                 return this.fecha_vencimiento;

@@ -14,10 +14,15 @@
                     "model": "MovBodegasModel",
                     "alias": "m_movimientos_bodegas"
                 },
-                "E009_model": {
+                "I011_model": {
                     "module": "MovimientosBodega/I011",
                     "model": "DocBodegaI011",
                     "alias": "m_i011"
+                },
+                "E009_model": {
+                    "module": "MovimientosBodega/E009",
+                    "model": "DocBodegaE009",
+                    "alias": "m_e009"
                 }
             }],
         "events": [],

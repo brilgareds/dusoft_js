@@ -77,12 +77,13 @@ DocumentoBodegaI011.prototype.listarNovedades = function (callback) {
  * @fecha 2018-02-19
  */
 DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros, callback) {
+    var subQuery = G.knex.raw("(\"invD\".\"cantidad\" -\"invD\".\"cantidad_recibida\")>0");
     var columnas = [
         "invD.movimiento_id",
         "invD.codigo_producto",
         "invenPro.tipo_producto_id",
-        "invenPro.descripcion",
-        "invD.cantidad",
+        G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
+        G.knex.raw("(\"invD\".\"cantidad\" -\"invD\".\"cantidad_recibida\") as  cantidad"),
         "invD.lote",
         "invD.fecha_vencimiento"
     ];
@@ -104,7 +105,8 @@ DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros,
                         .on("exisLote.codigo_producto", "i.codigo_producto")
             })
             .where('invD.numero', parametros.numero_doc)
-            .andWhere("invD.prefijo", parametros.prefijo);
+            .andWhere("invD.prefijo", parametros.prefijo)
+            .andWhere(subQuery);
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -112,6 +114,51 @@ DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros,
         console.log("err [listarProductosDevolucion]:", err);
         callback(err);
     });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza el producto devuelto 
+ * @fecha 2018-02-27
+ */
+DocumentoBodegaI011.prototype.updateMovimientoD = function (parametros, transaccion, callback) {
+    console.log("parametros", parametros);
+    var query = G.knex("inv_bodegas_movimiento_d")
+            .where('movimiento_id', parametros.movimiento_id)
+            .update('cantidad_recibida', parametros.cantidad);
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza todos los productos devueltos
+ * @fecha 2018-02-27
+ */
+DocumentoBodegaI011.prototype.updateAllMovimientoD = function (parametros, transaccion, callback) {
+    console.log("parametros",parametros);
+    var query = G.knex("inv_bodegas_movimiento_d")
+            .where('prefijo', parametros.prefijo)
+            .andWhere('numero', parametros.numero)
+            .update('cantidad_recibida', parametros.cantidad);
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
 };
 
 /**
@@ -135,7 +182,6 @@ DocumentoBodegaI011.prototype.modificarIngresoDevolucionTmp = function (parametr
 
 };
 
-
 /**
  * @author German Galvis
  * +Descripcion agrega productos al documento temporal
@@ -158,7 +204,6 @@ DocumentoBodegaI011.prototype.agregarDocumentoVerificacionTmp = function (parame
         callback(err);
     }).done();
 };
-
 
 /**
  * @author German Galvis
@@ -184,91 +229,223 @@ DocumentoBodegaI011.prototype.generarMovimientoDevolucionFarmaciaTmp = function 
 
 /**
  * @author German Galvis
- * +Descripcion actualiza el documento parcial para devoluciones
- * @fecha 2018-02-14
+ * +Descripcion agrega productos al documento temporal
+ * @fecha 2018-02-15
  */
-/*DocumentoBodegaE009.prototype.modificarDocumentoDevolucion = function (parametros, transaccion, callback) {
- var query = G.knex("inv_bodegas_movimiento")
- .where('prefijo', parametros.prefijoDocumento)
- .andWhere('numero', parametros.numeracionDocumento)
- .update('empresa_destino', parametros.bodega_destino);
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- callback(err);
- }).done();
- 
- };
- 
- /**
+DocumentoBodegaI011.prototype.agregarItem = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_tmp_d")
+            .returning('item_id')
+            .insert({bodega: parametros.bodega, cantidad: parametros.cantidad, centro_utilidad: parametros.centroUtilidad,
+                codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId, empresa_id: parametros.empresaId,
+                fecha_vencimiento: parametros.fechaVencimiento, lote: parametros.lote, usuario_id: parametros.usuarioId,
+                item_id_compras: parametros.movimiento_id
+            });
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarItem", err);
+        callback(err);
+    }).done();
+};
+
+/**
  * @author German Galvis
- * +Descripcion elimina todos los productos asociados al documento parcial
- * @fecha 2018-02-14
+ * +Descripcion agrega productos al documento temporal
+ * @fecha 2018-02-23
  */
-/*DocumentoBodegaE009.prototype.eliminarDocumentoTemporal_d = function (parametros, transaccion, callback) {
- var query = G.knex("inv_bodegas_movimiento_tmp_d").
- where('doc_tmp_id', parametros.docTmpId).
- andWhere('usuario_id', parametros.usuarioId).
- del();
- 
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- console.log("Error eliminar_documento_temporal_d", err);
- callback(err);
- });
- };
- 
- /**
+DocumentoBodegaI011.prototype.agregarDocumentoVerificacionTmpD = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_documento_verificacion_tmp_d").
+            insert({farmacia_id: parametros.empresa_envia, prefijo: parametros.prefijo, numero: parametros.numero,
+                item_id: parametros.item_id, codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId,
+                usuario_id: parametros.usuarioId, lote: parametros.lote, fecha_vencimiento: parametros.fechaVencimiento,
+                cantidad: parametros.cantidad, novedad_devolucion_id: parametros.novedad_id, novedad_anexa: parametros.novedad_anexa
+            });
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarDocumentoVerificacionTmpD", err);
+        callback(err);
+    }).done();
+};
+
+/**
  * @author German Galvis
- * +Descripcion elimina el documento parcial para devoluciones
- * @fecha 2018-02-14
+ * +Descripcion agrega un registro a la tabla inv_bodegas_movimiento_tmp_devolucion_farmacia_producto
+ * @fecha 2018-02-21
  */
-/*DocumentoBodegaE009.prototype.eliminarDocumentoTemporal = function (parametros, transaccion, callback) {
- 
- var query = G.knex("inv_bodegas_movimiento_tmp").
- where('doc_tmp_id', parametros.docTmpId).
- andWhere('usuario_id', parametros.usuarioId).
- del();
- 
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- console.log("Error __eliminar_documento_temporal", err);
- callback(err);
- });
- };
- 
- 
- /**
+DocumentoBodegaI011.prototype.agregarMovimientoDevolucionFarmaciaTmpD = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_tmp_devolucion_farmacia_productos").
+            insert({movimiento_id: parametros.movimiento_id, doc_tmp_id: parametros.docTmpId, lote: parametros.lote,
+                codigo_producto: parametros.codigoProducto, usuario_id: parametros.usuarioId, fecha_vencimiento: parametros.fechaVencimiento,
+                cantidad: parametros.cantidad
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarMovimientoDevolucionFarmaciaTmpD", err);
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion lista los productos del documento temporal
+ * @fecha 2018-02-15
+ */
+DocumentoBodegaI011.prototype.consultarProductosValidados = function (parametros, callback) {
+
+    var columnas = [
+        "invD.item_id",
+        "invD.item_id_compras as movimiento_id",
+        "invD.codigo_producto",
+        "invenPro.tipo_producto_id",
+        G.knex.raw("fc_descripcion_producto(\"invD\".\"codigo_producto\") as descripcion"),
+        "invD.cantidad",
+        "invD.lote",
+        "n.descripcion as novedad",
+        "invVer.novedad_anexa",
+        "invD.fecha_vencimiento"
+    ];
+
+    var query = G.knex.select(columnas)
+            .from('inv_bodegas_movimiento_tmp_d AS invD')
+            .innerJoin("inventarios_productos AS invenPro", "invD.codigo_producto", "invenPro.codigo_producto")
+            .innerJoin("inv_documento_verificacion_tmp_d AS invVer", function () {
+                this.on("invD.doc_tmp_id", "invVer.doc_tmp_id")
+                        .on("invD.codigo_producto", "invVer.codigo_producto")
+                        .on("invD.item_id", "invVer.item_id")
+            })
+            .innerJoin("inv_novedades_devoluciones AS n", "invVer.novedad_devolucion_id", "n.novedad_devolucion_id")
+            .where('invD.doc_tmp_id', parametros.numero_doc)
+            .andWhere("invD.usuario_id", parametros.usuario_id);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarProductosDevolucion]:", err);
+        callback(err);
+    });
+};
+
+/**
  * @author German Galvis
  * +Descripcion elimina el item seleccionado del documento parcial
  * @fecha 2018-02-14
  */
-/*DocumentoBodegaE009.prototype.eliminarItem = function (parametros, callback) {
- var query = G.knex("inv_bodegas_movimiento_tmp_d").
- where('doc_tmp_id', parametros.docTmpId).
- andWhere('usuario_id', parametros.usuarioId).
- andWhere('item_id', parametros.item_id).
- del();
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- console.log("Error eliminarItem", err);
- callback(err);
- });
- };
+DocumentoBodegaI011.prototype.eliminarItem = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_tmp_d").
+            where('doc_tmp_id', parametros.docTmpId).
+            andWhere('usuario_id', parametros.usuarioId).
+            andWhere('item_id', parametros.item_id).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarItem", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion elimina el item seleccionado del documento parcial
+ * @fecha 2018-02-14
  */
+DocumentoBodegaI011.prototype.eliminarItemMovimientoDevolucionFarmacia = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_tmp_devolucion_farmacia_productos").
+            where('doc_tmp_id', parametros.docTmpId).
+            andWhere('usuario_id', parametros.usuarioId).
+            andWhere('movimiento_id', parametros.movimiento_id).
+            andWhere('lote', parametros.lote).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarItem", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion elimina todos los productos asociados al documento parcial
+ * @fecha 2018-02-14
+ */
+DocumentoBodegaI011.prototype.eliminarDocumentoTemporal_d = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_tmp_d").
+            where('doc_tmp_id', parametros.docTmpId).
+            andWhere('usuario_id', parametros.usuarioId).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminar_documento_temporal_d", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion elimina el documento parcial para devoluciones
+ * @fecha 2018-02-14
+ */
+DocumentoBodegaI011.prototype.eliminarDocumentoTemporal = function (parametros, transaccion, callback) {
+
+    var query = G.knex("inv_bodegas_movimiento_tmp").
+            where('doc_tmp_id', parametros.docTmpId).
+            andWhere('usuario_id', parametros.usuarioId).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error __eliminar_documento_temporal", err);
+        callback(err);
+    });
+};
+
+DocumentoBodegaI011.prototype.eliminarMovimientoDevolucionFarmacia = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_tmp_devolucion_farmacia_productos").
+            where('doc_tmp_id', parametros.docTmpId).
+            andWhere('usuario_id', parametros.usuarioId).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarMovimientoDevolucionFarmacia", err);
+        callback(err);
+    });
+};
+
 //DocumentoBodegaE009.$inject = ["m_movimientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
 
 module.exports = DocumentoBodegaI011;

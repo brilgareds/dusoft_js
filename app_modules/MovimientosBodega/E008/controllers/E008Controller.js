@@ -2162,6 +2162,7 @@ function __validarDumian(identificacion_cliente,tipo_id_cliente){
    (identificacion_cliente === '9001128201' && tipo_id_cliente === "CE")|| //CMS PINARES PEREIRA+
    (identificacion_cliente === '9001128201' && tipo_id_cliente === "TI")|| //LABORATORIO CMS MANIZALEZ+
    (identificacion_cliente === '890304155' && tipo_id_cliente === "NIT")|| //HOSPITAL UNIVERSITARIO DEL VALLE+
+   (identificacion_cliente === '800088098' && tipo_id_cliente === "NIT")|| //LA COOPERATIVA MULTIACTIVA DE DESARROLLO SOCIAL Y DE ENTIDADES DE SALUD
    (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")){ //HOSPITAL SAN ANDRES DE TUMACO+
 
      return true;
@@ -2323,6 +2324,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
         }else if(pedido.identificacion_cliente === '900112820' || pedido.identificacion_cliente ==='9001128201'){
             
             $tercero = '900112820';            
+            
+        }else if(pedido.identificacion_cliente === '800088098'){
+            
+            $tercero = '800088098';            
             
         } else{
                         

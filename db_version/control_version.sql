@@ -84,5 +84,5 @@ COMMIT TRANSACTION;
 ------------------------------  Version 2.00.11  ------------------------------
 -----------------------------------------------------------------------------
 BEGIN TRANSACTION;
-INSERT INTO version (version, modulo, comentario) VALUES ('02.00.10', 'DOCUMENTOS BODEGA', 'Se crea modulo actas tecnicas');
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.11', 'DISPENSACION HC', 'se modifica el servidor de dispensacion para que no se modifque la fecha de pendiente');
 COMMIT TRANSACTION;

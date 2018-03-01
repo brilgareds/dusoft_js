@@ -126,13 +126,15 @@ define(["angular", "js/services"], function (angular, services) {
                         var obj = {
                             session: objs.session,
                             data: {
-                                docTmpId: objs.data.devolucion.doc_tmp_id,
-                                bodega_seleccionada: objs.data.devolucion.bodega_seleccionada,
-                                usuario_id: objs.data.devolucion.usuario_id
+                                numero_doc: objs.data.ingreso.numero_doc,
+                                prefijo_doc: objs.data.ingreso.prefijo_doc,
+                                empresa_envia: objs.data.ingreso.empresa_envia,
+                                docTmpId: objs.data.ingreso.doc_tmp_id,
+                                datoSeleccion: objs.data.ingreso.datoSeleccion,
+                                usuario_id: objs.data.ingreso.usuario_id
                             }
                         };
-
-                        Request.realizarRequest(API.E009.CREAR_DOCUMENTO, "POST", obj, function (data) {
+                        Request.realizarRequest(API.I011.CREAR_DOCUMENTO, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

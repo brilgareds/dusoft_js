@@ -122,7 +122,6 @@ DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros,
  * @fecha 2018-02-27
  */
 DocumentoBodegaI011.prototype.updateMovimientoD = function (parametros, transaccion, callback) {
-    console.log("parametros", parametros);
     var query = G.knex("inv_bodegas_movimiento_d")
             .where('movimiento_id', parametros.movimiento_id)
             .update('cantidad_recibida', parametros.cantidad);
@@ -144,7 +143,6 @@ DocumentoBodegaI011.prototype.updateMovimientoD = function (parametros, transacc
  * @fecha 2018-02-27
  */
 DocumentoBodegaI011.prototype.updateAllMovimientoD = function (parametros, transaccion, callback) {
-    console.log("parametros",parametros);
     var query = G.knex("inv_bodegas_movimiento_d")
             .where('prefijo', parametros.prefijo)
             .andWhere('numero', parametros.numero)
@@ -408,7 +406,7 @@ DocumentoBodegaI011.prototype.eliminarDocumentoTemporal_d = function (parametros
 
 /**
  * @author German Galvis
- * +Descripcion elimina el documento parcial para devoluciones
+ * +Descripcion elimina el documento parcial para ingresos por devoluciones
  * @fecha 2018-02-14
  */
 DocumentoBodegaI011.prototype.eliminarDocumentoTemporal = function (parametros, transaccion, callback) {
@@ -429,6 +427,11 @@ DocumentoBodegaI011.prototype.eliminarDocumentoTemporal = function (parametros, 
     });
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion elimina los productos del documento parcial para devoluciones de farmacia
+ * @fecha 2018-02-14
+ */
 DocumentoBodegaI011.prototype.eliminarMovimientoDevolucionFarmacia = function (parametros, transaccion, callback) {
     var query = G.knex("inv_bodegas_movimiento_tmp_devolucion_farmacia_productos").
             where('doc_tmp_id', parametros.docTmpId).
@@ -446,6 +449,132 @@ DocumentoBodegaI011.prototype.eliminarMovimientoDevolucionFarmacia = function (p
     });
 };
 
-//DocumentoBodegaE009.$inject = ["m_movimientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
+/**
+ * @author German Galvis
+ * +Descripcion agrega un registro a la tabla inv_bodegas_movimiento_devolucion_farmacia
+ * @fecha 2018-02-28
+ */
+DocumentoBodegaI011.prototype.agregarMovimientoFarmacia = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_devolucion_farmacia").
+            insert({farmacia_id: parametros.empresa_envia, empresa_id: parametros.empresa_id, prefijo: parametros.prefijoDocumento,
+                numero: parametros.numeracionDocumento, prefijo_doc_farmacia: parametros.prefijo_doc, numero_doc_farmacia: parametros.numero_doc
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarMovimientoFarmacia", err);
+        callback(err);
+    }).done();
+};
+
+// Crear documento 
+DocumentoBodegaI011.prototype.creacion_documento = function (parametros, transaccion, callback) {
+console.log('creacion_documento',parametros);
+
+    // Ingresar Cabecera Documento temporal
+    __ingresar_documento_verificacion(parametros, transaccion, function (err, result) {
+
+        console.log('=============== __ingresar_documento_verificacion ========================');
+        console.log(err, result);
+        console.log('=====================================================================');
+
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        // Ingresar Detalle Documento temporal
+        __ingresar_detalle_documento_verificacion(parametros, transaccion, function (err, result) {
+
+            if (err) {
+                callback(err);
+                return;
+            }
+            callback(err, result);
+
+        });
+    });
+};
+
+/*==================================================================================================================================================================
+ * 
+ *                                                          FUNCIONES PRIVADAS
+ * 
+ * ==================================================================================================================================================================*/
+
+// Ingresar cabecera documento verificacion
+function __ingresar_documento_verificacion(parametros, transaccion, callback) {
+console.log('__ingresar_documento_verificacion',parametros);
+    var query = G.knex("inv_documento_verificacion").
+            insert({farmacia_id: parametros.empresa_envia, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento,
+                empresa_id: parametros.empresa_id, prefijo_doc_farmacia: parametros.prefijo_doc, numero_doc_farmacia: parametros.numero_doc,
+                usuario_id: parametros.usuarioId
+            });
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error __ingresar_documento_verificacion", err);
+        callback(err);
+    }).done();
+
+}
+;
+
+// Ingresar detalle documento verificacion
+function __ingresar_detalle_documento_verificacion(parametros, transaccion, callback) {
+console.log('__ingresar_detalle_documento_verificacion',parametros);
+    var sql = " INSERT INTO inv_documento_verificacion_d ( \
+                    farmacia_id, \
+                    prefijo_doc_farmacia, \
+                    numero_doc_farmacia, \
+                    empresa_id, \
+                    prefijo, \
+                    numero, \
+                    codigo_producto, \
+                    lote, \
+                    fecha_vencimiento, \
+                    cantidad, \
+                    novedad_devolucion_id, \
+                    novedad_anexa, \
+                    cantidad_enviada \
+                )\
+                    SELECT  \
+                    a.farmacia_id, \
+                    a.prefijo, \
+                    a.numero, \
+                    :3 AS empresa_id, \
+                    :4 AS prefijo, \
+                    :5 AS numeracion, \
+                    a.codigo_producto, \
+                    a.lote, \
+                    a.fecha_vencimiento, \
+                    a.cantidad, \
+                    a.novedad_devolucion_id,\
+                    a.novedad_anexa, \
+                    b.cantidad_recibida \
+                    FROM inv_documento_verificacion_tmp_d a\
+                    inner join inv_bodegas_movimiento_d as b on (b.prefijo = :4 AND b.numero = :5 AND b.codigo_producto = a.codigo_producto)\
+                    WHERE a.doc_tmp_id = :1  AND a.usuario_id = :2; ";
+
+    var query = G.knex.raw(sql, {1: parametros.docTmpId, 2: parametros.usuarioId, 3: parametros.empresa_id, 4: parametros.prefijoDocumento, 5: parametros.numeracionDocumento});
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado.rows, resultado);
+    }).catch(function (err) {
+        callback(err);
+    });
+
+}
+;
+
 
 module.exports = DocumentoBodegaI011;

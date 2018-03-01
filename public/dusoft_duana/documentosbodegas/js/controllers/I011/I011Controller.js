@@ -314,7 +314,6 @@ define([
              * @fecha 2018-02-20
              */
             that.guardarNewDocTmp = function () {
-                console.log("guardarNewDocTmp");
                 var usuario = Usuario.getUsuarioActual();
                 var obj = {
                     session: $scope.session,
@@ -344,8 +343,7 @@ define([
                 });
             };
 
-            that.guardarProductoTmp = function (producto) {
-                console.log("guardarProductoTmp");
+            that.guardarProductoTmp = function (producto) { 
                 var usuario = Usuario.getUsuarioActual();
                 var parametro = {
                     empresaId: usuario.getEmpresa().getCodigo(),
@@ -523,10 +521,59 @@ define([
                 });
             };
 
+            /**
+             * @author German Galvis
+             * @fecha 2018-02-27
+             * +Descripcion Metodo encargado de Generar el documento definitivo o 
+             * una parte del mismo
+             * parametros: variable
+             */
+            $scope.generar_documento = function (dato) {
+                that.crearDocumento(dato);
+            };
+
+            that.crearDocumento = function (dato) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ingreso: {
+                            numero_doc: $scope.documento_ingreso.getDocumentoDevolucion().numero,
+                            prefijo_doc: $scope.documento_ingreso.getDocumentoDevolucion().prefijo,
+                            empresa_envia: $scope.documento_ingreso.getDocumentoDevolucion().empresa_id,
+                            doc_tmp_id: $scope.doc_tmp_id,
+                            datoSeleccion: dato,
+                            usuario_id: Usuario.getUsuarioActual().getId()
+                        }
+                    }
+                };
+                I011Service.crearDocumento(obj, function (data) {
+                    console.log("I011Service.crearDocumento", data);
+                    if (data.status === 200) {
+
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                        that.borrarVariables();
+                       // that.refrescarVista();
+
+                        var nombre = data.obj.nomb_pdf;
+                        console.log("dato nombre pdf", nombre);
+                        setTimeout(function () {
+                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                        }, 0);
+                    }
+
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                    }
+                });
+            };
+
             that.borrarVariables = function () {
                 $scope.doc_tmp_id = "00000";
                 $scope.documento_ingreso.set_observacion('');
-                $scope.documento_ingreso.set_bodega(null);
+                $scope.documento_ingreso.set_bodega("");
                 $scope.documento_ingreso.setDocumentoDevolucion(null);
                 $scope.datos_view.listado_productos = [];
                 $scope.datos_view.listado_productos_validados = [];
@@ -565,7 +612,7 @@ define([
 
             $scope.isGenerarDocumento = function () {
                 var disabled = false;
-                if ($scope.datos_view.listado_productos_validados.length > 0 && $scope.datos_view.listado_productos.length===0) {
+                if ($scope.datos_view.listado_productos_validados.length > 0 && $scope.datos_view.listado_productos.length === 0) {
                     disabled = true;
                 }
                 return disabled;
@@ -573,7 +620,7 @@ define([
 
             $scope.isGenerarParteDocumento = function () {
                 var disabled = false;
-                if ($scope.datos_view.listado_productos_validados.length > 0 && $scope.datos_view.listado_productos.length>0) {
+                if ($scope.datos_view.listado_productos_validados.length > 0 && $scope.datos_view.listado_productos.length > 0) {
                     disabled = true;
                 }
                 return disabled;

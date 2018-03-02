@@ -1,21 +1,21 @@
 <html>
     <head>
         <title>&nbsp;</title>
-        
+
         <link href="{{:serverUrl}}stylesheets/documentosbodegas/style.css" rel=stylesheet type=text/css >
         <link href="{{:serverUrl}}stylesheets/documentosbodegas/style-print.css" rel=stylesheet type=text/css media="print">
-        
+
         <script>
-            
-          
-           var imprimir = function(){
-               
-               document.getElementById("btnImprimir").style.display = 'none';
-               window.print();
-              
-           }
+
+
+            var imprimir = function () {
+
+                document.getElementById("btnImprimir").style.display = 'none';
+                window.print();
+
+            }
         </script>
-        
+
     </head>
     <body>
         <br>
@@ -24,18 +24,18 @@
         <table width="100%" border ='0' >
             <tr>
                 <td align="center">
-                  <hr />
+                    <hr />
                     <table width="90%"  class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:12px">
                         <tr >
                             <td >BODEGA:</td>
                             <td >{{:cabecerae.bodega}}</td>
-                            
+
                             <td >TIPO MOVIMIENTO</td>
                             <td  > {{:cabecerae.tipo_movimiento}}</td>
 
                             <td >DOC BOD ID: </td>
                             <td >{{:cabecerae.tipo_doc_bodega_id}}</td>
-                            
+
                         </tr>
                         <tr>
                             <td >DESCRIPCI&Oacute;N</td>
@@ -58,43 +58,47 @@
                             <td colspan='2'> {{:cabecerae.usuario_id}} {{:cabecerae.nombre}}</td>                              
                         </tr>
                     </table>
-                     <hr /> 
+                    <hr /> 
                 </td>
-             </tr>
-    </table>
-    <hr />   
-    <table width="100%" cellspacing="2">
-        <tr>
-            <td align="center">
-                <table width="100%" class="modulo_table_list" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:12px; border-collapse :collapse;">
-                    <tr>
-                        <td align="center" colspan='9' ><P class="normal_10AN" align="center" ><b>PRODUCTOS QUE CONTIENE ESTE DOCUMENTO</b></P><br /></td >
-                    </tr >
-                    <tr style="border: black 1px solid;" >  
-                        <td align="center" style="border: black 1px solid;"><b>CODIGO</b></td>
-                        <td align="center" style="border: black 1px solid;"><b>DESCRIPCI&Oacute;N</b></td>
-                        <td align="center" style="border: black 1px solid;"><b>FECHA V.</b></td>
-                        <td align="center" style="border: black 1px solid;"><b>LOTE</b></td>
-                        <td align="center" style="border: black 1px solid;"><b>CANT</b></td>
-                   </tr>
+            </tr>
+        </table>
+        <hr />   
+        <table width="100%" cellspacing="2">
+            <tr>
+                <td align="center">
+                    <table width="100%" class="modulo_table_list" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:12px; border-collapse :collapse;">
+                        <tr>
+                            <td align="center" colspan='9' ><P class="normal_10AN" align="center" ><b>PRODUCTOS QUE CONTIENE ESTE DOCUMENTO</b></P><br /></td >
+                        </tr >
+                        <tr style="border: black 1px solid;" >  
+                            <td align="center" style="border: black 1px solid;"><b>CODIGO</b></td>
+                            <td align="center" style="border: black 1px solid;"><b>DESCRIPCI&Oacute;N</b></td>
+                            <td align="center" style="border: black 1px solid;"><b>FECHA V.</b></td>
+                            <td align="center" style="border: black 1px solid;"><b>LOTE</b></td>
+                            <td align="center" style="border: black 1px solid;"><b>CANT</b></td>
+                        </tr>
 
-              {{for detalle}}
-                            <tr>
-                                <td style="border: black 1px solid;">{{:codigo_producto}}</td>
-                                <td style="border: black 1px solid;">{{:nombre}}</td>
-                                <td align="center" style="border: black 1px solid;">{{:fecha_vencimiento}}</td>
-                                <td align="center" style="border: black 1px solid;">{{:lote}}</td>
-                                <td align="right" style="border: black 1px solid;">{{:cantidad}}</td>
-                            </tr>
-              {{/for}}
-                            
-                </table>
-             </td>
-        </tr>
-       </table> 
-       <br />
+                        {{for detalle}}
+                        <tr>
+                            <td style="border: black 1px solid;">{{:codigo_producto}}</td>
+                            <td style="border: black 1px solid;">{{:nombre}}</td>
+                            <td align="center" style="border: black 1px solid;">{{:fecha_vencimiento}}</td>
+                            <td align="center" style="border: black 1px solid;">{{:lote}}</td>
+                            <td align="right" style="border: black 1px solid;">{{:cantidad}}</td>
+                        </tr>
+                        {{/for}}
+
+                    </table>
+                </td>
+            </tr>
+        </table> 
+        <br />
+        <div>
+            <p class="label">Revisado Por: ________________________________________ </p> 
+        </div>
         <br>
-        
+        <br>
+
         <br>
         <div id = "btnImprimir"><input type="button" name="imprimir" value="Imprimir" onclick="imprimir()" ></div>
     </BODY>

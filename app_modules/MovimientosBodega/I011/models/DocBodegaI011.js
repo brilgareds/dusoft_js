@@ -85,14 +85,13 @@ DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros,
         G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
         G.knex.raw("(\"invD\".\"cantidad\" -\"invD\".\"cantidad_recibida\") as  cantidad"),
         "invD.lote",
-        "invD.fecha_vencimiento"
+        "invD.fecha_vencimiento",
+        "param.torre"
     ];
 
     var query = G.knex.select(columnas)
             .from('inv_bodegas_movimiento_d AS invD')
-            .innerJoin("inventarios_productos AS invenPro ", function () {
-                this.on("invD.codigo_producto", "invenPro.codigo_producto")
-            })
+            .innerJoin("inventarios_productos AS invenPro ", "invD.codigo_producto", "invenPro.codigo_producto")
             .innerJoin("existencias_bodegas AS exisLote", function () {
                 this.on("invD.empresa_id", "exisLote.empresa_id")
                         .on("invD.centro_utilidad", "exisLote.centro_utilidad")
@@ -104,9 +103,14 @@ DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros,
                         .on("exisLote.empresa_id", "i.empresa_id")
                         .on("exisLote.codigo_producto", "i.codigo_producto")
             })
+            .leftJoin("param_torreproducto AS param", "invD.codigo_producto", "param.codigo_producto")
             .where('invD.numero', parametros.numero_doc)
             .andWhere("invD.prefijo", parametros.prefijo)
             .andWhere(subQuery);
+
+    console.log("Query resultado", G.sqlformatter.format(
+            query.toString()));
+
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -124,10 +128,34 @@ DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros,
 DocumentoBodegaI011.prototype.updateMovimientoD = function (parametros, transaccion, callback) {
     var query = G.knex("inv_bodegas_movimiento_d")
             .where('movimiento_id', parametros.movimiento_id)
-            .update('cantidad_recibida', parametros.cantidad);
+            .update('cantidad_recibida', G.knex.raw('cantidad_recibida +' + parametros.cantidad));
 
     if (transaccion)
         query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza el producto devuelto 
+ * @fecha 2018-02-27
+ */
+DocumentoBodegaI011.prototype.restarCantidadMovimientoD = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_d")
+            .where('movimiento_id', parametros.movimiento_id)
+            .update('cantidad_recibida', G.knex.raw('cantidad_recibida -' + parametros.cantidad));
+    if (transaccion)
+        query.transacting(transaccion);
+
+    console.log("Query resultado", G.sqlformatter.format(
+            query.toString()));
+
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -144,8 +172,7 @@ DocumentoBodegaI011.prototype.updateMovimientoD = function (parametros, transacc
  */
 DocumentoBodegaI011.prototype.updateAllMovimientoD = function (parametros, transaccion, callback) {
     var query = G.knex("inv_bodegas_movimiento_d")
-            .where('prefijo', parametros.prefijo)
-            .andWhere('numero', parametros.numero)
+            .where('movimiento_id', parametros.movimiento_id)
             .update('cantidad_recibida', parametros.cantidad);
 
     if (transaccion)
@@ -312,7 +339,8 @@ DocumentoBodegaI011.prototype.consultarProductosValidados = function (parametros
         "invD.lote",
         "n.descripcion as novedad",
         "invVer.novedad_anexa",
-        "invD.fecha_vencimiento"
+        "invD.fecha_vencimiento",
+        "param.torre",
     ];
 
     var query = G.knex.select(columnas)
@@ -324,6 +352,7 @@ DocumentoBodegaI011.prototype.consultarProductosValidados = function (parametros
                         .on("invD.item_id", "invVer.item_id")
             })
             .innerJoin("inv_novedades_devoluciones AS n", "invVer.novedad_devolucion_id", "n.novedad_devolucion_id")
+            .leftJoin("param_torreproducto AS param", "invD.codigo_producto", "param.codigo_producto")
             .where('invD.doc_tmp_id', parametros.numero_doc)
             .andWhere("invD.usuario_id", parametros.usuario_id);
 
@@ -473,7 +502,6 @@ DocumentoBodegaI011.prototype.agregarMovimientoFarmacia = function (parametros, 
 
 // Crear documento 
 DocumentoBodegaI011.prototype.creacion_documento = function (parametros, transaccion, callback) {
-console.log('creacion_documento',parametros);
 
     // Ingresar Cabecera Documento temporal
     __ingresar_documento_verificacion(parametros, transaccion, function (err, result) {
@@ -508,7 +536,6 @@ console.log('creacion_documento',parametros);
 
 // Ingresar cabecera documento verificacion
 function __ingresar_documento_verificacion(parametros, transaccion, callback) {
-console.log('__ingresar_documento_verificacion',parametros);
     var query = G.knex("inv_documento_verificacion").
             insert({farmacia_id: parametros.empresa_envia, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento,
                 empresa_id: parametros.empresa_id, prefijo_doc_farmacia: parametros.prefijo_doc, numero_doc_farmacia: parametros.numero_doc,
@@ -529,7 +556,6 @@ console.log('__ingresar_documento_verificacion',parametros);
 
 // Ingresar detalle documento verificacion
 function __ingresar_detalle_documento_verificacion(parametros, transaccion, callback) {
-console.log('__ingresar_detalle_documento_verificacion',parametros);
     var sql = " INSERT INTO inv_documento_verificacion_d ( \
                     farmacia_id, \
                     prefijo_doc_farmacia, \

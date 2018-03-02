@@ -270,7 +270,6 @@ I011Controller.prototype.modificarCantidad = function (req, res) {
         cantidad: args.cantidad,
         movimiento_id: args.item_id
     };
-    console.log("args", args);
     G.Q.nfcall(that.m_i011.updateMovimientoD, parametros, false).
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'producto modificado correctamente!!!!', 200, {modificarCantidad: resultado}));
@@ -300,7 +299,7 @@ I011Controller.prototype.eliminarItem = function (req, res) {
         item_id: args.item_id,
         docTmpId: args.docTmpId,
         lote: args.lote,
-        cantidad: 0,
+        cantidad: args.cantidad,
         movimiento_id: args.movimiento_id,
         usuarioId: usuarioId
     };
@@ -312,7 +311,7 @@ I011Controller.prototype.eliminarItem = function (req, res) {
             return G.Q.nfcall(that.m_i011.eliminarItemMovimientoDevolucionFarmacia, parametros, transaccion);
         }).then(function () {
 
-            return G.Q.nfcall(that.m_i011.updateMovimientoD, parametros, transaccion);
+            return G.Q.nfcall(that.m_i011.restarCantidadMovimientoD, parametros, transaccion);
 
         }).then(function () {
             transaccion.commit();
@@ -335,6 +334,7 @@ I011Controller.prototype.eliminarItem = function (req, res) {
 I011Controller.prototype.eliminarGetDocTemporal = function (req, res) {
     var that = this;
     var args = req.body.data;
+    var listado = args.listado;
     var usuarioId = req.session.user.usuario_id;
 
 
@@ -366,7 +366,9 @@ I011Controller.prototype.eliminarGetDocTemporal = function (req, res) {
             return G.Q.nfcall(that.m_i011.eliminarMovimientoDevolucionFarmacia, parametros, transaccion);
 
         }).then(function () {
-            return G.Q.nfcall(that.m_i011.updateAllMovimientoD, parametros, transaccion);
+
+            //return G.Q.nfcall(that.m_i011.updateAllMovimientoD, parametros, transaccion);
+            return G.Q.nfcall(__updateMovimiento, that, listado, parametros, 0, transaccion);
 
         }).then(function () {
             transaccion.commit();
@@ -492,7 +494,7 @@ I011Controller.prototype.crearDocumento = function (req, res) {
         if (resultado.length > 0) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
-            cabecera[0].edb_id = parametros.prefijo_doc +" "+ parametros.numero_doc;
+            cabecera[0].edb_id = parametros.prefijo_doc + " " + parametros.numero_doc;
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],
                 detalle: resultado[0],
@@ -513,6 +515,12 @@ I011Controller.prototype.crearDocumento = function (req, res) {
 
 
 };
+
+/*==================================================================================================================================================================
+ * 
+ *                                                          FUNCIONES PRIVADAS
+ * 
+ * ==================================================================================================================================================================*/
 
 function __generarPdf(datos, callback) {
 
@@ -549,6 +557,35 @@ function __generarPdf(datos, callback) {
         });
     });
 }
+
+
+function __updateMovimiento(that, listado, parametros, index, transaccion, callback) {
+  
+    var item = listado[index];
+    if (!item) {
+        callback(false, 0);
+        return;
+    }
+
+    parametros.movimiento_id = item.movimiento;
+
+    G.Q.nfcall(that.m_i011.updateAllMovimientoD, parametros, transaccion).then(function (resultado) {
+        var timer = setTimeout(function () {
+            clearTimeout(timer);
+            index++;
+            __updateMovimiento(that, listado, parametros, index, transaccion,callback);
+        }, 0);
+
+    }).fail(function (err) {
+        console.log("error", err);
+        callback(err);
+
+    }).done();
+
+}
+;
+
+
 
 I011Controller.$inject = ["m_movimientos_bodegas", "m_i011"];
 module.exports = I011Controller;

@@ -53,7 +53,6 @@ define([
                 };
                 I011Service.buscarNovedades(obj, function (data) {
                     if (data.status === 200) {
-                        //callback(data.obj.listarNovedades);
                         $scope.novedades = data.obj.listarNovedades;
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -98,7 +97,7 @@ define([
                 productos.forEach(function (data) {
 
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
-                            data.tipo_producto_id, data.lote, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"), data.cantidad, data.movimiento_id);
+                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"), data.cantidad, data.movimiento_id);
                     producto.setNovedadNombre("Acción");
                     producto.setNovedadAnexa(" ");
                     $scope.datos_view.listado_productos.push(producto);
@@ -113,6 +112,7 @@ define([
                 enableHighlighting: true,
                 showFilter: true,
                 columnDefs: [
+                    {field: 'torre', displayName: 'Torre', width: "5%", enableCellEdit: false},
                     {field: 'codigo_producto', displayName: 'Codigo ', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
@@ -124,9 +124,9 @@ define([
                                                 <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
                     },
-                    {field: 'descripcion', displayName: 'Descripcion', width: "35%", enableCellEdit: false},
-                    {field: 'cantidad', displayName: 'Cantidad', width: "10%", enableCellEdit: false},
-                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false},
+                    {field: 'descripcion', displayName: 'Descripcion', width: "33%", enableCellEdit: false},
+                    {field: 'cantidad', displayName: 'Cantidad', width: "9%", enableCellEdit: false},
+                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "9%", enableCellEdit: false},
                     {field: 'lote', displayName: 'Lote', width: "7%", enableCellEdit: false},
                     {field: 'getCantidadIngresada() | number : "0" ', displayName: 'Cantidad Ingresar', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
@@ -139,8 +139,7 @@ define([
                      </li>\
                      </ul>\
                      </div>'},
-                    {width: "9%", displayName: "Opcion", cellClass: "txt-center",
-                        //<button  class="btn btn-info btn-xs btnClick" ng-click="onprueba(row.entity)"><span class="glyphicon glyphicon-pencil"></span></button>\
+                    {width: "8%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                         <button  class="btn btn-info btn-xs btnClick" ng-click="btn_modificar_producto(row.entity)" ng-disabled="habilitarModificacion(row.entity)"><span class="glyphicon glyphicon-pencil"></span></button>\
                                         <button class="btn btn-success btn-xs "  ng-click="btn_adicionar_producto(row.entity)" ng-disabled="habilitarAdicion(row.entity)" id="agregarPro"><span class="glyphicon glyphicon-plus-sign"></span></button>\
@@ -217,7 +216,7 @@ define([
                 productos.forEach(function (data) {
 
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
-                            data.tipo_producto_id, data.lote, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"), data.cantidad, data.item_id);
+                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"), data.cantidad, data.item_id);
                     producto.setNovedad(data.novedad);
                     producto.setMovimiento(data.movimiento_id);
                     producto.setNovedadNombre(data.novedad_anexa);
@@ -233,6 +232,7 @@ define([
                 enableHighlighting: true,
                 showFilter: true,
                 columnDefs: [
+                    {field: 'torre', displayName: 'Torre', width: "5%", enableCellEdit: false},
                     {field: 'codigo_producto', displayName: 'Codigo ', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
@@ -244,10 +244,10 @@ define([
                                                 <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
                     },
-                    {field: 'descripcion', displayName: 'Descripcion', width: "35%", enableCellEdit: false},
-                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false},
+                    {field: 'descripcion', displayName: 'Descripcion', width: "33%", enableCellEdit: false},
+                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "9%", enableCellEdit: false},
                     {field: 'lote', displayName: 'Lote', width: "7%", enableCellEdit: false},
-                    {field: 'cantidad', displayName: 'Cantidad Ingresada', width: "10%", enableCellEdit: false},
+                    {field: 'cantidad', displayName: 'Cantidad Ingresada', width: "9%", enableCellEdit: false},
                     {field: 'novedad', displayName: 'Novedad', width: "20%", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.novedad}} - {{row.entity.novedadNombre}}</div>'},
                     {width: "9%", displayName: "Opcion", cellClass: "txt-center",
@@ -284,15 +284,11 @@ define([
                 var modalInstance = $modal.open($scope.opts);
                 modalInstance.result.then(function () {
 
-                    //}   , function () {
-
                 });
             };
 
             $scope.onBuscarDevoluciones = function () {
-                that.buscarDevoluciones($scope.documento_ingreso.get_bodega(), function () {
-                    //$scope.centros = data;
-                });
+                that.buscarDevoluciones($scope.documento_ingreso.get_bodega());
             };
 
             $scope.onBuscarProductosDevoluciones = function () {
@@ -300,7 +296,6 @@ define([
             };
 
             $scope.btn_adicionar_producto = function (fila) {
-                console.log("q hay en el item de la tabla", fila);
                 that.guardarProductoTmp(fila);
             };
 
@@ -343,7 +338,7 @@ define([
                 });
             };
 
-            that.guardarProductoTmp = function (producto) { 
+            that.guardarProductoTmp = function (producto) {
                 var usuario = Usuario.getUsuarioActual();
                 var parametro = {
                     empresaId: usuario.getEmpresa().getCodigo(),
@@ -420,10 +415,13 @@ define([
              * parametros: variables
              */
             $scope.eliminar_producto = function (parametro) {
-                var parametros = {item_id: parametro.item_id,
+                var parametros = {
+                    item_id: parametro.item_id,
                     movimiento_id: parametro.movimiento,
                     lote: parametro.lote,
-                    docTmpId: $scope.doc_tmp_id};
+                    cantidad: parametro.cantidad,
+                    docTmpId: $scope.doc_tmp_id
+                };
                 that.eliminarProductoDevolucion(parametros, function (condicional) {
                     if (condicional) {
                         that.refrescarVista();
@@ -438,6 +436,7 @@ define([
                     session: $scope.session,
                     item_id: parametro.item_id,
                     lote: parametro.lote,
+                    cantidad: parametro.cantidad,
                     movimiento_id: parametro.movimiento_id,
                     docTmpId: parametro.docTmpId
                 };
@@ -501,6 +500,7 @@ define([
                     session: $scope.session,
                     data: {
                         doc_tmp_id: $scope.doc_tmp_id,
+                        listado: $scope.datos_view.listado_productos_validados,
                         numero: $scope.documento_ingreso.getDocumentoDevolucion().numero,
                         prefijo: $scope.documento_ingreso.getDocumentoDevolucion().prefijo
                     }
@@ -554,7 +554,6 @@ define([
                         AlertService.mostrarMensaje("warning", data.msj);
 
                         that.borrarVariables();
-                       // that.refrescarVista();
 
                         var nombre = data.obj.nomb_pdf;
                         console.log("dato nombre pdf", nombre);

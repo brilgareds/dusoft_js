@@ -23,6 +23,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 fila_cantidad: parseFloat(fila.cantidad).toFixed(0)
             };
 
+            $scope.rootModificar.datos_modificados.push(Producto.get(fila.codigo_producto, fila.descripcion, 0,
+                    fila.tipo_producto_id, 0, fila.torre, null, 0, fila.item_id, 0, fila.novedad));
 
             $scope.onCerrar = function () {
                 $modalInstance.close();
@@ -40,6 +42,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 }
 
                 that.funcionRecursiva($scope.rootModificar.datos_modificados, 0, function () {
+                    //that.insertarCantidad(fila.item_id, cantidadTotal);
                     $scope.onCerrar();
                 });
 
@@ -61,15 +64,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     clearTimeout(time);
                 }, 0);
             }
-
-
-
-
-
-
-            $scope.rootModificar.datos_modificados.push(Producto.get(fila.codigo_producto, fila.descripcion, 0,
-                    fila.tipo_producto_id, 0, null, 0, fila.item_id, 0, fila.novedad));
-
 
             $scope.listadoModificaciones = {
                 data: 'rootModificar.datos_modificados',
@@ -101,7 +95,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             $scope.btn_adicionar_modificacion = function () {
                 var producto = Producto.get(fila.codigo_producto, fila.descripcion, 0,
-                        fila.tipo_producto_id);
+                        fila.tipo_producto_id, 0, fila.torre);
                 producto.setNovedad(fila.novedad);
                 producto.setItemId(fila.item_id);
                 $scope.rootModificar.datos_modificados.push(producto);
@@ -139,24 +133,23 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
 
-            that.insertarCantidad = function (parametro) {
+            that.insertarCantidad = function (id, cantidad) {
                 var obj = {
                     session: $scope.session,
-                    data: parametro
+                    data: {
+                        cantidad: cantidad,
+                        item_id: id
+
+                    }
                 };
-                console.log("obj", obj);
                 Request.realizarRequest(API.I011.INSERTAR_CANTIDAD, "POST", obj, function (data) {
-                    console.log("API.I011.INSERTAR_CANTIDAD", data);
-                    if (data.status === 500) {
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
             };
 
-
-
-            /*$scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {//ng-disabled="habilitar_ingreso_producto(row.entity)"
-             $scope.$$watchers = null;
-             });*/
         }]);
 });

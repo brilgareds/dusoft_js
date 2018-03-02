@@ -87,6 +87,7 @@ define(["angular", "js/services"], function (angular, services) {
                             session: parametro.session,
                             data: {
                                 doc_tmp_id: parametro.data.doc_tmp_id,
+                                listado: parametro.data.listado,
                                 numero: parametro.data.numero,
                                 prefijo: parametro.data.prefijo
                             }
@@ -107,6 +108,7 @@ define(["angular", "js/services"], function (angular, services) {
                             data: {
                                 item_id: objs.item_id,
                                 lote: objs.lote,
+                                cantidad: objs.cantidad,
                                 movimiento_id: objs.movimiento_id,
                                 docTmpId: objs.docTmpId
                             }

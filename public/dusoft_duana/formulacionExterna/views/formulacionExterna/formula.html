@@ -1,0 +1,96 @@
+
+<div class="row" style="margin-bottom: 5px;">
+	<div class="col-md-3">
+		<div class="input-group">
+		    <div class="input-group-btn">
+		        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.tipoDocumentoSeleccionado.descripcion}} <span class="caret"></span> </button>
+		        <ul class="dropdown-menu" ng-selected="">
+		            <li ng-repeat="tipoDocumento in tipoDocumentos">
+		                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(tipoDocumento)">
+		                    {{tipoDocumento.descripcion}}
+		                </a>
+		            </li>
+		        </ul>
+		    </div> 
+		    <input type="text" class="form-control" ng-keypress="buscarFormulas($event, 0);"  ng-model="root.documento" placeholder="Buscar" name="" id="" required/>
+		    <div class="input-group-btn">
+		        <button class="btn btn-default pull-right" type="submit" ng-click ="obtenerPaciente(root.tipoDocumentoSeleccionado.id, root.documento)"><i class="glyphicon glyphicon-search"></i></button>
+		    </div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+	        <div class="panel-heading clearfix">
+	            <div class="pull-left">
+	                <h3 class="text-center"><strong>Formula</strong></h3>
+	            </div>
+	            <div class="pull-right">
+	                <!--<h3 class="text-center"><h4>Formula</h4></h3>-->
+	            </div>
+	        </div>
+	        <div class="panel-body">
+	            <div class="row">
+	                <div class="col-md-1"><h4>{{root.paciente.getTipoIdPaciente()}} {{root.paciente.getPacienteId()}}</h4></div>
+	                <div class="col-md-4"><h4>{{root.paciente.getNombres()}} {{root.paciente.getApellidos()}}</h4></div>
+	                <div class="col-md-4"><h4>{{root.paciente.getPlan().getDescripcion()}}</h4></div>
+	            </div>
+	            <div class="row">
+	                <div class="col-md-2">        
+	                	<p class="input-group">
+				            <input type="text" class="form-control readonlyinput" 
+				                   datepicker-popup="{{format}}" 
+				                   ng-model="root.formula.fecha"
+				                   is-open="root.datepicker_fecha_inicial" 
+				                   min="minDate"   
+				                   readonly  close-text="Cerrar" 
+				                   ng-change="" 
+				                   clear-text="Borrar" 
+				                   current-text="Hoy" 
+				                   placeholder="Fecha" 
+				                   show-weeks="false" 
+				                   toggle-weeks-text="#"  />
+				            <span class="input-group-btn">
+				                <button class="btn btn-default" ng-click="abrirFecha($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+				            </span>
+				        </p>
+				    </div>
+	                <div class="col-md-2">
+					    <input type="text" class="form-control"  ng-model="root.formula.numero" placeholder="Numero"/>
+	                </div>
+	                <div class="col-md-2">
+			            <ui-select ng-model="$parent.root.tipoFormulaSeleccionada" theme="select2" class="form-control selectgeneral " style="padding-top: 0px !important">
+			                <ui-select-match  placeholder="Seleccione tipo formula" style="height: 33px !important">{{$select.selected.descripcion}}</ui-select-match>
+			                <ui-select-choices repeat="tipoFormula in  tipoFormulas | filter:$select.search">
+			                    {{tipoFormula.descripcion}}
+			                </ui-select-choices>
+			            </ui-select>
+						<!--
+	    				<div class="input-group-btn">
+					        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.tipoFormulaSeleccionada.descripcion}} <span class="caret"></span> </button>
+					        <ul class="dropdown-menu" ng-selected="">
+					            <li ng-repeat="tipoFormula in tipoFormulas">
+					                <a href="javascript:void(0)" ng-click="onSeleccionTipoFormula(tipoFormula)">
+					                    {{tipoFormula.descripcion}}
+					                </a>
+					            </li>
+					        </ul>
+					    </div>
+						-->
+	                </div>
+	                <div class="col-md-2">
+	                	<div class="input-group">
+					      <input type="text" class="form-control" placeholder="Municipio ...">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" ng-click="">
+					        	<i class="glyphicon glyphicon-plus"></i>
+					        </button>
+					      </span>
+					    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+</div>

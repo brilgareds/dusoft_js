@@ -1,0 +1,33 @@
+  <div class="row">
+        <div class="col-md-2 col-lg-1">
+            <p class="input-group">
+                 <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_formula()">
+                    <span class="glyphicon glyphicon-plus"></span> Crear Formula
+                </button>          
+            </p> 
+        </div>
+  </div>
+<div class="row">        
+    <div class="col-md-12">
+        <tabset>
+            <tab  ng-click="">
+                <tab-heading >
+                    <i class=""></i>  Dispensacion formula
+                </tab-heading>
+                <br> 
+                <div ng-include="'views/formulacionExterna/listarFormulas.html'"></div>
+            </tab>  
+
+             <tab  ng-click="">
+                <tab-heading >
+                    <i class=""></i>  Descartar pendientes
+                </tab-heading>
+                <br> 
+                <div ng-include="'views/formulacionExterna/listarFormulasPendientes.html'"></div>
+            </tab>  
+
+        </tabset>                                      
+    </div>
+</div>    
+  
+<visualizar-reporte></visualizar-reporte>

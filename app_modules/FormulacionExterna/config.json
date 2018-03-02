@@ -1,0 +1,29 @@
+{
+    "module": "FormulacionExterna",
+    "dependency": {
+        "controllers": [{
+                "formulacion_externa_controller": {
+                    "module": "FormulacionExterna",
+                    "controller": "FormulacionExternaController",
+                    "alias": "c_formulacion_externa"
+                }
+            },
+            {
+                "dispensacion_hc_controller": {
+                    "module": "DispensacionHc",
+                    "controller": "DispensacionHcController",
+                    "alias": "c_dispensacion_hc"
+                }
+            }],
+        "models": [{
+                "formulacion_externa_model": {
+                    "module": "FormulacionExterna",
+                    "model": "FormulacionExternaModel",
+                    "alias": "m_formulacion_externa"
+                }
+            }],
+        "events": [{
+        }],
+        "cronJobs": [{}]
+    }
+}

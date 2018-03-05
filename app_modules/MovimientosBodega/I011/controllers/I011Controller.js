@@ -367,7 +367,6 @@ I011Controller.prototype.eliminarGetDocTemporal = function (req, res) {
 
         }).then(function () {
 
-            //return G.Q.nfcall(that.m_i011.updateAllMovimientoD, parametros, transaccion);
             return G.Q.nfcall(__updateMovimiento, that, listado, parametros, 0, transaccion);
 
         }).then(function () {
@@ -423,7 +422,6 @@ I011Controller.prototype.crearDocumento = function (req, res) {
             parametros.empresa_id = result.empresa_id; //creacion_documento
             parametros.prefijoDocumento = result.prefijo_documento; //creacion_documento
             parametros.numeracionDocumento = result.numeracion_documento; //creacion_documento
-            //parametros.numero_doc = args.docTmpId;
             parametros.numero_doc = args.numero_doc; //creacion_documento
             parametros.prefijo_doc = args.prefijo_doc; //creacion_documento
             parametros.empresa_envia = args.empresa_envia; //creacion_documento

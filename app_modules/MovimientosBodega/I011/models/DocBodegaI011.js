@@ -108,10 +108,6 @@ DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros,
             .andWhere("invD.prefijo", parametros.prefijo)
             .andWhere(subQuery);
 
-    console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));
-
-
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -543,14 +539,12 @@ function __ingresar_documento_verificacion(parametros, transaccion, callback) {
             });
     if (transaccion)
         query.transacting(transaccion);
-
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
         console.log("Error __ingresar_documento_verificacion", err);
         callback(err);
     }).done();
-
 }
 ;
 
@@ -588,19 +582,14 @@ function __ingresar_detalle_documento_verificacion(parametros, transaccion, call
                     FROM inv_documento_verificacion_tmp_d a\
                     inner join inv_bodegas_movimiento_d as b on (b.prefijo = :4 AND b.numero = :5 AND b.codigo_producto = a.codigo_producto)\
                     WHERE a.doc_tmp_id = :1  AND a.usuario_id = :2; ";
-
     var query = G.knex.raw(sql, {1: parametros.docTmpId, 2: parametros.usuarioId, 3: parametros.empresa_id, 4: parametros.prefijoDocumento, 5: parametros.numeracionDocumento});
     if (transaccion)
         query.transacting(transaccion);
-
     query.then(function (resultado) {
         callback(false, resultado.rows, resultado);
     }).catch(function (err) {
         callback(err);
     });
-
 }
 ;
-
-
 module.exports = DocumentoBodegaI011;

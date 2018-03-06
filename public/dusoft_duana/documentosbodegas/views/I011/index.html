@@ -15,15 +15,15 @@
                         <div class="col-md-4">
 
                             <fieldset>
-                                <legend>Farmacia</legend>      
+                                <legend>Bodega</legend>      
 
                                 <div class="row">
                                     <div class="col-md-7">                                          
 
                                         <select ng-model="documento_ingreso.bodega"  pl
                                                 class="form-control selectgeneral pull-left"
-                                                ng-change="onBuscarDevoluciones()">
-                                            <option value="">Seleccionar bodega</option>
+                                                ng-change="onBuscarDevoluciones()" ng-disabled="validarDesdeLink">
+                                            <option value="" ng-hide="validarDesdeLink">Seleccionar bodega</option>
                                             <option ng-repeat="x in bodegas"
                                                     value="{{x.bodega}}">{{x.descripcion}}
                                             </option>
@@ -37,7 +37,7 @@
                                 <legend>Nro Documento</legend> 
                                 <div class="row">
                                     <div class="col-md-7">                                          
-                                        <ui-select ng-change="onBuscarProductosDevoluciones()" ng-model="documento_ingreso.documentoDevolucion" theme="select2" class="form-control selectgeneral pull-left">
+                                        <ui-select ng-change="onBuscarProductosDevoluciones()" ng-model="documento_ingreso.documentoDevolucion" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
                                             <ui-select-match  placeholder="Seleccionar Documento">{{ $select.selected.numero}}</ui-select-match>
                                             <ui-select-choices repeat="doc in docDevoluciones | filter:$select.search">
                                                 {{ doc.prefijo}}-{{ doc.numero}}

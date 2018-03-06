@@ -19,6 +19,7 @@ define([
             var that = this;
             var datos_documento = localStorageService.get("documento_bodega_E009");
             $scope.doc_tmp_id = "00000";
+            $scope.validarDesdeLink = false;
             $scope.tipoProducto = {
                 id: '',
                 nombre: ''
@@ -51,6 +52,22 @@ define([
                     session: $scope.session
                 };
                 E009Service.buscarBodega(obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data.obj.listarBodegas);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+
+            that.buscarBodegaPorId = function (id,callback) {
+                var obj = {
+                    session: $scope.session,
+                    data:{
+                        id:id
+                    }
+                };
+                E009Service.buscarBodegaId(obj, function (data) {
                     if (data.status === 200) {
                         callback(data.obj.listarBodegas);
                     } else {
@@ -110,20 +127,6 @@ define([
                 });
             };
 
-            /*
-             * retorna la diferencia entre dos fechas
-             */
-            $scope.restaFechas = function (f1, f2)
-            {
-                var aFecha1 = f1.split('/');
-                var aFecha2 = f2.split('/');
-                var fFecha1 = Date.UTC(aFecha1[2], aFecha1[1] - 1, aFecha1[0]);
-                var fFecha2 = Date.UTC(aFecha2[2], aFecha2[1] - 1, aFecha2[0]);
-                var dif = fFecha2 - fFecha1;
-                var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
-                return dias;
-            };
-
             that.borarrVariables = function () {
                 $scope.doc_tmp_id = "00000";
                 $scope.tipoProducto.id = '';
@@ -131,6 +134,7 @@ define([
                 $scope.documento_devolucion.set_observacion('');
                 $scope.documento_devolucion.set_bodega_destino(null);
                 $scope.datos_view.listado_productos = [];
+                $scope.validarDesdeLink = false;
             };
 
 
@@ -410,22 +414,12 @@ define([
                 });
             });
 
-            /* $scope.isNoTmp = function () {
-             var disabled = false;
-             if ($scope.doc_tmp_id === "00000") {
-             //if ($scope.doc_tmp_id === "00000" && $scope.DocumentoIngreso.get_orden_compra() === undefined) {
-             disabled = true;
-             }
-             return disabled;
-             };*/
-
             $scope.isTmp = function () {
                 var disabled = false;
 
                 if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
                     disabled = true;
                 }
-                // console.log("istmp", disabled);
                 return disabled;
             };
 
@@ -441,5 +435,16 @@ define([
                 return disabled;
             };
 
+            if (datos_documento.datosAdicionales !== undefined) {
+                $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
+                $scope.documento_devolucion.set_observacion(datos_documento.datosAdicionales.observacion);
+                $scope.validarDesdeLink = true;
+                that.buscarBodegaPorId(datos_documento.datosAdicionales.empresa_destino, function (result) {
+                $scope.documento_devolucion.set_bodega_destino(result[0]);
+                });
+                that.listarProductosAsociados();
+            } else {
+                $scope.validarDesdeLink = false;
+            }
         }]);
 });

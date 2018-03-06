@@ -29,6 +29,29 @@ define(["angular", "js/services"], function (angular, services) {
                         );
 
                     };
+                    
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 06/03/2018
+                     * +Descripcion: trae registro de la bodega seleccionada
+                     */
+                    self.buscarBodegaId = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I011.LISTAR_BODEGA_ID,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        id: obj.data.id
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
 
                     /*
                      * @Author: German Galvis.

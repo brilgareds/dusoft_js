@@ -803,11 +803,16 @@ MovimientosBodegasModel.prototype.getDoc = function (parametros, callback) {
 MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (parametro, callback) {
     var inner = '';
     var select = "''";
+    var select2 = "''";
     var where = "";
     if (parametro.tipoDocGeneralId === 'I002') {
         select = " cop.codigo_proveedor_id, oc.orden_pedido_id ";
         inner = " join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id) ";
         inner += " join compras_ordenes_pedidos as cop on (oc.orden_pedido_id=cop.orden_pedido_id)";
+    }
+    if (parametro.tipoDocGeneralId === 'I011') {
+        select2 = " df.numero as numero_edb, df.farmacia_id, df.prefijo";
+        inner = " join inv_bodegas_movimiento_tmp_devolucion_farmacia as df on (t.usuario_id=df.usuario_id and t.doc_tmp_id=df.doc_tmp_id)";
     }
     if (parametro.numeroDocumento !== '') {
         where = " AND t.doc_tmp_id ilike '%" + parametro.numeroDocumento + "%'";
@@ -823,6 +828,7 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
 		a.centro_utilidad, \
 		a.bodega, \
 		SU.nombre, \
+                " + select2 + " as prefijo_edb,\
                 " + select + " as orden\
 		FROM inv_bodegas_movimiento_tmp t \
 		JOIN inv_bodegas_documentos as a ON (t.bodegas_doc_id = a.bodegas_doc_id) \

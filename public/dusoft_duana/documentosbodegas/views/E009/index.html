@@ -18,7 +18,7 @@
                                 <legend>Bodega Destino</legend>
                                 <div class="row">
                                     <div class="col-md-7">                                          
-                                        <ui-select ng-model="documento_devolucion.bodega_destino" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-model="documento_devolucion.bodega_destino" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink" >
                                             <ui-select-match  placeholder="Seleccionar bodega">{{ $select.selected.descripcion}}</ui-select-match>
                                             <ui-select-choices refresh="bodegas($select.search,true)" refresh-delay="0" repeat="x in bodegas | filter:$select.search">
                                                 {{ x.descripcion}}
@@ -41,11 +41,6 @@
                         </div>
                     </div>
                     <br> 
-                    <!--div class="modal-footer col-md-12">
-                        <button class="btn btn-default" ng-click="tabProductosOrden()">
-                            <span class="glyphicon glyphicon-refresh" ></span> Refrescar
-                        </button>
-                    </div-->
                     <div class="row">  
                         <div class="col-md-12">
 

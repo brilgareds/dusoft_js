@@ -29,8 +29,8 @@ define(["angular", "js/models", "includes/classes/Documento"], function(angular,
                 return this.fecha_registro;
             };
             
-            DocumentoDevolucion.prototype.set_bodega_destino = function(orden_compra) {
-                this.bodega_destino = orden_compra;
+            DocumentoDevolucion.prototype.set_bodega_destino = function(bodega) {
+                this.bodega_destino = bodega;
             };
 
             DocumentoDevolucion.prototype.get_bodega_destino = function() {

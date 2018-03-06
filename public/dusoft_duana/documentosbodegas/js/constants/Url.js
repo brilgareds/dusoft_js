@@ -41,6 +41,7 @@ define(["angular"], function(angular) {
             },
             'I011': {
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/I011/listarBodegas',
+                'LISTAR_BODEGA_ID': BASE_URL + '/movBodegas/I011/listarBodegaId',
                 'CONSULTAR_DETALLE_DEVOLUCION': BASE_URL + '/movBodegas/I011/consultarDetalleDevolucion',
                 'CONSULTAR_PRODUCTOS_VALIDADOS': BASE_URL + '/movBodegas/I011/consultarProductosValidados',
                 'LISTAR_DEVOLUCIONES': BASE_URL + '/movBodegas/I011/listarDevoluciones',
@@ -60,6 +61,7 @@ define(["angular"], function(angular) {
                 'CREAR_ITEM': BASE_URL + '/movBodegas/E009/agregarItem',
                 'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/E009/eliminarGetDocTemporal',
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/E009/listarBodegas',
+                'LISTAR_BODEGA_ID': BASE_URL + '/movBodegas/E009/listarBodegaId',
                 'LISTAR_PRODUCTOS': BASE_URL + '/movBodegas/E009/listarProductos',
                 'CONSULTAR_DETALLE_DEVOLUCION': BASE_URL + '/movBodegas/E009/consultarDetalleDevolucion',
                 'ELIMINAR_PRODUCTO_DEVOLUCION': BASE_URL + '/movBodegas/E009/eliminarItem',

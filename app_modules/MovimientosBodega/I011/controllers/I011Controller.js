@@ -24,6 +24,26 @@ I011Controller.prototype.listarBodegas = function (req, res) {
 };
 /**
  * @author German Galvis
+ * +Descripcion trae registro de la bodega seleccionada
+ * @fecha 2018-03-06
+ */
+I011Controller.prototype.listarBodegaId = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var bodega_id = args.id;
+
+    G.Q.nfcall(that.m_i011.listarBodegaId, bodega_id).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listar bodega id ok!!!!', 200, {listarBodegas: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar la bodega', 500, {listarBodegas: {}}));
+            }).
+            done();
+
+};
+/**
+ * @author German Galvis
  * +Descripcion lista las novedades
  * @fecha 2018-02-17
  */
@@ -558,7 +578,7 @@ function __generarPdf(datos, callback) {
 
 
 function __updateMovimiento(that, listado, parametros, index, transaccion, callback) {
-  
+
     var item = listado[index];
     if (!item) {
         callback(false, 0);
@@ -571,7 +591,7 @@ function __updateMovimiento(that, listado, parametros, index, transaccion, callb
         var timer = setTimeout(function () {
             clearTimeout(timer);
             index++;
-            __updateMovimiento(that, listado, parametros, index, transaccion,callback);
+            __updateMovimiento(that, listado, parametros, index, transaccion, callback);
         }, 0);
 
     }).fail(function (err) {

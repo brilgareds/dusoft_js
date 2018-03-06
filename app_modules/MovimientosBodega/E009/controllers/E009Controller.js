@@ -25,6 +25,27 @@ E009Controller.prototype.listarBodegas = function (req, res) {
 
 /**
  * @author German Galvis
+ * +Descripcion trae registro de la bodega seleccionada
+ * @fecha 2018-03-06
+ */
+E009Controller.prototype.listarBodegaId = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var bodega_id = args.id;
+    
+    G.Q.nfcall(that.m_e009.listarBodegaId,bodega_id).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listar bodega id ok!!!!', 200, {listarBodegas: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar la bodega', 500, {listarBodegas: {}}));
+            }).
+            done();
+
+};
+
+/**
+ * @author German Galvis
  * +Descripcion crea un nuevo documento temporal
  * @fecha 2018-02-14
  */

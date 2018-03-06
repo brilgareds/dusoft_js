@@ -9,6 +9,10 @@ module.exports = function (app, di_container) {
         c_e009.listarBodegas(req, res);
     });
 
+    app.post('/api/movBodegas/E009/listarBodegaId', function (req, res) {
+        c_e009.listarBodegaId(req, res);
+    });
+
     app.post('/api/movBodegas/E009/newDocTemporal', function (req, res) {
         c_e009.newDocTemporal(req, res);
     });

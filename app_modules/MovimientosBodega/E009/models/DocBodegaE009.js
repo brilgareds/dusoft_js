@@ -11,13 +11,34 @@ var DocumentoBodegaE009 = function () {
 DocumentoBodegaE009.prototype.listarBodegas = function (callback) {
     var query = G.knex
             .select()
-            .from('bodegas');
-    //.where('bodega','03');
+            .from('bodegas')
+            .where('bodega', '03');
 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [listarBodegas]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta todas las bodegas que tengan el id enviado
+ * seleccionada
+ * @params obj: bodegaId
+ * @fecha 2018-03-06
+ */
+DocumentoBodegaE009.prototype.listarBodegaId = function (parametro,callback) {
+    var query = G.knex
+            .select()
+            .from('bodegas')
+            .where('bodega', parametro);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarBodegaId]:", err);
         callback(err);
     });
 };
@@ -34,7 +55,7 @@ DocumentoBodegaE009.prototype.listarProductos = function (parametros, callback) 
         "invenPro.codigo_producto",
         "invenPro.tipo_producto_id",
         "tPro.descripcion as nombreTipo",
-      G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
+        G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
         "exisBodega.existencia",
         "subclase.descripcion AS subClase",
         "exisLote.lote",
@@ -42,10 +63,6 @@ DocumentoBodegaE009.prototype.listarProductos = function (parametros, callback) 
     ];
 
     var query = G.knex.column(columnas)
-    /*.from("inventarios_productos AS invenPro")
-     .innerJoin("existencias_bodegas AS exisBodega ", function () {
-     this.on("invenPro.codigo_producto", "exisBodega.codigo_producto")
-     })*/
             .from("existencias_bodegas as exisBodega")
             .innerJoin("inventarios_productos as invenPro", "exisBodega.codigo_producto", "invenPro.codigo_producto")
             .innerJoin("inv_subclases_inventarios AS subclase", function () {
@@ -96,7 +113,6 @@ DocumentoBodegaE009.prototype.insertarBodegasMovimientoDevolucionTmp = function 
                 abreviatura: parametros.abreviatura,
                 empresa_destino: parametros.bodega_destino
             });
-    //         .update('abreviatura', parametros.abreviatura);
 
     if (transaccion)
         query.transacting(transaccion);

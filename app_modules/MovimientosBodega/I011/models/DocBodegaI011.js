@@ -25,6 +25,27 @@ DocumentoBodegaI011.prototype.listarBodegas = function (parametros, callback) {
 
 /**
  * @author German Galvis
+ * +Descripcion consulta todas las bodegas que tengan el id enviado
+ * seleccionada
+ * @params obj: bodegaId
+ * @fecha 2018-03-06
+ */
+DocumentoBodegaI011.prototype.listarBodegaId = function (parametro,callback) {
+    var query = G.knex
+            .select()
+            .from('bodegas')
+            .where('bodega', parametro);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarBodegaId]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
  * +Descripcion consulta todas las devoluciones que cuenta la bodega
  * seleccionada
  * @params obj: bodega

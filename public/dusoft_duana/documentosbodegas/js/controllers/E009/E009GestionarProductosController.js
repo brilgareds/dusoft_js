@@ -10,8 +10,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             var that = this;
             $scope.parametros = '';
-            //$scope.parametros = empresa;
-            //$scope.tipoProducto = tipoProducto;
             $scope.tipoProducto;
             $rootScope.$on('gestionar_productosCompleto', function (e, parametros) {
 
@@ -22,7 +20,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
                 $scope.parametros = parametros;
-                //$scope.tipoProducto = $scope.parametros[1].tipoProducto;
                 $scope.tipoProducto = parametros[1].tipoProducto;
 
                 $timeout(function () {
@@ -60,7 +57,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 });
             };
 
-            $scope.filtroNombre = {nombre: "Seleccionar", id: -1};
+           // $scope.filtroNombre = {nombre: "Seleccionar", id: -1};
+            $scope.filtroNombre = {nombre: "Descripcion", id: '0'};
 
             $scope.onSeleccionFiltro = function (filtro) {
                 $scope.filtroNombre.nombre = filtro.nombre;
@@ -71,7 +69,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
              *
              */
             $scope.buscador_productos = function (event, termino_busqueda) {
-                console.log("busca tipo",$scope.tipoProducto);
                 if (termino_busqueda !== undefined) {
                     if (termino_busqueda.length < 3) {
                         return;
@@ -83,9 +80,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     empresa_id: $scope.parametros[1].empresa.getEmpresa().getCodigo(),
                     centro_utilidad: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.codigo,
                     bodega: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.bodega.codigo,
-                    /*empresa_id: $scope.parametros.getEmpresa().getCodigo(),
-                     centro_utilidad: $scope.parametros.getEmpresa().centroUtilidad.codigo,
-                     bodega: $scope.parametros.getEmpresa().centroUtilidad.bodega.codigo,*/
                     descripcion: termino_busqueda,
                     tipoFiltro: $scope.filtroNombre.id
                 };
@@ -97,7 +91,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {nombre: "Descripcion", id: '0'},
                 {nombre: "Codigo", id: '1'},
                 {nombre: "Molecula", id: '2'}
-//                {nombre: "Unidad venta", id: true},
             ];
 
             $scope.filtro = $scope.filtros[0];
@@ -113,16 +106,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.tipoProducto.nombre = producto.nombreTipo;
                 } else if ($scope.tipoProducto.id !== producto.tipoProducto) {
                     AlertService.mostrarMensaje("warning", "DEBE SELECCIONAR PRODUCTOS DEL TIPO " + " " + $scope.tipoProducto.nombre.toUpperCase());
-                    return;
-                }
-
-                var fecha_actual = new Date();
-                fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-
-                var fecha_vencimiento = $filter('date')(new Date(producto.fecha_vencimiento), "dd/MM/yyyy");
-                var diferencia = $scope.restaFechas(fecha_actual, fecha_vencimiento);
-                if (diferencia >= 0 && diferencia <= 45) {
-                    AlertService.mostrarMensaje("warning", "Producto proximo a vencer");
                     return;
                 }
 
@@ -207,11 +190,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         </div>'}
                 ]
             };
-
-            /*$scope.onCerrar = function () {
-             $modalInstance.close($scope.tipoProducto);
-             };*/
-
 
             $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {//ng-disabled="habilitar_ingreso_producto(row.entity)"
                 $scope.$$watchers = null;

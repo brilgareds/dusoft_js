@@ -17,6 +17,7 @@ define([
             var that = this;
             var datos_documento = localStorageService.get("documento_bodega_I011");
             $scope.doc_tmp_id = "00000";
+            $scope.validarDesdeLink = false;
             $scope.documento_ingreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
@@ -39,6 +40,22 @@ define([
                     session: $scope.session
                 };
                 I011Service.buscarBodega(obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data.obj.listarBodegas);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+
+            that.buscarBodegaPorId = function (id, callback) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        id: id
+                    }
+                };
+                I011Service.buscarBodegaId(obj, function (data) {
                     if (data.status === 200) {
                         callback(data.obj.listarBodegas);
                     } else {
@@ -327,6 +344,7 @@ define([
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
                         $scope.doc_tmp_id = data.obj.movimiento_temporal_id;
+                        $scope.validarDesdeLink = true;
                         $scope.isTmp();
                     }
                     if (data.status === 500) {
@@ -576,6 +594,7 @@ define([
                 $scope.documento_ingreso.setDocumentoDevolucion(null);
                 $scope.datos_view.listado_productos = [];
                 $scope.datos_view.listado_productos_validados = [];
+                $scope.validarDesdeLink = false;
             };
 
             that.refrescarVista = function () {
@@ -624,6 +643,26 @@ define([
                 }
                 return disabled;
             };
+
+            if (datos_documento.datosAdicionales !== undefined) {
+                $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
+                $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
+                that.buscarBodegaPorId(datos_documento.datosAdicionales.bodega_seleccionada, function (result) {
+                    $scope.documento_ingreso.set_bodega(result[0]);
+                });
+                var doc_devolucion = {
+                    numero: datos_documento.datosAdicionales.numero,
+                    prefijo: datos_documento.datosAdicionales.prefijo_edb,
+                    empresa_id: datos_documento.datosAdicionales.farmacia_id
+
+                };
+                $scope.documento_ingreso.setDocumentoDevolucion(doc_devolucion);
+                $scope.validarDesdeLink = true;
+                that.listarProductosDevolucion();
+                that.listarProductosValidados();
+            } else {
+                $scope.validarDesdeLink = false;
+            }
 
         }]);
 });

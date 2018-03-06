@@ -6,6 +6,10 @@ module.exports = function (app, di_container) {
     app.post('/api/movBodegas/I011/listarBodegas', function (req, res) {
         c_i011.listarBodegas(req, res);
     });
+    
+    app.post('/api/movBodegas/I011/listarBodegaId', function (req, res) {
+        c_i011.listarBodegaId(req, res);
+    });
 
     app.post('/api/movBodegas/I011/listarDevoluciones', function (req, res) {
         c_i011.listarDevoluciones(req, res);

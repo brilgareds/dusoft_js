@@ -50,13 +50,12 @@ DocumentoBodegaE009.prototype.listarBodegaId = function (parametro,callback) {
  * @fecha 2018-02-12
  */
 DocumentoBodegaE009.prototype.listarProductos = function (parametros, callback) {
-    console.log("modelo productos", parametros);
     var columnas = [
         "invenPro.codigo_producto",
         "invenPro.tipo_producto_id",
         "tPro.descripcion as nombreTipo",
         G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
-        "exisBodega.existencia",
+        "exisLote.existencia_actual AS existencia",
         "subclase.descripcion AS subClase",
         "exisLote.lote",
         "exisLote.fecha_vencimiento"
@@ -89,9 +88,9 @@ DocumentoBodegaE009.prototype.listarProductos = function (parametros, callback) 
                     this.andWhere("invenPro.codigo_producto", parametros.descripcion);
                 }
             });
-    // .limit(G.settings.limit).offset((parametros.pagina_actual - 1) * G.settings.limit);
+    /* .limit(G.settings.limit).offset((parametros.pagina_actual - 1) * G.settings.limit);
     console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));
+            query.toString()));*/
 
     query.then(function (resultado) {
         callback(false, resultado);

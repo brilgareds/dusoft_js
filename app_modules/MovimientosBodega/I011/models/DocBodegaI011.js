@@ -170,10 +170,6 @@ DocumentoBodegaI011.prototype.restarCantidadMovimientoD = function (parametros, 
     if (transaccion)
         query.transacting(transaccion);
 
-    console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));
-
-
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

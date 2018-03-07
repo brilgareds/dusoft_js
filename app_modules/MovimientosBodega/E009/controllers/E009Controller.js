@@ -59,7 +59,6 @@ E009Controller.prototype.newDocTemporal = function (req, res) {
     var bodega_seleccionada = args.bodega_seleccionada;
     var observacion = args.observacion;
     var movimiento_temporal_id;
-    console.log("argumentos nuevos ", args);
     if (args.observacion === undefined) {
         res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
         return;
@@ -120,7 +119,6 @@ E009Controller.prototype.listarProductos = function (req, res) {
     };
 
     G.Q.nfcall(that.m_e009.listarProductos, parametros).then(function (resultado) {
-        console.log("resultado",resultado);
         res.send(G.utils.r(req.url, 'Listar Productos Para Asignar', 200, {listarProductos: resultado}));
     }).fail(function (err) {
         res.send(G.utils.r(req.url, 'Error al Listar Productos Para Asignar', 500, {}));
@@ -265,7 +263,6 @@ E009Controller.prototype.consultarDetalleDevolucion = function (req, res) {
     };
 
     that.m_e009.consultarDetalleDevolucion(parametros, function (err, lista_productos) {
-        console.log("consultarDetalleDevolucion.lista_productos", lista_productos);
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
             return;
@@ -288,7 +285,6 @@ E009Controller.prototype.eliminarItem = function (req, res) {
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
 
-    console.log("eliminarItem  ", args);
     if (args.item_id === undefined) {
         res.send(G.utils.r(req.url, 'El item_id NO estan definido', 404, {}));
         return;
@@ -394,7 +390,6 @@ E009Controller.prototype.crearDocumento = function (req, res) {
         }
 
     }).then(function (resultado) {
-        console.log("consultar_detalle_documento",resultado);
         detalle = resultado;
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');

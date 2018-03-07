@@ -23,7 +23,7 @@
                                         <select ng-model="documento_ingreso.bodega"  pl
                                                 class="form-control selectgeneral pull-left"
                                                 ng-change="onBuscarDevoluciones()" ng-disabled="validarDesdeLink">
-                                            <option value="" ng-hide="validarDesdeLink">Seleccionar bodega</option>
+                                            <option value="">Seleccionar bodega</option>
                                             <option ng-repeat="x in bodegas"
                                                     value="{{x.bodega}}">{{x.descripcion}}
                                             </option>

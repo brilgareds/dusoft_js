@@ -32,8 +32,8 @@ E009Controller.prototype.listarBodegaId = function (req, res) {
     var that = this;
     var args = req.body.data;
     var bodega_id = args.id;
-    
-    G.Q.nfcall(that.m_e009.listarBodegaId,bodega_id).
+
+    G.Q.nfcall(that.m_e009.listarBodegaId, bodega_id).
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'Consultar listar bodega id ok!!!!', 200, {listarBodegas: resultado}));
             }).
@@ -111,7 +111,7 @@ E009Controller.prototype.listarProductos = function (req, res) {
     var args = req.body.data;
 
     var parametros = {
-        empresa_id: args.empresa_id, //Sesion.getUsuarioActual().getEmpresa().getCodigo()
+        empresa_id: args.empresa_id,
         centro_utilidad: args.centro_utilidad,
         bodega: args.bodega,
         descripcion: args.descripcion,
@@ -227,15 +227,26 @@ E009Controller.prototype.agregarItem = function (req, res) {
         docTmpId: args.docTmpId,
         usuarioId: usuarioId
     };
+    var msj;
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaEnBodegaDestino", parametros).then(function (resultado) {
         if (resultado.length > 0) {
-            return G.Q.nfcall(that.m_e009.agregarItem, parametros);
+
+            G.Q.nfcall(that.m_e009.consultarItem, parametros).then(function (result) {
+                if (result.length > 0) {
+                    msj = "El producto " + parametros.codigoProducto + " ya se encuentra registrado en el documento de devolucion.";
+                } else {
+                    msj = "producto agregado correctamente";
+                    return G.Q.nfcall(that.m_e009.agregarItem, parametros);
+                }
+            }).then(function (resultado) {
+                res.send(G.utils.r(req.url, msj, 200, {agregarItem: resultado}));
+            }).fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al consultar el Producto', 500, {}));
+            }).done();
         } else {
             throw {msj: "El producto " + parametros.codigoProducto + " no se encuentra en bodegas_existencias.", status: 403};
         }
-    }).then(function (resultado) {
-        res.send(G.utils.r(req.url, 'producto agregado correctamente', 200, {agregarItem: resultado}));
     }).fail(function (err) {
         res.send(G.utils.r(req.url, err.msj, err.status, {agregarItem: []}));
     }).done();
@@ -245,7 +256,7 @@ E009Controller.prototype.agregarItem = function (req, res) {
 
 /**
  * @author German Galvis
- * +Descripcion lista los productos del documento temporal
+ * +Descripcion lista los productos del documento temporal 
  * @fecha 2018-02-15
  */
 E009Controller.prototype.consultarDetalleDevolucion = function (req, res) {
@@ -420,7 +431,77 @@ E009Controller.prototype.crearDocumento = function (req, res) {
 
 };
 
+// imprime el documento desde buscador de documentos
+E009Controller.prototype.crearDocumentoImprimir = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var cabecera = [];
 
+
+    if (args.empresaId === '' || args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.prefijo === '' || args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo esta vacío', 404, {}));
+        return;
+    }
+    if (args.numeracion === '' || args.numeracion === undefined) {
+        res.send(G.utils.r(req.url, 'El numeracion esta vacío', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        prefijoDocumento: args.prefijo,
+        numeracionDocumento: args.numeracion
+    };
+
+    try {
+        var nomb_pdf = "documentoE009" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
+        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
+            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
+            return;
+        }
+    } catch (e) {
+        console.log("NO EXISTE ARCHIVO  ");
+    }
+
+    G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros).then(function (result) {
+        cabecera = result;
+        if (result.length > 0) {
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "consultar_detalle_documento_despacho", parametros.numeracionDocumento, parametros.prefijoDocumento, parametros.empresaId);
+        } else {
+            throw 'Consulta sin resultados';
+        }
+    }).then(function (resultado) {
+        detalle = resultado;
+        var fecha = new Date();
+        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+
+        if (resultado.length > 0) {
+
+            cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
+            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecerae: cabecera[0],
+                detalle: detalle[0],
+                impresion: impresion,
+                archivoHtml: 'documentoE009.html',
+                reporte: "documentoE009"}, function (nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+        } else {
+            throw 'Consulta eliminar_documento_temporal_d sin resultados';
+        }
+
+    }).catch(function (err) {
+        console.log("crearHtmlDocumento>>>>", err);
+        res.send(G.utils.r(req.url, 'Error al Crear el html del Documento', 500, {err: err}));
+    }).done();
+};
 
 function __generarPdf(datos, callback) {
 

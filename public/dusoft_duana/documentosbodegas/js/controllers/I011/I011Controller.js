@@ -109,12 +109,17 @@ define([
                 });
             };
 
+            function sumarDias(fecha, dias) {
+                fecha.setDate(fecha.getDate() + dias);
+                return fecha;
+            }
+
             that.renderProductosDevolucion = function (productos) {
                 $scope.datos_view.listado_productos = [];
                 productos.forEach(function (data) {
-
+                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
-                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"), data.cantidad, data.movimiento_id);
+                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(fecha, "dd/MM/yyyy"), data.cantidad, data.movimiento_id);
                     producto.setNovedadNombre("Acción");
                     producto.setNovedadAnexa(" ");
                     $scope.datos_view.listado_productos.push(producto);
@@ -129,7 +134,7 @@ define([
                 enableHighlighting: true,
                 showFilter: true,
                 columnDefs: [
-                    {field: 'torre', displayName: 'Torre', width: "5%", enableCellEdit: false},
+                    {field: 'torre', displayName: 'Torre', width: "4%", enableCellEdit: false},
                     {field: 'codigo_producto', displayName: 'Codigo ', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
@@ -142,12 +147,12 @@ define([
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Descripcion', width: "33%", enableCellEdit: false},
-                    {field: 'cantidad', displayName: 'Cantidad', width: "9%", enableCellEdit: false},
+                    {field: 'cantidad', displayName: 'Cantidad', width: "8%", enableCellEdit: false},
                     {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "9%", enableCellEdit: false},
                     {field: 'lote', displayName: 'Lote', width: "7%", enableCellEdit: false},
                     {field: 'getCantidadIngresada() | number : "0" ', displayName: 'Cantidad Ingresar', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'novedad', displayName: 'Novedad', width: "10%", cellClass: "txt-center dropdown-button",
+                    {field: 'novedad', displayName: 'Novedad', width: "12%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                      <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >{{row.entity.novedadNombre}}<span class="caret"></span></button>\
                      <ul class="dropdown-menu dropdown-options">\
@@ -182,11 +187,6 @@ define([
                     AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar la cantidad enviada");
                     disabled = true;
                 }
-
-                /*if (parseInt(producto.cantidad_ingresada) < parseInt(producto.cantidad)) {
-                 AlertService.mostrarMensaje("warning", "la cantidad ingresada debe ser igual a cantidad enviada");
-                 disabled = true;
-                 }*/
 
                 return disabled;
             };
@@ -231,9 +231,9 @@ define([
             that.renderProductosValidados = function (productos) {
                 $scope.datos_view.listado_productos_validados = [];
                 productos.forEach(function (data) {
-
+                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
-                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"), data.cantidad, data.item_id);
+                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(fecha, "dd/MM/yyyy"), data.cantidad, data.item_id);
                     producto.setNovedad(data.novedad);
                     producto.setMovimiento(data.movimiento_id);
                     producto.setNovedadNombre(data.novedad_anexa);
@@ -649,9 +649,9 @@ define([
                 $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
                 $scope.documento_ingreso.set_bodega(datos_documento.datosAdicionales.bodega_seleccionada);
                 /*that.buscarBodegaPorId(datos_documento.datosAdicionales.bodega_seleccionada, function (result) {
-                    $scope.bodegas = result[0];
-                    $scope.documento_ingreso.set_bodega(result[0].bodega);
-                });*/
+                 $scope.bodegas = result[0];
+                 $scope.documento_ingreso.set_bodega(result[0].bodega);
+                 });*/
                 var doc_devolucion = {
                     numero: datos_documento.datosAdicionales.numero,
                     prefijo: datos_documento.datosAdicionales.prefijo_edb,

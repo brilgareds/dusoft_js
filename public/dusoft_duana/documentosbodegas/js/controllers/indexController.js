@@ -249,10 +249,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     {width: "7%", displayName: "Autorizacion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                            <div ">\
-                                            <button class="btn btn-default btn-xs" ng-click="btn_imprimirAutorizacion(row.entity)">Imprimir <span class="glyphicon glyphicon-print"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-hide="ocultarAutorizacion(row.entity)" ng-click="btn_imprimirAutorizacion(row.entity)">Imprimir <span class="glyphicon glyphicon-print"></span></button>\
                                            </div>\
                                         </div>'}
                 ]
+            };
+
+            $scope.ocultarAutorizacion = function (documento) {
+                var disabled = false;
+
+                if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009") {
+                    disabled = true;
+                }
+                return disabled;
             };
 
             that.crearHtmlDocumento = function (documentos, callback) {
@@ -265,16 +274,40 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         numeracion: documentos.numero
                     }
                 };
+                if (documentos.tipo_movimiento === "I002") {
 
-                Request.realizarRequest(API.I002.CREAR_HTML_DOCUMENTO, "POST", obj, function (data) {
-                    if (data.status === 200) {
-                        callback(data);
-                    }
-                    if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                        callback(false);
-                    }
-                });
+                    Request.realizarRequest(API.I002.CREAR_HTML_DOCUMENTO, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "I011") {
+
+                    Request.realizarRequest(API.I011.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "E009") {
+
+                    Request.realizarRequest(API.E009.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                }
             };
 
 
@@ -400,6 +433,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 };
                 E009Service.eliminarGetDocTemporal(obj, function (data) {
                     if (data.status === 200) {
+                        that.listarDocumetosTemporales(true);
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
 

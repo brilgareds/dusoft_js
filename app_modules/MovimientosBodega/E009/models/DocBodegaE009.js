@@ -231,6 +231,30 @@ DocumentoBodegaE009.prototype.agregarItem = function (parametros, callback) {
     }).done();
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion agrega productos al documento temporal
+ * @fecha 2018-02-15
+ */
+DocumentoBodegaE009.prototype.consultarItem = function (parametros, callback) {
+    var query = G.knex
+            .select()
+            .from('inv_bodegas_movimiento_tmp_d')
+            .where('empresa_id',parametros.empresaId )
+            .andWhere('doc_tmp_id', parametros.docTmpId)
+            .andWhere('centro_utilidad', parametros.centroUtilidad)
+            .andWhere('bodega', parametros.bodega)
+            .andWhere('codigo_producto', parametros.codigoProducto)
+            .andWhere('lote', parametros.lote)
+            .andWhere('fecha_vencimiento', parametros.fechaVencimiento);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error consultarItem", err);
+        callback(err);
+    }).done();
+};
 
 /**
  * @author German Galvis

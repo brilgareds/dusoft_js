@@ -47,6 +47,7 @@ define(["angular"], function(angular) {
                 'LISTAR_DEVOLUCIONES': BASE_URL + '/movBodegas/I011/listarDevoluciones',
                 'CREAR_ITEM': BASE_URL + '/movBodegas/I011/agregarItem',
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/I011/crearDocumento',
+                'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I011/crearHtmlDocumento',
                 'INSERTAR_CANTIDAD': BASE_URL + '/movBodegas/I011/modificarCantidad',
                 'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/I011/newDocTemporal',
                 'ELIMINAR_PRODUCTO_DEVOLUCION': BASE_URL + '/movBodegas/I011/eliminarItem',
@@ -57,6 +58,7 @@ define(["angular"], function(angular) {
             },
             'E009': {
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/E009/crearDocumento',
+                'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/E009/crearDocumentoImprimir',
                 'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/E009/newDocTemporal',
                 'CREAR_ITEM': BASE_URL + '/movBodegas/E009/agregarItem',
                 'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/E009/eliminarGetDocTemporal',

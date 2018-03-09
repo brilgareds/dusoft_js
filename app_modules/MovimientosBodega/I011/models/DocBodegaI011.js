@@ -30,7 +30,7 @@ DocumentoBodegaI011.prototype.listarBodegas = function (parametros, callback) {
  * @params obj: bodegaId
  * @fecha 2018-03-06
  */
-DocumentoBodegaI011.prototype.listarBodegaId = function (parametro,callback) {
+DocumentoBodegaI011.prototype.listarBodegaId = function (parametro, callback) {
     var query = G.knex
             .select()
             .from('bodegas')
@@ -541,6 +541,39 @@ DocumentoBodegaI011.prototype.creacion_documento = function (parametros, transac
     });
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion consulta los productos pertenecientes al documento a imprimir
+ * @fecha 2018-03-08
+ */
+DocumentoBodegaI011.prototype.consultar_detalle_documento = function (parametro, callback) {
+    var columnas = [
+        "a.codigo_producto",
+        "a.lote",
+        G.knex.raw("\"a\".\"cantidad\"::integer"),
+        G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
+        G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre"),
+        "param.torre"
+    ];
+
+    var query = G.knex.select(columnas)
+            .from('inv_bodegas_movimiento_d  AS a')
+            .innerJoin("inventarios_productos  AS b ", "a.codigo_producto", "b.codigo_producto")
+            .leftJoin("param_torreproducto AS param", "param.codigo_producto", "a.codigo_producto")
+            .where('a.empresa_id', parametro.empresa_id)
+            .andWhere("a.prefijo", parametro.prefijoDocumento)
+            .andWhere("a.numero", parametro.numeracionDocumento)
+            .orderBy('param.torre', 'asc');
+
+    console.log("Query resultado", G.sqlformatter.format(
+            query.toString()));
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    });
+};
 /*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS

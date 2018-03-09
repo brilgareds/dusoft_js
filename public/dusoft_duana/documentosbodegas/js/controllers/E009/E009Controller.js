@@ -60,11 +60,11 @@ define([
                 });
             };
 
-            that.buscarBodegaPorId = function (id,callback) {
+            that.buscarBodegaPorId = function (id, callback) {
                 var obj = {
                     session: $scope.session,
-                    data:{
-                        id:id
+                    data: {
+                        id: id
                     }
                 };
                 E009Service.buscarBodegaId(obj, function (data) {
@@ -120,12 +120,17 @@ define([
             that.renderProductosDevolucion = function (productos) {
                 $scope.datos_view.listado_productos = [];
                 productos.forEach(function (data) {
-
+                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
-                            data.tipo_producto_id, data.subClase, data.lote, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"), data.cantidad, data.item_id);
+                            data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"), data.cantidad, data.item_id);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
+
+            function sumarDias(fecha, dias) {
+                fecha.setDate(fecha.getDate() + dias);
+                return fecha;
+            }
 
             that.borarrVariables = function () {
                 $scope.doc_tmp_id = "00000";
@@ -440,7 +445,7 @@ define([
                 $scope.documento_devolucion.set_observacion(datos_documento.datosAdicionales.observacion);
                 $scope.validarDesdeLink = true;
                 that.buscarBodegaPorId(datos_documento.datosAdicionales.empresa_destino, function (result) {
-                $scope.documento_devolucion.set_bodega_destino(result[0]);
+                    $scope.documento_devolucion.set_bodega_destino(result[0]);
                 });
                 that.listarProductosAsociados();
             } else {

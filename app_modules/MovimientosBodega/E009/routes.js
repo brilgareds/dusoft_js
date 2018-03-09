@@ -41,4 +41,8 @@ module.exports = function (app, di_container) {
         c_e009.crearDocumento(req, res);
     });
 
+    app.post('/api/movBodegas/E009/crearDocumentoImprimir', function (req, res) {
+        c_e009.crearDocumentoImprimir(req, res);
+    });
+
 };

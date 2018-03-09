@@ -50,14 +50,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             that.renderProductos = function (productos) {
                 $scope.datos_form.listado_productos = [];
                 productos.forEach(function (data) {
+                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
-                            data.tipo_producto_id, data.subClase, data.lote, $filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"));
-                            producto.setNombreTipo(data.nombreTipo);
+                            data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"));
+                    producto.setNombreTipo(data.nombreTipo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
 
-           // $scope.filtroNombre = {nombre: "Seleccionar", id: -1};
+            function sumarDias(fecha, dias) {
+                fecha.setDate(fecha.getDate() + dias);
+                return fecha;
+            }
+
+            // $scope.filtroNombre = {nombre: "Seleccionar", id: -1};
             $scope.filtroNombre = {nombre: "Descripcion", id: '0'};
 
             $scope.onSeleccionFiltro = function (filtro) {

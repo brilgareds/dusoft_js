@@ -51,4 +51,8 @@ module.exports = function (app, di_container) {
         c_i011.crearDocumento(req, res);
     });
     
+    app.post('/api/movBodegas/I011/crearHtmlDocumento', function (req, res) {
+        c_i011.crearHtmlDocumento(req, res);
+    });
+    
 };

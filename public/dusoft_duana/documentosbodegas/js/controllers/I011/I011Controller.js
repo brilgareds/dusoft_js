@@ -119,7 +119,7 @@ define([
                 productos.forEach(function (data) {
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
-                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(fecha, "dd/MM/yyyy"), data.cantidad, data.movimiento_id);
+                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id);
                     producto.setNovedadNombre("Acción");
                     producto.setNovedadAnexa(" ");
                     $scope.datos_view.listado_productos.push(producto);
@@ -233,7 +233,7 @@ define([
                 productos.forEach(function (data) {
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
-                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(fecha, "dd/MM/yyyy"), data.cantidad, data.item_id);
+                            data.tipo_producto_id, data.lote, data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id);
                     producto.setNovedad(data.novedad);
                     producto.setMovimiento(data.movimiento_id);
                     producto.setNovedadNombre(data.novedad_anexa);
@@ -566,7 +566,6 @@ define([
                     }
                 };
                 I011Service.crearDocumento(obj, function (data) {
-                    console.log("I011Service.crearDocumento", data);
                     if (data.status === 200) {
 
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -574,7 +573,6 @@ define([
                         that.borrarVariables();
 
                         var nombre = data.obj.nomb_pdf;
-                        console.log("dato nombre pdf", nombre);
                         setTimeout(function () {
                             $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                         }, 0);

@@ -2037,7 +2037,8 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
            throw {msj:"Hay productos con cantidades pendientes invalidas", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: [], productos_pendientes: [], productos_pendientes_invalidos:productosPendientesInvalidos}}};
             
-        } else if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
+        } else if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {     
+            console.log("productos_no_auditados ",productos_no_auditados);
             throw {msj:"Algunos productos no ha sido auditados o tienen pendientes la justificacion.", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
         } else if(productosSinExistencias.length > 0){
@@ -2162,7 +2163,7 @@ function __validarDumian(identificacion_cliente,tipo_id_cliente){
    (identificacion_cliente === '9001128201' && tipo_id_cliente === "CE")|| //CMS PINARES PEREIRA+
    (identificacion_cliente === '9001128201' && tipo_id_cliente === "TI")|| //LABORATORIO CMS MANIZALEZ+
    (identificacion_cliente === '890304155' && tipo_id_cliente === "NIT")|| //HOSPITAL UNIVERSITARIO DEL VALLE+
-   (identificacion_cliente === '800088098' && tipo_id_cliente === "NIT")|| //LA COOPERATIVA MULTIACTIVA DE DESARROLLO SOCIAL Y DE ENTIDADES DE SALUD
+   (identificacion_cliente === '900112820' && tipo_id_cliente === "AS")|| //LABORATORIO CLINICA AMAN CMS +
    (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")){ //HOSPITAL SAN ANDRES DE TUMACO+
 
      return true;
@@ -2324,10 +2325,6 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
         }else if(pedido.identificacion_cliente === '900112820' || pedido.identificacion_cliente ==='9001128201'){
             
             $tercero = '900112820';            
-            
-        }else if(pedido.identificacion_cliente === '800088098'){
-            
-            $tercero = '800088098';            
             
         } else{
                         
@@ -3454,6 +3451,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
                                     productos_pendientes.push(producto_pedido);
                                 } else if (producto_pedido.item_id > 0) {
                                     productos_no_auditados.push(producto_pedido);
+                                    console.log("AAAAAAAA");
 
                                 }
                             } else {
@@ -3464,6 +3462,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 
                                 } else if (producto_pedido.auditado === '0') {
                                     productos_no_auditados.push(producto_pedido);
+                                    console.log("BBBBBB");
 
                                 }
                                 

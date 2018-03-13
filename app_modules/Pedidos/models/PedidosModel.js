@@ -66,7 +66,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                         cantidad_despachos += parseInt(producto[i].cantidad_temporalmente_separada);
                                     }
                                 }
-
+                             
                                 cantidad_despachada = cantidad_despachada + cantidad_despachos;
 
                                 // se consulta el total de existencias del producto seleccionado
@@ -91,9 +91,18 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     } else if(parseInt(cantidad_total_pendiente) === 0 && parseInt(cantidad_reservada_temporales) === 0) {
                                         
                                         disponible_bodega = parseInt(stock);
-                                       
+                                       console.log("2 disponible_bodega ",disponible_bodega);
                                     }else {
-                                        disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                        /*
+                                         * se comenta siguiente linea, porque cuando hay mas de un despacho la cantidad despachada 
+                                         */
+//                                        disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - cantidad_reservada_temporales;
+                                    console.log("3 stock  ",stock);
+                                    console.log("3 cantidad_total_pendiente  ",cantidad_total_pendiente);
+                                    console.log("3 cantidad_despachada  ",cantidad_despachada);
+                                    console.log("3 cantidad_reservada_temporales  ",cantidad_reservada_temporales);
+                                    console.log("3 disponible_bodega  ",disponible_bodega);
                                     }
                                    
                                     //disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);

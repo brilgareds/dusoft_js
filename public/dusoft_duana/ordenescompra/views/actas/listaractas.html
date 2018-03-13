@@ -1,0 +1,70 @@
+<div ng-controller="ListarActasController">
+    
+    <div class="row">  
+        <div class="col-md-2">
+
+            <fieldset>
+                <ui-select  ng-model="codigo_proveedor_id" theme="select2" class="form-control selectgeneral pull-left ui-select-z-index-11" ng-change="onBuscarOrden({event:{which :13}},codigo_proveedor_id)">
+                    <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre()}}</ui-select-match>
+                    <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
+                        {{ proveedor.get_nombre()}}
+                    </ui-select-choices>
+                </ui-select>
+            </fieldset>
+                
+        </div>  
+        <div class="col-md-3 pull-right"> 
+            <div class="input-group">
+                <div class="input-group-btn"> <!--ng-click="listarAutorizaciones();"-->
+                    <button type="button" class="btn btn-default dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="filtro in filtros">
+                            <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <input type="text" class="form-control"  ng-model="root.terminoBusqueda" ng-keypress="onBuscarOrden($event);" placeholder="Buscar" name="" id="" />
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" validacion-numero-entero type="submit" ng-click="onBuscarOrden($event);"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+            </div>
+        </div>                     
+    </div> 
+    <div class="row"> 
+        <div class="col-md-12">
+            <div style="padding-top:3px">  
+                <div class="table-responsive" >
+                    <div class="defaultGrid grid-responsive" style="height: 240px"  ng-grid="listaOrdenesProveedoresActas"></div>
+                </div>  
+            </div> 
+        </div> 
+    </div>
+    <br>
+    <br>
+    <div class="row"> 
+
+        <div class="col-md-4">
+            <div class="btn-group">
+                <h4><div class="label label-primary"> Numero Orden:</div>  
+                <div class="label label-default" >{{root.numeoOrden}}</div></h4> 
+            </div> 
+        </div>
+        <div class="col-md-8">
+            <div class="btn-group">
+                <h4><div class="label label-primary" style="position: relative;"> Proveedor:</div>   
+                <div class="label label-default left" >{{root.proveedor}}</div> </h4> 
+            </div>  
+        </div> 
+    </div> 
+    <br>
+    <br>
+    <div class="row"> 
+        <div class="col-md-12">
+            <div style="padding-top:3px">  
+                <div class="table-responsive" >
+                    <div class="defaultGrid grid-responsive" style="height: 240px"  ng-grid="listaProductosActas"></div>
+                </div>  
+            </div> 
+        </div> 
+    </div> 
+</div>  

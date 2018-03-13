@@ -2037,7 +2037,8 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
            throw {msj:"Hay productos con cantidades pendientes invalidas", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: [], productos_pendientes: [], productos_pendientes_invalidos:productosPendientesInvalidos}}};
             
-        } else if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
+        } else if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {     
+            console.log("productos_no_auditados ",productos_no_auditados);
             throw {msj:"Algunos productos no ha sido auditados o tienen pendientes la justificacion.", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
         } else if(productosSinExistencias.length > 0){
@@ -2134,22 +2135,37 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 };
 
 function __validarDumian(identificacion_cliente,tipo_id_cliente){
-    if((identificacion_cliente === '10102' && tipo_id_cliente === "NIT") || //Cucuta -inversiones dumian
-   (identificacion_cliente === '10103' && tipo_id_cliente === "NIT") || //palmira -inversiones dumian
-   (identificacion_cliente === '10110' && tipo_id_cliente === "NIT") || //uci pediatrica dumian cucuta
-   (identificacion_cliente === '10111' && tipo_id_cliente === "NIT") || //uci pediatrica dumian bogota
-   (identificacion_cliente === '10118' && tipo_id_cliente === "NIT") || //uci adultos dumian pereira
-   (identificacion_cliente === '10122' && tipo_id_cliente === "NIT") || //bodega dumian cucuta
-   (identificacion_cliente === '10134' && tipo_id_cliente === "NIT") || //uci summa dumian
-   (identificacion_cliente === '10133' && tipo_id_cliente === "NIT") || //uci dumian popayan
-   (identificacion_cliente === '10174' && tipo_id_cliente === "CC") || //clinica mari angel tulua
-   (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") ||  //dumian medical sas
-   (identificacion_cliente === '10365' && tipo_id_cliente === "CE") || //clinica santa gracia buenaventura
-   (identificacion_cliente === '10366' && tipo_id_cliente === "CE")|| //clinica san rafael
-   (identificacion_cliente === '10368' && tipo_id_cliente === "CE")|| //LABORATORIO CLINICA SAN RAFAEL DUMIAN GIRARDOT
-   (identificacion_cliente === '900775143' && tipo_id_cliente === "NIT")|| //UNION TEMPORAL DUCOT 
-   (identificacion_cliente === '890304155' && tipo_id_cliente === "NIT")|| //HOSPITAL UNIVERSITARIO DEL VALLE
-   (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")){ //HOSPITAL SAN ANDRES DE TUMACO
+
+    if((identificacion_cliente === '10102' && tipo_id_cliente === "NIT") || //Cucuta -inversiones dumian+
+   (identificacion_cliente === '10103' && tipo_id_cliente === "NIT") || //palmira -inversiones dumian+
+   (identificacion_cliente === '10110' && tipo_id_cliente === "NIT") || //uci pediatrica dumian cucuta+
+   (identificacion_cliente === '10111' && tipo_id_cliente === "NIT") || //uci pediatrica dumian bogota-
+   (identificacion_cliente === '10118' && tipo_id_cliente === "NIT") || //uci adultos dumian pereira+
+   (identificacion_cliente === '10122' && tipo_id_cliente === "NIT") || //bodega dumian cucuta+
+   (identificacion_cliente === '10134' && tipo_id_cliente === "NIT") || //uci summa dumian-
+   (identificacion_cliente === '10133' && tipo_id_cliente === "NIT") || //uci dumian popayan+
+   (identificacion_cliente === '10174' && tipo_id_cliente === "CC") || //clinica mariaangel tulua+
+   (identificacion_cliente === '10176' && tipo_id_cliente === "CC") || //laboratorio clinica mariaangel tulua+
+   (identificacion_cliente === '10158' && tipo_id_cliente === "NIT") || //LABORATORIO CLINICA DEL CAFE+
+   (identificacion_cliente === '10157' && tipo_id_cliente === "CC") || //FARMACIA CLINICA DEL CAFE+
+   (identificacion_cliente === '10177' && tipo_id_cliente === "CC") || //LABORATORIO SANTA GRACIA+
+   (identificacion_cliente === '10113' && tipo_id_cliente === "NIT") || //UCI ADULTOS ERAZMO MEOZ CUCUT+
+   (identificacion_cliente === '10367' && tipo_id_cliente === "CE") || //CLINICA SAN RAFAEL DUMIAN CONSULTA EXTERNA GIRARDOT+
+   (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") ||  //dumian medical sas+
+   (identificacion_cliente === '10365' && tipo_id_cliente === "CE") || //clinica santa gracia buenaventura+
+   (identificacion_cliente === '10366' && tipo_id_cliente === "CE")|| //CLÍNICA SAN RAFAEL DUMIAN GIRARDOT+
+   (identificacion_cliente === '10119' && tipo_id_cliente === "CE")|| //UCI MARIO CORREA- LOS CHORROS+
+   (identificacion_cliente === '10368' && tipo_id_cliente === "CC")|| //LABORATORIO CLINICA SAN RAFAEL DUMIAN GIRARDOT+
+   //(identificacion_cliente === '900775143' && tipo_id_cliente === "NIT")|| //UNION TEMPORAL DUCOT 
+   (identificacion_cliente === '900112820' && tipo_id_cliente === "NIT")|| //CMS LTDA MANIZALEZ+
+   (identificacion_cliente === '900112820' && tipo_id_cliente === "PA")|| //CMS - CLINICA AMAN+
+   (identificacion_cliente === '900112820' && tipo_id_cliente === "CC")|| //LABORATORIO PINARES CMS+
+   (identificacion_cliente === '9001128201' && tipo_id_cliente === "CE")|| //CMS PINARES PEREIRA+
+   (identificacion_cliente === '9001128201' && tipo_id_cliente === "TI")|| //LABORATORIO CMS MANIZALEZ+
+   (identificacion_cliente === '890304155' && tipo_id_cliente === "NIT")|| //HOSPITAL UNIVERSITARIO DEL VALLE+
+   (identificacion_cliente === '900112820' && tipo_id_cliente === "AS")|| //LABORATORIO CLINICA AMAN CMS +
+   (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")){ //HOSPITAL SAN ANDRES DE TUMACO+
+
      return true;
    }else{
      return false;
@@ -2305,6 +2321,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
         }else if(pedido.identificacion_cliente === '890304155'){
             
             $tercero = '890304155';            
+        
+        }else if(pedido.identificacion_cliente === '900112820' || pedido.identificacion_cliente ==='9001128201'){
+            
+            $tercero = '900112820';            
             
         } else{
                         
@@ -2482,7 +2502,6 @@ function __sincronizarRemisionProductos(obj, callback) {
 //        documentoId:obj.documentoId
 //    };
     obj.error = false;
-
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).then(function(client) {
         
@@ -2594,7 +2613,7 @@ function __sincronizarDetalleDocumento(obj, callback){
     spread(function(result,raw,soapHeader){
         obj.resultadoDetalle = result.return.descripcion["$value"];
         obj.error = false;
-        
+      
         //Asi fallen los productos se debe continuar con el proceso
         if(!result.return.estado["$value"]){
            //throw {msj:"Resultado sincronización: "+result.return.descripcion["$value"], status:403, obj:{}}; 
@@ -3432,6 +3451,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
                                     productos_pendientes.push(producto_pedido);
                                 } else if (producto_pedido.item_id > 0) {
                                     productos_no_auditados.push(producto_pedido);
+                                    console.log("AAAAAAAA");
 
                                 }
                             } else {
@@ -3442,6 +3462,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 
                                 } else if (producto_pedido.auditado === '0') {
                                     productos_no_auditados.push(producto_pedido);
+                                    console.log("BBBBBB");
 
                                 }
                                 

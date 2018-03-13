@@ -1,0 +1,112 @@
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="pull-left">
+                        <h4 class="text-center"><strong>Prefijo {{ documento_devolucion.get_prefijo()}}</strong></h4>
+                    </div>
+                    <div class="pull-right">
+                        <h4 class="text-center"><strong>No. Tmp # {{doc_tmp_id}}</strong></h4>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+
+                            <fieldset>
+                                <legend>Bodega Destino</legend>
+                                <div class="row">
+                                    <div class="col-md-7">                                          
+                                        <ui-select ng-model="documento_devolucion.bodega_destino" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink" >
+                                            <ui-select-match  placeholder="Seleccionar bodega">{{ $select.selected.descripcion}}</ui-select-match>
+                                            <ui-select-choices refresh="bodegas($select.search,true)" refresh-delay="0" repeat="x in bodegas | filter:$select.search">
+                                                {{ x.descripcion}}
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-4">
+
+                            <fieldset>
+                                <legend>Observación</legend>                                 
+                                <div class="row">  
+                                    <div class="col-md-12">
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='documento_devolucion.observacion' name="" placeholder="Ingresar Observación"></textarea>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <br> 
+                    <div class="row">  
+                        <div class="col-md-12">
+
+                            <tabset>
+                                <tab >
+                                    <tab-heading>
+                                        Productos Ingresados
+                                    </tab-heading>
+                                    <br>
+                                    <div class="row">  
+                                        <div class="">
+                                            <div class="col-md-3">
+                                                <p class="input-group">
+                                                    <button  type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()" ng-click="seleccionar_productos()">
+                                                        <span class="glyphicon glyphicon-plus"></span> Buscar Productos
+                                                    </button>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="table-responsive" style="margin-top:3px;" >
+                                        <div  style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_devolucion" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav class="grid" > </div>
+                                    </div>
+                                </tab>                       
+                            </tabset>
+                            <br>
+                            <hr></hr>                            
+                            <br>
+                            <div ng-if="isTmp()">    
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div ng-if="true" class="modal-footer col-md-12" >
+                                            <button  class="btn btn-default" ng-click="grabar_documento()">
+                                                <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
+                                            </button>
+                                            <button  class="btn btn-default" ng-click="cancelar_documento()">
+                                                <span class="glyphicon glyphicon-remove" ></span> Volver
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="!isTmp()">    
+                                <div class="modal-footer col-md-12">
+                                    <button class="btn btn-default" ng-click="cancelar_documento()">
+                                        <span class="glyphicon glyphicon-remove" ></span> Volver
+                                    </button>
+                                    <button ng-hide="isEliminarTmp()" class="btn btn-default" ng-click="btn_eliminar_documento()">
+                                        <span class="glyphicon glyphicon-trash" ></span> Eliminar
+                                    </button>
+                                    <button   class="btn btn-default" ng-click="generar_documento()" >
+                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento
+                                    </button>                                  
+                                </div>  
+                            </div>
+                        </div>
+                    </div>   
+                </div>
+            </div>       
+        </div>
+    </div>
+    <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos" >
+        <div ng-include src="slideurl" ng-controller="E009GestionarProductosController"></div>
+    </div>
+</div>
+<visualizar-reporte></visualizar-reporte>
+

@@ -1,0 +1,26 @@
+{
+    "module": "E009",
+    "dependency": {
+        "controllers": [{
+                "e009_controller": {
+                    "module": "MovimientosBodega/E009",
+                    "controller": "E009Controller",
+                    "alias": "c_e009"
+                }
+            }],
+        "models": [{
+                "movimientos_bodegas_model": {
+                    "module": "MovimientosBodega/MovBodegas",
+                    "model": "MovBodegasModel",
+                    "alias": "m_movimientos_bodegas"
+                },
+                "E009_model": {
+                    "module": "MovimientosBodega/E009",
+                    "model": "DocBodegaE009",
+                    "alias": "m_e009"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

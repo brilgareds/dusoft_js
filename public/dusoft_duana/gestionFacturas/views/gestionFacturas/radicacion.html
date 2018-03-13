@@ -1,0 +1,87 @@
+
+<div class="row" ng-controller="radicacionController">
+    <div class="col-sm-12 col-md-12">
+        <p class="text-right">
+           
+            <button type="button" class="btn btn-default dropdown-toggle" 
+                aria-haspopup="true" aria-expanded="false" ng-click="modalConcepto()" > Agregar Concepto
+             </button>
+        </p>
+    </div>
+</div>
+<div class="row"> 
+
+    <div class="col-sm-4 col-md-4">
+        <label class="col-md-4  control-label" >No. factura</label>
+        <legend></legend>
+        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input">
+    </div>
+    
+    <div class="col-sm-4 col-md-4">
+        <label class="col-md-4  control-label" >Farmacia</label>
+        <legend></legend>
+        <ui-select ng-model="root.farmaciaSeleccionada"
+                   theme="select2"
+                   class="form-control selectgeneral pull-left col-md-8"
+                   ng-change="onSeleccionFarmacia()"
+                   >
+            <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.descripcion}}</ui-select-match>
+            <ui-select-choices repeat="filtro in root.farmacias | filter:$select.search">
+                {{ filtro.descripcion}}
+            </ui-select-choices>
+        </ui-select>
+    </div>
+
+    <div class="col-sm-4 col-md-4">
+        <label class="col-md-4  control-label" >Concepto</label>
+        <legend></legend>
+        <ui-select ng-model="root.conceptoSeleccionado"
+                   theme="select2"
+                   class="form-control selectgeneral pull-left col-md-8"
+                   ng-change="onSeleccionConcepto()"
+                   >
+            <ui-select-match  placeholder="Seleccionar Concepto">{{ $select.selected.observacion}}</ui-select-match>
+            <ui-select-choices repeat="filtros in root.concepto | filter:$select.search">
+                {{ filtros.observacion}}
+            </ui-select-choices>
+        </ui-select>
+    </div>
+</div>
+
+            <div class="row">
+  <div class="col-md-8 col-md-offset-3">.col-md-8 .col-md-offset-4</div>
+  <label class="col-md-4  control-label" >Fecha de llegada</label>
+
+
+                         <p class="input-group">
+           <input type="text" class="form-control readonlyinput" 
+                  datepicker-popup="{{format}}" 
+                  ng-model="fecha_vencimiento" 
+                  is-open="abrir_fecha" 
+                  min="minDate"   
+                  readonly  close-text="Cerrar" 
+                  ng-change="" 
+                  clear-text="Borrar" 
+                  current-text="Hoy" 
+                  placeholder="Fecha Inicial" 
+                  show-weeks="false" 
+                  toggle-weeks-text="#"  />
+           <span class="input-group-btn">
+               <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+           </span>
+       </p>
+       </div>
+
+
+   <div class="row"> 
+
+    <div class="col-sm-4 col-md-4">
+        <label class="col-md-4  control-label" >Precio</label>
+        <legend></legend>
+        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Digite el precio.">
+    </div>
+        
+       
+     
+         
+    

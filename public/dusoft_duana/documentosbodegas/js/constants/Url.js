@@ -39,7 +39,34 @@ define(["angular"], function(angular) {
             },
             'I003': {
             },
+            'I011': {
+                'LISTAR_BODEGAS': BASE_URL + '/movBodegas/I011/listarBodegas',
+                'LISTAR_BODEGA_ID': BASE_URL + '/movBodegas/I011/listarBodegaId',
+                'CONSULTAR_DETALLE_DEVOLUCION': BASE_URL + '/movBodegas/I011/consultarDetalleDevolucion',
+                'CONSULTAR_PRODUCTOS_VALIDADOS': BASE_URL + '/movBodegas/I011/consultarProductosValidados',
+                'LISTAR_DEVOLUCIONES': BASE_URL + '/movBodegas/I011/listarDevoluciones',
+                'CREAR_ITEM': BASE_URL + '/movBodegas/I011/agregarItem',
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/I011/crearDocumento',
+                'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I011/crearHtmlDocumento',
+                'INSERTAR_CANTIDAD': BASE_URL + '/movBodegas/I011/modificarCantidad',
+                'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/I011/newDocTemporal',
+                'ELIMINAR_PRODUCTO_DEVOLUCION': BASE_URL + '/movBodegas/I011/eliminarItem',
+                'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I011/eliminarGetDocTemporal',
+                'LISTAR_NOVEDADES': BASE_URL + '/movBodegas/I011/listarNovedades'
+            },
             'E007': {
+            },
+            'E009': {
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/E009/crearDocumento',
+                'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/E009/crearDocumentoImprimir',
+                'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/E009/newDocTemporal',
+                'CREAR_ITEM': BASE_URL + '/movBodegas/E009/agregarItem',
+                'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/E009/eliminarGetDocTemporal',
+                'LISTAR_BODEGAS': BASE_URL + '/movBodegas/E009/listarBodegas',
+                'LISTAR_BODEGA_ID': BASE_URL + '/movBodegas/E009/listarBodegaId',
+                'LISTAR_PRODUCTOS': BASE_URL + '/movBodegas/E009/listarProductos',
+                'CONSULTAR_DETALLE_DEVOLUCION': BASE_URL + '/movBodegas/E009/consultarDetalleDevolucion',
+                'ELIMINAR_PRODUCTO_DEVOLUCION': BASE_URL + '/movBodegas/E009/eliminarItem',
             },
             'LABORATORIOS': {
                 'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios'

@@ -37,14 +37,24 @@ define([
     "models/I002/OrdenCompraIngreso",
     "models/I002/DocumentoIngreso",
     "models/I002/ProveedorIngreso",
+    "models/E009/ProductoDevolucion",
+    "models/E009/DocumentoDevolucion",
+    "models/I011/DocumentoIngresoDevolucion",
+    "models/I011/ProductoIngresoDevolucion",
     "models/Index/TipoDocumentos",
     "models/Index/EmpresaDocumento",
     "models/Index/DocumentoBodega",
     "controllers/indexController",
     "controllers/I002/I002Controller",
     "controllers/I002/GestionarProductosController",
+    "controllers/E009/E009Controller",
+    "controllers/E009/E009GestionarProductosController",
+    "controllers/I011/I011Controller",
+    "controllers/I011/ModificarProductoController",
     "webNotification",
     "services/general/GeneralService",
+    "services/E009/E009Service",
+    "services/I011/I011Service",
     
 ], function(angular) {
 
@@ -105,6 +115,36 @@ define([
                     templateUrl: "views/I002/index.html",
                     parent_name : "DocumentosBodegas",
                     controller: 'I002Controller'
+                });
+                
+                // I0011 
+                documentos_bodegas.stateProvider.state('I011', {
+                    url: "/I011",
+                    text: "Administración Documentos de Bodega [I011]",
+                    templateUrl: "views/I011/index.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'I011Controller'
+                }).state('modificarProducto', {
+                    url: "/modificarProducto",
+                    text: "modificador de productos",
+                    templateUrl: "views/I011/ventanaModificacion.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'ModificarProductoController'
+                });
+                
+                // E009
+                documentos_bodegas.stateProvider.state('E009', {
+                    url: "/E009",
+                    text: "Administración Documentos de Bodega [E009]",
+                    templateUrl: "views/E009/index.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'E009Controller'
+                }).state('buscarProductos', {
+                    url: "/buscarProductos",
+                    text: "Buscador de productos",
+                    templateUrl: "views/E009/gestionarproductosE009.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'E009GestionarProductosController'
                 });
 
 

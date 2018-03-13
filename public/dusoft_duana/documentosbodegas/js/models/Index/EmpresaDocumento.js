@@ -27,7 +27,8 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 this.get_documentos().forEach(function(documento) {
 
                     if (documento.get_tipo() === 'E007' || documento.get_tipo() === 'E008' || documento.get_tipo() === 'E012' ||
-                            documento.get_tipo() === 'E012' || documento.get_tipo() === 'NC01' || documento.get_tipo() === 'ND01') {
+                          documento.get_tipo() === 'E009' ||  documento.get_tipo() === 'E012' || documento.get_tipo() === 'NC01' || 
+                          documento.get_tipo() === 'ND01') {
                         documentos_salida.push(documento);
                     }                    
                 });
@@ -44,7 +45,8 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 this.get_documentos().forEach(function(documento) {
 
                     if (documento.get_tipo() === 'I001' || documento.get_tipo() === 'I002' || documento.get_tipo() === 'I004' ||
-                            documento.get_tipo() === 'I005' || documento.get_tipo() === 'I006' || documento.get_tipo() === 'I007') {
+                         documento.get_tipo() === 'I011' ||   documento.get_tipo() === 'I005' || documento.get_tipo() === 'I006' || 
+                         documento.get_tipo() === 'I007') {
                         documentos_entrada.push(documento);
                     }                   
                 });

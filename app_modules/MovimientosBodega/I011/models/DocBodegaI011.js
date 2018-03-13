@@ -565,9 +565,6 @@ DocumentoBodegaI011.prototype.consultar_detalle_documento = function (parametro,
             .andWhere("a.numero", parametro.numeracionDocumento)
             .orderBy('param.torre', 'asc');
 
-    console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));
-
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -600,41 +597,55 @@ function __ingresar_documento_verificacion(parametros, transaccion, callback) {
 
 // Ingresar detalle documento verificacion
 function __ingresar_detalle_documento_verificacion(parametros, transaccion, callback) {
-    var sql = " INSERT INTO inv_documento_verificacion_d ( \
-                    farmacia_id, \
-                    prefijo_doc_farmacia, \
-                    numero_doc_farmacia, \
-                    empresa_id, \
-                    prefijo, \
-                    numero, \
-                    codigo_producto, \
-                    lote, \
-                    fecha_vencimiento, \
-                    cantidad, \
-                    novedad_devolucion_id, \
-                    novedad_anexa, \
-                    cantidad_enviada \
-                )\
-                    SELECT  \
-                    a.farmacia_id, \
-                    a.prefijo, \
-                    a.numero, \
-                    :3 AS empresa_id, \
-                    :4 AS prefijo, \
-                    :5 AS numeracion, \
-                    a.codigo_producto, \
-                    a.lote, \
-                    a.fecha_vencimiento, \
-                    a.cantidad, \
-                    a.novedad_devolucion_id,\
-                    a.novedad_anexa, \
-                    b.cantidad_recibida \
-                    FROM inv_documento_verificacion_tmp_d a\
-                    inner join inv_bodegas_movimiento_d as b on (b.prefijo = :4 AND b.numero = :5 AND b.codigo_producto = a.codigo_producto)\
-                    WHERE a.doc_tmp_id = :1  AND a.usuario_id = :2; ";
-    var query = G.knex.raw(sql, {1: parametros.docTmpId, 2: parametros.usuarioId, 3: parametros.empresa_id, 4: parametros.prefijoDocumento, 5: parametros.numeracionDocumento});
+
+    var columnasConsulta = [
+        "a.farmacia_id",
+        "a.prefijo",
+        "a.numero",
+        G.knex.raw("'"+ parametros.empresa_id + "' AS empresa_id"),
+        G.knex.raw("'"+ parametros.prefijoDocumento + "' AS prefijo"),
+        G.knex.raw("'"+ parametros.numeracionDocumento + "' AS numeracion"),
+        "a.codigo_producto",
+        "a.lote",
+        "a.fecha_vencimiento",
+        "a.cantidad",
+        "a.novedad_devolucion_id",
+        "a.novedad_anexa",
+        "b.cantidad_recibida"
+    ];
+
+    var columnasInsert = [
+        "farmacia_id",
+        "prefijo_doc_farmacia",
+        "numero_doc_farmacia",
+        "empresa_id",
+        "prefijo",
+        "numero",
+        "codigo_producto",
+        "lote",
+        "fecha_vencimiento",
+        "cantidad",
+        "novedad_devolucion_id",
+        "novedad_anexa",
+        "cantidad_enviada"
+    ];
+
+    var sqlSelect = G.knex.select(columnasConsulta)
+            .from('inv_documento_verificacion_tmp_d as a')
+            .innerJoin("inv_bodegas_movimiento_d as b", function () {
+                this.on("b.prefijo",G.knex.raw("'"+ parametros.prefijoDocumento + "'"))
+                        .on("b.numero", parametros.numeracionDocumento)
+                        .on("b.codigo_producto", "a.codigo_producto")
+            })
+            .where('a.doc_tmp_id', parametros.docTmpId)
+            .andWhere("a.usuario_id", parametros.usuarioId);
+
+    var query = G.knex().
+    insert(sqlSelect).into(G.knex.raw("inv_documento_verificacion_d ("+columnasInsert+")"));
+
     if (transaccion)
         query.transacting(transaccion);
+
     query.then(function (resultado) {
         callback(false, resultado.rows, resultado);
     }).catch(function (err) {

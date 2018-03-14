@@ -2443,7 +2443,7 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
  */
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
     var that = this;
-console.log("modificar_detalle_pedido ",producto);
+
     var cantidadDespachar;
     var campoDespacho = "";
     if (pedido.estadoSolicitud === '8') {
@@ -2462,10 +2462,6 @@ console.log("modificar_detalle_pedido ",producto);
                             pedido_cliente_id = :6 and codigo_producto = :7 \
                 ) as cantidad_solicitada_anterior";
     
-    console.log("modificar_detalle_pedido sql ",sql);
-    console.log("modificar_detalle_pedido sql ",sql);
-    console.log("modificar_detalle_pedido sql ",sql);
-    console.log("modificar_detalle_pedido sql ",sql);
     var parametros = {
         1: producto.iva, 2: cantidadDespachar, 3: producto.precio_venta,
         4: pedido.usuario_id, 5: 'NOW()', 6: pedido.numero_pedido, 7: producto.codigo_producto

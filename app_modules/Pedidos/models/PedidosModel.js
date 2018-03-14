@@ -94,15 +94,11 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                        console.log("2 disponible_bodega ",disponible_bodega);
                                     }else {
                                         /*
-                                         * se comenta siguiente linea, porque cuando hay mas de un despacho la cantidad despachada 
+                                         * se comenta siguiente linea, porque cuando hay mas de un despacho se esta restando la reserva del pedido X a la disponibilidad del mismo pedido y por el contrario se debe obviar
                                          */
 //                                        disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
                                     disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - cantidad_reservada_temporales;
-                                    console.log("3 stock  ",stock);
-                                    console.log("3 cantidad_total_pendiente  ",cantidad_total_pendiente);
-                                    console.log("3 cantidad_despachada  ",cantidad_despachada);
-                                    console.log("3 cantidad_reservada_temporales  ",cantidad_reservada_temporales);
-                                    console.log("3 disponible_bodega  ",disponible_bodega);
+                                    
                                     }
                                    
                                     //disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
@@ -194,7 +190,11 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                         disponible_bodega = parseInt(stock);
                                        
                                     } else {
-                                         disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                         /*
+                                         * se comenta siguiente linea, porque cuando hay mas de un despacho se esta restando la reserva del pedido X a la disponibilidad del mismo pedido y por el contrario se debe obviar
+                                         */
+                                         disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente)  - cantidad_reservada_temporales;
+//                                         disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
                                     }
                                     
                                     disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;

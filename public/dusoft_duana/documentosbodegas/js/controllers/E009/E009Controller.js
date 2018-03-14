@@ -404,6 +404,8 @@ define([
                 E009Service.eliminarProductoDevolucion(obj, function (data) {
 
                     if (data.status === 200) {
+                       // $scope.tipoProducto.id = '';
+                       // $scope.tipoProducto.nombre = '';
                         callback(true);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema Eliminacion fallida: ", data.msj);

@@ -109,6 +109,10 @@ define([
                 Request.realizarRequest(API.E009.CONSULTAR_DETALLE_DEVOLUCION, "POST", obj, function (data) {
 
                     if (data.status === 200) {
+                        if (data.obj.lista_productos.length <= 0) {
+                            $scope.tipoProducto.id = '';
+                            $scope.tipoProducto.nombre = '';
+                        }
                         that.renderProductosDevolucion(data.obj.lista_productos);
 
                     }
@@ -404,8 +408,6 @@ define([
                 E009Service.eliminarProductoDevolucion(obj, function (data) {
 
                     if (data.status === 200) {
-                       // $scope.tipoProducto.id = '';
-                       // $scope.tipoProducto.nombre = '';
                         callback(true);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema Eliminacion fallida: ", data.msj);

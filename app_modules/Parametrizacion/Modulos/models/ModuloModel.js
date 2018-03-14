@@ -885,8 +885,7 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, ca
             
              return G.knex.raw(sql, {1:empresa_id, 2:modulo_id, 3:usuario_id, 4:estado});
         } else {
-            empresas_modulos.splice(0, 1);
-
+            
             if (resultado && resultado.rows.length > 0 && resultado.rows[0].id) {
                 ids.push({modulos_empresas_id: resultado.rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
             }

@@ -1,6 +1,7 @@
-var FacturacionProveedores = function(m_facturacion_proveedores,m_sincronizacion) {
+var FacturacionProveedores = function(m_facturacion_proveedores,m_sincronizacion,m_actas_tecnicas) {
     this.m_facturacion_proveedores = m_facturacion_proveedores;
     this.m_sincronizacion = m_sincronizacion;
+    this.m_actas_tecnicas = m_actas_tecnicas;
 };
 
 /**
@@ -269,6 +270,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         fecha_radicacion_factura: args.facturaProveedor.parmetros.fechaRadicacion,
         fecha_vencimiento: args.facturaProveedor.parmetros.fechaVencimiento,
         fecha: args.facturaProveedor.parmetros.fechaFactura,
+        numero_orden:args.facturaProveedor.parmetros.recepciones[0].numero_orden_compra,
         usuario_id: usuario,
         usuario: usuario,
         terminoBusqueda: "",
@@ -304,6 +306,20 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
 	    return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones,parametros,0,transaccion);
 
 	}).then(function(resultado) {
+            
+            var obj={numero_orden: parametros.numero_orden , codigo_proveedor_id:parametros.codigo_proveedor_id};
+            
+            return G.Q.ninvoke(that.m_facturacion_proveedores, "consultarFacturaProveedorDetalle", obj);
+            
+	}).then(function(resultado) {
+            console.log("resultado--->>",resultado[0]);
+            console.log("resultado.length--->>",resultado.length);
+           if(resultado.length > 0){
+            return G.Q.ninvoke(that.m_actas_tecnicas, "updateActaTecnica", resultado[0],transaccion);
+           }else{
+                throw 'Consulta sin resultados';
+           }
+	}).then(function(resultado) {
 
 	    transaccion.commit();
 
@@ -323,7 +339,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         return  G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);
 	
     }).then(function(resultado) {
-	
+        
         respuestaFI = resultado;
         return G.Q.nfcall(__reporteFactura, parametros);
 
@@ -729,6 +745,6 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
 }
 ;
 
-FacturacionProveedores.$inject = ["m_facturacion_proveedores", "m_sincronizacion"];
+FacturacionProveedores.$inject = ["m_facturacion_proveedores", "m_sincronizacion","m_actas_tecnicas"];
 
 module.exports = FacturacionProveedores;

@@ -18,6 +18,11 @@
                     "module": "Sincronizacion",
                     "model": "SincronizacionModel",
                     "alias": "m_sincronizacion"
+                },
+                "actas_tecnicas_model": {
+                    "module": "ActasTecnicas",
+                    "model": "ActasTecnicasModel",
+                    "alias": "m_actas_tecnicas"
                 }
             }],
         "events": [],

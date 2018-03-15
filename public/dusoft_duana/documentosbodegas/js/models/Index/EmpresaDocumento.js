@@ -46,7 +46,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
                     if (documento.get_tipo() === 'I001' || documento.get_tipo() === 'I002' || documento.get_tipo() === 'I004' ||
                          documento.get_tipo() === 'I011' ||   documento.get_tipo() === 'I005' || documento.get_tipo() === 'I006' || 
-                         documento.get_tipo() === 'I007') {
+                         documento.get_tipo() === 'I012' || documento.get_tipo() === 'I007') {
                         documentos_entrada.push(documento);
                     }                   
                 });

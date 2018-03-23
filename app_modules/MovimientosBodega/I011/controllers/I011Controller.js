@@ -434,6 +434,7 @@ I011Controller.prototype.crearDocumento = function (req, res) {
 
     var docTmpId = args.docTmpId;
     var cabecera = [];
+    var detallea = [];
 
     G.knex.transaction(function (transaccion) {
         G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
@@ -504,18 +505,22 @@ I011Controller.prototype.crearDocumento = function (req, res) {
         }
 
     }).then(function (resultado) {
+        detallea = resultado;
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
-        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var usuario = req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
 
+for(var i= 0;i<detallea.length;i++){
+    detallea[i].index = i+1;
+}
         if (resultado.length > 0) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
             cabecera[0].edb_id = parametros.prefijo_doc + " " + parametros.numero_doc;
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],
-                detalle: resultado,
+                detalle: detallea,
                 impresion: impresion,
                 archivoHtml: 'documentoI011.html',
                 reporte: "documentoI011"}, function (nombre_pdf) {
@@ -584,8 +589,13 @@ I011Controller.prototype.crearHtmlDocumento = function (req, res) {
         detallea = resultado;
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
-        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var usuario = req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+
+
+for(var i= 0;i<detallea.length;i++){
+    detallea[i].index = i+1;
+}
 
         if (resultado.length > 0) {
 

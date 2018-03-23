@@ -54,6 +54,9 @@ define(["angular"], function(angular) {
                 'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I011/eliminarGetDocTemporal',
                 'LISTAR_NOVEDADES': BASE_URL + '/movBodegas/I011/listarNovedades'
             },
+            'I012': {
+                "LISTAR_TIPOS_TERCEROS": BASE_URL + "/movBodegas/I012/listarTiposTerceros"
+            },
             'E007': {
             },
             'E009': {

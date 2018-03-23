@@ -307,20 +307,6 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
 
 	}).then(function(resultado) {
             
-            var obj={numero_orden: parametros.numero_orden , codigo_proveedor_id:parametros.codigo_proveedor_id};
-            
-            return G.Q.ninvoke(that.m_facturacion_proveedores, "consultarFacturaProveedorDetalle", obj);
-            
-	}).then(function(resultado) {
-            console.log("resultado--->>",resultado[0]);
-            console.log("resultado.length--->>",resultado.length);
-           if(resultado.length > 0){
-            return G.Q.ninvoke(that.m_actas_tecnicas, "updateActaTecnica", resultado[0],transaccion);
-           }else{
-                throw 'Consulta sin resultados';
-           }
-	}).then(function(resultado) {
-
 	    transaccion.commit();
 
 	}).fail(function(err) {

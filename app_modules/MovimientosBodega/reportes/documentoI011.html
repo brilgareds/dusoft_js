@@ -13,12 +13,12 @@
                 document.getElementById("btnImprimir").style.display = 'none';
                 window.print();
 
-            }
+            };
         </script>
 
     </head>
     <body>
-        <br>
+        <p id="sumado" style="display: none;" >0</p> 
         <p class="normal_10AN" align="center" >{{:cabecerae.descripcion}}</p>
 
         <table width="100%" border ='0' >
@@ -39,11 +39,14 @@
                         </tr>
                         <tr>
                             <td >DESCRIPCI&Oacute;N</td>
-                            <td colspan='5'> {{:cabecerae.tipo_clase_documento}}</td>                           
+                            <td colspan='3'> {{:cabecerae.tipo_clase_documento}}</td>                           
+                            <td >NUMERO</td>
+                            <td colspan='2'> {{:cabecerae.prefijo}} {{:cabecerae.numero}}</td>
                         </tr>
                         <tr>
-                            <td >NUMERO</td>
-                            <td colspan='2'> {{:cabecerae.prefijo}} {{:cabecerae.numero}}</td>                           
+
+                            <td >FECHA VERIFICACION</td>
+                            <td colspan='3'> {{:cabecerae.fecha_registro}}</td> 
                             <td >DOC EDB ID</td>
                             <td colspan='2'> {{:cabecerae.edb_id}}</td>                           
                         </tr>
@@ -52,24 +55,18 @@
                             <td colspan='5'> {{:cabecerae.observacion}}</td>                              
                         </tr>
                         <tr>
-                            <td >FECHA VERIFICACION</td>
-                            <td colspan='2'> {{:cabecerae.fecha_registro}}</td>                           
                             <td >USUARIO</td>
-                            <td colspan='2'> {{:cabecerae.usuario_id}} {{:cabecerae.nombre}}</td>                              
+                            <td colspan='2'>{{:cabecerae.nombre}}</td>                              
                         </tr>
                     </table>
                     <hr /> 
                 </td>
             </tr>
         </table>
-        <hr />   
         <table width="100%" cellspacing="2">
             <tr>
                 <td align="center">
-                    <table width="100%" class="modulo_table_list" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:12px; border-collapse :collapse;">
-                        <tr>
-                            <td align="center" colspan='9' ><P class="normal_10AN" align="center" ><b>PRODUCTOS QUE CONTIENE ESTE DOCUMENTO</b></P><br /></td >
-                        </tr >
+                    <table id="tablaDiv" width="100%" class="modulo_table_list" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:12px; border-collapse :collapse;">
                         <tr style="border: black 1px solid;" >  
                             <td align="center" style="border: black 1px solid;"><b>TORRE</b></td>
                             <td align="center" style="border: black 1px solid;"><b>CODIGO</b></td>
@@ -81,13 +78,21 @@
 
                         {{for detalle}}
                         <tr>
-                            <td style="border: black 1px solid;">{{:torre}}</td>
-                            <td style="border: black 1px solid;">{{:codigo_producto}}</td>
-                            <td style="border: black 1px solid;">{{:nombre}}</td>
-                            <td align="center" style="border: black 1px solid;">{{:fecha_vencimiento}}</td>
-                            <td align="center" style="border: black 1px solid;">{{:lote}}</td>
-                            <td align="right" style="border: black 1px solid;">{{:cantidad}}</td>
+                            <td width='5%' style="border: black 1px solid;">{{:torre}}</td>
+                            <td width='12%' style="border: black 1px solid;">{{:codigo_producto}}</td>
+                            <td width='60%' style="border: black 1px solid;">{{:nombre}}</td>
+                            <td width='10%' align="center" style="border: black 1px solid;">{{:fecha_vencimiento}}</td>
+                            <td width='8%' align="center" style="border: black 1px solid;">{{:lote}}</td>
+                            <td width='5%' align="right" style="border: black 1px solid;">{{:cantidad}}</td>
+
+                            {{if index == '25' || index == '50'|| index == '75'|| index == '100'}}
                         </tr>
+                        </table>
+                    <div class="saltopagina"></div>
+                    <table id="tablaDiv" width="100%" class="modulo_table_list" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:12px; border-collapse :collapse;">
+                        {{else index != '25' && index != '50' && index != '75' && index != '100'}}
+                        </tr>
+                        {{/end}}
                         {{/for}}
 
                     </table>

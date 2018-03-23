@@ -1,0 +1,43 @@
+div.watermark
+{
+    display:block;
+    position:fixed;
+    z-index:-1;
+    width:100%;
+    height:100%;
+}
+
+div.content > *:first-child,x:-moz-any-link{margin-top:0;}/* ff only */
+div.watermark,x:-moz-any-link{z-index:auto;}/* ff only */
+div.watermark,x:-moz-any-link,x:default{z-index:-1;}/* ff3 only */
+
+div.watermark 
+{
+    position:absolute;
+    left:0;
+    width:100%;
+}
+
+/* watermark position */
+/* horizontal */
+div.left{text-align:left;}
+div.center{text-align:center;}
+div.right{text-align:right;}
+
+/* vertical */
+div.top  {top:0;}
+div.middle {top:50%;margin-top:-80px;}
+div.bottom  {bottom:2px;}
+
+table {font-family: sans_serif, Verdana, helvetica, Arial;
+       color: #000000;
+       page-break-inside:auto}
+
+td{
+    font-size: 10px !important;
+}
+
+div.saltopagina{ 
+    display:block; 
+    page-break-before:always;
+}

@@ -404,7 +404,7 @@ E009Controller.prototype.crearDocumento = function (req, res) {
         detalle = resultado;
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
-        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var usuario = req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
 
         if (resultado.length > 0) {
@@ -479,7 +479,7 @@ E009Controller.prototype.crearDocumentoImprimir = function (req, res) {
         detalle = resultado;
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
-        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var usuario = req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
 
         if (resultado.length > 0) {

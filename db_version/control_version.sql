@@ -128,3 +128,10 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.18', 'DOCUMENTOS BODEGA', 'se modifica el reporte (tamanio letra)');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.19  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.19', 'FACTURACION PROVEEDORES', 'se modifica eliminando el update a actas tecnica ya que donde se ubico el update no deberia ir porque en la funcion ingresarFactura no se cre
+a el prefijo y el numero se modifica eliminando el update a actas tecnica ya que donde se ubico el update no deberia ir porque en la funcion ingresarFactura no se crea el prefijo ni el numero');
+COMMIT TRANSACTION;

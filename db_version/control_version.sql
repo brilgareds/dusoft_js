@@ -116,3 +116,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.16', 'DOCUMENTOS BODEGA', 'se agrega tipo de producto (Gerencia)');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.17  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.17', 'DOCUMENTOS BODEGA', 'se agrega tipo de producto (Gerencia)');
+COMMIT TRANSACTION;

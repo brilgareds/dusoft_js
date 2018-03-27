@@ -28,6 +28,11 @@ define(["angular", "js/models"], function(angular, models) {
             this.laboratorio = "";
             this.autorizado = "";
             this.ubicacion = "";
+            this.lotes = [];
+            this.principioActivo = "";
+            this.estadoProductoVencimiento = "";
+
+
         }
         
         
@@ -245,7 +250,35 @@ define(["angular", "js/models"], function(angular, models) {
         Producto.prototype.getAutorizado = function() {
             return this.autorizado;
         };
+
+        Producto.prototype.agregarLotes = function(lote){
+            this.lotes.push(lote);
+        };
+             
+        Producto.prototype.mostrarLotes = function(){
+            return this.lotes;
+        };
+         
+        Producto.prototype.vaciarLotes = function () {
+            this.lotes = [];
+        };
+
+        Producto.prototype.setPrincipioActivo = function(principioActivo){
+            this.principioActivo = principioActivo;
+        };
+   
+        Producto.prototype.getPrincipioActivo = function(){
+            return this.principioActivo;
+        };
+
+        Producto.prototype.getEstadoProductoVencimiento = function(){
+            return this.estadoProductoVencimiento;
+        };
         
+        Producto.prototype.setEstadoProductoVencimiento = function(estadoProductoVencimiento){
+            return this.estadoProductoVencimiento = estadoProductoVencimiento;
+        };
+    
         this.get = function(codigo_producto, descripcion, existencia) {
             return new Producto(codigo_producto, descripcion, existencia);
         };

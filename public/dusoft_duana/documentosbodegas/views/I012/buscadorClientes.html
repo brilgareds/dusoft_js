@@ -18,7 +18,7 @@
                     <div class="panel-body">
                         <div>
                             <div class ="row">       
-                                <div class="col-md-3 pull-right">                                                                                                                                 
+                                <div class="col-md-6 pull-right">                                                                                                                                 
                                     <div class="input-group">
                                         <div class="input-group-btn">                                                                      
                                             <button type="button" class="btn btn-default dropdown-toggle" 
@@ -41,45 +41,22 @@
                                                ng-keypress="buscarClientesFactura($event);"  
                                                ng-model="root.termino_busqueda" 
                                                placeholder="Buscar" name="" id="" />
-                                        <div class="input-group-btn">                                              
+                                        <div class="input-group-btn" >
+                                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarClientesFactura({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                                         </div>                                                       
                                     </div>       
                                 </div>          
                             </div>
-
-
-                            <!--div class="row">
-                                
-                                <div class=" col-sm-3 col-md-3 col-lg-3  pull-right">                                
-                                     <div class="input-group">
-                                        <div class="input-group-btn"> 
-                                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                                                 {{filtroNombre.nombre}} 
-                                           <span class="caret"></span></button>
-                                            <ul class="dropdown-menu">
-                                                <li ng-repeat="filtro in filtros">
-                                                    <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <input type="text" class="form-control" ng-keyup="buscador_productos($event, termino_busqueda);"  ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
-                                        <div class="input-group-btn" >
-                                            <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div-->
                             <br>
                             <div class="" style="height: 500px;" ng-grid="lista_clientes"> </div>
 
                             </br>
 
                             <div class="row text-center">
-                                <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()" >
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()" >
                                     <span class="glyphicon glyphicon-chevron-left" ></span>
                                 </button>
-                                <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="root.cantidad_consulta < 25" ng-click="paginaSiguiente()">
                                     <span class="glyphicon glyphicon-chevron-right" ></span>
                                 </button>
                             </div>    

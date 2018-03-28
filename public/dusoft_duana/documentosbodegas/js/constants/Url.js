@@ -55,7 +55,15 @@ define(["angular"], function(angular) {
                 'LISTAR_NOVEDADES': BASE_URL + '/movBodegas/I011/listarNovedades'
             },
             'I012': {
-                "LISTAR_TIPOS_TERCEROS": BASE_URL + "/movBodegas/I012/listarTiposTerceros"
+                "LISTAR_TIPOS_TERCEROS": BASE_URL + "/movBodegas/I012/listarTiposTerceros",
+                "LISTAR_CLIENTES": BASE_URL + "/movBodegas/I012/listarClientes",
+                "LISTAR_FACTURAS": BASE_URL + "/movBodegas/I012/listarFacturas",
+                "CONSULTAR_DETALLE_FACTURA": BASE_URL + "/movBodegas/I012/listarProductosFacturas",
+                "CREAR_NEW_DOCUMENTO_TEMPORAL": BASE_URL + "/movBodegas/I012/newDocTemporal",
+                'AGREGAR_ITEM': BASE_URL + '/movBodegas/I012/agregarItem',
+                'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I012/eliminarGetDocTemporal',
+                'CONSULTAR_PRODUCTOS_DEVUELTOS': BASE_URL + '/movBodegas/I012/consultarProductosDevueltos',
+                'ELIMINAR_PRODUCTO_DEVOLUCION': BASE_URL + '/movBodegas/I012/eliminarItem',
             },
             'E007': {
             },

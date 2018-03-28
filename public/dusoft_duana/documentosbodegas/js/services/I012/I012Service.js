@@ -38,139 +38,138 @@ define(["angular", "js/services"], function (angular, services) {
 
                     /*
                      * @Author: German Galvis.
-                     * @fecha 17/02/2018
-                     * +Descripcion: lista las bodegas
+                     * @fecha 24/03/2018
+                     * +Descripcion: lista los clientes
                      */
-                    /*self.buscarBodega = function (obj, callback) {
-                     Request.realizarRequest(
-                     API.I011.LISTAR_BODEGAS,
-                     "POST",
-                     {
-                     session: obj.session,
-                     data: {
-                     }
-                     },
-                     function (data) {
-                     
-                     callback(data);
-                     }
-                     );
-                     
-                     };
-                     
-                     /*
+                    self.listarClientes = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I012.LISTAR_CLIENTES,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        filtro: obj.listar_clientes.filtro,
+                                        terminoBusqueda: obj.listar_clientes.terminoBusqueda,
+                                        empresaId: obj.listar_clientes.empresaId,
+                                        paginaActual: obj.listar_clientes.paginaActual
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
+
+                    /*
                      * @Author: German Galvis.
-                     * @fecha 06/03/2018
-                     * +Descripcion: trae registro de la bodega seleccionada
+                     * @fecha 26/03/2018
+                     * +Descripcion: lista las facturas
                      */
-                    /*self.buscarBodegaId = function (obj, callback) {
-                     Request.realizarRequest(
-                     API.I011.LISTAR_BODEGA_ID,
-                     "POST",
-                     {
-                     session: obj.session,
-                     data: {
-                     id: obj.data.id
-                     }
-                     },
-                     function (data) {
-                     
-                     callback(data);
-                     }
-                     );
-                     
-                     };
-                     
-                     /*
+                    self.buscarFacturas = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I012.LISTAR_FACTURAS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        documento: obj.cliente.id,
+                                        tipo_documento: obj.cliente.tipo_id_tercero,
+                                        empresaId: obj.empresaId
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
+
+                    /**
                      * @Author: German Galvis.
-                     * @fecha 19/02/2018
-                     * +Descripcion: lista las bodegas
-                     */
-                    /*self.buscarNovedades = function (obj, callback) {
-                     Request.realizarRequest(
-                     API.I011.LISTAR_NOVEDADES,
-                     "POST",
-                     {
-                     session: obj.session,
-                     data: {
-                     }
-                     },
-                     function (data) {
-                     
-                     callback(data);
-                     }
-                     );
-                     
-                     };
-                     
-                     /*
-                     * @Author: German Galvis.
-                     * @fecha 19/02/2018
-                     * +Descripcion: lista las devoluciones
-                     */
-                    /*self.buscarDevoluciones = function (obj, callback) {
-                     Request.realizarRequest(
-                     API.I011.LISTAR_DEVOLUCIONES,
-                     "POST",
-                     {
-                     session: obj.session,
-                     data: {
-                     bodega: obj.bodega
-                     }
-                     },
-                     function (data) {
-                     
-                     callback(data);
-                     }
-                     );
-                     
-                     };
-                     
-                     /**
-                     * @Author: German Galvis.
-                     * @fecha 14/02/2018
+                     * @fecha 27/03/2018
                      * +Descripcion Metodo encargado de invocar el servicio que
                      *              borra los DocTemporal
                      */
-                    /*self.eliminarGetDocTemporal = function (parametro, callback) {
-                     
-                     var obj = {
-                     session: parametro.session,
-                     data: {
-                     doc_tmp_id: parametro.data.doc_tmp_id,
-                     listado: parametro.data.listado,
-                     numero: parametro.data.numero,
-                     prefijo: parametro.data.prefijo
-                     }
-                     };
-                     Request.realizarRequest(API.I011.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {
-                     callback(data);
-                     });
-                     };
-                     
-                     /*
+                    self.eliminarGetDocTemporal = function (parametro, callback) {
+
+                        var obj = {
+                            session: parametro.session,
+                            data: {
+                                doc_tmp_id: parametro.data.doc_tmp_id,
+//                     listado: parametro.data.listado,
+//                     numero: parametro.data.numero,
+//                     prefijo: parametro.data.prefijo
+                            }
+                        };
+                        Request.realizarRequest(API.I012.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
                      * @Author: German Galvis.
-                     * @fecha 14/02/2018
+                     * @fecha 27/03/2018
+                     * +Descripcion Metodo encargado de invocar el servicio que
+                     *              agrega items al DocTemporal
+                     */
+                    self.agregarProductoTmp = function (parametro, callback) {
+
+                        var obj = {
+                            session: parametro.session,
+                            data: {
+                                bodega: parametro.data.bodega,
+                                cantidad: parametro.data.cantidad,
+                                centroUtilidad: parametro.data.centroUtilidad,
+                                codigoProducto: parametro.data.codigoProducto,
+                                docTmpId: parametro.data.docTmpId,
+                                empresaId: parametro.data.empresaId,
+                                fechaVencimiento: parametro.data.fechaVencimiento,
+                                lote: parametro.data.lote,
+                                item_id: parametro.data.item_id,
+                                gravamen: parametro.data.gravamen,
+                                totalCosto: parametro.data.totalCosto,
+                                valorU: parametro.data.valorU,
+                                totalCostoPedido: parametro.data.totalCostoPedido,
+                                numero_doc: parametro.data.numero_doc,
+                                prefijo: parametro.data.prefijo,
+                                tipoDocumento: parametro.data.tipoDocumento
+                            }
+                        };
+                        Request.realizarRequest(API.I012.AGREGAR_ITEM, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 28/03/2018
                      * +Descripcion: elimionar producto en temporal
                      */
-                    /*self.eliminarProductoDevolucion = function (objs, callback) {
-                     var obj = {
-                     session: objs.session,
-                     data: {
-                     item_id: objs.item_id,
-                     lote: objs.lote,
-                     cantidad: objs.cantidad,
-                     movimiento_id: objs.movimiento_id,
-                     docTmpId: objs.docTmpId
-                     }
-                     };
-                     
-                     Request.realizarRequest(API.I011.ELIMINAR_PRODUCTO_DEVOLUCION, "POST", obj, function (data) {
-                     callback(data);
-                     });
-                     };
-                     
-                     /*
+                    self.eliminarProductoDevolucion = function (objs, callback) {
+                        var obj = {
+                            session: objs.session,
+                            data: {
+                                item_id: objs.item_id,
+                                docTmpId: objs.docTmpId,
+                                cantidad: objs.cantidad,
+                                codigo_producto: objs.codigo_producto,
+                                fechaVencimiento: objs.fechaVencimiento,
+                                lote: objs.lote,
+                                numero_doc: objs.numero_doc,
+                                prefijo: objs.prefijo,
+                                tipoDocumento: objs.tipoDocumento
+                            }
+                        };
+
+                        Request.realizarRequest(API.I012.ELIMINAR_PRODUCTO_DEVOLUCION, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /*
                      * @Author: German Galvis.
                      * @fecha 14/02/2018
                      * +Descripcion: Crea documento Definitivo

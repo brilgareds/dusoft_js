@@ -61,6 +61,10 @@ module.exports = function(app, di_container) {
 
     app.post('/api/FormulacionExterna/eliminarMedicamentoTmp', function(req, res) {
         c_formulacion_externa.eliminarMedicamentoTmp (req, res);
+    });   
+
+    app.post('/api/FormulacionExterna/eliminarDispensacionMedicamentoTmp', function(req, res) {
+        c_formulacion_externa.eliminarDispensacionMedicamentoTmp (req, res);
     });       
 
     app.post('/api/FormulacionExterna/consultaExisteFormula', function(req, res) {
@@ -73,9 +77,9 @@ module.exports = function(app, di_container) {
 
     app.post('/api/FormulacionExterna/insertarDispensacionMedicamentoTmp', function(req, res) {
         c_formulacion_externa.insertarDispensacionMedicamentoTmp(req, res);
-    });    
+    });   
 
-    app.post('/api/FormulacionExterna/eliminarDispensacionMedicamentoTmp', function(req, res) {
-        c_formulacion_externa.eliminarDispensacionMedicamentoTmp(req, res);
+    app.post('/api/FormulacionExterna/obtenerDispensacionMedicamentosTmp', function(req, res) {
+        c_formulacion_externa.obtenerDispensacionMedicamentosTmp(req, res);
     });       
 };

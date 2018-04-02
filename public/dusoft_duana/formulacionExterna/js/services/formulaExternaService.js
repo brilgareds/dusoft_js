@@ -36,6 +36,7 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
     self.obtenerLotesDeProducto = obtenerLotesDeProducto;
     self.insertarDispensacionMedicamentoTmp = insertarDispensacionMedicamentoTmp;
     self.eliminarDispensacionMedicamentoTmp = eliminarDispensacionMedicamentoTmp;
+    self.obtenerDispensacionMedicamentosTmp = obtenerDispensacionMedicamentosTmp;
 
     return this;
 
@@ -479,7 +480,25 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
           callback(error, null);
         }
       });
-    
+    }
+
+    function obtenerDispensacionMedicamentosTmp(formula_id_tmp, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id_tmp : formula_id_tmp
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.OBTENER_DISPENSACION_MEDICAMENTO_TMP, "POST", body, function(data){
+        console.log('respuesta en el servicio', data);
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, null);
+        }
+      });
     }
 
 

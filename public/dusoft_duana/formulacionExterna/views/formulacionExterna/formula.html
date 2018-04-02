@@ -134,7 +134,7 @@
 							    <tr ng-repeat="diagnostico in diagnosticos">
 							        <td colspan="2">{{diagnostico.nombre}}</td>
 							        <td>
-							        	<button class="btn btn-warning pull-right" type="button" ng-click="eliminarDiagnosticoTmp(root.formula.tmp_formula_id, diagnostico.id)">
+							        	<button class="btn btn-danger pull-right" type="button" ng-click="eliminarDiagnosticoTmp(root.formula.tmp_formula_id, diagnostico.id)">
 								        	<i class="glyphicon glyphicon-remove"></i>
 								        </button>
 								    </td>
@@ -143,54 +143,14 @@
 					  	</table>
 	              	</div>    
 	            </div>
-	            <div class="row">
-	            	<div class="col-md-12" style="background-color: #f5f5f5;">
-	            		<form class="navbar-form navbar-left" role="search">
-						  <div class="form-group">
-						  	<label><h4><strong>Búsqueda de productos &nbsp;</strong></h4></label>
-						  </div>
-						  <div class="form-group">
-						    <input type="text" class="form-control" placeholder="Código de producto" ng-model="root.busquedaProductos.codigoProducto" ng-change="reiniciarPagina()">
-						  </div>
-						  <div class="form-group">
-						    <input type="text" class="form-control" placeholder="Código de barras" ng-model="root.busquedaProductos.codigoBarras" ng-change="reiniciarPagina()">
-						  </div>
-						  <div class="form-group">
-						    <input type="text" class="form-control" placeholder="Descripción" ng-model="root.busquedaProductos.descripcion" ng-change="reiniciarPagina()">
-						  </div>
-						  <div class="form-group">
-					    <input type="text" class="form-control" placeholder="Principio activo" ng-model="root.busquedaProductos.principioActivo" ng-change="reiniciarPagina()">
-						  </div>
-						  <button type="submit" class="btn btn-success" ng-click="buscarProductos(empresa_id, centro_utilidad, bodega, root.busquedaProductos.codigoProducto, root.busquedaProductos.principioActivo, root.busquedaProductos.descripcion, root.busquedaProductos.codigoBarras,root.busquedaProductos.pagina)"><i class="glyphicon glyphicon-search"></i></button>
-						  <button type="submit" class="btn btn-success" ng-click=""><i class="glyphicon glyphicon-refresh"></i></button>
-						</form>
-	            	</div>
-	            </div>
-	            <div class="row">
-	            	<div class="col-md-12">
-		            	<div class="table-responsive" >
-		                    <div class="defaultGrid grid-responsive" style="height: 515px;" ng-grid="lista_productos">
-		                    </div>
-		                </div>
-	            	</div>
-	            </div>
-	            <div class="row" style="margin-top: 10px;">
-	            	<div class="col-md-1 col-md-offset-5">
-        				<button class="btn btn-success" type="button" ng-click="root.busquedaProductos.pagina = root.busquedaProductos.pagina - 1;root.busquedaProductos.pagina = root.busquedaProductos.pagina == 0? 1 : root.busquedaProductos.pagina;buscarProductos(empresa_id, centro_utilidad, bodega, root.busquedaProductos.codigoProducto, root.busquedaProductos.principioActivo, root.busquedaProductos.descripcion, root.busquedaProductos.codigoBarras,(root.busquedaProductos.pagina))">
-	        				<i class="glyphicon glyphicon-chevron-left"></i>
-					    </button>
-	            	</div>
-	            	<div class="col-md-1">
-        				<button class="btn btn-success" type="button" ng-click="root.busquedaProductos.pagina = root.busquedaProductos.pagina + 1; buscarProductos(empresa_id, centro_utilidad, bodega, root.busquedaProductos.codigoProducto, root.busquedaProductos.principioActivo, root.busquedaProductos.descripcion, root.busquedaProductos.codigoBarras,root.busquedaProductos.pagina)">
-	        				<i class="glyphicon glyphicon-chevron-right"></i>
-					    </button>
-	            	</div>
-	            </div>
 	            <div class="row" style="margin-top: 10px;">
 	            	<div class="col-md-12" style="background-color: #f5f5f5;">
 	            		<form class="navbar-form navbar-left" role="search">
 						  <div class="form-group">
 						  	<label><h4><strong>Medicamentos formulados</strong></h4></label>
+						  	<button class="btn btn-success pull-right" style="margin-left: 5px;" ng-click="abrirModalBusquedaMedicamentos()" type="button">
+								<i class="glyphicon glyphicon-plus"></i>
+							</button>
 						  </div>
 						</form>
 	            	</div>
@@ -199,6 +159,36 @@
 	            	<div class="col-md-12">
 		            	<div class="table-responsive" >
 		                    <div class="defaultGrid grid-responsive" style="height: 515px;" ng-grid="lista_productos_seleccionados">
+		                    </div>
+		                </div>
+	            	</div>
+	            </div>
+	           	<div class="row" style="margin-top: 10px;">
+	            	<div class="col-md-1 col-md-offset-5">
+        				<button class="btn btn-success" type="button" ng-click="">
+	        				<i class="glyphicon glyphicon-chevron-left"></i>
+					    </button>
+	            	</div>
+	            	<div class="col-md-1">
+        				<button class="btn btn-success" type="button" ng-click="">
+	        				<i class="glyphicon glyphicon-chevron-right"></i>
+					    </button>
+	            	</div>
+	            </div>
+
+	            <div class="row" style="margin-top: 10px;">
+	            	<div class="col-md-12" style="background-color: #f5f5f5;">
+	            		<form class="navbar-form navbar-left" role="search">
+						  <div class="form-group">
+						  	<label><h4><strong>Medicamentos dispensados</strong></h4></label>
+						  </div>
+						</form>
+	            	</div>
+	            </div>
+	            <div class="row">
+	            	<div class="col-md-12">
+		            	<div class="table-responsive" >
+		                    <div class="defaultGrid grid-responsive" style="height: 515px;" ng-grid="lista_productos_lotes_seleccionados">
 		                    </div>
 		                </div>
 	            	</div>

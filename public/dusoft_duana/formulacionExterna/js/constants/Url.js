@@ -24,6 +24,7 @@ define(["angular"], function(angular) {
                 "OBTENER_LOTES_DE_PRODUCTO": BASE_URL + "/FormulacionExterna/obtenerLotesDeProducto",
                 "INSERTAR_DISPENSACION_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/insertarDispensacionMedicamentoTmp",
                 "ELIMINAR_DISPENSACION_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/eliminarDispensacionMedicamentoTmp",
+                "OBTENER_DISPENSACION_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/obtenerDispensacionMedicamentosTmp",
             }
         }
     };

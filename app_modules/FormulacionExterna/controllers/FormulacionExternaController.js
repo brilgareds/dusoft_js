@@ -64,7 +64,6 @@ FormulacionExterna.prototype.eliminarDiagnosticoTmp = function(req, res){
     var that = this;
     var args = req.body.data;
     
-    console.log('eliminarDiagnosticoTmp', args);
     G.Q.ninvoke(that.m_formulacionExterna,'eliminarDiagnosticoTmp', args.tmp_formula_id, args.diagnostico_id).then(function(data){
         res.send(G.utils.r(req.url, 'eliminar diagnosticosTmp', 200, {}));
     }).fail(function(err){
@@ -156,10 +155,7 @@ FormulacionExterna.prototype.eliminarMedicamentoTmp = function(req, res){
     var that = this;
     var args = req.body.data;
     
-    console.log('eliminarDiagnosticoTmp', args);
     G.Q.ninvoke(that.m_formulacionExterna,'eliminarMedicamentoTmp', args.fe_medicamento_id).then(function(data){
-        return G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros);
-    }).then(function(resultado){
         res.send(G.utils.r(req.url, 'eliminar diagnosticosTmp', 200, {}));
     }).fail(function(err){
         G.logError("FormulacionExterna [eliminarDiagnosticoTmp] " + err);
@@ -214,6 +210,18 @@ FormulacionExterna.prototype.eliminarDispensacionMedicamentoTmp  = function(req,
         res.send(G.utils.r(req.url, 'se elimino la dispensacion del medicamento', 200, resultado));
     }).fail(function(err){
         G.logError("FormulacionExterna [eliminarDispensacionMedicamentoTmp] " + err);
+        res.send(G.utils.r(req.url, 'Error eliminando dispensacion medicamento tmp', 500, err));
+    }).done();
+}
+
+FormulacionExterna.prototype.obtenerDispensacionMedicamentosTmp  = function(req, res){
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(that.m_formulacionExterna,'obtenerDispensacionMedicamentosTmp', args.formula_id_tmp).then(function(resultado){
+        res.send(G.utils.r(req.url, 'se elimino la dispensacion del medicamento', 200, resultado));
+    }).fail(function(err){
+        G.logError("FormulacionExterna [obtenerDispensacionMedicamentosTmp] " + err);
         res.send(G.utils.r(req.url, 'Error eliminando dispensacion medicamento tmp', 500, err));
     }).done();
 }

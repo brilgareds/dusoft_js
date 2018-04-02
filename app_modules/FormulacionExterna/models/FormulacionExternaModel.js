@@ -442,9 +442,8 @@ FormulacionExternaModel.prototype.obtenerLotesDeProducto = function(empresa_id, 
          WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) > 30 THEN 2 END as estado_producto"),
         G.knex.raw("extract(days from (fv.fecha_vencimiento - timestamp 'now()')) as cantidad_dias"),
         "edmt.cantidad_despachada",
-        "edmt.esm_dispen_tmp_id",
-        G.knex.raw("CASE WHEN cantidad_despachada > 0 THEN true ELSE false END as loteSeleccionado")
-    ]; 
+        "edmt.esm_dispen_tmp_id"
+    ];
 
     var columnasExistenciasBodegasLote = ["empresa_id", "centro_utilidad", "codigo_producto", "lote", "ubicacion_id","bodega", "estado", "existencia_actual", "existencia_inicial", "fecha_registro", "fecha_vencimiento"];
 
@@ -456,7 +455,7 @@ FormulacionExternaModel.prototype.obtenerLotesDeProducto = function(empresa_id, 
                 .where("empresa_id", empresa_id)
                 .andWhere("centro_utilidad", centro_utilidad)
                 .andWhere("bodega", bodega)
-                .andWhere(G.knex.raw("(existencia_actual > 0 or lote in (select lote from esm_dispensacion_medicamentos_tmp where formula_id_tmp = " + formula_id_tmp + "))"))
+                .andWhere("existencia_actual", ">",  0)
                 .andWhere("codigo_producto", codigo_producto)
                 .orderBy("fecha_vencimiento", "ASC").as("fv");
         })
@@ -487,21 +486,13 @@ FormulacionExternaModel.prototype.obtenerLotesDeProducto = function(empresa_id, 
         .innerJoin('inv_clases_inventarios as invci', function(){
             this.on("invci.grupo_id", "invp.grupo_id")
                 .on("invci.clase_id", "invp.clase_id")
-        })
-        .leftJoin('esm_dispensacion_medicamentos_tmp as edmt', function(){
-            this.on("edmt.empresa_id", "fv.empresa_id")
-                .on("edmt.centro_utilidad", "fv.centro_utilidad")
-                .on("edmt.bodega", "fv.bodega")
-                .on("edmt.codigo_producto", "fv.codigo_producto")
-                .on("edmt.lote", "fv.lote")
-                .on("edmt.formula_id_tmp", formula_id_tmp)
         });
 
         //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        G.logError("err (/catch) FormulacionExternaModel [eliminarMedicamentoTmp]: " +  err);
+        G.logError("err (/catch) FormulacionExternaModel [obtenerLotesDeProducto]: " +  err);
         callback({err:err, msj: "Se genero un error en "});
     });                       
 };
@@ -551,6 +542,27 @@ FormulacionExternaModel.prototype.insertarDispensacionMedicamentoTmp = function(
     }).done();
 };
 
+FormulacionExternaModel.prototype.obtenerDispensacionMedicamentosTmp = function(formula_id_tmp, callback){
+    var columnas = [
+        "codigo_producto",
+        G.knex.raw("fc_descripcion_producto_molecula(codigo_producto) as molecula"),
+        "cantidad_despachada",
+        "fecha_vencimiento",
+        "lote",
+    ];
+
+    var query = G.knex.select(columnas)
+    .from('esm_dispensacion_medicamentos_tmp')
+    .where('formula_id_tmp', formula_id_tmp);
+
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        G.logError("err FormulacionExternaModel [obtenerDispensacionMedicamentosTmp]: " + err);
+        callback(err);
+    }).done();
+};
+
 function __insertarDispensacionMedicamentoTmp(empresa_id, centro_utilidad, bodega, codigo_producto, cantidad_despachada, fecha_vencimiento, lote, codigo_formulado, usuario_id, sw_entregado_off, formula_id_tmp, transaccion, callback){
     var query = G.knex('esm_dispensacion_medicamentos_tmp')
     .insert({
@@ -593,6 +605,8 @@ function __cantidadProductoTemporal(formula_id_tmp, codigo_producto, transaccion
         callback(err);   
     });
 };
+
+
 
 FormulacionExternaModel.$inject = [];
 

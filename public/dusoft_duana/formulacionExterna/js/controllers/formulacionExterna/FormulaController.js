@@ -3,6 +3,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
     controllers.controller('FormulaController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", formulaController]);
     controllers.controller('ModalSeleccionarController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", seleccionarController]);
     controllers.controller('ModalLotesMedicamentosFormuladosController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", lotesMedicamentosFormuladosController]);
+    controllers.controller('ModalBusquedaProductosController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", busquedaProductosController]);
     
     function formulaController($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
         //Tipos de documento que se despliegan en el elemento select
@@ -56,11 +57,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.buscar = buscar;
         $scope.eliminarDiagnosticoTmp = eliminarDiagnosticoTmp;
         //$scope.busquedaProductos = busquedaProductos;
-        $scope.buscarProductos = buscarProductos;
-        $scope.adicionarProducto = adicionarProducto;
-        $scope.eliminarProducto = eliminarProducto;
-        $scope.reiniciarPagina = reiniciarPagina;
         $scope.abrirModalLotesMedicamentosFormulados = abrirModalLotesMedicamentosFormulados;
+        $scope.abrirModalBusquedaMedicamentos = abrirModalBusquedaMedicamentos;
 
 
         /***********************************
@@ -155,6 +153,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             });
         }
 
+        function abrirModalBusquedaMedicamentos(){
+            $scope.opts = {
+                backdropClick: true,
+                dialogFade: false,
+                keyboard: true,
+                windowClass: 'app-modal-window-xlg',
+                templateUrl: 'views/formulacionExterna/modal/busquedaProductos.html',
+                scope: $scope,
+                controller: "ModalBusquedaProductosController"
+            };
+
+            //datos para compartir con el controlador del modal
+            formulaExternaService.shared = {
+                tipo_id_paciente: $scope.root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(),
+                id_paciente: $scope.root.afiliado.mostrarPacientes()[0].getPacienteId()
+            };
+
+            var modalInstance = $modal.open($scope.opts);
+            modalInstance.result.then(function(item){
+
+            },function(){
+            });
+        
+        }
+
         function guardarFormulaExternaTmp(){
             var tipo_id_paciente = $scope.root.afiliado.mostrarPacientes()[0].getTipoIdPaciente();
             var paciente_id = $scope.root.afiliado.mostrarPacientes()[0].getPacienteId();
@@ -224,7 +247,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         function obtenerTemporales(tipoIdPaciente, idPaciente){
             //obtiene temporal de formula externa (esm_formula_externa_tmp)
             formulaExternaService.obtenerFormulaExternaTmp(tipoIdPaciente, idPaciente, function(error, formulaExternaTmp){
-                if(error){
+                if(error || !formulaExternaTmp){
                     return;
                 }
 
@@ -243,6 +266,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                             $scope.root.productosFormulados = medicamentosFormuladosTmp;
                         }
                     });
+
+                    formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosLotesDispensacion){
+                        if(!error){
+                            $scope.root.productosLotesSeleccionados = medicamentosLotesDispensacion;
+                        }
+                    });
+                    //productosLotesSeleccionados
                 }
             });
         }
@@ -260,58 +290,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             });
         }
 
-        function buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina){
-            if(empresa_id && centro_utilidad && bodega_id && pagina && (codigo_producto || principio_activo || descripcion || codigo_barras)){
-                if(pagina > 0){
-                    formulaExternaService.buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina, function(error, productos){
-                        if(!error){
-                            $scope.productos = productos;
-                        }
-                    });
-                } else {
-                    $scope.root.busquedaProductos.pagina = 1;
-                }
-            }else{
-                AlertService.mostrarMensaje("warning", 'Diligencie alguno de los campos de busqueda.');
-            }
-        }
 
-        function adicionarProducto(tmp_formula_id, tipo_id_paciente, paciente_id, producto){
-            if(!producto.cantidad){
-                AlertService.mostrarMensaje("warning", 'Digite la cantidad solicitada.');
-                return;
-            }
-            formulaExternaService.insertarMedicamentoTmp(tmp_formula_id, producto.codigo_producto, producto.cantidad, 25, 4, tipo_id_paciente, paciente_id, function(error, fe_medicamento_id){
-                //se fija el id que retorna le medicamento
-                producto.fe_medicamento_id = fe_medicamento_id;
-                producto.cantidad_despachada = 0;
-                producto.cantidad_pendiente = producto.cantidad;
-
-                //recarga los productos formulados
-                /*formulaExternaService.obtenerMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosFormuladosTmp){
-                    if(!error){
-                        $scope.root.productosFormulados = medicamentosFormuladosTmp;
-                    }
-                });*/
-            });
-            $scope.root.productosFormulados.push(producto);
-        }
-
-        function eliminarProducto(fe_medicamento_id){
-            formulaExternaService.eliminarMedicamentoTmp(fe_medicamento_id, function(error, data){
-                if(!error){
-                    $scope.root.productosFormulados.forEach(function(obj, index){
-                        if(obj.fe_medicamento_id == fe_medicamento_id){
-                            $scope.root.productosFormulados.splice(index, 1);
-                        }
-                    });
-                }
-            });
-        }
-
-        function reiniciarPagina(){
-            $scope.root.busquedaProductos.pagina=1;
-        }
 
         function abrirModalLotesMedicamentosFormulados(producto){
             $scope.opts = {
@@ -350,8 +329,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             });
         }
 
-
-
         /***********************************
             Funcion inicializadora del modulo
         ***********************************/
@@ -378,21 +355,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $scope.centro_utilidad = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
             $scope.bodega = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
 
-            //inicializa grilla de busqueda de productos
-            $scope.lista_productos = {
-                data: 'productos',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo producto', width: "10%"},
-                    {field: 'descripcion', displayName: 'Descripcion', width : '20%'},
-                    {field: 'existencia', displayName: 'Existencia', width: "10%", cellClass: "txt-center",},
-                    {field: 'molecula', displayName: 'Molecula', width: "30%"},
-                    {field: 'cantidad', displayName: 'Cantidad', width: "10%", cellClass: "txt-center", cellTemplate: '<div class="col-xs-12 "><input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id=""/></div>'},
-                    {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12"><button type="submit" class="btn btn-success" ng-click="adicionarProducto(root.formula.tmp_formula_id, root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(), root.afiliado.mostrarPacientes()[0].getPacienteId(),row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-plus"></i></button></div>'}
-                ]
-            };
-
             //inicia grilla de productos formulados
             $scope.lista_productos_seleccionados = {
                 data: 'root.productosFormulados',
@@ -410,13 +372,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     </div>'}
                 ]
             };
-
+            //lista_productos_lotes_seleccionados 
+            $scope.lista_productos_lotes_seleccionados = {
+                data: 'root.productosLotesSeleccionados',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Codigo producto', width: "10%"},
+                    {field: 'molecula', displayName: 'Molecula', width: "30%"},
+                    {field: 'cantidad', displayName: 'Cantidad', width: "10%", cellClass: "txt-center"},
+                    {field: 'cantidad_despachada', displayName: 'Despachado', width: "10%", cellClass: "txt-center"},
+                    {field: 'cantidad_pendiente', displayName: 'Pendiente', width: "10%", cellClass: "txt-center"},
+                    {field: 'lote', displayName: 'Lote', width: "10%", cellClass: "txt-center"},
+                    {field: 'fecha_vencimiento', displayName: 'Fecha vencimiento', width: "10%", cellClass: "txt-center"},
+                    {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12">\
+                          <button type="submit" class="btn btn-danger" ng-click="eliminarProducto(row.entity.fe_medicamento_id)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-remove"></i></button>\
+                    </div>'}
+                ]
+            };
         }
 
         init();
     }
 
-    //Controlador del modal de seleccion
+/****************************************** CONTROLLER SELECCIONAR ********************************************/
     function seleccionarController($scope, $rootScope, Request, $filter, $state, $modal, $modalInstance, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
         //Modelo que contiene el termino de busqueda
         $scope.term = '';
@@ -460,8 +439,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         }
     }
 
-    //modulo=Formulacion_Externa&tipo=controller&metodo=FormaDigitalizar_Ambulatoria&tipo_id_paciente=CC&paciente_id=31292552&plan_id=769&formula_id=4263660
-
+/****************************************** CONTROLLER MEDICAMENTOS FORMULADOS DISPENSACION ********************************************/
     function lotesMedicamentosFormuladosController($scope, $rootScope, Request, $filter, $state, $modal, $modalInstance, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
         $scope.data = {
             //inicializan cuando se carga el modal en la funcion init()
@@ -589,6 +567,89 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                                           <button class="btn btn-default btn-xs" ng-click="cerrarVentanaDispensacionFormula()" ng-disabled ="showBtnDispensar ">Cerrar  </button>\
                                         </div>'
                     },
+                ]
+            };
+        }
+
+        init();
+    }
+
+
+/****************************************** CONTROLLER BUSQUEDA PRODUCTOS ********************************************/
+    function busquedaProductosController($scope, $rootScope, Request, $filter, $state, $modal, $modalInstance, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
+        $scope.buscarProductos = buscarProductos;
+        $scope.adicionarProducto = adicionarProducto;
+        $scope.eliminarProducto = eliminarProducto;
+        $scope.reiniciarPagina = reiniciarPagina;
+
+        function buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina){
+            if(empresa_id && centro_utilidad && bodega_id && pagina && (codigo_producto || principio_activo || descripcion || codigo_barras)){
+                if(pagina > 0){
+                    formulaExternaService.buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina, function(error, productos){
+                        if(!error){
+                            $scope.productos = productos;
+                        }
+                    });
+                } else {
+                    $scope.root.busquedaProductos.pagina = 1;
+                }
+            }else{
+                AlertService.mostrarMensaje("warning", 'Diligencie alguno de los campos de busqueda.');
+            }
+        }
+
+        function adicionarProducto(tmp_formula_id, tipo_id_paciente, paciente_id, producto){
+            if(!producto.cantidad){
+                AlertService.mostrarMensaje("warning", 'Digite la cantidad solicitada.');
+                return;
+            }
+            formulaExternaService.insertarMedicamentoTmp(tmp_formula_id, producto.codigo_producto, producto.cantidad, 25, 4, tipo_id_paciente, paciente_id, function(error, fe_medicamento_id){
+                //se fija el id que retorna le medicamento
+                producto.fe_medicamento_id = fe_medicamento_id;
+                producto.cantidad_despachada = 0;
+                producto.cantidad_pendiente = producto.cantidad;
+                AlertService.mostrarMensaje("success", 'Producto agregado');
+                return;
+                //recarga los productos formulados
+                /*formulaExternaService.obtenerMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosFormuladosTmp){
+                    if(!error){
+                        $scope.root.productosFormulados = medicamentosFormuladosTmp;
+                    }
+                });*/
+            });
+            $scope.root.productosFormulados.push(producto);
+        }
+
+        function eliminarProducto(fe_medicamento_id){
+            formulaExternaService.eliminarMedicamentoTmp(fe_medicamento_id, function(error, data){
+                if(!error){
+                    $scope.root.productosFormulados.forEach(function(obj, index){
+                        if(obj.fe_medicamento_id == fe_medicamento_id){
+                            $scope.root.productosFormulados.splice(index, 1);
+                        }
+                    });
+                }
+            });
+        }
+
+        function reiniciarPagina(){
+            $scope.root.busquedaProductos.pagina=1;
+        }
+
+        //funcion inicializadora del modulo
+        function init(){
+            //inicializa grilla de busqueda de productos
+            $scope.lista_productos = {
+                data: 'productos',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Codigo producto', width: "10%"},
+                    {field: 'descripcion', displayName: 'Descripcion', width : '20%'},
+                    {field: 'existencia', displayName: 'Existencia', width: "10%", cellClass: "txt-center",},
+                    {field: 'molecula', displayName: 'Molecula', width: "30%"},
+                    {field: 'cantidad', displayName: 'Cantidad', width: "10%", cellClass: "txt-center", cellTemplate: '<div class="col-xs-12 "><input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id=""/></div>'},
+                    {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12"><button type="submit" class="btn btn-success" ng-click="adicionarProducto(root.formula.tmp_formula_id, root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(), root.afiliado.mostrarPacientes()[0].getPacienteId(),row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-plus"></i></button></div>'}
                 ]
             };
         }

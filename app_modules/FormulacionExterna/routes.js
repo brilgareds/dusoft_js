@@ -81,5 +81,9 @@ module.exports = function(app, di_container) {
 
     app.post('/api/FormulacionExterna/obtenerDispensacionMedicamentosTmp', function(req, res) {
         c_formulacion_externa.obtenerDispensacionMedicamentosTmp(req, res);
+    });
+
+    app.post('/api/FormulacionExterna/generarEntrega', function(req, res) {
+        c_formulacion_externa.generarEntrega(req, res);
     });       
 };

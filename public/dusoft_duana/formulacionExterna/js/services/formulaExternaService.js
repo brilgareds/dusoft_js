@@ -37,6 +37,7 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
     self.insertarDispensacionMedicamentoTmp = insertarDispensacionMedicamentoTmp;
     self.eliminarDispensacionMedicamentoTmp = eliminarDispensacionMedicamentoTmp;
     self.obtenerDispensacionMedicamentosTmp = obtenerDispensacionMedicamentosTmp;
+    self.generarEntrega = generarEntrega;
 
     return this;
 
@@ -491,7 +492,6 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       };
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.OBTENER_DISPENSACION_MEDICAMENTO_TMP, "POST", body, function(data){
-        console.log('respuesta en el servicio', data);
         var error = data.status == 200? 0 : 1;
         if(!error){
           callback(error, data.obj);
@@ -501,6 +501,23 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       });
     }
 
+    function generarEntrega(formula_id_tmp, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id_tmp : formula_id_tmp
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.GENERAR_ENTREGA, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, null);
+        }
+      });
+    }
 
   }
 });

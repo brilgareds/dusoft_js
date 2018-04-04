@@ -56,9 +56,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         */
         $scope.buscar = buscar;
         $scope.eliminarDiagnosticoTmp = eliminarDiagnosticoTmp;
-        //$scope.busquedaProductos = busquedaProductos;
         $scope.abrirModalLotesMedicamentosFormulados = abrirModalLotesMedicamentosFormulados;
         $scope.abrirModalBusquedaMedicamentos = abrirModalBusquedaMedicamentos;
+        $scope.eliminarProductoLoteSeleccionado = eliminarProductoLoteSeleccionado;
+        $scope.eliminarProducto = eliminarProducto;
+        $scope.generarEntrega = generarEntrega;
+
+
 
 
         /***********************************
@@ -290,8 +294,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             });
         }
 
-
-
         function abrirModalLotesMedicamentosFormulados(producto){
             $scope.opts = {
                 backdropClick: true,
@@ -319,6 +321,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                         $scope.root.productosFormulados = medicamentosFormuladosTmp;
                     }
                 });
+                //cuando se cierra el modal se recarga la grilla de medicamentos dispensados
+                formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosLotesDispensacion){
+                    if(!error){
+                        $scope.root.productosLotesSeleccionados = medicamentosLotesDispensacion;
+                    }
+                });
             },function(){
                 //cuando se cierra el modal se recarga la grilla de medicamentos formulados
                 formulaExternaService.obtenerMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosFormuladosTmp){
@@ -326,6 +334,61 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                         $scope.root.productosFormulados = medicamentosFormuladosTmp;
                     }
                 });
+                //cuando se cierra el modal se recarga la grilla de medicamentos dispensados
+                formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosLotesDispensacion){
+                    if(!error){
+                        $scope.root.productosLotesSeleccionados = medicamentosLotesDispensacion;
+                    }
+                });
+            });
+        }
+
+        function eliminarProductoLoteSeleccionado(esm_dispen_tmp_id){
+            if(!esm_dispen_tmp_id){
+                return;
+            }
+            formulaExternaService.eliminarDispensacionMedicamentoTmp(esm_dispen_tmp_id, function(error, data){
+                if(error){
+                    AlertService.mostrarMensaje("warning", 'Error eliminando el temporal.');
+                    return;
+                }
+                //Elimina del arreglo el "producto lote seleccionado"
+                $scope.root.productosLotesSeleccionados.forEach(function(obj, index){
+                    if(esm_dispen_tmp_id == obj.esm_dispen_tmp_id){
+                        $scope.root.productosLotesSeleccionados.splice(index, 1);
+                    }
+                });
+
+                //recarga la grilla de medicamentos formulados
+                formulaExternaService.obtenerMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosFormuladosTmp){
+                    if(!error){
+                        $scope.root.productosFormulados = medicamentosFormuladosTmp;
+                    }
+                });
+            });
+        }
+
+        function eliminarProducto(fe_medicamento_id){
+            formulaExternaService.eliminarMedicamentoTmp(fe_medicamento_id, function(error, data){
+                if(!error){
+                    $scope.root.productosFormulados.forEach(function(obj, index){
+                        if(obj.fe_medicamento_id == fe_medicamento_id){
+                            $scope.root.productosFormulados.splice(index, 1);
+                        }
+                    });
+                    //recarga grilla medicamentos temporales
+                    formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosLotesDispensacion){
+                        if(!error){
+                            $scope.root.productosLotesSeleccionados = medicamentosLotesDispensacion;
+                        }
+                    });
+                }
+            });
+        }
+
+        function generarEntrega(tmp_formula_id){
+            formulaExternaService.generarEntrega(tmp_formula_id, function(error, data){
+                console.log('resultado en generarEntrega', data);
             });
         }
 
@@ -361,14 +424,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo producto', width: "10%"},
-                    {field: 'molecula', displayName: 'Molecula', width: "30%"},
+                    {field: 'codigo_producto', displayName: 'Codigo', width: "10%"},
+                    {field: 'molecula', displayName: 'Medicamento', width: "50%"},
                     {field: 'cantidad', displayName: 'Cantidad', width: "10%", cellClass: "txt-center"},
                     {field: 'cantidad_despachada', displayName: 'Despachado', width: "10%", cellClass: "txt-center"},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente', width: "10%", cellClass: "txt-center"},
                     {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12">\
                           <button type="submit" class="btn btn-danger" ng-click="eliminarProducto(row.entity.fe_medicamento_id)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-remove"></i></button>\
-                          <button type="submit" class="btn btn-success" ng-click="abrirModalLotesMedicamentosFormulados(row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-th-list"></i></button>\
+                          <button type="submit" class="btn btn-success" ng-disabled="row.entity.cantidad_pendiente == 0" ng-click="abrirModalLotesMedicamentosFormulados(row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-th-list"></i></button>\
                     </div>'}
                 ]
             };
@@ -378,15 +441,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo producto', width: "10%"},
-                    {field: 'molecula', displayName: 'Molecula', width: "30%"},
-                    {field: 'cantidad', displayName: 'Cantidad', width: "10%", cellClass: "txt-center"},
-                    {field: 'cantidad_despachada', displayName: 'Despachado', width: "10%", cellClass: "txt-center"},
-                    {field: 'cantidad_pendiente', displayName: 'Pendiente', width: "10%", cellClass: "txt-center"},
-                    {field: 'lote', displayName: 'Lote', width: "10%", cellClass: "txt-center"},
+                    {field: 'codigo_producto', displayName: 'Codigo', width: "10%"},
+                    {field: 'molecula', displayName: 'Medicamento', width: "50%"},
+                    {field: 'cantidad_despachada', displayName: 'Cantidad', width: "10%", cellClass: "txt-center"},
                     {field: 'fecha_vencimiento', displayName: 'Fecha vencimiento', width: "10%", cellClass: "txt-center"},
+                    {field: 'lote', displayName: 'Lote', width: "10%", cellClass: "txt-center"},
                     {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12">\
-                          <button type="submit" class="btn btn-danger" ng-click="eliminarProducto(row.entity.fe_medicamento_id)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-remove"></i></button>\
+                          <button type="submit" class="btn btn-danger" ng-click="eliminarProductoLoteSeleccionado(row.entity.esm_dispen_tmp_id)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-remove"></i></button>\
                     </div>'}
                 ]
             };
@@ -579,8 +640,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
     function busquedaProductosController($scope, $rootScope, Request, $filter, $state, $modal, $modalInstance, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
         $scope.buscarProductos = buscarProductos;
         $scope.adicionarProducto = adicionarProducto;
-        $scope.eliminarProducto = eliminarProducto;
+
         $scope.reiniciarPagina = reiniciarPagina;
+        $scope.cerrar = cerrar;
 
         function buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina){
             if(empresa_id && centro_utilidad && bodega_id && pagina && (codigo_producto || principio_activo || descripcion || codigo_barras)){
@@ -620,20 +682,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $scope.root.productosFormulados.push(producto);
         }
 
-        function eliminarProducto(fe_medicamento_id){
-            formulaExternaService.eliminarMedicamentoTmp(fe_medicamento_id, function(error, data){
-                if(!error){
-                    $scope.root.productosFormulados.forEach(function(obj, index){
-                        if(obj.fe_medicamento_id == fe_medicamento_id){
-                            $scope.root.productosFormulados.splice(index, 1);
-                        }
-                    });
-                }
-            });
-        }
 
         function reiniciarPagina(){
             $scope.root.busquedaProductos.pagina=1;
+        }
+
+        function cerrar(){
+            $modalInstance.close();
         }
 
         //funcion inicializadora del modulo

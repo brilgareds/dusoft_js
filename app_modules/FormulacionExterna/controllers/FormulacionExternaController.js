@@ -137,7 +137,6 @@ FormulacionExterna.prototype.insertarMedicamentoTmp = function(req, res){
     }).done();
 }
 
-
 FormulacionExterna.prototype.obtenerMedicamentosTmp = function(req, res){
     var that = this;
     var args = req.body.data;
@@ -154,9 +153,13 @@ FormulacionExterna.prototype.obtenerMedicamentosTmp = function(req, res){
 FormulacionExterna.prototype.eliminarMedicamentoTmp = function(req, res){
     var that = this;
     var args = req.body.data;
-    
-    G.Q.ninvoke(that.m_formulacionExterna,'eliminarMedicamentoTmp', args.fe_medicamento_id).then(function(data){
-        res.send(G.utils.r(req.url, 'eliminar diagnosticosTmp', 200, {}));
+
+    //primero elimina la dispensacion del medicamento temporal
+    G.Q.ninvoke(that.m_formulacionExterna,'eliminarDispensacionesMedicamentoTmp', args.fe_medicamento_id).then(function(data){
+        //elimina el medicamento temporal
+        return G.Q.ninvoke(that.m_formulacionExterna,'eliminarMedicamentoTmp',args.fe_medicamento_id);
+    }).then(function(){
+        res.send(G.utils.r(req.url, 'Eliminar Medicamento tmp', 200, {}));
     }).fail(function(err){
         G.logError("FormulacionExterna [eliminarDiagnosticoTmp] " + err);
         res.send(G.utils.r(req.url, 'error elimina diagnosticoTmp ', 500, err));
@@ -167,7 +170,6 @@ FormulacionExterna.prototype.consultaExisteFormula = function(req, res){
     var that = this;
     var args = req.body.data;
     
-    console.log('eliminarDiagnosticoTmp', args);
     G.Q.ninvoke(that.m_formulacionExterna,'consultaExisteFormula',args.tipo_id_paciente, args.paciente_id, args.formula_papel).then(function(existe){
         res.send(G.utils.r(req.url, 'consulta existe formula', 200, existe));
     }).fail(function(err){
@@ -223,6 +225,18 @@ FormulacionExterna.prototype.obtenerDispensacionMedicamentosTmp  = function(req,
     }).fail(function(err){
         G.logError("FormulacionExterna [obtenerDispensacionMedicamentosTmp] " + err);
         res.send(G.utils.r(req.url, 'Error eliminando dispensacion medicamento tmp', 500, err));
+    }).done();
+}
+
+FormulacionExterna.prototype.generarEntrega  = function(req, res){
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(that.m_formulacionExterna,'obtenerDispensacionMedicamentosTmp', args.formula_id_tmp).then(function(resultado){
+        res.send(G.utils.r(req.url, 'Generar entrega', 200, resultado));
+    }).fail(function(err){
+        G.logError("FormulacionExterna [generarEntrega] " + err);
+        res.send(G.utils.r(req.url, 'Error generando entrega', 500, err));
     }).done();
 }
 

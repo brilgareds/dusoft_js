@@ -32,30 +32,53 @@
 	        </div>
 	        <div class="panel-body">
 	            <div class="row">
-	            	<legend>
 	                <div class="col-md-2">
-	                	<h4>
-	                		<strong>Identificación </strong>
-	                		&nbsp;{{root.afiliado.mostrarPacientes()[0].getTipoIdPaciente()}} {{root.afiliado.mostrarPacientes()[0].getPacienteId()}}
-	                	</h4>
+	                	<fieldset>
+                            <legend><strong>Identificación</strong></legend> 
+                            <div class="row">  
+                                <div class="col-md-12" style="margin-top: -14px">                                          
+                                    <h4 class="ng-binding">
+                                        {{root.afiliado.mostrarPacientes()[0].getTipoIdPaciente()}} {{root.afiliado.mostrarPacientes()[0].getPacienteId()}}
+                                    </h4>
+                                </div>
+                            </div>
+                        </fieldset>
 	                </div>
 	                <div class="col-md-3">
-	                	<h4>
-	                		<strong>Nombre: </strong>
-	                		&nbsp;{{root.afiliado.mostrarPacientes()[0].getNombres()}} {{root.afiliado.mostrarPacientes()[0].getApellidos()}}
-	                	</h4>
+	                	<fieldset>
+                            <legend><strong>Nombre</strong></legend> 
+                            <div class="row">  
+                                <div class="col-md-12" style="margin-top: -14px">                                          
+                                    <h4 class="ng-binding">
+                                        {{root.afiliado.mostrarPacientes()[0].getNombres()}} {{root.afiliado.mostrarPacientes()[0].getApellidos()}}
+                                    </h4>
+                                </div>
+                            </div>
+                        </fieldset>
 	                </div>
 	                <div class="col-md-4">
-	                	<h4>
-	                		<strong>Plan: </strong> 
-	                		&nbsp;{{root.afiliado.mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()}}
-	                	</h4>
+	                	<fieldset>
+                            <legend><strong>Plan</strong></legend> 
+                            <div class="row">  
+                                <div class="col-md-12" style="margin-top: -14px">                                          
+                                    <h4 class="ng-binding">
+                                    	{{root.afiliado.mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()}}
+                                    </h4>
+                                </div>
+                            </div>
+                        </fieldset>
 	                </div>
 	                <div class="col-md-3">
-	                	<h4>
-	                		<strong>Rango: </strong> 
-	                		&nbsp;{{root.afiliado.mostrarPlanAtencion()[0].getRango()}}
-	                	</h4>
+	                	<fieldset>
+                            <legend><strong>Rango</strong></legend> 
+                            <div class="row">  
+                                <div class="col-md-12" style="margin-top: -14px">                                          
+                                    <h4 class="ng-binding">
+                                    	{{root.afiliado.mostrarPlanAtencion()[0].getRango()}}
+                                    </h4>
+                                </div>
+                            </div>
+                        </fieldset>
 	                </div>
 	            </div>
 	            <div class="row">
@@ -147,7 +170,7 @@
 	            	<div class="col-md-12" style="background-color: #f5f5f5;">
 	            		<form class="navbar-form navbar-left" role="search">
 						  <div class="form-group">
-						  	<label><h4><strong>Medicamentos formulados</strong></h4></label>
+						  	<label><h4><strong>Medicamentos solicitados</strong></h4></label>
 						  	<button class="btn btn-success pull-right" style="margin-left: 5px;" ng-click="abrirModalBusquedaMedicamentos()" type="button">
 								<i class="glyphicon glyphicon-plus"></i>
 							</button>
@@ -175,12 +198,11 @@
 					    </button>
 	            	</div>
 	            </div>
-
 	            <div class="row" style="margin-top: 10px;">
 	            	<div class="col-md-12" style="background-color: #f5f5f5;">
 	            		<form class="navbar-form navbar-left" role="search">
 						  <div class="form-group">
-						  	<label><h4><strong>Medicamentos dispensados</strong></h4></label>
+						  	<label><h4><strong>Medicamentos temporales</strong></h4></label>
 						  </div>
 						</form>
 	            	</div>
@@ -205,8 +227,16 @@
 					    </button>
 	            	</div>
 	            </div>
-
+	            <div class="modal-footer col-md-12 ng-scope" >
+	            	<button class="btn btn-default ng-scope" ng-click="ventanaTipoEntregaFormula(1)" >
+	                    Volver
+	                </button>
+		            <button class="btn btn-default ng-scope" ng-click="generarEntrega(root.formula.tmp_formula_id)" >
+	                    <span class="glyphicon glyphicon-cog"></span> Realizar entrega
+	                </button>
+	        	</div>
 	        </div>
+
 	    </div>
 	</div>
 </div>

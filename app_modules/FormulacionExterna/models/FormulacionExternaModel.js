@@ -572,37 +572,27 @@ FormulacionExternaModel.prototype.obtenerDispensacionMedicamentosTmp = function(
     }).done();
 };
 
-/*
-INSERT INTO esm_formula_externa (formula_id, empresa_id, centro_utilidad, bodega, formula_papel, fecha_formula, tipo_formula, tipo_id_tercero, tercero_id, tipo_id_paciente, paciente_id, plan_id, rango, tipo_afiliado_id, usuario_id,
-sw_estado, sw_autorizado, usuario_autoriza_id, observacion_autorizacion, fecha_registro_autorizacion, tipo_pais_id, tipo_dpto_id, tipo_mpio_id)
-*/
-FormulacionExternaModel.prototype.generarEntrega = function(formula_id_tmp, callback){
+FormulacionExternaModel.prototype.generarEntrega = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, callback){
     var tmp = {};
 
     G.knex.transaction(function(transaccion) {
-        //se consulta primero la cantidad ya dispensada y almacenada en temporal.
-        G.Q.nfcall(__cantidadProductoTemporal, formula_id_tmp, codigo_producto, transaccion).then(function(cantidadProductoTemporal){
-            cantidad_despachada = parseInt(cantidad_despachada);
-            cantidadProductoTemporal = parseInt(cantidadProductoTemporal);
-            cantidad_solicitada = parseInt(cantidad_solicitada);
-            //si la cantidad ya dispensada + la cantidad a despachar no supera la cantidad solicitada se inserta la dispensacion.
-            if (cantidad_despachada + cantidadProductoTemporal <= cantidad_solicitada) {
-                return G.Q.nfcall(__insertarDispensacionMedicamentoTmp, empresa_id, centro_utilidad, bodega, codigo_producto, cantidad_despachada, fecha_vencimiento, lote, codigo_formulado, usuario_id, sw_entregado_off, formula_id_tmp, transaccion);
-            } else {
-                throw 'La cantidad dispensada supera la cantidada solicitada.';
-            }
+        //se inserta la cabecera de la formula
+        G.Q.nfcall(__insertarFormulaExterna, formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, transaccion)
+        .then(function(formula_id){
+            console.log('formula_id insertado', formula_id); 
+            tmp.formula_id = formula_id;
+            return G.Q.nfcall(__insertaFormulaExternaDiagnosticos, formula_id_tmp, tmp.formula_id, transaccion);
         }).then(function(resultado){
-            //Id de dispensacion temporal insertado
-            tmp.esm_dispen_tmp_id = resultado[0];
+            console.log('resultado insertarFormulaExternaDiagnosticos', resultado);
             transaccion.commit();
         }).fail(function(err){
-            G.logError("err FormulacionExternaModel [insertarDispensacionMedicamento]: " + err);
+            G.logError("err FormulacionExternaModel [generarEntrega]: " + err);
             transaccion.rollback(err);
         }).done();
     }).then(function(){
-        callback(false, tmp.esm_dispen_tmp_id);
+        callback(false, tmp);
     }).catch(function(err){
-        G.logError("err FormulacionExternaModel [insertarDispensacionMedicamento]: " + err);
+        G.logError("err FormulacionExternaModel [generarEntrega]: " + err);
         callback(err);
     }).done();
 };
@@ -650,82 +640,104 @@ function __cantidadProductoTemporal(formula_id_tmp, codigo_producto, transaccion
     });
 };
 
-function __insertarFormulaExterna(empresa_id, centro_utilidad, bodega, formula_papel, fecha_formula, tipo_id_tercero, tercero_id, tipo_id_paciente, paciente_id, plan_id, rango, tipo_afiliado_id, usuario_id, sw_estado, sw_autorizado, usuario_autoriza_id, observacion_autorizacion, fecha_registro_autorizacion, tipo_pais_id, tipo_dpto_id, tipo_mpio_id, transaccion, callback){
-    var query = G.knex('esm_formula_externa')
-    .insert({
-        empresa_id : empresa_id,
-        centro_utilidad : centro_utilidad,
-        bodega : bodega,
-        formula_papel: formula_papel,
-        fecha_formula : fecha_formula,
-        tipo_formula : tipo_formula,
-        tipo_id_tercero : tipo_id_tercero,
-        tercero_id : tercero_id,
-        tipo_id_paciente : tipo_id_tercero,
-        tercero_id : tercero_id,
-        tipo_id_paciente : tipo_id_paciente,
-        paciente_id : paciente_id,
-        plan_id : plan_id,
-        rango : rango,
-        tipo_afiliado_id : tipo_afiliado_id,
-        usuario_id : usuario_id,
-        sw_estado : sw_estado,
-        sw_autorizado : sw_autorizado,
-        usuario_autoriza_id : usuario_autoriza_id,
-        observacion_autorizacion : observacion_autorizacion,
-        fecha_registro_autorizacion : fecha_registro_autorizacion,
-        tipo_pais_id : tipo_pais_id,
-        tipo_dpto_id : tipo_dpto_id,
-        tipo_mpio_id : tipo_mpio_id
-    }).returning('formula_id');
+function __insertarFormulaExterna(tmp_formula_id, empresa_id, centro_utilidad, bodega, usuario_id, transaccion, callback){
+    var columnasConsulta = [
+        G.knex.raw("'"+ empresa_id + "' AS empresa_id"),
+        G.knex.raw("'"+ centro_utilidad + "' AS centro_utilidad"),
+        G.knex.raw("'"+ bodega + "' AS bodega"),
+        "a.tmp_formula_papel",
+        "a.tipo_formula",
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "a.tipo_id_paciente",
+        "a.paciente_id",
+        "a.plan_id",
+        "a.rango",
+        "a.tipo_afiliado_id",
+        G.knex.raw("'"+ usuario_id + "' AS usuario_id"),
+        G.knex.raw("0 AS sw_estado"),
+        "a.sw_autorizado",
+        "a.usuario_autoriza_id",
+        "a.observacion_autorizacion",
+        "a.fecha_registro_autorizacion",
+        "a.tipo_pais_id",
+        "a.tipo_dpto_id",
+        "a.tipo_mpio_id",
+        "a.fecha_formula"
+    ];
 
-    if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){
-            callback(false, resultado[0].total);
-    }).catch(function(err){
-        G.logError("err (/catch) [__insertarFormulaESM]: " +  err);
+    var columnasInsert = [
+        "empresa_id",
+        "centro_utilidad",
+        "bodega",
+        "formula_papel",
+        "tipo_formula",
+        "tipo_id_tercero",
+        "tercero_id",
+        "tipo_id_paciente",
+        "paciente_id",
+        "plan_id",
+        "rango",
+        "tipo_afiliado_id",
+        "usuario_id",
+        "sw_estado",
+        "sw_autorizado",
+        "usuario_autoriza_id",
+        "observacion_autorizacion",
+        "fecha_registro_autorizacion",
+        "tipo_pais_id",
+        "tipo_dpto_id",
+        "tipo_mpio_id",
+        "fecha_formula"
+    ];
+
+    var sqlSelect = G.knex.select(columnasConsulta)
+            .from('esm_formula_externa_tmp as a')
+            .where('a.tmp_formula_id', tmp_formula_id);
+
+    var query = G.knex().
+    insert(sqlSelect).into(G.knex.raw("esm_formula_externa ("+columnasInsert+")")).returning('formula_id');
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado[0]);
+    }).catch(function (err) {
         callback(err);
     });
 };
 
-function __insertaFormulaExternaDiagnosticos(fe_diagnostico_id, formula_id, diagnostico_id, transaccion, callback){
-    var query = G.knex('esm_formula_externa_diagnosticos')
-        .insert({
-            formula_id : formula_id, 
-            diagnostico_id : diagnostico_id
-        });
+function __insertaFormulaExternaDiagnosticos(tmp_formula_id, formula_id, transaccion, callback){
+    var columnasConsulta = [
+        G.knex.raw( formula_id + " AS formula_id"),
+        "a.diagnostico_id"
+    ];
 
-    if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){            
-            callback(false, resultado[0].total);
-    }).catch(function(err){
-        G.logError("err (/catch) [__insertarFormulaExternaDianosticos]: " +  err);
-        callback(err);   
+    var columnasInsert = [
+        "formula_id",
+        "diagnostico_id"
+    ];
+
+    var sqlSelect = G.knex.select(columnasConsulta)
+            .from('esm_formula_externa_diagnosticos_tmp as a')
+            .where('a.tmp_formula_id', tmp_formula_id);
+
+    var query = G.knex().
+    insert(sqlSelect).into(G.knex.raw("esm_formula_externa_diagnosticos ("+columnasInsert+")"));
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado[0]);
+    }).catch(function (err) {
+        callback(err);
     });
 };
 
 function __insertarFormulaExternaMedicamentos(fomrula_id, codigo_producto, cantidad, tiempo_tratamiento, unidad_tiempo_tratamiento, sw_marcado, sw_autorizado, usuario_autoriza_id, observacion_autorizacion, fecha_registro_autorizacion,transaccion, callback){
-    var query = G.knex('esm_formula_externa_medicamentos')
-        .insert({
-            formula_id : formula_id, 
-            codigo_producto  : codigo_producto, 
-            cantidad : cantidad,
-            tiempo_tratamiento : tiempo_tratamiento,
-            unidad_tiempo_tratamiento : unidad_tiempo_tratamiento,
-            sw_marcado : sw_marcado,
-            sw_autorizado : sw_autorizado,
-            usuario_autoriza_id : usuario_autoriza_id,
-            observacion_autorizacion : observacion_autorizacion,
-            fecha_registro_autorizacion : fecha_registro_autorizacion
-        });
 
-     if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){            
-            callback(false, resultado[0].total);
-    }).catch(function(err){
-        G.logError("err (/catch) [__insertarFormulaExternaMedicamentos]: " +  err);
-        callback(err);   
-    });   
 };
 
 

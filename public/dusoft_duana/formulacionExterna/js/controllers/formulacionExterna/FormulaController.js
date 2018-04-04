@@ -385,9 +385,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 }
             });
         }
-
-        function generarEntrega(tmp_formula_id){
-            formulaExternaService.generarEntrega(tmp_formula_id, function(error, data){
+        function generarEntrega(tmp_formula_id, empresa_id, centro_utilidad, bodega){
+            console.log('tmp_formula_id', tmp_formula_id);
+            formulaExternaService.generarEntrega(tmp_formula_id, empresa_id, centro_utilidad, bodega, function(error, data){
                 console.log('resultado en generarEntrega', data);
             });
         }

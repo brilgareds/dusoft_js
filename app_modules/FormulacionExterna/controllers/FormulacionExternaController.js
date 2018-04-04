@@ -231,8 +231,9 @@ FormulacionExterna.prototype.obtenerDispensacionMedicamentosTmp  = function(req,
 FormulacionExterna.prototype.generarEntrega  = function(req, res){
     var that = this;
     var args = req.body.data;
-
-    G.Q.ninvoke(that.m_formulacionExterna,'obtenerDispensacionMedicamentosTmp', args.formula_id_tmp).then(function(resultado){
+    var usuario_id = req.session.user.usuario_id;
+//formula_id_tmp, empresa_id, centro_utilidad, bodega
+    G.Q.ninvoke(that.m_formulacionExterna,'generarEntrega', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id).then(function(resultado){
         res.send(G.utils.r(req.url, 'Generar entrega', 200, resultado));
     }).fail(function(err){
         G.logError("FormulacionExterna [generarEntrega] " + err);

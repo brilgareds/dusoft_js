@@ -501,11 +501,15 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       });
     }
 
-    function generarEntrega(formula_id_tmp, callback){
+    function generarEntrega(formula_id_tmp, empresa_id, centro_utilidad, bodega, callback){
       var body = {
         session : self.session,
+      //formula_id_tmp, empresa_id, centro_utilidad, bodega
         data : {
-          formula_id_tmp : formula_id_tmp
+          formula_id_tmp : formula_id_tmp,
+          empresa_id : empresa_id,
+          centro_utilidad : centro_utilidad,
+          bodega : bodega
         }
       };
 

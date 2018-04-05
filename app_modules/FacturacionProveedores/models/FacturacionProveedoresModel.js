@@ -301,7 +301,7 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
       
 
     query.then(function(resultado) {
-    
+         console.log(G.sqlformatter.format(query.toString()));
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [consultarFacturaProveedorDetalle]:", err);

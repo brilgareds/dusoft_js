@@ -75,7 +75,7 @@ define(["angular",
                 gestionFacturas.stateProvider
                 .state('Gestionfacturas', {
                     url: "/Gestionfacturas",
-                    text: "radicacion",
+                    text: "Gestion Facturas",
                     templateUrl: "views/gestionFacturas/radicacion.html",
                     controller: "radicacionController"
                 });

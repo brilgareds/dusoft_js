@@ -54066,7 +54066,7 @@ define('app',["angular",
                     url: "/Gestionfacturas",
                     text: "Gestion Facturas",
                     templateUrl: "views/gestionFacturas/radicacion.html",
-                    controller: "radicacionController"
+                    controller: "RadicacionController"
                 });
 
                 if ($location.path() === "") {

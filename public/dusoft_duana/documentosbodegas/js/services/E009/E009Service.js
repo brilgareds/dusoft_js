@@ -29,7 +29,7 @@ define(["angular", "js/services"], function (angular, services) {
                         );
 
                     };
-                    
+
                     /*
                      * @Author: German Galvis.
                      * @fecha 06/03/2018
@@ -102,7 +102,11 @@ define(["angular", "js/services"], function (angular, services) {
                             data: {
                                 docTmpId: objs.data.devolucion.doc_tmp_id,
                                 bodega_seleccionada: objs.data.devolucion.bodega_seleccionada,
-                                usuario_id: objs.data.devolucion.usuario_id
+                                usuario_id: objs.data.devolucion.usuario_id,
+                                empresaId: objs.data.devolucion.empresaId,
+                                centroUtilidad: objs.data.devolucion.centroUtilidad,
+                                bodega: objs.data.devolucion.bodega,
+                                listado: objs.data.devolucion.listado
                             }
                         };
 

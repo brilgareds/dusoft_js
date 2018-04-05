@@ -1,7 +1,7 @@
 
 define(["angular", "js/controllers"], function (angular, controllers) {
 
-    controllers.controller('ModificarProductoController', [
+    controllers.controller('I012ModificarProductoController', [
         '$scope', '$rootScope', 'Request',
         '$modal', "$modalInstance", 'API', "socket", "$timeout", "$filter",
         "AlertService", "localStorageService", "$state",

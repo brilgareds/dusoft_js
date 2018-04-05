@@ -324,6 +324,14 @@ E009Controller.prototype.crearDocumento = function (req, res) {
     var args = req.body.data;
     var usuarioId;
     var parametros = {};
+    var parametrosListado = {
+        listado: args.listado,
+        ids: {
+            empresaId: args.empresaId,
+            centroUtilidad: args.centroUtilidad,
+            bodega: args.bodega
+        }
+    };
 
     if (args.docTmpId === '') {
         res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
@@ -339,10 +347,14 @@ E009Controller.prototype.crearDocumento = function (req, res) {
     var cabecera = [];
     var detalle = [];
     ;
-
     G.knex.transaction(function (transaccion) {
 
-        G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
+        G.Q.nfcall(__validarExistencias, that, 0, parametrosListado, transaccion).then(function (resultado) {
+
+
+            return G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion);
+
+        }).then(function (result) {
 
             parametros.empresaId = result.empresa_id;
             parametros.empresa_id = result.empresa_id;
@@ -355,15 +367,10 @@ E009Controller.prototype.crearDocumento = function (req, res) {
             parametros.usuarioId = usuarioId;
 
             return G.Q.nfcall(that.m_e009.consultarDetalleDevolucion, parametros);
-
         }).then(function (result) {
             return G.Q.nfcall(that.m_e009.modificarDocumentoDevolucion, parametros, transaccion);
-
-
         }).then(function (result) {
             return G.Q.nfcall(that.m_e009.eliminarDocumentoTemporal_d, parametros, transaccion);
-
-
         }).then(function (result) {
 
             if (result >= 1) {
@@ -385,12 +392,9 @@ E009Controller.prototype.crearDocumento = function (req, res) {
 
             console.log("Error rollback ", err);
             transaccion.rollback(err);
-
         }).done();
-
     }).then(function () {
         return G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros);
-
     }).then(function (resultado) {
 
         cabecera = resultado;
@@ -406,7 +410,6 @@ E009Controller.prototype.crearDocumento = function (req, res) {
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         var usuario = req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
-
         if (resultado.length > 0) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
@@ -426,18 +429,12 @@ E009Controller.prototype.crearDocumento = function (req, res) {
         console.log("execCrearDocumento>>>>", err);
         res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
     }).done();
-
-
-
 };
-
 // imprime el documento desde buscador de documentos
 E009Controller.prototype.crearDocumentoImprimir = function (req, res) {
     var that = this;
     var args = req.body.data;
     var cabecera = [];
-
-
     if (args.empresaId === '' || args.empresaId === undefined) {
         res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
         return;
@@ -457,7 +454,6 @@ E009Controller.prototype.crearDocumentoImprimir = function (req, res) {
         prefijoDocumento: args.prefijo,
         numeracionDocumento: args.numeracion
     };
-
     try {
         var nomb_pdf = "documentoE009" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
         if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
@@ -481,7 +477,6 @@ E009Controller.prototype.crearDocumentoImprimir = function (req, res) {
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         var usuario = req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
-
         if (resultado.length > 0) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
@@ -502,6 +497,11 @@ E009Controller.prototype.crearDocumentoImprimir = function (req, res) {
         res.send(G.utils.r(req.url, 'Error al Crear el html del Documento', 500, {err: err}));
     }).done();
 };
+/*==================================================================================================================================================================
+ * 
+ *                                                          FUNCIONES PRIVADAS
+ * 
+ * ==================================================================================================================================================================*/
 
 function __generarPdf(datos, callback) {
 
@@ -539,6 +539,57 @@ function __generarPdf(datos, callback) {
     });
 }
 
-E009Controller.$inject = ["m_movimientos_bodegas", "m_e009"];
+/**
+ * @author German Galvis
+ * +Descripcion Funcion encargada de validar la existencias de bodegas
+ *              y bodegas lotes fv a insertar en el detalle de la devolucion
+ *              a traves de una funcion recursiva encargada de recorrer el arreglo de los productos
+ *              temporales que se devuelven 
+ * @fecha 2018-04-04
+ */
+function __validarExistencias(that, index, parametrosListado, transaccion, callback) {
 
+    var resta = 0;
+    var producto = parametrosListado.listado[index];
+    if (!producto) {
+        callback(false);
+        return;
+    }
+    index++;
+    G.Q.nfcall(that.m_e009.actualizarExistenciasBodegasLotesFv, producto, parametrosListado.ids, transaccion).then(function (resultado) {
+
+        resta = (resultado[0].existencia_actual - producto.cantidad);
+
+        if (resta >= 1) {
+            resta = 0;
+            return  G.Q.nfcall(that.m_e009.actualizarExistenciasBodegas, producto, parametrosListado.ids, transaccion);
+        } else {
+            throw 'Error al actualizar las existencias de los lotes por que no pueden ser menores a 0 para el para el lote: ' + producto.lote
+                    + '\n del producto: ' + producto.codigo_producto;
+        }
+
+    }).then(function (resultado) {
+
+        resta = (resultado[0].existencia - producto.cantidad);
+
+        if (resta >= 1) {
+            return resultado[0];
+        } else {
+            throw 'Error al actualizar las existencias de bodega por que no pueden ser menores a 0 para el lote: ' + producto.lote
+                    + '\n del producto: ' + producto.codigo_producto;
+        }
+
+
+    }).then(function (resultado) {
+
+        setTimeout(function () {
+            __validarExistencias(that, index, parametrosListado, transaccion, callback);
+        }, 300);
+    }).fail(function (err) {
+        console.log("err (/fail) [__validarExistencias]: ", err);
+        callback(err);
+    }).done();
+}
+;
+E009Controller.$inject = ["m_movimientos_bodegas", "m_e009"];
 module.exports = E009Controller;

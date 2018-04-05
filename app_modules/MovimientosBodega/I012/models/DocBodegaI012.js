@@ -432,7 +432,7 @@ DocumentoBodegaI012.prototype.consultarProductosDevueltos = function (parametros
         "b.unidad_id",
         "c.descripcion as descripcion_unidad",
         G.knex.raw("(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit"),
-        G.knex.raw("((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)) as iva"),
+        G.knex.raw("(a.total_costo * (a.porcentaje_gravamen/100)) as iva"),
         G.knex.raw("((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total"),
         G.knex.raw("(((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total"),
         "a.numero_caja",
@@ -508,6 +508,71 @@ DocumentoBodegaI012.prototype.restarCantidadFacturaD = function (parametros, tra
 
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion trae los porcentajes de retencion
+ * @fecha 02/04/2018
+ */
+DocumentoBodegaI012.prototype.parametrosRetencion = function (parametros, callback) {
+    var query = G.knex
+            .select()
+            .from('vnts_bases_retenciones')
+            .where('estado', 1)
+            .andWhere('empresa_id', parametros.empresaId)
+            .andWhere('anio', parametros.anio);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarItem", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion agrega un registro a la tabla inv_bodegas_movimiento_devolucion_cliente
+ * @fecha 03/04/2018
+ */
+DocumentoBodegaI012.prototype.agregarMovimientoCliente = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_devolucion_cliente").
+            insert({empresa_id: parametros.empresaId, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento,
+                tipo_id_tercero: parametros.tipo_id_tercero, tercero_id: parametros.tercero_id, prefijo_doc_cliente: parametros.prefijo_doc_cliente,
+                numero_doc_cliente: parametros.numero_doc_cliente
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarMovimientoCliente", err);
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion elimina los productos del documento parcial para devoluciones de cliente
+ * @fecha 03/04/2018
+ */
+DocumentoBodegaI012.prototype.eliminarMovimientoDevolucionCliente = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_tmp_devolucion_cliente").
+            where('doc_tmp_id', parametros.docTmpId).
+            andWhere('usuario_id', parametros.usuarioId).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarMovimientoDevolucionFarmacia", err);
+        callback(err);
+    });
+};
 /**
  * @author German Galvis
  * +Descripcion actualiza todos los productos devueltos
@@ -621,28 +686,6 @@ DocumentoBodegaI012.prototype.restarCantidadFacturaD = function (parametros, tra
  console.log("Error eliminarItem", err);
  callback(err);
  });
- };
- 
- /**
- * @author German Galvis
- * +Descripcion agrega un registro a la tabla inv_bodegas_movimiento_devolucion_farmacia
- * @fecha 2018-02-28
- */
-/*DocumentoBodegaI011.prototype.agregarMovimientoFarmacia = function (parametros, transaccion, callback) {
- var query = G.knex("inv_bodegas_movimiento_devolucion_farmacia").
- insert({farmacia_id: parametros.empresa_envia, empresa_id: parametros.empresa_id, prefijo: parametros.prefijoDocumento,
- numero: parametros.numeracionDocumento, prefijo_doc_farmacia: parametros.prefijo_doc, numero_doc_farmacia: parametros.numero_doc
- });
- 
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- console.log("Error agregarMovimientoFarmacia", err);
- callback(err);
- }).done();
  };
  
  // Crear documento 

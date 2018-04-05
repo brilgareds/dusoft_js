@@ -99,9 +99,10 @@ define(["angular", "js/services"], function (angular, services) {
                             session: parametro.session,
                             data: {
                                 doc_tmp_id: parametro.data.doc_tmp_id,
-//                     listado: parametro.data.listado,
-//                     numero: parametro.data.numero,
-//                     prefijo: parametro.data.prefijo
+                                listado: parametro.data.listado,
+                                numero_doc: parametro.data.numero_doc,
+                                prefijo: parametro.data.prefijo,
+                                tipoDocumento: parametro.data.tipoDocumento,
                             }
                         };
                         Request.realizarRequest(API.I012.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {
@@ -171,25 +172,25 @@ define(["angular", "js/services"], function (angular, services) {
 
                     /*
                      * @Author: German Galvis.
-                     * @fecha 14/02/2018
+                     * @fecha 03/04/2018
                      * +Descripcion: Crea documento Definitivo
                      */
-                    /*self.crearDocumento = function (objs, callback) {
-                     var obj = {
-                     session: objs.session,
-                     data: {
-                     numero_doc: objs.data.ingreso.numero_doc,
-                     prefijo_doc: objs.data.ingreso.prefijo_doc,
-                     empresa_envia: objs.data.ingreso.empresa_envia,
-                     docTmpId: objs.data.ingreso.doc_tmp_id,
-                     datoSeleccion: objs.data.ingreso.datoSeleccion,
-                     usuario_id: objs.data.ingreso.usuario_id
-                     }
-                     };
-                     Request.realizarRequest(API.I011.CREAR_DOCUMENTO, "POST", obj, function (data) {
-                     callback(data);
-                     });
-                     };*/
+                    self.crearDocumento = function (objs, callback) {
+                        var obj = {
+                            session: objs.session,
+                            data: {
+                                tipo_id_tercero: objs.data.tipo_id_tercero,
+                                tercero_id: objs.data.tercero_id,
+                                prefijo_doc_cliente: objs.data.prefijo_doc_cliente,
+                                numero_doc_cliente: objs.data.numero_doc_cliente,
+                                docTmpId: objs.data.ingreso.doc_tmp_id,
+                                usuario_id: objs.data.ingreso.usuario_id
+                            }
+                        };
+                        Request.realizarRequest(API.I012.CREAR_DOCUMENTO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
 
 
                     return this;

@@ -43,17 +43,16 @@ module.exports = function (app, di_container) {
         c_i012.eliminarItem(req, res);
     });
 
-    /*app.post('/api/movBodegas/I011/modificarCantidad', function (req, res) {
-     c_i011.modificarCantidad(req, res);
+    app.post('/api/movBodegas/I012/consultarRetenciones', function (req, res) {
+        c_i012.consultarRetenciones(req, res);
+    });
+
+     app.post('/api/movBodegas/I012/crearDocumento', function (req, res) {
+     c_i012.crearDocumento(req, res);
      });
      
-     
-     app.post('/api/movBodegas/I011/crearDocumento', function (req, res) {
-     c_i011.crearDocumento(req, res);
+     app.post('/api/movBodegas/I012/crearHtmlDocumento', function (req, res) {
+     c_i012.crearHtmlDocumento(req, res);
      });
-     
-     app.post('/api/movBodegas/I011/crearHtmlDocumento', function (req, res) {
-     c_i011.crearHtmlDocumento(req, res);
-     });*/
 
 };

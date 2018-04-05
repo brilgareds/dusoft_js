@@ -18,6 +18,12 @@ define([
             var datos_documento = localStorageService.get("documento_bodega_I012");
             $scope.doc_tmp_id = "00000";
             $scope.tipoDocumento = '';
+            $scope.valorSubTotal = 0;
+            $scope.valorIva = 0;
+            $scope.valorRetFte = 0;
+            $scope.valorRetIca = 0;
+            $scope.valorRetIva = 0;
+            $scope.valorTotal = 0;
             $scope.cliente_seleccionado = [];
             $scope.validarDesdeLink = false;
             $scope.documento_ingreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
@@ -28,7 +34,8 @@ define([
 
             $scope.datos_view = {
                 listado_productos: [],
-                listado_productos_devueltos: []
+                listado_productos_devueltos: [],
+                costoTotal: '2'
             };
 
             /**
@@ -109,7 +116,6 @@ define([
 
             $scope.onBuscarProductosFactura = function () {
                 $scope.tipoDocumento = $scope.documento_ingreso.getFacturaDevolucion().fac_agrupada;
-                console.log("tipo", $scope.tipoDocumento);
                 that.listarProductosFactura();
             };
 
@@ -149,7 +155,7 @@ define([
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var resta = (data.cantidad - data.cantidad_devuelta);
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, data.tipo_producto_id, data.lote,
-                            data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, parseFloat(data.iva).toFixed(2), data.valor_unitario);
+                            data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, parseFloat(data.porc_iva).toFixed(2), parseFloat(data.iva).toFixed(2), data.valor_unitario);
                     producto.setCantidadResta(resta);
                     $scope.datos_view.listado_productos.push(producto);
                 });
@@ -183,7 +189,7 @@ define([
                     {field: 'cantidad_resta', displayName: 'Cantidad', width: "6%", enableCellEdit: false},
                     {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "9%", enableCellEdit: false},
                     {field: 'lote', displayName: 'Lote', width: "7%", enableCellEdit: false},
-                    {field: 'iva', displayName: 'IVA(%)', width: "6%", enableCellEdit: false},
+                    {field: 'porc_iva', displayName: 'IVA(%)', width: "6%", enableCellEdit: false},
                     {field: 'valorU', displayName: 'VLR/U', width: "8%", enableCellEdit: false},
                     {field: 'getCantidadIngresada() | number : "0" ', displayName: 'Cantidad Ingresar', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
@@ -247,14 +253,30 @@ define([
             };
 
             that.renderProductosDevueltos = function (productos) {
+                that.limpiarTotales();
                 $scope.datos_view.listado_productos_devueltos = [];
                 productos.forEach(function (data) {
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
-                            data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, parseFloat(data.iva).toFixed(2), data.valor_unitario);
+                            data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, parseFloat(data.porcentaje_gravamen).toFixed(2), parseFloat(data.iva).toFixed(2), data.valor_unitario);
                     producto.setCostoTotal(data.total_costo);
+                    $scope.valorSubTotal += parseFloat(data.total_costo);
+                    $scope.valorIva += parseFloat(data.iva);
+
+                    if ($scope.valorSubTotal >= $scope.base_rtf) {
+                        $scope.valorRetFte = $scope.valorSubTotal * ($scope.porcentajeRetFte / 100);
+                    }
+                    if ($scope.valorSubTotal >= $scope.base_ica) {
+                        $scope.valorRetIca = $scope.valorSubTotal * ($scope.porcentajeRetIca / 1000);
+                    }
+                    if ($scope.valorSubTotal >= $scope.base_iva) {
+                        $scope.valorRetIva = $scope.valorIva * ($scope.porcentajeRetIva / 100);
+                    }
+
+
                     $scope.datos_view.listado_productos_devueltos.push(producto);
                 });
+                $scope.valorTotal = (((($scope.valorSubTotal + $scope.valorIva) - $scope.valorRetFte) - $scope.valorRetIca) - $scope.valorRetIva);
             };
 
             $scope.lista_productos_devueltos = {
@@ -263,6 +285,7 @@ define([
                 enableRowSelection: false,
                 enableCellSelection: true,
                 enableHighlighting: true,
+                //showFooter: true,
                 showFilter: true,
                 footerTemplate: '   <div class="row col-md-12">\
                                         <div class="">\
@@ -279,12 +302,12 @@ define([
                                                 </thead>\
                                                 <tbody>\
                                                     <tr>\
-                                                        <td class="right">{{valorSubtotal | currency: "$ "}}</td> \
-                                                        <td class="right">{{gravamen | currency: "$ "}}</td> \
+                                                        <td class="right">{{valorSubTotal | currency: "$ "}}</td> \
+                                                        <td class="right">{{valorIva | currency: "$ "}}</td> \
                                                         <td class="right">{{valorRetFte | currency: "$ "}}</td> \
                                                         <td class="right">{{valorRetIca | currency: "$ "}}</td> \
                                                         <td class="right">{{valorRetIva | currency: "$ "}}</td> \
-                                                        <td class="right">{{total | currency: "$ "}}</td> \
+                                                        <td class="right">{{valorTotal | currency: "$ "}}</td> \
                                                     </tr>\
                                                 </tbody>\
                                             </table>\
@@ -311,7 +334,7 @@ define([
                     {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "9%", enableCellEdit: false},
                     {field: 'lote', displayName: 'Lote', width: "7%", enableCellEdit: false},
                     {field: 'cantidad', displayName: 'Cantidad Ingresada', width: "9%", enableCellEdit: false},
-                    {field: 'iva', displayName: 'Gravemen(%)', width: "9%", enableCellEdit: false},
+                    {field: 'porc_iva', displayName: 'Gravemen(%)', width: "9%", enableCellEdit: false},
                     {field: 'costoTotal', displayName: 'Costo', width: "9%", enableCellEdit: false},
                     {width: "9%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
@@ -330,9 +353,9 @@ define([
                     size: 'lg',
                     backdrop: 'static',
                     dialogClass: "modificar_productos",
-                    templateUrl: 'views/I011/ventanaModificacion.html',
+                    templateUrl: 'views/I012/ventanaModificacion.html',
                     scope: $scope,
-                    controller: "ModificarProductoController",
+                    controller: "I012ModificarProductoController",
                     resolve: {
                         fila: function () {
                             return fila;
@@ -378,6 +401,7 @@ define([
                         $scope.doc_tmp_id = data.obj.movimiento_temporal_id;
                         $scope.validarDesdeLink = true;
                         $scope.isTmp();
+                        that.parametrizacionRetencion();
                     }
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -387,8 +411,6 @@ define([
                     }
                 });
             };
-
-
 
             $scope.btn_adicionar_producto = function (fila) {
                 that.guardarProductoTmp(fila);
@@ -410,7 +432,7 @@ define([
                         fechaVencimiento: producto.fecha_vencimiento,
                         lote: producto.lote,
                         item_id: producto.item_id,
-                        gravamen: producto.iva,
+                        gravamen: producto.porc_iva,
                         totalCosto: costo_total,
                         valorU: producto.valorU,
                         totalCostoPedido: costo_total,
@@ -485,7 +507,7 @@ define([
                     tipoDocumento: $scope.tipoDocumento,
                     docTmpId: $scope.doc_tmp_id
                 };
-                
+
                 I012Service.eliminarProductoDevolucion(obj, function (data) {
 
                     if (data.status === 200) {
@@ -546,13 +568,13 @@ define([
                     session: $scope.session,
                     data: {
                         doc_tmp_id: $scope.doc_tmp_id,
-//                        listado: $scope.datos_view.listado_productos_devueltos,
-//                        numero: $scope.documento_ingreso.getDocumentoDevolucion().numero,
-//                        prefijo: $scope.documento_ingreso.getDocumentoDevolucion().prefijo
+                        listado: $scope.datos_view.listado_productos_devueltos,
+                        numero_doc: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
+                        prefijo: $scope.documento_ingreso.getFacturaDevolucion().prefijo,
+                        tipoDocumento: $scope.tipoDocumento
                     }
                 };
-                
-                console.log("obj",obj);
+
                 I012Service.eliminarGetDocTemporal(obj, function (data) {
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -568,53 +590,52 @@ define([
                     }
                 });
             };
-//
-//            /**
-//             * @author German Galvis
-//             * @fecha 2018-02-27
-//             * +Descripcion Metodo encargado de Generar el documento definitivo o 
-//             * una parte del mismo
-//             * parametros: variable
-//             */
-//            $scope.generar_documento = function (dato) {
-//                that.crearDocumento(dato);
-//            };
-//
-//            that.crearDocumento = function (dato) {
-//
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        ingreso: {
-//                            numero_doc: $scope.documento_ingreso.getDocumentoDevolucion().numero,
-//                            prefijo_doc: $scope.documento_ingreso.getDocumentoDevolucion().prefijo,
-//                            empresa_envia: $scope.documento_ingreso.getDocumentoDevolucion().empresa_id,
-//                            doc_tmp_id: $scope.doc_tmp_id,
-//                            datoSeleccion: dato,
-//                            usuario_id: Usuario.getUsuarioActual().getId()
-//                        }
-//                    }
-//                };
-//                I011Service.crearDocumento(obj, function (data) {
-//                    if (data.status === 200) {
-//
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//
-//                        that.borrarVariables();
-//
+
+            $scope.generar_documento = function () {
+                that.crearDocumento();
+            };
+
+            /**
+             * @author German Galvis
+             * @fecha 2018-03-04
+             * +Descripcion Metodo encargado de Generar el documento definitivo
+             */
+            that.crearDocumento = function () {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ingreso: {
+                            tipo_id_tercero: $scope.cliente_seleccionado.tipo_id_tercero,
+                            tercero_id: $scope.cliente_seleccionado.id,
+                            prefijo_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().prefijo,
+                            numero_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
+                            doc_tmp_id: $scope.doc_tmp_id,
+                            usuario_id: Usuario.getUsuarioActual().getId()
+                        }
+                    }
+                };
+                
+                I012Service.crearDocumento(obj, function (data) {
+                    if (data.status === 200) {
+
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                        that.borrarVariables();
+
 //                        var nombre = data.obj.nomb_pdf;
 //                        setTimeout(function () {
 //                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
 //                        }, 0);
-//                    }
-//
-//                    if (data.status === 500) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//
-//                    }
-//                });
-//            };
-//
+                    }
+
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                    }
+                });
+            };
+
             that.borrarVariables = function () {
                 $scope.doc_tmp_id = "00000";
                 $scope.tipoDocumento = '';
@@ -624,6 +645,26 @@ define([
                 $scope.datos_view.listado_productos = [];
                 $scope.datos_view.listado_productos_devueltos = [];
                 $scope.validarDesdeLink = false;
+                that.limpiarTotales();
+                that.limpiarRetenciones();
+            };
+
+            that.limpiarTotales = function () {
+                $scope.valorSubTotal = 0;
+                $scope.valorIva = 0;
+                $scope.valorRetFte = 0;
+                $scope.valorRetIca = 0;
+                $scope.valorRetIva = 0;
+                $scope.valorTotal = 0;
+            };
+
+            that.limpiarRetenciones = function () {
+                $scope.base_rtf = '';
+                $scope.base_ica = '';
+                $scope.base_iva = '';
+                $scope.porcentajeRetFte = '';
+                $scope.porcentajeRetIca = '';
+                $scope.porcentajeRetIva = '';
             };
 
             that.refrescarVista = function () {
@@ -651,22 +692,43 @@ define([
                 }
                 return disabled;
             };
-//
-//            $scope.isGenerarDocumento = function () {
-//                var disabled = false;
-//                if ($scope.datos_view.listado_productos_validados.length > 0 && $scope.datos_view.listado_productos.length === 0) {
-//                    disabled = true;
-//                }
-//                return disabled;
-//            };
-//
-//            $scope.isGenerarParteDocumento = function () {
-//                var disabled = false;
-//                if ($scope.datos_view.listado_productos_validados.length > 0 && $scope.datos_view.listado_productos.length > 0) {
-//                    disabled = true;
-//                }
-//                return disabled;
-//            };
+
+            /**
+             * @author German Galvis
+             * @fecha 2018-04-02
+             * +Descripcion Metodo encargado de invocar el servicio que
+             *              trae los porcentajes de retencion
+             */
+            that.parametrizacionRetencion = function () {
+                var fecha = new Date($scope.documento_ingreso.getFacturaDevolucion().fecha_registro);
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        anio: fecha.getFullYear(),
+                        empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo()
+                    }
+                };
+                Request.realizarRequest(API.I012.CONSULTAR_RETENCIONES, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        that.ParametrizacionRetencion(data.obj.consultarRetenciones);
+                    }
+
+                });
+            };
+
+            that.ParametrizacionRetencion = function (parametros) {
+                $scope.base_rtf = parametros[0].base_rtf;
+                $scope.base_ica = parametros[0].base_ica;
+                $scope.base_iva = parametros[0].base_reteiva;
+                $scope.porcentajeRetFte = parametros[0].porcentaje_rtf;
+                $scope.porcentajeRetIca = parametros[0].porcentaje_ica;
+                $scope.porcentajeRetIva = parametros[0].porcentaje_reteiva;
+
+            };
+
+
 //
 //            if (datos_documento.datosAdicionales !== undefined) {
 //                $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;

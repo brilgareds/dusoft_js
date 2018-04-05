@@ -181,8 +181,9 @@ I012Controller.prototype.newDocTemporal = function (req, res) {
 I012Controller.prototype.eliminarGetDocTemporal = function (req, res) {
     var that = this;
     var args = req.body.data;
-    //var listado = args.listado;
+    var listado = args.listado;
     var usuarioId = req.session.user.usuario_id;
+    var tablaUpdate;
 
 
     if (usuarioId === undefined) {
@@ -194,11 +195,18 @@ I012Controller.prototype.eliminarGetDocTemporal = function (req, res) {
         res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
         return;
     }
+
+    if (args.tipoDocumento === 1) {
+        tablaUpdate = "inv_facturas_agrupadas_despacho_d";
+    } else if (args.tipoDocumento === 0) {
+        tablaUpdate = "inv_facturas_despacho_d";
+    }
+
     var parametros = {
         docTmpId: args.doc_tmp_id,
-//        numero: args.numero,
-//        prefijo: args.prefijo,
-//        cantidad: 0,
+        numero_doc: args.numero_doc,
+        prefijo: args.prefijo,
+        tabla: tablaUpdate,
         usuarioId: usuarioId
     };
 
@@ -209,9 +217,9 @@ I012Controller.prototype.eliminarGetDocTemporal = function (req, res) {
 
             return G.Q.nfcall(that.m_i012.eliminarDocumentoTemporal, parametros, transaccion);
 
-//        }).then(function () {
-//
-//            return G.Q.nfcall(__updateMovimiento, that, listado, parametros, 0, transaccion);
+        }).then(function () {
+
+            return G.Q.nfcall(__updateMovimiento, that, listado, parametros, 0, transaccion);
 
         }).then(function () {
             transaccion.commit();
@@ -385,156 +393,146 @@ I012Controller.prototype.eliminarItem = function (req, res) {
         res.send(G.utils.r(req.url, 'Error al borrar Producto', 500, {}));
     }).done();
 };
+
 /**
  * @author German Galvis
- * +Descripcion modifica la cantida enviada del registro
- * @fecha 2018-02-26
+ * +Descripcion lista las retenciones deacuerdo al año
+ * @fecha 2018-04-02
  */
-/*I011Controller.prototype.modificarCantidad = function (req, res) {
- var that = this;
- var args = req.body.data;
- 
- var parametros = {
- cantidad: args.cantidad,
- movimiento_id: args.item_id
- };
- G.Q.nfcall(that.m_i011.updateMovimientoD, parametros, false).
- then(function (resultado) {
- res.send(G.utils.r(req.url, 'producto modificado correctamente!!!!', 200, {modificarCantidad: resultado}));
- }).
- fail(function (err) {
- res.send(G.utils.r(req.url, 'Error al modificar el producto', 500, {modificarCantidad: {}}));
- }).
- done();
- };
- 
- 
- 
- /**
+I012Controller.prototype.consultarRetenciones = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        anio: args.anio,
+        empresaId: args.empresaId
+    };
+    G.Q.nfcall(that.m_i012.parametrosRetencion, parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar retenciones clientes ok!!!!', 200, {consultarRetenciones: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar retenciones de facturas', 500, {consultarRetenciones: {}}));
+            }).
+            done();
+};
+
+/**
  * @author German Galvis
- * +Descripcion genera el documento definitivo EDB
- * @fecha 2018-02-15
+ * +Descripcion genera el documento definitivo IDC
+ * @fecha 2018-04-03
  */
-/*I011Controller.prototype.crearDocumento = function (req, res) {
- var that = this;
- var args = req.body.data;
- var usuarioId;
- var datoSeleccion = args.datoSeleccion;
- var parametros = {};
- if (args.docTmpId === '') {
- res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
- return;
- }
- if (args.usuario_id === '') {
- usuarioId = req.session.user.usuario_id;
- } else {
- usuarioId = args.usuario_id;
- }
- 
- var docTmpId = args.docTmpId;
- var cabecera = [];
- 
- G.knex.transaction(function (transaccion) {
- G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
- 
- parametros.empresaId = result.empresa_id; //getDoc
- parametros.empresa_id = result.empresa_id; //creacion_documento
- parametros.prefijoDocumento = result.prefijo_documento; //creacion_documento
- parametros.numeracionDocumento = result.numeracion_documento; //creacion_documento
- parametros.numero_doc = args.numero_doc; //creacion_documento
- parametros.prefijo_doc = args.prefijo_doc; //creacion_documento
- parametros.empresa_envia = args.empresa_envia; //creacion_documento
- parametros.docTmpId = args.docTmpId; // eliminarDocumentoTemporal 
- parametros.usuario_id = usuarioId;
- parametros.usuarioId = usuarioId; // eliminarDocumentoTemporal
- 
- return G.Q.nfcall(that.m_i011.agregarMovimientoFarmacia, parametros, transaccion);
- 
- }).then(function () {
- if (datoSeleccion === 0) {
- return G.Q.nfcall(that.m_i011.creacion_documento, parametros, transaccion);
- } else {
- return 0;
- }
- 
- }).then(function (result) {
- return G.Q.nfcall(that.m_i011.eliminarMovimientoDevolucionFarmacia, parametros, transaccion);
- 
- }).then(function (result) {
- if (result >= 1) {
- return G.Q.nfcall(that.m_i011.eliminarDocumentoTemporal_d, parametros, transaccion);
- } else {
- throw 'eliminar_movimiento_devolucion_farmacia_temporal_d Fallo';
- }
- 
- }).then(function (result) {
- 
- if (result >= 1) {
- return G.Q.nfcall(that.m_i011.eliminarDocumentoTemporal, parametros, transaccion);
- } else {
- throw 'eliminar_documento_temporal_d Fallo';
- }
- 
- }).then(function (result) {
- 
- if (result >= 1) {
- transaccion.commit();
- return false;
- } else {
- throw ' Fallo ';
- }
- 
- }).fail(function (err) {
- 
- console.log("Error rollback ", err);
- transaccion.rollback(err);
- 
- }).done();
- 
- }).then(function () {
- return G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros);
- 
- }).then(function (resultado) {
- cabecera = resultado;
- if (resultado.length > 0) {
- return G.Q.nfcall(that.m_i011.consultar_detalle_documento, parametros);
- } else {
- throw 'Consulta sin resultados';
- }
- 
- }).then(function (resultado) {
- var fecha = new Date();
- var formatoFecha = fecha.toFormat('DD-MM-YYYY');
- var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
- var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
- 
- if (resultado.length > 0) {
- 
- cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
- cabecera[0].edb_id = parametros.prefijo_doc + " " + parametros.numero_doc;
- __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
- cabecerae: cabecera[0],
- detalle: resultado,
- impresion: impresion,
- archivoHtml: 'documentoI011.html',
- reporte: "documentoI011"}, function (nombre_pdf) {
- res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
- });
- } else {
- throw 'Consulta consultar_detalle_documento sin resultados';
- }
- 
- }).catch(function (err) {
- console.log("crearDocumento>>>>", err);
- res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
- }).done();
- 
- 
- 
- };
- 
- // imprime el documento desde buscador de documentos
- I011Controller.prototype.crearHtmlDocumento = function (req, res) {
+I012Controller.prototype.crearDocumento = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId;
+    var parametros = {};
+    if (args.docTmpId === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.usuario_id === '') {
+        usuarioId = req.session.user.usuario_id;
+    } else {
+        usuarioId = args.usuario_id;
+    }
+
+    var docTmpId = args.docTmpId;
+    var cabecera = [];
+
+    G.knex.transaction(function (transaccion) {
+        G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
+
+            parametros.empresaId = result.empresa_id; //getDoc
+            parametros.prefijoDocumento = result.prefijo_documento; 
+            parametros.numeracionDocumento = result.numeracion_documento; 
+            parametros.tipo_id_tercero = args.tipo_id_tercero; 
+            parametros.tercero_id = args.tercero_id;
+            parametros.prefijo_doc_cliente = args.prefijo_doc_cliente;
+            parametros.numero_doc_cliente = args.numero_doc_cliente; 
+            parametros.docTmpId = args.docTmpId; 
+            parametros.usuario_id = usuarioId;
+            parametros.usuarioId = usuarioId;         
+
+            return G.Q.nfcall(that.m_i012.agregarMovimientoCliente, parametros, transaccion);
+
+        }).then(function () {
+            return G.Q.nfcall(that.m_i012.eliminarMovimientoDevolucionCliente, parametros, transaccion);
+
+        }).then(function (result) {
+            if (result >= 1) {
+                return G.Q.nfcall(that.m_i012.eliminarDocumentoTemporal_d, parametros, transaccion);
+            } else {
+                throw 'eliminar_movimiento_devolucion_farmacia_temporal_d Fallo';
+            }
+
+        }).then(function (result) {
+
+            if (result >= 1) {
+                return G.Q.nfcall(that.m_i012.eliminarDocumentoTemporal, parametros, transaccion);
+            } else {
+                throw 'eliminar_documento_temporal_d Fallo';
+            }
+
+        }).then(function (result) {
+
+            if (result >= 1) {
+                transaccion.commit();
+                return false;
+            } else {
+                throw ' Fallo ';
+            }
+
+        }).fail(function (err) {
+
+            console.log("Error rollback ", err);
+            transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function () {
+        return G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros);
+
+    }).then(function (resultado) {
+        cabecera = resultado;
+        if (resultado.length > 0) {
+            return G.Q.nfcall(that.m_i011.consultar_detalle_documento, parametros);
+        } else {
+            throw 'Consulta sin resultados';
+        }
+
+//    }).then(function (resultado) {
+//        var fecha = new Date();
+//        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+//        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+//        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+//
+//        if (resultado.length > 0) {
+//
+//            cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
+//            cabecera[0].edb_id = parametros.prefijo_doc + " " + parametros.numero_doc;
+//            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+//                cabecerae: cabecera[0],
+//                detalle: resultado,
+//                impresion: impresion,
+//                archivoHtml: 'documentoI011.html',
+//                reporte: "documentoI011"}, function (nombre_pdf) {
+//                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+//            });
+//        } else {
+//            throw 'Consulta consultar_detalle_documento sin resultados';
+//        }
+
+    }).catch(function (err) {
+        console.log("crearDocumento>>>>", err);
+        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
+    }).done();
+
+
+
+};
+
+// imprime el documento desde buscador de documentos
+/*I011Controller.prototype.crearHtmlDocumento = function (req, res) {
  var that = this;
  var args = req.body.data;
  var cabecera = [];
@@ -647,34 +645,37 @@ I012Controller.prototype.eliminarItem = function (req, res) {
  });
  });
  });
- }
- 
- 
- function __updateMovimiento(that, listado, parametros, index, transaccion, callback) {
- 
- var item = listado[index];
- if (!item) {
- callback(false, 0);
- return;
- }
- 
- parametros.movimiento_id = item.movimiento;
- 
- G.Q.nfcall(that.m_i011.updateAllMovimientoD, parametros, transaccion).then(function (resultado) {
- var timer = setTimeout(function () {
- clearTimeout(timer);
- index++;
- __updateMovimiento(that, listado, parametros, index, transaccion, callback);
- }, 0);
- 
- }).fail(function (err) {
- console.log("error", err);
- callback(err);
- 
- }).done();
- 
- }
- ;*/
+ }*/
+
+
+function __updateMovimiento(that, listado, parametros, index, transaccion, callback) {
+
+    var item = listado[index];
+    if (!item) {
+        callback(false, 0);
+        return;
+    }
+
+    parametros.codigo_producto = item.codigo_producto;
+    parametros.lote = item.lote;
+    parametros.fechaVencimiento = item.fecha_vencimiento;
+    parametros.cantidad = item.cantidad;
+
+    G.Q.nfcall(that.m_i012.restarCantidadFacturaD, parametros, transaccion).then(function (resultado) {
+        var timer = setTimeout(function () {
+            clearTimeout(timer);
+            index++;
+            __updateMovimiento(that, listado, parametros, index, transaccion, callback);
+        }, 0);
+
+    }).fail(function (err) {
+        console.log("error", err);
+        callback(err);
+
+    }).done();
+
+}
+;
 
 
 

@@ -2,7 +2,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
 
     models.factory('ProductoFactura', ["Producto", function (Producto) {
 
-            function ProductoFactura(codigo, nombre, tipoProducto, lote, torre, fecha_vencmiento, cantidad, item_id, iva, valorU, cantidad_ingresada) {
+            function ProductoFactura(codigo, nombre, tipoProducto, lote, torre, fecha_vencmiento, cantidad, item_id, porc_iva, iva, valorU, cantidad_ingresada) {
 
                 Producto.getClass().call(this, codigo, nombre);
 
@@ -11,6 +11,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 this.cantidad = cantidad;
                 this.cantidad_ingresada = cantidad_ingresada || 0;
                 this.item_id = item_id;
+                this.porc_iva = porc_iva || 0;
                 this.iva = iva || 0;
                 this.valorU = valorU;
                 this.fecha_vencimiento = fecha_vencmiento || "";
@@ -19,8 +20,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
 
             ProductoFactura.prototype = Object.create(Producto.getClass().prototype);
 
-            this.get = function (codigo, nombre, tipoProducto, lote, torre, fecha_vencmiento, cantidad, item_id, iva, valorU, cantidad_ingresada) {
-                return new ProductoFactura(codigo, nombre, tipoProducto, lote, torre, fecha_vencmiento, cantidad, item_id, iva, valorU, cantidad_ingresada);
+            this.get = function (codigo, nombre, tipoProducto, lote, torre, fecha_vencmiento, cantidad, item_id, porc_iva, iva, valorU, cantidad_ingresada) {
+                return new ProductoFactura(codigo, nombre, tipoProducto, lote, torre, fecha_vencmiento, cantidad, item_id, porc_iva, iva, valorU, cantidad_ingresada);
             };
 
             ProductoFactura.prototype.setTipoProductoId = function (tipoProducto) {
@@ -69,6 +70,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
 
             ProductoFactura.prototype.getIva = function () {
                 return this.iva;
+            };
+
+            ProductoFactura.prototype.set_porc_iva = function (porc_iva) {
+                this.porc_iva = porc_iva;
+            };
+
+            ProductoFactura.prototype.get_porc_iva = function () {
+                return this.porc_iva;
             };
 
             ProductoFactura.prototype.setValorU = function (valorU) {

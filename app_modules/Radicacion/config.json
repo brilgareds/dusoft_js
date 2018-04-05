@@ -21,7 +21,11 @@
                 }
             }],
         "events": [{
-                
+                    "radicacion_events": {
+                    "module": "Radicacion",
+                    "event": "RadicacionEvents",
+                    "alias": "e_radicacion"
+                }
             }],
         "cronJobs": []
     }

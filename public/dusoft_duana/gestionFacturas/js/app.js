@@ -1,6 +1,7 @@
 //main app module
 define(["angular",
     "route",
+    "socketservice",
     "bootstrap",
     "bootstrapLib",
     "js/controllers",
@@ -9,12 +10,17 @@ define(["angular",
     "models/ErrorLog",
     "models/Version",
     "nggrid",
+    'storage',
+    "httpinterceptor",
+    "dragndropfile",
     "js/directive",
-    "controllers/gestionFacturas/radicacionController",
+    "controllers/gestionFacturas/RadicacionController",
+    "includes/validation/ValidacionNumeroDecimal",
     "includes/menu/menucontroller",
     "url",
     "includes/header/HeaderController",
     "loader",
+    "dragndropfile",
     "includes/alert/Alert",
     "httpinterceptor",
     "storage",
@@ -35,6 +41,7 @@ define(["angular",
         'ui.bootstrap',
         'ngGrid',
         'Url',
+        'flow',
         'services',
         'LocalStorageModule',
         'ui.select',
@@ -68,9 +75,9 @@ define(["angular",
                 gestionFacturas.stateProvider
                 .state('Gestionfacturas', {
                     url: "/Gestionfacturas",
-                    text: "radicacion",
+                    text: "Gestion Facturas",
                     templateUrl: "views/gestionFacturas/radicacion.html",
-                    controller: "radicacionController"
+                    controller: "RadicacionController"
                 });
 
                 if ($location.path() === "") {

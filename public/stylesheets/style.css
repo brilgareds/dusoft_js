@@ -657,6 +657,10 @@ a{
     width:50%;
     height:200%;
 }
+.app-modal-window-ls-xlg-ls .modal-dialog{
+    width:60%;
+    height:50%;
+}
 
 .gridStylea {
     border: 1px solid rgb(212,212,212);

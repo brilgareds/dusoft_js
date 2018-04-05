@@ -13,10 +13,32 @@ define(["angular"], function (angular) {
 
                 'GUARDAR_FACTURA': BASE_URL + "/Radicacion/guardarFactura",
                 
-                'SUBIR_ARCHIVO': BASE_URL + "/Radicacion/subirArchivo"
-            },
-            'BODEGAS': {
-                'LISTAR_BODEGA_DUANA_FARMACIA': BASE_URL + "/Bodegas/listar_bodegas_duana_farmacias"
+                'MODIFICAR_FACTURA': BASE_URL + "/Radicacion/modificarFactura",
+                
+                'SUBIR_ARCHIVO': BASE_URL + "/Radicacion/subirArchivo",
+                
+                'SUBIR_ARCHIVO_FACTURA': BASE_URL + "/Radicacion/subirArchivoFactura",
+                
+                'AGRUPAR_FACTURA': BASE_URL + "/Radicacion/agruparFactura",         
+                
+                'LISTAR_AGRUPAR': BASE_URL + "/Radicacion/listarAgrupar",
+                
+                'MODIFICAR_ENTREGADO': BASE_URL + "/Radicacion/modificarEntregado",
+                
+                'ELIMINAR_GRUPO_FACTURA':BASE_URL + "/Radicacion/eliminarGrupoFactura",
+                
+                'LISTAR_FACTURA_ENTREGADO' :BASE_URL + "/Radicacion/listarFacturaEntregado",
+                
+                'AGREGAR_FACTURA_ENTREGADO' :BASE_URL + "/Radicacion/agregarFacturaEntregado",
+                
+                'PLANILLA_RADICACION' :BASE_URL + "/Radicacion/planillaRadicacion",
+                
+                'MODIFICAR_NOMBRE_ARCHIVO' :BASE_URL + "/Radicacion/modificarNombreArchivo"               
+                
+               
+            },  
+            'PARAMETRIZACION': {
+                'LISTAR_MUNICIPIO': BASE_URL + "/Ciudades/listar"
             }
 
         }

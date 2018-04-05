@@ -62,4 +62,82 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.07', 'DOCUMENTOS BODEGA', 'Se agregan varios clientes para las remisiones de Dumian');
 COMMIT TRANSACTION;
-
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.08  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.08', 'DOCUMENTOS BODEGA', 'Se crea cliente uci mario correa Los chorros');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.09  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.09', 'DOCUMENTOS BODEGA', 'Se crea cliente uci mario correa Los chorros');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.10  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.10', 'DOCUMENTOS BODEGA', 'Se crea modulo actas tecnicas');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.11  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.11', 'DISPENSACION HC', 'se modifica el servidor de dispensacion para que no se modifque la fecha de pendiente');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.12  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.12', 'DOCUMENTOS BODEGA', 'se agrega cliente para dumian 800088098');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.13  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.13', 'DOCUMENTOS BODEGA', 'se crean los documentos: I011  E009');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.14  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.14', 'PEDIDOS', 'se comenta siguiente linea, porque cuando hay mas de un despacho se esta restando la reserva del pedido X a la disponibilidad del mismo pedido y por el contrario se debe obviar');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.15  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.15', 'PEDIDOS', 'se agrega el tercero 800088098 a remision dumian');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.16  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.16', 'DOCUMENTOS BODEGA', 'se agrega tipo de producto (Gerencia)');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.17  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.17', 'DOCUMENTOS BODEGA', 'se agrega tipo de producto (Gerencia)');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.18  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.18', 'DOCUMENTOS BODEGA', 'se modifica el reporte (tamanio letra)');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.19  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.19', 'FACTURACION PROVEEDORES', 'se modifica eliminando el update a actas tecnica ya que donde se ubico el update no deberia ir porque en la funcion ingresarFactura no se cre
+a el prefijo y el numero se modifica eliminando el update a actas tecnica ya que donde se ubico el update no deberia ir porque en la funcion ingresarFactura no se crea el prefijo ni el numero');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.20  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.20', 'DOCUMENTOS BODEGA', 'se corrige la modificacion de existencias en bodega y en lotes_fv al realizar devoluciones (EDB)');
+COMMIT TRANSACTION;

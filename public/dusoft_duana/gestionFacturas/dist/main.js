@@ -42945,11 +42945,11 @@ define('includes/classes/Empresa',["angular", "js/models"], function(angular, mo
 
 /* global entregado, si, $flow, that, $http, echo, subirArchivo, flow, data, modalInstancesy, form, backdrop, parametros, parametros, parametros, archivo */
 
-define('controllers/gestionFacturas/radicacionController',["angular", "js/controllers", 'includes/slide/slideContent',
+define('controllers/gestionFacturas/RadicacionController',["angular", "js/controllers", 'includes/slide/slideContent',
     "includes/classes/Empresa",
 ], function (angular, controllers) {
 
-    controllers.controller('radicacionController', [
+    controllers.controller('RadicacionController', [
         '$scope', '$rootScope', "Request",
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
@@ -54003,7 +54003,7 @@ define('app',["angular",
     "httpinterceptor",
     "dragndropfile",
     "js/directive",
-    "controllers/gestionFacturas/radicacionController",
+    "controllers/gestionFacturas/RadicacionController",
     "includes/validation/ValidacionNumeroDecimal",
     "includes/menu/menucontroller",
     "url",

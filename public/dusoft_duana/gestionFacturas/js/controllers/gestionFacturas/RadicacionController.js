@@ -5,7 +5,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
     "includes/classes/Empresa",
 ], function (angular, controllers) {
 
-    controllers.controller('radicacionController', [
+    controllers.controller('RadicacionController', [
         '$scope', '$rootScope', "Request",
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',

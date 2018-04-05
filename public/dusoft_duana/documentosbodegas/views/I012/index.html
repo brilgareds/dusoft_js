@@ -21,7 +21,7 @@
                                     <div class="">
                                         <div class="col-md-3">
                                             <p class="input-group">
-                                                <button  type="button" class="btn btn-info btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_cliente()" ng-click="btn_seleccionar_cliente()">
+                                                <button  type="button" class="btn btn-info btn-medium pull-right ng-scope" ng-disabled="validarDesdeLink" ng-click="btn_seleccionar_cliente()">
                                                     <span class="glyphicon glyphicon-plus"></span> Buscar Cliente
                                                 </button>
                                             </p>
@@ -33,12 +33,12 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
-                            <fieldset>
-                            <legend>Cliente Seleccionado</legend>
-                        <h4 class=""><strong>{{cliente_seleccionado}}</strong></h4>
-                        </fieldset>
-                    </div>
-                    </div>
+                                <fieldset>
+                                    <legend>Cliente Seleccionado</legend>
+                                    <h4 class=""><strong>{{cliente_seleccionado.nombre_tercero}}</strong></h4>
+                                </fieldset>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4">
@@ -46,10 +46,10 @@
                                 <legend>Factura</legend> 
                                 <div class="row">
                                     <div class="col-md-7">                                          
-                                        <ui-select ng-change="onBuscarProductosDevoluciones()" ng-model="documento_ingreso.documentoDevolucion" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
-                                            <ui-select-match  placeholder="Seleccionar Documento">{{ $select.selected.numero}}</ui-select-match>
-                                            <ui-select-choices repeat="doc in docDevoluciones | filter:$select.search">
-                                                {{ doc.prefijo}}-{{ doc.numero}}
+                                        <ui-select ng-change="onBuscarProductosFactura()" ng-model="documento_ingreso.facturaDevolucion" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
+                                            <ui-select-match  placeholder="Seleccionar Factura">{{ $select.selected.prefijo}}-{{ $select.selected.factura_fiscal}}</ui-select-match>
+                                            <ui-select-choices repeat="factura in facturasCliente | filter:$select.search">
+                                                {{ factura.prefijo}}-{{ factura.factura_fiscal}}
                                             </ui-select-choices>
                                         </ui-select>
                                     </div>
@@ -62,36 +62,36 @@
                                 <legend>Observación</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">
-                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='documento_ingreso.observacion' name="" placeholder="Ingresar Observación"></textarea>
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='documento_ingreso.observacion' name="" placeholder="Ingresar Observación" ng-disabled="validarDesdeLink"></textarea>
                                     </div>
                                 </div>
                             </fieldset>
                         </div>
                     </div>
-
+                    <br>
+                    <br>
+                    <hr></hr>                            
+                    <br>
                     <div class="row">  
                         <div class="col-md-12">
 
-                            <tabset>
-                                <tab >
-                                    <tab-heading>
-                                        Productos a Devolver
-                                    </tab-heading>
-                                    <br>
+                            <div class="row"> 
+                                <legend>Productos de la Factura</legend>
+                                <div class="col-md-12">
                                     <div class="table-responsive" style="margin-top:3px;" >
-                                        <div  style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_ingreso" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav > </div>
+                                        <div  style="height: 300px" class="defaultGrid grid-responsive" ng-grid="lista_productos_factura" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav > </div>
                                     </div>
-                                </tab>                                                        
-                            </tabset>
+                                </div>
+                            </div>
                             <br>
                             <br>
                             <hr></hr>                            
                             <br>
                             <div class="row"> 
-                                <legend>Productos Validados</legend>
+                                <legend>Productos Devueltos</legend>
                                 <div class="col-md-12">
                                     <div class="table-responsive" style="margin-top:3px;" > 
-                                        <div style="height: 300px" class="defaultGrid grid-responsive" ng-grid="lista_productos_validados"> </div> 
+                                        <div style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_devueltos"> </div> 
                                     </div>  
                                 </div>
                             </div>
@@ -99,7 +99,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div ng-if="true" class="modal-footer col-md-12" >
-                                            <button ng-hide="isNoTmp()" class="btn btn-primary" ng-click="grabar_documento()">
+                                            <button ng-hide="isNoTmp()" class="btn btn-primary" ng-click="grabar_documento_tmp()">
                                                 <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
                                             </button>
                                             <button  class="btn btn-default" ng-click="cancelar_documento()">
@@ -117,12 +117,9 @@
                                     <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
                                         <span class="glyphicon glyphicon-trash" ></span> Eliminar
                                     </button>
-                                    <button ng-hide="!isGenerarDocumento()"  class="btn btn-success" ng-click="generar_documento(0)" >
+                                    <button class="btn btn-success" ng-click="generar_documento()" >
                                         <span class="glyphicon glyphicon-ok" ></span> Crear Documento
-                                    </button>                                 
-                                    <button ng-hide="!isGenerarParteDocumento()"  class="btn btn-default" ng-click="generar_documento(1)" >
-                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento
-                                    </button>                                 
+                                    </button>
                                 </div>  
                             </div>
                         </div>

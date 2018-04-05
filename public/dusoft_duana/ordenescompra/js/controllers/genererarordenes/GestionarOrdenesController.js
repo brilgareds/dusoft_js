@@ -803,7 +803,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     // Solo Subir Plano
                     $scope.opciones_archivo.opts.query.data = JSON.stringify({
                         ordenes_compras: {
-                            //empresa_id: '03',
+                            //empresa_id: '03'
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             numero_orden: $scope.numero_orden,
                             codigo_proveedor_id: $scope.codigo_proveedor_id.get_codigo_proveedor()
@@ -818,6 +818,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     that.set_orden_compra();
 
                     that.insertar_cabercera_orden_compra(function(continuar) {
+
+
 
                         if (continuar) {
 
@@ -857,7 +859,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         $scope.buscar_detalle_orden_compra();
 
-                        $scope.activar_tab.tab_productos = true;
+                        $sc$scope.progresoArchivo = 0;ope.activar_tab.tab_productos = true;
                         $scope.progresoArchivo = 0;
                         $scope.productos_validos = data.obj.ordenes_compras.productos_validos;
                         $scope.productos_invalidos = data.obj.ordenes_compras.productos_invalidos;

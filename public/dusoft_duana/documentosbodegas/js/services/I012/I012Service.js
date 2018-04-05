@@ -179,11 +179,13 @@ define(["angular", "js/services"], function (angular, services) {
                         var obj = {
                             session: objs.session,
                             data: {
-                                tipo_id_tercero: objs.data.tipo_id_tercero,
-                                tercero_id: objs.data.tercero_id,
-                                prefijo_doc_cliente: objs.data.prefijo_doc_cliente,
-                                numero_doc_cliente: objs.data.numero_doc_cliente,
+                                tipo_id_tercero: objs.data.ingreso.tipo_id_tercero,
+                                tercero_id: objs.data.ingreso.tercero_id,
+                                nombreTercero: objs.data.ingreso.nombre_tercero,
+                                prefijo_doc_cliente: objs.data.ingreso.prefijo_doc_cliente,
+                                numero_doc_cliente: objs.data.ingreso.numero_doc_cliente,
                                 docTmpId: objs.data.ingreso.doc_tmp_id,
+                                valorTotalFactura: objs.data.ingreso.valor_total_factura,
                                 usuario_id: objs.data.ingreso.usuario_id
                             }
                         };

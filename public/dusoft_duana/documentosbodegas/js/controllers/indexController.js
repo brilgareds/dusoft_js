@@ -258,7 +258,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.ocultarAutorizacion = function (documento) {
                 var disabled = false;
 
-                if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009") {
+                if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012") {
                     disabled = true;
                 }
                 return disabled;
@@ -288,6 +288,17 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 } else if (documentos.tipo_movimiento === "I011") {
 
                     Request.realizarRequest(API.I011.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "I012") {
+
+                    Request.realizarRequest(API.I012.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
                         }

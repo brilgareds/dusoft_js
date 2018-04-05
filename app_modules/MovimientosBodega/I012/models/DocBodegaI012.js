@@ -497,9 +497,6 @@ DocumentoBodegaI012.prototype.restarCantidadFacturaD = function (parametros, tra
     if (transaccion)
         query.transacting(transaccion);
 
-    console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));
-
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -573,161 +570,20 @@ DocumentoBodegaI012.prototype.eliminarMovimientoDevolucionCliente = function (pa
         callback(err);
     });
 };
-/**
- * @author German Galvis
- * +Descripcion actualiza todos los productos devueltos
- * @fecha 2018-02-27
- */
-/*DocumentoBodegaI011.prototype.updateAllMovimientoD = function (parametros, transaccion, callback) {
- var query = G.knex("inv_bodegas_movimiento_d")
- .where('movimiento_id', parametros.movimiento_id)
- .update('cantidad_recibida', parametros.cantidad);
- 
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- callback(err);
- }).done();
- 
- };
- 
- /**
- * @author German Galvis
- * +Descripcion agrega productos al documento temporal
- * @fecha 2018-02-15
- */
-/*DocumentoBodegaI011.prototype.agregarDocumentoVerificacionTmp = function (parametros, transaccion, callback) {
- var query = G.knex("inv_documento_verificacion_tmp").
- insert({farmacia_id: parametros.empresa_envia, prefijo: parametros.prefijo, numero: parametros.numero,
- empresa_id: parametros.empresaId, centro_utilidad: parametros.centroUtilidad, bodega: parametros.bodega,
- doc_tmp_id: parametros.doc_tmp_id, usuario_id: parametros.usuarioId
- });
- 
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- console.log("Error agregarDocumentoVerificacionTmp", err);
- callback(err);
- }).done();
- };
- 
- /**
- * @author German Galvis
- * +Descripcion agrega productos al documento temporal
- * @fecha 2018-02-23
- */
-/*DocumentoBodegaI011.prototype.agregarDocumentoVerificacionTmpD = function (parametros, transaccion, callback) {
- var query = G.knex("inv_documento_verificacion_tmp_d").
- insert({farmacia_id: parametros.empresa_envia, prefijo: parametros.prefijo, numero: parametros.numero,
- item_id: parametros.item_id, codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId,
- usuario_id: parametros.usuarioId, lote: parametros.lote, fecha_vencimiento: parametros.fechaVencimiento,
- cantidad: parametros.cantidad, novedad_devolucion_id: parametros.novedad_id, novedad_anexa: parametros.novedad_anexa
- });
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- console.log("Error agregarDocumentoVerificacionTmpD", err);
- callback(err);
- }).done();
- };
- 
- /**
- * @author German Galvis
- * +Descripcion agrega un registro a la tabla inv_bodegas_movimiento_tmp_devolucion_farmacia_producto
- * @fecha 2018-02-21
- */
-/*DocumentoBodegaI011.prototype.agregarMovimientoDevolucionFarmaciaTmpD = function (parametros, transaccion, callback) {
- var query = G.knex("inv_bodegas_movimiento_tmp_devolucion_farmacia_productos").
- insert({movimiento_id: parametros.movimiento_id, doc_tmp_id: parametros.docTmpId, lote: parametros.lote,
- codigo_producto: parametros.codigoProducto, usuario_id: parametros.usuarioId, fecha_vencimiento: parametros.fechaVencimiento,
- cantidad: parametros.cantidad
- });
- 
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- console.log("Error agregarMovimientoDevolucionFarmaciaTmpD", err);
- callback(err);
- }).done();
- };
- 
- 
- /**
- * @author German Galvis
- * +Descripcion elimina el item seleccionado del documento parcial
- * @fecha 2018-02-14
- */
-/*DocumentoBodegaI011.prototype.eliminarItemMovimientoDevolucionFarmacia = function (parametros, transaccion, callback) {
- var query = G.knex("inv_bodegas_movimiento_tmp_devolucion_farmacia_productos").
- where('doc_tmp_id', parametros.docTmpId).
- andWhere('usuario_id', parametros.usuarioId).
- andWhere('movimiento_id', parametros.movimiento_id).
- andWhere('lote', parametros.lote).
- del();
- 
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- console.log("Error eliminarItem", err);
- callback(err);
- });
- };
- 
- // Crear documento 
- DocumentoBodegaI011.prototype.creacion_documento = function (parametros, transaccion, callback) {
- 
- // Ingresar Cabecera Documento temporal
- __ingresar_documento_verificacion(parametros, transaccion, function (err, result) {
- 
- console.log('=============== __ingresar_documento_verificacion ========================');
- console.log(err, result);
- console.log('=====================================================================');
- 
- if (err) {
- callback(err);
- return;
- }
- 
- // Ingresar Detalle Documento temporal
- __ingresar_detalle_documento_verificacion(parametros, transaccion, function (err, result) {
- 
- if (err) {
- callback(err);
- return;
- }
- callback(err, result);
- 
- });
- });
- };
- 
+
  /**
  * @author German Galvis
  * +Descripcion consulta los productos pertenecientes al documento a imprimir
- * @fecha 2018-03-08
+ * @fecha 05/04/2018
  */
-/*DocumentoBodegaI011.prototype.consultar_detalle_documento = function (parametro, callback) {
+DocumentoBodegaI012.prototype.consultar_detalle_documento = function (parametro, callback) {
  var columnas = [
  "a.codigo_producto",
  "a.lote",
  G.knex.raw("\"a\".\"cantidad\"::integer"),
  G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
  G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre"),
+ "a.valor_unitario",
  "param.torre"
  ];
  
@@ -735,7 +591,7 @@ DocumentoBodegaI012.prototype.eliminarMovimientoDevolucionCliente = function (pa
  .from('inv_bodegas_movimiento_d  AS a')
  .innerJoin("inventarios_productos  AS b ", "a.codigo_producto", "b.codigo_producto")
  .leftJoin("param_torreproducto AS param", "param.codigo_producto", "a.codigo_producto")
- .where('a.empresa_id', parametro.empresa_id)
+ .where('a.empresa_id', parametro.empresaId)
  .andWhere("a.prefijo", parametro.prefijoDocumento)
  .andWhere("a.numero", parametro.numeracionDocumento)
  .orderBy('param.torre', 'asc');
@@ -752,80 +608,4 @@ DocumentoBodegaI012.prototype.eliminarMovimientoDevolucionCliente = function (pa
  * 
  * ==================================================================================================================================================================*/
 
-// Ingresar cabecera documento verificacion
-/*function __ingresar_documento_verificacion(parametros, transaccion, callback) {
- var query = G.knex("inv_documento_verificacion").
- insert({farmacia_id: parametros.empresa_envia, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento,
- empresa_id: parametros.empresa_id, prefijo_doc_farmacia: parametros.prefijo_doc, numero_doc_farmacia: parametros.numero_doc,
- usuario_id: parametros.usuarioId
- });
- if (transaccion)
- query.transacting(transaccion);
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- console.log("Error __ingresar_documento_verificacion", err);
- callback(err);
- }).done();
- }
- ;
- 
- // Ingresar detalle documento verificacion
- function __ingresar_detalle_documento_verificacion(parametros, transaccion, callback) {
- 
- var columnasConsulta = [
- "a.farmacia_id",
- "a.prefijo",
- "a.numero",
- G.knex.raw("'"+ parametros.empresa_id + "' AS empresa_id"),
- G.knex.raw("'"+ parametros.prefijoDocumento + "' AS prefijo"),
- G.knex.raw("'"+ parametros.numeracionDocumento + "' AS numeracion"),
- "a.codigo_producto",
- "a.lote",
- "a.fecha_vencimiento",
- "a.cantidad",
- "a.novedad_devolucion_id",
- "a.novedad_anexa",
- "b.cantidad_recibida"
- ];
- 
- var columnasInsert = [
- "farmacia_id",
- "prefijo_doc_farmacia",
- "numero_doc_farmacia",
- "empresa_id",
- "prefijo",
- "numero",
- "codigo_producto",
- "lote",
- "fecha_vencimiento",
- "cantidad",
- "novedad_devolucion_id",
- "novedad_anexa",
- "cantidad_enviada"
- ];
- 
- var sqlSelect = G.knex.select(columnasConsulta)
- .from('inv_documento_verificacion_tmp_d as a')
- .innerJoin("inv_bodegas_movimiento_d as b", function () {
- this.on("b.prefijo",G.knex.raw("'"+ parametros.prefijoDocumento + "'"))
- .on("b.numero", parametros.numeracionDocumento)
- .on("b.codigo_producto", "a.codigo_producto")
- })
- .where('a.doc_tmp_id', parametros.docTmpId)
- .andWhere("a.usuario_id", parametros.usuarioId);
- 
- var query = G.knex().
- insert(sqlSelect).into(G.knex.raw("inv_documento_verificacion_d ("+columnasInsert+")"));
- 
- if (transaccion)
- query.transacting(transaccion);
- 
- query.then(function (resultado) {
- callback(false, resultado.rows, resultado);
- }).catch(function (err) {
- callback(err);
- });
- }
- ;*/
 module.exports = DocumentoBodegaI012;

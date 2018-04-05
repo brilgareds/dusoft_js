@@ -34,8 +34,7 @@ define([
 
             $scope.datos_view = {
                 listado_productos: [],
-                listado_productos_devueltos: [],
-                costoTotal: '2'
+                listado_productos_devueltos: []
             };
 
             /**
@@ -344,7 +343,7 @@ define([
             };
 
             that.init(function () {
-                console.log("hola");
+//                console.log("hola");
             });
 
             //  Abre slider para gestionar productos
@@ -608,14 +607,16 @@ define([
                         ingreso: {
                             tipo_id_tercero: $scope.cliente_seleccionado.tipo_id_tercero,
                             tercero_id: $scope.cliente_seleccionado.id,
+                            nombre_tercero: $scope.cliente_seleccionado.nombre_tercero,
                             prefijo_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().prefijo,
                             numero_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
                             doc_tmp_id: $scope.doc_tmp_id,
+                            valor_total_factura: $scope.valorTotal,
                             usuario_id: Usuario.getUsuarioActual().getId()
                         }
                     }
                 };
-                
+        
                 I012Service.crearDocumento(obj, function (data) {
                     if (data.status === 200) {
 
@@ -623,10 +624,10 @@ define([
 
                         that.borrarVariables();
 
-//                        var nombre = data.obj.nomb_pdf;
-//                        setTimeout(function () {
-//                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-//                        }, 0);
+                        var nombre = data.obj.nomb_pdf;
+                        setTimeout(function () {
+                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                        }, 0);
                     }
 
                     if (data.status === 500) {

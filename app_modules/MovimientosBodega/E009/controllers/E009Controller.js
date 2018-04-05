@@ -560,7 +560,7 @@ function __validarExistencias(that, index, parametrosListado, transaccion, callb
 
         resta = (resultado[0].existencia_actual - producto.cantidad);
 
-        if (resta >= 1) {
+        if (resta >= 0) {
             resta = 0;
             return  G.Q.nfcall(that.m_e009.actualizarExistenciasBodegas, producto, parametrosListado.ids, transaccion);
         } else {
@@ -572,7 +572,7 @@ function __validarExistencias(that, index, parametrosListado, transaccion, callb
 
         resta = (resultado[0].existencia - producto.cantidad);
 
-        if (resta >= 1) {
+        if (resta >= 0) {
             return resultado[0];
         } else {
             throw 'Error al actualizar las existencias de bodega por que no pueden ser menores a 0 para el lote: ' + producto.lote

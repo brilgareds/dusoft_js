@@ -141,3 +141,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.20', 'DOCUMENTOS BODEGA', 'se corrige la modificacion de existencias en bodega y en lotes_fv al realizar devoluciones (EDB)');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.21  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.21', 'RADICACIÓN', 'se crea modulo de radicacion de facturas de sistemas');
+COMMIT TRANSACTION;

@@ -1,0 +1,106 @@
+
+
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <style>
+            table, tr, th, td {
+                font-family: sans_serif, Verdana, helvetica, Arial;
+                color: #000545;
+                font-size: 10px;
+                border-collapse :collapse;
+                border-width: thin;
+            }
+
+            td{
+                height: 11px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <table style="width:100%; margin-top: 11em;">
+
+            <tr>
+                <td rowspan=2 style="border: black 1px solid; width: 10px !important;"> <img src="{{:serverUrl}}images/logo.png"></td>
+
+
+                <td align="center" colspan='5' style="border: black 1px solid;"> GESTION FINANCIERA Y CONTABLE</td>        
+                <td align="center" style="border: black 1px solid;">GFC-FT-09 <br>VERSION 1</td>          
+            </tr>
+            <tr>
+                <td align="center" colspan='5' style="border: black 1px solid;"> PLANILLA RADICACION CUENTAS DE GIRO DIARIO</td> 
+                <td align="center" style="border: black 1px solid;">PAGINA 1 de<br>1</td>                         
+            </tr>
+        </table>
+        <br>
+        
+        <table style="width:100%">
+            <tr>
+                <td align="lefth" style="border: black 1px solid;"> FECHA ELABORACION: {{:fecha}}</td>
+            </tr>  
+        </table>
+        <br>
+        
+        <table style="width:100%">
+            <tr>
+                <th style=" border: 1px solid;" colspan='3'></th>
+                <th style=" border: 1px solid;" colspan='2'>FECHA FACTURA</th>
+                <th style=" border: 1px solid;" rowspan=2>CONCEPTO</th>
+                <th style=" border: 1px solid;" rowspan=2>DESCUENTO <br> POR PRONTO<br> PAGO</th> 
+                <th style=" border: 1px solid;" rowspan=2><h5>VALOR</h5></th>
+            </tr>
+            <tr>
+                <th style=" border: 1px solid;">No.</th>
+                <th style=" border: 1px solid;">PROVEEDOR</th> 
+                <th style=" border: 1px solid;">No. FACTURA</th>
+                <th style=" border: 1px solid;">GENERADA</th> 
+                <th style=" border: 1px solid;">VENCIMIENTO</th>
+            </tr>
+
+            {{for listado}}
+            <tr>
+                <td align="center" style="border: black 1px solid;">{{:~count(precio)}}</td>
+                <td width="30%" align="center" style="border: black 1px solid;">{{:observacion}}</td>
+                <td width="8%" align="center" style="border: black 1px solid;">{{:numero_factura}}</td>
+                <td width="8%" align="center" style="border: black 1px solid;">{{:fecha_entrega}}</td>
+                <td width="8%" align="center" style="border: black 1px solid;">{{:fecha_vencimiento}}</td>
+                <td width="16%" align="center" style="border: black 1px solid;">{{:descripcion}}</td>
+                <td width="10%" align="center" style="border: black 1px solid;"></td>
+                <td width="10%" align="center" style="border: black 1px solid;"> {{:~formatMoney(precio)}}</td>
+
+            </tr>
+            {{/for}}
+            <tr  >
+                <td colspan="8" style="height:25px;">&nbsp;</td>
+            </tr>
+        </table>
+<!--        <br>
+        <div >
+            <hr>-->
+            <table style="width:100%; border: 1px solid;"   >
+                <tr >
+                    <th> ELABORO(AREA)</th>
+                    <th> CONTABILIDAD</th>
+                    <th>CONTROL INTERNO</th>
+                    <th> ADMINISTRACION</th>
+                    <th> TESORERIA </th>
+                    <th> T.HUMANO</th>
+                </tr>
+
+                <tr>
+                    <td colspan="6" align="right " style="height: 35px; vertical-align: bottom; padding-right: 100px" > FECHA VIGENCIA: SEPTIEMBRE 22 DE 2.006</td>
+                </tr> 
+            </table>
+        <!--</div>-->
+
+
+
+        
+    </body>
+</html>

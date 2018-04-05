@@ -2,29 +2,28 @@
     <div class="col-sm-12 col-md-12">
         <div class="panel panel-info ">
             <div class="panel-heading">
-                <h4 class="h4MarginTopBottom"><span >Conceptos</span></h4>
+                <h4 class="h4MarginTopBottom"><span >Prooveedor</span></h4>
             </div>
-            <br>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="col-md-6">
-                        <label class="col-md-12  control-label">Nombre Concepto</label>   
-                    </div>
-                    <div class="col-md-6 pull-left">
-                        <input
-                            type="text"
-                            class="form-control"
-                            ng-model="root.nombreConcepto"
-                            name="" id="" />
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="col-md-6">
+                            <label class="col-md-12  control-label">Nombre Proveedor</label>   
+                        </div>
+                        <div class="col-md-6 pull-left">
+                            <input
+                                type="text"
+                                class="form-control"
+                                ng-model="root.nombreConcepto"
+                                name="" id="" />
+                        </div>
                     </div>
                 </div>
             </div>
-            <br>
-            <br>
-         </div>
+        </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-warning" ng-click="cerrar()">Cerrar</button>
-            <button type="button" class="btn btn-primary" ng-click="guardarConcepto()">Guardar</button>
+            <button type="button" class="btn btn-primary btn-md" ng-click="cerrar()">Cerrar</button>
+            <button type="button" class="btn btn-success btn-md" ng-click="guardarConcepto()">Guardar</button>
         </div>
     </div>
 </div> 

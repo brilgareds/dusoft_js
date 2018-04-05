@@ -4,18 +4,29 @@ define(["angular", "js/controllers"], function (angular, controllers) {
     controllers.controller('I012GestionarClientesController', [
         '$scope', '$rootScope', 'Request',
         '$modal', '$modalInstance', 'API', "socket", "$timeout", "$filter", "Usuario",
-        "AlertService", "localStorageService", "$state", 'I012Service', "DocumentoDevolucion", "ProductoDevolucion",
+        "AlertService", "$state", 'I012Service',
+        'Usuario',
+        "Clientes",
+        'tipoTerceros',
         function ($scope, $rootScope, Request, $modal, $modalInstance, API, socket, $timeout, $filter, Sesion,
-                AlertService, localStorageService, $state, I012Service, Documento, Producto) {
+                AlertService, $state, I012Service, Usuario, Clientes, tipTer) {
 
             var that = this;
             $scope.parametros = '';
+            $scope.paginaactual = 1;
             $scope.tipoProducto;
+            $scope.tipoTercero = tipTer;
             $scope.root = {
+                termino_busqueda: '',
+                cantidad_consulta: 0
+            };
+
+            $scope.datos_form = {
+                listado_clientes: []
             };
 
             $scope.onCerrar = function () {
-                $modalInstance.close();
+                $modalInstance.close(null);
             };
 
             $scope.root.filtros = [
@@ -23,115 +34,122 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {tipo: 'Nombre', descripcion: "Nombre"}
             ];
 
+            $scope.root.filtro = $scope.root.filtros[0];
+
+
             /**
-             * +Descripcion Metodo encargado de invocar el servicio que listara 
-             *              los tipos de terceros
-             * @author German Andres Galvis
-             * @fecha 20/03/2018 DD/MM/YYYY
+             * +Descripcion Metodo encargado de visualizar en el boton del dropdwn
+             *              el tipo de documento seleccionado
+             * @param {type} filtro
              * @returns {undefined}
              */
-            that.listarTiposTerceros = function () {
-                console.log("prueba 1");
+            $scope.onSeleccionFiltro = function (filtro) {
+
+                $scope.root.filtro = filtro;
+                $scope.root.termino_busqueda = '';
+            };
+
+
+            /**
+             * @author German Galvis
+             * @fecha 24/03/2018
+             * +Descripcion Metodo encargado de invocar el servicio que
+             *              listara los clientes para facturar
+             *  @parametros ($event = eventos del teclado)
+             */
+            $scope.buscarClientesFactura = function (event) {
+                if (event.which === 13 || event.which === 1) {
+                    that.listarClientes();
+                }
+
+            };
+
+            /*
+             * Descripcion: lista todos los clientes existentes
+             * @author German Andres Galvis
+             * @fecha  24/03/2018
+             */
+            that.listarClientes = function () {
+                var usuario = Usuario.getUsuarioActual();
                 var obj = {
                     session: $scope.session,
-                    data: {listar_tipo_terceros: {}}
+                    listar_clientes: {
+                        filtro: $scope.root.filtro,
+                        terminoBusqueda: $scope.root.termino_busqueda,
+                        empresaId: usuario.getEmpresa().getCodigo(),
+                        paginaActual: $scope.paginaactual
+                    }
                 };
 
-                I012Service.listarTiposTerceros(obj, function (data) {
-
+                I012Service.listarClientes(obj, function (data) {
                     if (data.status === 200) {
-                        $scope.tipoTercero = I012Service.renderListarTipoTerceros(data.obj.listar_tipo_terceros);
+                        $scope.root.cantidad_consulta = data.obj.listarClientes.length;
+
+                        if ($scope.root.cantidad_consulta === 0) {
+                            AlertService.mostrarMensaje("warning", "no se encontraron registros");
+                        }
+
+                        that.renderClientes(data.obj.listarClientes);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
                 });
             };
 
-            that.init = function (callback) {
-                console.log("prueba");
-                that.listarTiposTerceros();
-                callback();
-            }
+            that.renderClientes = function (clientes) {
+                $scope.datos_form.listado_clientes = [];
+                clientes.forEach(function (data) {
+                    var cliente = Clientes.get(data.nombre_tercero, data.tipo_id_tercero, data.tercero_id,
+                            data.direccion, data.telefono, data.pais, data.dv);
+                    $scope.datos_form.listado_clientes.push(cliente);
+                });
+            };
+
+            $scope.lista_clientes = {
+                data: 'datos_form.listado_clientes',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
+                columnDefs: [
+                    {field: 'id', displayName: 'Identificación', width: "25%", enableCellEdit: false,
+                        cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
+                    {field: 'nombre_tercero', displayName: 'Nombre', width: "65%", enableCellEdit: false},
+                    {width: "10%", displayName: "Opción", cellClass: "txt-center",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs" ng-click="seleccionarCliente(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
+                                        </div>'}
+                ]
+            };
 
             /*
-             * Descripcion: lista todos los productos existentes
-             * @author German Andres Galvis
-             * @fecha  12/02/2018
+             * funcion para paginar anterior
+             * @returns {lista datos}
              */
-//            that.listarProductos = function (busqueda) {
-//
-//                var obj = {
-//                    session: $scope.session,
-//                    data: busqueda
-//                };
-//
-//                Request.realizarRequest(API.E009.LISTAR_PRODUCTOS, "POST", obj, function (data) {
-//                    if (data.status === 200) {
-//                        that.renderProductos(data.obj.listarProductos);
-//                    }
-//                });
-//            };
-//
-//            that.renderProductos = function (productos) {
-//                $scope.datos_form.listado_productos = [];
-//                productos.forEach(function (data) {
-//                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
-//                    var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
-//                            data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"));
-//                    producto.setNombreTipo(data.nombreTipo);
-//                    $scope.datos_form.listado_productos.push(producto);
-//                });
-//            };
-//
-//            function sumarDias(fecha, dias) {
-//                fecha.setDate(fecha.getDate() + dias);
-//                return fecha;
-//            }
-//
-//            // $scope.filtroNombre = {nombre: "Seleccionar", id: -1};
-//            $scope.filtroNombre = {nombre: "Descripcion", id: '0'};
-//
-//            $scope.onSeleccionFiltro = function (filtro) {
-//                $scope.filtroNombre.nombre = filtro.nombre;
-//                $scope.filtroNombre.id = filtro.id;
-//            };
-//
-//            /*
-//             *
-//             */
-//            $scope.buscador_productos = function (event, termino_busqueda) {
-//                if (termino_busqueda !== undefined) {
-//                    if (termino_busqueda.length < 3) {
-//                        return;
-//                    }
-//                } else {
-//                    termino_busqueda = '';
-//                }
-//                var parametros = {
-//                    empresa_id: $scope.parametros[1].empresa.getEmpresa().getCodigo(),
-//                    centro_utilidad: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.codigo,
-//                    bodega: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.bodega.codigo,
-//                    descripcion: termino_busqueda,
-//                    tipoFiltro: $scope.filtroNombre.id
-//                };
-//                if (event.which === 13)
-//                    that.listarProductos(parametros);
-//            };
-//
-//            $scope.filtros = [
-//                {nombre: "Descripcion", id: '0'},
-//                {nombre: "Codigo", id: '1'},
-//                {nombre: "Molecula", id: '2'}
-//            ];
-//
-//            $scope.filtro = $scope.filtros[0];
-//
-//            $scope.onSeleccionFiltros = function (filtro) {
-//                $scope.filtro = filtro;
-//            };
-//
-//            $scope.guardarProducto = function (producto) {
-//
+            $scope.paginaAnterior = function () {
+                if ($scope.paginaactual === 1)
+                    return;
+                $scope.paginaactual--;
+                that.listarClientes();
+            };
+
+
+            /*
+             * funcion para paginar siguiente
+             * @returns {lista datos}
+             */
+            $scope.paginaSiguiente = function () {
+                $scope.paginaactual++;
+                that.listarClientes();
+            };
+
+            /*
+             * Descripcion: guarda la informacion del cliente seleccionado
+             * @author German Andres Galvis
+             * @fecha  26/03/2018
+             */
+            $scope.seleccionarCliente = function (cliente) {
+                $modalInstance.close(cliente);
 //                if ($scope.tipoProducto === undefined || $scope.tipoProducto.id === "") {
 //                    $scope.tipoProducto.id = producto.tipoProducto;
 //                    $scope.tipoProducto.nombre = producto.nombreTipo;
@@ -157,7 +175,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 //                    docTmpId: $scope.doc_tmp_id
 //                };
 //                that.insertarProductos(parametro);
-//            };
+            };
 //
 //            that.insertarProductos = function (parametro) {
 //
@@ -175,35 +193,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 //                });
 //            };
 //
-//            $scope.habilitarCheck = function (producto) {
-//                var disabled = false;
-//
-//                if (producto.cantidad === undefined || producto.cantidad === "" || parseInt(producto.cantidad) <= 0) {
-//                    disabled = true;
-//                }
-//                if (parseInt(producto.cantidad) > parseInt(producto.existencia)) {
-//                    AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar las existencias");
-//                    disabled = true;
-//                }
-//
-//                return disabled;
-//            };
-
-            $scope.lista_clientes = {
-                data: 'datos_form.listado_productos',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                enableCellSelection: true,
-                enableHighlighting: true,
-                columnDefs: [
-                    {field: 'ID', displayName: 'Identificación', width: "25%", enableCellEdit: false},
-                    {field: 'NOMBRE', displayName: 'Nombre', width: "65%", enableCellEdit: false},
-                    {width: "10%", displayName: "Opción", cellClass: "txt-center",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="guardarProducto(row.entity)" ng-disabled="habilitarCheck(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
-                                        </div>'}
-                ]
-            };
 
         }]);
 });

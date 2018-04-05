@@ -363,14 +363,18 @@ define([
              * +Descripcion Metodo encargado crear el documento definitivo
              */
             that.crearDocumento = function () {
-
+                var usuario = Usuario.getUsuarioActual();
                 var obj = {
                     session: $scope.session,
                     data: {
                         devolucion: {
                             doc_tmp_id: $scope.doc_tmp_id,
                             bodega_seleccionada: $scope.documento_devolucion.get_bodega_destino().bodega,
-                            usuario_id: Sesion.getUsuarioActual().getId()
+                            usuario_id: usuario.getId(),
+                            empresaId: usuario.getEmpresa().getCodigo(),
+                            centroUtilidad: usuario.getEmpresa().centroUtilidad.codigo,
+                            bodega: usuario.getEmpresa().centroUtilidad.bodega.codigo,
+                            listado: $scope.datos_view.listado_productos
                         }
                     }
                 };
@@ -391,6 +395,7 @@ define([
 
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarMensaje("warning", data.obj.err);
 
                     }
                 });

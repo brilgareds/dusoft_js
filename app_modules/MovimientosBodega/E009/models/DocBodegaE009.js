@@ -29,7 +29,7 @@ DocumentoBodegaE009.prototype.listarBodegas = function (callback) {
  * @params obj: bodegaId
  * @fecha 2018-03-06
  */
-DocumentoBodegaE009.prototype.listarBodegaId = function (parametro,callback) {
+DocumentoBodegaE009.prototype.listarBodegaId = function (parametro, callback) {
     var query = G.knex
             .select()
             .from('bodegas')
@@ -89,8 +89,8 @@ DocumentoBodegaE009.prototype.listarProductos = function (parametros, callback) 
                 }
             });
     /* .limit(G.settings.limit).offset((parametros.pagina_actual - 1) * G.settings.limit);
-    console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));*/
+     console.log("Query resultado", G.sqlformatter.format(
+     query.toString()));*/
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -240,7 +240,7 @@ DocumentoBodegaE009.prototype.consultarItem = function (parametros, callback) {
     var query = G.knex
             .select()
             .from('inv_bodegas_movimiento_tmp_d')
-            .where('empresa_id',parametros.empresaId )
+            .where('empresa_id', parametros.empresaId)
             .andWhere('doc_tmp_id', parametros.docTmpId)
             .andWhere('centro_utilidad', parametros.centroUtilidad)
             .andWhere('bodega', parametros.bodega)
@@ -303,6 +303,58 @@ DocumentoBodegaE009.prototype.consultarDetalleDevolucion = function (parametros,
         callback(err);
     });
 };
-//DocumentoBodegaE009.$inject = ["m_movimientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
+
+/**
+ * @author German Galvis
+ * +Descripcion resta las existencias de existencias_bodegas_lote_fv
+ * @fecha 2018-04-04
+ */
+DocumentoBodegaE009.prototype.actualizarExistenciasBodegasLotesFv = function (obj, ids, transaccion, callback) {
+
+    var query = G.knex.select('existencia_actual')
+            .from('existencias_bodegas_lote_fv')
+            .where({empresa_id: ids.empresaId,
+                centro_utilidad: ids.centroUtilidad,
+                bodega: ids.bodega,
+                codigo_producto: obj.codigo_producto,
+                fecha_vencimiento: obj.fecha_vencimiento,
+                lote: obj.lote
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+        
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [actualizarExistenciasBodegasLotesFv]: ", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion resta las existencias de existencias_bodegas
+ * @fecha 2018-04-04
+ */
+DocumentoBodegaE009.prototype.actualizarExistenciasBodegas = function (obj, ids, transaccion, callback) {
+    var query = G.knex.select('existencia')
+            .from('existencias_bodegas')
+            .where({empresa_id: ids.empresaId,
+                centro_utilidad: ids.centroUtilidad,
+                bodega: ids.bodega,
+                codigo_producto: obj.codigo_producto
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+    
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [actualizarExistenciasBodegas]: ", err);
+        callback(err);
+    });
+};
 
 module.exports = DocumentoBodegaE009;

@@ -139,6 +139,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero: documento.numero_edb,
                             prefijo_edb: documento.prefijo_edb, farmacia_id: documento.farmacia_id, bodega_seleccionada: documento.bodega};
                     }
+                    if (documento.tipo_doc_bodega_id === 'I012') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero_factura: documento.numero_factura,
+                            prefijoFactura: documento.prefijo_idc, terceroId: documento.tercero_id, tipoTerceroId: documento.tipo_id_tercero.trim()};
+console.log("documento",documento);
+                    }
                     var datos = {bodegas_doc_id: documento.bodegas_doc_id, prefijo: documento.prefijo, numero: numero, datosAdicionales: datosAdicionales};
                     localStorageService.add("documento_bodega_" + documento.tipo_doc_bodega_id, datos);
 

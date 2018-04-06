@@ -78,6 +78,55 @@ I012Controller.prototype.listarFacturas = function (req, res) {
 
 /**
  * @author German Galvis
+ * +Descripcion trae registro de la factura seleccionada
+ * @fecha 2018-04-06
+ */
+I012Controller.prototype.listarFacturaId = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        prefijo: args.prefijo,
+        numero: args.numero
+    };
+
+    G.Q.nfcall(that.m_i012.listarFacturaId, parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar factura id ok!!!!', 200, {listarFactura: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar la factura', 500, {listarFactura: {}}));
+            }).
+            done();
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion trae registro del seleccionado
+ * @fecha 2018-04-06
+ */
+I012Controller.prototype.listarClienteId = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        id: args.id,
+        tipoId: args.tipoId
+    };
+    
+
+    G.Q.nfcall(that.m_i012.listarClienteId, parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar cliente id ok!!!!', 200, {listarCliente: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar el cliente', 500, {listarCliente: {}}));
+            }).
+            done();
+
+};
+
+/**
+ * @author German Galvis
  * +Descripcion lista los productos de la factura
  * @fecha 2018-03-26
  */
@@ -129,6 +178,7 @@ I012Controller.prototype.newDocTemporal = function (req, res) {
     var abreviatura = args.abreviatura;
     var observacion = args.observacion;
     var movimiento_temporal_id;
+    var bodega_destino = '03';
 
     if (args.observacion === undefined) {
         res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
@@ -144,6 +194,7 @@ I012Controller.prototype.newDocTemporal = function (req, res) {
                     movimiento_temporal_id, usuarioId, bodega_doc_id, observacion, transaccion).then(function () {
                 var parametros = {
                     abreviatura: abreviatura,
+                    destino: bodega_destino,
                     doc_tmp_id: movimiento_temporal_id
                 };
                 return G.Q.nfcall(that.m_i012.modificarDevolucionFacturaTmp, parametros, transaccion);
@@ -545,7 +596,7 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
     var valorTotalFactura = "123";
     var cabecera = [];
     var detallea = [];
-    
+
 
 
     if (args.empresaId === '' || args.empresaId === undefined) {
@@ -579,7 +630,6 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
     }
 
     G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros).then(function (result) {
-        console.log("resultado cabecera : ",result);
         cabecera = result;
 
         if (result.length > 0) {
@@ -588,7 +638,6 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
             throw 'Consulta getDoc sin resultados';
         }
     }).then(function (resultado) {
-        console.log("resultado detalle : ",resultado);
         detallea = resultado;
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
@@ -600,7 +649,7 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
             cabecera[0].cliente = parametros.tipo_id_tercero + " " + parametros.tercero_id + " : " + nombreTercero;
             cabecera[0].num_factura = parametros.prefijo_doc_cliente + " - " + parametros.numero_doc_cliente;
-            console.log("resultado final : ",cabecera[0]);
+            console.log("resultado final : ", cabecera[0]);
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],
                 detalle: detallea[0],
@@ -627,7 +676,7 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
  * ==================================================================================================================================================================*/
 
 function __generarPdf(datos, callback) {
-console.log("datos", datos);
+    console.log("datos", datos);
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
@@ -641,9 +690,6 @@ console.log("datos", datos);
         },
         data: datos
     }, function (err, response) {
-
-        console.log("err", err);
-        console.log("response", response);
 
         response.body(function (body) {
             var fecha = new Date();

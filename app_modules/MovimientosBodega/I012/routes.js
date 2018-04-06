@@ -15,8 +15,16 @@ module.exports = function (app, di_container) {
         c_i012.listarClientes(req, res);
     });
 
+    app.post('/api/movBodegas/I012/listarClienteId', function (req, res) {
+        c_i012.listarClienteId(req, res);
+    });
+
     app.post('/api/movBodegas/I012/listarFacturas', function (req, res) {
         c_i012.listarFacturas(req, res);
+    });
+
+    app.post('/api/movBodegas/I012/listarFacturaId', function (req, res) {
+        c_i012.listarFacturaId(req, res);
     });
 
     app.post('/api/movBodegas/I012/listarProductosFacturas', function (req, res) {

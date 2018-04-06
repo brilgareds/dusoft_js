@@ -112,6 +112,52 @@ define([
                 });
             };
 
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que listara 
+             *              la factura seleccionada
+             * @author German Andres Galvis
+             * @fecha 06/04/2018 DD/MM/YYYY
+             */
+            that.buscarFacturaPorId = function (prefijo, numero, callback) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        prefijo: prefijo,
+                        numero: numero
+                    }
+                };
+                I012Service.buscarFacturaId(obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data.obj.listarFactura);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que traera 
+             *              el cliente seleccionado
+             * @author German Andres Galvis
+             * @fecha 06/04/2018 DD/MM/YYYY
+             */
+            that.buscarClientePorId = function (tipo, id, callback) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        id: id,
+                        tipoId: tipo
+                    }
+                };
+
+                I012Service.buscarClienteId(obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data.obj.listarCliente);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
 
             $scope.onBuscarProductosFactura = function () {
                 $scope.tipoDocumento = $scope.documento_ingreso.getFacturaDevolucion().fac_agrupada;
@@ -131,7 +177,7 @@ define([
                     data: {
                         numero_doc: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
                         prefijo: $scope.documento_ingreso.getFacturaDevolucion().prefijo,
-                        empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo()
                     }
                 };
                 Request.realizarRequest(API.I012.CONSULTAR_DETALLE_FACTURA, "POST", obj, function (data) {
@@ -616,7 +662,7 @@ define([
                         }
                     }
                 };
-        
+
                 I012Service.crearDocumento(obj, function (data) {
                     if (data.status === 200) {
 
@@ -713,45 +759,42 @@ define([
                 Request.realizarRequest(API.I012.CONSULTAR_RETENCIONES, "POST", obj, function (data) {
 
                     if (data.status === 200) {
-                        that.ParametrizacionRetencion(data.obj.consultarRetenciones);
+                        that.ParametrizarRetencion(data.obj.consultarRetenciones);
                     }
 
                 });
             };
 
-            that.ParametrizacionRetencion = function (parametros) {
+            that.ParametrizarRetencion = function (parametros) {
                 $scope.base_rtf = parametros[0].base_rtf;
                 $scope.base_ica = parametros[0].base_ica;
                 $scope.base_iva = parametros[0].base_reteiva;
                 $scope.porcentajeRetFte = parametros[0].porcentaje_rtf;
                 $scope.porcentajeRetIca = parametros[0].porcentaje_ica;
                 $scope.porcentajeRetIva = parametros[0].porcentaje_reteiva;
-
             };
 
 
-//
-//            if (datos_documento.datosAdicionales !== undefined) {
-//                $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
-//                $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
-//                $scope.documento_ingreso.set_bodega(datos_documento.datosAdicionales.bodega_seleccionada);
-//                /*that.buscarBodegaPorId(datos_documento.datosAdicionales.bodega_seleccionada, function (result) {
-//                 $scope.bodegas = result[0];
-//                 $scope.documento_ingreso.set_bodega(result[0].bodega);
-//                 });*/
-//                var doc_devolucion = {
-//                    numero: datos_documento.datosAdicionales.numero,
-//                    prefijo: datos_documento.datosAdicionales.prefijo_edb,
-//                    empresa_id: datos_documento.datosAdicionales.farmacia_id
-//
-//                };
-//                $scope.documento_ingreso.setDocumentoDevolucion(doc_devolucion);
-//                $scope.validarDesdeLink = true;
-//                that.listarProductosFactura();
-//                that.listarProductosDevueltos();
-//            } else {
-//                $scope.validarDesdeLink = false;
-//            }
+
+            if (datos_documento.datosAdicionales !== undefined) {
+                console.log("llego", datos_documento.datosAdicionales);
+                $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
+                $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
+                that.buscarClientePorId(datos_documento.datosAdicionales.tipoTerceroId, datos_documento.datosAdicionales.terceroId, function (result) {
+                    $scope.cliente_seleccionado = result[0];
+                });
+
+                that.buscarFacturaPorId(datos_documento.datosAdicionales.prefijoFactura, datos_documento.datosAdicionales.numero_factura, function (result) {
+                    $scope.documento_ingreso.setFacturaDevolucion(result[0]);
+                    $scope.tipoDocumento = result[0].fac_agrupada;
+                    $scope.validarDesdeLink = true;
+                    that.parametrizacionRetencion();
+                    that.refrescarVista();
+                });
+
+            } else {
+                $scope.validarDesdeLink = false;
+            }
 
         }]);
 });

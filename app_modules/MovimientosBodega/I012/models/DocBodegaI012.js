@@ -91,6 +91,26 @@ DocumentoBodegaI012.prototype.listarClientes = function (obj, callback) {
 
 /**
  * @author German Galvis
+ * @fecha 06/04/2018
+ * +Descripcion Modelo encargado de buscar el cliente seleccionado
+ */
+DocumentoBodegaI012.prototype.listarClienteId = function (parametros, callback) {
+
+    var query = G.knex.select()
+            .from('terceros')
+            .where('tipo_id_tercero', parametros.tipoId)
+            .andWhere('tercero_id', parametros.id);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarClienteId]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
  * @fecha 26/03/2018
  * +Descripcion Metodo encargado de listar las facturas
  */
@@ -172,6 +192,83 @@ DocumentoBodegaI012.prototype.listarFacturas = function (parametros, callback) {
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [listarFacturas]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * @fecha 06/04/2018
+ * +Descripcion Metodo encargado de listar la factura seleccionada
+ */
+DocumentoBodegaI012.prototype.listarFacturaId = function (parametros, callback) {
+
+    var columnas = [
+        "a.empresa_id",
+        "a.factura_fiscal",
+        "a.prefijo",
+        "a.documento_id",
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "a.valor_notacredito",
+        "a.valor_notadebito",
+        "a.fecha_registro",
+        "a.usuario_id",
+        "a.valor_total",
+        "a.fecha_vencimiento_factura",
+        "a.observaciones",
+        "a.porcentaje_rtf",
+        "a.porcentaje_ica",
+        "a.porcentaje_reteiva",
+        "a.saldo",
+        "a.porcentaje_cree",
+        G.knex.raw("0 as fac_agrupada")
+    ];
+
+    var columnas2 = [
+        "a.empresa_id",
+        "a.factura_fiscal",
+        "a.prefijo",
+        "a.documento_id",
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "a.valor_notacredito",
+        "a.valor_notadebito",
+        "a.fecha_registro",
+        "a.usuario_id",
+        "a.valor_total",
+        "a.fecha_vencimiento_factura",
+        "a.observaciones",
+        "a.porcentaje_rtf",
+        "a.porcentaje_ica",
+        "a.porcentaje_reteiva",
+        "a.saldo",
+        "a.porcentaje_cree",
+        G.knex.raw("1 as fac_agrupada")
+    ];
+
+    var query = G.knex.select(columnas)
+            .from('inv_facturas_despacho as a')
+            .where('a.prefijo', parametros.prefijo)
+            .andWhere('a.factura_fiscal', parametros.numero);
+//            .andWhere('a.tipo_id_tercero', parametros.tipo_documento)
+//            .andWhere('a.tercero_id', parametros.documento);
+
+    query.union(function () {
+        this.select(columnas2)
+                .from('inv_facturas_agrupadas_despacho as a')
+                .where('a.prefijo', parametros.prefijo)
+                .andWhere('a.factura_fiscal', parametros.numero)
+//                .andWhere('a.tipo_id_tercero', parametros.tipo_documento)
+//                .andWhere('a.tercero_id', parametros.documento)
+                .groupBy(G.knex.raw("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"))
+                .orderBy(G.knex.raw("2"));
+    });
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarFactura]:", err);
         callback(err);
     });
 };
@@ -269,7 +366,10 @@ DocumentoBodegaI012.prototype.listarProductosFacturas = function (parametros, ca
 DocumentoBodegaI012.prototype.modificarDevolucionFacturaTmp = function (parametros, transaccion, callback) {
     var query = G.knex("inv_bodegas_movimiento_tmp")
             .where('doc_tmp_id', parametros.doc_tmp_id)
-            .update('abreviatura', parametros.abreviatura);
+            .update({
+                abreviatura: parametros.abreviatura,
+                empresa_destino: parametros.destino
+            });
 
     if (transaccion)
         query.transacting(transaccion);
@@ -571,38 +671,38 @@ DocumentoBodegaI012.prototype.eliminarMovimientoDevolucionCliente = function (pa
     });
 };
 
- /**
+/**
  * @author German Galvis
  * +Descripcion consulta los productos pertenecientes al documento a imprimir
  * @fecha 05/04/2018
  */
 DocumentoBodegaI012.prototype.consultar_detalle_documento = function (parametro, callback) {
- var columnas = [
- "a.codigo_producto",
- "a.lote",
- G.knex.raw("\"a\".\"cantidad\"::integer"),
- G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
- G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre"),
- "a.valor_unitario",
- "param.torre"
- ];
- 
- var query = G.knex.select(columnas)
- .from('inv_bodegas_movimiento_d  AS a')
- .innerJoin("inventarios_productos  AS b ", "a.codigo_producto", "b.codigo_producto")
- .leftJoin("param_torreproducto AS param", "param.codigo_producto", "a.codigo_producto")
- .where('a.empresa_id', parametro.empresaId)
- .andWhere("a.prefijo", parametro.prefijoDocumento)
- .andWhere("a.numero", parametro.numeracionDocumento)
- .orderBy('param.torre', 'asc');
- 
- query.then(function (resultado) {
- callback(false, resultado);
- }).catch(function (err) {
- callback(err);
- });
- };
- /*==================================================================================================================================================================
+    var columnas = [
+        "a.codigo_producto",
+        "a.lote",
+        G.knex.raw("\"a\".\"cantidad\"::integer"),
+        G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
+        G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre"),
+        "a.valor_unitario",
+        "param.torre"
+    ];
+
+    var query = G.knex.select(columnas)
+            .from('inv_bodegas_movimiento_d  AS a')
+            .innerJoin("inventarios_productos  AS b ", "a.codigo_producto", "b.codigo_producto")
+            .leftJoin("param_torreproducto AS param", "param.codigo_producto", "a.codigo_producto")
+            .where('a.empresa_id', parametro.empresaId)
+            .andWhere("a.prefijo", parametro.prefijoDocumento)
+            .andWhere("a.numero", parametro.numeracionDocumento)
+            .orderBy('param.torre', 'asc');
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    });
+};
+/*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS
  * 

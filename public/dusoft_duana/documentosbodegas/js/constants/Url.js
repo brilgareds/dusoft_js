@@ -57,7 +57,9 @@ define(["angular"], function(angular) {
             'I012': {
                 "LISTAR_TIPOS_TERCEROS": BASE_URL + "/movBodegas/I012/listarTiposTerceros",
                 "LISTAR_CLIENTES": BASE_URL + "/movBodegas/I012/listarClientes",
+                "LISTAR_CLIENTE_ID": BASE_URL + "/movBodegas/I012/listarClienteId",
                 "LISTAR_FACTURAS": BASE_URL + "/movBodegas/I012/listarFacturas",
+                "LISTAR_FACTURA_ID": BASE_URL + "/movBodegas/I012/listarFacturaId",
                 "CONSULTAR_DETALLE_FACTURA": BASE_URL + "/movBodegas/I012/listarProductosFacturas",
                 "CREAR_NEW_DOCUMENTO_TEMPORAL": BASE_URL + "/movBodegas/I012/newDocTemporal",
                 'AGREGAR_ITEM': BASE_URL + '/movBodegas/I012/agregarItem',

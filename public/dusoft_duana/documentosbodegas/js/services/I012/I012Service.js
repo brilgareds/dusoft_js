@@ -87,6 +87,54 @@ define(["angular", "js/services"], function (angular, services) {
 
                     };
 
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 06/04/2018
+                     * +Descripcion: trae registro de la factura seleccionada
+                     */
+                    self.buscarFacturaId = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I012.LISTAR_FACTURA_ID,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        prefijo: obj.data.prefijo,
+                                        numero: obj.data.numero
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 06/04/2018
+                     * +Descripcion: trae registro del cliente seleccionado
+                     */
+                    self.buscarClienteId = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I012.LISTAR_CLIENTE_ID,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        id: obj.data.id,
+                                        tipoId: obj.data.tipoId
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
+
                     /**
                      * @Author: German Galvis.
                      * @fecha 27/03/2018

@@ -357,10 +357,10 @@ MovimientosBodegasModel.prototype.actualizar_tipo_documento_temporal = function 
 };
 
 // Crear documento 
-MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_id, usuario_id, transaccion, callback) {
+MovimientosBodegasModel.prototype.crear_documento = function (documento_temporal_id, usuario_id, transaccion, callback) {
 
     // Consultar cabecera del docuemnto temporal
-    __consultar_documento_bodega_temporal(documento_temporal_id, usuario_id, function(err, documento_temporal) {
+    __consultar_documento_bodega_temporal(documento_temporal_id, usuario_id, function (err, documento_temporal) {
 
         if (err || documento_temporal === null) {
             console.log('Se ha generado un error o el docuemnto está vacío.');
@@ -375,14 +375,14 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
 
             // Consultar detalle del docuemnto temporal
-            __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
+            __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function (err, detalle_documento_temporal) {
                 if (err || detalle_documento_temporal.length === 0) {
                     console.log('Se ha generado un error o el documento está vacío...');
                     callback(err);
                     return;
                 } else {
                     // Consultar numeracion del documento    
-                    __obtener_numeracion_documento(empresa_id, documento_id, function(err, numeracion, result) {
+                    __obtener_numeracion_documento(empresa_id, documento_id, function (err, numeracion, result) {
 
                         if (err || numeracion.length === 0) {
                             console.log('Se ha generado un error o no se pudo tener la numeracion del documento');
@@ -396,7 +396,7 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
 
                             // Ingresar Cabecera Documento temporal
-                            __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo_documento, numeracion_documento, observacion, usuario_id, transaccion, function(err, result) {
+                            __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo_documento, numeracion_documento, observacion, usuario_id, transaccion, function (err, result) {
 
                                 console.log('=============== __ingresar_movimiento_bodega ========================');
                                 console.log(err, result);
@@ -815,12 +815,12 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
         select2 = " df.numero as numero_edb, df.farmacia_id, df.prefijo";
         inner = " join inv_bodegas_movimiento_tmp_devolucion_farmacia as df on (t.usuario_id=df.usuario_id and t.doc_tmp_id=df.doc_tmp_id)";
     }
-    
+
     if (parametro.tipoDocGeneralId === 'I012') {
         select3 = " dc.numero as numero_factura, dc.tercero_id, dc.tipo_id_tercero, dc.prefijo";
         inner = " join inv_bodegas_movimiento_tmp_devolucion_cliente as dc on (t.usuario_id = dc.usuario_id and t.doc_tmp_id = dc.doc_tmp_id)";
     }
-    
+
     if (parametro.numeroDocumento !== '') {
         where = " AND t.doc_tmp_id ilike '%" + parametro.numeroDocumento + "%'";
     }
@@ -861,8 +861,16 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
 
 MovimientosBodegasModel.prototype.getDocumentosBodegaUsuario = function (parametro, callback) {
     var where = "";
+    var inner = '';
+    var select = "''";
+    
+    
     if (parametro.numeroDocumento !== '') {
         where = " WHERE numero_doc ilike '%" + parametro.numeroDocumento + "%' ";
+    }
+    if (parametro.tipoDocGeneralId === 'I012') {
+        select = " dc.numero_doc_cliente, dc.tercero_id, dc.tipo_id_tercero, dc.prefijo_doc_cliente";
+        inner = " join inv_bodegas_movimiento_devolucion_cliente as dc on (m.prefijo = dc.prefijo and m.numero = dc.numero)";
     }
 
     var sql = "  * from (\
@@ -872,12 +880,14 @@ MovimientosBodegasModel.prototype.getDocumentosBodegaUsuario = function (paramet
                             c.inv_tipo_movimiento as tipo_movimiento, \
                             b.tipo_doc_general_id as tipo_doc_bodega_id, \
                             c.descripcion as tipo_clase_documento,\
-                            b.descripcion \
+                            b.descripcion, \
+                             " + select + " \
                         FROM\
                             inv_bodegas_movimiento as m \
                             inner join inv_bodegas_documentos as a on (a.documento_id = m.documento_id AND a.empresa_id = m.empresa_id AND a.centro_utilidad = m.centro_utilidad  AND a.bodega = m.bodega)\
                             inner join documentos as b on (b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id AND b.tipo_doc_general_id = :4)\
                             inner join tipos_doc_generales as c on (c.tipo_doc_general_id = b.tipo_doc_general_id AND c.inv_tipo_movimiento = :5 )\
+                            " + inner + "\
                         WHERE \
                             m.empresa_id = :1 \
                             AND m.centro_utilidad = :2 \

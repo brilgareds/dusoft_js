@@ -483,10 +483,29 @@ DocumentoBodegaI012.prototype.updatefacturaD = function (parametros, transaccion
     var query = G.knex(parametros.tabla)
             .where('prefijo', parametros.prefijo)
             .andWhere('factura_fiscal', parametros.numero_doc)
-            .andWhere('codigo_producto', parametros.codigoProducto)
-            .andWhere('lote', parametros.lote)
-            .andWhere('fecha_vencimiento', parametros.fechaVencimiento)
+            .andWhere('item_id', parametros.item_id)
             .update('cantidad_devuelta', G.knex.raw('cantidad_devuelta +' + parametros.cantidad));
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza el el costo total del documento de bodega
+ * @fecha 09/04/2018
+ */
+DocumentoBodegaI012.prototype.updateCostoTotalDocumento = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento")
+            .where('prefijo', parametros.prefijoDocumento)
+            .andWhere('numero', parametros.numeracionDocumento)
+            .update('total_costo',parametros.valorTotalFactura);
 
     if (transaccion)
         query.transacting(transaccion);
@@ -590,9 +609,7 @@ DocumentoBodegaI012.prototype.restarCantidadFacturaD = function (parametros, tra
     var query = G.knex(parametros.tabla)
             .where('prefijo', parametros.prefijo)
             .andWhere('factura_fiscal', parametros.numero_doc)
-            .andWhere('codigo_producto', parametros.codigo_producto)
-            .andWhere('lote', parametros.lote)
-            .andWhere('fecha_vencimiento', parametros.fechaVencimiento)
+            .andWhere('item_id', parametros.item_id_compras)
             .update('cantidad_devuelta', G.knex.raw('cantidad_devuelta -' + parametros.cantidad));
     if (transaccion)
         query.transacting(transaccion);

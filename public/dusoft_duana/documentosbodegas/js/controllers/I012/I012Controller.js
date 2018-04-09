@@ -305,6 +305,7 @@ define([
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, parseFloat(data.porcentaje_gravamen).toFixed(2), parseFloat(data.iva).toFixed(2), data.valor_unitario);
                     producto.setCostoTotal(data.total_costo);
+                    producto.setItemIdCompra(data.item_id_compras);
                     $scope.valorSubTotal += parseFloat(data.total_costo);
                     $scope.valorIva += parseFloat(data.iva);
 
@@ -543,6 +544,7 @@ define([
                 var obj = {
                     session: $scope.session,
                     item_id: parametro.item_id,
+                    item_id_compras: parametro.itemIdCompra,
                     cantidad: parametro.cantidad,
                     codigo_producto: parametro.codigo_producto,
                     fechaVencimiento: parametro.fecha_vencimiento,
@@ -777,11 +779,11 @@ define([
 
 
             if (datos_documento.datosAdicionales !== undefined) {
-                console.log("llego", datos_documento.datosAdicionales);
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
                 $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
                 that.buscarClientePorId(datos_documento.datosAdicionales.tipoTerceroId, datos_documento.datosAdicionales.terceroId, function (result) {
                     $scope.cliente_seleccionado = result[0];
+                    $scope.cliente_seleccionado.id = result[0].tercero_id;
                 });
 
                 that.buscarFacturaPorId(datos_documento.datosAdicionales.prefijoFactura, datos_documento.datosAdicionales.numero_factura, function (result) {

@@ -202,6 +202,7 @@ define(["angular", "js/services"], function (angular, services) {
                             session: objs.session,
                             data: {
                                 item_id: objs.item_id,
+                                item_id_compras: objs.item_id_compras,
                                 docTmpId: objs.docTmpId,
                                 cantidad: objs.cantidad,
                                 codigo_producto: objs.codigo_producto,

@@ -112,7 +112,7 @@ I012Controller.prototype.listarClienteId = function (req, res) {
         id: args.id,
         tipoId: args.tipoId
     };
-    
+
 
     G.Q.nfcall(that.m_i012.listarClienteId, parametros).
             then(function (resultado) {
@@ -414,6 +414,7 @@ I012Controller.prototype.eliminarItem = function (req, res) {
 
     var parametros = {
         item_id: args.item_id,
+        item_id_compras: args.item_id_compras,
         docTmpId: args.docTmpId,
         usuarioId: usuarioId,
         cantidad: args.cantidad,
@@ -504,11 +505,15 @@ I012Controller.prototype.crearDocumento = function (req, res) {
             parametros.prefijo_doc_cliente = args.prefijo_doc_cliente;
             parametros.numero_doc_cliente = args.numero_doc_cliente;
             parametros.docTmpId = args.docTmpId;
+            parametros.valorTotalFactura = args.valorTotalFactura;
             parametros.usuario_id = usuarioId;
             parametros.usuarioId = usuarioId;
 
             return G.Q.nfcall(that.m_i012.agregarMovimientoCliente, parametros, transaccion);
 
+        }).then(function () {
+            return G.Q.nfcall(that.m_i012.updateCostoTotalDocumento, parametros, transaccion);
+            
         }).then(function () {
             return G.Q.nfcall(that.m_i012.eliminarMovimientoDevolucionCliente, parametros, transaccion);
 
@@ -592,12 +597,10 @@ I012Controller.prototype.crearDocumento = function (req, res) {
 I012Controller.prototype.crearHtmlDocumento = function (req, res) {
     var that = this;
     var args = req.body.data;
-    var nombreTercero = "This is Sparta";
-    var valorTotalFactura = "123";
+    var nombreTercero = "";
+    var valorTotalFactura = "0";
     var cabecera = [];
     var detallea = [];
-
-
 
     if (args.empresaId === '' || args.empresaId === undefined) {
         res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
@@ -616,7 +619,13 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
         empresaId: args.empresaId,
         empresa_id: args.empresaId,
         prefijoDocumento: args.prefijo,
-        numeracionDocumento: args.numeracion
+        numeracionDocumento: args.numeracion,
+        prefijo_doc_cliente: args.prefijoFactura,
+        numero_doc_cliente: args.numeroFactura,
+        tipo_id_tercero: args.tipoTercero,
+        tercero_id: args.terceroId,
+        id: args.terceroId,
+        tipoId: args.tipoTercero.trim()
     };
 
     try {
@@ -631,28 +640,39 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
 
     G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros).then(function (result) {
         cabecera = result;
-
         if (result.length > 0) {
+            
+            valorTotalFactura = cabecera[0].total_costo;
+            
             return G.Q.nfcall(that.m_i012.consultar_detalle_documento, parametros);
         } else {
             throw 'Consulta getDoc sin resultados';
         }
     }).then(function (resultado) {
         detallea = resultado;
+
+        return G.Q.nfcall(that.m_i012.listarClienteId, parametros);
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            nombreTercero = resultado[0].nombre_tercero;
+        }
+
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
 
-        if (resultado.length > 0) {
+        if (detallea.length > 0) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
             cabecera[0].cliente = parametros.tipo_id_tercero + " " + parametros.tercero_id + " : " + nombreTercero;
             cabecera[0].num_factura = parametros.prefijo_doc_cliente + " - " + parametros.numero_doc_cliente;
-            console.log("resultado final : ", cabecera[0]);
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],
-                detalle: detallea[0],
+                detalle: detallea,
                 impresion: impresion,
                 valorTotal: valorTotalFactura,
                 archivoHtml: 'documentoI012.html',
@@ -676,7 +696,6 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
  * ==================================================================================================================================================================*/
 
 function __generarPdf(datos, callback) {
-    console.log("datos", datos);
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
@@ -721,9 +740,7 @@ function __updateMovimiento(that, listado, parametros, index, transaccion, callb
         return;
     }
 
-    parametros.codigo_producto = item.codigo_producto;
-    parametros.lote = item.lote;
-    parametros.fechaVencimiento = item.fecha_vencimiento;
+    parametros.item_id_compras = item.itemIdCompra;
     parametros.cantidad = item.cantidad;
 
     G.Q.nfcall(that.m_i012.restarCantidadFacturaD, parametros, transaccion).then(function (resultado) {

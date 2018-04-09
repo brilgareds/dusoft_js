@@ -28,6 +28,38 @@ define(["angular", "js/models", "includes/classes/Documento"], function(angular,
                 this.prefijoNumero = prefijoNumero;
             };
             
+            DocumentoBodega.prototype.getTerceroId = function() {
+               return this.terceroId;
+            };
+
+            DocumentoBodega.prototype.setTerceroId = function(terceroId) {
+                this.terceroId = terceroId;
+            };
+            
+            DocumentoBodega.prototype.getTipoTercero = function() {
+               return this.tipoTercero;
+            };
+
+            DocumentoBodega.prototype.setTipoTercero = function(tipoTercero) {
+                this.tipoTercero = tipoTercero;
+            };
+            
+            DocumentoBodega.prototype.getNumeroFactura = function() {
+               return this.numeroFactura;
+            };
+
+            DocumentoBodega.prototype.setNumeroFactura = function(numeroFactura) {
+                this.numeroFactura = numeroFactura;
+            };
+            
+            DocumentoBodega.prototype.getPrefijoFactura = function() {
+               return this.prefijoFactura;
+            };
+
+            DocumentoBodega.prototype.setPrefijoFactura = function(prefijoFactura) {
+                this.prefijoFactura = prefijoFactura;
+            };
+            
             return this;
         }]);
 });

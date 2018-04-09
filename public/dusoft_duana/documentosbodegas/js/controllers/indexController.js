@@ -19,8 +19,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "GeneralService",
         "E009Service",
         "I011Service",
+        "I012Service",
         "TipoDocumentos",
-        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion, GeneralService, E009Service, I011Service, TipoDocumentos) {
+        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion, GeneralService, E009Service, I011Service, I012Service, TipoDocumentos) {
 
             var that = this;
             $scope.claseDoc;
@@ -142,7 +143,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     if (documento.tipo_doc_bodega_id === 'I012') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero_factura: documento.numero_factura,
                             prefijoFactura: documento.prefijo_idc, terceroId: documento.tercero_id, tipoTerceroId: documento.tipo_id_tercero.trim()};
-console.log("documento",documento);
                     }
                     var datos = {bodegas_doc_id: documento.bodegas_doc_id, prefijo: documento.prefijo, numero: numero, datosAdicionales: datosAdicionales};
                     localStorageService.add("documento_bodega_" + documento.tipo_doc_bodega_id, datos);
@@ -303,6 +303,11 @@ console.log("documento",documento);
                     });
                 } else if (documentos.tipo_movimiento === "I012") {
 
+                    obj.data.tipoTercero = documentos.tipoTercero;
+                    obj.data.terceroId = documentos.terceroId;
+                    obj.data.prefijoFactura = documentos.prefijoFactura;
+                    obj.data.numeroFactura = documentos.numeroFactura;
+
                     Request.realizarRequest(API.I012.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
@@ -403,6 +408,9 @@ console.log("documento",documento);
                             }
                             if (data.tipo_doc_bodega_id === "I011") {
                                 that.eliminarGetDocTemporalI011(data);
+                            }
+                            if (data.tipo_doc_bodega_id === "I012") {
+                                that.eliminarGetDocTemporalI012(data);
                             }
                             $modalInstance.close();
                         };
@@ -524,6 +532,74 @@ console.log("documento",documento);
 
                     var producto = {};
                     producto.movimiento = data.movimiento_id;
+                    $scope.listado_productos.push(producto);
+                });
+            };
+
+            that.eliminarGetDocTemporalI012 = function (datos) {
+
+                that.listarProductosEliminarI012(datos.doc_tmp_id, function (condicional) {
+
+                    if (condicional) {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                doc_tmp_id: datos.doc_tmp_id,
+                                listado: $scope.listado_productos,
+                                numero_doc: datos.numero_factura,
+                                prefijo: datos.prefijo_idc,
+//                        tipoDocumento: $scope.tipoDocumento  ??
+                            }
+                        };
+                        console.log("obj", obj);
+//                I012Service.eliminarGetDocTemporal(obj, function (data) {
+//                            if (data.status === 200) {
+//                                that.listarDocumetosTemporales(true);
+//                                AlertService.mostrarMensaje("warning", data.msj);
+//                            }
+//
+//                            if (data.status === 404) {
+//                                AlertService.mostrarMensaje("warning", data.msj);
+//                            }
+//
+//                            if (data.status === 500) {
+//                                AlertService.mostrarMensaje("warning", data.msj);
+//                            }
+//                        });
+                    }
+                });
+            };
+
+            that.listarProductosEliminarI012 = function (doc_id, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numero_doc: doc_id
+
+                    }
+                };
+                Request.realizarRequest(API.I012.CONSULTAR_PRODUCTOS_DEVUELTOS, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        that.renderProductosValidadosI012(data.obj.lista_productos);
+                        callback(true);
+                    } else {
+                        callback(false);
+
+                    }
+
+                });
+            };
+
+            that.renderProductosValidadosI012 = function (productos) {
+                $scope.listado_productos = [];
+                productos.forEach(function (data) {
+
+                    var producto = {};
+                    producto.itemIdCompra = data.item_id_compras;
+                    producto.cantidad = data.cantidad;
                     $scope.listado_productos.push(producto);
                 });
             };
@@ -665,6 +741,15 @@ console.log("documento",documento);
                     doc.set_observaciones(data.observacion);
                     doc.setPrefijoNumero(data.prefijo + '-' + data.numero);
                     var nomb_pdf = "documentoI002" + data.prefijo + data.numero + ".html";
+
+//                    if(data.tipo_movimiento === 'I012'){
+//                        nomb_pdf = "documentoI012" + data.prefijo + data.numero + ".html";
+                    doc.setTerceroId(data.tercero_id);
+                    doc.setTipoTercero(data.tipo_id_tercero);
+                    doc.setNumeroFactura(data.numero_doc_cliente);
+                    doc.setPrefijoFactura(data.prefijo_doc_cliente);
+                    //}
+
                     doc.setArchivo(nomb_pdf);
                     allDocumentos.push(doc);
                 });

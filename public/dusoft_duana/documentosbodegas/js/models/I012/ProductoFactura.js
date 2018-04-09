@@ -111,6 +111,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
             ProductoFactura.prototype.getCostoTotal = function () {
                 return this.costoTotal;
             };
+            
+            ProductoFactura.prototype.setItemIdCompra = function (itemIdCompra) {
+                this.itemIdCompra = itemIdCompra;
+            };
+
+            ProductoFactura.prototype.getItemIdCompra = function () {
+                return this.itemIdCompra;
+            };
 
             return this;
         }]);

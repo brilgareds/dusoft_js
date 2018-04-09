@@ -111,6 +111,27 @@ DocumentoBodegaI012.prototype.listarClienteId = function (parametros, callback) 
 
 /**
  * @author German Galvis
+ * @fecha 09/04/2018
+ * +Descripcion Modelo encargado de buscar la factura seleccionada desde temporales
+ */
+DocumentoBodegaI012.prototype.tipoFactura = function (parametros, callback) {
+
+    var query = G.knex.select()
+            .from('inv_facturas_despacho')
+            .where('prefijo', parametros.prefijo)
+            .andWhere('factura_fiscal', parametros.numero);
+    
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [tipoFactura]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
  * @fecha 26/03/2018
  * +Descripcion Metodo encargado de listar las facturas
  */

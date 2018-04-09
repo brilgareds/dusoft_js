@@ -31,6 +31,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.termino_busquedaTmp = "";
             $scope.ultima_busqueda = "";
             $scope.termino = "";
+            $scope.tipo_factura = "";
             $scope.paginaactual = 1;
             $scope.paginas = 0;
             $scope.items = 0;
@@ -538,9 +539,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             that.eliminarGetDocTemporalI012 = function (datos) {
 
+                that.tipoFacturaI012(datos);
                 that.listarProductosEliminarI012(datos.doc_tmp_id, function (condicional) {
 
                     if (condicional) {
+
+
 
                         var obj = {
                             session: $scope.session,
@@ -549,25 +553,49 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 listado: $scope.listado_productos,
                                 numero_doc: datos.numero_factura,
                                 prefijo: datos.prefijo_idc,
-//                        tipoDocumento: $scope.tipoDocumento  ??
+                                tipoDocumento: $scope.tipo_factura
                             }
                         };
-                        console.log("obj", obj);
-//                I012Service.eliminarGetDocTemporal(obj, function (data) {
-//                            if (data.status === 200) {
-//                                that.listarDocumetosTemporales(true);
-//                                AlertService.mostrarMensaje("warning", data.msj);
-//                            }
-//
-//                            if (data.status === 404) {
-//                                AlertService.mostrarMensaje("warning", data.msj);
-//                            }
-//
-//                            if (data.status === 500) {
-//                                AlertService.mostrarMensaje("warning", data.msj);
-//                            }
-//                        });
+                        I012Service.eliminarGetDocTemporal(obj, function (data) {
+                            if (data.status === 200) {
+                                that.listarDocumetosTemporales(true);
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 404) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                        });
                     }
+                });
+            };
+
+            that.tipoFacturaI012 = function (datos) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numero: datos.numero_factura,
+                        prefijo: datos.prefijo_idc
+                    }
+                };
+
+                Request.realizarRequest(API.I012.CONSULTAR_TIPO_FACTURA, "POST", obj, function (data) {
+                    if (data.status === 200) {
+
+                        if (data.obj.tipoFactura.length > 0) {
+                            $scope.tipo_factura = 0;
+
+                        } else {
+
+                            $scope.tipo_factura = 1;
+                        }
+                    }
+
                 });
             };
 

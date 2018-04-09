@@ -36,7 +36,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     cantidadTotal += parseInt(data.cantidad_ingresada);
                 });
 
-                console.log("fila",fila);
 
                 if (parseInt(cantidadTotal) > parseInt($scope.rootModificar.fila_cantidad)) {
                     AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar la cantidad enviada");

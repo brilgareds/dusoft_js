@@ -127,6 +127,31 @@ I012Controller.prototype.listarClienteId = function (req, res) {
 
 /**
  * @author German Galvis
+ * +Descripcion trae registro del seleccionado
+ * @fecha 2018-04-09
+ */
+I012Controller.prototype.tipoFactura = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        prefijo: args.prefijo,
+        numero: args.numero
+    };
+
+
+    G.Q.nfcall(that.m_i012.tipoFactura, parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar tipo de factura ok!!!!', 200, {tipoFactura: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al el tipo de factura', 500, {tipoFactura: {}}));
+            }).
+            done();
+
+};
+
+/**
+ * @author German Galvis
  * +Descripcion lista los productos de la factura
  * @fecha 2018-03-26
  */

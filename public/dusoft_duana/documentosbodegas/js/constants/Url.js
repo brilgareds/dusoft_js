@@ -65,6 +65,7 @@ define(["angular"], function(angular) {
                 'AGREGAR_ITEM': BASE_URL + '/movBodegas/I012/agregarItem',
                 'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I012/eliminarGetDocTemporal',
                 'CONSULTAR_PRODUCTOS_DEVUELTOS': BASE_URL + '/movBodegas/I012/consultarProductosDevueltos',
+                'CONSULTAR_TIPO_FACTURA': BASE_URL + '/movBodegas/I012/tipoFactura',
                 'ELIMINAR_PRODUCTO_DEVOLUCION': BASE_URL + '/movBodegas/I012/eliminarItem',
                 'CONSULTAR_RETENCIONES': BASE_URL + '/movBodegas/I012/consultarRetenciones',
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/I012/crearDocumento',

@@ -62,5 +62,9 @@ module.exports = function (app, di_container) {
      app.post('/api/movBodegas/I012/crearHtmlDocumento', function (req, res) {
      c_i012.crearHtmlDocumento(req, res);
      });
+     
+     app.post('/api/movBodegas/I012/tipoFactura', function (req, res) {
+     c_i012.tipoFactura(req, res);
+     });
 
 };

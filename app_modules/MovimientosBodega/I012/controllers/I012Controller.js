@@ -642,7 +642,7 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
         cabecera = result;
         if (result.length > 0) {
             
-            valorTotalFactura = cabecera[0].total_costo;
+            valorTotalFactura = parseFloat(cabecera[0].total_costo).toFixed(2);
             
             return G.Q.nfcall(that.m_i012.consultar_detalle_documento, parametros);
         } else {

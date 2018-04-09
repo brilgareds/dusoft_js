@@ -727,7 +727,7 @@ define([
 
             $scope.isNoTmp = function () {
                 var disabled = false;
-                if ($scope.doc_tmp_id === "00000" && $scope.documento_ingreso.getFacturaDevolucion() === undefined) {
+                if ($scope.doc_tmp_id === "00000" && ($scope.documento_ingreso.getFacturaDevolucion() === undefined ||$scope.documento_ingreso.getFacturaDevolucion() === null)) {
                     disabled = true;
                 }
                 return disabled;

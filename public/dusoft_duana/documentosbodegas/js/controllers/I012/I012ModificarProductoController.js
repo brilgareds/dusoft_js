@@ -5,7 +5,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         '$scope', '$rootScope', 'Request',
         '$modal', "$modalInstance", 'API', "socket", "$timeout", "$filter",
         "AlertService", "localStorageService", "$state",
-        'ProductoIngresoDevolucion', 'empresa', 'fila',
+        'ProductoFactura', 'empresa', 'fila',
         function ($scope, $rootScope, Request, $modal, $modalInstance, API, socket, $timeout, $filter, AlertService,
                 localStorageService, $state, Producto, empresa, fila) {
 
@@ -20,11 +20,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.rootModificar = {
                 datos_modificados: [],
                 fila: fila,
-                fila_cantidad: parseFloat(fila.cantidad).toFixed(0)
+                fila_cantidad: parseFloat(fila.cantidad_resta).toFixed(0)
             };
 
-            $scope.rootModificar.datos_modificados.push(Producto.get(fila.codigo_producto, fila.descripcion, 0,
-                    fila.tipo_producto_id, 0, fila.torre, null, 0, fila.item_id, 0, fila.novedad));
+            $scope.rootModificar.datos_modificados.push(Producto.get(fila.codigo_producto, fila.descripcion, fila.tipoProducto, 0,
+                    fila.torre, null, 0, fila.item_id, fila.porc_iva, fila.iva, fila.valorU));
 
             $scope.onCerrar = function () {
                 $modalInstance.close();
@@ -36,13 +36,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     cantidadTotal += parseInt(data.cantidad_ingresada);
                 });
 
+                console.log("fila",fila);
+
                 if (parseInt(cantidadTotal) > parseInt($scope.rootModificar.fila_cantidad)) {
                     AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar la cantidad enviada");
                     return;
                 }
 
                 that.funcionRecursiva($scope.rootModificar.datos_modificados, 0, function () {
-                    //that.insertarCantidad(fila.item_id, cantidadTotal);
                     $scope.onCerrar();
                 });
 
@@ -56,7 +57,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     callback(false);
                     return;
                 }
-                item.novedadAnexa = "CAMBIO LOTE MANUAL";
                 $scope.btn_adicionar_producto(item);
                 var time = setTimeout(function () {
                     index++;
@@ -94,10 +94,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $scope.btn_adicionar_modificacion = function () {
-                var producto = Producto.get(fila.codigo_producto, fila.descripcion, 0,
-                        fila.tipo_producto_id, 0, fila.torre);
-                producto.setNovedad(fila.novedad);
-                producto.setItemId(fila.item_id);
+                var producto = Producto.get(fila.codigo_producto, fila.descripcion, fila.tipoProducto, 0,
+                        fila.torre, null, 0, fila.item_id, fila.porc_iva, fila.iva, fila.valorU);
                 $scope.rootModificar.datos_modificados.push(producto);
             };
 
@@ -130,25 +128,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.$$watchers = null;
 
                 }, 500);
-            };
-
-
-            that.insertarCantidad = function (id, cantidad) {
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        cantidad: cantidad,
-                        item_id: id
-
-                    }
-                };
-                Request.realizarRequest(API.I011.INSERTAR_CANTIDAD, "POST", obj, function (data) {
-                    if (data.status === 200) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    } else {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }
-                });
             };
 
         }]);

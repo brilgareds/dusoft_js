@@ -43748,9 +43748,14 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
                 columnDefs: [
                     {field: 'relacion_id', displayName: 'Grupo', width: "5%"},
                     {field: 'municipio', displayName: "Ciudad", width: "14%"}, //
-                    {field: 'numero_factura', displayName: 'No. Factura', width: "10%"},
+                    {field: 'numero_factura', displayName: 'No. Factura', width: "8%"},
                     {field: 'descripcion', displayName: 'Descripcion', width: "30%"},
-                    {field: 'fecha_entrega', displayName: 'Fecha de Radicacion', width: "15%"},
+                    {displayName: "Img", cellClass: "txt-center dropdown-button", width: "4%",
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
+                                        <button ng-click="onDescargarArchivo(row.entity)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-download-alt"></span></button>\
+                                     </div>'
+                    },
+                    {field: 'fecha_entrega', displayName: 'Fecha de Radicacion', width: "13%"},
                     {displayName: 'Formato Cargado', cellClass: "txt-center dropdown-button", width: "10%",
                         cellTemplate: ' <div class="row">\
                                           <div class="txt-center dropdown-button" "checkbox" ng-if="row.entity.archivo==null">\
@@ -43910,6 +43915,10 @@ if (parametro.archivo===null){
             $scope.onDescargarArchivo = function (archivo) {
                 $scope.visualizarReporte("/Facturas/Sistemas/" + archivo.ruta, archivo.ruta, "blank");
             };
+            
+//            $scope.onDescargarArchivoFactura = function (archivo) {
+//                $scope.visualizarReporte("/Facturas/Sistemas/" + archivo.ruta, archivo.ruta, "blank");
+//            };
 
             $scope.onDescargarArchivoFormato = function (formato) {
 

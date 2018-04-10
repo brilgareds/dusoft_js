@@ -68,7 +68,8 @@ RadicacionModel.prototype.listarAgrupar = function (obj, callback) {
              'a.imprimir',
              'a.archivo',
              'a.factura_id',
-             'b.sw_entregado')
+             'b.sw_entregado',
+             'b.ruta')
             .select()
             .from("agrupar_factura as a")
             .innerJoin("factura as b", "a.factura_id", "b.factura_id")

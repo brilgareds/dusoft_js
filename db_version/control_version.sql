@@ -165,3 +165,15 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.24', 'RADICACIÓN', 'se compila gestionFactura');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.25  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.25', 'DOCUMENTOS BODEGA', 'se modifica el documento a imprimir para I012');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.26  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.26', 'RADICACIÓN', 'se agrega imagen de descarga para factura');
+COMMIT TRANSACTION;

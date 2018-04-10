@@ -177,3 +177,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.26', 'RADICACIÓN', 'se agrega imagen de descarga para factura');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.27  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.27', 'DOCUMENTOS BODEGA', 'se modifica la validacion de existencias');
+COMMIT TRANSACTION;

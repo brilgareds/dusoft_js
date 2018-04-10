@@ -558,6 +558,11 @@ function __validarExistencias(that, index, parametrosListado, transaccion, callb
     index++;
     G.Q.nfcall(that.m_e009.actualizarExistenciasBodegasLotesFv, producto, parametrosListado.ids, transaccion).then(function (resultado) {
 
+        if (resultado.length <= 0) {
+            throw 'Error no se encuentra el lote : ' + producto.lote
+                    + '\n del producto: ' + producto.codigo_producto + 'con fecha de vencimiento: '+producto.fecha_vencimiento;
+        }
+
         resta = (resultado[0].existencia_actual - producto.cantidad);
 
         if (resta >= 0) {
@@ -569,6 +574,11 @@ function __validarExistencias(that, index, parametrosListado, transaccion, callb
         }
 
     }).then(function (resultado) {
+
+        if (resultado.length <= 0) {
+            throw 'Error no se encuentra existencias en bodega para el lote : ' + producto.lote
+                    + '\n del producto: ' + producto.codigo_producto + 'con fecha de vencimiento: '+producto.fecha_vencimiento;
+        }
 
         resta = (resultado[0].existencia - producto.cantidad);
 

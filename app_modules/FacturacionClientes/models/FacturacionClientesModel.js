@@ -1473,9 +1473,13 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
             if(obj.estado === 5){
                 this.andWhere("a.id_factura_xconsumo",obj.id_factura_xconsumo)               
             }
+            
+            if(obj.idFacturaXconsumo !== undefined){
+                this.andWhere("a.id_factura_xconsumo",obj.idFacturaXconsumo)               
+            }
         })
         .groupBy(camposGroupBy);
-        
+       
     query.then(function(resultado){    
         callback(false, resultado);
     }).catch(function(err){

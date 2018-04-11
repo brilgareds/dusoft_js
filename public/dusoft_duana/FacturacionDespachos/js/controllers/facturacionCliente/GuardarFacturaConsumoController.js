@@ -365,10 +365,12 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         prefijo_documento: $scope.root.documento.get_prefijo(),
                         empresa_id:$scope.root.documento.get_empresa(),
                         tipoTerceroId: $scope.root.cliente.getTipoId(),
-                        terceroId:$scope.root.cliente.getId()
+                        terceroId:$scope.root.cliente.getId(),
+                        idFacturaXconsumo: $scope.root.idFacturaXconsumo
                     }
                 }
             };
+            console.log(" obj ",obj.data);
             facturacionClientesService.consultarDetalleTemporalFacturaConsumo(obj, function(data){
            
                 var sumTotalIva = 0;
@@ -573,9 +575,11 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     } else {
                         var lsTemp = localStorageService.get("facturaTemporalCabecera");
                         if(lsTemp){
+                            console.log('lsTemp',lsTemp);
                             $scope.disabledDropDownCliente = true;
                             $scope.tipoPagoFacturaConsumo = lsTemp.tipo_pago;
                             $scope.root.observacion = lsTemp.observaciones;
+                            $scope.root.idFacturaXconsumo =lsTemp.id_factura_xconsumo;
                             that.listarCliente(lsTemp.nombre_tercero, function(estado){
                                 if(estado){
                                     $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 

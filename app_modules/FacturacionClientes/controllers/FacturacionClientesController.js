@@ -1204,9 +1204,10 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function(
         terceroId: args.facturas_consumo.terceroId,
         prefijo: args.facturas_consumo.prefijo_documento,
         numero: args.facturas_consumo.numero_documento,
+        idFacturaXconsumo:args.facturas_consumo.idFacturaXconsumo,
         estado: 4
     };
-    
+
     var usuario = req.session.user.usuario_id;
      
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametros).then(function(resultado){

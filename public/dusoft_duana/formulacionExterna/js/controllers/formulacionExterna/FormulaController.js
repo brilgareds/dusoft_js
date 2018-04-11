@@ -4,7 +4,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
     controllers.controller('ModalSeleccionarController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", seleccionarController]);
     controllers.controller('ModalLotesMedicamentosFormuladosController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", lotesMedicamentosFormuladosController]);
     controllers.controller('ModalBusquedaProductosController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", busquedaProductosController]);
-    
+    controllers.controller('ModalGenerarEntregaController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", generarEntregaController]);
+    controllers.controller('ModalDispensacionFormulaExternaAutorizacionController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario","detalleRegistroDispensacion","detalleFormula", dispensacionFormulaExternaAutorizacionController]);
+
     function formulaController($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
         //Tipos de documento que se despliegan en el elemento select
         $scope.tipoDocumentos = [];
@@ -60,10 +62,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.abrirModalBusquedaMedicamentos = abrirModalBusquedaMedicamentos;
         $scope.eliminarProductoLoteSeleccionado = eliminarProductoLoteSeleccionado;
         $scope.eliminarProducto = eliminarProducto;
-        $scope.generarEntrega = generarEntrega;
-
-
-
+        $scope.abrirModalGenerarEntrega = abrirModalGenerarEntrega;
 
         /***********************************
             Definicion de funciones
@@ -176,10 +175,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
 
             var modalInstance = $modal.open($scope.opts);
             modalInstance.result.then(function(item){
+                //obtiene los medicamentos formulados guardados en temporal
+                formulaExternaService.obtenerMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosFormuladosTmp){
+                    if(!error){
+                        $scope.root.productosFormulados = medicamentosFormuladosTmp;
+                    }
+                });
 
             },function(){
+                //obtiene los medicamentos formulados guardados en temporal
+                formulaExternaService.obtenerMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosFormuladosTmp){
+                    if(!error){
+                        $scope.root.productosFormulados = medicamentosFormuladosTmp;
+                    }
+                });
+
             });
-        
         }
 
         function guardarFormulaExternaTmp(){
@@ -277,6 +288,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                         }
                     });
                     //productosLotesSeleccionados
+                }else{
+                    $scope.diagnosticos = [];
+                    $scope.root.productosFormulados = [];
+                    $scope.root.productosLotesSeleccionados = [];
                 }
             });
         }
@@ -385,10 +400,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 }
             });
         }
-        function generarEntrega(tmp_formula_id, empresa_id, centro_utilidad, bodega){
-            console.log('tmp_formula_id', tmp_formula_id);
-            formulaExternaService.generarEntrega(tmp_formula_id, empresa_id, centro_utilidad, bodega, function(error, data){
-                console.log('resultado en generarEntrega', data);
+
+
+        function abrirModalGenerarEntrega(){
+            $scope.opts = {
+                backdropClick: true,
+                dialogFade: false,
+                keyboard: true,
+                windowClass: 'app-modal-window-sm',
+                templateUrl: 'views/formulacionExterna/modal/dispensacionRealizarEntrega.html',
+                scope: $scope,
+                controller: "ModalGenerarEntregaController"
+            };
+
+
+
+            //datos para compartir con el controlador del modal
+            /*formulaExternaService.shared = {
+                tipoEntrega: tipoEntrega
+            };*/
+
+            var modalInstance = $modal.open($scope.opts);
+            modalInstance.result.then(function(item){
+                //cierra el modal 
+            },function(){
             });
         }
 
@@ -529,6 +564,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.agregarClaseLoteProxVencer = agregarClaseLoteProxVencer;
         $scope.cerrarVentanaDispensacionFormula = cerrarVentanaDispensacionFormula;
         $scope.adicionarEliminarDispensacionMedicamento = adicionarEliminarDispensacionMedicamento;
+        $scope.ventanaAutorizaDispensacion = ventanaAutorizaDispensacion;
 
         function agregarClaseLoteProxVencer (estado) {
             return $scope.estadosLotesProxVencer[estado];
@@ -582,6 +618,40 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             }
         }
 
+        function ventanaAutorizaDispensacion(ultimoRegistroDispensacion, entity){ 
+            $scope.opts = {
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: true,
+                keyboard: true,
+                templateUrl: '../DispensacionHc/views/dispensacionHc/dispensarAutorizaDispensacion.html',
+                scope: $scope,                  
+                controller: "ModalDispensacionFormulaExternaAutorizacionController",
+                resolve: {
+                        detalleRegistroDispensacion: function() {
+                            return ultimoRegistroDispensacion;
+                        },                     
+                        detalleFormula: function(){
+                            return entity;
+                        }
+                    }           
+            };
+            var modalInstance = $modal.open($scope.opts);   
+           
+            modalInstance.result.then(function(resultado){
+                if(!resultado){
+                    $scope.cerrarVentanaDispensacionFormula();
+                    return;
+                }
+                //Si el medicamento fue autorizado, se refresca la propiedad dle objeto producto y se reinicia "init()" el modal para que recupere los lotes.
+                if(resultado.sw_autorizado){
+                    formulaExternaService.shared.producto.sw_autorizado = '1';
+                }
+                init();
+            },function(){});                          
+                
+        };
+
         //inicializacion del modal
         function init(){
             $scope.data.empresa_id = Usuario.getUsuarioActual().getEmpresa().getCodigo();
@@ -589,10 +659,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $scope.data.bodega = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
             $scope.data.producto = formulaExternaService.shared.producto;
             $scope.data.tmp_formula_id = formulaExternaService.shared.tmp_formula_id;
-
             //obtiene el producto con los lotes del producto 
-            formulaExternaService.obtenerLotesDeProducto($scope.empresa_id, $scope.centro_utilidad, $scope.bodega,  $scope.data.producto.codigo_producto, $scope.data.tmp_formula_id, function(error, productos){
-                $scope.data.productos = productos;
+            formulaExternaService.obtenerLotesDeProducto($scope.empresa_id, $scope.centro_utilidad, $scope.bodega, $scope.data.producto.codigo_producto, $scope.data.tmp_formula_id, $scope.root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(), $scope.root.afiliado.mostrarPacientes()[0].getPacienteId(), $scope.data.producto.principio_activo, $scope.data.producto.sw_autorizado, function(error, data){
+                //medicamento ya fue entregado en menos de 25 dias
+                if(error == 204){
+                    formulaExternaService.usuarioPrivilegios($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, function(error, privilegios){
+                        console.log(privilegios.sw_privilegio_autorizar_confrontado);
+                        if(privilegios.sw_privilegio_autorizar_confrontado){
+                            //mostrar modal para autorizacion la dispensacion
+                            $scope.ventanaAutorizaDispensacion(data, $scope.data.producto);
+                        }else{
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El usuario no posee privilegios para autorizar la dispensacion");   
+                            $scope.cerrarVentanaDispensacionFormula();
+                        }
+                    });
+                    return;
+                }
+
+                $scope.data.productos = data;
             });
 
             //grilla de lotes 
@@ -682,7 +766,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $scope.root.productosFormulados.push(producto);
         }
 
-
         function reiniciarPagina(){
             $scope.root.busquedaProductos.pagina=1;
         }
@@ -711,5 +794,203 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
 
         init();
     }
+
+/****************************************** CONTROLLER GENERAR ENTREGA ********************************************/
+    function generarEntregaController($scope, $rootScope, Request, $filter, $state, $modal, $modalInstance, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario){
+        $scope.cerrarVentana  = cerrarVentana;
+        $scope.generarEntrega = generarEntrega;
+        $scope.root.observacion = '';
+
+        function cerrarVentana() {
+            $modalInstance.close();
+        }
+
+        function generarEntrega(tmp_formula_id, observacion, empresa_id, centro_utilidad, bodega, plan) {
+            //Valida todo_pendiente {si ningun medicamento fue dispensado todo_pendiente = 1 | si algun medicamento fue dispensado todo_pendiente = 0}
+            var todo_pendiente = $scope.root.productosLotesSeleccionados.length == 0? 1 : 0;
+            var observacion = observacion + " No. Formula: " + $scope.root.formula.formula_papel + " Paciente " + $scope.root.afiliado.mostrarPacientes()[0].getTipoIdPaciente() + $scope.root.afiliado.mostrarPacientes()[0].getPacienteId() + " " + $scope.root.afiliado.mostrarPacientes()[0].getNombres() + " " + $scope.root.afiliado.mostrarPacientes()[0].getApellidos();
+
+            formulaExternaService.generarEntrega(tmp_formula_id, observacion, todo_pendiente, empresa_id, centro_utilidad, bodega, plan,function(error, data){
+                if(error){
+                    AlertService.mostrarMensaje("warning", data);
+                    return;
+                }
+            });
+        }
+
+        function init(){
+            $scope.medicamentosTemporales = {
+                data: 'root.productosLotesSeleccionados',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
+                columnDefs: [
+                    {field: 'molecula', displayName: 'Medicamento'},
+                    {field: 'cantidad_despachada', displayName: 'Cantidad', width:"20%"}
+                ]
+            };
+        }
+
+        init();
+    }
+
+/****************************************** CONTROLLER AUTORIZACION ENTREGA MEDICAMENTO ********************************************/
+    function dispensacionFormulaExternaAutorizacionController($scope, $rootScope, Request, $filter, $state, $modal, $modalInstance, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario, detalleRegistroDispensacion, detalleFormula){
+        var that = this;
+        var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
+        var seleccionTipoObservacion;
+        $scope.root = { observacion:''}; 
+       
+        $scope.detalleRegistroDispensacion = detalleRegistroDispensacion.msj[0];
+        console.log('detalle registro dispensacion', $scope.detalleRegistroDispensacion);
+        /*
+         * Inicializacion de variables
+         * @param {type} empresa
+         * @param {type} callback
+         * @returns {void}
+         */
+        that.init = function(empresa, callback) {
+            $scope.session = {
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
+            };
+            callback();
+        };
+        
+        that.tipoObservacionConfrontado = function(){
+              var tipoObservacion = [];                
+              var data = [ {descripcion: "Entrega tarde"},
+                           {descripcion: "Aumento de dosis"},
+                           {descripcion: "No cumple el tiempo de tratamiento"}];
+            for(var i in data){                
+                tipoObservacion.push(data[i]);
+            }                  
+            return tipoObservacion;
+        };
+        /**
+        * @author Cristian Ardila
+        * @fecha 09/06/2016 (MM/DD/YYYY)
+        * +Descripcion Metodo el cual invocara el servicio que consulta
+        *              todos los tipos de formulas
+        * */
+        that.listarTipoObservacion = function(){
+           $scope.tipoObservacion =  that.tipoObservacionConfrontado();
+        };
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Se visualiza la tabla con los tipos de formulas
+         * @fecha 25/05/2016
+         */
+        $scope.listaTipoObservacion = {
+            data: 'tipoObservacion',
+            afterSelectionChange: function(rowItem) {
+                    if (rowItem.selected) {
+                        that.onSeleccionTipoObservacion(rowItem.entity);
+                    }else{
+                        that.onSeleccionTipoObservacion(undefined);
+                    }
+                },
+            enableColumnResize: true,
+            enableRowSelection: true,
+            keepLastSelected: false,
+            multiSelect: false,
+            columnDefs: [
+                {field: 'descripcion', displayName: 'Descripcion'},              
+            ],
+        };
+         
+        that.onSeleccionTipoObservacion = function(entity){
+            seleccionTipoObservacion = entity;
+        };
+        
+        /*
+         * +Descripcion Metodo encargado de realizar la autorizacion del producto
+         *              confrontado y emitir un evento para que se desplegue la ventana
+         *              con los lotes
+         * @fecha 2016-10-13 YYYY-MM-DD
+         */
+        that.realizarEntregaFormula = function(){
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+           
+            console.log('producto', detalleFormula.codigo_producto);
+            console.log('observacion', seleccionTipoObservacion.descripcion);
+            console.log('detalle formula', detalleFormula);
+            formulaExternaService.autorizarMedicamento(detalleFormula.fe_medicamento_id, seleccionTipoObservacion.descripcion, function(error, respuesta){
+                if(!error){
+                    that.cerrarVentana({sw_autorizado : true});
+                } else {
+                    that.cerrarVentana({sw_autorizado : false});
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error en la autorizacion");
+                }
+            });
+
+            /*
+            dispensacionHcService.autorizarDispensacionMedicamento(obj,function(data){
+                var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+                if(data.status === 200){
+                    AlertService.mostrarMensaje("success", data.msj);
+                    $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: data.obj.autorizar_dispensacion.evolucion_id, pendientes: resultadoStorage.pendientes});
+                    that.cerrarVentana(data);
+                }else{
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }
+            }); */
+        };
+        
+        $scope.realizarAutorizacionDispensacion = function(){
+            if(!seleccionTipoObservacion){
+                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el tipo de observacion");
+                return;
+            }
+            
+            AlertService.mostrarVentanaAlerta("Mensaje del sistema",  "Desea autorizar la dispensacion del medicamento?",
+                function(estado){
+                    if(estado){
+                       that.realizarEntregaFormula();
+                    }
+                }
+            );
+        };
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de cerrar la ventana actual
+         * @fecha 09/06/2016 (DD/MM/YYYY)
+         */
+        $scope.cerrarVentana = function(){
+            $modalInstance.close();
+        };
+        
+        that.cerrarVentana = function(data){
+            $modalInstance.close(data);
+        }
+
+        that.init(empresa, function() {
+            if(!Usuario.getUsuarioActual().getEmpresa()) {
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
+                AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+            }else{
+                if(!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() || Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
+                    $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
+                    AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+                }else{
+                    if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                        $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
+                        AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                    }
+                }
+            }
+        });
+        
+        that.listarTipoObservacion();
+        $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+            $scope.$$watchers = null;
+            // set localstorage
+            $scope.root=null;
+        });
+    }
+    
 
 });

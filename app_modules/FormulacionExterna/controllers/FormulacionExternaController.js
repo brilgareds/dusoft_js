@@ -182,13 +182,59 @@ FormulacionExterna.prototype.consultaExisteFormula = function(req, res){
 FormulacionExterna.prototype.obtenerLotesDeProducto = function(req, res){
     var that = this;
     var args = req.body.data;
+    var def = G.Q.defer();
 
-    G.Q.ninvoke(that.m_formulacionExterna,'obtenerLotesDeProducto', args.empresa_id, args.centro_utilidad, args.bodega, args.codigo_producto, args.formula_id_tmp).then(function(lotesProductos){
-        res.send(G.utils.r(req.url, 'obtuvo lotes productos', 200, lotesProductos));
-    }).fail(function(err){
-        G.logError("FormulacionExterna [obtenerLotesDeProducto] " + err);
-        res.send(G.utils.r(req.url, 'Error obteniendo lotes del producto', 500, err));
-    }).done();
+    var today = new Date();
+    var formato = 'YYYY-MM-DD';
+    var fechaRegistro = "";
+    var fechaDespacho = "";
+    var fechaExtTicinco=G.moment().subtract(25,'days').format(formato);
+    var fechaToday = G.moment(today).format(formato);
+
+    var parametrosUltimoRegistroDispensacion = {
+        tipoIdPaciente: args.tipo_paciente_id,
+        pacienteId:args.paciente_id,
+        principioActivo: args.principio_activo, 
+        producto: args.codigo_producto,
+        fechaDia: fechaExtTicinco,
+        today: fechaToday,
+        movimientoFormulaPaciente: 1
+    };
+        
+    G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parametrosUltimoRegistroDispensacion).then(function(resultado){
+        if(resultado.length > 0){ 
+            fechaRegistro = resultado[0].fecha_registro;
+        }
+
+        if(fechaToday >= fechaRegistro){
+            if(!fechaRegistro){                
+                 fechaDespacho = fechaExtTicinco;
+            }else{
+                fechaDespacho = fechaRegistro;
+            }
+        }
+ 
+        var fechaActual = G.moment(fechaToday);
+        var fechaUltimaEntregaProducto  = G.moment(fechaDespacho);
+        var diferenciaDeDias = fechaActual.diff(fechaUltimaEntregaProducto, 'days');
+
+        if(diferenciaDeDias > 23 || args.existenciasBodegas.autorizado === '1' || args.existenciasBodegas.autorizado === ""){
+            return G.Q.ninvoke(that.m_formulacionExterna,'obtenerLotesDeProducto', args.empresa_id, args.centro_utilidad, args.bodega, args.codigo_producto, args.formula_id_tmp);
+        }else{
+            def.resolve();             
+            throw {msj: resultado, codigo: 204};
+        }
+    }).then(function(lotesProducto){
+        if(lotesProducto || lotesProducto.length > 0){
+             res.send(G.utils.r(req.url, 'Lotes del producto', 200, lotesProducto));
+        }else{
+             res.send(G.utils.r(req.url, 'Lotes del producto', 200, []));
+        }
+    }).fail(function(err){     
+        console.log(err);
+        G.logError('FormulacionExterna  [obtenerLotesDeProducto] ' + err);
+        res.send(G.utils.r(req.url, err.msj, err.codigo, {existenciasBodegas: []}));
+    }).done(); 
 }
 
 FormulacionExterna.prototype.insertarDispensacionMedicamentoTmp = function(req, res){
@@ -228,18 +274,119 @@ FormulacionExterna.prototype.obtenerDispensacionMedicamentosTmp  = function(req,
     }).done();
 }
 
+FormulacionExterna.prototype.updateAutorizacionPorMedicamento  = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    var usuario_id = req.session.user.usuario_id;
+
+    G.Q.ninvoke(that.m_formulacionExterna,'updateAutorizacionPorMedicamento', args.fe_medicamento_id, args.observacion_autorizacion, usuario_id).then(function(resultado){
+        res.send(G.utils.r(req.url, 'autoriza el medicamento', 200, resultado));
+    }).fail(function(err){
+        G.logError("FormulacionExterna [updateAutorizacionPorMedicamento] " + err);
+        res.send(G.utils.r(req.url, 'Error actualizando autoriza el medicamento', 500, err));
+    }).done();
+}
+
 FormulacionExterna.prototype.generarEntrega  = function(req, res){
     var that = this;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
-//formula_id_tmp, empresa_id, centro_utilidad, bodega
-    G.Q.ninvoke(that.m_formulacionExterna,'generarEntrega', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id).then(function(resultado){
-        res.send(G.utils.r(req.url, 'Generar entrega', 200, resultado));
+
+    var tmp = {};
+/*
+formula_id_tmp, empresa_id, centro_utilidad, bodega, plan, observacion, todo_pendiente
+*/
+    console.log('parametros', args);
+    //Pasa la formula de temporal a las tablas finales
+    G.Q.ninvoke(that.m_formulacionExterna,'registrarFormulaReal', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id).then(function(formula_id){
+        tmp.formula_id = formula_id;
+        console.log('fomrula_id ------->', formula_id);
+        //consultar el id del documento de bodega
+        var parametroBodegaDocId = {variable:"documento_dispensacion_"+args.empresa_id+"_"+args.bodega, tipoVariable:1, modulo:'Formulacion_Externa'};
+        return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId); 
+    }).then(function(resultado){
+        if(resultado.length > 0){
+            tmp.bodegasDocId = resultado[0].valor;          
+            console.log('tmp.bodegasDocId ----->', tmp.bodegasDocId);
+            return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId: tmp.bodegasDocId}); 
+        }else{
+            throw 'El id del documento de bodega no se encuentra parametrizado'
+        }
+    }).then(function(resultado){
+        tmp.numeracion = resultado[0];
+        console.log('numeracion', tmp.numeracion);
+        return G.Q.ninvoke(that.m_formulacionExterna,'generarDispensacionFormula', args.empresa_id, args.centro_utilidad, args.bodega, args.plan, tmp.bodegasDocId, tmp.numeracion, args.formula_id_tmp, tmp.formula_id, args.observacion, usuario_id, args.todo_pendiente); 
+    }).then(function(resultado){
+        return G.Q.ninvoke(that.m_formulacionExterna,'listarMedicamentosPendientesSinDispensar', tmp.formula_id, args.formula_id_tmp); 
+    }).then(function(resultado){
+        console.log('terminado :) ');
+    }).then(function(resultado){
+        res.send(G.utils.r(req.url, 'Entrega generada', 200, resultado));
     }).fail(function(err){
         G.logError("FormulacionExterna [generarEntrega] " + err);
         res.send(G.utils.r(req.url, 'Error generando entrega', 500, err));
     }).done();
 }
+
+ FormulacionExterna.prototype.listarMedicamentosPendientesPorDispensar = function(req, res){
+    var that = this;
+    var args = req.body.data;
+/*    if (args.listar_medicamentos_pendientes === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_pendientes: []}));
+        return;
+    }
+   
+    if (!args.listar_medicamentos_pendientes.evolucion || args.listar_medicamentos_pendientes.evolucion.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {listar_medicamentos_pendientes: []}));
+        return;
+    }*/
+
+    var productosPendientes;
+    var detalleCabecera;
+    /*var parametros = {evolucionId:args.listar_medicamentos_pendientes.evolucion,
+
+        tipoIdPaciente: args.listar_medicamentos_pendientes.tipoIdPaciente,
+        pacienteId: args.listar_medicamentos_pendientes.pacienteId,
+        estadoEntrega: 1
+    };*/
+   
+    G.Q.ninvoke(that.m_formulacionExterna,'listarMedicamentosPendientesPorDispensar', args.formula_id).then(function(resultado){
+        if(resultado.length > 0){             
+           throw 'No hay pendientes por dispensar';
+            productosPendientes = resultado;          
+            //return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormula',parametros)         
+        }else{
+           throw 'No hay pendientes por dispensar';
+        }
+   }).then(function(resultado){
+       if(resultado.length > 0){ 
+            detalleCabecera = resultado[0];
+            return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros)
+        }else{
+            throw 'Consulta sin resultados';
+        }
+   }).then(function(resultado){
+        if(resultado.length > 0){ 
+            __generarPdf({productosPendientes:productosPendientes, 
+                            serverUrl:req.protocol + '://' + req.get('host')+ "/", 
+                            detalle: detalleCabecera, 
+                            profesional:resultado[0],
+                            archivoHtml: 'medicamentosPendientesPorDispensar.html',
+                            reporte: "Medicamentos_pendientes_por_dispensar_"}, function(nombre_pdf) {
+                    
+                    res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
+                    
+                        listar_medicamentos_pendientes: {nombre_pdf: nombre_pdf, resultados: productosPendientes}
+                    }));
+                });
+        }else{
+            throw 'Consulta sin resultados';
+        }
+           
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 
 FormulacionExterna.$inject = ["m_formulacion_externa", "m_dispensacion_hc"];
 module.exports = FormulacionExterna;

@@ -331,7 +331,6 @@ define(["angular", "js/services"], function(angular, services) {
               *              dispensacion del usuario de la session
               */
             self.usuarioPrivilegios = function(obj,callback){
-               
                 Request.realizarRequest(API.DISPENSACIONHC.USUARIO_PRIVILEGIOS,"POST", obj, function(data){     
                     callback(data);
                 });

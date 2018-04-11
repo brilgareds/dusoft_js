@@ -26,7 +26,10 @@ define(["angular"], function(angular) {
                 "ELIMINAR_DISPENSACION_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/eliminarDispensacionMedicamentoTmp",
                 "OBTENER_DISPENSACION_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/obtenerDispensacionMedicamentosTmp",
                 "GENERAR_ENTREGA": BASE_URL + "/FormulacionExterna/generarEntrega",
-
+                "AUTORIZAR_MEDICAMENTO": BASE_URL + "/FormulacionExterna/updateAutorizacionPorMedicamento"
+            },
+            'DISPENSACIONHC':{
+                "USUARIO_PRIVILEGIOS": BASE_URL + "/DispensacionHc/usuarioPrivilegios"
             }
         }
     };

@@ -83,7 +83,15 @@ module.exports = function(app, di_container) {
         c_formulacion_externa.obtenerDispensacionMedicamentosTmp(req, res);
     });
 
+    app.post('/api/FormulacionExterna/updateAutorizacionPorMedicamento', function(req, res) {
+        c_formulacion_externa.updateAutorizacionPorMedicamento(req, res);
+    });
+
     app.post('/api/FormulacionExterna/generarEntrega', function(req, res) {
         c_formulacion_externa.generarEntrega(req, res);
+    });       
+
+    app.post('/api/FormulacionExterna/listarMedicamentosPendientesPorDispensar', function(req, res) {
+        c_formulacion_externa.listarMedicamentosPendientesPorDispensar(req, res);
     });       
 };

@@ -1,0 +1,31 @@
+<style type="text/css">
+    .gridStyle3 {
+        margin-top: 5px;
+        border: 1px solid rgb(212,212,212);
+        width: 100%;
+        height: 200px;
+    }
+</style>
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <h4 class="h4MarginTopBottom"><span >Entrega medicamentos</span></h4>
+            </div>
+            <br>
+            <div class="row marginCampoObservacion" >                   
+                <div class="form-group">
+                    <div class="col-sm-12"><textarea class="form-control" ng-model="root.observacion" id="inputBody" rows="2" placeholder="Observacion"></textarea></div>
+                </div>                
+            </div>
+            <div class="table-responsive">
+                <div class="gridStyle3" ng-grid="medicamentosTemporales"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-warning" ng-click="generarEntrega(root.formula.tmp_formula_id, root.observacion, empresa_id, centro_utilidad, bodega, root.afiliado.mostrarPlanAtencion()[0].mostrarPlanes()[0].getPlanId())" ng-disabled="btnEntregaFormula">Aceptar</button>
+            <button type="button" class="btn btn-primary" ng-click="cerrarVentana()">Cancelar</button>
+        </div>
+    </div>
+</div> 
+

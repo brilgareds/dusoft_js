@@ -38,6 +38,9 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
     self.eliminarDispensacionMedicamentoTmp = eliminarDispensacionMedicamentoTmp;
     self.obtenerDispensacionMedicamentosTmp = obtenerDispensacionMedicamentosTmp;
     self.generarEntrega = generarEntrega;
+    self.usuarioPrivilegios = usuarioPrivilegios;
+    self.autorizarMedicamento = autorizarMedicamento;
+    
 
     return this;
 
@@ -400,7 +403,10 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       });
     }
 
-    function obtenerLotesDeProducto(empresa_id, centro_utilidad, bodega, codigo_producto, formula_id_tmp, callback){
+    function obtenerLotesDeProducto(empresa_id, centro_utilidad, bodega, codigo_producto, formula_id_tmp, tipo_paciente_id, paciente_id, principio_activo, sw_autorizado, callback){
+      /*
+        args.existenciasBodegas.autorizado
+      */
       var body = {
         session : self.session,
         data : {
@@ -408,15 +414,22 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
           centro_utilidad : centro_utilidad,
           bodega : bodega,
           codigo_producto : codigo_producto,
-          formula_id_tmp : formula_id_tmp
+          formula_id_tmp : formula_id_tmp,
+          existenciasBodegas : {
+            autorizado : sw_autorizado
+          },
+          //parametros para confontar el medicamento (determinar si ya se realizo una entrega del medicamento hace menos de 25 dias)
+          tipo_paciente_id: tipo_paciente_id, 
+          paciente_id : paciente_id,
+          principio_activo : principio_activo
         }
       };
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.OBTENER_LOTES_DE_PRODUCTO, "POST", body, function(data){
-        var error = data.status == 200? 0 : 1;
+        var error = data.status == 200? 0 : data.status;
         if(!error){
             var productos = [];
-
+            console.log('data cuando trae lotes', data);
             data.obj.forEach(function(item, index){
               var objLote = Lote.get(item.lote, item.fecha_vencimiento, item.existencia_actual);
               var objProducto = Producto.get(item.codigo_producto, item.producto, 0);
@@ -434,10 +447,32 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
             });
           callback(error, productos);
         } else {
-          callback(error, null);
+          callback(error, data);
         }
       });
     }
+
+    function usuarioPrivilegios(empresa_id, centro_utilidad, bodega, callback){ 
+      var body = {
+        session : self.session,
+        data : {
+          existenciasBodegas : {
+            empresa : empresa_id,
+            centroUtilidad : centro_utilidad,
+            bodega : bodega
+          }
+        }
+      };
+
+      Request.realizarRequest(API.DISPENSACIONHC.USUARIO_PRIVILEGIOS,"POST", body, function(data){     
+        var error = data.status == 200? 0 : data.status;
+        if(!error){
+          callback(error, data.obj.privilegios);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    };
 
     function insertarDispensacionMedicamentoTmp(empresa_id, centro_utilidad, bodega, codigo_producto, cantidad_despachada, fecha_vencimiento, lote, formula_id_tmp, cantidad_solicitada, callback){
       var body = {
@@ -501,15 +536,17 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       });
     }
 
-    function generarEntrega(formula_id_tmp, empresa_id, centro_utilidad, bodega, callback){
+    function generarEntrega(formula_id_tmp, observacion, todo_pendiente, empresa_id, centro_utilidad, bodega, plan, callback){
       var body = {
         session : self.session,
-      //formula_id_tmp, empresa_id, centro_utilidad, bodega
         data : {
           formula_id_tmp : formula_id_tmp,
+          observacion : observacion,
+          todo_pendiente : todo_pendiente,
           empresa_id : empresa_id,
           centro_utilidad : centro_utilidad,
-          bodega : bodega
+          bodega : bodega,
+          plan: plan
         }
       };
 
@@ -518,10 +555,33 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
         if(!error){
           callback(error, data.obj);
         } else {
-          callback(error, null);
+          callback(error, data.obj);
         }
       });
     }
+
+    //args.fe_medicamento_id, args.observacion_autorizacion,
+    function autorizarMedicamento(fe_medicamento_id, observacion_autorizacion, callback){
+
+      var body = {
+        session : self.session,
+        data : {
+          fe_medicamento_id : fe_medicamento_id,
+          observacion_autorizacion : observacion_autorizacion
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.AUTORIZAR_MEDICAMENTO, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
+
+
 
   }
 });

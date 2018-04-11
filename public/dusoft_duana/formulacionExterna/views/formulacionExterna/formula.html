@@ -228,10 +228,13 @@
 	            	</div>
 	            </div>
 	            <div class="modal-footer col-md-12 ng-scope" >
-	            	<button class="btn btn-default ng-scope" ng-click="ventanaTipoEntregaFormula(1)" >
+	            	<button class="btn btn-default ng-scope" ng-click="ventanaTipoEntregaFormula()" >
 	                    Volver
 	                </button>
-		            <button class="btn btn-default ng-scope" ng-click="generarEntrega(root.formula.tmp_formula_id, empresa_id, centro_utilidad, bodega)" >
+	                <!--<button class="btn btn-default ng-scope" ng-click="abrirModalGenerarEntrega(0)" ng-disabled="root.productosLotesSeleccionados.length > 0">
+	                    <span class="glyphicon glyphicon-cog"></span> Todo pendiente
+	                </button>-->
+		            <button class="btn btn-default ng-scope" ng-click="abrirModalGenerarEntrega()" >
 	                    <span class="glyphicon glyphicon-cog"></span> Realizar entrega
 	                </button>
 	        	</div>

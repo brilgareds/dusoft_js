@@ -1,3 +1,4 @@
+
 define(["angular", "js/controllers", "js/models/FacturaConsumo",
         "js/models/FacturaDetalleConsumo", "js/models/DocumentoDetalleConsumo"], function (angular, controllers) {
 

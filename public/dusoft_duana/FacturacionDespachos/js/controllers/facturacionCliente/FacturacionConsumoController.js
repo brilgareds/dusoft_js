@@ -1,3 +1,4 @@
+
 define(["angular", "js/controllers"], function (angular, controllers) {
 
     var fo = controllers.controller('FacturacionConsumoController',

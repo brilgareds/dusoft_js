@@ -1,3 +1,4 @@
+
 var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };
@@ -2264,6 +2265,5 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
 
    
 FacturacionClientesModel.$inject = ["m_e008"];
-
 
 module.exports = FacturacionClientesModel;

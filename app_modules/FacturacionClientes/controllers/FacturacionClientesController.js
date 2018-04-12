@@ -1,3 +1,4 @@
+
 var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e008,m_usuarios,m_sincronizacion,e_facturacion_clientes,m_pedidos_clientes) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
@@ -1199,10 +1200,10 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function(
     }
     
     var estado=4;
-    if(args.facturas_consumo.estado != '' && args.facturas_consumo.estado != undefined){
+    if(args.facturas_consumo.estado === 0){
       estado=6;  
     }
-    
+    console.log("args.facturas_consumo ",args.facturas_consumo);
     var parametros = {
         empresaId: args.facturas_consumo.empresa_id,
         tipoIdTercero: args.facturas_consumo.tipoTerceroId,

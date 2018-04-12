@@ -1198,15 +1198,21 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function(
         return;
     }
     
+    var estado=4;
+    if(args.facturas_consumo.estado != '' && args.facturas_consumo.estado != undefined){
+      estado=6;  
+    }
+    
     var parametros = {
         empresaId: args.facturas_consumo.empresa_id,
         tipoIdTercero: args.facturas_consumo.tipoTerceroId,
         terceroId: args.facturas_consumo.terceroId,
         prefijo: args.facturas_consumo.prefijo_documento,
         numero: args.facturas_consumo.numero_documento,
-        estado: 4
+        idFacturaXconsumo:args.facturas_consumo.idFacturaXconsumo,
+        estado: estado
     };
-    
+
     var usuario = req.session.user.usuario_id;
      
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametros).then(function(resultado){

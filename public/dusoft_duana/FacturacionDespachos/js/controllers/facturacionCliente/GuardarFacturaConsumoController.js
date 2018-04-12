@@ -365,7 +365,9 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         prefijo_documento: $scope.root.documento.get_prefijo(),
                         empresa_id:$scope.root.documento.get_empresa(),
                         tipoTerceroId: $scope.root.cliente.getTipoId(),
-                        terceroId:$scope.root.cliente.getId()
+                        terceroId:$scope.root.cliente.getId(),
+                        idFacturaXconsumo: $scope.root.idFacturaXconsumo,
+                        estado:$scope.root.estadoConsulta
                     }
                 }
             };
@@ -399,7 +401,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          * @author Eduar Garcia
          * 
          */
-        $scope.onDocumentoSeleccionado = function(){
+        $scope.onDocumentoSeleccionado = function(dato){
          
             
             var obj = {
@@ -573,9 +575,12 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     } else {
                         var lsTemp = localStorageService.get("facturaTemporalCabecera");
                         if(lsTemp){
+                   
                             $scope.disabledDropDownCliente = true;
                             $scope.tipoPagoFacturaConsumo = lsTemp.tipo_pago;
                             $scope.root.observacion = lsTemp.observaciones;
+                            $scope.root.idFacturaXconsumo =lsTemp.id_factura_xconsumo;
+                            $scope.root.estadoConsulta =lsTemp.estado;
                             that.listarCliente(lsTemp.nombre_tercero, function(estado){
                                 if(estado){
                                     $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 

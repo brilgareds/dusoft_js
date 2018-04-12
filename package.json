@@ -17,6 +17,7 @@
     "fcm-push": "^1.1.2",
     "fs-extra": "~0.12.0",
     "intravenous": "latest",
+    "ip": "1.1.5",
     "j": "^0.4.3",
     "jade": "*",
     "jinq": "^1.6.0",
@@ -25,19 +26,20 @@
     "jsreport-client": "*",
     "knex": "^0.11.5",
     "log4js": "^1.1.1",
+    "measured": "^1.1.0",
     "moment": "^2.13.0",
     "node-xlsx": "~0.5.1",
-    "nodemailer": "^0.6.1",
-    "pg": "2.x",
+    "nodemailer": "^0.6.5",
+    "pg": "^4.5.5",
     "pg-query": "0.x",
     "promise": "~7.1.1",
     "q": "*",
+    "rtc": "~3.4.0",
     "soap": "^0.13.0",
     "socket.io": "1.4.5",
     "socket.io-client": "1.4.5",
     "socket.io-redis": "2.0.0",
-    "ip": "1.1.5",
-    "xls-to-json": "*",
-    "rtc": "~3.4.0"
+    "sqlformatter": "^0.1.0",
+    "xls-to-json": "*"
   }
 }

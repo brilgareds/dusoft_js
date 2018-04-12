@@ -266,7 +266,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          *              se agregaran productos al detalle del temporal de facturacion
          *              y posteriormente facturar
          */
-        $scope.detalleFacturaTemporal = function(entity){           
+        $scope.detalleFacturaTemporal = function(entity){   
             if(entity.getEstadoFacturacion() !=="0"){
                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El temporal ya ha sido facturado");
                 return;
@@ -280,7 +280,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 contrato_cliente_id: entity.mostrarTerceros()[0].getContratoClienteId(),
                 tipo_pago: entity.getTipoPagoId(),
                 observaciones: entity.getObservaciones(),
-                fecha_registro: entity.getFechaRegistro()
+                fecha_registro: entity.getFechaRegistro(),
+                id_factura_xconsumo: entity.getId(),
+                estado:0
             }); 
             $state.go("GuardarFacturaConsumo");
         };

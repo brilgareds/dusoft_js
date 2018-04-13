@@ -1320,7 +1320,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         direccion_ip: '',
         pedidos: args.facturas_consumo.documentos,
         documentos: args.facturas_consumo.documentoDetalle,
-        id_factura_xconsumo:0,
+        id_factura_xconsumo:args.facturas_consumo.idFacturaXconsumo,
         observacion: args.facturas_consumo.observacion,
         fechaCorte: args.facturas_consumo.fechaCorte
     };
@@ -1444,7 +1444,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
          
         if(resultado.length > 0){
-            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+       //     parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             def.resolve();
         }else{
          
@@ -1459,7 +1459,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
              
         if(resultado){
-            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+       //     parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
         }
         
         

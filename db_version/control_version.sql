@@ -183,3 +183,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.27', 'DOCUMENTOS BODEGA', 'se modifica la validacion de existencias');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.28  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.28', 'AUDITORIA', 'Se modifica la seleccion del prefijo en auditoria - se correge error en facturacion clientes');
+COMMIT TRANSACTION;

@@ -23,22 +23,24 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
     self.obtenerMunicipios = obtenerMunicipios;
     self.obtenerProfesionales = obtenerProfesionales;
     self.obtenerDiagnosticos = obtenerDiagnosticos;
-    self.guardarFormulaExternaTmp = guardarFormulaExternaTmp;
     self.obtenerFormulaExternaTmp = obtenerFormulaExternaTmp;
     self.obtenerDiagnosticosTmp = obtenerDiagnosticosTmp;
-    self.guardarDiagnosticoTmp = guardarDiagnosticoTmp;
-    self.eliminarDiagnosticoTmp = eliminarDiagnosticoTmp;
-    self.buscarProductos = buscarProductos;
-    self.insertarMedicamentoTmp = insertarMedicamentoTmp;
     self.obtenerMedicamentosTmp = obtenerMedicamentosTmp;
-    self.eliminarMedicamentoTmp = eliminarMedicamentoTmp;
-    self.consultaExisteFormula = consultaExisteFormula;
     self.obtenerLotesDeProducto = obtenerLotesDeProducto;
-    self.insertarDispensacionMedicamentoTmp = insertarDispensacionMedicamentoTmp;
-    self.eliminarDispensacionMedicamentoTmp = eliminarDispensacionMedicamentoTmp;
     self.obtenerDispensacionMedicamentosTmp = obtenerDispensacionMedicamentosTmp;
+    self.guardarFormulaExternaTmp = guardarFormulaExternaTmp;
+    self.guardarDiagnosticoTmp = guardarDiagnosticoTmp;
+    self.insertarMedicamentoTmp = insertarMedicamentoTmp;
+    self.insertarDispensacionMedicamentoTmp = insertarDispensacionMedicamentoTmp;
+    self.eliminarMedicamentoTmp = eliminarMedicamentoTmp;
+    self.eliminarDiagnosticoTmp = eliminarDiagnosticoTmp;
+    self.eliminarDispensacionMedicamentoTmp = eliminarDispensacionMedicamentoTmp;
+    self.consultaExisteFormula = consultaExisteFormula;
+    self.imprimirMedicamentosPendientesPorDispensar = imprimirMedicamentosPendientesPorDispensar;
+    self.imprimirMedicamentosDispensados = imprimirMedicamentosDispensados;
     self.generarEntrega = generarEntrega;
     self.usuarioPrivilegios = usuarioPrivilegios;
+    self.buscarProductos = buscarProductos;
     self.autorizarMedicamento = autorizarMedicamento;
     
 
@@ -78,7 +80,7 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
               objAfiliados.agregarPacientes(objPaciente);
               objAfiliados.agregarPlanAtencion(objPlanRango);
             } else {
-              objAfiliados = {};
+              objAfiliados = false;
             }
             callback(error, objAfiliados);
           } else{
@@ -404,9 +406,6 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
     }
 
     function obtenerLotesDeProducto(empresa_id, centro_utilidad, bodega, codigo_producto, formula_id_tmp, tipo_paciente_id, paciente_id, principio_activo, sw_autorizado, callback){
-      /*
-        args.existenciasBodegas.autorizado
-      */
       var body = {
         session : self.session,
         data : {
@@ -429,7 +428,6 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
         var error = data.status == 200? 0 : data.status;
         if(!error){
             var productos = [];
-            console.log('data cuando trae lotes', data);
             data.obj.forEach(function(item, index){
               var objLote = Lote.get(item.lote, item.fecha_vencimiento, item.existencia_actual);
               var objProducto = Producto.get(item.codigo_producto, item.producto, 0);
@@ -562,7 +560,6 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
 
     //args.fe_medicamento_id, args.observacion_autorizacion,
     function autorizarMedicamento(fe_medicamento_id, observacion_autorizacion, callback){
-
       var body = {
         session : self.session,
         data : {
@@ -581,7 +578,42 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       });
     }
 
+    function imprimirMedicamentosPendientesPorDispensar(formula_id, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id : formula_id
+        }
+      };
 
+      Request.realizarRequest(API.FORMULACION_EXTERNA.IMPRIMIR_MEDICAMENTOS_PENDIENTES_POR_DISPENSAR, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
+
+    function imprimirMedicamentosDispensados(formula_id, imprimir_actual, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id : formula_id,
+          imprimir_actual : imprimir_actual
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.IMPRIMIR_MEDICAMENTOS_DISPENSADOS, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
 
   }
 });

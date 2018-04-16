@@ -12,6 +12,7 @@ FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
         res.send(G.utils.r(req.url, 'obtiene afilaido', 200, resultado[0]));
     }).fail(function(err){
         G.logError("FormulacionExternaController [obtenerAfiliado] " + err);
+        res.send(G.utils.r(req.url, 'error al obtenerAfiliado', 500, err));
     }).done();
 }
 
@@ -23,6 +24,7 @@ FormulacionExterna.prototype.obtenerMunicipios = function(req, res){
         res.send(G.utils.r(req.url, 'obtener municipio', 200, municipios));
     }).fail(function(err){
         G.logError("FormulacionExternaController [obtenerMunicipios] " + err);
+        res.send(G.utils.r(req.url, 'error al obtenerMunicipios', 500, err));
     }).done();
 }
 
@@ -34,6 +36,7 @@ FormulacionExterna.prototype.obtenerDiagnosticos = function(req, res){
         res.send(G.utils.r(req.url, 'obtener diagnosticos', 200, municipios));
     }).fail(function(err){
         G.logError("FormulacionExternaController [obtenerDiagnosticos] " + err);
+        res.send(G.utils.r(req.url, 'error al obtenerDiagnosticos', 500, err));
     }).done();
 }
 
@@ -45,6 +48,7 @@ FormulacionExterna.prototype.obtenerDiagnosticosTmp = function(req, res){
         res.send(G.utils.r(req.url, 'obtener diagnosticos tmp', 200, diagnosticos));
     }).fail(function(err){
         G.logError("FormulacionExternaController [obtenerDiagnosticosTmp] " + err);
+        res.send(G.utils.r(req.url, 'error al obtenerDiagnosticosTmp', 500, err));
     }).done();
 }
 
@@ -56,7 +60,7 @@ FormulacionExterna.prototype.obtenerProfesionales = function(req, res){
         res.send(G.utils.r(req.url, 'obtener profesionales', 200, profesionales));
     }).fail(function(err){
         G.logError("FormulacionExterna [obtenerProfesionales] " + err);
-        res.send(G.utils.r(req.url, 'error obtener profesionales', 500, err));
+        res.send(G.utils.r(req.url, 'error al obtener profesionales', 500, err));
     }).done();
 }
 
@@ -231,7 +235,6 @@ FormulacionExterna.prototype.obtenerLotesDeProducto = function(req, res){
              res.send(G.utils.r(req.url, 'Lotes del producto', 200, []));
         }
     }).fail(function(err){     
-        console.log(err);
         G.logError('FormulacionExterna  [obtenerLotesDeProducto] ' + err);
         res.send(G.utils.r(req.url, err.msj, err.codigo, {existenciasBodegas: []}));
     }).done(); 
@@ -293,45 +296,43 @@ FormulacionExterna.prototype.generarEntrega  = function(req, res){
     var usuario_id = req.session.user.usuario_id;
 
     var tmp = {};
-/*
-formula_id_tmp, empresa_id, centro_utilidad, bodega, plan, observacion, todo_pendiente
-*/
-    console.log('parametros', args);
     //Pasa la formula de temporal a las tablas finales
     G.Q.ninvoke(that.m_formulacionExterna,'registrarFormulaReal', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id).then(function(formula_id){
         tmp.formula_id = formula_id;
-        console.log('fomrula_id ------->', formula_id);
         //consultar el id del documento de bodega
         var parametroBodegaDocId = {variable:"documento_dispensacion_"+args.empresa_id+"_"+args.bodega, tipoVariable:1, modulo:'Formulacion_Externa'};
         return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId); 
     }).then(function(resultado){
         if(resultado.length > 0){
             tmp.bodegasDocId = resultado[0].valor;          
-            console.log('tmp.bodegasDocId ----->', tmp.bodegasDocId);
             return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId: tmp.bodegasDocId}); 
         }else{
             throw 'El id del documento de bodega no se encuentra parametrizado'
         }
     }).then(function(resultado){
         tmp.numeracion = resultado[0];
-        console.log('numeracion', tmp.numeracion);
         return G.Q.ninvoke(that.m_formulacionExterna,'generarDispensacionFormula', args.empresa_id, args.centro_utilidad, args.bodega, args.plan, tmp.bodegasDocId, tmp.numeracion, args.formula_id_tmp, tmp.formula_id, args.observacion, usuario_id, args.todo_pendiente); 
     }).then(function(resultado){
-        return G.Q.ninvoke(that.m_formulacionExterna,'listarMedicamentosPendientesSinDispensar', tmp.formula_id, args.formula_id_tmp); 
-    }).then(function(resultado){
-        console.log('terminado :) ');
-    }).then(function(resultado){
+        var resultado = {
+            formula_id : tmp.formula_id,
+            generoPendientes : resultado.generoPendientes
+        } 
         res.send(G.utils.r(req.url, 'Entrega generada', 200, resultado));
     }).fail(function(err){
         G.logError("FormulacionExterna [generarEntrega] " + err);
         res.send(G.utils.r(req.url, 'Error generando entrega', 500, err));
     }).done();
 }
-
- FormulacionExterna.prototype.listarMedicamentosPendientesPorDispensar = function(req, res){
+/*
+*/
+ FormulacionExterna.prototype.imprimirMedicamentosPendientesPorDispensar = function(req, res){
     var that = this;
     var args = req.body.data;
-/*    if (args.listar_medicamentos_pendientes === undefined) {
+
+    var tmp = {};
+    var date = new Date();
+    tmp.fecha_impresion = date.getFullYear()  + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2) + '  (' + ("0" + date.getHours()).slice(-2) +':'+ ("0" + date.getMinutes()).slice(-2) + ':' + ("0" + date.getSeconds()).slice(-2) +')';
+/*  if (args.listar_medicamentos_pendientes === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_pendientes: []}));
         return;
     }
@@ -341,8 +342,6 @@ formula_id_tmp, empresa_id, centro_utilidad, bodega, plan, observacion, todo_pen
         return;
     }*/
 
-    var productosPendientes;
-    var detalleCabecera;
     /*var parametros = {evolucionId:args.listar_medicamentos_pendientes.evolucion,
 
         tipoIdPaciente: args.listar_medicamentos_pendientes.tipoIdPaciente,
@@ -350,43 +349,108 @@ formula_id_tmp, empresa_id, centro_utilidad, bodega, plan, observacion, todo_pen
         estadoEntrega: 1
     };*/
    
-    G.Q.ninvoke(that.m_formulacionExterna,'listarMedicamentosPendientesPorDispensar', args.formula_id).then(function(resultado){
-        if(resultado.length > 0){             
-           throw 'No hay pendientes por dispensar';
-            productosPendientes = resultado;          
-            //return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormula',parametros)         
+    G.Q.ninvoke(that.m_formulacionExterna,'listarMedicamentosPendientesPorDispensarNoOcultos', args.formula_id).then(function(resultado){
+        if(resultado.length > 0){
+            tmp.pendientes = resultado;
+            return G.Q.ninvoke(that.m_formulacionExterna,'obtenerCabeceraFormula', args.formula_id)
         }else{
            throw 'No hay pendientes por dispensar';
         }
    }).then(function(resultado){
-       if(resultado.length > 0){ 
-            detalleCabecera = resultado[0];
-            return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros)
+        if(resultado.length > 0){
+            tmp.formula = resultado[0];          
+
+            return G.Q.ninvoke(that.m_formulacionExterna,'obtenerDiagnosticosDeFormula', args.formula_id)
         }else{
-            throw 'Consulta sin resultados';
+           throw 'Error recuperando formula';
         }
    }).then(function(resultado){
-        if(resultado.length > 0){ 
-            __generarPdf({productosPendientes:productosPendientes, 
-                            serverUrl:req.protocol + '://' + req.get('host')+ "/", 
-                            detalle: detalleCabecera, 
-                            profesional:resultado[0],
-                            archivoHtml: 'medicamentosPendientesPorDispensar.html',
-                            reporte: "Medicamentos_pendientes_por_dispensar_"}, function(nombre_pdf) {
-                    
-                    res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
-                    
-                        listar_medicamentos_pendientes: {nombre_pdf: nombre_pdf, resultados: productosPendientes}
-                    }));
-                });
-        }else{
-            throw 'Consulta sin resultados';
-        }
-           
-    }).fail(function(err){      
-       res.send(G.utils.r(req.url, err, 500, {}));
+        tmp.diagnosticos = resultado; 
+        var parametrosPDF = {
+                        serverUrl:req.protocol + '://' + req.get('host')+ "/", 
+                        formula: tmp.formula, 
+                        pendientes: tmp.pendientes,//resultado[0],
+                        diagnosticos: tmp.diagnosticos, 
+                        fecha_impresion : tmp.fecha_impresion,
+                        archivoHtml: 'medicamentosPendientesPorDispensar.html',
+                        reporte: "Medicamentos_pendientes_por_dispensar_"
+                    };
+
+        __generarPdf(parametrosPDF, function(nombre_pdf) {
+            res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
+                listar_medicamentos_pendientes: {nombre_pdf: nombre_pdf, resultados: tmp.pendientes}
+            }));
+        });
+    }).fail(function(err){
+        G.logError("FormulacionExterna [imprimirMedicamentosPendientesPorDispensar] Error " + err)
+        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+
+
+FormulacionExterna.prototype.imprimirMedicamentosDispensados = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    var tmp = {};
+    var date = new Date();
+    tmp.fecha_impresion = date.getFullYear()  + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2) + '  (' + ("0" + date.getHours()).slice(-2) +':'+ ("0" + date.getMinutes()).slice(-2) + ':' + ("0" + date.getSeconds()).slice(-2) +')';
+
+    G.Q.ninvoke(that.m_formulacionExterna,'obtenerCabeceraFormula', args.formula_id).then(function(resultado){
+        tmp.formula = resultado[0];
+        return G.Q.ninvoke(that.m_formulacionExterna,'listarMedicamentosEsmXLote', args.formula_id, args.imprimir_actual);
+    }).then(function(resultado){
+        tmp.dispensados = resultado;
+        return G.Q.ninvoke(that.m_formulacionExterna,'obtenerDiagnosticosDeFormula', args.formula_id);
+    }).then(function(resultado){
+        tmp.diagnosticos = resultado;
+
+        var parametrosPDF = {
+            serverUrl:req.protocol + '://' + req.get('host')+ "/", 
+            formula: tmp.formula, 
+            dispensados: tmp.dispensados,
+            diagnosticos: tmp.diagnosticos, 
+            fecha_impresion : tmp.fecha_impresion,
+            archivoHtml: 'medicamentosDispensados.html',
+            reporte: "Medicamentos_dispensados_"
+        };
+        __generarPdf(parametrosPDF, function(nombre_pdf) {
+            res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
+                listar_medicamentos_pendientes: {nombre_pdf: nombre_pdf, resultados: tmp.dispensados}
+            }));
+        });
+    }).fail(function(err){
+        G.logError("FormulacionExterna [imprimirMedicamentosDispensados] Error imprimiendo medicamentos Dispensados" + err);
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+function __generarPdf(datos, callback) {  
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/FormulacionExterna/reports/'+datos.archivoHtml, 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function(err, response) {
+        response.body(function(body) {
+           var fecha = new Date();
+           var nombreTmp = datos.reporte + fecha.getTime() + ".html";
+           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
+                if(err) {
+                    G.logError("Error en funcion __generarPdf [FormulacionExterna] " + err);
+                } else {
+                    callback(nombreTmp);
+                }
+            });                            
+        });
+    });
+};
+
 
 FormulacionExterna.$inject = ["m_formulacion_externa", "m_dispensacion_hc"];
 module.exports = FormulacionExterna;

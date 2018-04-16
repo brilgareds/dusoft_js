@@ -8,6 +8,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
     controllers.controller('ModalDispensacionFormulaExternaAutorizacionController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario","detalleRegistroDispensacion","detalleFormula", dispensacionFormulaExternaAutorizacionController]);
 
     function formulaController($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
+
         //Tipos de documento que se despliegan en el elemento select
         $scope.tipoDocumentos = [];
         $scope.tipoFormulas = [];
@@ -63,6 +64,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.eliminarProductoLoteSeleccionado = eliminarProductoLoteSeleccionado;
         $scope.eliminarProducto = eliminarProducto;
         $scope.abrirModalGenerarEntrega = abrirModalGenerarEntrega;
+        $scope.imprimirMedicamentosPendientesPorDispensar = imprimirMedicamentosPendientesPorDispensar;
+        $scope.imprimirMedicamentosDispensados = imprimirMedicamentosDispensados;
 
         /***********************************
             Definicion de funciones
@@ -80,6 +83,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             }
 
             formulaExternaService.obtenerAfiliado(tipoIdentificacion, identificacion, function(error, afiliado){
+                if(!afiliado){
+                    AlertService.mostrarMensaje("warning", 'No se encontró un afiliado con identificación: ' + tipoIdentificacion + identificacion);
+                    return; 
+                }
+
                 if(!error){
                     if(afiliado.mostrarPacientes()[0].getPacienteId()){
                         $scope.root.afiliado = afiliado;
@@ -153,6 +161,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     }
                 }
             },function(){
+
             });
         }
 
@@ -412,9 +421,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 scope: $scope,
                 controller: "ModalGenerarEntregaController"
             };
-
-
-
             //datos para compartir con el controlador del modal
             /*formulaExternaService.shared = {
                 tipoEntrega: tipoEntrega
@@ -424,6 +430,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             modalInstance.result.then(function(item){
                 //cierra el modal 
             },function(){
+            });
+        }
+
+        function imprimirMedicamentosPendientesPorDispensar(formula_id){
+            formulaExternaService.imprimirMedicamentosPendientesPorDispensar(formula_id, function(error, resultado){
+                $scope.visualizarReporte("/reports/" + resultado.listar_medicamentos_pendientes.nombre_pdf, resultado.listar_medicamentos_pendientes.nombre_pdf, "_blank");
+            });
+        }
+
+        function imprimirMedicamentosDispensados(formula_id, imprimir_actual_o_todo){
+            formulaExternaService.imprimirMedicamentosDispensados(formula_id, imprimir_actual_o_todo, function(error, resultado){
+                $scope.visualizarReporte("/reports/" + resultado.listar_medicamentos_pendientes.nombre_pdf, resultado.listar_medicamentos_pendientes.nombre_pdf, "_blank");
             });
         }
 
@@ -664,7 +682,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 //medicamento ya fue entregado en menos de 25 dias
                 if(error == 204){
                     formulaExternaService.usuarioPrivilegios($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, function(error, privilegios){
-                        console.log(privilegios.sw_privilegio_autorizar_confrontado);
                         if(privilegios.sw_privilegio_autorizar_confrontado){
                             //mostrar modal para autorizacion la dispensacion
                             $scope.ventanaAutorizaDispensacion(data, $scope.data.producto);
@@ -815,9 +832,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     AlertService.mostrarMensaje("warning", data);
                     return;
                 }
+                //Genera la impresion de medicamentos dispensados
+                if(!todo_pendiente){
+                    $scope.imprimirMedicamentosDispensados(data.formula_id, true);
+                }
+                //Genera la impresion de medicamentos pendientes por dispensar
+                if(data.generoPendientes){
+                    $scope.imprimirMedicamentosPendientesPorDispensar(data.formula_id);
+                }
+                //vuelve a formulacion externa pantalla principal
+                formulaExternaService.shared = {
+                    formula_id : data.formula_id
+                };
+
+                $state.go('FormulacionExterna');           
             });
         }
-
+        //inicializa el modal
         function init(){
             $scope.medicamentosTemporales = {
                 data: 'root.productosLotesSeleccionados',
@@ -843,7 +874,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.root = { observacion:''}; 
        
         $scope.detalleRegistroDispensacion = detalleRegistroDispensacion.msj[0];
-        console.log('detalle registro dispensacion', $scope.detalleRegistroDispensacion);
         /*
          * Inicializacion de variables
          * @param {type} empresa
@@ -914,9 +944,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         that.realizarEntregaFormula = function(){
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
            
-            console.log('producto', detalleFormula.codigo_producto);
-            console.log('observacion', seleccionTipoObservacion.descripcion);
-            console.log('detalle formula', detalleFormula);
             formulaExternaService.autorizarMedicamento(detalleFormula.fe_medicamento_id, seleccionTipoObservacion.descripcion, function(error, respuesta){
                 if(!error){
                     that.cerrarVentana({sw_autorizado : true});
@@ -925,18 +952,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error en la autorizacion");
                 }
             });
-
-            /*
-            dispensacionHcService.autorizarDispensacionMedicamento(obj,function(data){
-                var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
-                if(data.status === 200){
-                    AlertService.mostrarMensaje("success", data.msj);
-                    $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: data.obj.autorizar_dispensacion.evolucion_id, pendientes: resultadoStorage.pendientes});
-                    that.cerrarVentana(data);
-                }else{
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                }
-            }); */
         };
         
         $scope.realizarAutorizacionDispensacion = function(){

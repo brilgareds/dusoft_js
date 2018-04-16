@@ -91,7 +91,11 @@ module.exports = function(app, di_container) {
         c_formulacion_externa.generarEntrega(req, res);
     });       
 
-    app.post('/api/FormulacionExterna/listarMedicamentosPendientesPorDispensar', function(req, res) {
-        c_formulacion_externa.listarMedicamentosPendientesPorDispensar(req, res);
+    app.post('/api/FormulacionExterna/imprimirMedicamentosPendientesPorDispensar', function(req, res) {
+        c_formulacion_externa.imprimirMedicamentosPendientesPorDispensar(req, res);
+    });   
+
+    app.post('/api/FormulacionExterna/imprimirMedicamentosDispensados', function(req, res) {
+        c_formulacion_externa.imprimirMedicamentosDispensados(req, res);
     });       
 };

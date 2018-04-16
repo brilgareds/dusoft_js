@@ -587,7 +587,9 @@ FormulacionExternaModel.prototype.registrarFormulaReal = function(formula_id_tmp
 };
 
 FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, formula_id_tmp, formula_id, observacion, usuario_id, todo_pendiente, callback){
-    var tmp = {};
+    var tmp = {
+        generoPendientes : false
+    };
     var that = this;
     G.knex.transaction(function(transaccion) {
         //se consulta primero la cantidad ya dispensada y almacenada en temporal.
@@ -601,6 +603,10 @@ FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_
         }).then(function(resultado){
             return G.Q.nfcall(__listarMedicamentosPendientesSinDispensar, formula_id, formula_id_tmp, transaccion);
         }).then(function(resultado){
+            //verifica si se generaron pendientes
+            if(resultado.length > 0){
+                tmp.generoPendientes = true;
+            }
             return G.Q.nfcall(__insertarMedicamentosPendientes, that, resultado, formula_id, usuario_id, transaccion);
         }).then(function(resultado){
             return G.Q.ninvoke(that, 'eliminarDispensacionMedicamentosTmp', formula_id_tmp, transaccion);
@@ -613,12 +619,11 @@ FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_
         }).then(function(resultado){
             transaccion.commit();
         }).fail(function(err){
-            console.log('error en la dispensacion generarDispensacionFormula ', err);
             G.logError("err FormulacionExternaModel [generarDispensacionFormula]: " + err);
             transaccion.rollback(err);
         }).done();
     }).then(function(){
-        callback(false, tmp.esm_dispen_tmp_id);
+        callback(false, {generoPendientes:tmp.generoPendientes});
     }).catch(function(err){
         G.logError("err FormulacionExternaModel [generarDispensacionFormula]: " + err);
         callback(err);
@@ -731,6 +736,7 @@ function __insertarFormulaExterna(tmp_formula_id, empresa_id, centro_utilidad, b
     query.then(function (resultado) {
         callback(false, resultado[0]);
     }).catch(function (err) {
+        G.logError("err (/catch) FormulacionExternaModel [__insertarFormulaExterna]: " +  err);
         callback(err);
     });
 };
@@ -759,6 +765,7 @@ function __insertaFormulaExternaDiagnosticos(tmp_formula_id, formula_id, transac
     query.then(function (resultado) {
         callback(false, resultado[0]);
     }).catch(function (err) {
+        G.logError("err (/catch) FormulacionExternaModel [__insertaFormulaExternaDiagnosticos]: " +  err);
         callback(err);
     });
 };
@@ -806,6 +813,7 @@ function __insertaFormulaExternaMedicamentos(tmp_formula_id, formula_id, transac
     query.then(function (resultado) {
         callback(false, resultado[0]);
     }).catch(function (err) {
+        G.logError("err (/catch) FormulacionExternaModel [__insertaFormulaExternaMedicamentos]: " +  err);
         callback(err);
     });
 };
@@ -831,7 +839,7 @@ function __insertarBodegasDocumentos(bodegasDocId, numeracion, observacion, usua
            
             callback(false, resultado);
     }).catch(function(err){
-        G.logError("err (/catch) [__insertarBodegasDocumentos]: " +  err);
+        G.logError("err (/catch) FormulacionExternaModel [__insertarBodegasDocumentos]: " +  err);
         callback({err:err, msj: "Error al generar el documento de bodega"});   
     });
 };
@@ -886,8 +894,6 @@ function __obtenerDispensacionMedicamentosTmp(formula_id_tmp, transaccion, callb
 };
 
 function __guardarBodegasDocumentosDetalle(that, empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, productos, transaccion, callback) {
-    console.log('bodegasDocId', bodegasDocId);
-    console.log('numeracion', numeracion);
     if (productos.length == 0) {       
         callback(false);
         return;
@@ -998,7 +1004,7 @@ function __listarMedicamentosPendientesSinDispensar(formula_id, formula_id_tmp, 
         query.then(function(resultado){           
             callback(false, resultado);
     }).catch(function(err){
-        G.logError("err (/catch) [listarMedicamentosPendientesSinDispensar]: " +  err);
+        G.logError("err (/catch) FormulacionExternaModel [listarMedicamentosPendientesSinDispensar]: " +  err);
         callback({err:err, msj: "Error listando los medicamentos sin dispensar"});   
     });
 };
@@ -1030,7 +1036,7 @@ FormulacionExternaModel.prototype.insertarPendientesPorDispensar = function(form
         query.then(function(resultado){           
             callback(false, resultado);
     }).catch(function(err){
-        G.logError("err (/catch) [__insertarPendientesPorDispensar]: " +  err);
+        G.logError("err (/catch) FormulacionExternaModel [__insertarPendientesPorDispensar]: " +  err);
         callback({err:err, msj: "Error insertando medicamentos pendientes por dispensar"});   
     });
 };
@@ -1044,8 +1050,8 @@ FormulacionExternaModel.prototype.eliminarDispensacionMedicamentosTmp = function
         query.then(function(resultado){
             callback(false, resultado);
    }).catch(function(err){
-            console.log("err (/catch) [eliminarDispensacionMedicamentosTmp]: ", err);        
-            callback({err:err, msj: "Error al eliminar la dispensacion temporal"});   
+        G.logError("err (/catch) FormulacionExternaModel [eliminarDispensacionMedicamentosTmp]: " +  err);
+        callback({err:err, msj: "Error al eliminar la dispensacion temporal"});   
     });  
 };
 
@@ -1058,8 +1064,8 @@ FormulacionExternaModel.prototype.eliminarFormulaExternaMedicamentosTmp = functi
         query.then(function(resultado){
             callback(false, resultado);
    }).catch(function(err){
-            console.log("err (/catch) [eliminarFormulaExternaMedicamentosTmp]: ", err);        
-            callback({err:err, msj: "Error al eliminar los medicamentos temporales"});   
+        G.logError("err (/catch) FormulacionExternaModel [eliminarFormulaExternaMedicamentosTmp]: " +  err);
+        callback({err:err, msj: "Error al eliminar los medicamentos temporales"});   
     });  
 };
 
@@ -1072,8 +1078,8 @@ FormulacionExternaModel.prototype.eliminarFormulaExternaDiagnosticosTmp = functi
         query.then(function(resultado){
             callback(false, resultado);
    }).catch(function(err){
-            console.log("err (/catch) [eliminarFormulaExternaDiagnosticosTmp]: ", err);        
-            callback({err:err, msj: "Error al eliminar los diagnosticos temporales"});   
+        G.logError("err (/catch) FormulacionExternaModel [eliminarFormulaExternaDiagnosticosTmp]: " +  err);
+        callback({err:err, msj: "Error al eliminar los diagnosticos temporales"});   
     });  
 };
 
@@ -1086,8 +1092,8 @@ FormulacionExternaModel.prototype.eliminarFormulaExterna= function(formula_id_tm
         query.then(function(resultado){
             callback(false, resultado);
    }).catch(function(err){
-            console.log("err (/catch) [eliminarFormulaExterna]: ", err);        
-            callback({err:err, msj: "Error al eliminar la formula externa temporal"});   
+        G.logError("err (/catch) FormulacionExternaModel [eliminarFormulaExterna]: " +  err);
+        callback({err:err, msj: "Error al eliminar la formula externa temporal"});   
     });  
 };
 
@@ -1104,32 +1110,261 @@ FormulacionExternaModel.prototype.updateAutorizacionPorMedicamento = function(fe
     query.then(function(resultado){ 
        callback(false, resultado);
     }).catch(function(err){    
-        G.logError("err (/catch) [updateAutorizacionPorMedicamento]: " + err);
-        console.log("err (/catch) [updateAutorizacionPorMedicamento]: ", err);
+        G.logError("err (/catch) FormulacionExternaModel [updateAutorizacionPorMedicamento]: " +  err);
         callback("Error al autorizar medicamento");  
     });
 };
 
-FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensar = function(formula_id, callback){
-
-    var columnas = ['codigo_medicamento', G.knex.raw('fc_descripcion_producto_molecula(codigo_medicamento) as descripcion_prod', G.knex.raw('cantidad AS cantidad_entrega'))];
+FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensarNoOcultos = function(formula_id, callback){
+    var columnas = ["codigo_medicamento", G.knex.raw("SUM(numero_unidades) AS total"), G.knex.raw("fc_descripcion_producto_alterno(codigo_medicamento) AS descripcion_prod")];
     var query = G.knex.select(columnas)
-        .from('esm_pendientes_por_dispensar')
-        .where('formula_id', formula_id);               
-    
-    var query = G.knex.select(colSubQuery).from(subQueryB);
-    G.logError(G.sqlformatter.format(query.toString()));
-              
-        query.then(function(resultado){       
-
-            callback(false, resultado);
-        }).catch(function(err){   
-              console.log("Error listarMedicamentosPendientesPorDispensar ", err);
-            callback(err);
-        });  
+                        .from(function(){
+                            this.select(["dc.codigo_medicamento", G.knex.raw("SUM(dc.cantidad) AS numero_unidades")])
+                                .from("esm_pendientes_por_dispensar AS dc")
+                                .innerJoin("esm_formula_externa_medicamentos AS fem", function(){
+                                    this.on("dc.codigo_medicamento", "fem.codigo_producto").andOn("fem.formula_id", "dc.formula_id");
+                                })
+                                .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").andWhere("sw_ocultar", "=", "0").groupBy("dc.codigo_medicamento").as("a");
+                        })
+                        .groupBy("codigo_medicamento");
+    //G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){   
+        G.logError("err (/catch) FormulacionExternaModel [listarMedicamentosPendientesPorDispensarNoOcultos]: " +  err);
+        callback(err);
+    });  
 };
 
+FormulacionExternaModel.prototype.obtenerCabeceraFormula = function(formula_id, callback){
+    var columnas = [
+        "FR.formula_papel", 
+        "FR.formula_id", 
+        G.knex.raw("to_char(\"FR\".\"fecha_formula\", 'dd-mm-yyyy') AS fecha_formula"), 
+        "FR.hora_formula", 
+        "FR.tipo_id_tercero", 
+        "FR.tercero_id", 
+        "FR.tipo_id_tercero", 
+        "FR.tercero_id",
+        "FR.tipo_id_paciente",
+        "FR.paciente_id",
+        "FR.plan_id",
+        "FR.rango",
+        "FR.tipo_afiliado_id",
+        "FR.semanas_cotizadas",
+        "FR.usuario_id",
+        G.knex.raw("to_char(\"FR\".\"fecha_registro\", 'dd-mm-yyyy') AS fecha_registro"),
+        "PROF.nombre AS profesional",
+        "TIPOPROF.descripcion as descripcion_profesional",
+        G.knex.raw(" \"PAC\".\"primer_nombre\" || ' ' ||  \"PAC\".\"segundo_nombre\" || ' ' || \"PAC\".\"primer_apellido\" || ' ' || \"PAC\".\"segundo_apellido\" AS nombre_paciente"),
+        "PAC.sexo_id",
+        G.knex.raw("CASE WHEN \"PAC\".\"sexo_id\" = 'F' THEN 'FEMENINO' ELSE 'MASCULINO' END AS sexo_id"),
+        G.knex.raw("edad(\"PAC\".\"fecha_nacimiento\") as edad"),
+        "PLAN.plan_descripcion",
+        "tipos.descripcion_tipo_formula",
+        "EPS.eps_tipo_afiliado_id",
+        "AFI.descripcion_eps_tipo_afiliado as vinculacion",
+        "TIPOP.descripcion AS tipo_plan"
+    ];
+
+    var query = G.knex.select(columnas)
+                        .from('esm_formula_externa AS FR')
+                        .innerJoin('eps_afiliados AS EPS', function(){
+                            this.on("EPS.afiliado_id", "FR.paciente_id").andOn("EPS.afiliado_tipo_id", "FR.tipo_id_paciente").andOn("EPS.plan_atencion", "FR.plan_id");
+                        })
+                        .innerJoin("eps_tipos_afiliados AS AFI", function(){
+                            this.on("EPS.eps_tipo_afiliado_id", "AFI.eps_tipo_afiliado_id");
+                        })
+                        .innerJoin("planes_rangos AS PLAR", function(){
+                            this.on("EPS.plan_atencion", "PLAR.plan_id").andOn("EPS.tipo_afiliado_atencion", "PLAR.tipo_afiliado_id").andOn("EPS.rango_afiliado_atencion", "PLAR.rango");
+                        })
+                        .innerJoin("planes AS PLA", function(){
+                            this.on("PLAR.plan_id", "PLA.plan_id");
+                        })
+                        .innerJoin("tipos_planes AS TIPOP", function(){
+                            this.on("PLA.sw_tipo_plan", "TIPOP.sw_tipo_plan");
+                        })
+                        .leftJoin('profesionales AS PROF', function(){
+                            this.on("FR.tipo_id_tercero", "PROF.tipo_id_tercero").andOn("FR.tercero_id", "PROF.tercero_id");
+                        })
+                        .leftJoin("tipos_profesionales AS TIPOPROF", function(){
+                            this.on("PROF.tipo_profesional", "TIPOPROF.tipo_profesional");
+                        })
+                        .leftJoin("pacientes AS PAC", function(){
+                            this.on("FR.tipo_id_paciente", "PAC.tipo_id_paciente").andOn("FR.paciente_id", "PAC.paciente_id");
+                        })
+                        .leftJoin("planes_rangos AS PLANR", function(){
+                            this.on("FR.plan_id", "PLANR.plan_id").andOn("FR.rango", "PLANR.rango").andOn("FR.tipo_afiliado_id", "PLANR.tipo_afiliado_id");
+                        })
+                        .leftJoin("planes AS PLAN", function(){
+                            this.on("PLANR.plan_id", "PLAN.plan_id");
+                        })
+                        .leftJoin("esm_tipos_formulas AS tipos", function(){
+                            this.on("FR.tipo_formula", "tipos.tipo_formula_id");
+                        })
+                        .where("FR.formula_id", formula_id);
+
+    //G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){   
+        G.logError("err (/catch) FormulacionExternaModel [obtenerCabeceraFormula]: " +  err);
+        callback(err);
+    });  
+};
+
+FormulacionExternaModel.prototype.obtenerDiagnosticosDeFormula = function(formula_id, callback){
+    var columnas = ["DXT.diagnostico_id", "DX.diagnostico_nombre"];
+    var query = G.knex.select(columnas)
+                    .from("esm_formula_externa_diagnosticos AS DXT")
+                    .innerJoin("diagnosticos AS DX", function(){
+                        this.on("DXT.diagnostico_id", "DX.diagnostico_id");
+                    })
+                    .where("DXT.formula_id", formula_id);
+    //G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        G.logError("err (/catch) FormulacionExternaModel [obtenerDiagnosticosDeFormula]: " +  err);
+        callback(err);
+    });
+};
+
+FormulacionExternaModel.prototype.listarMedicamentosEsmXLote = function(formula_id, imprimir_actual, callback){
+    var date = new Date();
+    var fecha_hoy = ("0" + date.getDate()).slice(-2) + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
+    var columnas = [
+                        "dd.codigo_producto", 
+                        G.knex.raw("round(dd.cantidad) as numero_unidades"),
+                        G.knex.raw("TO_CHAR(dd.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento"),
+                        "dd.lote", 
+                        G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) AS descripcion_prod"), 
+                        G.knex.raw("fc_descripcion_producto_molecula(dd.codigo_producto) AS molecula"), 
+                        "d.usuario_id", 
+                        "sys.nombre", 
+                        "sys.descripcion",
+                        G.knex.raw("fc_codigo_mindefensa(dd.codigo_producto) AS codigo_producto_mini"), 
+                        "dd.sw_pactado",
+                        "dd.total_costo"
+                    ];
+
+    var query = G.knex.select(columnas)
+                    .from(function(){
+                        this.select(["*"]).from("esm_formulacion_despachos_medicamentos").where("formula_id", formula_id).as("dc");
+                    })
+                    .innerJoin("bodegas_documentos AS d", function(){
+                        this.on("dc.bodegas_doc_id", "d.bodegas_doc_id").andOn("dc.numeracion", "d.numeracion");
+                    })
+                    .innerJoin("bodegas_documentos_d AS dd", function(){
+                        this.on("d.bodegas_doc_id", "dd.bodegas_doc_id").andOn("d.numeracion", "dd.numeracion");
+                    })
+                    .innerJoin("system_usuarios AS sys", function(){
+                        this.on("d.usuario_id", "sys.usuario_id");
+                    })
+                    .where(function(){
+                        if(imprimir_actual){
+                            this.where(G.knex.raw("dc.formula_id = " + formula_id)).andWhere(G.knex.raw("to_char(d.fecha_registro, 'dd-mm-YYYY') = '" + fecha_hoy + "'"));
+                        }else{
+                            this.where(G.knex.raw("dc.formula_id = " + formula_id));
+                        }
+                    });
+    //G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        G.logError("err (/catch) FormulacionExternaModel [listarMedicamentosEsmXLote]: " +  err);
+        callback(err);
+    });
+};
+
+FormulacionExternaModel.prototype.obtenerPendientesEnt = function(formula_id, imprimir_actual, callback){
+    var date = new Date();
+    var fecha_hoy = date.getFullYear()  + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2);
+
+    var columnas = ["dd.codigo_producto", G.knex.raw("dd.cantidad AS numero_unidades"), "dd.fecha_vencimiento", "dd.lote", G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) AS descripcion_prod"), "dd.sw_pactado", "dd.total_costo"];
+    var query = G.knex.select(columnas)
+                    .from("esm_formulacion_despachos_medicamentos_pendientes AS tmp")
+                    .innerJoin("bodegas_documentos AS d", function(){
+                        this.on("tmp.bodegas_doc_id", "d.bodegas_doc_id").andOn("tmp.numeracion", "d.numeracion");
+                    })
+                    innerJoin("bodegas_documentos_d AS dd", function(){
+                        this.on("d.bodegas_doc_id", "dd.bodegas_doc_id").andOn("d.numeracion", "dd.numeracion");
+                    })
+                    .where(function(){
+                        if(imprimir_actual){
+                            this.where(G.knex.raw("tmp.formula_id = " + formula_id)).andWhere(G.knex.raw("to_char(d.fecha_registro, 'YYYY-mm-dd') = " + fecha_hoy));
+                        }else{
+                            this.where(G.knex.raw("tmp.formula_id = " + formula_id));
+                        }
+                    });
+
+    //G.logError(G.sqlformatter.format(query.toString()));
+     query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){   
+        G.logError("err (/catch) FormulacionExternaModel [obtenerPendientesEnt]: " +  err);
+        callback(err);
+    });                     
+};
+/*
+  if($filtros['nombre_paciente']!="")
+        {
+        $filtro .= " and b.primer_nombre ||' '||b.segundo_nombre||' '||b.primer_apellido||' '||b.segundo_apellido ILIKE '%".$filtros['nombre_paciente']."%' ";
+        }
+      if($filtros['formula_papel']!="")
+        {
+        $filtro .= " and a.formula_papel = '".$filtros['formula_papel']."' ";
+        }
+      if($filtros['tipo_id_paciente']!="")
+        {
+        $filtro .= " and b.tipo_id_paciente = '".$filtros['tipo_id_paciente']."' ";
+        }
+      if($filtros['paciente_id']!="")
+        {
+        $filtro .= " and b.paciente_id = '".$filtros['paciente_id']."' ";
+        }
+      
+      $sql  = "
+                        select
+                        a.formula_id,
+                        a.formula_papel,
+                        a.fecha_formula,
+                        a.sw_estado,
+                        a.plan_id,
+                        a.tipo_formula,
+                        b.tipo_id_paciente,
+                        b.paciente_id,
+                        b.primer_nombre ||' '||b.segundo_nombre||' '||b.primer_apellido||' '||b.segundo_apellido as nombre_paciente
+                        from 
+                        esm_formula_externa as a
+                        JOIN pacientes as b ON (a.tipo_id_paciente = b.tipo_id_paciente)
+                        and (a.paciente_id = b.paciente_id)
+
+                        JOIN system_usuarios as c ON (a.usuario_id = c.usuario_id)
+                        where   a.esm_tercero_id IS NULL
+                         and  a.sw_estado IN ('0')  ";
+                      $sql .= $filtro;
+      
+                  $cont  = "SELECT COUNT(*) FROM (".$sql.") A  ";
+                  $this->ProcesarSqlConteo($cont,$offset);
+                  $sql .= "ORDER BY a.fecha_formula  DESC ";
+                  $sql .= "LIMIT ".$this->limit." OFFSET ".$this->offset;
+*/
+
+FormulacionExternaModel.prototype.sbuscarFormulas = function(nombre_paciente, formula_papel, tipo_id_paciente, paciente_id, callback){
+    var columnas =  ["a.formula_id", "a.formula_papel", "a.fecha_formula", "a.sw_estado", "a.plan_id", "a.tipo_formula", "b.tipo_id_paciente", "b.paciente_id", G.knex.raw("b.primer_nombre ||' '||b.segundo_nombre||' '||b.primer_apellido||' '||b.segundo_apellido as nombre_paciente")];
+    var query  = G.knex.select(columnas)
+                        .from("esm_formula_externa AS a")
+                        .innerJoin("pacientes", function(){
+                            this.on("a.tipo_id_paciente", "b.tipo_id_paciente").andOn("a.paciente_id", "b.paciente_id");
+                        })
+                        .innerJoin("system_usuarios AS c", function(){
+                            this.on("a.usuario_id", "c.usuario_id");
+                        })
+                        .where(function(){
+                            this.whereRaw('b.primer_nombre || \' \' || b. = ?', [1]).whereNotNull("a.esm_tercero_id").whereIn('a.sw_estado', ['0']);
+                        });
+};
 
 FormulacionExternaModel.$inject = [];
-
 module.exports = FormulacionExternaModel;

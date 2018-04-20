@@ -267,7 +267,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                 }).innerJoin("planes AS i", 
                         function(){
                             this.on("h.plan_id","i.plan_id")
-                }).as("a")
+                }).where(function(){
+                this.where("g.estado_afiliado_id",'AC')                              
+                }).as("a");
                         
     var query =  G.knex(subQuery)
         .where(function() {
@@ -300,7 +302,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         .andWhere(G.knex.raw("a.paciente_id::varchar = " + obj.terminoBusqueda));
             }
         });
-                
+            console.log(G.sqlformatter.format(query.toString()));     
     query.limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){   
         callback(false, resultado);

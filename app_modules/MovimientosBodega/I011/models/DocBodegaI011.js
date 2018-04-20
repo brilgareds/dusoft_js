@@ -94,6 +94,29 @@ DocumentoBodegaI011.prototype.listarNovedades = function (callback) {
 
 /**
  * @author German Galvis
+ * +Descripcion lista todas las torres de los productos devueltos
+ * @fecha 2018-04-20
+ */
+DocumentoBodegaI011.prototype.listarTorres = function (parametros, callback) {
+    
+    var query = G.knex
+            .select()
+            .distinct('t.torre')
+            .from('inv_bodegas_movimiento_d as d')
+            .leftJoin("param_torreproducto AS t", "d.codigo_producto", "t.codigo_producto")
+            .where('d.prefijo', parametros.prefijo)
+            .andWhere('d.numero', parametros.numero);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarTorres]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
  * +Descripcion lista los productos devueltos
  * @fecha 2018-02-19
  */
@@ -563,6 +586,38 @@ DocumentoBodegaI011.prototype.consultar_detalle_documento = function (parametro,
             .where('a.empresa_id', parametro.empresa_id)
             .andWhere("a.prefijo", parametro.prefijoDocumento)
             .andWhere("a.numero", parametro.numeracionDocumento)
+            .orderBy('param.torre', 'asc');
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta los productos pertenecientes al documento a imprimir por torre
+ * @fecha 2018-04-20
+ */
+DocumentoBodegaI011.prototype.consultar_torre_documento = function (parametro, callback) {
+    var columnas = [
+        "a.codigo_producto",
+        "a.lote",
+        G.knex.raw("\"a\".\"cantidad\"::integer"),
+        G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
+        G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre"),
+        "param.torre"
+    ];
+
+    var query = G.knex.select(columnas)
+            .from('inv_bodegas_movimiento_d  AS a')
+            .innerJoin("inventarios_productos  AS b ", "a.codigo_producto", "b.codigo_producto")
+            .leftJoin("param_torreproducto AS param", "param.codigo_producto", "a.codigo_producto")
+            .where('a.empresa_id', parametro.empresa_id)
+            .andWhere("a.prefijo", parametro.prefijoDocumento)
+            .andWhere("a.numero", parametro.numeracionDocumento)
+            .andWhere("param.torre", parametro.torre)
             .orderBy('param.torre', 'asc');
 
     query.then(function (resultado) {

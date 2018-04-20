@@ -24,6 +24,7 @@ define([
             $scope.valorRetIca = 0;
             $scope.valorRetIva = 0;
             $scope.valorTotal = 0;
+            $scope.paginaactualproductos = 1;
             $scope.cliente_seleccionado = [];
             $scope.validarDesdeLink = false;
             $scope.documento_ingreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
@@ -177,7 +178,8 @@ define([
                     data: {
                         numero_doc: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
                         prefijo: $scope.documento_ingreso.getFacturaDevolucion().prefijo,
-                        empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo()
+                        empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        paginaActual: $scope.paginaactualproductos
                     }
                 };
                 Request.realizarRequest(API.I012.CONSULTAR_DETALLE_FACTURA, "POST", obj, function (data) {
@@ -776,7 +778,26 @@ define([
                 $scope.porcentajeRetIva = parametros[0].porcentaje_reteiva;
             };
 
+            /*
+             * funcion para paginar anterior
+             * @returns {lista datos}
+             */
+            $scope.paginaAnteriorIndex = function () {
+                if ($scope.paginaactualproductos === 1)
+                    return;
+                $scope.paginaactualproductos--;
+                that.listarProductosFactura();
+            };
 
+
+            /*
+             * funcion para paginar siguiente
+             * @returns {lista datos}
+             */
+            $scope.paginaSiguienteIndex = function () {
+                $scope.paginaactualproductos++;
+                that.listarProductosFactura();
+            };
 
             if (datos_documento.datosAdicionales !== undefined) {
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;

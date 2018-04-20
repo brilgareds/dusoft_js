@@ -170,7 +170,8 @@ I012Controller.prototype.listarProductosFacturas = function (req, res) {
     var parametros = {
         numero_doc: args.numero_doc,
         prefijo: args.prefijo,
-        empresa_id: args.empresaId
+        empresa_id: args.empresaId,
+        paginaActual: args.paginaActual
     };
     that.m_i012.listarProductosFacturas(parametros, function (err, lista_productos) {
 

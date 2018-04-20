@@ -195,3 +195,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.29', 'DISPENSACION', 'Se modifica la consulta de dispensacion listarFormulas para que consulte los afiliados AC');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.30  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.30', 'DOCUMENTOS BODEGA', 'se agrega la impresion por torre para el tipo de documento I011');
+COMMIT TRANSACTION;

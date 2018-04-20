@@ -45,11 +45,13 @@ define(["angular", "js/controllers",
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
                 $scope.filtro.codigo_barras = true;
-
-                //TEMPORALEMNTE HARDCODED HASTA QUE SE REALIZE LA FUNCIONALIDAD DE PERSMISOS
-                
                 var empresa = Usuario.getUsuarioActual().getEmpresa();
-                
+                that.listaDocumentos(empresa);
+            });
+            
+            that.listaDocumentos=function(empresa){
+                //TEMPORALEMNTE HARDCODED HASTA QUE SE REALIZE LA FUNCIONALIDAD DE PERSMISOS
+                                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -76,7 +78,7 @@ define(["angular", "js/controllers",
 
                 $scope.traerProductosAuditatos(params);
 
-            });
+            };
 
             $scope.$on("detalleFarmaciaCerradoCompleto", function(e) {
                 $scope.filtro.termino_busqueda = "";
@@ -265,7 +267,24 @@ define(["angular", "js/controllers",
             });
  
             $scope.valorSeleccionado = function() {
-                
+              AlertService.mostrarVentanaAlerta("Verificación", "Verificar el prefijo del documento.\n Desea continuar? ",
+                        function (estadoConfirm) {
+                            if (estadoConfirm) {                                
+                                that.valorSeleccionado();
+                            }else{
+                                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                                that.listaDocumentos(empresa);
+                                that.seleccionarDocumentoDespacho();
+                               
+                                $scope.documento_despacho = "";
+                                $scope.seleccion.prefijo = "";
+                                $scope.seleccion.descripcion  = "";
+                            }
+                        }
+                );  
+            };
+            
+            that.valorSeleccionado = function () {
                 that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
                 var obj = {
                     session: $scope.session,

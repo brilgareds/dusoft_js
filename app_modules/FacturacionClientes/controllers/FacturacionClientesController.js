@@ -1,3 +1,4 @@
+
 var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e008,m_usuarios,m_sincronizacion,e_facturacion_clientes,m_pedidos_clientes) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
@@ -1198,15 +1199,21 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function(
         return;
     }
     
+    var estado=4;
+    if(args.facturas_consumo.estado === 0){
+      estado=6;  
+    }
+    console.log("args.facturas_consumo ",args.facturas_consumo);
     var parametros = {
         empresaId: args.facturas_consumo.empresa_id,
         tipoIdTercero: args.facturas_consumo.tipoTerceroId,
         terceroId: args.facturas_consumo.terceroId,
         prefijo: args.facturas_consumo.prefijo_documento,
         numero: args.facturas_consumo.numero_documento,
-        estado: 4
+        idFacturaXconsumo:args.facturas_consumo.idFacturaXconsumo,
+        estado: estado
     };
-    
+
     var usuario = req.session.user.usuario_id;
      
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametros).then(function(resultado){
@@ -1313,7 +1320,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         direccion_ip: '',
         pedidos: args.facturas_consumo.documentos,
         documentos: args.facturas_consumo.documentoDetalle,
-        id_factura_xconsumo:0,
+        id_factura_xconsumo:args.facturas_consumo.idFacturaXconsumo,
         observacion: args.facturas_consumo.observacion,
         fechaCorte: args.facturas_consumo.fechaCorte
     };
@@ -1437,7 +1444,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
          
         if(resultado.length > 0){
-            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+       //     parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             def.resolve();
         }else{
          
@@ -1452,7 +1459,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
              
         if(resultado){
-            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+       //     parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
         }
         
         

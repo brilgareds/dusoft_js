@@ -1,3 +1,4 @@
+
 define(["angular", "js/controllers", "js/models/FacturaConsumo",
         "js/models/FacturaDetalleConsumo", "js/models/DocumentoDetalleConsumo"], function (angular, controllers) {
 
@@ -232,7 +233,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          *              los productos del EFC a facturar
          */
         $scope.guardarTemporalFacturaConsumo = function(documento){
-            
+
             var obj = {
                 session: $scope.session,
                 data: {
@@ -251,7 +252,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                             prefijo: $scope.root.documento.prefijo,
                             numero: $scope.root.documento.numero
                         },
-                        documentoDetalle: documento
+                        documentoDetalle: documento,
+                        idFacturaXconsumo: $scope.root.idFacturaXconsumo
                     }
                 }
             };
@@ -365,10 +367,13 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         prefijo_documento: $scope.root.documento.get_prefijo(),
                         empresa_id:$scope.root.documento.get_empresa(),
                         tipoTerceroId: $scope.root.cliente.getTipoId(),
-                        terceroId:$scope.root.cliente.getId()
+                        terceroId:$scope.root.cliente.getId(),
+                        idFacturaXconsumo: $scope.root.idFacturaXconsumo,
+                        estado:$scope.root.estadoConsulta
                     }
                 }
             };
+            $scope.root.estadoConsulta=""
             facturacionClientesService.consultarDetalleTemporalFacturaConsumo(obj, function(data){
            
                 var sumTotalIva = 0;
@@ -399,7 +404,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          * @author Eduar Garcia
          * 
          */
-        $scope.onDocumentoSeleccionado = function(){
+        $scope.onDocumentoSeleccionado = function(dato){
          
             
             var obj = {
@@ -573,9 +578,13 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     } else {
                         var lsTemp = localStorageService.get("facturaTemporalCabecera");
                         if(lsTemp){
+                   
                             $scope.disabledDropDownCliente = true;
                             $scope.tipoPagoFacturaConsumo = lsTemp.tipo_pago;
                             $scope.root.observacion = lsTemp.observaciones;
+                            $scope.root.idFacturaXconsumo =lsTemp.id_factura_xconsumo;
+                            $scope.root.estadoConsulta =lsTemp.estado;
+                            console.log("AAAAAAAAAAAAAA",$scope.root.estadoConsulta);
                             that.listarCliente(lsTemp.nombre_tercero, function(estado){
                                 if(estado){
                                     $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 

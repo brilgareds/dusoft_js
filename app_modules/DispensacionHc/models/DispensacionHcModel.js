@@ -302,7 +302,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         .andWhere(G.knex.raw("a.paciente_id::varchar = " + obj.terminoBusqueda));
             }
         });
-            console.log(G.sqlformatter.format(query.toString()));     
+                
     query.limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){   
         callback(false, resultado);

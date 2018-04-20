@@ -704,7 +704,7 @@ I011Controller.prototype.crearTorreDocumento = function (req, res) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
             cabecera[0].edb_id = parametros.prefijo_doc + " " + parametros.numero_doc;
-            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+            __generarPdfTorre({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],
                 detalle: detallea,
                 impresion: impresion,
@@ -729,6 +729,41 @@ I011Controller.prototype.crearTorreDocumento = function (req, res) {
  * ==================================================================================================================================================================*/
 
 function __generarPdf(datos, callback) {
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/MovimientosBodega/I011/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function (err, response) {
+
+        response.body(function (body) {
+            var fecha = new Date();
+
+            var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + ".html";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                if (err) {
+                    console.log("err [__generarPdf]: ", err);
+                    callback(true, err);
+                    return;
+                } else {
+
+                    callback(nombreTmp);
+                    return;
+                }
+            });
+        });
+    });
+}
+function __generarPdfTorre(datos, callback) {
 
     G.jsreport.render({
         template: {

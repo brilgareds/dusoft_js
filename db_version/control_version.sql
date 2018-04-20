@@ -189,3 +189,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.28', 'AUDITORIA', 'Se modifica la seleccion del prefijo en auditoria - se correge error en facturacion clientes');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.29  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.29', 'DISPENSACION', 'Se modifica la consulta de dispensacion listarFormulas para que consulte los afiliados AC');
+COMMIT TRANSACTION;

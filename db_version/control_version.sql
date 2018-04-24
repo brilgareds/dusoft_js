@@ -201,3 +201,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.30', 'DOCUMENTOS BODEGA', 'se agrega la impresion por torre para el tipo de documento I011');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.31  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.31', 'DOCUMENTOS BODEGA', 'se realiza modificacion por solicitud de usuario final para el tipo de documento I011');
+COMMIT TRANSACTION;

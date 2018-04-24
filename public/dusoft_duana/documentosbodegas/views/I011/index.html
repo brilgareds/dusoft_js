@@ -90,7 +90,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div ng-if="true" class="modal-footer col-md-12" >
-                                            <button ng-hide="isNoTmp()" class="btn btn-default" ng-click="grabar_documento()">
+                                            <button ng-hide="isNoTmp()" class="btn btn-primary" ng-click="grabar_documento()">
                                                 <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
                                             </button>
                                             <button  class="btn btn-default" ng-click="cancelar_documento()">
@@ -105,13 +105,13 @@
                                     <button class="btn btn-default" ng-click="cancelar_documento()">
                                         <span class="glyphicon glyphicon-remove" ></span> Cancelar
                                     </button>
-                                    <button ng-hide="isEliminarTmp()" class="btn btn-default" ng-click="btn_eliminar_documento()">
+                                    <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
                                         <span class="glyphicon glyphicon-trash" ></span> Eliminar
                                     </button>
-                                    <button ng-hide="!isGenerarDocumento()"  class="btn btn-default" ng-click="generar_documento(0)" >
+                                    <button ng-hide="!isGenerarDocumento()"  class="btn btn-success" ng-click="generar_documento(0)" >
                                         <span class="glyphicon glyphicon-ok" ></span> Crear Documento
                                     </button>                                 
-                                    <button ng-hide="!isGenerarParteDocumento()"  class="btn btn-default" ng-click="generar_documento(1)" >
+                                    <button ng-hide="!isGenerarParteDocumento()"  class="btn btn-success" ng-click="generar_documento(1)" >
                                         <span class="glyphicon glyphicon-ok" ></span> Crear Documento
                                     </button>                                 
                                 </div>  

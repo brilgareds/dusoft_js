@@ -137,15 +137,15 @@ define([
                     {field: 'torre', displayName: 'Torre', width: "4%", enableCellEdit: false},
                     {field: 'codigo_producto', displayName: 'Codigo ', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                                <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
-                                                <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
-                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
-                                                <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 6">NeA</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 7">MoE</span>\
-                                                <span class="label label-default" ng-show="row.entity.getTipoProductoId() == 8">Nut</span>\
-                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 9">Ger</span>\
+                                                <span title="Normales" class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
+                                                <span title="Alto Costo" class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
+                                                <span title="Controlados" class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
+                                                <span title="Insumos" class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
+                                                <span title="Nevera" class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span title="Nevera Alto Costo" class="label label-info" ng-show="row.entity.getTipoProductoId() == 6">NeA</span>\
+                                                <span title="Monopol_Estado" class="label label-info" ng-show="row.entity.getTipoProductoId() == 7">MoE</span>\
+                                                <span title="Nutricion" class="label label-default" ng-show="row.entity.getTipoProductoId() == 8">Nut</span>\
+                                                <span title="Gerencia" class="label label-warning" ng-show="row.entity.getTipoProductoId() == 9">Ger</span>\
                                                 <span ng-cell-text >{{COL_FIELD}} </span>\
                                                 <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
@@ -256,15 +256,15 @@ define([
                     {field: 'torre', displayName: 'Torre', width: "5%", enableCellEdit: false},
                     {field: 'codigo_producto', displayName: 'Codigo ', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                                <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
-                                                <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
-                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
-                                                <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 6">NeA</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 7">MoE</span>\
-                                                <span class="label label-default" ng-show="row.entity.getTipoProductoId() == 8">Nut</span>\
-                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 9">Ger</span>\
+                                                <span title="Normales" class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
+                                                <span title="Alto Costo" class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
+                                                <span title="Controlados" class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
+                                                <span title="Insumos" class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
+                                                <span title="Nevera" class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span title="Nevera Alto Costo" class="label label-info" ng-show="row.entity.getTipoProductoId() == 6">NeA</span>\
+                                                <span title="Monopol_Estado" class="label label-info" ng-show="row.entity.getTipoProductoId() == 7">MoE</span>\
+                                                <span title="Nutricion" class="label label-default" ng-show="row.entity.getTipoProductoId() == 8">Nut</span>\
+                                                <span title="Gerencia" class="label label-warning" ng-show="row.entity.getTipoProductoId() == 9">Ger</span>\
                                                 <span ng-cell-text >{{COL_FIELD}} </span>\
                                                 <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
@@ -555,7 +555,23 @@ define([
              * parametros: variable
              */
             $scope.generar_documento = function (dato) {
-                that.crearDocumento(dato);
+                var condicion = true;
+                var productos = $scope.datos_view.listado_productos;
+                var productos_devueltos = $scope.datos_view.listado_productos_validados;
+
+                productos_devueltos.forEach(function (data) {
+                    for (var i = 0; i < productos.length; i++) {
+
+                        if (data.movimiento === productos[i].item_id) {
+                            condicion = false;
+                            AlertService.mostrarMensaje("warning", "la cantidad ingresada para el producto " + data.descripcion + " tiene que coincidir con la cantidad devuelta");
+                        }
+                    }
+                });
+
+                if (condicion) {
+                    that.crearDocumento(dato);
+                }
             };
 
             that.crearDocumento = function (dato) {

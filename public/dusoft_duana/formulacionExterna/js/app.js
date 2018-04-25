@@ -25,6 +25,7 @@ define(["angular",
     "models/PlanesRangosEsm",
     "models/EpsAfiliadosEsm",
     "controllers/formulacionExterna/FormulacionExternaController",
+    "controllers/formulacionExterna/FormulacionExternaPendientesController",
     "controllers/formulacionExterna/FormulaController",
     "services/formulaExternaService",
 ], function(angular, Agencia) {
@@ -76,6 +77,12 @@ define(["angular",
                     text: "Nueva Formula",
                     templateUrl: "views/formulacionExterna/formula.html",
                     controller: "FormulaController",
+                    parent_name : "FormulacionExterna"
+                }).state('FormulaExternaPendientes', {
+                    url: "/FormulaExternaPendientes",
+                    text: "Formula externa pendientes",
+                    templateUrl: "views/formulacionExterna/formulaExternaPendientes.html",
+                    controller: "FormulacionExternaPendientesController",
                     parent_name : "FormulacionExterna"
                 });
 

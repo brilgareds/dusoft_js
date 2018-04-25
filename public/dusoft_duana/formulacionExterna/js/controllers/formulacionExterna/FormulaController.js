@@ -19,6 +19,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             documento : '',
             paciente : {},
             formula : {
+                fecha: '',
                 tipoFormula : {'descripcion' : 'Tipo Formula'},
                 municipio :  {'nombre' : 'Seleccionar Municipio'}
             },
@@ -66,6 +67,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.abrirModalGenerarEntrega = abrirModalGenerarEntrega;
         $scope.imprimirMedicamentosPendientesPorDispensar = imprimirMedicamentosPendientesPorDispensar;
         $scope.imprimirMedicamentosDispensados = imprimirMedicamentosDispensados;
+        $scope.volver = volver;
+
 
         /***********************************
             Definicion de funciones
@@ -207,45 +210,89 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             var paciente_id = $scope.root.afiliado.mostrarPacientes()[0].getPacienteId();
             var formula_papel = $scope.root.formula.formula_papel; 
             //consulta si ya existe una formula 
-            formulaExternaService.consultaExisteFormula(tipo_id_paciente, paciente_id, formula_papel, function(error, existe){
-                if(error){
-                    AlertService.mostrarMensaje("warning", 'Ocurrio un error consultando si la formula ya existe.');
-                    return;
-                }
 
-                if(existe){
-                    AlertService.mostrarMensaje("warning", 'La formula ' + formula_papel + ' ya existe para el paciente.');
-                    return;
-                }
-
-                var empresa_id = Usuario.getUsuarioActual().getEmpresa().getCodigo();
-                var fecha_formula = $scope.root.formula.fecha? $scope.root.formula.fecha.getFullYear().toString() + '-' + ($scope.root.formula.fecha.getMonth() + 101).toString().slice(-2) + '-'+ ($scope.root.formula.fecha.getDate() + 100).toString().slice(-2) : false;
-                var tipo_formula = $scope.root.formula.tipoFormula.id;
-                var tipo_id_tercero = $scope.root.formula.profesional? $scope.root.formula.profesional.tipo_id_tercero: false;
-                var tercero_id = $scope.root.formula.profesional? $scope.root.formula.profesional.tercero_id : false;
-                var plan_id = $scope.root.afiliado.mostrarPlanAtencion()[0].mostrarPlanes()[0].getPlanId();
-                var rango = $scope.root.afiliado.mostrarPlanAtencion()[0].getRango();
-                var tipo_afiliado_id = $scope.root.afiliado.mostrarPlanAtencion()[0].getTipoAfiliadoId();
-                var centro_utilidad = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
-                var bodega = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
-                var tipo_pais_id = $scope.root.formula.municipio ? $scope.root.formula.municipio.tipo_pais_id : null;
-                var tipo_dpto_id = $scope.root.formula.municipio ? $scope.root.formula.municipio.tipo_dpto_id : null;
-                var tipo_mpio_id = $scope.root.formula.municipio ? $scope.root.formula.municipio.tipo_mpio_id : null;
-
-                if(!formula_papel || !empresa_id || !fecha_formula || !tipo_formula || !tipo_id_tercero || !tercero_id || !tipo_id_paciente || !paciente_id || !plan_id || !rango || !tipo_afiliado_id || !centro_utilidad || !bodega){
-                    AlertService.mostrarMensaje("warning", 'Diligencie los campos obligatorios (*).');
-                    return;
-                }
-
-                formulaExternaService.guardarFormulaExternaTmp(formula_papel, empresa_id, fecha_formula, tipo_formula, tipo_id_tercero, tercero_id, tipo_id_paciente, paciente_id, plan_id, rango, tipo_afiliado_id, centro_utilidad, bodega, tipo_pais_id, tipo_dpto_id, tipo_mpio_id,  function(error, tmp_formula_id){
+            if(!$scope.root.formula.tmp_formula_id){
+                formulaExternaService.consultaExisteFormula(tipo_id_paciente, paciente_id, formula_papel, function(error, existe){
                     if(error){
-                        AlertService.mostrarMensaje("warning", 'No se guardó la formula.');
+                        AlertService.mostrarMensaje("warning", 'Ocurrio un error consultando si la formula ya existe.');
                         return;
                     }
-                    //Se asigna a la formula el id de la formula insertada en base de datos 
-                    $scope.root.formula.tmp_formula_id = tmp_formula_id;
+
+                    if(existe){
+                        AlertService.mostrarMensaje("warning", 'La formula ' + formula_papel + ' ya existe para el paciente.');
+                        return;
+                    }
+
+                    var empresa_id = Usuario.getUsuarioActual().getEmpresa().getCodigo();
+                    var fecha_formula = $scope.root.formula.fecha? $scope.root.formula.fecha.getFullYear().toString() + '-' + ($scope.root.formula.fecha.getMonth() + 101).toString().slice(-2) + '-'+ ($scope.root.formula.fecha.getDate() + 100).toString().slice(-2) : false;
+                    var tipo_formula = $scope.root.formula.tipoFormula.id;
+                    var tipo_id_tercero = $scope.root.formula.profesional? $scope.root.formula.profesional.tipo_id_tercero: false;
+                    var tercero_id = $scope.root.formula.profesional? $scope.root.formula.profesional.tercero_id : false;
+                    var plan_id = $scope.root.afiliado.mostrarPlanAtencion()[0].mostrarPlanes()[0].getPlanId();
+                    var rango = $scope.root.afiliado.mostrarPlanAtencion()[0].getRango();
+                    var tipo_afiliado_id = $scope.root.afiliado.mostrarPlanAtencion()[0].getTipoAfiliadoId();
+                    var centro_utilidad = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
+                    var bodega = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
+                    var tipo_pais_id = $scope.root.formula.municipio ? $scope.root.formula.municipio.tipo_pais_id : null;
+                    var tipo_dpto_id = $scope.root.formula.municipio ? $scope.root.formula.municipio.tipo_dpto_id : null;
+                    var tipo_mpio_id = $scope.root.formula.municipio ? $scope.root.formula.municipio.tipo_mpio_id : null;
+
+                    if(!formula_papel || !empresa_id || !fecha_formula || !tipo_formula || !tipo_id_tercero || !tercero_id || !tipo_id_paciente || !paciente_id || !plan_id || !rango || !tipo_afiliado_id || !centro_utilidad || !bodega){
+                        AlertService.mostrarMensaje("warning", 'Diligencie los campos obligatorios (*).');
+                        return;
+                    }
+
+                    formulaExternaService.guardarFormulaExternaTmp(formula_papel, empresa_id, fecha_formula, tipo_formula, tipo_id_tercero, tercero_id, tipo_id_paciente, paciente_id, plan_id, rango, tipo_afiliado_id, centro_utilidad, bodega, tipo_pais_id, tipo_dpto_id, tipo_mpio_id,  function(error, tmp_formula_id){
+                        if(error){
+                            AlertService.mostrarMensaje("warning", 'No se guardó la formula.');
+                            return;
+                        }
+                        //Se asigna a la formula el id de la formula insertada en base de datos 
+                        $scope.root.formula.tmp_formula_id = tmp_formula_id;
+                    });
                 });
-            });
+            }else{
+                formulaExternaService.consultaExisteFormula(tipo_id_paciente, paciente_id, formula_papel, function(error, existe){
+                    if(error){
+                        AlertService.mostrarMensaje("warning", 'Ocurrio un error consultando si la formula ya existe.');
+                        return;
+                    }
+
+                    if(existe){
+                        AlertService.mostrarMensaje("warning", 'La formula ' + formula_papel + ' ya existe para el paciente.');
+                        return;
+                    }
+
+                    var empresa_id = Usuario.getUsuarioActual().getEmpresa().getCodigo();
+                    var fecha_formula = typeof $scope.root.formula.fecha == 'string'? $scope.root.formula.fecha : $scope.root.formula.fecha.getFullYear().toString() + '-' + ($scope.root.formula.fecha.getMonth() + 101).toString().slice(-2) + '-'+ ($scope.root.formula.fecha.getDate() + 100).toString().slice(-2);
+                    var tipo_formula = $scope.root.formula.tipoFormula.id;
+                    var tipo_id_tercero = $scope.root.formula.profesional? $scope.root.formula.profesional.tipo_id_tercero: false;
+                    var tercero_id = $scope.root.formula.profesional? $scope.root.formula.profesional.tercero_id : false;
+                    var plan_id = $scope.root.afiliado.mostrarPlanAtencion()[0].mostrarPlanes()[0].getPlanId();
+                    var rango = $scope.root.afiliado.mostrarPlanAtencion()[0].getRango();
+                    var tipo_afiliado_id = $scope.root.afiliado.mostrarPlanAtencion()[0].getTipoAfiliadoId();
+                    var centro_utilidad = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
+                    var bodega = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
+                    var tipo_pais_id = $scope.root.formula.municipio ? $scope.root.formula.municipio.tipo_pais_id : null;
+                    var tipo_dpto_id = $scope.root.formula.municipio ? $scope.root.formula.municipio.tipo_dpto_id : null;
+                    var tipo_mpio_id = $scope.root.formula.municipio ? $scope.root.formula.municipio.tipo_mpio_id : null;
+
+                    if(!formula_papel || !empresa_id || !fecha_formula || !tipo_formula || !tipo_id_tercero || !tercero_id || !tipo_id_paciente || !paciente_id || !plan_id || !rango || !tipo_afiliado_id || !centro_utilidad || !bodega){
+                        AlertService.mostrarMensaje("warning", 'Diligencie los campos obligatorios (*).');
+                        return;
+                    }
+
+                    formulaExternaService.actualizarFormulaExternaTmp($scope.root.formula.tmp_formula_id, formula_papel, empresa_id, fecha_formula, tipo_formula, tipo_id_tercero, tercero_id, tipo_id_paciente, paciente_id, plan_id, rango, tipo_afiliado_id, centro_utilidad, bodega, tipo_pais_id, tipo_dpto_id, tipo_mpio_id,  function(error, tmp_formula_id){
+                        if(error){
+                            AlertService.mostrarMensaje("warning", 'No se guardó la formula.');
+                            return;
+                        }
+                        AlertService.mostrarMensaje("success", 'Formula actualizada.');
+                        //Se asigna a la formula el id de la formula insertada en base de datos 
+                        //$scope.root.formula.tmp_formula_id = tmp_formula_id;
+                    });
+                });
+            }
         }
 
         function buscar(elemento, term){
@@ -291,7 +338,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                         }
                     });
 
-                    formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosLotesDispensacion){
+                    formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, null, function(error, medicamentosLotesDispensacion){
                         if(!error){
                             $scope.root.productosLotesSeleccionados = medicamentosLotesDispensacion;
                         }
@@ -333,7 +380,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             formulaExternaService.shared = {
                 producto: producto,
                 tipo_id_paciente: $scope.root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(),
-                id_paciente: $scope.root.afiliado.mostrarPacientes()[0].getPacienteId(),
+                paciente_id: $scope.root.afiliado.mostrarPacientes()[0].getPacienteId(),
                 tmp_formula_id : $scope.root.formula.tmp_formula_id
             };
 
@@ -346,7 +393,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     }
                 });
                 //cuando se cierra el modal se recarga la grilla de medicamentos dispensados
-                formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosLotesDispensacion){
+                formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, null,function(error, medicamentosLotesDispensacion){
                     if(!error){
                         $scope.root.productosLotesSeleccionados = medicamentosLotesDispensacion;
                     }
@@ -359,7 +406,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     }
                 });
                 //cuando se cierra el modal se recarga la grilla de medicamentos dispensados
-                formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosLotesDispensacion){
+                formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, null,function(error, medicamentosLotesDispensacion){
                     if(!error){
                         $scope.root.productosLotesSeleccionados = medicamentosLotesDispensacion;
                     }
@@ -444,6 +491,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 $scope.visualizarReporte("/reports/" + resultado.listar_medicamentos_pendientes.nombre_pdf, resultado.listar_medicamentos_pendientes.nombre_pdf, "_blank");
             });
         }
+
+        function volver(){
+            $state.go('FormulacionExterna');
+        }
+
 
         /***********************************
             Funcion inicializadora del modulo
@@ -611,7 +663,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     return;
                 }
 
-                formulaExternaService.insertarDispensacionMedicamentoTmp($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, medicamentoLote.codigo_producto, medicamentoLote.cantidad_despachada, medicamentoLote.lotes[0].fecha_vencimiento, medicamentoLote.lotes[0].codigo_lote, $scope.data.tmp_formula_id, $scope.data.producto.cantidad, function(error, esm_dispen_tmp_id){
+                formulaExternaService.insertarDispensacionMedicamentoTmp($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, medicamentoLote.codigo_producto, medicamentoLote.cantidad_despachada, medicamentoLote.lotes[0].fecha_vencimiento, medicamentoLote.lotes[0].codigo_lote, $scope.data.tmp_formula_id, $scope.data.formula_id, $scope.data.producto.cantidad, function(error, esm_dispen_tmp_id){
                     if(error){
                         AlertService.mostrarMensaje("warning", esm_dispen_tmp_id);
                         medicamentoLote.loteSeleccionado = false;
@@ -676,9 +728,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $scope.data.centro_utilidad = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
             $scope.data.bodega = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
             $scope.data.producto = formulaExternaService.shared.producto;
-            $scope.data.tmp_formula_id = formulaExternaService.shared.tmp_formula_id;
+            $scope.data.tmp_formula_id = formulaExternaService.shared.tmp_formula_id? formulaExternaService.shared.tmp_formula_id : null;
+            $scope.data.formula_id = formulaExternaService.shared.formula_id? formulaExternaService.shared.formula_id : null;
+            $scope.data.tipo_id_paciente = formulaExternaService.shared.tipo_id_paciente;
+            $scope.data.paciente_id =  formulaExternaService.shared.paciente_id;
             //obtiene el producto con los lotes del producto 
-            formulaExternaService.obtenerLotesDeProducto($scope.empresa_id, $scope.centro_utilidad, $scope.bodega, $scope.data.producto.codigo_producto, $scope.data.tmp_formula_id, $scope.root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(), $scope.root.afiliado.mostrarPacientes()[0].getPacienteId(), $scope.data.producto.principio_activo, $scope.data.producto.sw_autorizado, function(error, data){
+            formulaExternaService.obtenerLotesDeProducto($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, $scope.data.producto.codigo_producto, $scope.data.tmp_formula_id, $scope.data.tipo_id_paciente, $scope.data.paciente_id, $scope.data.producto.principio_activo, $scope.data.producto.sw_autorizado, function(error, data){
                 //medicamento ya fue entregado en menos de 25 dias
                 if(error == 204){
                     formulaExternaService.usuarioPrivilegios($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, function(error, privilegios){
@@ -822,34 +877,53 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $modalInstance.close();
         }
 
-        function generarEntrega(tmp_formula_id, observacion, empresa_id, centro_utilidad, bodega, plan) {
+        function generarEntrega(tmp_formula_id, formula_id, observacion, empresa_id, centro_utilidad, bodega, plan) {
             //Valida todo_pendiente {si ningun medicamento fue dispensado todo_pendiente = 1 | si algun medicamento fue dispensado todo_pendiente = 0}
             var todo_pendiente = $scope.root.productosLotesSeleccionados.length == 0? 1 : 0;
-            var observacion = observacion + " No. Formula: " + $scope.root.formula.formula_papel + " Paciente " + $scope.root.afiliado.mostrarPacientes()[0].getTipoIdPaciente() + $scope.root.afiliado.mostrarPacientes()[0].getPacienteId() + " " + $scope.root.afiliado.mostrarPacientes()[0].getNombres() + " " + $scope.root.afiliado.mostrarPacientes()[0].getApellidos();
+            if(tmp_formula_id){
+                var observacion = observacion + " No. Formula: " + $scope.root.formula.formula_papel + " Paciente " + $scope.root.afiliado.mostrarPacientes()[0].getTipoIdPaciente() + $scope.root.afiliado.mostrarPacientes()[0].getPacienteId() + " " + $scope.root.afiliado.mostrarPacientes()[0].getNombres() + " " + $scope.root.afiliado.mostrarPacientes()[0].getApellidos();
+                formulaExternaService.generarEntrega(tmp_formula_id, observacion, todo_pendiente, empresa_id, centro_utilidad, bodega, plan,function(error, data){
+                    if(error){
+                        AlertService.mostrarMensaje("warning", data);
+                        return;
+                    }
+                    //Genera la impresion de medicamentos dispensados
+                    if(!todo_pendiente){
+                        $scope.imprimirMedicamentosDispensados(data.formula_id, true);
+                    }
+                    //Genera la impresion de medicamentos pendientes por dispensar
+                    if(data.generoPendientes){
+                        $scope.imprimirMedicamentosPendientesPorDispensar(data.formula_id);
+                    }
+                    //vuelve a formulacion externa pantalla principal
+                    formulaExternaService.shared = {
+                        formula_id : data.formula_id
+                    };
 
-            formulaExternaService.generarEntrega(tmp_formula_id, observacion, todo_pendiente, empresa_id, centro_utilidad, bodega, plan,function(error, data){
-                if(error){
-                    AlertService.mostrarMensaje("warning", data);
-                    return;
-                }
-                //Genera la impresion de medicamentos dispensados
-                if(!todo_pendiente){
-                    $scope.imprimirMedicamentosDispensados(data.formula_id, true);
-                }
-                //Genera la impresion de medicamentos pendientes por dispensar
-                if(data.generoPendientes){
-                    $scope.imprimirMedicamentosPendientesPorDispensar(data.formula_id);
-                }
-                //vuelve a formulacion externa pantalla principal
-                formulaExternaService.shared = {
-                    formula_id : data.formula_id
-                };
+                    $scope.volver();
+                    $modalInstance.close();
+                });
+            }else{
+                //entrega de pendientes
+                formulaExternaService.generarEntregaPendientes(formula_id, observacion, todo_pendiente, empresa_id, centro_utilidad, bodega, plan, function(error, data){
+                    if(error){
+                        AlertService.mostrarMensaje("warning", "Error al momento de generar la entrega de pendientes");
+                        return;
+                    }
 
-                $state.go('FormulacionExterna');           
-            });
+                    $scope.imprimirMedicamentosPendientesDispensados(formula_id, true);
+
+                    $scope.volver();
+                    $modalInstance.close();
+                });
+            }
         }
         //inicializa el modal
         function init(){
+            if($scope.root.afiliado){
+                $scope.plan_id = $scope.root.afiliado.mostrarPlanAtencion()[0].mostrarPlanes()[0].getPlanId();
+            }
+
             $scope.medicamentosTemporales = {
                 data: 'root.productosLotesSeleccionados',
                 enableColumnResize: true,

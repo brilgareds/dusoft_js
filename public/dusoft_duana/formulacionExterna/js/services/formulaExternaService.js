@@ -32,16 +32,26 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
     self.guardarDiagnosticoTmp = guardarDiagnosticoTmp;
     self.insertarMedicamentoTmp = insertarMedicamentoTmp;
     self.insertarDispensacionMedicamentoTmp = insertarDispensacionMedicamentoTmp;
+    self.insertarLlamadaPacientes= insertarLlamadaPacientes;
     self.eliminarMedicamentoTmp = eliminarMedicamentoTmp;
     self.eliminarDiagnosticoTmp = eliminarDiagnosticoTmp;
     self.eliminarDispensacionMedicamentoTmp = eliminarDispensacionMedicamentoTmp;
     self.consultaExisteFormula = consultaExisteFormula;
     self.imprimirMedicamentosPendientesPorDispensar = imprimirMedicamentosPendientesPorDispensar;
     self.imprimirMedicamentosDispensados = imprimirMedicamentosDispensados;
+    self.imprimirMedicamentosPendientesDispensados = imprimirMedicamentosPendientesDispensados;
+    self.imprimirTodoDispensado = imprimirTodoDispensado;
     self.generarEntrega = generarEntrega;
+    self.generarEntregaPendientes = generarEntregaPendientes;
     self.usuarioPrivilegios = usuarioPrivilegios;
     self.buscarProductos = buscarProductos;
     self.autorizarMedicamento = autorizarMedicamento;
+    self.buscarFormulas = buscarFormulas;
+    self.listarLlamadasPacientes= listarLlamadasPacientes;
+    self.listarMedicamentosPendientes = listarMedicamentosPendientes;
+    self.inactivarPendiente = inactivarPendiente;
+    self.cambiarCodigoPendiente = cambiarCodigoPendiente;
+    self.actualizarFormulaExternaTmp = actualizarFormulaExternaTmp;
     
 
     return this;
@@ -98,6 +108,25 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       };
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.OBTENER_TIPO_FORMULA,"POST", body, function(data){
+          var error = data.status == 200 ? 0 : 1;
+          if(!error){
+            callback(error, data.obj.listar_tipo_formula);
+          } else{
+            callback(error, null);
+          }
+      });
+    }
+
+
+    function inactivarPendiente(esm_pendiente_dispensacion_id, callback){
+      var body = {
+        session : self.session,
+        data : {
+          esm_pendiente_dispensacion_id : esm_pendiente_dispensacion_id
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.INACTIVAR_PENDIENTE,"POST", body, function(data){
           var error = data.status == 200 ? 0 : 1;
           if(!error){
             callback(error, data.obj.listar_tipo_formula);
@@ -201,6 +230,28 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       });
     }
 
+
+    function cambiarCodigoPendiente(formula_id ,esm_pendiente_dispensacion_id, codigo_cambiar, codigo_medicamento, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id : formula_id,
+          esm_pendiente_dispensacion_id : esm_pendiente_dispensacion_id,
+          codigo_cambiar : codigo_cambiar,
+          codigo_medicamento : codigo_medicamento
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.CAMBIAR_CODIGO_PENDIENTE,"POST", body, function(data){
+          var error = data.status == 200 ? 0 : 1;
+          if(!error){
+            callback(error, data.obj);
+          } else{
+            callback(error, null);
+          }
+      });
+    }
+
     function guardarDiagnosticoTmp(tmp_formula_id, tipo_id_paciente, paciente_id, diagnostico_id, callback){
       var body = {
         session : self.session,
@@ -246,6 +297,40 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       };
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.GUARDAR_FORMULA_TMP,"POST", body, function(data){
+          var error = data.status == 200 ? 0 : 1;
+          if(!error){
+            callback(error, data.obj.tmp_formula_id);
+          } else{
+            callback(error, null);
+          }
+      });
+    }
+
+    function actualizarFormulaExternaTmp(tmp_formula_id, formula_papel, empresa_id, fecha_formula, tipo_formula, tipo_id_tercero, tercero_id, tipo_id_paciente, paciente_id, plan_id, rango, tipo_afiliado_id, centro_utilidad, bodega, tipo_pais_id, tipo_dpto_id, tipo_mpio_id, callback){
+      var body = {
+        session : self.session,
+        data : {
+          tmp_formula_id : tmp_formula_id,
+          formula_papel: formula_papel,
+           empresa_id: empresa_id,
+           fecha_formula: fecha_formula,
+           tipo_formula: tipo_formula,
+           tipo_id_tercero: tipo_id_tercero,
+           tercero_id: tercero_id,
+           tipo_id_paciente: tipo_id_paciente,
+           paciente_id: paciente_id,
+           plan_id: plan_id,
+           rango: rango,
+           tipo_afiliado_id: tipo_afiliado_id,
+           centro_utilidad: centro_utilidad,
+           bodega: bodega,
+           tipo_pais_id: tipo_pais_id,
+           tipo_dpto_id: tipo_dpto_id,
+           tipo_mpio_id: tipo_mpio_id
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.ACTUALIZAR_FORMULA_TMP,"POST", body, function(data){
           var error = data.status == 200 ? 0 : 1;
           if(!error){
             callback(error, data.obj.tmp_formula_id);
@@ -462,7 +547,7 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
         }
       };
 
-      Request.realizarRequest(API.DISPENSACIONHC.USUARIO_PRIVILEGIOS,"POST", body, function(data){     
+      Request.realizarRequest(API.DISPENSACIONHC.USUARIO_PRIVILEGIOS,"POST", body, function(data){
         var error = data.status == 200? 0 : data.status;
         if(!error){
           callback(error, data.obj.privilegios);
@@ -472,7 +557,7 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       });
     };
 
-    function insertarDispensacionMedicamentoTmp(empresa_id, centro_utilidad, bodega, codigo_producto, cantidad_despachada, fecha_vencimiento, lote, formula_id_tmp, cantidad_solicitada, callback){
+    function insertarDispensacionMedicamentoTmp(empresa_id, centro_utilidad, bodega, codigo_producto, cantidad_despachada, fecha_vencimiento, lote, formula_id_tmp, formula_id, cantidad_solicitada, callback){
       var body = {
         session : self.session,
         data : {
@@ -484,6 +569,7 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
           fecha_vencimiento : fecha_vencimiento,
           lote : lote,
           formula_id_tmp : formula_id_tmp,
+          formula_id : formula_id,
           cantidad_solicitada : cantidad_solicitada
         }
       };
@@ -516,11 +602,12 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       });
     }
 
-    function obtenerDispensacionMedicamentosTmp(formula_id_tmp, callback){
+    function obtenerDispensacionMedicamentosTmp(formula_id_tmp, formula_id, callback){
       var body = {
         session : self.session,
         data : {
-          formula_id_tmp : formula_id_tmp
+          formula_id_tmp : formula_id_tmp,
+          formula_id : formula_id
         }
       };
 
@@ -549,6 +636,30 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       };
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.GENERAR_ENTREGA, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
+
+    function generarEntregaPendientes(formula_id, observacion, todo_pendiente, empresa_id, centro_utilidad, bodega, plan, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id : formula_id,
+          observacion : observacion,
+          todo_pendiente : todo_pendiente,
+          empresa_id : empresa_id,
+          centro_utilidad : centro_utilidad,
+          bodega : bodega,
+          plan: plan
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.GENERAR_ENTREGA_PENDIENTES, "POST", body, function(data){
         var error = data.status == 200? 0 : 1;
         if(!error){
           callback(error, data.obj);
@@ -596,6 +707,84 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       });
     }
 
+    function imprimirMedicamentosPendientesDispensados(formula_id, imprimir_actual, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id : formula_id,
+          imprimir_actual : imprimir_actual
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.IMPRIMIR_MEDICAMENTOS_PENDIENTES_DISPENSADOS, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
+
+
+    function listarMedicamentosPendientes(formula_id, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id : formula_id
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.LISTAR_MEDICAMENTOS_PENDIENTES, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
+
+    function insertarLlamadaPacientes(formula_id, contacto_nombre, contacto_parentezco, observacion, tel_contacto, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id : formula_id,
+          contacto_nombre : contacto_nombre,
+          contacto_parentezco : contacto_parentezco,
+          observacion : observacion,
+          tel_contacto : tel_contacto
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.INSERTAR_LLAMADAS_PACIENTES, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
+
+    function listarLlamadasPacientes(formula_id, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id : formula_id
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.LISTAR_LLAMADAS_PACIENTES, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
+
     function imprimirMedicamentosDispensados(formula_id, imprimir_actual, callback){
       var body = {
         session : self.session,
@@ -606,6 +795,49 @@ define(["angular", "js/services", "includes/classes/planes", "includes/classes/P
       };
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.IMPRIMIR_MEDICAMENTOS_DISPENSADOS, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }    
+
+
+    function imprimirTodoDispensado(formula_id, imprimir_actual, callback){
+      var body = {
+        session : self.session,
+        data : {
+          formula_id : formula_id,
+          imprimir_actual : imprimir_actual
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.IMPRIMIR_TODO_DISPENSADO, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
+    
+    //G.Q.ninvoke(that.m_formulacionExterna,'buscarFormulas', args.nombre_paciente, args.formula_papel, args.tipo_id_paciente, args.paciente_id).then(function(resultado){
+    function buscarFormulas(nombre_paciente, formula_papel, tipo_id_paciente, paciente_id, pagina, callback){
+      var body = {
+        session : self.session,
+        data : {
+          nombre_paciente : nombre_paciente,
+          formula_papel : formula_papel,
+          tipo_id_paciente : tipo_id_paciente,
+          paciente_id : paciente_id,
+          pagina : pagina
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.BUSCAR_FORMULAS, "POST", body, function(data){
         var error = data.status == 200? 0 : 1;
         if(!error){
           callback(error, data.obj);

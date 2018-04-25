@@ -75,6 +75,15 @@ module.exports = function(app, di_container) {
         c_formulacion_externa.obtenerLotesDeProducto(req, res);
     });   
 
+    app.post('/api/FormulacionExterna/insertarLlamadaPacientes', function(req, res) {
+        c_formulacion_externa.insertarLlamadaPacientes(req, res);
+    });   
+    
+    app.post('/api/FormulacionExterna/listarLlamadasPacientes', function(req, res) {
+        c_formulacion_externa.listarLlamadasPacientes(req, res);
+    });   
+      
+
     app.post('/api/FormulacionExterna/insertarDispensacionMedicamentoTmp', function(req, res) {
         c_formulacion_externa.insertarDispensacionMedicamentoTmp(req, res);
     });   
@@ -89,6 +98,10 @@ module.exports = function(app, di_container) {
 
     app.post('/api/FormulacionExterna/generarEntrega', function(req, res) {
         c_formulacion_externa.generarEntrega(req, res);
+    });  
+
+    app.post('/api/FormulacionExterna/generarEntregaPendientes', function(req, res) {
+        c_formulacion_externa.generarEntregaPendientes(req, res);
     });       
 
     app.post('/api/FormulacionExterna/imprimirMedicamentosPendientesPorDispensar', function(req, res) {
@@ -98,4 +111,32 @@ module.exports = function(app, di_container) {
     app.post('/api/FormulacionExterna/imprimirMedicamentosDispensados', function(req, res) {
         c_formulacion_externa.imprimirMedicamentosDispensados(req, res);
     });       
+
+    app.post('/api/FormulacionExterna/buscarFormulas', function(req, res) {
+        c_formulacion_externa.buscarFormulas(req, res);
+    });    
+
+    app.post('/api/FormulacionExterna/listarMedicamentosPendientes', function(req, res) {
+        c_formulacion_externa.listarMedicamentosPendientes(req, res);
+    }); 
+
+    app.post('/api/FormulacionExterna/imprimirMedicamentosPendientesDispensados', function(req, res) {
+        c_formulacion_externa.imprimirMedicamentosPendientesDispensados(req, res);
+    });
+
+    app.post('/api/FormulacionExterna/inactivarPendiente', function(req, res) {
+        c_formulacion_externa.inactivarPendiente(req, res);
+    });      
+    
+    app.post('/api/FormulacionExterna/imprimirTodoDispensado', function(req, res) {
+        c_formulacion_externa.imprimirTodoDispensado(req, res);
+    });         
+
+    app.post('/api/formulacionexterna/cambiarCodigoPendiente', function(req, res) {
+        c_formulacion_externa.cambiarCodigoPendiente(req, res);
+    });  
+
+    app.post('/api/formulacionexterna/actualizarFormulaExternaTmp', function(req, res) {
+        c_formulacion_externa.actualizarFormulaExternaTmp(req, res);
+    });      
 };

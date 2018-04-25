@@ -92,7 +92,11 @@
         <table border="0" width="100%" align="center" >
             <tr>
                 <td>
-                <center class="label"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8.5px">MEDICAMENTOS DISPENSADOS</center>
+                {{if esDispensacionPendientes}}
+                    <center class="label"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8.5px">MEDICAMENTOS PENDIENTES DISPENSADOS</center>
+                {{else}}
+                    <center class="label"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8.5px">MEDICAMENTOS DISPENSADOS</center>
+                {{/end}}
                 <table width="100%" cellspacing="2">
                     <tr>
                         <td align="center">

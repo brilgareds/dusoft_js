@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-warning" ng-click="generarEntrega(root.formula.tmp_formula_id, root.observacion, empresa_id, centro_utilidad, bodega, root.afiliado.mostrarPlanAtencion()[0].mostrarPlanes()[0].getPlanId())" ng-disabled="btnEntregaFormula">Aceptar</button>
+            <button type="button" class="btn btn-warning" ng-click="generarEntrega(root.formula.tmp_formula_id, root.formula.formula_id, root.observacion, empresa_id, centro_utilidad, bodega, plan_id)" ng-disabled="btnEntregaFormula">Aceptar</button>
             <button type="button" class="btn btn-primary" ng-click="cerrarVentana()">Cancelar</button>
         </div>
     </div>

@@ -23,12 +23,22 @@ define(["angular"], function(angular) {
                 "CONSULTA_EXISTE_FORMULA": BASE_URL + "/FormulacionExterna/consultaExisteFormula",
                 "OBTENER_LOTES_DE_PRODUCTO": BASE_URL + "/FormulacionExterna/obtenerLotesDeProducto",
                 "INSERTAR_DISPENSACION_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/insertarDispensacionMedicamentoTmp",
+                "INSERTAR_LLAMADAS_PACIENTES": BASE_URL + "/FormulacionExterna/insertarLlamadaPacientes",
                 "ELIMINAR_DISPENSACION_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/eliminarDispensacionMedicamentoTmp",
                 "OBTENER_DISPENSACION_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/obtenerDispensacionMedicamentosTmp",
                 "GENERAR_ENTREGA": BASE_URL + "/FormulacionExterna/generarEntrega",
+                "GENERAR_ENTREGA_PENDIENTES": BASE_URL + "/FormulacionExterna/generarEntregaPendientes",
                 "AUTORIZAR_MEDICAMENTO": BASE_URL + "/FormulacionExterna/updateAutorizacionPorMedicamento",
                 "IMPRIMIR_MEDICAMENTOS_PENDIENTES_POR_DISPENSAR": BASE_URL + "/FormulacionExterna/imprimirMedicamentosPendientesPorDispensar",
-                "IMPRIMIR_MEDICAMENTOS_DISPENSADOS": BASE_URL + "/FormulacionExterna/imprimirMedicamentosDispensados"
+                "IMPRIMIR_MEDICAMENTOS_DISPENSADOS": BASE_URL + "/FormulacionExterna/imprimirMedicamentosDispensados",
+                "IMPRIMIR_MEDICAMENTOS_PENDIENTES_DISPENSADOS": BASE_URL + "/FormulacionExterna/imprimirMedicamentosPendientesDispensados",
+                "BUSCAR_FORMULAS": BASE_URL + "/FormulacionExterna/buscarFormulas",
+                "LISTAR_LLAMADAS_PACIENTES": BASE_URL + "/FormulacionExterna/listarLlamadasPacientes",
+                "LISTAR_MEDICAMENTOS_PENDIENTES": BASE_URL + "/FormulacionExterna/listarMedicamentosPendientes",
+                "INACTIVAR_PENDIENTE": BASE_URL + "/FormulacionExterna/inactivarPendiente",
+                "IMPRIMIR_TODO_DISPENSADO": BASE_URL + "/FormulacionExterna/imprimirTodoDispensado",
+                "CAMBIAR_CODIGO_PENDIENTE": BASE_URL + "/FormulacionExterna/cambiarCodigoPendiente",
+                "ACTUALIZAR_FORMULA_TMP": BASE_URL + "/FormulacionExterna/actualizarFormulaExternaTmp",
             },
             'DISPENSACIONHC':{
                 "USUARIO_PRIVILEGIOS": BASE_URL + "/DispensacionHc/usuarioPrivilegios"

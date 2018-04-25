@@ -83,7 +83,6 @@ module.exports = function(app, di_container) {
         c_formulacion_externa.listarLlamadasPacientes(req, res);
     });   
       
-
     app.post('/api/FormulacionExterna/insertarDispensacionMedicamentoTmp', function(req, res) {
         c_formulacion_externa.insertarDispensacionMedicamentoTmp(req, res);
     });   

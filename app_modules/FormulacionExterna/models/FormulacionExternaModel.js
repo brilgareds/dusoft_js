@@ -183,7 +183,6 @@ FormulacionExternaModel.prototype.insertarFormulaTmp = function(formula_papel, e
         tipo_dpto_id: tipo_dpto_id,
         tipo_mpio_id: tipo_mpio_id
     }).returning('tmp_formula_id');
-
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){    
         callback(false, resultado[0]);
@@ -212,7 +211,6 @@ FormulacionExternaModel.prototype.actualizarFormulaExternaTmp = function(tmp_for
         tipo_dpto_id: tipo_dpto_id,
         tipo_mpio_id: tipo_mpio_id
     }).where('tmp_formula_id', tmp_formula_id);
-
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){    
         callback(false, resultado[0]);
@@ -354,7 +352,7 @@ FormulacionExternaModel.prototype.buscarProductos = function(empresa_id, centro_
                         if(codigo_barras != '' && codigo_barras != 'undefined'){
                             this.andWhere('invp.codigo_barras', 'ilike', '%' + codigo_barras + '%');
                         }
-                    }); 
+                    }).orderBy('existencia', 'desc'); 
     //G.logError(G.sqlformatter.format(query.toString()));
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){   
@@ -377,7 +375,6 @@ FormulacionExternaModel.prototype.insertarMedicamentoTmp = function(tmp_formula_
         paciente_id: paciente_id,
         usuario_id: usuario_id
     }).returning('fe_medicamento_id');
-
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado[0]);
@@ -409,7 +406,6 @@ FormulacionExternaModel.prototype.obtenerMedicamentosTmp = function(tmp_formula_
                             this.on('tmp.codigo_producto', 'invp.codigo_producto')
                         })
                         .where('tmp.tmp_formula_id', tmp_formula_id);
-
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);
@@ -438,8 +434,7 @@ FormulacionExternaModel.prototype.consultaExisteFormula = function(tipo_id_pacie
         .where('tipo_id_paciente', tipo_id_paciente)
         .andWhere('paciente_id', paciente_id)
         .andWhere('formula_papel', formula_papel)
-
-        //G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         existe = resultado[0] ? true : false;
         callback(false, existe);
@@ -990,7 +985,7 @@ function __insertarBodegasDocumentos(bodegasDocId, numeracion, observacion, usua
             fecha_registro: 'now()' 
         });
 
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){  
             callback(false, resultado);
@@ -1683,7 +1678,7 @@ FormulacionExternaModel.prototype.obtenerPendientesEnt = function(formula_id, im
                     }
                 });
 
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
      query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){   

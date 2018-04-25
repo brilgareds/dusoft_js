@@ -448,7 +448,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                         }
                     });
                     //recarga grilla medicamentos temporales
-                    formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosLotesDispensacion){
+                    formulaExternaService.obtenerDispensacionMedicamentosTmp($scope.root.formula.tmp_formula_id, null, function(error, medicamentosLotesDispensacion){
                         if(!error){
                             $scope.root.productosLotesSeleccionados = medicamentosLotesDispensacion;
                         }
@@ -798,6 +798,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.adicionarProducto = adicionarProducto;
 
         $scope.reiniciarPagina = reiniciarPagina;
+        $scope.limpiarCampos = limpiarCampos;
         $scope.cerrar = cerrar;
 
         function buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina){
@@ -826,6 +827,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 producto.fe_medicamento_id = fe_medicamento_id;
                 producto.cantidad_despachada = 0;
                 producto.cantidad_pendiente = producto.cantidad;
+                //Abre el modal de lotes, para seleccionar los lotes del producto
+                $scope.abrirModalLotesMedicamentosFormulados(producto);
                 AlertService.mostrarMensaje("success", 'Producto agregado');
                 return;
                 //recarga los productos formulados
@@ -840,6 +843,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
 
         function reiniciarPagina(){
             $scope.root.busquedaProductos.pagina=1;
+        }
+
+        function limpiarCampos(){
+            $scope.productos = [];
+            $scope.root.busquedaProductos.codigoProducto = '';
+            $scope.root.busquedaProductos.codigoBarras = '';
+            $scope.root.busquedaProductos.descripcion = '';
+            $scope.root.busquedaProductos.principioActivo = '';
         }
 
         function cerrar(){

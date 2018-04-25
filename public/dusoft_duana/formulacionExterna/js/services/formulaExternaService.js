@@ -1,4 +1,4 @@
-define(["angular", "js/services", "includes/classes/planes", "includes/classes/Paciente", "includes/classes/Lote", "includes/classes/Producto"], function(angular, services) {
+define(["angular", "js/services", "includes/classes/Planes", "includes/classes/Paciente", "includes/classes/Lote", "includes/classes/Producto"], function(angular, services) {
   services.factory('formulaExternaService', ['$rootScope', 'Request', 'API',"$modal","localStorageService", "Paciente", "Planes", "PlanesRangosEsm", "EpsAfiliadosEsm", "Lote", "Producto", formulaExternaService]);
 
   function formulaExternaService($rootScope, Request, API, $modal, localStorageService, Paciente, Planes, PlanesRangosEsm, EpsAfiliadosEsm, Lote, Producto) {

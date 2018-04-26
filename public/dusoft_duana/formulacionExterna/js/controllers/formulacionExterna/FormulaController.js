@@ -68,6 +68,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.imprimirMedicamentosPendientesPorDispensar = imprimirMedicamentosPendientesPorDispensar;
         $scope.imprimirMedicamentosDispensados = imprimirMedicamentosDispensados;
         $scope.volver = volver;
+        $scope.marcar = marcar;
 
 
         /***********************************
@@ -366,6 +367,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         }
 
         function abrirModalLotesMedicamentosFormulados(producto){
+            var existencia = parseInt(producto.existencia);
+            if(existencia == 0){
+                AlertService.mostrarMensaje("warning", 'Producto sin existencias');
+                return;
+            }
+
             $scope.opts = {
                 backdropClick: true,
                 dialogFade: false,
@@ -496,6 +503,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $state.go('FormulacionExterna');
         }
 
+        function marcar(fe_medicamento_id, sw_marcado){
+            formulaExternaService.marcar(fe_medicamento_id, sw_marcado , function(error, resultado){
+                if(error){
+                    AlertService.mostrarMensaje("warning", 'Error al marcar el medicamento');
+                }
+
+                formulaExternaService.obtenerMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosFormuladosTmp){
+                    if(!error){
+                        $scope.root.productosFormulados = medicamentosFormuladosTmp;
+                    }
+                });
+            });
+        }
+
 
         /***********************************
             Funcion inicializadora del modulo
@@ -535,11 +556,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     {field: 'cantidad_despachada', displayName: 'Despachado', width: "10%", cellClass: "txt-center"},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente', width: "10%", cellClass: "txt-center"},
                     {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12">\
-                          <button type="submit" class="btn btn-danger" ng-click="eliminarProducto(row.entity.fe_medicamento_id)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-remove"></i></button>\
-                          <button type="submit" class="btn btn-success" ng-disabled="row.entity.cantidad_pendiente == 0" ng-click="abrirModalLotesMedicamentosFormulados(row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-th-list"></i></button>\
+                          <button type="submit" class="btn btn-danger btn-xs" ng-click="eliminarProducto(row.entity.fe_medicamento_id)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-remove"></i></button>\
+                          <button type="submit" class="btn btn-success btn-xs" ng-if="row.entity.sw_marcado == \'0\'" ng-disabled="row.entity.cantidad_pendiente == 0" ng-click="abrirModalLotesMedicamentosFormulados(row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-th-list"></i></button>\
+                          <button type="submit" class="btn btn-success btn-xs" ng-if="row.entity.sw_marcado == \'0\' && row.entity.cantidad_pendiente != \'0\'" ng-click="marcar(row.entity.fe_medicamento_id, \'1\')" style="padding: 3px 7px;">Marcar</button>\
+                          <button type="submit" class="btn btn-warning btn-xs" ng-if="row.entity.sw_marcado == \'1\' && row.entity.cantidad_pendiente != \'0\'" ng-click="marcar(row.entity.fe_medicamento_id, \'0\')" style="padding: 3px 7px;">Desmarcar</button>\
                     </div>'}
                 ]
             };
+            /*<i class="glyphicon glyphicon-ok-circle"></i> <i class="glyphicon glyphicon-remove-circle"></i>
+           btn btn-default btn-xs */
             //lista_productos_lotes_seleccionados 
             $scope.lista_productos_lotes_seleccionados = {
                 data: 'root.productosLotesSeleccionados',
@@ -552,7 +577,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     {field: 'fecha_vencimiento', displayName: 'Fecha vencimiento', width: "10%", cellClass: "txt-center"},
                     {field: 'lote', displayName: 'Lote', width: "10%", cellClass: "txt-center"},
                     {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12">\
-                          <button type="submit" class="btn btn-danger" ng-click="eliminarProductoLoteSeleccionado(row.entity.esm_dispen_tmp_id)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-remove"></i></button>\
+                          <button type="submit" class="btn btn-danger btn-xs" ng-click="eliminarProductoLoteSeleccionado(row.entity.esm_dispen_tmp_id)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-remove"></i></button>\
                     </div>'}
                 ]
             };
@@ -732,25 +757,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $scope.data.formula_id = formulaExternaService.shared.formula_id? formulaExternaService.shared.formula_id : null;
             $scope.data.tipo_id_paciente = formulaExternaService.shared.tipo_id_paciente;
             $scope.data.paciente_id =  formulaExternaService.shared.paciente_id;
+            //si la existencia es cero no hacer la consulta de lotes
             //obtiene el producto con los lotes del producto 
-            formulaExternaService.obtenerLotesDeProducto($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, $scope.data.producto.codigo_producto, $scope.data.tmp_formula_id, $scope.data.tipo_id_paciente, $scope.data.paciente_id, $scope.data.producto.principio_activo, $scope.data.producto.sw_autorizado, function(error, data){
-                //medicamento ya fue entregado en menos de 25 dias
-                if(error == 204){
-                    formulaExternaService.usuarioPrivilegios($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, function(error, privilegios){
-                        if(privilegios.sw_privilegio_autorizar_confrontado){
-                            //mostrar modal para autorizacion la dispensacion
-                            $scope.ventanaAutorizaDispensacion(data, $scope.data.producto);
-                        }else{
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El usuario no posee privilegios para autorizar la dispensacion");   
-                            $scope.cerrarVentanaDispensacionFormula();
-                        }
-                    });
-                    return;
-                }
-
-                $scope.data.productos = data;
-            });
-
             //grilla de lotes 
             $scope.listaLotes = {
                 data: 'data.productos',
@@ -786,6 +794,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     },
                 ]
             };
+
+            formulaExternaService.obtenerLotesDeProducto($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, $scope.data.producto.codigo_producto, $scope.data.tmp_formula_id, $scope.data.tipo_id_paciente, $scope.data.paciente_id, $scope.data.producto.principio_activo, $scope.data.producto.sw_autorizado, function(error, data){
+                //medicamento ya fue entregado en menos de 25 dias
+                if(error == 204){
+                    formulaExternaService.usuarioPrivilegios($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, function(error, privilegios){
+                        if(privilegios.sw_privilegio_autorizar_confrontado){
+                            //mostrar modal para autorizacion la dispensacion
+                            $scope.ventanaAutorizaDispensacion(data, $scope.data.producto);
+                            return;
+                        }else{
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El usuario no posee privilegios para autorizar la dispensacion");   
+                            $scope.cerrarVentanaDispensacionFormula();
+                            return;
+                        }
+                    });
+                }
+                $scope.data.productos = data;
+            });
         }
 
         init();
@@ -801,10 +827,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.limpiarCampos = limpiarCampos;
         $scope.cerrar = cerrar;
 
-        function buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina){
-            if(empresa_id && centro_utilidad && bodega_id && pagina && (codigo_producto || principio_activo || descripcion || codigo_barras)){
+        function buscarProductos(empresa_id, centro_utilidad, bodega_id, principio_activo, descripcion, codigo_barras, pagina){
+            if(empresa_id && centro_utilidad && bodega_id && pagina && ( principio_activo || descripcion || codigo_barras)){
                 if(pagina > 0){
-                    formulaExternaService.buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina, function(error, productos){
+                    formulaExternaService.buscarProductos(empresa_id, centro_utilidad, bodega_id, principio_activo, descripcion, codigo_barras, pagina, function(error, productos){
                         if(!error){
                             $scope.productos = productos;
                         }
@@ -827,9 +853,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 producto.fe_medicamento_id = fe_medicamento_id;
                 producto.cantidad_despachada = 0;
                 producto.cantidad_pendiente = producto.cantidad;
+
+                AlertService.mostrarMensaje("success", 'Producto agregado');
                 //Abre el modal de lotes, para seleccionar los lotes del producto
                 $scope.abrirModalLotesMedicamentosFormulados(producto);
-                AlertService.mostrarMensaje("success", 'Producto agregado');
                 return;
                 //recarga los productos formulados
                 /*formulaExternaService.obtenerMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosFormuladosTmp){
@@ -866,11 +893,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo producto', width: "10%"},
-                    {field: 'descripcion', displayName: 'Descripcion', width : '20%'},
-                    {field: 'existencia', displayName: 'Existencia', width: "10%", cellClass: "txt-center",},
-                    {field: 'molecula', displayName: 'Molecula', width: "30%"},
+                    {field: 'descripcion', displayName: 'Descripcion', width : '39%'},
+                    {field: 'existencia', displayName: 'Existencia', width: "6%", cellClass: "txt-center",},
+                    {field: 'molecula', displayName: 'Molecula', width: "27%"},
                     {field: 'cantidad', displayName: 'Cantidad', width: "10%", cellClass: "txt-center", cellTemplate: '<div class="col-xs-12 "><input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id=""/></div>'},
-                    {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12"><button type="submit" class="btn btn-success" ng-click="adicionarProducto(root.formula.tmp_formula_id, root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(), root.afiliado.mostrarPacientes()[0].getPacienteId(),row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-plus"></i></button></div>'}
+                    {field: 'opciones', displayName : 'Opciones', width : '8%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12"><button type="submit" class="btn btn-success btn-xs" ng-click="adicionarProducto(root.formula.tmp_formula_id, root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(), root.afiliado.mostrarPacientes()[0].getPacienteId(),row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-plus"></i></button></div>'}
                 ]
             };
         }

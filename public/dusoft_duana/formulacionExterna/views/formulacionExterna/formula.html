@@ -95,7 +95,7 @@
 				        </p>
 				    </div>
 	                <div class="col-md-2" style="margin-top: 10px;">
-					    <input type="text" class="form-control"  ng-model="root.formula.formula_papel" placeholder="Numero" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()"/>
+					    <input type="text" class="form-control"  ng-model="root.formula.formula_papel" placeholder="Número formula" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()"/>
 	                </div>
 	                <div class="col-md-2" style="margin-top: 10px;">
 			            <ui-select ng-model="$parent.root.formula.tipoFormula" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()" theme="select2" class="form-control selectgeneral " style="padding-top: 0px !important">
@@ -169,7 +169,7 @@
                             <div class="panel-heading clearfix">
                                 <div class="pull-center">
                                     <h4 class="text-center"><strong>Medicamentos solicitados <button class="btn btn-success" style="margin-left: 5px;" ng-disabled="!root.formula.tmp_formula_id" ng-click="abrirModalBusquedaMedicamentos()" type="button">
-										<i class="glyphicon glyphicon-plus"></i>
+										Adicionar medicamentos &nbsp;<i class="glyphicon glyphicon-plus"></i>
 									</button></strong></h4>
                                 	
                                 </div>
@@ -180,7 +180,7 @@
 	            <div class="row">
 	            	<div class="col-md-12">
 		            	<div class="table-responsive" >
-		                    <div class="defaultGrid grid-responsive" style="height: 515px;" ng-grid="lista_productos_seleccionados">
+		                    <div class="defaultGrid grid-responsive" style="height: 350px;" ng-grid="lista_productos_seleccionados">
 		                    </div>
 		                </div>
 	            	</div>
@@ -214,7 +214,7 @@
 	            <div class="row">
 	            	<div class="col-md-12">
 		            	<div class="table-responsive" >
-		                    <div class="defaultGrid grid-responsive" style="height: 515px;" ng-grid="lista_productos_lotes_seleccionados">
+		                    <div class="defaultGrid grid-responsive" style="height: 350px;" ng-grid="lista_productos_lotes_seleccionados">
 		                    </div>
 		                </div>
 	            	</div>

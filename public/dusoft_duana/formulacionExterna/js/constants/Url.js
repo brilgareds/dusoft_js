@@ -17,6 +17,7 @@ define(["angular"], function(angular) {
                 "GUARDAR_FORMULA_TMP": BASE_URL + "/FormulacionExterna/insertarFormulaTmp",
                 "OBTENER_FORMULA_EXTERNA_TMP": BASE_URL + "/FormulacionExterna/obtenerFormulaExternaTmp",
                 "BUSCAR_PRODUCTOS": BASE_URL + "/FormulacionExterna/buscarProductos",
+                "BUSCAR_PRODUCTOS_POR_PRINCIPIO_ACTIVO": BASE_URL + "/FormulacionExterna/buscarProductosPorPrincipioActivo",
                 "INSERTAR_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/insertarMedicamentoTmp",
                 "OBTENER_MEDICAMENTOS_TMP": BASE_URL + "/FormulacionExterna/obtenerMedicamentosTmp",
                 "ELIMINAR_MEDICAMENTO_TMP": BASE_URL + "/FormulacionExterna/eliminarMedicamentoTmp",
@@ -39,6 +40,7 @@ define(["angular"], function(angular) {
                 "IMPRIMIR_TODO_DISPENSADO": BASE_URL + "/FormulacionExterna/imprimirTodoDispensado",
                 "CAMBIAR_CODIGO_PENDIENTE": BASE_URL + "/FormulacionExterna/cambiarCodigoPendiente",
                 "ACTUALIZAR_FORMULA_TMP": BASE_URL + "/FormulacionExterna/actualizarFormulaExternaTmp",
+                "MARCAR": BASE_URL + "/FormulacionExterna/marcar",
             },
             'DISPENSACIONHC':{
                 "USUARIO_PRIVILEGIOS": BASE_URL + "/DispensacionHc/usuarioPrivilegios"

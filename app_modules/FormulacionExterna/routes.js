@@ -49,6 +49,10 @@ module.exports = function(app, di_container) {
 
     app.post('/api/FormulacionExterna/buscarProductos', function(req, res) {
         c_formulacion_externa.buscarProductos(req, res);
+    });    
+       
+    app.post('/api/FormulacionExterna/buscarProductosPorPrincipioActivo', function(req, res) {
+        c_formulacion_externa.buscarProductosPorPrincipioActivo(req, res);
     });       
 
     app.post('/api/FormulacionExterna/insertarMedicamentoTmp', function(req, res) {
@@ -137,5 +141,9 @@ module.exports = function(app, di_container) {
 
     app.post('/api/formulacionexterna/actualizarFormulaExternaTmp', function(req, res) {
         c_formulacion_externa.actualizarFormulaExternaTmp(req, res);
+    });  
+
+    app.post('/api/formulacionexterna/marcar', function(req, res) {
+        c_formulacion_externa.marcar(req, res);
     });      
 };

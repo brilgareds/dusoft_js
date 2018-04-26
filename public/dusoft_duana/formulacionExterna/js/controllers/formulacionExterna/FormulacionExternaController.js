@@ -5,22 +5,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
     controllers.controller('RegistroLlamadasController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', "$modalInstance","API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", registroLlamadasControler]); 
     controllers.controller('FormulacionExternaController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", 
       function($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService) {
-        $scope.root = {
-          datepicker_fecha_inicial : '',
-          datepicker_fecha_final : '',
-        	visibleBuscador : true,
-        	formulas : [],
-          buscador : {
-            numero_formula : '',
-            numero_documento : '',
-            nombre_paciente : '',
-            filtro : {
-              id: false ,
-              descripcion : 'Tipo Documento'
-            },
-            pagina : 1
-          }
-        };
+
 
         /**
   				@description: Verifica el estado de una formula
@@ -52,6 +37,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         $scope.imprimirPendientes = imprimirPendientes;
         $scope.imprimirTodoDispensado = imprimirTodoDispensado;
         $scope.abrirModalRegistroLlamadas = abrirModalRegistroLlamadas;
+        $scope.abrirFechaInicial = abrirFechaInicial;
+        $scope.abrirFechaFinal = abrirFechaFinal;
 
         /***************************
 		  		Definicion de funciones
@@ -78,8 +65,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
           $state.go("Formula");
         };
 
-        function buscarFormulas(nombre_paciente, formula_papel, tipo_id_paciente, paciente_id, pagina) {
-          formulaExternaService.buscarFormulas(nombre_paciente, formula_papel, tipo_id_paciente, paciente_id, pagina, function(error, formulas){
+        function buscarFormulas(fecha_inicial, fecha_final, nombre_paciente, formula_papel, tipo_id_paciente, paciente_id, pagina) {
+          var fecha_ini = typeof fecha_inicial == 'string'? fecha_inicial : fecha_inicial.getFullYear().toString() + '-' + (fecha_inicial.getMonth() + 101).toString().slice(-2) + '-'+ (fecha_inicial.getDate() + 100).toString().slice(-2);
+          var fecha_fin = typeof fecha_final == 'string'? fecha_final : fecha_final.getFullYear().toString() + '-' + (fecha_final.getMonth() + 101).toString().slice(-2) + '-'+ (fecha_final.getDate() + 100).toString().slice(-2);
+          formulaExternaService.buscarFormulas(fecha_ini, fecha_fin, nombre_paciente, formula_papel, tipo_id_paciente, paciente_id, pagina, function(error, formulas){
             if(error){
               AlertService.mostrarMensaje("warning", 'Error mientras se recuperaban las formulas.');
               return;
@@ -147,6 +136,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
         
+        }
+
+        function abrirFechaInicial($event){
+          $event.preventDefault();
+          $event.stopPropagation();
+          $scope.root.datepicker_fecha_inicial = true;
+        }
+
+        function abrirFechaFinal($event){
+          $event.preventDefault();
+          $event.stopPropagation();
+          $scope.root.datepicker_fecha_final = true;
         }
 
 
@@ -217,6 +218,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
       	***************************/
         init();
         function init(){
+          var date = new Date();
+          var date2 = new Date();
+          date2.setDate(date2.getDate()-30);
+          fecha_hoy = date.getFullYear()  + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2);
+          fecha_inicial = date2.getFullYear()  + '-' +("0" + (date2.getMonth() + 1)).slice(-2) + '-' + ("0" + date2.getDate()).slice(-2);
+
+          $scope.root = {
+            datepicker_fecha_inicial : '',
+            datepicker_fecha_final : '',
+            visibleBuscador : true,
+            formulas : [],
+            buscador : {
+              fecha_inicial: fecha_inicial,
+              fecha_final: fecha_hoy,
+              numero_formula : '',
+              numero_documento : '',
+              nombre_paciente : '',
+              filtro : {
+                id: false ,
+                descripcion : 'Tipo Documento'
+              },
+              pagina : 1
+            }
+          };
+
           //Inicializa el service con los datos de session de usuario para poder realizar peticiones
           formulaExternaService.session = {
               usuario_id: Usuario.getUsuarioActual().getId(),
@@ -246,7 +272,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         $scope.insertarLlamadaPacientes = insertarLlamadaPacientes;
         $scope.listarLlamadasPacientes = listarLlamadasPacientes;
         $scope.cerrar = cerrar;
-//insertarLlamadaPacientes(root.formula.formula_id, root.llamada.contacto_nombre, root.llamada.contacto_parentezco, root.llamada.observacion, root.llamada.tel_contacto)
+        //insertarLlamadaPacientes(root.formula.formula_id, root.llamada.contacto_nombre, root.llamada.contacto_parentezco, root.llamada.observacion, root.llamada.tel_contacto)
         function insertarLlamadaPacientes(formula_id, contacto_nombre, contacto_parentezco, observacion, tel_contacto){
           formulaExternaService.insertarLlamadaPacientes(formula_id, contacto_nombre, contacto_parentezco, observacion, tel_contacto, function(error, llamada_id){
             if(error){

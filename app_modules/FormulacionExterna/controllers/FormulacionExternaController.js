@@ -134,10 +134,23 @@ FormulacionExterna.prototype.buscarProductos = function(req, res){
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_formulacionExterna,'buscarProductos', args.empresa_id, args.centro_utilidad, args.bodega_id, args.codigo_producto, args.principio_activo, args.descripcion, args.codigo_barras, args.pagina).then(function(formulaExternaTmp){
+    G.Q.ninvoke(that.m_formulacionExterna,'buscarProductos', args.empresa_id, args.centro_utilidad, args.bodega_id,  args.principio_activo, args.descripcion, args.codigo_barras, args.pagina).then(function(formulaExternaTmp){
         res.send(G.utils.r(req.url, 'obtener formulaExternaTmp', 200, formulaExternaTmp));
     }).fail(function(err){
         G.logError("FormulacionExterna [buscarProductos] " + err);
+        res.send(G.utils.r(req.url, 'error obtener productos', 500, err));
+    }).done();
+}
+
+
+FormulacionExterna.prototype.buscarProductosPorPrincipioActivo = function(req, res){
+    var that = this;
+    var args = req.body.data;
+//empresa_id, centro_utilidad, bodega_id, principio_activo, pagina, 
+    G.Q.ninvoke(that.m_formulacionExterna,'buscarProductosPorPrincipioActivo', args.empresa_id, args.centro_utilidad, args.bodega_id,  args.principio_activo, args.pagina).then(function(formulaExternaTmp){
+        res.send(G.utils.r(req.url, 'obtener formulaExternaTmp', 200, formulaExternaTmp));
+    }).fail(function(err){
+        G.logError("FormulacionExterna [buscarProductosPorPrincipioActivo] " + err);
         res.send(G.utils.r(req.url, 'error obtener productos', 500, err));
     }).done();
 }
@@ -309,7 +322,8 @@ FormulacionExterna.prototype.buscarFormulas  = function(req, res){
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
 
-    G.Q.ninvoke(that.m_formulacionExterna,'buscarFormulas', args.nombre_paciente, args.formula_papel, args.tipo_id_paciente, args.paciente_id, args.pagina).then(function(resultado){
+
+    G.Q.ninvoke(that.m_formulacionExterna,'buscarFormulas', args.fecha_inicial, args.fecha_final, args.nombre_paciente, args.formula_papel, args.tipo_id_paciente, args.paciente_id, args.pagina).then(function(resultado){
         res.send(G.utils.r(req.url, 'resultado buscar formulas', 200, resultado));
     }).fail(function(err){
         G.logError("FormulacionExterna [buscarFormulas] " + err);
@@ -367,6 +381,19 @@ FormulacionExterna.prototype.inactivarPendiente  = function(req, res){
     }).fail(function(err){
         G.logError("FormulacionExterna [inactivarPendiente] " + err);
         res.send(G.utils.r(req.url, 'inactivarPendiente', 500, err));
+    }).done();
+}
+
+FormulacionExterna.prototype.marcar  = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    var usuario_id = req.session.user.usuario_id;
+
+    G.Q.ninvoke(that.m_formulacionExterna,'marcar', args.fe_medicamento_id, args.sw_marcado).then(function(resultado){
+        res.send(G.utils.r(req.url, 'resultado marcar', 200, resultado));
+    }).fail(function(err){
+        G.logError("FormulacionExterna [marcar] " + err);
+        res.send(G.utils.r(req.url, 'marcar', 500, err));
     }).done();
 }
 

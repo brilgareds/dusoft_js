@@ -45,6 +45,7 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
     self.generarEntregaPendientes = generarEntregaPendientes;
     self.usuarioPrivilegios = usuarioPrivilegios;
     self.buscarProductos = buscarProductos;
+    self.buscarProductosPorPrincipioActivo = buscarProductosPorPrincipioActivo;
     self.autorizarMedicamento = autorizarMedicamento;
     self.buscarFormulas = buscarFormulas;
     self.listarLlamadasPacientes= listarLlamadasPacientes;
@@ -52,6 +53,7 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
     self.inactivarPendiente = inactivarPendiente;
     self.cambiarCodigoPendiente = cambiarCodigoPendiente;
     self.actualizarFormulaExternaTmp = actualizarFormulaExternaTmp;
+    self.marcar = marcar;
     
 
     return this;
@@ -182,6 +184,25 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
       };
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.ELIMINAR_DIAGNOSTICO_TMP,"POST", body, function(data){
+          var error = data.status == 200 ? 0 : 1;
+          if(!error){
+            callback(error, 0);
+          } else{
+            callback(error, null);
+          }
+      });
+    }
+
+    function marcar(fe_medicamento_id, sw_marcado, callback){
+      var body = {
+        session : self.session,
+        data : {
+          fe_medicamento_id: fe_medicamento_id,
+          sw_marcado : sw_marcado
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.MARCAR,"POST", body, function(data){
           var error = data.status == 200 ? 0 : 1;
           if(!error){
             callback(error, 0);
@@ -385,14 +406,13 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
       });
     }
 
-    function buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina, callback){
+    function buscarProductos(empresa_id, centro_utilidad, bodega_id,  principio_activo, descripcion, codigo_barras, pagina, callback){
       var body = {
         session : self.session,
         data : {
           empresa_id: empresa_id,
           centro_utilidad : centro_utilidad,
           bodega_id : bodega_id,
-          codigo_producto : codigo_producto,
           principio_activo : principio_activo,
           descripcion : descripcion,
           codigo_barras : codigo_barras,
@@ -401,6 +421,28 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
       }; 
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.BUSCAR_PRODUCTOS, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, null);
+        }
+      });
+    }
+
+    function buscarProductosPorPrincipioActivo(empresa_id, centro_utilidad, bodega_id,  principio_activo, pagina, callback){
+      var body = {
+        session : self.session,
+        data : {
+          empresa_id: empresa_id,
+          centro_utilidad : centro_utilidad,
+          bodega_id : bodega_id,
+          principio_activo : principio_activo,
+          pagina : pagina
+        }
+      }; 
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.BUSCAR_PRODUCTOS_POR_PRINCIPIO_ACTIVO, "POST", body, function(data){
         var error = data.status == 200? 0 : 1;
         if(!error){
           callback(error, data.obj);
@@ -825,10 +867,12 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
     }
     
     //G.Q.ninvoke(that.m_formulacionExterna,'buscarFormulas', args.nombre_paciente, args.formula_papel, args.tipo_id_paciente, args.paciente_id).then(function(resultado){
-    function buscarFormulas(nombre_paciente, formula_papel, tipo_id_paciente, paciente_id, pagina, callback){
+    function buscarFormulas(fecha_inicial, fecha_final, nombre_paciente, formula_papel, tipo_id_paciente, paciente_id, pagina, callback){
       var body = {
         session : self.session,
         data : {
+          fecha_inicial : fecha_inicial,
+          fecha_final : fecha_final,
           nombre_paciente : nombre_paciente,
           formula_papel : formula_papel,
           tipo_id_paciente : tipo_id_paciente,

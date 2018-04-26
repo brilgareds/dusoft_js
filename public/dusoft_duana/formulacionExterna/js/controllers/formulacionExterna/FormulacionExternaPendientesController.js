@@ -1,7 +1,7 @@
 define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/classes/Empresa"], function(angular, controllers) {
     
     controllers.controller('FormulacionExternaPendientesController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", formulacionExternaPendientesController]);
-    controllers.controller('CambiarMedicamentoController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance',"API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", cambiarMedicamentoController]);
+    controllers.controller('ProductosController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance',"API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", productosController]);
 
     function formulacionExternaPendientesController($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
         $scope.root = {
@@ -15,7 +15,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.abrirModalGenerarEntrega = abrirModalGenerarEntrega;
         $scope.imprimirMedicamentosPendientesDispensados = imprimirMedicamentosPendientesDispensados;
         $scope.abrirModalDescartarPendiente = abrirModalDescartarPendiente;
-        $scope.abrirModalCambiar = abrirModalCambiar;
+        $scope.abrirModalProductos = abrirModalProductos;
 
         $scope.listaPendientes = {
             data: 'root.medicamentosPendientes',
@@ -53,8 +53,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                                 <li>\n\
                                   <a href="javascript:void(0);" ng-click="abrirModalDescartarPendiente(row.entity.esm_pendiente_dispensacion_id)" class="glyphicon glyphicon-minus">&nbsp;Descartar</a>\
                                 </li>\
-                                <li>\
-                                  <a href="javascript:void(0);" ng-click="abrirModalCambiar(row.entity)" class="glyphicon glyphicon-transfer">&nbsp;Cambiar</a>\
+                                <li ng-if="sw_cambio_codigo_pendiente">\
+                                  <a href="javascript:void(0);" ng-click="abrirModalProductos(row.entity)" class="glyphicon glyphicon-transfer">&nbsp;Cambiar</a>\
                                 </li>\
                               </ul>\
                             </div>'
@@ -183,7 +183,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 }
             ); 
         } 
-        function abrirModalCambiar(medicamento){
+        
+        function abrirModalProductos(medicamento){
 
             $scope.opts = {
                 backdropClick: true,
@@ -192,7 +193,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 windowClass: 'app-modal-window-xlg',
                 templateUrl: 'views/formulacionExterna/modal/cambiarMedicamento.html',
                 scope: $scope,
-                controller: "CambiarMedicamentoController"
+                controller: "ProductosController"
             };
 
             //datos para compartir con el controlador del modal
@@ -256,6 +257,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
 
         function init(){
 
+
             //si no se han pasado los datos, se regresa a la pagina principal 
             if(!formulaExternaService.shared){
                 $scope.volver();
@@ -267,6 +269,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $scope.bodega = Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
             $scope.plan_id = formulaExternaService.shared.plan_id;
 
+            formulaExternaService.usuarioPrivilegios($scope.empresa_id, $scope.centro_utilidad, $scope.bodega, function(error, privilegios){
+                if(error){
+
+                }
+                $scope.sw_cambio_codigo_pendiente = privilegios.sw_cambio_codigo_pendiente;
+                console.log('privilegios', privilegios);
+            });
             //obtiene los datosprovenientes de la pagina principal data{formula_id, formula_papel, tipo_id_paciente, paciente_id, plan, nombre_paciente, fecha_formula}
             $scope.root.formula = formulaExternaService.shared;
             //Inicializa el service con los datos de session de usuario para poder realizar peticiones
@@ -282,7 +291,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         init();
     }
 
-    function cambiarMedicamentoController($scope, $rootScope, Request, $filter, $state, $modal, $modalInstance, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
+    function productosController ($scope, $rootScope, Request, $filter, $state, $modal, $modalInstance, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
         $scope.buscarProductos = buscarProductos;
         $scope.cambiarCodigoMedicamento = cambiarCodigoMedicamento;
         $scope.medicamentoACambiar = {};
@@ -291,30 +300,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.productos = [];
         $scope.root = {
             busquedaProductos : {
-                codigoProducto : '',
-                principioActivo :'',
-                descripcion : '',
-                codigoBarras : '',
                 pagina : 1
             }
         };
-
-
-        function buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina){
-            if(empresa_id && centro_utilidad && bodega_id && pagina && (codigo_producto || principio_activo || descripcion || codigo_barras)){
-                if(pagina > 0){
-                    formulaExternaService.buscarProductos(empresa_id, centro_utilidad, bodega_id, codigo_producto, principio_activo, descripcion, codigo_barras, pagina, function(error, productos){
-                        if(!error){
-                            $scope.productos = productos;
-                        }
-                    });
-                } else {
-                    $scope.root.busquedaProductos.pagina = 1;
-                }
-            }else{
-                AlertService.mostrarMensaje("warning", 'Diligencie alguno de los campos de busqueda.');
-            }
-        }
 
         function cambiarCodigoMedicamento(formula_id, esm_pendiente_dispensacion_id, codigo_cambiar, codigo_nuevo){
             AlertService.mostrarVentanaAlerta("Confirmar",  "¿Desea cambiar el medicamento?",
@@ -338,9 +326,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $modalInstance.close();
         }
 
+        function buscarProductos(pagina){
+            formulaExternaService.buscarProductosPorPrincipioActivo($scope.empresa_id, $scope.centro_utilidad, $scope.bodega, $scope.medicamentoACambiar.principio_activo, pagina, function(error, productos){
+                if(!error){
+                    $scope.productos = productos;
+                }
+            });
+        }
+
         function init(){
             $scope.medicamentoACambiar = formulaExternaService.shared.medicamentoACambiar;
             $scope.formula_id = formulaExternaService.shared.formula_id;
+
+            buscarProductos(1);
 
             //inicializa grilla
             $scope.lista_productos = {

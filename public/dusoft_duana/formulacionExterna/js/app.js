@@ -17,6 +17,7 @@ define(["angular",
     "js/models",
     "js/directive",
     "includes/helpersdirectives/visualizarReporte",
+    "includes/validation/ValidacionNumeroEntero",
     "includes/classes/CentroUtilidad",
     "includes/menu/menucontroller",
     "includes/header/HeaderController",
@@ -28,7 +29,8 @@ define(["angular",
     "controllers/formulacionExterna/FormulacionExternaPendientesController",
     "controllers/formulacionExterna/FormulaController",
     "services/formulaExternaService",
-], function(angular, Agencia) {
+],
+function(angular, Agencia) {
     /* App Module and its dependencies */
     var formulacionExterna = angular.module('formulacionExterna', [
         'ui.router',

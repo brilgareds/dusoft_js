@@ -218,6 +218,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
       	***************************/
         init();
         function init(){
+          //Verifica que los campos empresa, centro de utilidad y bodega se encuentren seleccionados, si alguno no esta seleccionado redirige al Home.
+          var is_set_empresa_id = Usuario.getUsuarioActual().getEmpresa() ? true : false;
+          var is_set_centro_utilidad = is_set_empresa_id ? Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() : false;
+          var is_set_bodega = is_set_centro_utilidad ? Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada() : false;
+
+          if(!is_set_empresa_id || !is_set_centro_utilidad || !is_set_bodega){
+            $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
+            AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa, centro de utilidad y bodega.");
+            return;
+          }
+
           var date = new Date();
           var date2 = new Date();
           date2.setDate(date2.getDate()-30);
@@ -302,7 +313,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
           $modalInstance.close();
         }
 
-
         function init(){
           $scope.root.formula= formulaExternaService.shared.formula;
           formulaExternaService.listarMedicamentosPendientes($scope.root.formula.formula_id, function(error, medicamentosPendientes){
@@ -315,7 +325,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
           //carga las llamadas realizadas
           listarLlamadasPacientes($scope.root.formula.formula_id);
 
-          $scope.listaPendientes =  {
+          $scope.listaPendientes = {
             data: 'root.pendientes',
             enableColumnResize: true,
             enableRowSelection: false,
@@ -327,7 +337,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             ]
           };
 
-           $scope.listaRegistroLlamadas =  {
+          $scope.listaRegistroLlamadas = {
             data: 'root.registroLlamadas',
             enableColumnResize: true,
             enableRowSelection: false,

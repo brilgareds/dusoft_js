@@ -781,7 +781,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Existencia', width:"10%"},
                     {field: 'cantidad_solicitada', width: "7%", displayName: 'Cantidad',
                         cellTemplate: '<div class="col-xs-12 "> \
-                                            <input type="text" ng-model="row.entity.cantidad_despachada" ng-disabled="row.entity.loteSeleccionado" validacion-numero-entero class="form-control grid-inline-input" name="" id="" ng-disabled="row.entity.estadoProductoVencimiento == 1" ng-class=""/>\
+                                            <input type="text" ng-model="row.entity.cantidad_despachada"  validacion-numero-entero ng-disabled="row.entity.loteSeleccionado" class="form-control grid-inline-input" name="" id="" ng-disabled="row.entity.estadoProductoVencimiento == 1" ng-class=""/>\
                                         </div>'},
 
                     {field: 'Sel', width: "10%",
@@ -883,6 +883,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         function cerrar(){
             $modalInstance.close();
         }
+                                     /*  {field: 'Ajuste', width: "7%", displayName: 'Ajuste',
+                    cellTemplate: '<div class="col-xs-12 " > \
+                                  <input type="text" \
+                                   ng-model="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroEntregaActual" \
+                                   validacion-numero-entero \
+                                   class="form-control grid-inline-input" \
+                                   name="" \
+                                   id="" \
+                                   ng-disabled="!root.opciones.sw_ajustar_entrega_formula" ng-class=""\n\
+                                    /> </div>'},*/
 
         //funcion inicializadora del modulo
         function init(){
@@ -896,7 +906,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     {field: 'descripcion', displayName: 'Descripcion', width : '39%'},
                     {field: 'existencia', displayName: 'Existencia', width: "6%", cellClass: "txt-center",},
                     {field: 'molecula', displayName: 'Molecula', width: "27%"},
-                    {field: 'cantidad', displayName: 'Cantidad', width: "10%", cellClass: "txt-center", cellTemplate: '<div class="col-xs-12 "><input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id=""/></div>'},
+                    {field: 'cantidad', displayName: 'Cantidad', width: "10%", cellClass: "txt-center", cellTemplate: '<div class="col-xs-12 "><input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" ng-class=""/></div>'},
                     {field: 'opciones', displayName : 'Opciones', width : '8%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12"><button type="submit" class="btn btn-success btn-xs" ng-click="adicionarProducto(root.formula.tmp_formula_id, root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(), root.afiliado.mostrarPacientes()[0].getPacienteId(),row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-plus"></i></button></div>'}
                 ]
             };

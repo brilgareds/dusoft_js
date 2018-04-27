@@ -274,7 +274,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
 
                 }
                 $scope.sw_cambio_codigo_pendiente = privilegios.sw_cambio_codigo_pendiente;
-                console.log('privilegios', privilegios);
             });
             //obtiene los datosprovenientes de la pagina principal data{formula_id, formula_papel, tipo_id_paciente, paciente_id, plan, nombre_paciente, fecha_formula}
             $scope.root.formula = formulaExternaService.shared;
@@ -348,7 +347,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo producto', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripcion', width : '30%'},
-                    {field: 'existencia', displayName: 'Existencia', width: "10%", cellClass: "txt-center",},
+                    {field: 'existencia', displayName: 'Existencia', width: "10%", cellClass: "txt-center"},
                     {field: 'molecula', displayName: 'Molecula', width: "40%"},
                     {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12"><button type="submit" class="btn btn-success" ng-click="cambiarCodigoMedicamento(formula_id, medicamentoACambiar.esm_pendiente_dispensacion_id, medicamentoACambiar.codigo_producto, row.entity.codigo_producto)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-transfer"></i></button></div>'}
                 ]

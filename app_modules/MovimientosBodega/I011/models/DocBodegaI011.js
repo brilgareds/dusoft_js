@@ -98,10 +98,10 @@ DocumentoBodegaI011.prototype.listarNovedades = function (callback) {
  * @fecha 2018-04-20
  */
 DocumentoBodegaI011.prototype.listarTorres = function (parametros, callback) {
-    
+
     var query = G.knex
             .select()
-            .distinct('t.torre')
+            .distinct(G.knex.raw("CASE WHEN t.torre is null THEN 'Sin Torre' ELSE t.torre END as torre"))
             .from('inv_bodegas_movimiento_d as d')
             .leftJoin("param_torreproducto AS t", "d.codigo_producto", "t.codigo_producto")
             .where('d.prefijo', parametros.prefijo)
@@ -657,9 +657,9 @@ function __ingresar_detalle_documento_verificacion(parametros, transaccion, call
         "a.farmacia_id",
         "a.prefijo",
         "a.numero",
-        G.knex.raw("'"+ parametros.empresa_id + "' AS empresa_id"),
-        G.knex.raw("'"+ parametros.prefijoDocumento + "' AS prefijo"),
-        G.knex.raw("'"+ parametros.numeracionDocumento + "' AS numeracion"),
+        G.knex.raw("'" + parametros.empresa_id + "' AS empresa_id"),
+        G.knex.raw("'" + parametros.prefijoDocumento + "' AS prefijo"),
+        G.knex.raw("'" + parametros.numeracionDocumento + "' AS numeracion"),
         "a.codigo_producto",
         "a.lote",
         "a.fecha_vencimiento",
@@ -688,7 +688,7 @@ function __ingresar_detalle_documento_verificacion(parametros, transaccion, call
     var sqlSelect = G.knex.select(columnasConsulta)
             .from('inv_documento_verificacion_tmp_d as a')
             .innerJoin("inv_bodegas_movimiento_d as b", function () {
-                this.on("b.prefijo",G.knex.raw("'"+ parametros.prefijoDocumento + "'"))
+                this.on("b.prefijo", G.knex.raw("'" + parametros.prefijoDocumento + "'"))
                         .on("b.numero", parametros.numeracionDocumento)
                         .on("b.codigo_producto", "a.codigo_producto")
             })
@@ -696,7 +696,7 @@ function __ingresar_detalle_documento_verificacion(parametros, transaccion, call
             .andWhere("a.usuario_id", parametros.usuarioId);
 
     var query = G.knex().
-    insert(sqlSelect).into(G.knex.raw("inv_documento_verificacion_d ("+columnasInsert+")"));
+            insert(sqlSelect).into(G.knex.raw("inv_documento_verificacion_d (" + columnasInsert + ")"));
 
     if (transaccion)
         query.transacting(transaccion);

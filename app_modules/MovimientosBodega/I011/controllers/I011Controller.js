@@ -585,6 +585,8 @@ I011Controller.prototype.crearHtmlDocumento = function (req, res) {
         empresaId: args.empresaId,
         empresa_id: args.empresaId,
         prefijoDocumento: args.prefijo,
+        prefijo_doc: args.prefijoFactura,
+        numero_doc: args.numeroFactura,
         numeracionDocumento: args.numeracion
     };
 
@@ -667,11 +669,13 @@ I011Controller.prototype.crearTorreDocumento = function (req, res) {
         empresa_id: args.empresaId,
         prefijoDocumento: args.prefijo,
         numeracionDocumento: args.numeracion,
+        prefijo_doc: args.prefijoFactura,
+        numero_doc: args.numeroFactura,
         torre: torre
     };
 
     try {
-        var nomb_pdf = "documentoI011" + parametros.prefijoDocumento + parametros.numeracionDocumento + torre +".html";
+        var nomb_pdf = "documentoI011" + parametros.prefijoDocumento + parametros.numeracionDocumento + torre + ".html";
         if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
             res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
             return;

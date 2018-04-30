@@ -311,6 +311,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     });
                 } else if (documentos.tipo_movimiento === "I011") {
 
+                    obj.data.prefijoFactura = documentos.prefijoFactura;
+                    obj.data.numeroFactura = documentos.numeroFactura;
+
                     Request.realizarRequest(API.I011.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
@@ -398,8 +401,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $scope.btn_imprimirTorre = function (documentos, torre) {
+                var e;
+                if (torre === "Sin Torre") {
+                    e = null;
+                } else {
+                    e = torre;
+                }
 
-                that.crearTorreDocumento(documentos, torre, function (respuesta) {
+                that.crearTorreDocumento(documentos, e, function (respuesta) {
                     if (respuesta !== false) {
                         $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
                     }
@@ -415,6 +424,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         empresaId: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                         prefijo: documentos.prefijo,
                         numeracion: documentos.numero,
+                        prefijoFactura: documentos.prefijoFactura,
+                        numeroFactura: documentos.numeroFactura,
                         torre: torre
                     }
                 };

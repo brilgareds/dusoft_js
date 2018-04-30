@@ -558,13 +558,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     {field: 'opciones', displayName : 'Opciones', width : '10%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12">\
                           <button type="submit" class="btn btn-danger btn-xs" ng-click="eliminarProducto(row.entity.fe_medicamento_id)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-remove"></i></button>\
                           <button type="submit" class="btn btn-success btn-xs" ng-if="row.entity.sw_marcado == \'0\'" ng-disabled="row.entity.cantidad_pendiente == 0" ng-click="abrirModalLotesMedicamentosFormulados(row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-th-list"></i></button>\
-                          <button type="submit" class="btn btn-success btn-xs" ng-if="row.entity.sw_marcado == \'0\' && row.entity.cantidad_pendiente != \'0\'" ng-click="marcar(row.entity.fe_medicamento_id, \'1\')" style="padding: 3px 7px;">Marcar</button>\
-                          <button type="submit" class="btn btn-warning btn-xs" ng-if="row.entity.sw_marcado == \'1\' && row.entity.cantidad_pendiente != \'0\'" ng-click="marcar(row.entity.fe_medicamento_id, \'0\')" style="padding: 3px 7px;">Desmarcar</button>\
+                          <input-check ng-model="row.entity.sw_marcado" ng-click="row.entity.sw_marcado = row.entity.sw_marcado == 1? 0: 1;marcar(row.entity.fe_medicamento_id, row.entity.sw_marcado)"></input-check>\
                     </div>'}
                 ]
             };
-            /*<i class="glyphicon glyphicon-ok-circle"></i> <i class="glyphicon glyphicon-remove-circle"></i>
-           btn btn-default btn-xs */
+
             //lista_productos_lotes_seleccionados 
             $scope.lista_productos_lotes_seleccionados = {
                 data: 'root.productosLotesSeleccionados',
@@ -666,17 +664,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         }
 
         function cerrarVentanaDispensacionFormula () {
-            //that.consultarMedicamentosTemporales();
-            /**
-            * +Descripcion Se valida si los productos formulados son pendientes
-            */
-            /*if(resultadoStorage.pendientes === 1){
-               that.listarMedicamentosFormuladosPendientes(resultadoStorage);
-            }
-            if(resultadoStorage.pendientes === 0){
-               that.listarMedicamentosFormulados(resultadoStorage);
-            }*/
-            
             $modalInstance.close();
         }
 
@@ -858,12 +845,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 //Abre el modal de lotes, para seleccionar los lotes del producto
                 $scope.abrirModalLotesMedicamentosFormulados(producto);
                 return;
-                //recarga los productos formulados
-                /*formulaExternaService.obtenerMedicamentosTmp($scope.root.formula.tmp_formula_id, function(error, medicamentosFormuladosTmp){
-                    if(!error){
-                        $scope.root.productosFormulados = medicamentosFormuladosTmp;
-                    }
-                });*/
             });
             $scope.root.productosFormulados.push(producto);
         }
@@ -883,16 +864,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         function cerrar(){
             $modalInstance.close();
         }
-                                     /*  {field: 'Ajuste', width: "7%", displayName: 'Ajuste',
-                    cellTemplate: '<div class="col-xs-12 " > \
-                                  <input type="text" \
-                                   ng-model="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroEntregaActual" \
-                                   validacion-numero-entero \
-                                   class="form-control grid-inline-input" \
-                                   name="" \
-                                   id="" \
-                                   ng-disabled="!root.opciones.sw_ajustar_entrega_formula" ng-class=""\n\
-                                    /> </div>'},*/
 
         //funcion inicializadora del modulo
         function init(){

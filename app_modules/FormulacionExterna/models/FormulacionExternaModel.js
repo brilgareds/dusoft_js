@@ -359,7 +359,7 @@ fc_descripcion_producto_molecula
                             this.andWhere('invp.codigo_barras', 'ilike', '%' + codigo_barras + '%');
                         }
                     }).orderBy('existencia', 'desc'); 
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){   
         callback(false, resultado);
@@ -437,7 +437,7 @@ fc_descripcion_producto_molecula
                     .where(function(){
                         this.where(1, 1).andWhere('med.cod_principio_activo', principio_activo)
                     }).orderBy('existencia', 'desc'); 
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){   
         callback(false, resultado);
@@ -1840,7 +1840,7 @@ FormulacionExternaModel.prototype.marcar = function(fe_medicamento_id, sw_marcad
             sw_marcado : sw_marcado
         });
     
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){ 
        callback(false, resultado);
     }).catch(function(err){    

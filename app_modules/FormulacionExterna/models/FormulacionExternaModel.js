@@ -359,7 +359,7 @@ fc_descripcion_producto_molecula
                             this.andWhere('invp.codigo_barras', 'ilike', '%' + codigo_barras + '%');
                         }
                     }).orderBy('existencia', 'desc'); 
-    //G.logError(G.sqlformatter.format(query.toString()));
+    G.logError(G.sqlformatter.format(query.toString()));
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){   
         callback(false, resultado);
@@ -1867,6 +1867,18 @@ FormulacionExternaModel.prototype.cambiarCodigoFormulaExternaMedicamentos = func
     });
 };
 
+FormulacionExternaModel.prototype.medicamentoEstaInsertado = function(tmp_formula_id, codigo_producto, callback){
+    var query = G.knex.select(['codigo_producto'])
+                    .from("esm_formula_externa_medicamentos_tmp")
+                    .where("tmp_formula_id", tmp_formula_id).andWhere("codigo_producto", codigo_producto);
+    //G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        G.logError("err (/catch) FormulacionExternaModel [medicamentoEstaInsertado]: " +  err);
+        callback(err);
+    });
+};
 
 FormulacionExternaModel.$inject = [];
 module.exports = FormulacionExternaModel;

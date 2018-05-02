@@ -89,6 +89,7 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
               var objPlan = Planes.get(data.obj.plan_atencion, data.obj.plan_descripcion);
               objPlanRango.agregarPlanes(objPlan);
               var objPaciente = Paciente.get(data.obj.tipo_id_paciente, data.obj.paciente_id, data.obj.apellidos, data.obj.nombres);
+              objAfiliados.estadoAfiliadoId = data.obj.estado_afiliado_id;
               objAfiliados.agregarPacientes(objPaciente);
               objAfiliados.agregarPlanAtencion(objPlanRango);
             } else {
@@ -471,7 +472,7 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
         if(!error){
           callback(error, data.obj);
         } else {
-          callback(error, null);
+          callback(error, data.obj);
         }
       });
     }

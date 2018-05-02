@@ -9,7 +9,7 @@ FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
     var args = req.body.data;
 
     G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliado', args.tipoIdentificacion, args.identificacion).then(function(resultado){
-        res.send(G.utils.r(req.url, 'obtiene afilaido', 200, resultado[0]));
+        res.send(G.utils.r(req.url, 'obtiene afiliado', 200, resultado[0]));
     }).fail(function(err){
         G.logError("FormulacionExternaController [obtenerAfiliado] " + err);
         res.send(G.utils.r(req.url, 'error al obtenerAfiliado', 500, err));
@@ -160,7 +160,13 @@ FormulacionExterna.prototype.insertarMedicamentoTmp = function(req, res){
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
 
-    G.Q.ninvoke(that.m_formulacionExterna,'insertarMedicamentoTmp',args.tmp_formula_id, args.codigo_producto, args.cantidad, args.tiempo_tratamiento, args.unidad_tiempo_tratamiento, args.tipo_id_paciente, args.paciente_id, usuario_id).then(function(fe_medicamento_id){
+    G.Q.ninvoke(that.m_formulacionExterna,'medicamentoEstaInsertado',args.tmp_formula_id, args.codigo_producto).then(function(resultado){
+        if(resultado.length > 0){
+            throw 'El medicamento ya fue registrado';
+        }
+
+        return G.Q.ninvoke(that.m_formulacionExterna,'insertarMedicamentoTmp',args.tmp_formula_id, args.codigo_producto, args.cantidad, args.tiempo_tratamiento, args.unidad_tiempo_tratamiento, args.tipo_id_paciente, args.paciente_id, usuario_id);
+    }).then(function(fe_medicamento_id){
         res.send(G.utils.r(req.url, 'inserto medicamento tmp', 200, fe_medicamento_id));
     }).fail(function(err){
         G.logError("FormulacionExterna [insertarMedicamentoTmp] " + err);

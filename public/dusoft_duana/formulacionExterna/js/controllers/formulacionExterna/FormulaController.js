@@ -59,17 +59,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         * @Descripcion Filtra items de los elementos select
         */
         $scope.buscar = buscar;
-        $scope.eliminarDiagnosticoTmp = eliminarDiagnosticoTmp;
-        $scope.abrirModalLotesMedicamentosFormulados = abrirModalLotesMedicamentosFormulados;
-        $scope.abrirModalBusquedaMedicamentos = abrirModalBusquedaMedicamentos;
-        $scope.eliminarProductoLoteSeleccionado = eliminarProductoLoteSeleccionado;
-        $scope.eliminarProducto = eliminarProducto;
-        $scope.abrirModalGenerarEntrega = abrirModalGenerarEntrega;
-        $scope.imprimirMedicamentosPendientesPorDispensar = imprimirMedicamentosPendientesPorDispensar;
-        $scope.imprimirMedicamentosDispensados = imprimirMedicamentosDispensados;
         $scope.volver = volver;
         $scope.marcar = marcar;
-
+        $scope.eliminarProducto = eliminarProducto;
+        $scope.eliminarDiagnosticoTmp = eliminarDiagnosticoTmp;
+        $scope.abrirModalGenerarEntrega = abrirModalGenerarEntrega;
+        $scope.abrirModalBusquedaMedicamentos = abrirModalBusquedaMedicamentos;
+        $scope.imprimirMedicamentosDispensados = imprimirMedicamentosDispensados;
+        $scope.eliminarProductoLoteSeleccionado = eliminarProductoLoteSeleccionado;
+        $scope.abrirModalLotesMedicamentosFormulados = abrirModalLotesMedicamentosFormulados;
+        $scope.imprimirMedicamentosPendientesPorDispensar = imprimirMedicamentosPendientesPorDispensar;
 
         /***********************************
             Definicion de funciones
@@ -87,29 +86,33 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             }
 
             formulaExternaService.obtenerAfiliado(tipoIdentificacion, identificacion, function(error, afiliado){
-                if(!afiliado){
-                    AlertService.mostrarMensaje("warning", 'No se encontró un afiliado con identificación: ' + tipoIdentificacion + identificacion);
+                //limpiar los campos para una segunda busqueda
+                $scope.root = {
+                    tipoDocumentoSeleccionado : {'descripcion' : 'Tipo Documento'},
+                    documento : '',
+                    paciente : {},
+                    formula : {
+                        tipoFormula : {'descripcion' : 'Tipo Formula'},
+                        municipio : ''
+                    }
+                };
+
+                if(error){
+                    AlertService.mostrarMensaje("warning", 'Ocurrio un error recuperando el afiliado');
                     return; 
                 }
 
-                if(!error){
-                    if(afiliado.mostrarPacientes()[0].getPacienteId()){
-                        $scope.root.afiliado = afiliado;
-                        //Si existe una formula en el temporal, se recuperan los datos;
-                        obtenerTemporales(tipoIdentificacion, identificacion);
-                    } else {
-                        //limpiar los campos para una segunda busqueda
-                        $scope.root = {
-                            tipoDocumentoSeleccionado : {'descripcion' : 'Tipo Documento'},
-                            documento : '',
-                            paciente : {},
-                            formula : {
-                                tipoFormula : {'descripcion' : 'Tipo Formula'},
-                                municipio : ''
-                            }
-                        };
-                        AlertService.mostrarMensaje("success", 'No se encontró el afiliado');
-                    }
+                if(afiliado.estadoAfiliadoId == 'RE'){
+                    AlertService.mostrarMensaje("warning", 'Afiliado en estado retirado');
+                    return; 
+                }
+
+                if(afiliado.mostrarPacientes()[0].getPacienteId()){
+                    $scope.root.afiliado = afiliado;
+                    //Si existe una formula en el temporal, se recuperan los datos;
+                    obtenerTemporales(tipoIdentificacion, identificacion);
+                } else {
+                    AlertService.mostrarMensaje("success", afiliado);
                 }
             });
         }
@@ -675,6 +678,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     return;
                 }
 
+                console.log('medicamentos.cantidad_despachada', medicamentoLote.cantidad_despachada, 'medicamentoLote.lotes[0].cantidad', medicamentoLote.lotes[0].cantidad);
+                if(parseInt(medicamentoLote.cantidad_despachada) > parseInt(medicamentoLote.lotes[0].cantidad)){
+                    AlertService.mostrarMensaje("warning", 'La cantidad digitada supera las existencias.');
+                    medicamentoLote.loteSeleccionado = true;
+                    return;
+                }
+
+
                 formulaExternaService.insertarDispensacionMedicamentoTmp($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, medicamentoLote.codigo_producto, medicamentoLote.cantidad_despachada, medicamentoLote.lotes[0].fecha_vencimiento, medicamentoLote.lotes[0].codigo_lote, $scope.data.tmp_formula_id, $scope.data.formula_id, $scope.data.producto.cantidad, function(error, esm_dispen_tmp_id){
                     if(error){
                         AlertService.mostrarMensaje("warning", esm_dispen_tmp_id);
@@ -835,8 +846,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 AlertService.mostrarMensaje("warning", 'Digite la cantidad solicitada.');
                 return;
             }
+
             formulaExternaService.insertarMedicamentoTmp(tmp_formula_id, producto.codigo_producto, producto.cantidad, 25, 4, tipo_id_paciente, paciente_id, function(error, fe_medicamento_id){
-                //se fija el id que retorna le medicamento
+                if(error){
+                    AlertService.mostrarMensaje("warning", fe_medicamento_id);
+                    return;
+                }
+                //se fija el id que retorna el medicamento
                 producto.fe_medicamento_id = fe_medicamento_id;
                 producto.cantidad_despachada = 0;
                 producto.cantidad_pendiente = producto.cantidad;
@@ -867,6 +883,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
 
         //funcion inicializadora del modulo
         function init(){
+            $scope.root.busquedaProductos = {};
+            $scope.root.busquedaProductos.codigoProducto = '';
+            $scope.root.busquedaProductos.codigoBarras = '';
+            $scope.root.busquedaProductos.descripcion = '';
+            $scope.root.busquedaProductos.principioActivo = '';
             //inicializa grilla de busqueda de productos
             $scope.lista_productos = {
                 data: 'productos',

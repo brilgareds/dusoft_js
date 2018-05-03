@@ -1,5 +1,5 @@
 define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/classes/Empresa"], function(angular, controllers) {
-    
+
     controllers.controller('FormulaController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", formulaController]);
     controllers.controller('ModalSeleccionarController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", seleccionarController]);
     controllers.controller('ModalLotesMedicamentosFormuladosController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", lotesMedicamentosFormuladosController]);
@@ -14,6 +14,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.tipoFormulas = [];
         $scope.diagnosticos = [];
         $scope.productos = [];
+        var today = new Date();
+        today.setMonth(today.getMonth());
+        $scope.maxDate = new Date(today.getFullYear(),today.getMonth() , today.getDate());
         $scope.root = {
             tipoDocumentoSeleccionado : {'descripcion' : 'Tipo Documento'},
             documento : '',
@@ -104,7 +107,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
 
                 if(afiliado.estadoAfiliadoId == 'RE'){
                     AlertService.mostrarMensaje("warning", 'Afiliado en estado retirado');
-                    return; 
+                    return;
                 }
 
                 if(afiliado.mostrarPacientes()[0].getPacienteId()){
@@ -799,6 +802,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     formulaExternaService.usuarioPrivilegios($scope.data.empresa_id, $scope.data.centro_utilidad, $scope.data.bodega, function(error, privilegios){
                         if(privilegios.sw_privilegio_autorizar_confrontado){
                             //mostrar modal para autorizacion la dispensacion
+                            //Debe llegar el fe_medicamento_id en data console.log('la data', $scope.data.producto);
                             $scope.ventanaAutorizaDispensacion(data, $scope.data.producto);
                             return;
                         }else{
@@ -986,7 +990,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
         var seleccionTipoObservacion;
         $scope.root = { observacion:''}; 
-       
         $scope.detalleRegistroDispensacion = detalleRegistroDispensacion.msj[0];
         /*
          * Inicializacion de variables
@@ -1001,7 +1004,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             };
             callback();
         };
-        
+
         that.tipoObservacionConfrontado = function(){
               var tipoObservacion = [];                
               var data = [ {descripcion: "Entrega tarde"},
@@ -1012,6 +1015,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             }                  
             return tipoObservacion;
         };
+
         /**
         * @author Cristian Ardila
         * @fecha 09/06/2016 (MM/DD/YYYY)
@@ -1021,7 +1025,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         that.listarTipoObservacion = function(){
            $scope.tipoObservacion =  that.tipoObservacionConfrontado();
         };
-        
+
         /**
          * @author Cristian Ardila
          * +Descripcion Se visualiza la tabla con los tipos de formulas
@@ -1044,11 +1048,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 {field: 'descripcion', displayName: 'Descripcion'},              
             ],
         };
-         
+
         that.onSeleccionTipoObservacion = function(entity){
             seleccionTipoObservacion = entity;
         };
-        
+
         /*
          * +Descripcion Metodo encargado de realizar la autorizacion del producto
          *              confrontado y emitir un evento para que se desplegue la ventana
@@ -1057,7 +1061,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
          */
         that.realizarEntregaFormula = function(){
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
-           
+            //esm_pendiente_dispensacion_id
             formulaExternaService.autorizarMedicamento(detalleFormula.fe_medicamento_id, seleccionTipoObservacion.descripcion, function(error, respuesta){
                 if(!error){
                     that.cerrarVentana({sw_autorizado : true});
@@ -1067,13 +1071,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 }
             });
         };
-        
+
         $scope.realizarAutorizacionDispensacion = function(){
             if(!seleccionTipoObservacion){
                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el tipo de observacion");
                 return;
             }
-            
+
             AlertService.mostrarVentanaAlerta("Mensaje del sistema",  "Desea autorizar la dispensacion del medicamento?",
                 function(estado){
                     if(estado){
@@ -1082,7 +1086,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 }
             );
         };
-        
+
         /**
          * @author Cristian Ardila
          * +Descripcion Metodo encargado de cerrar la ventana actual
@@ -1091,7 +1095,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.cerrarVentana = function(){
             $modalInstance.close();
         };
-        
+
         that.cerrarVentana = function(data){
             $modalInstance.close(data);
         }
@@ -1112,7 +1116,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 }
             }
         });
-        
+
         that.listarTipoObservacion();
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
             $scope.$$watchers = null;
@@ -1120,6 +1124,4 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             $scope.root=null;
         });
     }
-    
-
 });

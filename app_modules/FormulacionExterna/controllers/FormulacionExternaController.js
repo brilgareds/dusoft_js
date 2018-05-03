@@ -278,9 +278,17 @@ FormulacionExterna.prototype.insertarDispensacionMedicamentoTmp = function(req, 
     var args = req.body.data;
 
     var usuario_id = req.session.user.usuario_id;
-    G.Q.ninvoke(that.m_formulacionExterna,'insertarDispensacionMedicamentoTmp', args.empresa_id, args.centro_utilidad, args.bodega, args.codigo_producto, args.cantidad_despachada, args.fecha_vencimiento, args.lote, args.codigo_producto, usuario_id, 0, args.formula_id_tmp, args.formula_id, args.cantidad_solicitada).then(function(esm_dispen_tmp_id){
+    G.Q.ninvoke(that.m_formulacionExterna,'verificarLoteEstaInsertado', args.formula_id_tmp, args.codigo_producto, args.fecha_vencimiento, args.lote).then(function(resultado){
+        if(resultado.length > 0){
+            throw 'El lote ya se encuentra registrado en temporal';
+        }else{
+            return G.Q.ninvoke(that.m_formulacionExterna,'insertarDispensacionMedicamentoTmp', args.empresa_id, args.centro_utilidad, args.bodega, args.codigo_producto, args.cantidad_despachada, args.fecha_vencimiento, args.lote, args.codigo_producto, usuario_id, 0, args.formula_id_tmp, args.formula_id, args.cantidad_solicitada);
+        }
+    }).then(function(esm_dispen_tmp_id){
+    //G.Q.ninvoke(that.m_formulacionExterna,'insertarDispensacionMedicamentoTmp', args.empresa_id, args.centro_utilidad, args.bodega, args.codigo_producto, args.cantidad_despachada, args.fecha_vencimiento, args.lote, args.codigo_producto, usuario_id, 0, args.formula_id_tmp, args.formula_id, args.cantidad_solicitada).then(function(esm_dispen_tmp_id){
         res.send(G.utils.r(req.url, 'Inserto dispensacion medicamento', 200, esm_dispen_tmp_id));
     }).fail(function(err){
+        console.log('el resultado ', err);
         G.logError("FormulacionExterna [insertarDispensacionMedicamentoTmp] " + err);
         res.send(G.utils.r(req.url, 'Error insertando dispensacion medicamento', 500, err));
     }).done();

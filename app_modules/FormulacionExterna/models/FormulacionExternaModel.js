@@ -634,6 +634,19 @@ FormulacionExternaModel.prototype.eliminarDispensacionMedicamentoTmp = function(
     });
 };
 
+FormulacionExternaModel.prototype.verificarLoteEstaInsertado = function(formula_id_tmp, codigo_producto, fecha_vencimiento, lote, callback){
+    var query = G.knex.select(['esm_dispen_tmp_id'])
+    .from('esm_dispensacion_medicamentos_tmp')
+    .where('formula_id_tmp', formula_id_tmp).andWhere('codigo_producto', codigo_producto).andWhere('fecha_vencimiento', fecha_vencimiento).andWhere('lote', lote);
+
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        G.logError("err FormulacionExternaModel [verificarLoteEstaInsertado]: " + err);
+        callback(err);
+    }).done();
+}
+
 FormulacionExternaModel.prototype.insertarDispensacionMedicamentoTmp = function(empresa_id, centro_utilidad, bodega, codigo_producto, cantidad_despachada, fecha_vencimiento, lote, codigo_formulado, usuario_id, sw_entregado_off, formula_id_tmp, formula_id, cantidad_solicitada, callback){
     var tmp = {};
     G.knex.transaction(function(transaccion) {
@@ -1497,6 +1510,7 @@ FormulacionExternaModel.prototype.eliminarFormulaExterna= function(formula_id_tm
 };
 
 FormulacionExternaModel.prototype.updateAutorizacionPorMedicamento = function(fe_medicamento_id, observacion_autorizacion, usuario_autoriza_id, callback) {
+    console.log('fe_medicamento_id', fe_medicamento_id, 'observacion_autorizacion', observacion_autorizacion, 'usuario_autoriza_id', usuario_autoriza_id);
     var query = G.knex('esm_formula_externa_medicamentos_tmp')
         .where('fe_medicamento_id', fe_medicamento_id)
         .update({
@@ -1508,7 +1522,8 @@ FormulacionExternaModel.prototype.updateAutorizacionPorMedicamento = function(fe
     
     query.then(function(resultado){ 
        callback(false, resultado);
-    }).catch(function(err){    
+    }).catch(function(err){ 
+        console.log('el error en el modelo', err);
         G.logError("err (/catch) FormulacionExternaModel [updateAutorizacionPorMedicamento]: " +  err);
         callback("Error al autorizar medicamento");  
     });
@@ -1538,6 +1553,7 @@ FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensarNoOcul
 
 FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensar = function(formula_id, callback){
     var columnas = [
+        "fe_medicamento_id",
         "esm_pendiente_dispensacion_id",
         "codigo_medicamento AS codigo_producto", 
         G.knex.raw("SUM(numero_unidades) AS cantidad"), 
@@ -1549,7 +1565,7 @@ FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensar = fun
     ];
     var query = G.knex.select(columnas)
                         .from(function(){
-                            this.select(["dc.codigo_medicamento", "fem.sw_autorizado", "med.cod_principio_activo", "dc.esm_pendiente_dispensacion_id",G.knex.raw("SUM(dc.cantidad) AS numero_unidades")])
+                            this.select(["fem.fe_medicamento_id","dc.codigo_medicamento", "fem.sw_autorizado", "med.cod_principio_activo", "dc.esm_pendiente_dispensacion_id",G.knex.raw("SUM(dc.cantidad) AS numero_unidades")])
                                 .from("esm_pendientes_por_dispensar AS dc")
                                 .innerJoin("esm_formula_externa_medicamentos AS fem", function(){
                                     this.on("dc.codigo_medicamento", "fem.codigo_producto").andOn("fem.formula_id", "dc.formula_id");
@@ -1557,9 +1573,9 @@ FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensar = fun
                                 .innerJoin("medicamentos as med", function(){
                                     this.on("med.codigo_medicamento", "fem.codigo_producto")
                                 })
-                                .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").andWhere("sw_ocultar", "=", "0").groupBy("dc.codigo_medicamento", "fem.sw_autorizado", "med.cod_principio_activo", "dc.esm_pendiente_dispensacion_id").as("a");
+                                .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").andWhere("sw_ocultar", "=", "0").groupBy("fem.fe_medicamento_id", "dc.codigo_medicamento", "fem.sw_autorizado", "med.cod_principio_activo", "dc.esm_pendiente_dispensacion_id").as("a");
                         })
-                        .groupBy("codigo_medicamento", "sw_autorizado", "cod_principio_activo", "esm_pendiente_dispensacion_id");
+                        .groupBy("fe_medicamento_id","codigo_medicamento", "sw_autorizado", "cod_principio_activo", "esm_pendiente_dispensacion_id");
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);

@@ -720,7 +720,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 backdropClick: true,
                 dialogFade: true,
                 keyboard: true,
-                templateUrl: '../DispensacionHc/views/dispensacionHc/dispensarAutorizaDispensacion.html',
+                templateUrl: 'views/formulacionExterna/modal/dispensarAutorizaDispensacion.html',
                 scope: $scope,                  
                 controller: "ModalDispensacionFormulaExternaAutorizacionController",
                 resolve: {

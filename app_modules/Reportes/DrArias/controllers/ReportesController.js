@@ -151,7 +151,7 @@ Reportes.prototype.reportesGenerados = function(req, res) {
  * @params detalle: 
  * @fecha 2016-06-17
  */
-Reportes.prototype.listarPlanes = function(req, res) {
+Reportes.prototype.listarPlanes0 = function(req, res) {
     var that = this;
     var args = req.body.data;
 
@@ -164,6 +164,25 @@ Reportes.prototype.listarPlanes = function(req, res) {
     }).
 	    done();
 };
+
+
+
+Reportes.prototype.listarPlanes = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(that.m_drArias, 'rotacion').then(function(listarPlanes) {
+        
+        console.log(">>>>>>>>>>>",listarPlanes);
+        
+	res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: listarPlanes}));
+    }).fail(function(err) {
+	console.log("error controller listarPlanes ", err);
+	res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
+    }).done();
+};
+
+
 
 
 /**

@@ -76,6 +76,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         /***********************************
             Definicion de funciones
         ***********************************/
+
+
+
         function obtenerAfiliado(tipoIdentificacion, identificacion){
             //validacion si el tipo de identificacion no esta seleccionado
             if(!tipoIdentificacion){

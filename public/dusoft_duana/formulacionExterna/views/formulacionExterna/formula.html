@@ -96,7 +96,7 @@
 				        </p>
 				    </div>
 	                <div class="col-md-2" style="margin-top: 10px;">
-					    <input type="text" class="form-control"  ng-model="root.formula.formula_papel" placeholder="Número formula" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()"/>
+					    <input type="text" class="form-control" validacion-caracteres-especiales ng-model="root.formula.formula_papel" placeholder="Número formula" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()"/>
 	                </div>
 	                <div class="col-md-2" style="margin-top: 10px;">
 			            <ui-select ng-model="$parent.root.formula.tipoFormula" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()" theme="select2" class="form-control selectgeneral " style="padding-top: 0px !important">

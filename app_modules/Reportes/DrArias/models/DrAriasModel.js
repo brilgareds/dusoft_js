@@ -279,11 +279,10 @@ union all   \
             where aa.empresa_id = 'FD' and aa.centro_utilidad=  '54' and aa.bodega =  '54'   \
             and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0) )   \
    ) as w    \
-  order by 1,5";
+  order by 8";
 
     var query = G.knex.raw(sql);
-    query.then(function(resultado) {
-        console.log("AAAAAAAA ",resultado);
+    query.then(function(resultado) {       
 	callback(false, resultado.rows);
     }). catch (function(err) {
 	console.log("Error [listarPlanes] Parametros: ", err);

@@ -170,19 +170,241 @@ Reportes.prototype.listarPlanes0 = function(req, res) {
 Reportes.prototype.listarPlanes = function(req, res) {
     var that = this;
     var args = req.body.data;
-
+    
     G.Q.ninvoke(that.m_drArias, 'rotacion').then(function(listarPlanes) {
+     
+        return G.Q.nfcall(__organizaRotacion,0,listarPlanes,[]);
         
-        console.log(">>>>>>>>>>>",listarPlanes);
+     }).then(function(resultados) {
+        // console.log(">>>>>>",resultados)
+         return G.Q.nfcall(__creaExcel,resultados);
+         
+     }).then(function(resultados) {
+         
+	res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: resultados}));
         
-	res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: listarPlanes}));
     }).fail(function(err) {
+        
 	console.log("error controller listarPlanes ", err);
 	res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
+        
     }).done();
+
 };
 
+function __creaExcel(data,callback){
+var workbook = new G.Excel.Workbook();
+var worksheet = workbook.addWorksheet('Discography', {properties:{tabColor:{argb:'FFC0000'}}});
 
+
+worksheet.addRow(["MAN PALO GRANDE"]) ;
+
+
+var alignment = { vertical: 'middle', horizontal: 'center' };
+var border={
+    top: {style:'thin'},
+    left: {style:'thin'},
+    bottom: {style:'thin'},
+    right: {style:'thin'} };
+
+var font = { name: 'Calibri',size: 9 };
+
+var style= { font: font,border : border };
+// add column headers
+worksheet.columns = [
+    { header: 'CODIGO', key: 'a', style: style },
+    { header: 'PRODUCTO', key: 'b',width: 50, style: style },
+    { header: 'MOLECULA', key: 'c',width: 25, style: style },
+    { header: 'LABORATORIO', key: 'd', style: style },
+    { header: 'TIPO PRODUCTO', key: 'e', style: style },
+    { header: 'NIVEL', key: 'f', style: style },
+    { header: 'SALIDA 1', key: 'g', style: style },
+    { header: 'SALIDA 2', key: 'h', style: style },
+    { header: 'Promedio Mes', key: 'i',width: 10, style: style },
+    { header: 'Stock Farmacia', key: 'j',width: 10, style: style },
+    { header: 'Pedidos 60 Dias', key: 'k',width: 10, style: style },
+    { header: '', key: 'l',width: 10, style: style },
+    { header: 'Stock Bodega', key: 'm',width: 10, style: style}
+];
+
+worksheet.views = [
+    {zoomScale: 160,state: 'frozen', xSplit: 1, ySplit: 1, activeCell: 'A1'}
+];
+     var i=1;
+    data.forEach(function(element) {
+         console.log(element);
+        if (element.color === 'ROJO') {
+            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+                element.sum1, element.sum2, element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
+                color: {argb: 'C42807'}, name: 'Calibri',size: 9
+            };
+        }else{
+            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+                element.sum1, element.sum2, element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]); 
+        }
+        
+        worksheet.getColumn('A').hidden = true;
+        worksheet.getColumn('D').hidden = true;
+        worksheet.getColumn('E').hidden = true;
+        worksheet.getColumn('F').hidden = true;
+        worksheet.getColumn('G').hidden = true;
+        worksheet.getColumn('H').hidden = true;
+        worksheet.getColumn('N').hidden = true;
+        worksheet.getColumn('O').hidden = true;
+        
+         i++;
+      });
+      
+
+
+var font = {
+    name: 'SansSerif',
+    size: 9,
+    bold: true
+};
+
+var alignment = { vertical: 'distributed', horizontal: 'center'  };
+
+var border = {
+    top: {style:'thin'},
+    left: {style:'thin'},
+    bottom: {style:'thin'},
+    right: {style:'thin'}
+};
+
+var style = { font: font , border : border ,alignment : alignment } ;
+
+worksheet.getCell('A1').style = style;
+worksheet.getCell('B1').style = style;
+worksheet.getCell('C1').style = style;
+worksheet.getCell('D1').style = style;
+worksheet.getCell('E1').style = style;
+worksheet.getCell('F1').style = style;
+worksheet.getCell('G1').style = style;
+worksheet.getCell('H1').style = style;
+worksheet.getCell('I1').style = style;
+worksheet.getCell('J1').style = style;
+worksheet.getCell('K1').style = style;
+worksheet.getCell('L1').style = style;
+worksheet.getCell('M1').style = style;
+//
+//worksheet.getCell('A1').font = font;
+//worksheet.getCell('B1').font = font;
+//worksheet.getCell('C1').font = font;
+//worksheet.getCell('D1').font = font;
+//worksheet.getCell('E1').font = font;
+//worksheet.getCell('F1').font = font;
+//worksheet.getCell('G1').font = font;
+//worksheet.getCell('H1').font = font;
+//worksheet.getCell('I1').font = font;
+//worksheet.getCell('J1').font = font;
+//worksheet.getCell('K1').font = font;
+//worksheet.getCell('L1').font = font;
+//worksheet.getCell('M1').font = font;
+//
+//worksheet.getCell('A1').alignment = alignment;
+//worksheet.getCell('B1').alignment = alignment;
+//worksheet.getCell('C1').alignment = alignment;
+//worksheet.getCell('D1').alignment = alignment;
+//worksheet.getCell('E1').alignment = alignment;
+//worksheet.getCell('F1').alignment = alignment;
+//worksheet.getCell('G1').alignment = alignment;
+//worksheet.getCell('H1').alignment = alignment;
+//worksheet.getCell('I1').alignment = alignment;
+//worksheet.getCell('J1').alignment = alignment;
+//worksheet.getCell('K1').alignment = alignment;
+//worksheet.getCell('L1').alignment = alignment;
+//worksheet.getCell('M1').alignment = alignment;
+
+// add rows the dumb way
+//worksheet.addRow(["Fearless", 2008]);
+//worksheet.addRow(["Fearless", 2008]);
+//worksheet.addRow(["Fearless", 2008]);
+//worksheet.addRow(["Fearless", 2008]);
+//worksheet.addRow(["Fearless", 2008]);
+//worksheet.addRow(["Fearless", 2008]);
+//worksheet.addRow(["Fearless", 2008]);
+//
+//// add an array of rows
+//var rows = [
+//  ["Speak Now", 2010],
+//  {album: "Red", year: 2012}
+//  
+//];
+//worksheet.addRows(rows);
+//
+// worksheet.getRow(5).font = {
+//    name: 'Arial Black',
+//    color: { argb: 'C42807' },
+//    family: 2,    
+//    size: 9,
+//    italic: true
+//};
+//
+//worksheet.getCell('A2').fill = {
+//    type: 'pattern',
+//    pattern:'darkTrellis',
+//    fgColor:{argb:'FFFFFF00'},
+//    bgColor:{argb:'FF0000FF'}
+//};
+//
+//worksheet.getCell('A1').font = {
+//    name: 'Arial Black',
+//    color: { argb: 'C42807' },
+//    family: 2,    
+//    size: 9,
+//    italic: true
+//};
+//
+////var dobCol = worksheet.getColumn('a');
+////ocultar
+////dobCol.hidden = true;
+//
+//worksheet.getCell('F1').value = "Tulua";
+
+// save workbook to disk
+workbook.xlsx.writeFile('./taylor_swift.xlsx').then(function() {
+  console.log("saved");
+   callback(false, 'taylor_swift.xlsx');
+}); 
+}
+
+function __organizaRotacion(index, data, resultado, callback) {
+
+    var _resultado = data[index];
+    index++;
+    if (_resultado) {
+        callback(false, resultado);
+    }
+
+    var resultColumna = {
+        codigo_poducto: _resultado.codigo_producto,
+        poducto: _resultado.producto,
+        molecula: _resultado.molecula,
+        laboratorio: _resultado.laboratorio,
+        tipo_producto: _resultado.tipo_producto,
+        sum1: _resultado.sum
+    };
+    
+    if (_resultado.codigo_producto === data[index].codigo_producto) {
+        resultColumna.sum2 = data[index].sum;
+        index++;
+    } else {
+        resultColumna.sum2 = 0;
+    }
+    
+    resultColumna.promedioMes = Math.ceil((resultColumna.sum2+resultColumna.sum1)/2);
+    resultColumna.totalStock = _resultado.existencia;
+    resultColumna.pedido60Dias = ((resultColumna.sum2+resultColumna.sum1)) - ( _resultado.existencia) > 0 ? (resultColumna.sum2+resultColumna.sum1) - (_resultado.existencia):0;
+    resultColumna.stockBodega = _resultado.existencia_bd;
+    resultColumna.nivel = _resultado.nivel;
+    resultColumna.tipo_producto = _resultado.tipo_producto;    
+    resultColumna.color= _resultado.existencia/((Math.ceil((resultColumna.sum2+resultColumna.sum1)) / 2)>0?Math.ceil(((resultColumna.sum2+resultColumna.sum1)) / 2):1)>=5?"ROJO":"N/A";
+    
+     resultado.push(resultColumna);
+    
+     return __organizaRotacion(index, data, resultado, callback);
+}
 
 
 /**

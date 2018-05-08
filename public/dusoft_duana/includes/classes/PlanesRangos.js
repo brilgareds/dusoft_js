@@ -7,19 +7,20 @@ define(["angular", "js/models"], function(angular, models) {
             
             this.tipoAfiliadoId = tipoAfiliadoId || "";
             this.rango = rango || "";
+            this.planes = [];
            
         };
         
         PlanesRangos.prototype.getTipoAfiliadoId = function(){
-            return this.afiliadoTipoId;
+            return this.tipoAfiliadoId;
         };
 
         PlanesRangos.prototype.getRango = function(){
-            return this.planAtencion;
+            return this.rango;
         };
         
         this.get = function(tipoAfiliadoId,rango){
-            return new (tipoAfiliadoId,rango);
+            return new PlanesRangos(tipoAfiliadoId,rango);
         };
 
         this.getClass = function() {

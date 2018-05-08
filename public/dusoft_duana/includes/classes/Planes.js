@@ -19,7 +19,7 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         this.get = function(planId,descripcion){
-            return new (planId,descripcion);
+            return new Planes(planId,descripcion);
         };
 
         this.getClass = function() {

@@ -546,7 +546,7 @@ PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido = function(nume
 };
 
 // Listar todos los pedidos de farmacias
-PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, empresa_id_actual, termino_busqueda, filtro, pagina, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, filtro, pagina, callback) {
 
     /*=========================================================================*/
     // Se implementa este filtro, para poder filtrar los pedidos por el estado actual
@@ -676,7 +676,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     where(function(){
         this.where("a.farmacia_id", empresa_id);
         this.orWhere("a.farmacia_id", '03');
-        this.andWhere("d.empresa_id", empresa_id_actual);
+        //this.andWhere("d.empresa_id", empresa_id_actual);
         
     }).
     andWhere(function() {

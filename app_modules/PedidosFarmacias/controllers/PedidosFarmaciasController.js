@@ -244,12 +244,12 @@ PedidosFarmacias.prototype.listarPedidosFarmacias = function(req, res) {
 
     var empresa_id = args.pedidos_farmacias.empresa_id;
     var empresa_id_actual = args.pedidos_farmacias.empresa_id_actual;
-    console.log('empresa_id_actual', empresa_id_actual);
+    //console.log('empresa_id_actual', empresa_id_actual);
     var termino_busqueda = args.pedidos_farmacias.termino_busqueda;
     var pagina_actual = args.pedidos_farmacias.pagina_actual;
     var filtro = args.pedidos_farmacias.filtro;
 
-    this.m_pedidos_farmacias.listar_pedidos_farmacias(empresa_id, empresa_id_actual, termino_busqueda, filtro, pagina_actual, function(err, lista_pedidos_farmacias) {
+    this.m_pedidos_farmacias.listar_pedidos_farmacias(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, lista_pedidos_farmacias) {
         res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
     });
 };

@@ -546,7 +546,7 @@ PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido = function(nume
 };
 
 // Listar todos los pedidos de farmacias
-PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, filtro, pagina, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, empresa_id_actual, termino_busqueda, filtro, pagina, callback) {
 
     /*=========================================================================*/
     // Se implementa este filtro, para poder filtrar los pedidos por el estado actual
@@ -676,6 +676,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     where(function(){
         this.where("a.farmacia_id", empresa_id);
         this.orWhere("a.farmacia_id", '03');
+        this.andWhere("d.empresa_id", empresa_id_actual);
         
     }).
     andWhere(function() {
@@ -900,7 +901,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 (\
                     select case when j.estado = '1' then 'Aprobado' when j.estado = '2' then 'Denegado' end as descripcion_autorizacion from autorizaciones_productos_pedidos  as j\
                     where  tipo_pedido = '1' and j.codigo_producto = a.codigo_producto and j.pedido_id = a.solicitud_prod_a_bod_ppal_id\
-                    order by fecha_verificacion asc limit 1\
+                    order by fecha_verificacion desc limit 1\
                 ) as descripcion_autorizacion,\
                 b.observacion_justificacion_separador,\
                 b.observacion_justificacion_auditor,\

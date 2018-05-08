@@ -1,6 +1,7 @@
-var FacturacionProveedores = function(m_facturacion_proveedores,m_sincronizacion) {
+var FacturacionProveedores = function(m_facturacion_proveedores,m_sincronizacion,m_actas_tecnicas) {
     this.m_facturacion_proveedores = m_facturacion_proveedores;
     this.m_sincronizacion = m_sincronizacion;
+    this.m_actas_tecnicas = m_actas_tecnicas;
 };
 
 /**
@@ -269,6 +270,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         fecha_radicacion_factura: args.facturaProveedor.parmetros.fechaRadicacion,
         fecha_vencimiento: args.facturaProveedor.parmetros.fechaVencimiento,
         fecha: args.facturaProveedor.parmetros.fechaFactura,
+        numero_orden:args.facturaProveedor.parmetros.recepciones[0].numero_orden_compra,
         usuario_id: usuario,
         usuario: usuario,
         terminoBusqueda: "",
@@ -304,7 +306,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
 	    return G.Q.nfcall(__ingresarFacturaDetalle, that, 0, args.facturaProveedor.parmetros.recepciones,parametros,0,transaccion);
 
 	}).then(function(resultado) {
-
+            
 	    transaccion.commit();
 
 	}).fail(function(err) {
@@ -323,7 +325,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         return  G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);
 	
     }).then(function(resultado) {
-	
+        
         respuestaFI = resultado;
         return G.Q.nfcall(__reporteFactura, parametros);
 
@@ -729,6 +731,6 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
 }
 ;
 
-FacturacionProveedores.$inject = ["m_facturacion_proveedores", "m_sincronizacion"];
+FacturacionProveedores.$inject = ["m_facturacion_proveedores", "m_sincronizacion","m_actas_tecnicas"];
 
 module.exports = FacturacionProveedores;

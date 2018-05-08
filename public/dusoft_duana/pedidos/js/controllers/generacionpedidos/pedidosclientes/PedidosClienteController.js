@@ -772,11 +772,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * 
              */
             $scope.confirmar_modificar_producto = function (producto) {
+                console.log("confirmar_modificar_producto:::: ",producto);
                 var productos = [];
                 productos.push(producto);
                 $scope.ocultarOpciones = 1;
                 //OJO VOLVER A DEJAR
                 that.validarDisponibleProductosCotizacion(0, productos, function (estado) {
+                    console.log("Estado:::: ",estado);
                     if (estado) {
 
                         $scope.datos_view.producto_seleccionado = producto;
@@ -988,7 +990,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if(pedido !== 0){
 		  estado=false;
                 }
-                console.log("estado",estado);
+              
                 return estado;
 	    };
             
@@ -1368,8 +1370,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 <div class="list-group">\
                                     <a ng-repeat="producto in productos_no_disponible" \
                                     class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                        Cantidad solicitada ({{ producto.cantidad_solicitada}})\
-                                        Cantidad disponible ({{ producto.cantidad_disponible}}) \
+                                        Cantidad solicitada ({{ producto.cantidad_solicitada}})<br>\
+                                        Cantidad disponible ({{ producto.cantidad_disponible}})<br> \
                                         Unidad de medida ({{producto.unidad_medida}}) para el codigo ({{ producto.codigo_producto}}) \
                                     </a>\
                                 </div>\
@@ -1414,7 +1416,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             function __productosBodegaDuana(index, productos, productosBodegaDuana, bodega, callback) {
-
+console.log("__productosBodegaDuana");
                 var producto = productos[index];
 
                 if (producto === undefined) {
@@ -1440,9 +1442,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * 
              **/
             that.validarDisponibleProductosCotizacion = function (estadoBoton, producto, callback) {
-
+console.log("validarDisponibleProductosCotizacion");
                 __productosBodegaDuana(0, $scope.Pedido.productos, [], $scope.Pedido.get_bodega_id(), function (resultado, productosBodega) {
 
+console.log("111111111111",resultado);
+console.log("222222222222",productosBodega);
 
                     var numeroPedidoCot;
                     var tipoPedidoCot;
@@ -1494,7 +1498,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 observacion += $scope.Pedido.get_observacion_cartera();
                                 $scope.Pedido.set_observacion_cartera(observacion);
                             }
-
+console.log(data.obj.pedidos_clientes.producto.length);
                             if (data.obj.pedidos_clientes.producto.length > 0) {
                                 that.ventanaProductosSinDisponibilidad(estadoBoton, data.obj.pedidos_clientes.producto);
                             } else {

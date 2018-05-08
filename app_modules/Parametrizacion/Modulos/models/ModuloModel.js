@@ -187,6 +187,8 @@ ModuloModel.prototype.insertarModulo = function(modulo, callback) {
         modulo_id = modulo.modulo_id;
     }
 
+    console.log('modulo id ', modulo_id);
+
     var sql = "INSERT INTO modulos (id, parent, nombre, url, parent_name, icon, state, observacion, usuario_id,\
                fecha_creacion, estado, carpeta_raiz, alias, sw_reporte) VALUES (" + modulo_id + ", :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, replace(LOWER( :2 ), ' ', '_'), :12 ) RETURNING id";
 
@@ -883,8 +885,7 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, ca
             
              return G.knex.raw(sql, {1:empresa_id, 2:modulo_id, 3:usuario_id, 4:estado});
         } else {
-            empresas_modulos.splice(0, 1);
-
+            
             if (resultado && resultado.rows.length > 0 && resultado.rows[0].id) {
                 ids.push({modulos_empresas_id: resultado.rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
             }

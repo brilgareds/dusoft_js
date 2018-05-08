@@ -255,6 +255,8 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
         "a.cantidad_devuelta",
         "a.codigo_proveedor_id",
         "b.prefijo",
+        "b.numero",
+        "b.orden_pedido_id",
         "e.sw_insumos",
         "e.sw_medicamento",
         "d.codigo_cum",
@@ -292,10 +294,14 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
         if (obj.numero_factura !== undefined) {
             this.andWhere("a.numero_factura",obj.numero_factura)
         }
+        if (obj.numero_orden !== undefined) {
+            this.andWhere("b.orden_pedido_id",obj.numero_orden)
+        }
     });
       
 
     query.then(function(resultado) {
+         console.log(G.sqlformatter.format(query.toString()));
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [consultarFacturaProveedorDetalle]:", err);

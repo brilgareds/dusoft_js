@@ -225,6 +225,7 @@ define(["angular",
                         pedidos_farmacias: {
                             termino_busqueda: $scope.rootPedidosFarmacias.termino_busqueda,
                             empresa_id: $scope.rootPedidosFarmacias.empresaSeleccionada.getCodigo(),
+                            empresa_id_actual : Usuario.getUsuarioActual().getEmpresa().codigo,
                             pagina_actual: $scope.rootPedidosFarmacias.paginaactual,
                             filtro:  $scope.rootPedidosFarmacias.filtro 
                         }

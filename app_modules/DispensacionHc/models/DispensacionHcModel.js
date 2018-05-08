@@ -267,7 +267,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                 }).innerJoin("planes AS i", 
                         function(){
                             this.on("h.plan_id","i.plan_id")
-                }).as("a")
+                }).where(function(){
+                this.where("g.estado_afiliado_id",'AC')                              
+                }).as("a");
                         
     var query =  G.knex(subQuery)
         .where(function() {
@@ -345,7 +347,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
                         })
                         .where('evolucion_id',obj.evolucionId).andWhere("d.todo_pendiente","!=", 1);                 
                       
-            
+     console.log(G.sqlformatter.format(query.toString()));       
     query.then(function(resultado){ 
 
       callback(false, resultado);
@@ -2221,27 +2223,33 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
  *               por dispensar
  * @fecha: 08/06/2015 2:43 pm 
  */
-DispensacionHcModel.prototype.updatePendientesPorDispensar = function(producto,obj,transaccion,callback) {
-      var query = G.knex('hc_pendientes_por_dispensar')
-       .where({evolucion_id: obj.evolucion}) 
-       .andWhere({codigo_medicamento:producto.codigo_producto})             
-       .update({
-            cantidad: Math.round(producto.total),
-            usurio_reg_pendiente: obj.usuario,
-            todo_pendiente:  0,
-            bodegas_doc_id: obj.bodegas_doc_id,
-            numeracion: obj.numeracion,
-            sw_estado:producto.sw_estado_pendiente,
-            fecha_registro: 'now()',
-            fecha_pendiente: 'now()'
-    });
+DispensacionHcModel.prototype.updatePendientesPorDispensar = function (producto, obj, transaccion, callback) {
     
-   if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){       
-            callback(false, resultado);
-    }).catch(function(err){
-            console.log("err (/catch) [updatePendientesPorDispensar]: ", err);       
-            callback({err:err, msj: "Error al modificar los medicamentos pendientes"});   
+    var parametros = {
+        cantidad: Math.round(producto.total),
+        usurio_reg_pendiente: obj.usuario,
+        todo_pendiente: 0,
+        bodegas_doc_id: obj.bodegas_doc_id,
+        numeracion: obj.numeracion,
+        sw_estado: producto.sw_estado_pendiente
+    };
+    
+    if (producto.sw_estado_pendiente === 1) {
+        parametros.fecha_registro = 'now()';
+    }
+    
+    var query = G.knex('hc_pendientes_por_dispensar')
+            .where({evolucion_id: obj.evolucion})
+            .andWhere({codigo_medicamento: producto.codigo_producto})
+            .update(parametros);
+
+    if (transaccion)
+        query.transacting(transaccion);
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [updatePendientesPorDispensar]: ", err);
+        callback({err: err, msj: "Error al modificar los medicamentos pendientes"});
     });
 };
              

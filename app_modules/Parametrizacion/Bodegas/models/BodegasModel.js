@@ -15,6 +15,19 @@ EmpresasModel.prototype.listar_bodegas_empresa = function(empresa_id, centro_uti
     });
 };
 
+
+EmpresasModel.prototype.listar_bodegas_duana_farmacias = function(callback) {
+
+    var sql = "SELECT  bodega as bodega_id, descripcion FROM bodegas WHERE empresa_id in ('03','FD'); ";
+    
+    G.knex.raw(sql).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
+    });
+};
+
 EmpresasModel.prototype.listarBodegasPorTermino = function(termino, callback) {
 
     var sql = "SELECT  bodega as bodega_id, empresa_id, centro_utilidad, descripcion, ubicacion FROM bodegas WHERE descripcion ILIKE :1 ; ";

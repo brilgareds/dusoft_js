@@ -433,7 +433,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");
     
     queryPrincipal.then(function(rows) {
-
+console.log(G.sqlformatter.format(queryPrincipal.toString()));
         callback(false, rows);
     }). catch (function(err) {
         console.log("err [listar_pedidos_clientes]: ", err);
@@ -710,7 +710,7 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                     (\
                         select case when j.estado = '1' then 'Aprobado' when j.estado = '2' then 'Denegado' end as descripcion_autorizacion from autorizaciones_productos_pedidos  as j\
                         where  tipo_pedido = '0' and j.codigo_producto = a.codigo_producto and j.pedido_id = a.pedido_cliente_id\
-                        order by fecha_verificacion asc limit 1\
+                        order by fecha_verificacion desc limit 1\
                     ) as descripcion_autorizacion,\
                     b.observacion_justificacion_separador,\
                     b.observacion_justificacion_auditor,\
@@ -2443,7 +2443,7 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
  */
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
     var that = this;
-console.log("modificar_detalle_pedido ",producto);
+
     var cantidadDespachar;
     var campoDespacho = "";
     if (pedido.estadoSolicitud === '8') {
@@ -2462,10 +2462,6 @@ console.log("modificar_detalle_pedido ",producto);
                             pedido_cliente_id = :6 and codigo_producto = :7 \
                 ) as cantidad_solicitada_anterior";
     
-    console.log("modificar_detalle_pedido sql ",sql);
-    console.log("modificar_detalle_pedido sql ",sql);
-    console.log("modificar_detalle_pedido sql ",sql);
-    console.log("modificar_detalle_pedido sql ",sql);
     var parametros = {
         1: producto.iva, 2: cantidadDespachar, 3: producto.precio_venta,
         4: pedido.usuario_id, 5: 'NOW()', 6: pedido.numero_pedido, 7: producto.codigo_producto

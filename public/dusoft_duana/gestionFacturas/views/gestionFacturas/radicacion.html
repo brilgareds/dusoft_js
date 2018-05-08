@@ -1,0 +1,121 @@
+<div class="panel panel-defaul"> 
+    <div class="row"> 
+        <div class="col-xs-4 col-sm-4 col-md-3">
+            <label class="col-md-12  control-label" >No. Factura</label>
+
+            <input type="text" class="form-control" ng-model="root.numeroFactura" id="colFmLabelSm" placeholder="Digite el numero de factura">
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3">
+            <label class="col-md-12  control-label" >Ciudad</label>
+
+            <ui-select ng-model="root.farmaciaSeleccionada" theme="select2" class="form-control selectgeneral pull-left col-md-8" >
+                <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.nombre_ciudad}}</ui-select-match>
+                <ui-select-choices refresh="consultarMunicipio($select.search)" refresh-delay="0" repeat="filtro in root.municipio | filter:$select.search">
+                    {{ filtro.nombre_ciudad}}
+                </ui-select-choices>
+            </ui-select>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-3">
+            <label class="col-md-12  control-label">Precio</label>
+
+            <input type="text" class="form-control" validacion-numero-decimal ng-model="root.precioSeleccionado" id="formGroupExampleInput" placeholder="Digite el precio">
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-3">
+            <label class="col-md-12  control-label">Concepto</label>
+
+            <input type="text" class="form-control"  ng-model="root.descripcion" id="formGroupExampleInput" placeholder="Digite el concepto">
+        </div>
+
+    </div>
+    <div class="row"> 
+        <div class="col-xs-6 col-sm-3 col-md-3">
+            <label class="col-md-12  control-label">Fecha de vencimiento</label>
+
+            <p class="input-group">
+                <input type="text" class="form-control readonlyinput" 
+                       datepicker-popup="{{format}}" 
+                       ng-model="root.fecha_vencimiento" 
+                       is-open="abrir_fecha" 
+                       min="minDate"   
+                       readonly  close-text="Cerrar" 
+                       ng-change="" 
+                       clear-text="Borrar" 
+                       current-text="Hoy" 
+                       placeholder="Fecha Inicial" 
+                       show-weeks="false" 
+                       toggle-weeks-text="#"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>            
+            </p>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-3">   
+            <label class="col-md-12 control-label">Cargar Archivo</label>
+
+            <div>
+                <div class="input-group form-group">
+                    <input title="Adjuntar archivo" type="file" ng-model="root.archivo" class="uploadChat" onchange="angular.element(this).scope().onArchivoSeleccionado(this.files)" />
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-2 col-md-3">
+            <label class="col-md-12  control-label" >Proveedor</label>
+
+            <ui-select ng-model="root.conceptoSeleccionado"
+                       theme="select2"
+                       class="form-control selectgeneral pull-left col-md-8"
+                       ng-change="onSeleccionConcepto()"
+                       >
+                <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.observacion}}</ui-select-match>
+                <ui-select-choices refresh="onSeleccionConcepto()"  refresh-delay="0"  repeat="filtros in root.concepto | filter:$select.search">
+                    {{ filtros.observacion}}
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+
+        <div class="col-xs-6 col-sm-2 col-md-3">
+            <label class="col-md-12  control-label" >&nbsp;</label>
+
+            <p class="text-center">
+                <button type="button" class="btn btn-primary" class="btn btn-default dropdown-toggle" 
+                        aria-haspopup="true" aria-expanded="false" ng-click="modalConcepto()" > <i class="glyphicon glyphicon-list-alt"></i> Agregar Proveedor
+                </button>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <p class="text-left">
+                <button type="button" class="glyphicon glyphicon-floppy-disk btn btn-success btn-md" ng-click="onGuardarFactura()">Guardar</button>
+            </p>
+        </div>
+    </div> 
+</div> 
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12"> 
+        <legend>Factura </legend>
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <p class="text-left">
+                    <button type="button" class="glyphicon glyphicon-paperclip btn btn-success btn-md" ng-click="onVistaAgrupar()">Agrupar</button>
+                </p>
+            </div>
+        </div> 
+        <div class="table-responsive" >
+            <div class="defaultGrid grid-responsive" style="height: 240px" ng-grid="listar_factura">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12"> 
+        <legend> Factura Agrupada </legend>
+        <div class="table-responsive" >
+            <div class="defaultGrid grid-responsive" style="height: 240px"
+                 ng-grid="listar_agrupar">
+            </div>
+        </div>
+    </div>
+</div>
+<visualizar-reporte></visualizar-reporte>

@@ -1,0 +1,23 @@
+{
+    "module": "ActasTecnicas",
+    "dependency": {
+        "controllers": [{
+                "actasTecnicas_controller": {
+                    "module": "ActasTecnicas",
+                    "controller": "ActasTecnicasController",
+                    "alias": "c_actasTecnicas"
+                }
+            }],
+        "models": [{
+                "actasTecnicas_model": {
+                    "module": "ActasTecnicas",
+                    "model": "ActasTecnicasModel",
+                    "alias": "m_actasTecnicas"
+                }
+            }],
+        "events": [{
+               
+                   }],
+        "cronJobs": []
+    }
+}

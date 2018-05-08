@@ -1,0 +1,32 @@
+{
+    "module": "Radicacion",
+    "dependency": {
+        "controllers": [{
+                "radicacion_controller": {
+                    "module": "Radicacion",
+                    "controller": "RadicacionController",
+                    "alias": "c_radicacion"
+                }
+            }],
+        "models": [{
+                "radicacion_model": {
+                    "module": "Radicacion",
+                    "model": "RadicacionModel",
+                    "alias": "m_radicacion"
+                },               
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                }
+            }],
+        "events": [{
+                    "radicacion_events": {
+                    "module": "Radicacion",
+                    "event": "RadicacionEvents",
+                    "alias": "e_radicacion"
+                }
+            }],
+        "cronJobs": []
+    }
+}

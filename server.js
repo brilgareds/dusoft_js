@@ -43,6 +43,7 @@ G.XlsParser =  require("./lib/XlsParser");
 G.moment = require("moment");
 G.jsonQuery = require('jinq');
 G.json2csv = require('json2csv');
+G.Excel = require('exceljs');
 G.fcmPush = require('fcm-push');
 G.sqlformatter = require('sqlformatter');
 var events = require('events');

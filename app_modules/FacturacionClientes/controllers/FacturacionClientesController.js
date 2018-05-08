@@ -1444,7 +1444,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
          
         if(resultado.length > 0){
-       //     parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             def.resolve();
         }else{
          

@@ -73,6 +73,10 @@ define(["angular"], function(angular) {
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/I012/crearDocumento',
                 'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I012/crearHtmlDocumento'
             },
+            'I015': {
+                'LISTAR_BODEGAS': BASE_URL + '/movBodegas/I015/listarBodegas',
+                'LISTAR_DOCUMENTOS': BASE_URL + '/movBodegas/I015/listarBodegas',
+            },
             'E007': {
             },
             'E009': {

@@ -1462,6 +1462,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
        //     parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
         }
         
+        parametros.id_factura_xconsumo=parametros.id_factura_xconsumo === undefined?0:parametros.id_factura_xconsumo;
         
         var parametrosDetalleFactura = {
             id_factura_xconsumo:parametros.id_factura_xconsumo, 

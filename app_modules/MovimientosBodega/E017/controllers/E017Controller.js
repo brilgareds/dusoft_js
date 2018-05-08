@@ -500,7 +500,6 @@ E017Controller.prototype.crearHtmlDocumento = function (req, res) {
         detallea = resultado;
         return G.Q.nfcall(that.m_e017.consultarFarmaciaDestino, parametros);
     }).then(function (resultado) {
-console.log("resultado",resultado);
 
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');

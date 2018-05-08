@@ -155,7 +155,28 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 return disabled;
             };
 
+            $scope.restaFechas = function (f1, f2)
+            {
+                var aFecha1 = f1.split('/');
+                var aFecha2 = f2.split('/');
+                var fFecha1 = Date.UTC(aFecha1[2], aFecha1[1] - 1, aFecha1[0]);
+                var fFecha2 = Date.UTC(aFecha2[2], aFecha2[1] - 1, aFecha2[0]);
+                var dif = fFecha2 - fFecha1;
+                var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
+                return dias;
+            };
+
+
             $scope.btn_adicionar_producto = function (fila) {
+
+                var fecha_actual = new Date();
+                fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
+                var diferencia = $scope.restaFechas(fecha_actual, fila.fecha_vencimiento);
+                if (diferencia <= 0) {
+                    AlertService.mostrarMensaje("warning", "No se permite trasladar productos vencidos");
+                    return;
+                }
+
                 that.guardarProductoTmp(fila);
             };
 

@@ -371,6 +371,10 @@ DocumentoBodegaI012.prototype.listarProductosFacturas = function (parametros, ca
             .andWhere("a.empresa_id", parametros.empresa_id)
             .andWhere(G.knex.raw("(\"a\".\"cantidad\" <> \"a\".\"cantidad_devuelta\")"));
 
+query.limit(G.settings.limit).
+            offset((parametros.paginaActual - 1) * G.settings.limit)
+
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

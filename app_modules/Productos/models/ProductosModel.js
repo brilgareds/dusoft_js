@@ -238,7 +238,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
             sqlAux += "  and d.estado = '1'";
         }
     }
-    
+  
     if(filtro.codigoLote && filtro.fechaVencimiento){
         sqlAux += "and a.lote = :5\
                    and a.fecha_vencimiento = :6 ";

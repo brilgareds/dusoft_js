@@ -55,4 +55,12 @@ module.exports = function (app, di_container) {
         c_i011.crearHtmlDocumento(req, res);
     });
     
+    app.post('/api/movBodegas/I011/crearTorreDocumento', function (req, res) {
+        c_i011.crearTorreDocumento(req, res);
+    });
+    
+    app.post('/api/movBodegas/I011/listarTorres', function (req, res) {
+        c_i011.listarTorres(req, res);
+    });
+    
 };

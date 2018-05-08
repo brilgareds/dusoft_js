@@ -8,6 +8,9 @@ define(["angular", "js/models", "includes/classes/Documento"], function(angular,
             
             DocumentoBodega.prototype = Object.create(Documento.getClass().prototype);
             
+            DocumentoBodega.torres = [];
+            
+            
             this.get = function(id, prefijo, numero, fecha_registro) {                
                 return new DocumentoBodega(id, prefijo, numero, fecha_registro);
             };
@@ -59,6 +62,20 @@ define(["angular", "js/models", "includes/classes/Documento"], function(angular,
             DocumentoBodega.prototype.setPrefijoFactura = function(prefijoFactura) {
                 this.prefijoFactura = prefijoFactura;
             };
+            
+                        // torres
+            DocumentoBodega.set_torres = function(torre) {
+                this.torres.push(torre);
+            };
+
+            DocumentoBodega.get_torres = function() {
+                return this.torres;
+            };
+
+            DocumentoBodega.limpiar_torres = function() {
+                this.torres = [];
+            };
+            
             
             return this;
         }]);

@@ -267,7 +267,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                 }).innerJoin("planes AS i", 
                         function(){
                             this.on("h.plan_id","i.plan_id")
-                }).as("a")
+                }).where(function(){
+                this.where("g.estado_afiliado_id",'AC')                              
+                }).as("a");
                         
     var query =  G.knex(subQuery)
         .where(function() {

@@ -252,12 +252,21 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             <button class="btn btn-default btn-xs" ng-click="btn_imprimir(row.entity)">Imprimir <span class="glyphicon glyphicon-print"></span></button>\
                                            </div>\
                                         </div>'},
-                    {width: "7%", displayName: "Autorizacion", cellClass: "txt-center",
+                    {width: "7%", displayName: "Autorizacion", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                           <div ">\
-                                            <button class="btn btn-default btn-xs" ng-hide="ocultarAutorizacion(row.entity)" ng-click="btn_imprimirAutorizacion(row.entity)">Imprimir <span class="glyphicon glyphicon-print"></span></button>\
-                                           </div>\
-                                        </div>'}
+                     <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" ng-hide="ocultarTorre(row.entity)">Torres<span class="caret"></span></button>\
+                     <ul class="dropdown-menu dropdown-options">\
+                     <li ng-repeat="torre in row.entity.torres">\
+                     <a href="javascript:void(0)" ng-click="btn_imprimirTorre(row.entity,torre.torre)">{{torre.torre}}</a>\
+                     </li>\
+                     </ul>\
+                     </div>\
+                     <button class="btn btn-default btn-xs" ng-hide="ocultarAutorizacion(row.entity)" ng-click="btn_imprimirAutorizacion(row.entity)">Imprimir <span class="glyphicon glyphicon-print"></span></button>\
+                    </div>\
+                 </div>'
+                                //{width: "7%", displayName: "Acciónes", cellClass: "txt-center",
+//                        cellTemplate: '<div class="btn-group">\
+                    }
                 ]
             };
 
@@ -266,6 +275,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                 if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012") {
                     disabled = true;
+                }
+                return disabled;
+            };
+
+            $scope.ocultarTorre = function (documento) {
+                var disabled = true;
+
+                if (documento.tipo_movimiento === "I011") {
+                    disabled = false;
                 }
                 return disabled;
             };
@@ -292,6 +310,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
                     });
                 } else if (documentos.tipo_movimiento === "I011") {
+
+                    obj.data.prefijoFactura = documentos.prefijoFactura;
+                    obj.data.numeroFactura = documentos.numeroFactura;
 
                     Request.realizarRequest(API.I011.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
@@ -374,6 +395,48 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 that.crearHtmlAutorizacion(documentos, function (respuesta) {
                     if (respuesta !== false) {
                         $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
+                    }
+                });
+
+            };
+
+            $scope.btn_imprimirTorre = function (documentos, torre) {
+                var e;
+                if (torre === "Sin Torre") {
+                    e = null;
+                } else {
+                    e = torre;
+                }
+
+                that.crearTorreDocumento(documentos, e, function (respuesta) {
+                    if (respuesta !== false) {
+                        $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
+                    }
+                });
+
+            };
+
+            that.crearTorreDocumento = function (documentos, torre, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        empresaId: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                        prefijo: documentos.prefijo,
+                        numeracion: documentos.numero,
+                        prefijoFactura: documentos.prefijoFactura,
+                        numeroFactura: documentos.numeroFactura,
+                        torre: torre
+                    }
+                };
+
+                Request.realizarRequest(API.I011.CREAR_DOCUMENTO_TORRE, "POST", obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data);
+                    }
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                        callback(false);
                     }
                 });
 
@@ -769,14 +832,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     doc.set_observaciones(data.observacion);
                     doc.setPrefijoNumero(data.prefijo + '-' + data.numero);
                     var nomb_pdf = "documentoI002" + data.prefijo + data.numero + ".html";
+                    if (data.tipo_doc_bodega_id === 'I011') {
+                        that.buscarTorres(data.prefijo, data.numero, function (resul) {
+                            doc.torres = resul;
+                        });
 
-//                    if(data.tipo_movimiento === 'I012'){
-//                        nomb_pdf = "documentoI012" + data.prefijo + data.numero + ".html";
+                    }
                     doc.setTerceroId(data.tercero_id);
                     doc.setTipoTercero(data.tipo_id_tercero);
                     doc.setNumeroFactura(data.numero_doc_cliente);
                     doc.setPrefijoFactura(data.prefijo_doc_cliente);
-                    //}
 
                     doc.setArchivo(nomb_pdf);
                     allDocumentos.push(doc);
@@ -832,8 +897,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 that.listarDocumetosTemporales(true);
             };
 
+            that.buscarTorres = function (prefijo, numero, callback) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        prefijo: prefijo,
+                        numero: numero
+                    }
+                };
 
+                Request.realizarRequest(API.I011.LISTAR_TORRES, "POST", obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data.obj.listarTorres);
+                    }
+                });
 
+            };
 
             $scope.consultar_listado_documentos_usuario();
         }]);

@@ -460,7 +460,7 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                 WHERE \
                  a.pedido_id = :1 AND a.tipo_pedido = :2 AND \
                   a.codigo_producto = :3 \
-                 ORDER BY fecha_verificacion DESC \
+                 ORDER BY a.fecha_verificacion DESC \
                  ";
     } else {
         sql = " a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\
@@ -489,10 +489,10 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                 WHERE \
                     a.pedido_id = :1 AND a.tipo_pedido = :2  \
                     AND a.codigo_producto = :3 \
-                    ORDER BY fecha_verificacion DESC \
+                    ORDER BY a.fecha_verificacion DESC \
                     ";
     }
-    
+  
    var parametros =  {1: obj.pedidoId, 2: obj.tipoPedido, 3: obj.codigoProducto}; 
    var query = G.knex.select(G.knex.raw(sql, parametros)).
         limit(limite).

@@ -1,3 +1,4 @@
+
 var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };
@@ -1389,7 +1390,7 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
  * @fecha 2017-15-05 YYYY-DD-MM
  */
 FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
-   
+   console.log("parametros ",obj);
     var campos = [
         G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
         "b.tipo_id_vendedor",
@@ -1460,6 +1461,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
                     .andWhere("b.lote",obj.lote)
                 }
             }
+            
             if(obj.estado === 3){
                 this.andWhere("b.pedido_cliente_id", obj.pedido_cliente_id)
             }
@@ -1473,9 +1475,27 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
             if(obj.estado === 5){
                 this.andWhere("a.id_factura_xconsumo",obj.id_factura_xconsumo)               
             }
+            
+            if(obj.estado === 6){
+                this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
+                .andWhere("a.tercero_id", obj.terceroId)           
+                .andWhere("b.empresa_id", obj.empresaId)
+                .andWhere("a.sw_facturacion",0)
+                .andWhere("a.id_factura_xconsumo",obj.idFacturaXconsumo)   
+            }
+            
+//            
+//            if(obj.idFacturaXconsumo !== undefined && obj.numero === undefined && obj.prefijo === undefined ){
+//                this.andWhere("a.id_factura_xconsumo",obj.idFacturaXconsumo)               
+//            }
+//            
+//            if(obj.numero !== undefined && obj.prefijo !== undefined ){
+//                this.andWhere("b.prefijo", obj.prefijo)
+//                    .andWhere("b.factura_fiscal", obj.numero)            
+//            }
         })
         .groupBy(camposGroupBy);
-        
+      console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){    
         callback(false, resultado);
     }).catch(function(err){
@@ -2245,6 +2265,5 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
 
    
 FacturacionClientesModel.$inject = ["m_e008"];
-
 
 module.exports = FacturacionClientesModel;

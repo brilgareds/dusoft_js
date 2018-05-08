@@ -61,6 +61,27 @@ I011Controller.prototype.listarNovedades = function (req, res) {
 };
 /**
  * @author German Galvis
+ * +Descripcion lista las novedades
+ * @fecha 2018-04-20
+ */
+I011Controller.prototype.listarTorres = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        prefijo: args.prefijo,
+        numero: args.numero
+    };
+    G.Q.nfcall(that.m_i011.listarTorres, parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listar torres ok!!!!', 200, {listarTorres: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de torres', 500, {listarTorres: {}}));
+            }).
+            done();
+};
+/**
+ * @author German Galvis
  * +Descripcion lista las devoluciones que pertenecen a la bodega seleccionada
  * @fecha 2018-02-19
  */
@@ -511,9 +532,9 @@ I011Controller.prototype.crearDocumento = function (req, res) {
         var usuario = req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
 
-for(var i= 0;i<detallea.length;i++){
-    detallea[i].index = i+1;
-}
+        for (var i = 0; i < detallea.length; i++) {
+            detallea[i].index = i + 1;
+        }
         if (resultado.length > 0) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
@@ -564,6 +585,8 @@ I011Controller.prototype.crearHtmlDocumento = function (req, res) {
         empresaId: args.empresaId,
         empresa_id: args.empresaId,
         prefijoDocumento: args.prefijo,
+        prefijo_doc: args.prefijoFactura,
+        numero_doc: args.numeroFactura,
         numeracionDocumento: args.numeracion
     };
 
@@ -593,9 +616,9 @@ I011Controller.prototype.crearHtmlDocumento = function (req, res) {
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
 
 
-for(var i= 0;i<detallea.length;i++){
-    detallea[i].index = i+1;
-}
+        for (var i = 0; i < detallea.length; i++) {
+            detallea[i].index = i + 1;
+        }
 
         if (resultado.length > 0) {
 
@@ -606,6 +629,91 @@ for(var i= 0;i<detallea.length;i++){
                 detalle: detallea,
                 impresion: impresion,
                 archivoHtml: 'documentoI011.html',
+                reporte: "documentoI011"}, function (nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+        } else {
+            throw 'Consulta consultar_detalle_documento sin resultados';
+        }
+
+    }).catch(function (err) {
+        console.log("crearHtmlDocumento>>>>", err);
+        res.send(G.utils.r(req.url, 'Error al Crear el html del Documento', 500, {err: err}));
+    }).done();
+};
+
+// imprime el documento para la torre seleccionada desde buscador de documentos
+I011Controller.prototype.crearTorreDocumento = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var cabecera = [];
+    var detallea = [];
+    var torre = args.torre;
+
+
+    if (args.empresaId === '' || args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.prefijo === '' || args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo esta vacío', 404, {}));
+        return;
+    }
+    if (args.numeracion === '' || args.numeracion === undefined) {
+        res.send(G.utils.r(req.url, 'El numeracion esta vacío', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        prefijoDocumento: args.prefijo,
+        numeracionDocumento: args.numeracion,
+        prefijo_doc: args.prefijoFactura,
+        numero_doc: args.numeroFactura,
+        torre: torre
+    };
+
+    try {
+        var nomb_pdf = "documentoI011" + parametros.prefijoDocumento + parametros.numeracionDocumento + torre + ".html";
+        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
+            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
+            return;
+        }
+    } catch (e) {
+        console.log("NO EXISTE ARCHIVO  ");
+    }
+
+    G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros).then(function (result) {
+        cabecera = result;
+
+        if (result.length > 0) {
+            return G.Q.nfcall(that.m_i011.consultar_torre_documento, parametros);
+        } else {
+            throw 'Consulta getDoc sin resultados';
+        }
+    }).then(function (resultado) {
+        detallea = resultado;
+        var fecha = new Date();
+        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+        var usuario = req.session.user.nombre_usuario;
+        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+
+
+        for (var i = 0; i < detallea.length; i++) {
+            detallea[i].index = i + 1;
+        }
+
+        if (resultado.length > 0) {
+
+            cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
+            cabecera[0].edb_id = parametros.prefijo_doc + " " + parametros.numero_doc;
+            __generarPdfTorre({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecerae: cabecera[0],
+                detalle: detallea,
+                impresion: impresion,
+                archivoHtml: 'documentoI011.html',
+                torre: torre,
                 reporte: "documentoI011"}, function (nombre_pdf) {
                 res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
             });
@@ -644,6 +752,41 @@ function __generarPdf(datos, callback) {
             var fecha = new Date();
 
             var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + ".html";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                if (err) {
+                    console.log("err [__generarPdf]: ", err);
+                    callback(true, err);
+                    return;
+                } else {
+
+                    callback(nombreTmp);
+                    return;
+                }
+            });
+        });
+    });
+}
+function __generarPdfTorre(datos, callback) {
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/MovimientosBodega/I011/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function (err, response) {
+
+        response.body(function (body) {
+            var fecha = new Date();
+
+            var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + datos.torre + ".html";
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {

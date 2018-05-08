@@ -24,6 +24,7 @@ define([
             $scope.valorRetIca = 0;
             $scope.valorRetIva = 0;
             $scope.valorTotal = 0;
+            $scope.paginaactualproductos = 1;
             $scope.cliente_seleccionado = [];
             $scope.validarDesdeLink = false;
             $scope.documento_ingreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
@@ -177,7 +178,8 @@ define([
                     data: {
                         numero_doc: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
                         prefijo: $scope.documento_ingreso.getFacturaDevolucion().prefijo,
-                        empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo()
+                        empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        paginaActual: $scope.paginaactualproductos
                     }
                 };
                 Request.realizarRequest(API.I012.CONSULTAR_DETALLE_FACTURA, "POST", obj, function (data) {
@@ -217,15 +219,15 @@ define([
                     {field: 'torre', displayName: 'Torre', width: "3%", enableCellEdit: false},
                     {field: 'codigo_producto', displayName: 'Codigo ', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                                <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
-                                                <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
-                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
-                                                <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 6">NeA</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 7">MoE</span>\
-                                                <span class="label label-default" ng-show="row.entity.getTipoProductoId() == 8">Nut</span>\
-                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 9">Ger</span>\
+                                                <span title="Normales" class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
+                                                <span title="Alto Costo" class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
+                                                <span title="Controlados" class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
+                                                <span title="Insumos" class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
+                                                <span title="Nevera" class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span title="Nevera Alto Costo" class="label label-info" ng-show="row.entity.getTipoProductoId() == 6">NeA</span>\
+                                                <span title="Monopol_Estado" class="label label-info" ng-show="row.entity.getTipoProductoId() == 7">MoE</span>\
+                                                <span title="Nutricion" class="label label-default" ng-show="row.entity.getTipoProductoId() == 8">Nut</span>\
+                                                <span title="Gerencia" class="label label-warning" ng-show="row.entity.getTipoProductoId() == 9">Ger</span>\
                                                 <span ng-cell-text >{{COL_FIELD}} </span>\
                                                 <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
@@ -776,7 +778,26 @@ define([
                 $scope.porcentajeRetIva = parametros[0].porcentaje_reteiva;
             };
 
+            /*
+             * funcion para paginar anterior
+             * @returns {lista datos}
+             */
+            $scope.paginaAnteriorIndex = function () {
+                if ($scope.paginaactualproductos === 1)
+                    return;
+                $scope.paginaactualproductos--;
+                that.listarProductosFactura();
+            };
 
+
+            /*
+             * funcion para paginar siguiente
+             * @returns {lista datos}
+             */
+            $scope.paginaSiguienteIndex = function () {
+                $scope.paginaactualproductos++;
+                that.listarProductosFactura();
+            };
 
             if (datos_documento.datosAdicionales !== undefined) {
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;

@@ -40,16 +40,17 @@ define(["angular", "js/controllers",
                 $scope.$emit('onDetalleCerrado');
             };
 
-            $scope.$on("detalleClienteCompleto", function(e, datos) {
-
- 
+            $scope.$on("detalleClienteCompleto", function(e, datos) { 
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal(that.obtenerParametros(), false, 1, that.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
                 $scope.filtro.codigo_barras = true;
                 var empresa = Usuario.getUsuarioActual().getEmpresa();
-                
+                that.listaDocumentos(empresa);
+            });
+            
+            that.listaDocumentos=function(empresa){
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -76,7 +77,7 @@ define(["angular", "js/controllers",
 
                 $scope.traerProductosAuditatos(params);
 
-            });
+            };
 
 
             $scope.$on("detalleClienteCerradoCompleto", function(e) {
@@ -287,8 +288,25 @@ define(["angular", "js/controllers",
                 $scope.buscarDetalleDocumentoTemporal($scope.filtro.termino_busqueda, true);
             };
 
-            $scope.valorSeleccionado = function(manual) {
-                
+            $scope.valorSeleccionado = function (manual) {
+                AlertService.mostrarVentanaAlerta("Verificación", "Verificar el prefijo del documento.\n Desea continuar? ",
+                        function (estadoConfirm) {
+                            if (estadoConfirm) {                                
+                                that.valorSeleccionado(manual);
+                            }else{
+                                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                                that.listaDocumentos(empresa);
+                                that.seleccionarDocumentoDespacho();
+                                $scope.documento_despacho = "";
+                                $scope.seleccion.prefijo = "";
+                                $scope.seleccion.descripcion  = "";
+                            }
+                        }
+                );
+            };
+            
+            that.valorSeleccionado = function(manual) {
+       
                 that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
                 if (!manual) {
                     return;
@@ -320,10 +338,11 @@ define(["angular", "js/controllers",
             };
 
             that.seleccionarDocumentoDespacho = function(bodega_doc_id) {
+               
                 bodega_doc_id = parseInt(bodega_doc_id);
                 for (var i in $scope.documentos_usuarios) {
                     var doc = $scope.documentos_usuarios[i];
-                    
+                 
                     if (bodega_doc_id === doc.bodegas_doc_id) {
                         $scope.documento_despacho = doc;
                         $scope.seleccion.prefijo = doc.prefijo;

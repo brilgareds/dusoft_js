@@ -1,3 +1,4 @@
+
 var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc,m_e008,m_usuarios,m_sincronizacion,e_facturacion_clientes,m_pedidos_clientes) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
@@ -1198,15 +1199,21 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function(
         return;
     }
     
+    var estado=4;
+    if(args.facturas_consumo.estado === 0){
+      estado=6;  
+    }
+    console.log("args.facturas_consumo ",args.facturas_consumo);
     var parametros = {
         empresaId: args.facturas_consumo.empresa_id,
         tipoIdTercero: args.facturas_consumo.tipoTerceroId,
         terceroId: args.facturas_consumo.terceroId,
         prefijo: args.facturas_consumo.prefijo_documento,
         numero: args.facturas_consumo.numero_documento,
-        estado: 4
+        idFacturaXconsumo:args.facturas_consumo.idFacturaXconsumo,
+        estado: estado
     };
-    
+
     var usuario = req.session.user.usuario_id;
      
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametros).then(function(resultado){
@@ -1313,7 +1320,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         direccion_ip: '',
         pedidos: args.facturas_consumo.documentos,
         documentos: args.facturas_consumo.documentoDetalle,
-        id_factura_xconsumo:0,
+        id_factura_xconsumo:args.facturas_consumo.idFacturaXconsumo,
         observacion: args.facturas_consumo.observacion,
         fechaCorte: args.facturas_consumo.fechaCorte
     };
@@ -1437,10 +1444,12 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
          
         if(resultado.length > 0){
+           //estaba comentado por que ya traia id_factura_xconsumo
+           //
             parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             def.resolve();
         }else{
-         
+             
         return G.Q.ninvoke(that.m_facturacion_clientes,'generarTemporalFacturaConsumo',
             {documento_facturacion:documentoFacturacion,
                 consultar_tercero_contrato:consultarTerceroContrato,
@@ -1452,12 +1461,13 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
              
         if(resultado){
+            if(parametros.id_factura_xconsumo === undefined){
             parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+            }
         }
-        
-        
-        var parametrosDetalleFactura = {
-            id_factura_xconsumo:parametros.id_factura_xconsumo, 
+       
+        var parametrosDetalleFactura = {    
+            id_factura_xconsumo : parametros.id_factura_xconsumo,
             tipo_id_vendedor: 'NIT', 
             vendedor_id: '830080649', 
             pedido_cliente_id: parametros.pedidos.pedido, 
@@ -1472,8 +1482,8 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             cantidad_despachada: parametros.documentos.cantidadNueva, 
             cantidad_devuelta: 0, 
             porc_iva: parametros.documentos.porcIva
-        }
-        
+        };
+                
         return G.Q.ninvoke(that.m_facturacion_clientes,'insertarDetalleFacturaConsumo',parametrosDetalleFactura);
             
         

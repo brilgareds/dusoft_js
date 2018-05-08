@@ -901,7 +901,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 (\
                     select case when j.estado = '1' then 'Aprobado' when j.estado = '2' then 'Denegado' end as descripcion_autorizacion from autorizaciones_productos_pedidos  as j\
                     where  tipo_pedido = '1' and j.codigo_producto = a.codigo_producto and j.pedido_id = a.solicitud_prod_a_bod_ppal_id\
-                    order by fecha_verificacion asc limit 1\
+                    order by fecha_verificacion desc limit 1\
                 ) as descripcion_autorizacion,\
                 b.observacion_justificacion_separador,\
                 b.observacion_justificacion_auditor,\

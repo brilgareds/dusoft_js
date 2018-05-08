@@ -52,7 +52,9 @@ define(["angular"], function(angular) {
                 'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/I011/newDocTemporal',
                 'ELIMINAR_PRODUCTO_DEVOLUCION': BASE_URL + '/movBodegas/I011/eliminarItem',
                 'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I011/eliminarGetDocTemporal',
-                'LISTAR_NOVEDADES': BASE_URL + '/movBodegas/I011/listarNovedades'
+                'LISTAR_NOVEDADES': BASE_URL + '/movBodegas/I011/listarNovedades',
+                'LISTAR_TORRES': BASE_URL + '/movBodegas/I011/listarTorres',
+                'CREAR_DOCUMENTO_TORRE': BASE_URL + '/movBodegas/I011/crearTorreDocumento'
             },
             'I012': {
                 "LISTAR_TIPOS_TERCEROS": BASE_URL + "/movBodegas/I012/listarTiposTerceros",

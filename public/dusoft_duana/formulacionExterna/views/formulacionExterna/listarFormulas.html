@@ -1,0 +1,72 @@
+<br>
+<div class ="row">
+  <div class="col-md-2">        
+    <p class="input-group">
+        <input type="text" class="form-control readonlyinput" 
+               datepicker-popup="{{format}}" 
+               ng-model="root.buscador.fecha_inicial"
+               is-open="root.datepicker_fecha_inicial" 
+               current-text="Hoy" 
+               placeholder="Fecha inicial" 
+               show-weeks="false" 
+               toggle-weeks-text="#"
+               />
+        <span class="input-group-btn">
+            <button class="btn btn-success" ng-click="abrirFechaInicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+        </span>
+    </p>
+  </div>
+  <div class="col-md-2">        
+    <p class="input-group">
+        <input type="text" class="form-control readonlyinput" 
+               datepicker-popup="{{format}}" 
+               ng-model="root.buscador.fecha_final"
+               is-open="root.datepicker_fecha_final" 
+               current-text="Hoy" 
+               placeholder="Fecha final" 
+               show-weeks="false" 
+               toggle-weeks-text="#"
+               />
+        <span class="input-group-btn">
+            <button class="btn btn-success" ng-click="abrirFechaFinal($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+        </span>
+    </p>
+  </div>
+  <div class="col-md-3">
+    <div class="input-group">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.buscador.filtro.descripcion}} <span class="caret"></span></button>
+        <ul class="dropdown-menu" ng-selected="onColumnaSize(root.buscador.filtro.tipo)">
+          <li ng-repeat="tipoDocumento in tipoDocumentos">
+            <a href="javascript:void(0)" ng-click="onSeleccionFiltro(tipoDocumento)">
+              {{tipoDocumento.descripcion}}
+            </a>
+          </li>
+        </ul>
+      </div> 
+      <input ng-show="root.visibleBuscador" type="text" class="form-control" ng-keypress="" ng-model="root.buscador.numero_documento" placeholder="Número documento" name="" id="" />
+    </div>
+  </div>
+  <div class="col-md-2"> 
+    <input type="text" class="form-control" placeholder="Número formula" ng-model="root.buscador.numero_formula"> 
+  </div>
+  <div class="col-md-2">
+    <input type="text" class="form-control" placeholder="Nombre paciente" ng-model="root.buscador.nombre_paciente"> 
+  </div>
+  <div class="col-md-1">
+    <button class="btn btn-success " type="submit" ng-click="root.buscador.pagina = 1;buscarFormulas(root.buscador.fecha_inicial, root.buscador.fecha_final, root.buscador.nombre_paciente, root.buscador.numero_formula, root.buscador.filtro.id, root.buscador.numero_documento, root.buscador.pagina)"><i class="glyphicon glyphicon-search"></i>&nbsp;Buscar</button>
+  </div>
+</div>
+<br>
+<div class="table-responsive" style="clear:both;">
+  <div class="defaultGrid grid-responsive" ng-grid="listaFormulas" ></div>
+</div>
+</br>
+<div class="row text-center">
+  <button type="button" class="btn btn-success btn-medium" ng-disabled="root.buscador.pagina == 1" ng-click="root.buscador.pagina = root.buscador.pagina - 1; buscarFormulas(root.buscador.fecha_inicial, root.buscador.fecha_final, root.buscador.nombre_paciente, root.buscador.numero_formula, root.buscador.filtro.id, root.buscador.numero_documento, root.buscador.pagina)">
+    <span class="glyphicon glyphicon-chevron-left" ></span>
+  </button>
+  <button type="button" class="btn btn-success btn-medium" ng-disabled="root.items < 25" ng-click="root.buscador.pagina = root.buscador.pagina + 1; buscarFormulas(root.buscador.fecha_inicial, root.buscador.fecha_final, root.buscador.nombre_paciente, root.buscador.numero_formula, root.buscador.filtro.id, root.buscador.numero_documento, root.buscador.pagina)">
+    <span class="glyphicon glyphicon-chevron-right" ></span>
+  </button>
+</div>

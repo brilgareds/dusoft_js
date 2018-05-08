@@ -1,0 +1,81 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <h4 class="h4MarginTopBottom"><span >Autorizar despacho del medicamento</span> </h4>
+            </div>                        
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <fieldset>
+                            <legend style="color: #dc2c0f">Este medicamento fue despachado hace menos de 25 dias</legend> 
+                           
+                        </fieldset>
+                    </div>              
+                </div>                
+                <div class="row">
+                    
+                     <div class="col-md-3">
+
+                        <fieldset>
+                            <legend>No formula / F. entrega</legend> 
+                            <div class="row">  
+                                <div class="col-md-9" style="margin-top: -14px">                                          
+                                    <h5>{{detalleRegistroDispensacion.no_formula}} /</h5>
+                                    <h5>{{detalleRegistroDispensacion.fecha_registro}}</h5>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>     
+                    
+                    <div class="col-md-3">
+
+                        <fieldset>
+                            <legend>Usuario que despacho</legend> 
+                            <div class="row">  
+                                <div class="col-md-7" style="margin-top: -14px">                                          
+                                    <h5>{{detalleRegistroDispensacion.nombre}}</h5>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>                        
+                    <div class="col-md-3">
+
+                        <fieldset>
+                            <legend>Lugar de despacho</legend> 
+                            <div class="row">  
+                                <div class="col-md-7" style="margin-top: -14px">                                        
+                                    <h5>{{detalleRegistroDispensacion.razon_social}}</h5>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    
+                    <div class="col-md-3">
+
+                        <fieldset>
+                            <legend>Ultima entrega</legend> 
+                            <div class="row">  
+                                <div class="col-md-9" style="margin-top: -14px">                                          
+                                    <h5>{{detalleRegistroDispensacion.unidades}} Unid {{detalleRegistroDispensacion.formulacion}}</h5>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div> 
+
+                </div>
+            </div>
+            <br>
+            <div class="table-responsive" style="height: 200px;">
+                <div class="gridStyle3" ng-grid="listaTipoObservacion" style="height: 200px;"> </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+
+            <button type="button" class="btn btn-warning" ng-click="realizarAutorizacionDispensacion()" ng-disabled="">Aceptar</button>
+            <button type="button" class="btn btn-primary" ng-click="cerrarVentana()">Cancelar</button>
+        </div>
+    </div>
+</div> 

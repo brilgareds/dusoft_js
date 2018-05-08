@@ -1,0 +1,54 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+               	<h4 class="h4MarginTopBottom"><span>Busqueda de medicamentos</span></h4>
+            </div>
+            <div class="panel-body"> 
+				<div class="row">
+					<div class="col-md-12" style="background-color: #f5f5f5;">
+						<form class="form-inline" role="search">
+						  <div class="form-group">
+						  	<label><h4><strong>Búsqueda de productos &nbsp;</strong></h4></label>
+						  </div>
+						  <div class="form-group">
+						    <input type="text" class="form-control" placeholder="Código de barras" ng-model="root.busquedaProductos.codigoBarras" ng-change="reiniciarPagina()">
+						  </div>
+						  <div class="form-group">
+						    <input type="text" class="form-control" placeholder="Descripción" ng-model="root.busquedaProductos.descripcion" ng-change="reiniciarPagina()">
+						  </div>
+						  <div class="form-group">
+					    	<input type="text" class="form-control" placeholder="Principio activo" ng-model="root.busquedaProductos.principioActivo" ng-change="reiniciarPagina()">
+						  </div>
+						  <button type="submit" class="btn btn-success" ng-click="buscarProductos(empresa_id, centro_utilidad, bodega, root.busquedaProductos.principioActivo, root.busquedaProductos.descripcion, root.busquedaProductos.codigoBarras,root.busquedaProductos.pagina)"><i class="glyphicon glyphicon-search"></i></button>
+						  <button type="submit" class="btn btn-success" ng-click="limpiarCampos()"><i class="glyphicon glyphicon-refresh"></i></button>
+						</form>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+				    	<div class="table-responsive" >
+				            <div class="defaultGrid grid-responsive" style="height: 400px;" ng-grid="lista_productos">
+				            </div>
+				        </div>
+					</div>
+				</div>
+				<div class="row" style="margin-top: 10px;">
+	            	<div class="col-md-1 col-md-offset-5">
+        				<button class="btn btn-success" type="button" ng-click="root.busquedaProductos.pagina = root.busquedaProductos.pagina - 1;root.busquedaProductos.pagina = root.busquedaProductos.pagina == 0? 1 : root.busquedaProductos.pagina;buscarProductos(empresa_id, centro_utilidad, bodega, root.busquedaProductos.principioActivo, root.busquedaProductos.descripcion, root.busquedaProductos.codigoBarras,(root.busquedaProductos.pagina))">
+	        				<i class="glyphicon glyphicon-chevron-left"></i>
+					    </button>
+	            	</div>
+	            	<div class="col-md-1">
+        				<button class="btn btn-success" type="button" ng-click="root.busquedaProductos.pagina = root.busquedaProductos.pagina + 1; buscarProductos(empresa_id, centro_utilidad, bodega, root.busquedaProductos.principioActivo, root.busquedaProductos.descripcion, root.busquedaProductos.codigoBarras,root.busquedaProductos.pagina)">
+	        				<i class="glyphicon glyphicon-chevron-right"></i>
+					    </button>
+	            	</div>
+	            </div>
+			</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="cerrar()">Cerrar</button>
+        </div>
+    </div>
+</div>

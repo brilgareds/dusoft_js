@@ -237,3 +237,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.36', 'FACTURA CLIENTES', 'se modifica controlador porque no dejaba crear inv_facturas_xconsumo_tmp_d ya que no se creaba primero inv_facturas_xconsumo_tmp ');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.37  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.37', 'FACTURA CLIENTES', 'se modifica controlador porque no dejaba crear inv_facturas_xconsumo_tmp_d ya que no se creaba primero inv_facturas_xconsumo_tmp ');
+COMMIT TRANSACTION;

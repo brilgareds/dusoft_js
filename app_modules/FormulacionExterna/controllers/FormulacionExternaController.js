@@ -7,13 +7,21 @@ var FormulacionExterna = function(m_formulacion_externa, m_dispensacion_hc) {
 FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
     var that = this;
     var args = req.body.data;
+    var usuario_id = req.session.user.usuario_id;
 
-    G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliado', args.tipoIdentificacion, args.identificacion).then(function(resultado){
+    G.Q.ninvoke(that.m_formulacionExterna,'existeFormulaTmp', args.tipoIdentificacion, args.identificacion).then(function(resultado){
+        if(resultado.length > 0){
+            //compara si el usuario actual es el mismo que esta intentando digitar la formula
+            var registro = resultado[0];
+            if(registro.usuario_id != usuario_id){
+                res.send(G.utils.r(req.url, 'Ya se esta digitando una formula para el paciente', 404, resultado[0]));
+                return;
+            }
+        }
+        return G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliado', args.tipoIdentificacion, args.identificacion);
+    }).then(function(resultado){
         res.send(G.utils.r(req.url, 'obtiene afiliado', 200, resultado[0]));
-    }).fail(function(err){
-        G.logError("FormulacionExternaController [obtenerAfiliado] " + err);
-        res.send(G.utils.r(req.url, 'error al obtenerAfiliado', 500, err));
-    }).done();
+    });
 }
 
 FormulacionExterna.prototype.obtenerMunicipios = function(req, res){
@@ -507,22 +515,6 @@ FormulacionExterna.prototype.generarEntregaPendientes  = function(req, res){
     var tmp = {};
     var date = new Date();
     tmp.fecha_impresion = date.getFullYear()  + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2) + '  (' + ("0" + date.getHours()).slice(-2) +':'+ ("0" + date.getMinutes()).slice(-2) + ':' + ("0" + date.getSeconds()).slice(-2) +')';
-/*  if (args.listar_medicamentos_pendientes === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_pendientes: []}));
-        return;
-    }
-   
-    if (!args.listar_medicamentos_pendientes.evolucion || args.listar_medicamentos_pendientes.evolucion.length === 0 ) {
-        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {listar_medicamentos_pendientes: []}));
-        return;
-    }*/
-
-    /*var parametros = {evolucionId:args.listar_medicamentos_pendientes.evolucion,
-
-        tipoIdPaciente: args.listar_medicamentos_pendientes.tipoIdPaciente,
-        pacienteId: args.listar_medicamentos_pendientes.pacienteId,
-        estadoEntrega: 1
-    };*/
    
     G.Q.ninvoke(that.m_formulacionExterna,'listarMedicamentosPendientesPorDispensarNoOcultos', args.formula_id).then(function(resultado){
         if(resultado.length > 0){

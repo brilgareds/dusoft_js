@@ -97,7 +97,7 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
             }
             callback(error, objAfiliados);
           } else{
-            callback(error, null);
+            callback(error, data.obj);
           }
       });
     }    

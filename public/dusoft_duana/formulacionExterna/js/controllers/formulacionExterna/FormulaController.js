@@ -104,7 +104,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 };
 
                 if(error){
-                    AlertService.mostrarMensaje("warning", 'Ocurrio un error recuperando el afiliado');
+                    AlertService.mostrarMensaje("warning", 'El usuario ' + afiliado.nombre + ' se encuentra digitando la formula #' + afiliado.tmp_formula_papel + ' para el paciente ' + tipoIdentificacion + identificacion);
                     return; 
                 }
 

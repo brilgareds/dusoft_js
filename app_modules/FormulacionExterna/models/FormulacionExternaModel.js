@@ -42,6 +42,21 @@ FormulacionExternaModel.prototype.obtenerAfiliado = function(tipoIdentificacion,
     });
 };
 
+FormulacionExternaModel.prototype.existeFormulaTmp = function(tipoIdentificacion, identificacion, callback) {
+    var query = G.knex.select(["fe.usuario_id", "fe.tmp_formula_papel", "su.nombre"])
+                    .from("esm_formula_externa_tmp as fe")
+                    .innerJoin("system_usuarios as su", function(){
+                        this.on("fe.usuario_id", "su.usuario_id")
+                    }).where("fe.tipo_id_paciente", tipoIdentificacion).andWhere("fe.paciente_id", identificacion);
+
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        G.logError("err FormulacionExternaModel [obtenerMunicipios]: " + err);
+        callback(err);
+    });                   
+};
+
 FormulacionExternaModel.prototype.obtenerMunicipios = function(term, callback) {
     var columnas = 	[
 	    				"a.tipo_pais_id",
@@ -1602,6 +1617,7 @@ FormulacionExternaModel.prototype.obtenerCabeceraFormula = function(formula_id, 
         "FR.tipo_afiliado_id",
         "FR.semanas_cotizadas",
         "FR.usuario_id",
+        "su.nombre",
         G.knex.raw("to_char(\"FR\".\"fecha_registro\", 'yyyy-mm-dd') AS fecha_registro"),
         "PROF.nombre AS profesional",
         "TIPOPROF.descripcion as descripcion_profesional",
@@ -1650,6 +1666,9 @@ FormulacionExternaModel.prototype.obtenerCabeceraFormula = function(formula_id, 
                         })
                         .leftJoin("esm_tipos_formulas AS tipos", function(){
                             this.on("FR.tipo_formula", "tipos.tipo_formula_id");
+                        })
+                        .leftJoin("system_usuarios AS su", function(){
+                            this.on("su.usuario_id", "FR.usuario_id")
                         })
                         .where("FR.formula_id", formula_id);
 

@@ -207,3 +207,21 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.31', 'DOCUMENTOS BODEGA', 'se realiza modificacion por solicitud de usuario final para el tipo de documento I011');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.32  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.32', 'DOCUMENTOS BODEGA', 'correcion al reporte para el tipo de documento I011');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.33  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.33', 'PEDIDOS', 'se corrige consulta consultar_detalle_pedido ya que traía la fecha_verificacion asc y deberia ser desc');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.34  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.34', 'PEDIDOS', 'se corrige consulta consultar_detalle_pedido ya que traía la fecha_verificacion asc y deberia ser desc');
+COMMIT TRANSACTION;

@@ -151,7 +151,7 @@ Reportes.prototype.reportesGenerados = function(req, res) {
  * @params detalle: 
  * @fecha 2016-06-17
  */
-Reportes.prototype.listarPlanes0 = function(req, res) {
+Reportes.prototype.listarPlanes = function(req, res) {
     var that = this;
     var args = req.body.data;
 
@@ -167,7 +167,7 @@ Reportes.prototype.listarPlanes0 = function(req, res) {
 
 
 
-Reportes.prototype.listarPlanes = function(req, res) {
+Reportes.prototype.listarPlanes0 = function(req, res) {
     var that = this;
     var args = req.body.data;
     

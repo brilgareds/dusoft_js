@@ -1461,7 +1461,9 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
              
         if(resultado){
+            if(parametros.id_factura_xconsumo === undefined){
             parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+            }
         }
        
         var parametrosDetalleFactura = {    

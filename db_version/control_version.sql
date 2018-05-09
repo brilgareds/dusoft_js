@@ -249,3 +249,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.38', 'FORMULACION EXTERNA', 'Nuevo modulo formulacion externa');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.39  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.39', 'FORMULACION EXTERNA', 'Validacion al crear una nueva formula, si el paciente no existe emite mensaje de advertencia');
+COMMIT TRANSACTION;

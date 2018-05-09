@@ -231,3 +231,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.35', 'DOCUMENTOS BODEGA', 'se agrega nuevo documento de bodega (I012)');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.36  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.36', 'DOCUMENTOS BODEGA', 'se elimina la opcion de modificar productos para el documento de bodega (I012)');
+COMMIT TRANSACTION;

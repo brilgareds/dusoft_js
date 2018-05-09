@@ -18,74 +18,31 @@
                 <td align="center">
                     <table width="100%" class="label"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
                         <tr >
-                            <td align="left" >FECHA DE REGISTRO:</td>
-                            <td align="left">{{:formula.fecha_registro}}</td>
-                            <td align="left">FECHA DE FORMULA:</td>
-                            <td align="left">{{:formula.fecha_formula}}
-                            </td>
-                            <td align="left" >FORMULA No:</td>
-                            <td align="left">{{:formula.formula_papel}}
-                            </td>
-                            <td align="left"  >HORA:</td>
-                            <td align="left" >{{:formula.hora_formula}}
-                            </td> 
+                            <td align="left" >FORMULA No: </td>
+                            <td align="left" >{{:formula.formula_papel}}</td>
+                            <td align="left" colspan="5">FECHA DE REGISTRO: {{:formula.fecha_registro}}</td>
                         </tr>
                         <tr >
                             <td align="left">TIPO FORMULA:</td>
-                            <td colspan="2" align="left">{{:formula.descripcion_tipo_formula}}
-                            </td>
+                            <td align="left">{{:formula.descripcion_tipo_formula}}</td>
                         </tr>
                         <tr >
                             <td align="left">PROFESIONAL:</td>
-                            <td colspan="2" align="left">{{:formula.tipo_id_tercero}} {{:formula.tercero_id}} &nbsp;&nbsp; {{:formula.profesional}}&nbsp;&nbsp;{{:formula.descripcion_profesional}}
-                            </td>
+                            <td colspan="2" align="left"> {{:formula.profesional}}</td>
                         </tr>
                         <tr>
-                            <td align="left">IDENTIFICACION:</td>
-                            <td align="left" >
-                                {{:formula.tipo_id_paciente}} &nbsp; {{:formula.paciente_id}}
-                            </td>
-                            <td colspan="4" align="left"   >NOMBRE COMPLETO:
-                                {{:formula.nombre_paciente}}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="left">EDAD:</td>
-                            <td align="left" >{{:formula.edad}} &nbsp; AÑOS 
-                            </td>
-                            <td colspan="2" align="left">SEXO:
-                                {{:formula.sexo_id}}
-                            </td>
+                            <td align="left" >PACIENTE:</td>
+                            <td align="left">{{:formula.nombre_paciente}}</td>
+                            <td colspan="5" align="left">EDAD:&nbsp;{{:formula.edad}}&nbsp;AÑOS</td>
                         </tr>
                         <tr>
                             <td align="left">TIPO PLAN:</td>
-                            <td align="left" >{{:formula.tipo_plan}}
-                            </td>
-                            <td colspan="5" align="left">TIPO VINCULACION:
-                                {{:formula.vinculacion}}
-                            </td>
+                            <td align="left" >{{:formula.tipo_plan}}</td>
+                            <td colspan="5" align="left">TIPO VINCULACION: {{:formula.vinculacion}} </td>
                         </tr>
                     </table>
             <tr>
                 <td align="center">
-                </td>
-            </tr>
-        </table>
-        <table width="100%" cellspacing="2">
-            <tr>
-                <td align="center">
-                    <table width="100%" class="label"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
-                        <tr>
-                            <td>CODIGO:</td>
-                            <td colspan="6">DIAGNOSTICO:</td>
-                        </tr>
-                        {{for diagnosticos}}
-                        <tr>
-                            <td>{{:diagnostico_id}}</td>
-                            <td colspan="6"> {{:diagnostico_nombre}}
-                        </tr>
-                        {{/for}}
-                    </table>
                 </td>
             </tr>
         </table>

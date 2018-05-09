@@ -1545,18 +1545,20 @@ FormulacionExternaModel.prototype.updateAutorizacionPorMedicamento = function(fe
 };
 
 FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensarNoOcultos = function(formula_id, callback){
-
-    var columnas = ["codigo_medicamento", G.knex.raw("SUM(numero_unidades) AS total"), G.knex.raw("fc_descripcion_producto_alterno(codigo_medicamento) AS descripcion_prod")];
+    var columnas = ["producto_id AS codigo_medicamento", G.knex.raw("SUM(numero_unidades) AS total"), G.knex.raw("fc_descripcion_producto_alterno(codigo_medicamento) AS descripcion_prod")];
     var query = G.knex.select(columnas)
                         .from(function(){
-                            this.select(["dc.codigo_medicamento", G.knex.raw("SUM(dc.cantidad) AS numero_unidades")])
+                            this.select(["ip.producto_id", "dc.codigo_medicamento",G.knex.raw("SUM(dc.cantidad) AS numero_unidades")])
                                 .from("esm_pendientes_por_dispensar AS dc")
                                 .innerJoin("esm_formula_externa_medicamentos AS fem", function(){
                                     this.on("dc.codigo_medicamento", "fem.codigo_producto").andOn("fem.formula_id", "dc.formula_id");
                                 })
-                                .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").andWhere("sw_ocultar", "=", "0").groupBy("dc.codigo_medicamento").as("a");
+                                .innerJoin("inventarios_productos as ip", function(){
+                                    this.on("ip.codigo_producto", "dc.codigo_medicamento");
+                                })
+                                .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").andWhere("sw_ocultar", "=", "0").groupBy("ip.producto_id", "dc.codigo_medicamento").as("a");
                         })
-                        .groupBy("codigo_medicamento");
+                        .groupBy("producto_id", "codigo_medicamento");
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);
@@ -1723,7 +1725,7 @@ FormulacionExternaModel.prototype.listarMedicamentosEsmXLote = function(formula_
     var date = new Date();
     var fecha_hoy = ("0" + date.getDate()).slice(-2) + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
     var columnas = [
-                        "dd.codigo_producto", 
+                        "ip.producto_id AS codigo_producto", 
                         G.knex.raw("round(dd.cantidad) as numero_unidades"),
                         G.knex.raw("TO_CHAR(dd.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento"),
                         "dd.lote", 
@@ -1746,6 +1748,9 @@ FormulacionExternaModel.prototype.listarMedicamentosEsmXLote = function(formula_
                     })
                     .innerJoin("bodegas_documentos_d AS dd", function(){
                         this.on("d.bodegas_doc_id", "dd.bodegas_doc_id").andOn("d.numeracion", "dd.numeracion");
+                    })
+                    .innerJoin("inventarios_productos AS ip", function(){
+                        this.on("ip.codigo_producto", "dd.codigo_producto");
                     })
                     .innerJoin("system_usuarios AS sys", function(){
                         this.on("d.usuario_id", "sys.usuario_id");
@@ -1772,7 +1777,7 @@ FormulacionExternaModel.prototype.obtenerPendientesEnt = function(formula_id, im
     var fecha_hoy = date.getFullYear()  + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2);
   //G.knex.raw("round(dd.cantidad) as numero_unidades"),
     var columnas = [
-        "dd.codigo_producto", 
+        "ip.producto_id AS codigo_producto", 
         G.knex.raw("round(dd.cantidad) AS numero_unidades"), 
         G.knex.raw("to_char(dd.fecha_vencimiento, 'YYYY-mm-dd') as fecha_vencimiento"), 
         "dd.lote", 
@@ -1788,6 +1793,9 @@ FormulacionExternaModel.prototype.obtenerPendientesEnt = function(formula_id, im
                 })
                 .innerJoin("bodegas_documentos_d AS dd", function(){
                     this.on("d.bodegas_doc_id", "dd.bodegas_doc_id").andOn("d.numeracion", "dd.numeracion");
+                })
+                .innerJoin("inventarios_productos AS ip", function(){
+                        this.on("ip.codigo_producto", "dd.codigo_producto");
                 })
                 .where(function(){
                     if(imprimir_actual){

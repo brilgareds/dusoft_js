@@ -2843,8 +2843,9 @@ function __generarPdf(datos, callback){
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/FacturacionClientes/reports/'+datos.archivoHtml, 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
             recipe: "html",
-            engine: 'jsrender',
+            engine: 'jsrender',           
             phantom: {
                 margin: "10px",
                 width: '700px'

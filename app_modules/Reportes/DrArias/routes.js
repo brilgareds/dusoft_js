@@ -18,5 +18,9 @@ module.exports = function(app, di_container) {
     app.post('/api/Reportes/DrArias/reportesGenerados', function(req, res) {
         c_Reportes.reportesGenerados(req, res);
     });
+    
+    app.post('/api/Reportes/DrArias/rotacionZonas', function(req, res) {
+        c_Reportes.rotacionZonas(req, res);
+    });
 
 };

@@ -1,0 +1,31 @@
+<div>
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
+<!--                <li class="animate-repeat" ng-repeat="listaRotacionZona in listaRotacionZonas">
+                    {{listaRotacionZona.getNombreZona()}}
+                </li> -->
+            <div  ng-repeat="listaRotacionZona in listaRotacionZonas">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">{{listaRotacionZona.getNombreZona()}}</div>
+                    <div class="panel-body">Panel Content</div>
+                </div>
+            </div>
+
+
+                <!--                <button type="button" class="btn btn-primary" ng-click="abrirModalDrArias()" name="btnCrearPedido">
+                                    <span class="glyphicon glyphicon-plus"></span> Generar
+                                </button>-->
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">    
+        <div class="col-md-12 col-lg-12">
+            <div class="table-responsive" >
+
+            </div>
+            <visualizar-reporte></visualizar-reporte>
+        </div>
+    </div>
+</div>

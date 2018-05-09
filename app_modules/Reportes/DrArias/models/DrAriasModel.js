@@ -115,13 +115,110 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
 	callback(err);
     });
 };
+
+
+
+
+DrAriasModel.prototype.rotacionZonas = function (callback) {
+    var columna = [
+        "b.descripcion as zona",
+        "a.descripcion as nombre_bodega",
+        "empresa_id",
+        "centro_utilidad",
+        "bodega"
+    ];
+
+    var query = G.knex.select(columna)
+            .from('bodegas as a')
+            .innerJoin('zonas_bodegas as b',
+                    function () {
+                        this.on("a.zona_id", "b.id");
+                    })
+            .where(function () {
+                this.andWhere("empresa_id","FD")
+                    .andWhere("a.estado","1")
+                    .andWhere(G.knex.raw("bodega not in (42,77,50,65,63,81)"))
+               
+            });
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("err [rotacionZonas]:", query.toSQL());
+        callback(err);
+    });
+};
+
+DrAriasModel.prototype.rotacionKnex = function(callback) {
+var selectPrincipal = [
+    "codigo_producto", 
+    "descripcion_producto as producto",
+    "farmacia as nom_bode",
+    "stock_farmacia as existencia",    
+    "periodo as mes", 
+    "stock_bodega as existencia_bd",
+    "laboratorio",
+    "molecula",
+    "cantidad_total_despachada as sum",    
+    G.knex.raw("case when  tipo_producto = 'Normales' then nivel else '' end  as nivel"), 
+    "tipo_producto"
+];
+
+var selectPrimerUnion = [
+    "'salida 1' as periodo",   
+    "cc.descripcion as farmacia",   
+    "aa.codigo_producto",   
+    "fc_descripcion_producto(aa.codigo_producto) as descripcion_producto",   
+    "ee.descripcion as molecula",   
+    "ff.descripcion as laboratorio",   
+    "gg.descripcion  as tipo_producto",   
+    "aa.existencia::integer as stock_farmacia",   
+    G.knex.raw("(select sum(aaa.existencia)::integer \n\
+                from existencias_bodegas aaa \n\
+                where aaa.empresa_id = '03' and aaa.bodega = '03' and aaa.codigo_producto= aa.codigo_producto   \
+    ) as stock_bodega"),   
+    G.knex.raw("COALESCE(bb.cantidad_total_despachada, 0) as cantidad_total_despachada"),   
+    "nivel"  
+];
+    
+    var query = G.knex.select(columna)
+            .from('compras_ordenes_pedidos as a')
+            .innerJoin('terceros_proveedores as b',
+                    function () {
+                        this.on("a.codigo_proveedor_id", "b.codigo_proveedor_id");
+                    })
+            .innerJoin('terceros as c',
+                    function () {
+                        this.on("b.tipo_id_tercero", "c.tipo_id_tercero")
+                                .on("b.tercero_id", "c.tercero_id");
+                    })
+            .where(function () {
+                if (obj.codigoProveedor !== undefined && obj.codigoProveedor !== "") {
+                    this.andWhere(G.knex.raw("b.codigo_proveedor_id = " + obj.codigoProveedor));
+                }
+                if (obj.termino !== undefined && obj.termino !== "") {
+                    this.andWhere(G.knex.raw("a.orden_pedido_id = " + obj.termino));
+                }
+            });
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("err [listarOrdenesParaActas]:", query.toSQL());
+        callback(err);
+    });
+
+
+}
 /**
  * @author Andres M Gonzalez
  * +Descripcion: listado de planes
  * @fecha 2016-06-17
  */
-DrAriasModel.prototype.rotacion = function(callback) {
-    var that = this;
+DrAriasModel.prototype.rotacion = function(obj,callback) {
+    
     var sql = "select codigo_producto, descripcion_producto as producto,farmacia as nom_bode,stock_farmacia as existencia,    \
                 periodo as mes, stock_bodega as existencia_bd,laboratorio,molecula,cantidad_total_despachada as sum,    \
                 case when  tipo_producto = 'Normales' then nivel else '' end  as nivel, \
@@ -279,7 +376,7 @@ union all   \
             where aa.empresa_id = 'FD' and aa.centro_utilidad=  '54' and aa.bodega =  '54'   \
             and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0) )   \
    ) as w    \
-  order by 8";
+  order by 1,5";
 
     var query = G.knex.raw(sql);
     query.then(function(resultado) {

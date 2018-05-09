@@ -61,7 +61,6 @@ define([
     "controllers/I011/ModificarProductoController",
     "controllers/I012/I012Controller",
     "controllers/I012/I012GestionarClientesController",
-    "controllers/I012/I012ModificarProductoController",
     "controllers/E017/E017Controller",
     "controllers/E017/E017GestionarProductosController",
     "controllers/I015/I015Controller",

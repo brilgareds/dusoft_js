@@ -2468,6 +2468,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function(req, res)
          
         if(resultado){   
             parametrosReporte.cabecera = resultado[0];
+
             return G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id)
         }else{
             throw {msj:'[listarFacturasGeneradas]: Consulta sin resultados', status: 404}; 
@@ -2548,17 +2549,21 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function(req, res)
                 subTotal += parseFloat(row.subtotal_factura);
                 totalIva += parseFloat(row.iva_total);
             });              
-             
+         
             if(subTotal >= resultado[0].base_rtf){
-                retencionFuente = (subTotal * ((parametrosReporte.cabecera.porcentaje_rtf) / 100));
+                
+//                retencionFuente = (subTotal * ((parametrosReporte.cabecera.porcentaje_rtf) / 100));
+                retencionFuente = (subTotal * ((resultado[0].porcentaje_rtf) / 100));
             }
-        
+         
             if(subTotal >= resultado[0].base_ica){
-                retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
+//                retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
+                retencionIca = (subTotal) * (parseFloat(resultado[0].porcentaje_ica) / 1000);
             }
 
             if(subTotal >= resultado[0].base_reteiva){
-                retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
+//                retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
+                retencionIva = (totalIva) * (parseFloat(resultado[0].porcentaje_reteiva) / 100);
             }
 
             totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));

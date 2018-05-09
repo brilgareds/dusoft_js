@@ -150,49 +150,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
              */
             $scope.seleccionarCliente = function (cliente) {
                 $modalInstance.close(cliente);
-//                if ($scope.tipoProducto === undefined || $scope.tipoProducto.id === "") {
-//                    $scope.tipoProducto.id = producto.tipoProducto;
-//                    $scope.tipoProducto.nombre = producto.nombreTipo;
-//                } else if ($scope.tipoProducto.id !== producto.tipoProducto) {
-//                    AlertService.mostrarMensaje("warning", "DEBE SELECCIONAR PRODUCTOS DEL TIPO " + " " + $scope.tipoProducto.nombre.toUpperCase());
-//                    return;
-//                }
-//
-//                if ($scope.doc_tmp_id === '00000') {
-//                    AlertService.mostrarMensaje("warning", "Debe crear primero el temporal");
-//                    return;
-//                }
-//
-//
-//                var parametro = {
-//                    empresaId: $scope.parametros[1].empresa.getEmpresa().getCodigo(),
-//                    centroUtilidad: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.codigo,
-//                    bodega: $scope.parametros[1].empresa.getEmpresa().centroUtilidad.bodega.codigo,
-//                    codigoProducto: producto.codigo_producto,
-//                    cantidad: producto.cantidad,
-//                    lote: producto.lote,
-//                    fechaVencimiento: producto.fecha_vencimiento,
-//                    docTmpId: $scope.doc_tmp_id
-//                };
-//                that.insertarProductos(parametro);
             };
-//
-//            that.insertarProductos = function (parametro) {
-//
-//                var obj = {
-//                    session: $scope.session,
-//                    data: parametro
-//                };
-//
-//                Request.realizarRequest(API.E009.CREAR_ITEM, "POST", obj, function (data) {
-//                    if (data.status === 200) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    } else {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    }
-//                });
-//            };
-//
+
 
         }]);
 });

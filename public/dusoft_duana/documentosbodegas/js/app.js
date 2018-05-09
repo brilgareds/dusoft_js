@@ -39,12 +39,16 @@ define([
     "models/I002/ProveedorIngreso",
     "models/E009/ProductoDevolucion",
     "models/E009/DocumentoDevolucion",
+    "models/E017/ProductoDevolucionE017",
+    "models/E017/DocDevolucion",
     "models/I011/DocumentoIngresoDevolucion",
     "models/I011/ProductoIngresoDevolucion",
     "models/I012/TipoTerceros",
     "models/I012/FacturaDevolucion",
     "models/I012/ProductoFactura",
     "models/I012/Clientes",
+    "models/I015/ProductoI015",
+    "models/I015/DocumentoI015",
     "models/Index/TipoDocumentos",
     "models/Index/EmpresaDocumento",
     "models/Index/DocumentoBodega",
@@ -57,12 +61,16 @@ define([
     "controllers/I011/ModificarProductoController",
     "controllers/I012/I012Controller",
     "controllers/I012/I012GestionarClientesController",
-    "controllers/I012/I012ModificarProductoController",
+    "controllers/E017/E017Controller",
+    "controllers/E017/E017GestionarProductosController",
+    "controllers/I015/I015Controller",
     "webNotification",
     "services/general/GeneralService",
     "services/E009/E009Service",
+    "services/E017/E017Service",
     "services/I011/I011Service",
     "services/I012/I012Service",
+    "services/I015/I015Service",
     
 ], function(angular) {
 
@@ -148,6 +156,22 @@ define([
                     parent_name : "DocumentosBodegas",
                     controller: 'I012Controller'
                 });
+                /*/ E017 
+                documentos_bodegas.stateProvider.state('E017', {
+                    url: "/E017",
+                    text: "Administración Documentos de Bodega [E017]",
+                    templateUrl: "views/E017/index.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'E017Controller'
+                });
+                // I015 
+                documentos_bodegas.stateProvider.state('I015', {
+                    url: "/I015",
+                    text: "Administración Documentos de Bodega [I015]",
+                    templateUrl: "views/I015/index.html",
+                    parent_name : "DocumentosBodegas",
+                    controller: 'I015Controller'
+                });*/
                 // E009
                 documentos_bodegas.stateProvider.state('E009', {
                     url: "/E009",

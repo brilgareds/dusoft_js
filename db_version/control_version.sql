@@ -267,3 +267,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.41', 'FORMULACION EXTERNA' , 'BugFix en el responsive del modulo y correción de impresiones.');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.42  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.42', 'DOCUMENTOS BODEGA', 'se elimina la opcion de modificar productos para el documento de bodega (I012)');
+COMMIT TRANSACTION;

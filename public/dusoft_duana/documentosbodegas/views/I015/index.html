@@ -32,10 +32,10 @@
                                 <legend>Documento</legend> 
                                 <div class="row">
                                     <div class="col-md-7">                                          
-                                        <ui-select ng-change="onBuscarProductosFactura()" ng-model="documento_ingreso.facturaDevolucion" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
-                                            <ui-select-match  placeholder="Seleccionar Documento">{{ $select.selected.prefijo}}-{{ $select.selected.factura_fiscal}}</ui-select-match>
+                                        <ui-select ng-change="onBuscarProductosTraslado()" ng-model="documento_ingreso.documento_traslado" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
+                                            <ui-select-match  placeholder="Seleccionar Documento">{{ $select.selected.prefijo}}-{{ $select.selected.numero}}</ui-select-match>
                                             <ui-select-choices repeat="documento in documentosTraslado | filter:$select.search">
-                                                {{ documento.prefijo}}-{{ documento.factura_fiscal}}
+                                                {{ documento.prefijo}}-{{ documento.numero}}
                                             </ui-select-choices>
                                         </ui-select>
                                     </div>
@@ -63,27 +63,19 @@
                                 <legend>Productos a Trasladar</legend>
                                 <div class="col-md-12">
                                     <div class="table-responsive" style="margin-top:3px;" >
-                                        <div  style="height: 300px" class="defaultGrid grid-responsive" ng-grid="lista_productos_factura" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav > </div>
+                                        <div  style="height: 300px" class="defaultGrid grid-responsive" ng-grid="lista_productos_traslado" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav > </div>
                                     </div>
                                 </div>
                             </div>
                             <br>
                             <br>
-                            <div class="row text-center">
-                                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactualproductos == 1" ng-click="paginaAnteriorIndex()" >
-                                    <span class="glyphicon glyphicon-chevron-left" ></span>
-                                </button>
-                                <button type="button" class="btn btn-default btn-medium"  ng-click="paginaSiguienteIndex()">
-                                    <span class="glyphicon glyphicon-chevron-right" ></span>
-                                </button>
-                            </div> 
-                            <hr></hr>                            
+                            <hr>                           
                             <br>
                             <div class="row"> 
                                 <legend>Productos Validados</legend>
                                 <div class="col-md-12">
                                     <div class="table-responsive" style="margin-top:3px;" > 
-                                        <div style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_devueltos"> </div> 
+                                        <div style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_validados"> </div> 
                                     </div>  
                                 </div>
                             </div>

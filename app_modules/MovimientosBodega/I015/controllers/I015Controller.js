@@ -25,259 +25,259 @@ I015Controller.prototype.listarBodegas = function (req, res) {
 
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion lista los documentos de traslado
+ * @fecha 2018-05-08
+ */
+I015Controller.prototype.listarTraslados = function (req, res) {
+    var that = this;
+    var args = req.body.data;
 
-///**
-// * @author German Galvis
-// * +Descripcion crea un nuevo documento temporal
-// * @fecha 2018-05-03
-// */
-//E017Controller.prototype.newDocTemporal = function (req, res) {
-//
-//    var that = this;
-//    var args = req.body.data;
-//    var usuarioId = req.session.user.usuario_id;
-//    var bodega_doc_id = args.bodega_doc_id;
-//    var bodega_seleccionada = args.bodega_seleccionada;
-//    var observacion = args.observacion;
-//    var movimiento_temporal_id;
-//
-//    if (args.observacion === undefined) {
-//        res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
-//        return;
-//    }
-//    if (args.bodega_seleccionada === undefined || args.bodega_seleccionada === null) {
-//        res.send(G.utils.r(req.url, 'La bodega NO esta definida', 404, {}));
-//        return;
-//    }
-//
-//
-//    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificicador_movimiento_temporal", usuarioId).then(function (doc_tmp_id) {
-//        movimiento_temporal_id = doc_tmp_id;
-//
-//        G.knex.transaction(function (transaccion) {
-//
-//            G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal,
-//                    movimiento_temporal_id, usuarioId, bodega_doc_id, observacion, transaccion).then(function () {
-//
-//                var parametros = {
-//                    bodega_destino: bodega_seleccionada.bodega,
-//                    doc_tmp_id: movimiento_temporal_id
-//                };
-//
-//                return G.Q.nfcall(that.m_i015.insertarBodegasMovimientoTmp, parametros, transaccion);
-//
-//            }).then(function () {
-//
-//                var parametros2 = {
-//                    usuario_id: usuarioId,
-//                    doc_tmp_id: movimiento_temporal_id,
-//                    farmacia_id: bodega_seleccionada.empresa_id,
-//                    centro_utilidad: bodega_seleccionada.centro_utilidad,
-//                    bodega: bodega_seleccionada.bodega
-//                };
-//
-//                return G.Q.nfcall(that.m_i015.insertarTrasladoFarmaciaTmp, parametros2, transaccion);
-//            }).then(function () {
-//                transaccion.commit(movimiento_temporal_id);
-//            }).fail(function (err) {
-//                transaccion.rollback(err);
-//            }).done();
-//
-//        }).then(function (movimiento_temporal_id) {
-//            res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {movimiento_temporal_id: movimiento_temporal_id}));
-//        }).catch(function (err) {
-//            console.log("EROR ", err);
-//            res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
-//        }).done();
-//
-//    }).fail(function (err) {
-//        res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
-//    }).done();
-//};
-//
-///**
-// * @author German Galvis
-// * +Descripcion elimina el documento temporal
-// * @fecha 2018-05-03
-// */
-//E017Controller.prototype.eliminarGetDocTemporal = function (req, res) {
-//    var that = this;
-//    var args = req.body.data;
-//    var usuarioId = req.session.user.usuario_id;
-//
-//
-//    if (usuarioId === undefined) {
-//        res.send(G.utils.r(req.url, 'EL usuario_id NO esta definido', 404, {}));
-//        return;
-//    }
-//
-//    if (args.doc_tmp_id === '') {
-//        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
-//        return;
-//    }
-//
-//    var docTmpId = args.doc_tmp_id;
-//    var parametros = {docTmpId: docTmpId, usuarioId: usuarioId};
-//
-//
-//    G.knex.transaction(function (transaccion) {
-//
-//        G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal_d, parametros, transaccion).then(function () {
-//
-//            return G.Q.nfcall(that.m_i015.eliminarDocumentoTrasladoFarmaciaTemporal, parametros, transaccion);
-//
-//        }).then(function () {
-//
-//            return G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal, parametros, transaccion);
-//        }).then(function () {
-//
-//            transaccion.commit();
-//
-//        }).fail(function (err) {
-//
-//            console.log("Error rollback ", err);
-//            transaccion.rollback(err);
-//
-//        }).done();
-//
-//    }).then(function () {
-//
-//        res.send(G.utils.r(req.url, 'SE HA BORRADO EL DOCUMENTO EXITOSAMENTE', 200, {eliminarGetDocTemporal: parametros}));
-//
-//    }).catch(function (err) {
-//
-//        console.log("eliminarGetDocTemporal>>>>", err);
-//        res.send(G.utils.r(req.url, 'ERROR AL BORRAR EL DOCUMENTO', 500, {err: err}));
-//
-//    }).done();
-//};
-//
-///**
-// * @author German Galvis
-// * +Descripcion lista los productos buscados
-// * @fecha 2018-05-04
-// */
-//E017Controller.prototype.listarProductos = function (req, res) {
-//    var that = this;
-//    var args = req.body.data;
-//
-//    var parametros = {
-//        empresa_id: args.empresa_id,
-//        centro_utilidad: args.centro_utilidad,
-//        bodega: args.bodega,
-//        descripcion: args.descripcion,
-//        tipoFiltro: args.tipoFiltro,
-//        paginaActual: args.paginaActual
-//    };
-//
-//    G.Q.nfcall(that.m_i015.listarProductos, parametros).then(function (resultado) {
-//        res.send(G.utils.r(req.url, 'Listar Productos de la farmacia', 200, {listarProductos: resultado}));
-//    }).fail(function (err) {
-//        res.send(G.utils.r(req.url, 'Error al Listar Productos de la farmacia', 500, {}));
-//    }).done();
-//};
-//
-///**
-// * @author German Galvis
-// * +Descripcion agrega productos al documento temporal
-// * @fecha 2018-02-15
-// */
-//E017Controller.prototype.agregarItem = function (req, res) {
-//
-//    var that = this;
-//    var args = req.body.data;
-//    var usuarioId = req.session.user.usuario_id;
-//
-//    if (args.empresa_id === undefined || args.centro_utilidad === undefined || args.bodega === undefined) {
-//        res.send(G.utils.r(req.url, 'Algunos valores de la empresa no estan definidos', 404, {}));
-//        return;
-//    }
-//    if (args.codigoProducto === undefined) {
-//        res.send(G.utils.r(req.url, 'El codigo Producto no esta definida', 404, {}));
-//        return;
-//    }
-//    if (args.cantidad === undefined) {
-//        res.send(G.utils.r(req.url, 'La cantidad no esta definida', 404, {}));
-//        return;
-//    }
-//    if (args.lote === undefined) {
-//        res.send(G.utils.r(req.url, 'El lote no esta definida', 404, {}));
-//        return;
-//    }
-//    if (args.fechaVencimiento === undefined) {
-//        res.send(G.utils.r(req.url, 'La fecha vencimiento no esta definida', 404, {}));
-//        return;
-//    }
-//    if (args.docTmpId === undefined) {
-//        res.send(G.utils.r(req.url, 'El docTmpId no esta definida', 404, {}));
-//        return;
-//    }
-//
-//
-//    var parametros = {
-//        empresaId: args.empresa_id,
-//        centroUtilidad: args.centro_utilidad,
-//        bodega: args.bodega,
-//        codigoProducto: args.codigoProducto,
-//        cantidad: args.cantidad,
-//        lote: args.lote,
-//        fechaVencimiento: args.fechaVencimiento,
-//        docTmpId: args.docTmpId,
-//        usuarioId: usuarioId
-//    };
-//    var msj;
-//
-////    G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaEnBodegaDestino", parametros).then(function (resultado) {
-////        if (resultado.length > 0) {
-//
-//    G.Q.nfcall(that.m_i015.consultarItem, parametros).then(function (result) {
-//        if (result.length > 0) {
-//            msj = "El producto " + parametros.codigoProducto + " ya se encuentra registrado en el documento de traslado.";
-//        } else {
-//            msj = "producto agregado correctamente";
-//            return G.Q.nfcall(that.m_i015.agregarItem, parametros);
-//        }
-//    }).then(function (resultado) {
-//        res.send(G.utils.r(req.url, msj, 200, {agregarItem: resultado}));
-//    }).fail(function (err) {
-//        res.send(G.utils.r(req.url, 'Error al consultar el Producto', 500, {}));
-//    }).done();
-////        } else {
-////            throw {msj: "El producto " + parametros.codigoProducto + " no se encuentra en bodegas_existencias.", status: 403};
-////        }
-////    }).fail(function (err) {
-////        res.send(G.utils.r(req.url, err.msj, err.status, {agregarItem: []}));
-////    }).done();
-//
-//};
-//
-//
-///**
-// * @author German Galvis
-// * +Descripcion lista los productos del documento temporal 
-// * @fecha 2018-05-05
-// */
-//E017Controller.prototype.consultarProductosTraslados = function (req, res) {
-//    var that = this;
-//    var usuarioId = req.session.user.usuario_id;
-//    var args = req.body.data;
-//    if (args.numero_doc === undefined || args.numero_doc === '00000') {
-//        res.send(G.utils.r(req.url, 'documento_id no esta definida', 404, {}));
-//        return;
-//    }
-//
-//    var parametros = {
-//        numero_doc: args.numero_doc,
-//        usuario_id: usuarioId
-//    };
-//
-//    G.Q.nfcall(that.m_i015.consultarProductosTraslados, parametros).then(function (resultado) {
-//        res.send(G.utils.r(req.url, 'Listar Productos a trasladar', 200, {listarProductos: resultado}));
-//    }).fail(function (err) {
-//        res.send(G.utils.r(req.url, 'Error al Listar Productos a trasladar', 500, {}));
-//    }).done();
-//};
-//
+    var parametros = {
+        origen_empresa: args.bodega_origen.empresa_id,
+        origen_centro: args.bodega_origen.centro_utilidad,
+        origen_bodega: args.bodega_origen.bodega,
+        destino_empresa: args.bodega_destino.codigo,
+        destino_centro: args.bodega_destino.centroUtilidad.codigo,
+        destino_bodega: args.bodega_destino.centroUtilidad.bodega.codigo
+    }
+
+    G.Q.nfcall(that.m_i015.listarTraslados, parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listar traslados ok!!!!', 200, {listarTraslados: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de traslados', 500, {listarTraslados: {}}));
+            }).
+            done();
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion lista los productos a trasladar
+ * @fecha 2018-05-08
+ */
+I015Controller.prototype.listarProductosTraslados = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        numero: args.numero,
+        prefijo: args.prefijo
+    };
+
+    G.Q.nfcall(that.m_i015.listarProductosTraslados, parametros).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Listar Productos del traslado ok', 200, {listarProductos: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Listar Productos del traslado', 500, {}));
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion crea un nuevo documento temporal
+ * @fecha 2018-05-08
+ */
+I015Controller.prototype.newDocTemporal = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+    var bodega_doc_id = args.bodega_doc_id;
+    var observacion = args.observacion;
+    var movimiento_temporal_id;
+
+    if (args.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
+        return;
+    }
+
+    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificicador_movimiento_temporal", usuarioId).then(function (doc_tmp_id) {
+        movimiento_temporal_id = doc_tmp_id;
+
+        G.knex.transaction(function (transaccion) {
+
+            G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal,
+                    movimiento_temporal_id, usuarioId, bodega_doc_id, observacion, transaccion).then(function () {
+
+                var parametros = {
+                    usuario_id: usuarioId,
+                    doc_tmp_id: movimiento_temporal_id,
+                    farmacia_id: args.empresaId,
+                    prefijo: args.prefijo_documento_seleccionado,
+                    numero: args.numero_documento_seleccionado
+                };
+
+                return G.Q.nfcall(that.m_i015.insertarTrasladoFarmaciaTmp, parametros, transaccion);
+            }).then(function () {
+                transaccion.commit(movimiento_temporal_id);
+            }).fail(function (err) {
+                transaccion.rollback(err);
+            }).done();
+
+        }).then(function (movimiento_temporal_id) {
+            res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {movimiento_temporal_id: movimiento_temporal_id}));
+        }).catch(function (err) {
+            console.log("EROR ", err);
+            res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
+        }).done();
+
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion elimina el documento temporal
+ * @fecha 2018-05-08
+ */
+I015Controller.prototype.eliminarGetDocTemporal = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+
+    if (usuarioId === undefined) {
+        res.send(G.utils.r(req.url, 'EL usuario_id NO esta definido', 404, {}));
+        return;
+    }
+
+    if (args.doc_tmp_id === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+
+    var docTmpId = args.doc_tmp_id;
+    var parametros = {docTmpId: docTmpId, usuarioId: usuarioId};
+
+
+    G.knex.transaction(function (transaccion) {
+
+        G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal_d, parametros, transaccion).then(function () {
+
+            return G.Q.nfcall(that.m_i015.eliminarDocumentoTrasladoFarmaciaTemporal, parametros, transaccion);
+
+        }).then(function () {
+
+            return G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal, parametros, transaccion);
+        }).then(function () {
+
+            transaccion.commit();
+
+        }).fail(function (err) {
+
+            console.log("Error rollback ", err);
+            transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function () {
+
+        res.send(G.utils.r(req.url, 'SE HA BORRADO EL DOCUMENTO EXITOSAMENTE', 200, {eliminarGetDocTemporal: parametros}));
+
+    }).catch(function (err) {
+
+        console.log("eliminarGetDocTemporal>>>>", err);
+        res.send(G.utils.r(req.url, 'ERROR AL BORRAR EL DOCUMENTO', 500, {err: err}));
+
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion agrega productos al documento temporal
+ * @fecha 2018-05-09
+ */
+I015Controller.prototype.agregarItem = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    if (args.empresa_id === undefined || args.centro_utilidad === undefined || args.bodega === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos valores de la empresa no estan definidos', 404, {}));
+        return;
+    }
+    if (args.codigoProducto === undefined) {
+        res.send(G.utils.r(req.url, 'El codigo Producto no esta definida', 404, {}));
+        return;
+    }
+    if (args.cantidad === undefined) {
+        res.send(G.utils.r(req.url, 'La cantidad no esta definida', 404, {}));
+        return;
+    }
+    if (args.lote === undefined) {
+        res.send(G.utils.r(req.url, 'El lote no esta definida', 404, {}));
+        return;
+    }
+    if (args.fechaVencimiento === undefined) {
+        res.send(G.utils.r(req.url, 'La fecha vencimiento no esta definida', 404, {}));
+        return;
+    }
+    if (args.docTmpId === undefined) {
+        res.send(G.utils.r(req.url, 'El docTmpId no esta definida', 404, {}));
+        return;
+    }
+
+
+    var parametros = {
+        empresaId: args.empresa_id,
+        centroUtilidad: args.centro_utilidad,
+        bodega: args.bodega,
+        codigoProducto: args.codigoProducto,
+        cantidad: args.cantidad,
+        cantidad_enviada: args.cantidad_enviada,
+        lote: args.lote,
+        fechaVencimiento: args.fechaVencimiento,
+        docTmpId: args.docTmpId,
+        item_id: args.item_id,
+        usuarioId: usuarioId
+    };
+    var msj;
+
+    G.Q.nfcall(that.m_i015.consultarItem, parametros).then(function (result) {
+        if (result.length > 0) {
+            msj = "El producto " + parametros.codigoProducto + " ya se encuentra registrado en el documento de traslado.";
+        } else {
+            msj = "producto agregado correctamente";
+            return G.Q.nfcall(that.m_i015.agregarItem, parametros);
+        }
+    }).then(function (resultado) {
+        res.send(G.utils.r(req.url, msj, 200, {agregarItem: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al consultar el Producto', 500, {}));
+    }).done();
+};
+
+
+/**
+ * @author German Galvis
+ * +Descripcion lista los productos del documento temporal 
+ * @fecha 2018-05-09
+ */
+I015Controller.prototype.listarProductosValidados = function (req, res) {
+    var that = this;
+    var usuarioId = req.session.user.usuario_id;
+    var args = req.body.data;
+    if (args.numero_doc === undefined || args.numero_doc === '00000') {
+        res.send(G.utils.r(req.url, 'documento_id no esta definida', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        numero_doc: args.numero_doc,
+        usuario_id: usuarioId
+    };
+
+    G.Q.nfcall(that.m_i015.consultarProductosValidados, parametros).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Listar Productos a trasladar', 200, {listarProductos: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Listar Productos validados', 500, {}));
+    }).done();
+};
 //
 ///**
 // * @author German Galvis
@@ -285,7 +285,7 @@ I015Controller.prototype.listarBodegas = function (req, res) {
 // * @fecha 2018-05-05
 // */
 //
-//E017Controller.prototype.eliminarItem = function (req, res) {
+//I015Controller.prototype.eliminarItem = function (req, res) {
 //    var that = this;
 //    var args = req.body.data;
 //    var usuarioId = req.session.user.usuario_id;
@@ -313,7 +313,7 @@ I015Controller.prototype.listarBodegas = function (req, res) {
 // * @fecha 2018-05-07
 // */
 //
-//E017Controller.prototype.listarBodegaId = function (req, res) {
+//I015Controller.prototype.listarBodegaId = function (req, res) {
 //    var that = this;
 //    var args = req.body.data;
 //    var usuarioId = req.session.user.usuario_id;
@@ -340,7 +340,7 @@ I015Controller.prototype.listarBodegas = function (req, res) {
 // * +Descripcion genera el documento definitivo ETF
 // * @fecha 2018-05-07
 // */
-//E017Controller.prototype.crearDocumento = function (req, res) {
+//I015Controller.prototype.crearDocumento = function (req, res) {
 //    var that = this;
 //    var args = req.body.data;
 //    var usuarioId;
@@ -452,7 +452,7 @@ I015Controller.prototype.listarBodegas = function (req, res) {
 //};
 //
 //// imprime el documento desde buscador de documentos
-//E017Controller.prototype.crearHtmlDocumento = function (req, res) {
+//I015Controller.prototype.crearHtmlDocumento = function (req, res) {
 //    var that = this;
 //    var args = req.body.data;
 //    var cabecera = [];

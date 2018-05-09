@@ -31,188 +31,146 @@ define(["angular", "js/services"], function (angular, services) {
 
                     };
 
-//                    /*
-//                     * @Author: German Galvis.
-//                     * @fecha 24/03/2018
-//                     * +Descripcion: lista los clientes
-//                     */
-//                    self.listarClientes = function (obj, callback) {
-//                        Request.realizarRequest(
-//                                API.I012.LISTAR_CLIENTES,
-//                                "POST",
-//                                {
-//                                    session: obj.session,
-//                                    data: {
-//                                        filtro: obj.listar_clientes.filtro,
-//                                        terminoBusqueda: obj.listar_clientes.terminoBusqueda,
-//                                        empresaId: obj.listar_clientes.empresaId,
-//                                        paginaActual: obj.listar_clientes.paginaActual
-//                                    }
-//                                },
-//                                function (data) {
-//
-//                                    callback(data);
-//                                }
-//                        );
-//
-//                    };
-//
-//                    /*
-//                     * @Author: German Galvis.
-//                     * @fecha 26/03/2018
-//                     * +Descripcion: lista las facturas
-//                     */
-//                    self.buscarFacturas = function (obj, callback) {
-//                        Request.realizarRequest(
-//                                API.I012.LISTAR_FACTURAS,
-//                                "POST",
-//                                {
-//                                    session: obj.session,
-//                                    data: {
-//                                        documento: obj.cliente.id,
-//                                        tipo_documento: obj.cliente.tipo_id_tercero,
-//                                        empresaId: obj.empresaId
-//                                    }
-//                                },
-//                                function (data) {
-//
-//                                    callback(data);
-//                                }
-//                        );
-//
-//                    };
-//
-//                    /*
-//                     * @Author: German Galvis.
-//                     * @fecha 06/04/2018
-//                     * +Descripcion: trae registro de la factura seleccionada
-//                     */
-//                    self.buscarFacturaId = function (obj, callback) {
-//                        Request.realizarRequest(
-//                                API.I012.LISTAR_FACTURA_ID,
-//                                "POST",
-//                                {
-//                                    session: obj.session,
-//                                    data: {
-//                                        prefijo: obj.data.prefijo,
-//                                        numero: obj.data.numero
-//                                    }
-//                                },
-//                                function (data) {
-//
-//                                    callback(data);
-//                                }
-//                        );
-//
-//                    };
-//
-//                    /*
-//                     * @Author: German Galvis.
-//                     * @fecha 06/04/2018
-//                     * +Descripcion: trae registro del cliente seleccionado
-//                     */
-//                    self.buscarClienteId = function (obj, callback) {
-//                        Request.realizarRequest(
-//                                API.I012.LISTAR_CLIENTE_ID,
-//                                "POST",
-//                                {
-//                                    session: obj.session,
-//                                    data: {
-//                                        id: obj.data.id,
-//                                        tipoId: obj.data.tipoId
-//                                    }
-//                                },
-//                                function (data) {
-//
-//                                    callback(data);
-//                                }
-//                        );
-//
-//                    };
-//
-//                    /**
-//                     * @Author: German Galvis.
-//                     * @fecha 27/03/2018
-//                     * +Descripcion Metodo encargado de invocar el servicio que
-//                     *              borra los DocTemporal
-//                     */
-//                    self.eliminarGetDocTemporal = function (parametro, callback) {
-//
-//                        var obj = {
-//                            session: parametro.session,
-//                            data: {
-//                                doc_tmp_id: parametro.data.doc_tmp_id,
-//                                listado: parametro.data.listado,
-//                                numero_doc: parametro.data.numero_doc,
-//                                prefijo: parametro.data.prefijo,
-//                                tipoDocumento: parametro.data.tipoDocumento,
-//                            }
-//                        };
-//                        Request.realizarRequest(API.I012.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {
-//                            callback(data);
-//                        });
-//                    };
-//
-//                    /**
-//                     * @Author: German Galvis.
-//                     * @fecha 27/03/2018
-//                     * +Descripcion Metodo encargado de invocar el servicio que
-//                     *              agrega items al DocTemporal
-//                     */
-//                    self.agregarProductoTmp = function (parametro, callback) {
-//
-//                        var obj = {
-//                            session: parametro.session,
-//                            data: {
-//                                bodega: parametro.data.bodega,
-//                                cantidad: parametro.data.cantidad,
-//                                centroUtilidad: parametro.data.centroUtilidad,
-//                                codigoProducto: parametro.data.codigoProducto,
-//                                docTmpId: parametro.data.docTmpId,
-//                                empresaId: parametro.data.empresaId,
-//                                fechaVencimiento: parametro.data.fechaVencimiento,
-//                                lote: parametro.data.lote,
-//                                item_id: parametro.data.item_id,
-//                                gravamen: parametro.data.gravamen,
-//                                totalCosto: parametro.data.totalCosto,
-//                                valorU: parametro.data.valorU,
-//                                totalCostoPedido: parametro.data.totalCostoPedido,
-//                                numero_doc: parametro.data.numero_doc,
-//                                prefijo: parametro.data.prefijo,
-//                                tipoDocumento: parametro.data.tipoDocumento
-//                            }
-//                        };
-//                        Request.realizarRequest(API.I012.AGREGAR_ITEM, "POST", obj, function (data) {
-//                            callback(data);
-//                        });
-//                    };
-//
-//                    /*
-//                     * @Author: German Galvis.
-//                     * @fecha 28/03/2018
-//                     * +Descripcion: elimionar producto en temporal
-//                     */
-//                    self.eliminarProductoDevolucion = function (objs, callback) {
-//                        var obj = {
-//                            session: objs.session,
-//                            data: {
-//                                item_id: objs.item_id,
-//                                item_id_compras: objs.item_id_compras,
-//                                docTmpId: objs.docTmpId,
-//                                cantidad: objs.cantidad,
-//                                codigo_producto: objs.codigo_producto,
-//                                fechaVencimiento: objs.fechaVencimiento,
-//                                lote: objs.lote,
-//                                numero_doc: objs.numero_doc,
-//                                prefijo: objs.prefijo,
-//                                tipoDocumento: objs.tipoDocumento
-//                            }
-//                        };
-//
-//                        Request.realizarRequest(API.I012.ELIMINAR_PRODUCTO_DEVOLUCION, "POST", obj, function (data) {
-//                            callback(data);
-//                        });
-//                    };
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 08/05/2018
+                     * +Descripcion: lista las bodegas
+                     */
+                    self.buscarTraslados = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I015.LISTAR_DOCUMENTOS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        bodega_origen: obj.data.bodega_origen,
+                                        bodega_destino: obj.data.bodega_destino
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 08/05/2018
+                     * +Descripcion: lista las bodegas
+                     */
+                    self.buscarProductosTraslados = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I015.LISTAR_PRODUCTOS_TRASLADO,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        numero: obj.data.numero_doc,
+                                        prefijo: obj.data.prefijo
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 08/05/2018
+                     * +Descripcion: Crea documento tmp
+                     */
+                    self.crearTmp = function (objs, callback) {
+                        var obj = {
+                            session: objs.session,
+                            data: {
+                                prefijo_documento_seleccionado: objs.data.prefijo_documento_seleccionado,
+                                numero_documento_seleccionado: objs.data.numero_documento_seleccionado,
+                                bodega_doc_id: objs.data.bodega_doc_id,
+                                observacion: objs.data.observacion,
+                                empresaId: objs.data.empresaId
+                            }
+                        };
+                        Request.realizarRequest(API.I015.CREAR_NEW_DOCUMENTO_TEMPORAL, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @Author: German Galvis.
+                     * @fecha 08/05/2018
+                     * +Descripcion Metodo encargado de invocar el servicio que
+                     *              borra los DocTemporal
+                     */
+                    self.eliminarGetDocTemporal = function (parametro, callback) {
+
+                        var obj = {
+                            session: parametro.session,
+                            data: {
+                                doc_tmp_id: parametro.data.doc_tmp_id
+                            }
+                        };
+                        Request.realizarRequest(API.I015.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @Author: German Galvis.
+                     * @fecha 08/05/2018
+                     * +Descripcion Metodo encargado de invocar el servicio que
+                     *              agrega items al DocTemporal
+                     */
+                    self.agregarProductoTmp = function (parametro, callback) {
+
+                        var obj = {
+                            session: parametro.session,
+                            data: {
+                                empresa_id: parametro.data.empresa_id,
+                                centro_utilidad: parametro.data.centro_utilidad,
+                                bodega: parametro.data.bodega,
+                                codigoProducto: parametro.data.codigoProducto,
+                                cantidad: parametro.data.cantidad,
+                                cantidad_enviada: parametro.data.cantidad_enviada,
+                                lote: parametro.data.lote,
+                                fechaVencimiento: parametro.data.fechaVencimiento,
+                                item_id: parametro.data.item_id,
+                                docTmpId: parametro.data.docTmpId
+                            }
+                        };
+                        Request.realizarRequest(API.I015.AGREGAR_ITEM, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 09/05/2018
+                     * +Descripcion: elimionar producto en temporal
+                     */
+                    self.eliminarProductoTmp = function (objs, callback) {
+                        var obj = {
+                            session: objs.session,
+                            data: {
+                                item_id: objs.item_id,
+                                item_id_compras: objs.item_id_compras,
+                                docTmpId: objs.docTmpId,
+                                cantidad: objs.cantidad,
+                                codigo_producto: objs.codigo_producto,
+                                fechaVencimiento: objs.fechaVencimiento,
+                                lote: objs.lote,
+                                numero_doc: objs.numero_doc,
+                                prefijo: objs.prefijo
+                            }
+                        };
+
+                        Request.realizarRequest(API.I015.ELIMINAR_PRODUCTO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
 //
 //                    /*
 //                     * @Author: German Galvis.

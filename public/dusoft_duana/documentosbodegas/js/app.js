@@ -47,6 +47,8 @@ define([
     "models/I012/FacturaDevolucion",
     "models/I012/ProductoFactura",
     "models/I012/Clientes",
+    "models/I015/ProductoI015",
+    "models/I015/DocumentoI015",
     "models/Index/TipoDocumentos",
     "models/Index/EmpresaDocumento",
     "models/Index/DocumentoBodega",

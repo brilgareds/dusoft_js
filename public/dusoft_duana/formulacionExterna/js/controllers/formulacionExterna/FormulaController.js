@@ -108,6 +108,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     return; 
                 }
 
+                if(!afiliado){
+                    AlertService.mostrarMensaje("warning", 'No existe un paciente con identificación ' + tipoIdentificacion + identificacion);
+                    return; 
+                }
+
                 if(afiliado.estadoAfiliadoId == 'RE'){
                     AlertService.mostrarMensaje("warning", 'Afiliado en estado retirado');
                     return;

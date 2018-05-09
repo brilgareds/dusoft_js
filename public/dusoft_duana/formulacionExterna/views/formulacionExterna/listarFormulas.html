@@ -1,6 +1,6 @@
 <br>
 <div class ="row">
-  <div class="col-md-2">        
+  <div class="col-md-2" style="width: 15.5%;">        
     <p class="input-group">
         <input type="text" class="form-control readonlyinput" 
                datepicker-popup="{{format}}" 
@@ -16,7 +16,7 @@
         </span>
     </p>
   </div>
-  <div class="col-md-2">        
+  <div class="col-md-2" style="width: 15.5%;">        
     <p class="input-group">
         <input type="text" class="form-control readonlyinput" 
                datepicker-popup="{{format}}" 
@@ -44,13 +44,13 @@
           </li>
         </ul>
       </div> 
-      <input ng-show="root.visibleBuscador" type="text" class="form-control" ng-keypress="" ng-model="root.buscador.numero_documento" placeholder="Número documento" name="" id="" />
+      <input ng-show="root.visibleBuscador" type="text" class="form-control" ng-keypress="" ng-model="root.buscador.numero_documento" placeholder="No. documento" name="" id="" />
     </div>
   </div>
-  <div class="col-md-2"> 
-    <input type="text" class="form-control" placeholder="Número formula" ng-model="root.buscador.numero_formula"> 
+  <div class="col-md-2" style="width: 15.5%;"> 
+    <input type="text" class="form-control" placeholder="No. formula" ng-model="root.buscador.numero_formula"> 
   </div>
-  <div class="col-md-2">
+  <div class="col-md-2" style="width: 15.5%;">
     <input type="text" class="form-control" placeholder="Nombre paciente" ng-model="root.buscador.nombre_paciente"> 
   </div>
   <div class="col-md-1">
@@ -58,9 +58,21 @@
   </div>
 </div>
 <br>
-<div class="table-responsive" style="clear:both;">
-  <div class="defaultGrid grid-responsive" ng-grid="listaFormulas" ></div>
+
+<div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+    <!--<div class="table-responsive">-->
+          <div class="defaultGrid" ng-grid="listaFormulas">
+          </div>
+      <!--</div>-->
+  </div>
 </div>
+
+
+<!--<div class="table-responsive" style="clear:both;">
+  <div class="defaultGrid grid-responsive" ng-grid="listaFormulas" ></div>
+</div>-->
+
 </br>
 <div class="row text-center">
   <button type="button" class="btn btn-success btn-medium" ng-disabled="root.buscador.pagina == 1" ng-click="root.buscador.pagina = root.buscador.pagina - 1; buscarFormulas(root.buscador.fecha_inicial, root.buscador.fecha_final, root.buscador.nombre_paciente, root.buscador.numero_formula, root.buscador.filtro.id, root.buscador.numero_documento, root.buscador.pagina)">

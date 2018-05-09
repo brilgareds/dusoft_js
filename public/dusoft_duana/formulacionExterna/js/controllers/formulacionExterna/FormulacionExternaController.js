@@ -179,12 +179,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             },   
             {
               displayName: 'F.Formulacion',  
-              width: "10%",  
+              width: "14%",  
               cellTemplate: '<div class="col-xs-12 txt-center"><p class="text-uppercase ">{{row.entity.fecha_formula}}</p></div>'
             },
             {
               displayName: 'Plan', 
-              width: "35%",   
+              width: "31%",   
               cellTemplate: '<div class="col-xs-12 " style="padding-left:1em;"><p class="text-lowercase">{{row.entity.plan_descripcion}}</p></div>'
             },
             {
@@ -248,7 +248,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
               nombre_paciente : '',
               filtro : {
                 id: false ,
-                descripcion : 'Tipo Documento'
+                descripcion : 'Tipo Doc'
               },
               pagina : 1
             }

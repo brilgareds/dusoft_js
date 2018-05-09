@@ -2,10 +2,10 @@
 	<div class="col-md-12">
 		<div class="panel panel-info">
 	        <div class="panel-heading clearfix">
-	        	<div class="col-md-1">
+	        	<div class="col-sm-2 col-md-2 col-lg-1" >
 	        		<h3 style="margin-top: 0.2em !important;"><strong>Paciente</strong></h3>
 				</div>
-	        	<div class="col-md-4">
+	        	<div class="col-sm-6 col-md-6 col-lg-3" >
 					<div class="input-group">
 					    <div class="input-group-btn">
 					        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.tipoDocumentoSeleccionado.descripcion}} <span class="caret"></span> </button>
@@ -17,7 +17,7 @@
 					            </li>
 					        </ul>
 					    </div> 
-					    <input type="text" class="form-control" ng-keypress="buscarFormulas($event, 0);"  ng-model="root.documento" placeholder="Buscar" name="" id="" required/>
+					    <input type="text" class="form-control" ng-keypress="buscarFormulas($event, 0);" ng-enter="obtenerAfiliado(root.tipoDocumentoSeleccionado.id, root.documento)"  ng-model="root.documento" placeholder="Buscar" name="" id="" required/>
 					    <div class="input-group-btn">
 					        <button class="btn btn-success pull-right" type="submit" ng-click ="obtenerAfiliado(root.tipoDocumentoSeleccionado.id, root.documento)"><i class="glyphicon glyphicon-search"></i></button>
 					    </div>
@@ -100,7 +100,7 @@
 	                </div>
 	                <div class="col-md-2" style="margin-top: 10px;">
 			            <ui-select ng-model="$parent.root.formula.tipoFormula" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()" theme="select2" class="form-control selectgeneral " style="padding-top: 0px !important">
-			                <ui-select-match  placeholder="Seleccione tipo formula" style="height: 33px !important">{{$select.selected.descripcion}}</ui-select-match>
+			                <ui-select-match  placeholder="Tipo formula" style="height: 33px !important">{{$select.selected.descripcion}}</ui-select-match>
 			                <ui-select-choices repeat="tipoFormula in  tipoFormulas | filter:$select.search">
 			                    {{tipoFormula.descripcion}}
 			                </ui-select-choices>
@@ -108,7 +108,7 @@
 	                </div>
                     <div class="col-md-4" style="margin-top: 10px;">                                          
                         <ui-select ng-model="root.formula.profesional" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()" theme="select2" class="form-control selectgeneral" style="padding-top: 0px !important">
-                            <ui-select-match  placeholder="Seleccionar profesional" style="height: 33px !important">{{ $select.selected.nombre }}</ui-select-match>
+                            <ui-select-match  placeholder="Profesional" style="height: 33px !important">{{ $select.selected.nombre }}</ui-select-match>
                             <ui-select-choices refresh="buscar('profesional',$select.search)" refresh-delay="0" repeat="profesional in profesionales | filter:$select.search">
                                 {{ profesional.nombre }}
                             </ui-select-choices>
@@ -116,7 +116,7 @@
                     </div>
 	                <div class="col-md-2" style="margin-top: 10px;">                                          
                         <ui-select ng-model="root.formula.municipio" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()" theme="select2" class="form-control selectgeneral" style="padding-top: 0px !important">
-                            <ui-select-match  placeholder="Seleccionar municipio" style="height: 33px !important">{{ $select.selected.nombre }}</ui-select-match>
+                            <ui-select-match  placeholder="Municipio" style="height: 33px !important">{{ $select.selected.nombre }}</ui-select-match>
                             <ui-select-choices refresh="buscar('municipio',$select.search)" refresh-delay="0" repeat="municipio in municipios | filter:$select.search">
                                 {{ municipio.nombre }}
                             </ui-select-choices>
@@ -172,18 +172,17 @@
                                     <h4 class="text-center"><strong>Medicamentos solicitados <button class="btn btn-success" style="margin-left: 5px;" ng-disabled="!root.formula.tmp_formula_id" ng-click="abrirModalBusquedaMedicamentos()" type="button">
 										Adicionar medicamentos &nbsp;<i class="glyphicon glyphicon-plus"></i>
 									</button></strong></h4>
-                                	
                                 </div>
                             </div>
                         </div>
 	            	</div>
 	            </div>
 	            <div class="row">
-	            	<div class="col-md-12">
-		            	<div class="table-responsive" >
-		                    <div class="defaultGrid grid-responsive" style="height: 350px;" ng-grid="lista_productos_seleccionados">
+	            	<div class="col-sm-12 col-md-12 col-lg-12">
+		            	<!--<div class="table-responsive">-->
+		                    <div class="" style="height: 350px;" ng-grid="lista_productos_seleccionados">
 		                    </div>
-		                </div>
+		                <!--</div>-->
 	            	</div>
 	            </div>
 	            <!--
@@ -214,10 +213,11 @@
 
 	            <div class="row">
 	            	<div class="col-md-12">
-		            	<div class="table-responsive" >
-		                    <div class="defaultGrid grid-responsive" style="height: 350px;" ng-grid="lista_productos_lotes_seleccionados">
+		            	<!--<div class="table-responsive" >-->
+		                    <!--<div class="defaultGrid grid-responsive" style="height: 350px;" ng-grid="lista_productos_lotes_seleccionados">-->
+		                    <div class="" style="height: 350px;" ng-grid="lista_productos_lotes_seleccionados">
 		                    </div>
-		                </div>
+		                <!--</div>-->
 	            	</div>
 	            </div>
 	           	<!--<div class="row" style="margin-top: 10px;">

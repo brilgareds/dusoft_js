@@ -24,7 +24,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             formula : {
                 fecha: '',
                 tipoFormula : {'descripcion' : 'Tipo Formula'},
-                municipio :  {'nombre' : 'Seleccionar Municipio'}
+                municipio :  {'nombre' : 'Municipio'}
             },
             busquedaProductos :{codigoBarras:'', descripcion:'', codigoProducto: '',principioActivo:'', pagina:1},
             productosFormulados : []
@@ -779,16 +779,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion'},
-                    {field: 'getConcentracion()', displayName: 'Concentracion', width:"10%"},
+                    {field: 'getConcentracion()', displayName: 'Concentracion', width:"8%"},
                     {field: 'getCodigoFormaFarmacologico()', displayName: 'F.Farmacologica', width:"10%"},
                     {field: 'getLaboratorio()', displayName: 'Laboratorio', width:"10%"},
-                    {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"10%"},
-                    {field: 'fecha_vencimiento', width: "10%", displayName: 'Fecha vencimiento',
+                    {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"8%"},
+                    {field: 'fecha_vencimiento', width: "12%", displayName: 'Fecha vencimiento',
                         cellTemplate: '<div class="col-xs-12 "> \
                                             <input type="label" ng-model="row.entity.lotes[0].fecha_vencimiento" validacion-numero-entero class="form-control grid-inline-input" name="" id="" ng-class="agregarClaseLoteProxVencer(row.entity.estadoProductoVencimiento)"/>"\
                                         </div>'},
-                    {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Existencia', width:"10%"},
-                    {field: 'cantidad_solicitada', width: "7%", displayName: 'Cantidad',
+                    {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Existencia', width:"8%"},
+                    {field: 'cantidad_solicitada', width: "11%", displayName: 'Cantidad',
                         cellTemplate: '<div class="col-xs-12 "> \
                                             <input type="text" ng-model="row.entity.cantidad_despachada"  validacion-numero-entero ng-disabled="row.entity.loteSeleccionado" class="form-control grid-inline-input" name="" id="" ng-disabled="row.entity.estadoProductoVencimiento == 1" ng-class=""/>\
                                         </div>'},
@@ -907,11 +907,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo producto', width: "10%"},
-                    {field: 'descripcion', displayName: 'Descripcion', width : '39%'},
-                    {field: 'existencia', displayName: 'Existencia', width: "6%", cellClass: "txt-center",},
-                    {field: 'molecula', displayName: 'Molecula', width: "27%"},
+                    {field: 'descripcion', displayName: 'Descripcion', width : '29%'},
+                    {field: 'existencia', displayName: 'Existencia', width: "10%", cellClass: "txt-center",},
+                    {field: 'molecula', displayName: 'Molecula', width: "29%"},
                     {field: 'cantidad', displayName: 'Cantidad', width: "10%", cellClass: "txt-center", cellTemplate: '<div class="col-xs-12 "><input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" ng-class=""/></div>'},
-                    {field: 'opciones', displayName : 'Opciones', width : '8%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12"><button type="submit" class="btn btn-success btn-xs" ng-click="adicionarProducto(root.formula.tmp_formula_id, root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(), root.afiliado.mostrarPacientes()[0].getPacienteId(),row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-plus"></i></button></div>'}
+                    {field: 'opciones', displayName : 'Opciones', width : '6%' , cellClass: "txt-center", cellTemplate : '<div class="col-xs-12"><button type="submit" class="btn btn-success btn-xs" ng-click="adicionarProducto(root.formula.tmp_formula_id, root.afiliado.mostrarPacientes()[0].getTipoIdPaciente(), root.afiliado.mostrarPacientes()[0].getPacienteId(),row.entity)" style="padding: 3px 7px;"><i class="glyphicon glyphicon-plus"></i></button></div>'}
                 ]
             };
         }

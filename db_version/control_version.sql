@@ -261,3 +261,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.40', 'FACTURACION CLIENTES', 'se elimina la funcion de postgres to_char(round((a.valor_unitario * a.cantidad),2),LFM9,999,999.00) porque no muestra el valor en los formulario');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.41  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.41', 'FORMULACION EXTERNA' , 'BugFix en el responsive del modulo y correción de impresiones.');
+COMMIT TRANSACTION;

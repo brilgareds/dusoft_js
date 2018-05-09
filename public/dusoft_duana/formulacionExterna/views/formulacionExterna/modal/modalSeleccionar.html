@@ -1,0 +1,45 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+               	<h4 class="h4MarginTopBottom"><span>Buscar ...</span></h4>
+            </div>
+            <div class="panel-body"> 
+            	<div class="row" style="margin-bottom: 10px;" ng-show="esDiagnostico">
+                    <div class="col-md-8 col-md-offset-2">
+                    	<div class="input-group pull-center">
+						    <input type="text" class="form-control" ng-keyup="buscar(elemento ,term)" placeholder="Codigo ..." ng-model="codigo">
+						    <span class="input-group-btn">
+						        <button class="btn btn-success" type="button"  ng-click="buscar(elemento ,term)">
+						        	<i class="glyphicon glyphicon-search"></i>
+						        </button>
+						    </span>
+					    </div>
+                    </div>
+            	</div>
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+	                    <div class="input-group pull-center">
+					      	<input type="text" class="form-control" ng-keyup="buscar(elemento ,term)" placeholder="Nombre ..." ng-model="term">
+					      	<span class="input-group-btn">
+					        	<button class="btn btn-success" type="button"  ng-click="buscar(elemento ,term)">
+					        		<i class="glyphicon glyphicon-search"></i>
+					        	</button>
+					      	</span>
+					    </div>
+					</div>
+                </div>
+                <div class="row" style="padding-top: 5px;">
+                    <div class="col-md-8 col-md-offset-2">
+                    	<div class="list-group">
+						  	<a class="list-group-item list-group-item-action" ng-repeat="item in items" ng-click="seleccionar(item)">{{item.nombre}}</a>
+						</div>
+                    </div>
+                </div>
+        	</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="seleccionar()">Cancelar</button>
+        </div>
+    </div>
+</div>

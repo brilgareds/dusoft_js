@@ -6,7 +6,6 @@ define(["angular", "js/models", "includes/classes/PlanesRangos"], function (angu
 
             function PlanesRangosHc(tipoAfiliadoId,rango) {                          
                 PlanesRangos.getClass().call(this,tipoAfiliadoId,rango); 
-                this.planes = [];
             }
             
             PlanesRangosHc.prototype = Object.create(PlanesRangos.getClass().prototype);

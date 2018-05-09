@@ -1,0 +1,159 @@
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-heading clearfix">
+                    <div class="pull-left">
+                        <h4 class="text-center"><strong>Registro Llamadas</strong></h4>
+                    </div>
+
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <fieldset>
+                                <legend><strong>#Formula</strong></legend> 
+                                <div class="row">  
+                                    <div class="col-md-10" style="margin-top: -14px">                                          
+                                        <h4>
+                                            {{root.formula.formula_papel}}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>                        
+                        <div class="col-md-2">
+                            <fieldset>
+                                <legend><strong>Identificacion</strong></legend> 
+                                <div class="row">
+                                    <div class="col-md-7" style="margin-top: -14px">  
+                                        <h4>{{root.formula.tipo_id_paciente}} {{root.formula.paciente_id}}</h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <legend><strong>Paciente</strong></legend> 
+                                <div class="row">  
+                                    <div class="col-md-12" style="margin-top: -14px">                                        
+                                        <h4>
+                                            {{root.formula.nombre_paciente}}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>  
+                        <div class="col-md-3">
+                            <fieldset>
+                                <legend><strong>Plan</strong></legend> 
+                                <div class="row">  
+                                    <div class="col-md-12" style="margin-top: -14px">                                        
+                                        <h4>
+                                            {{root.formula.plan_descripcion}}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>  
+                        <div class="col-md-2">
+                            <fieldset>
+                                <legend><strong>Fecha formula</strong></legend> 
+                                <div class="row">  
+                                    <div class="col-md-7" style="margin-top: -14px">                                          
+                                        <h4>{{root.formula.fecha_formula}}</h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>                     
+                    </div>
+                    <div class="row">  
+
+                        <div class="col-md-12">
+                            <tabset>
+                                    <br>
+                                    <div class="panel panel-info">
+                                        <div class="panel-heading clearfix">
+                                            <div class="pull-center">
+                                                <h4 class="text-center"><strong>Medicamentos pendientes</strong></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">  
+                                        <div class="col-md-12">
+                                            <div class="table-responsive" >
+                                                <div class="defaultGrid grid-responsive" ng-grid="listaPendientes" style="clear:both; height: 350px;" > </div>
+                                            </div>
+                                        </div>
+                                    </div>   
+                            </tabset>
+                            <br>
+                            <tabset>
+                                <br>
+                                <div class="panel panel-info">
+                                    <div class="panel-heading clearfix">
+                                        <div class="pull-center">
+                                            <h4 class="text-center"><strong>Registro de Llamadas</strong></h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">  
+                                    <div class="col-md-12">
+                                        <form class="form-inline">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="exampleInputName2" ng-model="root.llamada.contacto_nombre" placeholder="Nombre contacto">
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="exampleInputEmail2" ng-model="root.llamada.tel_contacto" placeholder="Telefono contacto">
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="exampleInputEmail2" ng-model="root.llamada.contacto_parentezco" placeholder="Parentezco">
+                                            </div>
+                                        </form> 
+                                        <div class="form-group" style="margin-top: 1em;">
+                                            <textarea class="form-control" placeholder="Observacion" ng-model="root.llamada.observacion" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>   
+                                <div class="row" style="margin-bottom: 1em;">
+                                    <div class="col-md-1 pull-right">
+                                        <button ng-disabled="root.llamada.contacto_nombre == '' || root.llamada.tel_contacto == '' || root.llamada.contacto_parentezco == '' || root.llamada.observacion == ''" class="btn btn-success pull-right" ng-click="insertarLlamadaPacientes(root.formula.formula_id, root.llamada.contacto_nombre, root.llamada.contacto_parentezco, root.llamada.observacion, root.llamada.tel_contacto)">
+                                            <span class="glyphicon glyphicon-floppy-disk" ></span> Guardar
+                                        </button>
+                                    </div>
+                                </div>
+                            </tabset>
+                            <tabset>
+                                <div class="row">  
+                                    <div class="col-md-12">
+                                        <div class="table-responsive" >
+                                            <div class="defaultGrid grid-responsive" ng-grid="listaRegistroLlamadas" style="clear:both; height: 350px;" > </div>
+                                        </div>
+                                    </div>
+                                </div>   
+                            </tabset>
+
+
+                            <br>
+                            <!--Acciones Cotizacion/ Pedido -->    
+                            <div class="modal-footer col-md-12" ng-if="!datos_view.cartera">
+
+                                <button class="btn btn-success" ng-click="cerrar()" >
+                                    <span class="glyphicon glyphicon-remove" ></span> Cerrar
+                                </button>
+                            </div>  
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>       
+        </div>
+    </div>
+    <div  class="slide" slide-content open-callback="gestionar_productos_clientes" close-callback="cerrar_gestion_productos_clientes"   >
+        <div ng-include src="slideurl"  ></div>
+    </div>
+
+    <visualizar-reporte></visualizar-reporte>
+</div>

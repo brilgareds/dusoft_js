@@ -1,0 +1,38 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <h4 class="h4MarginTopBottom"><span>Cambio de medicamento</span></h4>
+            </div>
+            <div class="panel-body"> 
+                <div class="row">
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                       <!--<div class="table-responsive" >-->
+                            <!--div class="defaultGrid grid-responsive" style="height: 515px;" ng-grid="lista_productos">-->
+                            <div class="" style="height: 515px;" ng-grid="lista_productos">
+                            </div>
+                        <!--</div>-->
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col-md-1 col-md-offset-5">
+                        <button class="btn btn-success" type="button" ng-click="root.busquedaProductos.pagina = root.busquedaProductos.pagina - 1;root.busquedaProductos.pagina == 0? 1 : root.busquedaProductos.pagina;buscarProductos(root.busquedaProductos.pagina)">
+                            <i class="glyphicon glyphicon-chevron-left"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-success" type="button" ng-click="root.busquedaProductos.pagina = root.busquedaProductos.pagina + 1; buscarProductos(root.busquedaProductos.pagina)">
+                            <i class="glyphicon glyphicon-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="cerrar()">Cerrar</button>
+        </div>
+    </div>
+</div>

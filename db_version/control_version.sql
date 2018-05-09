@@ -235,5 +235,41 @@ COMMIT TRANSACTION;
 ------------------------------  Version 2.00.36  ------------------------------
 -----------------------------------------------------------------------------
 BEGIN TRANSACTION;
-INSERT INTO version (version, modulo, comentario) VALUES ('02.00.36', 'DOCUMENTOS BODEGA', 'se elimina la opcion de modificar productos para el documento de bodega (I012)');
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.36', 'FACTURA CLIENTES', 'se modifica controlador porque no dejaba crear inv_facturas_xconsumo_tmp_d ya que no se creaba primero inv_facturas_xconsumo_tmp ');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.37  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.37', 'FACTURA CLIENTES', 'se modifica controlador porque no dejaba crear inv_facturas_xconsumo_tmp_d ya que no se creaba primero inv_facturas_xconsumo_tmp ');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.38  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.38', 'FORMULACION EXTERNA', 'Nuevo modulo formulacion externa');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.39  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.39', 'FORMULACION EXTERNA', 'Validacion al crear una nueva formula, si el paciente no existe emite mensaje de advertencia');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.40  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.40', 'FACTURACION CLIENTES', 'se elimina la funcion de postgres to_char(round((a.valor_unitario * a.cantidad),2),LFM9,999,999.00) porque no muestra el valor en los formulario');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.41  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.41', 'FORMULACION EXTERNA' , 'BugFix en el responsive del modulo y correción de impresiones.');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.42  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.42', 'DOCUMENTOS BODEGA', 'se elimina la opcion de modificar productos para el documento de bodega (I012)');
 COMMIT TRANSACTION;

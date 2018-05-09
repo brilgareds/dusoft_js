@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <title>&nbsp;</title>
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style.css" rel=stylesheet type=text/css >
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style-print.css" rel=stylesheet type=text/css media="print">
+        
+        <script>
+           var imprimir = function(){
+               document.getElementById("btnImprimir").style.display = 'none';
+               window.print();
+           }
+        </script>
+    </head>
+    <body>
+        <center class="normal_10AN"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">ENTREGA DE MEDICAMENTOS</center>
+        <table width="100%" cellspacing="2">
+            <tr>
+                <td align="center">
+                    <table width="100%" class="label"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+                        <tr >
+                            <td align="left" >FORMULA No: </td>
+                            <td align="left" >{{:formula.formula_papel}}</td>
+                            <td align="left" colspan="5">FECHA DE REGISTRO: {{:formula.fecha_registro}}</td>
+                        </tr>
+                        <tr >
+                            <td align="left">TIPO FORMULA:</td>
+                            <td align="left">{{:formula.descripcion_tipo_formula}}</td>
+                        </tr>
+                        <tr >
+                            <td align="left">PROFESIONAL:</td>
+                            <td colspan="2" align="left"> {{:formula.profesional}}</td>
+                        </tr>
+                        <tr>
+                            <td align="left" >PACIENTE:</td>
+                            <td align="left">{{:formula.nombre_paciente}}</td>
+                            <td colspan="5" align="left">EDAD:&nbsp;{{:formula.edad}}&nbsp;AÑOS</td>
+                        </tr>
+                        <tr>
+                            <td align="left">TIPO PLAN:</td>
+                            <td align="left" >{{:formula.tipo_plan}}</td>
+                            <td colspan="5" align="left">TIPO VINCULACION: {{:formula.vinculacion}} </td>
+                        </tr>
+                    </table>
+            <tr>
+                <td align="center">
+                </td>
+            </tr>
+        </table>
+        <table border="0" width="100%" align="center" >
+            <tr>
+                <td>
+                <center  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px" class="normal_10AN">MEDICAMENTOS PENDIENTES *****</center>
+                <table width="100%" cellspacing="2">
+                    <tr>
+                        <td align="center">
+                            <table width="100%" class="label"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+                                <tr>
+                                    <td>CODIGO</td>
+                                    <td colspan="6">MEDICAMENTO</td>
+                                    <td >CANTIDAD</td>
+                                    </td>
+                                </tr>
+                               {{for pendientes}} 
+                                <tr>
+                                    <td>{{:codigo_medicamento}}</td>
+                                    <td colspan="6">{{:descripcion_prod}}</td>
+                                    <td>{{:total}}</td>
+                                    </td>
+                                </tr>
+                                {{/for}}
+                            </table>
+                        <td>
+                    </tr>
+                    <tr>
+                        <td align="center"></td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+        </table>
+        <table width="100%" class="label"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+            <tr class="label"  valign="bottom" >
+                <td align="LEFT" height="50">________________________________________</td>
+                <td width='50%' align="right"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px"> FECHA DE IMPRESION {{:fecha_impresion}}&nbsp;     </td>
+            </tr>
+            <tr class="label" >
+                <td align="LEFT">FIRMA PACIENTE</td>
+            </tr>
+            <tr align='right'>
+                <td align="right"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px"> USUARIO  DIGITALIZA:  {{:formula.nombre}}&nbsp;-{{:formula.descripcion}}&nbsp;     </td>
+         </tr>
+        </table>
+    </BODY>
+</HTML>
+
+
+
+

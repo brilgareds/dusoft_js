@@ -13,6 +13,7 @@
     "cron-cluster": "^1.0.0",
     "date-utils": "~1.2.15",
     "db-migrate": "0.6.4",
+    "exceljs": "^1.4.6",
     "express": "3.4.7",
     "fcm-push": "^1.1.2",
     "fs-extra": "~0.12.0",

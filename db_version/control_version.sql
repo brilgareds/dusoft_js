@@ -283,5 +283,5 @@ COMMIT TRANSACTION;
 ------------------------------  Version 2.00.44  ------------------------------
 -----------------------------------------------------------------------------
 BEGIN TRANSACTION;
-INSERT INTO version (version, modulo, comentario) VALUES ('02.00.43', 'FACTURACION CLIENTES', 'se modifica la base que apunta a la generacion de impuestos');
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.44', 'FACTURACION CLIENTES', 'se modifica la base que apunta a la generacion de impuestos');
 COMMIT TRANSACTION;

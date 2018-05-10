@@ -278,62 +278,63 @@ I015Controller.prototype.listarProductosValidados = function (req, res) {
         res.send(G.utils.r(req.url, 'Error al Listar Productos validados', 500, {}));
     }).done();
 };
-//
-///**
-// * @author German Galvis
-// * +Descripcion Elimina un  producto del documento temporal
-// * @fecha 2018-05-05
-// */
-//
-//I015Controller.prototype.eliminarItem = function (req, res) {
-//    var that = this;
-//    var args = req.body.data;
-//    var usuarioId = req.session.user.usuario_id;
-//
-//    if (args.item_id === undefined) {
-//        res.send(G.utils.r(req.url, 'El item_id NO estan definido', 404, {}));
-//        return;
-//    }
-//
-//    parametros = {item_id: args.item_id,
-//        docTmpId: args.docTmpId,
-//        usuarioId: usuarioId};
-//
-//    G.Q.nfcall(that.m_i015.eliminarItem, parametros).then(function (result) {
-//        res.send(G.utils.r(req.url, 'Producto Borrado Correctamente', 200, {eliminarItem: result}));
-//    }).fail(function (err) {
-//        console.log("eliminarItem  ", err);
-//        res.send(G.utils.r(req.url, 'Error al borrar Producto', 500, {}));
-//    }).done();
-//};
-//
-///**
-// * @author German Galvis
-// * +Descripcion Lista la bodega seleccionada
-// * @fecha 2018-05-07
-// */
-//
-//I015Controller.prototype.listarBodegaId = function (req, res) {
-//    var that = this;
-//    var args = req.body.data;
-//    var usuarioId = req.session.user.usuario_id;
-//
-//    if (args.empresa_id === undefined || args.centro_utilidad === undefined || args.bodega === undefined) {
-//        res.send(G.utils.r(req.url, 'Algunos datos no estan definidos', 404, {}));
-//        return;
-//    }
-//
-//    parametros = {empresa_id: args.empresa_id,
-//        centro_utilidad: args.centro_utilidad,
-//        bodega: args.bodega};
-//
-//    G.Q.nfcall(that.m_i015.listarBodegaId, parametros).then(function (result) {
-//        res.send(G.utils.r(req.url, 'Listar bodega id OK', 200, {listarBodega: result}));
-//    }).fail(function (err) {
-//        console.log("listarBodegaId  ", err);
-//        res.send(G.utils.r(req.url, 'Error al listar la bodega', 500, {}));
-//    }).done();
-//};
+
+/**
+ * @author German Galvis
+ * +Descripcion Elimina un  producto del documento temporal
+ * @fecha 2018-05-10
+ */
+
+I015Controller.prototype.eliminarItem = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    if (args.item_id === undefined) {
+        res.send(G.utils.r(req.url, 'El item_id NO estan definido', 404, {}));
+        return;
+    }
+
+    parametros = {item_id: args.item_id,
+        item_id_compras: args.item_id_compras,
+        docTmpId: args.docTmpId,
+        usuarioId: usuarioId};
+
+    G.Q.nfcall(that.m_i015.eliminarItem, parametros).then(function (result) {
+        res.send(G.utils.r(req.url, 'Producto Borrado Correctamente', 200, {eliminarItem: result}));
+    }).fail(function (err) {
+        console.log("eliminarItem  ", err);
+        res.send(G.utils.r(req.url, 'Error al borrar Producto', 500, {}));
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Lista el documento seleccionado
+ * @fecha 2018-05-10
+ */
+
+I015Controller.prototype.listarDocumentoId = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.numero === undefined || args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos datos no estan definidos', 404, {}));
+        return;
+    }
+
+    parametros = {
+        numero: args.numero,
+        prefijo: args.prefijo
+    };
+
+    G.Q.nfcall(that.m_i015.listarDocumentoId, parametros).then(function (result) {
+        res.send(G.utils.r(req.url, 'Listar documento id OK', 200, {listarDocumento: result}));
+    }).fail(function (err) {
+        console.log("listarBodegaId  ", err);
+        res.send(G.utils.r(req.url, 'Error al listar el documento', 500, {}));
+    }).done();
+};
 //
 ///**
 // * @author German Galvis

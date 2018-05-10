@@ -81,7 +81,8 @@ define(["angular"], function(angular) {
                 'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I015/eliminarGetDocTemporal',
                 'AGREGAR_ITEM': BASE_URL + '/movBodegas/I015/agregarItem',
                 'CONSULTAR_PRODUCTOS_VALIDADOS': BASE_URL + '/movBodegas/I015/listarProductosValidados',
-                'ELIMINAR_PRODUCTO': BASE_URL + '/movBodegas/I015/eliminarItem'
+                'ELIMINAR_PRODUCTO': BASE_URL + '/movBodegas/I015/eliminarItem',
+                'LISTAR_DOCUMENTO_SELECCIONADO': BASE_URL + '/movBodegas/I015/listarDocumentoId'
             },
             'E007': {
             },

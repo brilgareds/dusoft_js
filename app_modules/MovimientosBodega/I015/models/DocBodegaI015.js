@@ -229,7 +229,7 @@ DocumentoBodegaI015.prototype.consultarItem = function (parametros, callback) {
 /**
  * @author German Galvis
  * +Descripcion lista los productos del documento temporal
- * @fecha 2018-05-05
+ * @fecha 2018-05-09
  */
 DocumentoBodegaI015.prototype.consultarProductosValidados = function (parametros, callback) {
     var columnas = [
@@ -257,26 +257,52 @@ DocumentoBodegaI015.prototype.consultarProductosValidados = function (parametros
         callback(err);
     });
 };
-//
-///**
-// * @author German Galvis
-// * +Descripcion elimina el item seleccionado del documento parcial
-// * @fecha 2018-05-05
-// */
-//DocumentoBodegaE017.prototype.eliminarItem = function (parametros, callback) {
-//    var query = G.knex("inv_bodegas_movimiento_tmp_d").
-//            where('doc_tmp_id', parametros.docTmpId).
-//            andWhere('usuario_id', parametros.usuarioId).
-//            andWhere('item_id', parametros.item_id).
-//            del();
-//
-//    query.then(function (resultado) {
-//        callback(false, resultado);
-//    }).catch(function (err) {
-//        console.log("Error eliminarItem", err);
-//        callback(err);
-//    });
-//};
+
+/**
+ * @author German Galvis
+ * +Descripcion elimina el item seleccionado del documento parcial
+ * @fecha 2018-05-10
+ */
+DocumentoBodegaI015.prototype.eliminarItem = function (parametros, callback) {
+    var query = G.knex("inv_bodegas_movimiento_tmp_d").
+            where('doc_tmp_id', parametros.docTmpId).
+            andWhere('usuario_id', parametros.usuarioId).
+            andWhere('item_id', parametros.item_id).
+            del();
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarItem", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta la bodega que pertenezca a la empresa y la bodega
+ * seleccionada
+ * @params obj: bodega
+ * @fecha 2018-05-07
+ */
+DocumentoBodegaI015.prototype.listarDocumentoId = function (parametro, callback) {
+    var query = G.knex
+            .select()
+            .from('inv_bodegas_movimiento as a')
+            .innerJoin("inv_bodegas_movimiento_traslados_farmacia as b", function () {
+                this.on("b.prefijo", "a.prefijo")
+                        .on("b.numero", "a.numero");
+            })
+            .where('b.prefijo',parametro.prefijo)
+            .andWhere('b.numero', parametro.numero);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarDocumentoId]:", err);
+        callback(err);
+    });
+};
 //
 ///**
 // * @author German Galvis

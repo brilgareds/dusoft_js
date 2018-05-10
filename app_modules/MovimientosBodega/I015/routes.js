@@ -39,6 +39,10 @@ module.exports = function (app, di_container) {
     app.post('/api/movBodegas/I015/listarDocumentoId', function (req, res) {
         c_i015.listarDocumentoId(req, res);
     });
+    
+    app.post('/api/movBodegas/I015/listarFarmaciaId', function (req, res) {
+        c_i015.listarFarmaciaId(req, res);
+    });
 //
 //    app.post('/api/movBodegas/I015/crearDocumento', function (req, res) {
 //        c_i015.crearDocumento(req, res);

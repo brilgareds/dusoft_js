@@ -93,6 +93,31 @@ define([
 
             /**
              * +Descripcion Metodo encargado de invocar el servicio que lista
+             *              la farmacia origen
+             * @author German Andres Galvis
+             * @fecha 10/05/2018 DD/MM/YYYY
+             */
+            that.buscarFarmaciaOrigenPorId = function (prefijo, numero) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numero: numero,
+                        prefijo: prefijo
+                    }
+                };
+
+                I015Service.buscarFarmaciaOrigenId(obj, function (data) {
+                    if (data.status === 200) {
+                        $scope.documento_ingreso.set_bodega_origen(data.obj.listarFarmaciaOrigen[0]);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+            
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que lista
              *              el documento seleccionado
              * @author German Andres Galvis
              * @fecha 10/05/2018 DD/MM/YYYY
@@ -108,15 +133,15 @@ define([
                 };
 
                 I015Service.buscarDocumentoId(obj, function (data) {
-console.log("data",data);
                     if (data.status === 200) {
                         $scope.documento_ingreso.set_documento_traslado(data.obj.listarDocumento[0]);
+                        that.refrescarVista();
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
                 });
             };
-            
+
             $scope.onBuscarProductosTraslado = function () {
                 that.listarProductosTraslado();
             };
@@ -449,7 +474,7 @@ console.log("data",data);
 
             /**
              * @author German Galvis
-             * @fecha 2018-03-27
+             * @fecha 2018-05-09
              * +Descripcion Metodo encargado de invocar el servicio que
              *              borra los DocTemporal
              */
@@ -457,6 +482,7 @@ console.log("data",data);
                 var obj = {
                     session: $scope.session,
                     data: {
+                        listado:$scope.datos_view.listado_productos_validados,
                         doc_tmp_id: $scope.doc_tmp_id
                     }
                 };
@@ -591,17 +617,11 @@ console.log("data",data);
             };
 
             if (datos_documento.datosAdicionales !== undefined) {
-                console.log("datos", datos_documento.datosAdicionales);
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
                 $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
-//                that.buscarClientePorId(datos_documento.datosAdicionales.tipoTerceroId, datos_documento.datosAdicionales.terceroId, function (result) {
-//                    $scope.cliente_seleccionado = result[0];
-//                    $scope.cliente_seleccionado.id = result[0].tercero_id;
-//                });
-
+                that.buscarFarmaciaOrigenPorId(datos_documento.datosAdicionales.prefijo, datos_documento.datosAdicionales.numero);
                 that.buscarDocumentoPorId(datos_documento.datosAdicionales.prefijo, datos_documento.datosAdicionales.numero);
                 $scope.validarDesdeLink = true;
-                that.refrescarVista();
 
             } else {
                 $scope.validarDesdeLink = false;

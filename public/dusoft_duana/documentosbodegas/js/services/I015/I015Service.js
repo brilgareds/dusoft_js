@@ -110,6 +110,7 @@ define(["angular", "js/services"], function (angular, services) {
                         var obj = {
                             session: parametro.session,
                             data: {
+                                listado: parametro.data.listado,
                                 doc_tmp_id: parametro.data.doc_tmp_id
                             }
                         };
@@ -175,6 +176,29 @@ define(["angular", "js/services"], function (angular, services) {
                     self.buscarDocumentoId = function (obj, callback) {
                         Request.realizarRequest(
                                 API.I015.LISTAR_DOCUMENTO_SELECCIONADO,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        numero: obj.data.numero,
+                                        prefijo: obj.data.prefijo
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 10/05/2018
+                     * +Descripcion: lista la farmacia origen
+                     */
+                    self.buscarFarmaciaOrigenId = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I015.LISTAR_FARMACIA_SELECCIONADA,
                                 "POST",
                                 {
                                     session: obj.session,

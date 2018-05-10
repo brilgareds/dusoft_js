@@ -137,6 +137,7 @@ I015Controller.prototype.newDocTemporal = function (req, res) {
 I015Controller.prototype.eliminarGetDocTemporal = function (req, res) {
     var that = this;
     var args = req.body.data;
+    var listado = args.listado;
     var usuarioId = req.session.user.usuario_id;
 
 
@@ -163,6 +164,9 @@ I015Controller.prototype.eliminarGetDocTemporal = function (req, res) {
         }).then(function () {
 
             return G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal, parametros, transaccion);
+        }).then(function () {
+
+            return G.Q.nfcall(__updateMovimiento, that, listado, parametros, 0, transaccion);
         }).then(function () {
 
             transaccion.commit();
@@ -237,18 +241,30 @@ I015Controller.prototype.agregarItem = function (req, res) {
         usuarioId: usuarioId
     };
     var msj;
+    G.knex.transaction(function (transaccion) {
 
-    G.Q.nfcall(that.m_i015.consultarItem, parametros).then(function (result) {
-        if (result.length > 0) {
-            msj = "El producto " + parametros.codigoProducto + " ya se encuentra registrado en el documento de traslado.";
-        } else {
-            msj = "producto agregado correctamente";
-            return G.Q.nfcall(that.m_i015.agregarItem, parametros);
-        }
+
+        G.Q.nfcall(that.m_i015.consultarItem, parametros).then(function (result) {
+            if (result.length > 0) {
+                msj = "El producto " + parametros.codigoProducto + " ya se encuentra registrado en el documento de traslado.";
+            } else {
+                msj = "producto agregado correctamente";
+                return G.Q.nfcall(that.m_i015.agregarItem, parametros, transaccion);
+            }
+        }).then(function (resultado) {
+
+            return G.Q.nfcall(that.m_i015.updateMovimientoD, parametros, transaccion);
+
+        }).then(function () {
+            transaccion.commit();
+        }).fail(function (err) {
+            transaccion.rollback(err);
+        }).done();
     }).then(function (resultado) {
-        res.send(G.utils.r(req.url, msj, 200, {agregarItem: resultado}));
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error al consultar el Producto', 500, {}));
+        res.send(G.utils.r(req.url, 'producto agregado correctamente', 200, {agregarItem: resultado}));
+    }).catch(function (err) {
+        console.log("EROR ", err);
+        res.send(G.utils.r(req.url, 'Error al insertar el cuerpo del temporal', 500, {}));
     }).done();
 };
 
@@ -297,12 +313,28 @@ I015Controller.prototype.eliminarItem = function (req, res) {
 
     parametros = {item_id: args.item_id,
         item_id_compras: args.item_id_compras,
+        cantidad: args.cantidad,
         docTmpId: args.docTmpId,
         usuarioId: usuarioId};
 
-    G.Q.nfcall(that.m_i015.eliminarItem, parametros).then(function (result) {
-        res.send(G.utils.r(req.url, 'Producto Borrado Correctamente', 200, {eliminarItem: result}));
-    }).fail(function (err) {
+    G.knex.transaction(function (transaccion) {
+
+
+        G.Q.nfcall(that.m_i015.eliminarItem, parametros, transaccion).then(function (result) {
+
+            return G.Q.nfcall(that.m_i015.restarCantidadMovimientoD, parametros, transaccion);
+
+        }).then(function () {
+//            res.send(G.utils.r(req.url, 'Producto Borrado Correctamente', 200, {eliminarItem: result}));
+            transaccion.commit();
+        }).fail(function (err) {
+//            console.log("eliminarItem  ", err);
+//            res.send(G.utils.r(req.url, 'Error al borrar Producto', 500, {}));
+            transaccion.rollback(err);
+        }).done();
+    }).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Producto Borrado Correctamente', 200, {eliminarItem: resultado}));
+    }).catch(function (err) {
         console.log("eliminarItem  ", err);
         res.send(G.utils.r(req.url, 'Error al borrar Producto', 500, {}));
     }).done();
@@ -331,8 +363,36 @@ I015Controller.prototype.listarDocumentoId = function (req, res) {
     G.Q.nfcall(that.m_i015.listarDocumentoId, parametros).then(function (result) {
         res.send(G.utils.r(req.url, 'Listar documento id OK', 200, {listarDocumento: result}));
     }).fail(function (err) {
-        console.log("listarBodegaId  ", err);
+        console.log("listarDocumentoId  ", err);
         res.send(G.utils.r(req.url, 'Error al listar el documento', 500, {}));
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Lista la farmacia origen
+ * @fecha 2018-05-10
+ */
+
+I015Controller.prototype.listarFarmaciaId = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.numero === undefined || args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos datos no estan definidos', 404, {}));
+        return;
+    }
+
+    parametros = {
+        numero: args.numero,
+        prefijo: args.prefijo
+    };
+
+    G.Q.nfcall(that.m_i015.listarFarmaciaId, parametros).then(function (result) {
+        res.send(G.utils.r(req.url, 'Listar farmacia id OK', 200, {listarFarmaciaOrigen: result}));
+    }).fail(function (err) {
+        console.log("listarFarmaciaId  ", err);
+        res.send(G.utils.r(req.url, 'Error al listar la farmacia origen', 500, {}));
     }).done();
 };
 //
@@ -570,6 +630,32 @@ I015Controller.prototype.listarDocumentoId = function (req, res) {
 //        });
 //    });
 //}
+
+function __updateMovimiento(that, listado, parametros, index, transaccion, callback) {
+
+    var item = listado[index];
+    if (!item) {
+        callback(false, 0);
+        return;
+    }
+
+    parametros.item_id_compras = item.itemIdCompra;
+    parametros.cantidad = item.cantidad;
+
+    G.Q.nfcall(that.m_i015.restarCantidadMovimientoD, parametros, transaccion).then(function (resultado) {
+        var timer = setTimeout(function () {
+            clearTimeout(timer);
+            index++;
+            __updateMovimiento(that, listado, parametros, index, transaccion, callback);
+        }, 0);
+
+    }).fail(function (err) {
+        console.log("error", err);
+        callback(err);
+
+    }).done();
+
+}
 
 I015Controller.$inject = ["m_movimientos_bodegas", "m_i015"];
 module.exports = I015Controller;

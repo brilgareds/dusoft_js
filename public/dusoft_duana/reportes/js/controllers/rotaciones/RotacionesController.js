@@ -25,6 +25,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 auth_token: Usuario.getUsuarioActual().getToken()
             };           
              
+             $scope.item=0;
+            
+            $scope.itemValida=function(item){
+                console.log(item);
+                item++;
+                var valida=true;
+                if(item%2===0){
+                  valida=false;
+                }
+                console.log(valida);
+                return valida;
+            };
+            
+            
 
             that.init = function(callback) {
                 $scope.root = {};         
@@ -89,21 +103,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @fecha: 11/05/2016
              * @returns {objeto}
              */
-            that.renderRotacionZonas = function(data) {               
+            that.renderRotacionZonas = function (data) {
                 var listaRotacionZonas = [];
-                var zonaName="";
-                var rotacionZonas;
+                var rotacionZonas = undefined;
+                var zonaName = "";
+                
                 for (var i in data.obj.rotacionZonas) {
                     var objt = data.obj.rotacionZonas[i];
-                    
-                    if(objt.zona !== zonaName){
-                      zonaName=objt.zona;   
-                      var rotacionZonas = Zona.get();
-                      rotacionZonas.setNombreZona(objt.zona);
+                    var bodegas = {
+                        nombreBodega: objt.nombre_bodega,
+                        empresa: objt.empresa_id,
+                        centroUtilidad: objt.centro_utilidad,
+                        bodega: objt.bodega
+                    };
+
+                    if (objt.zona !== zonaName) {
+                        if (rotacionZonas !== undefined) {
+                            rotacionZonas.setNombreBodegas(listaRotacionZonasDetalle);
+                            listaRotacionZonas.push(rotacionZonas);
+                        }
+                        zonaName = objt.zona;
+                        var listaRotacionZonasDetalle = [];
+                        var rotacionZonas = Zona.get();
+                        rotacionZonas.setNombreZona(objt.zona);
                     }
-                    rotacionZonas.setNombreBodegas(objt.nombre_bodega,objt.empresa_id,objt.centro_utilidad,objt.bodega);
-                    listaRotacionZonas.push(rotacionZonas);
-                }   
+                    listaRotacionZonasDetalle.push(bodegas);
+                }
                 $scope.listaRotacionZonas = listaRotacionZonas;
             };
                        

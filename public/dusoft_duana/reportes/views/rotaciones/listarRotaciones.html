@@ -2,20 +2,27 @@
     <div class="row">
         <div class="col-md-12 col-lg-12">
             <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
-<!--                <li class="animate-repeat" ng-repeat="listaRotacionZona in listaRotacionZonas">
-                    {{listaRotacionZona.getNombreZona()}}
-                </li> -->
-            <div  ng-repeat="listaRotacionZona in listaRotacionZonas">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">{{listaRotacionZona.getNombreZona()}}</div>
-                    <div class="panel-body">Panel Content</div>
+
+
+                <div  ng-repeat="listaRotacionZona in listaRotacionZonas">
+                        <div class="row" ng-if="(listaRotacionZona.getNombreZona() === 'Cali')">
+                           
+                            <div class="col-lg-12">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">{{listaRotacionZona.getNombreZona()}}</div>
+                                    <div class="panel-body">
+                                        <div  ng-repeat="listaRotacion in listaRotacionZona.nombreBodegas[0]">
+                                            <div>
+                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                                <label class="form-check-label" for="exampleCheck1">{{listaRotacion.nombreBodega}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>      
+                        </div >
                 </div>
-            </div>
 
-
-                <!--                <button type="button" class="btn btn-primary" ng-click="abrirModalDrArias()" name="btnCrearPedido">
-                                    <span class="glyphicon glyphicon-plus"></span> Generar
-                                </button>-->
             </div>
         </div>
     </div>

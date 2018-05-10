@@ -15,22 +15,12 @@ define(["angular", "js/models"], function(angular, models) {
         	return this.nombreZona;
         };
         
-        Zona.prototype.setNombreBodegas = function(nombreBodega,empresa,centroUtilidad,bodega){
-//            var bodegas={
-//                nombreBodega:nombreBodega,
-//                empresa:empresa,
-//                centroUtilidad:centroUtilidad,
-//                bodega:bodega
-//            };
-            this.nombreBodegas.push({
-                nombreBodega:nombreBodega,
-                empresa:empresa,
-                centroUtilidad:centroUtilidad,
-                bodega:bodega
-            });
+        Zona.prototype.setNombreBodegas = function(bodegas){
+           
+            this.nombreBodegas.push(bodegas);
         };
         
-        Zona.prototype.setNombreBodegas = function(){
+        Zona.prototype.getNombreBodegas = function(){
         	this.nombreBodegas;
         };
         

@@ -271,9 +271,6 @@ COMMIT TRANSACTION;
 ------------------------------  Version 2.00.42  ------------------------------
 -----------------------------------------------------------------------------
 BEGIN TRANSACTION;
-<<<<<<< HEAD
-INSERT INTO version (version, modulo, comentario) VALUES ('02.00.42', 'FACTURACION CLIENTES' , 'se cambia la consulta de impuestos');
-=======
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.42', 'DOCUMENTOS BODEGA', 'se elimina la opcion de modificar productos para el documento de bodega (I012)');
 COMMIT TRANSACTION;
 -----------------------------------------------------------------------------
@@ -281,5 +278,10 @@ COMMIT TRANSACTION;
 -----------------------------------------------------------------------------
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.43', 'FORMULACION EXTERNA', 'Se ajustan impresiones para que muestren el consecutivo del producto y no el codigo completo, se ajusta la vista de llamadas para que sea responsive');
->>>>>>> dee374f2090d0d95d36c90e8637c2950806603b5
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.44  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.43', 'FACTURACION CLIENTES', 'se modifica la base que apunta a la generacion de impuestos');
 COMMIT TRANSACTION;

@@ -285,3 +285,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.44', 'FACTURACION CLIENTES', 'se modifica la base que apunta a la generacion de impuestos');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.45  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.45', 'DOCUMENTOS BODEGA', 'se corrige error en buscador de productos E009');
+COMMIT TRANSACTION;

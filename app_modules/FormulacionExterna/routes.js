@@ -146,4 +146,8 @@ module.exports = function(app, di_container) {
     app.post('/api/formulacionexterna/marcar', function(req, res) {
         c_formulacion_externa.marcar(req, res);
     });      
+
+    app.post('/api/formulacionexterna/guardarNuevaCantidadPendiente', function(req, res) {
+        c_formulacion_externa.guardarNuevaCantidadPendiente(req, res);
+    });      
 };

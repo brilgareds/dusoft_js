@@ -419,6 +419,19 @@ FormulacionExterna.prototype.marcar  = function(req, res){
     }).done();
 }
 
+FormulacionExterna.prototype.guardarNuevaCantidadPendiente  = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    var usuario_id = req.session.user.usuario_id;
+
+    G.Q.ninvoke(that.m_formulacionExterna,'guardarNuevaCantidadPendiente', args.esm_pendiente_dispensacion_id, args.cantidad).then(function(resultado){
+        res.send(G.utils.r(req.url, 'guarda nueva cantidad pendiente', 200, resultado));
+    }).fail(function(err){
+        G.logError("FormulacionExterna [guardarNuevaCantidadPendiente] " + err);
+        res.send(G.utils.r(req.url, 'guardarNuevaCantidadPendiente', 500, err));
+    }).done();
+}
+
 FormulacionExterna.prototype.cambiarCodigoPendiente  = function(req, res){
     var that = this;
     var args = req.body.data;

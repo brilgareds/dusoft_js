@@ -53,6 +53,7 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
     self.inactivarPendiente = inactivarPendiente;
     self.cambiarCodigoPendiente = cambiarCodigoPendiente;
     self.actualizarFormulaExternaTmp = actualizarFormulaExternaTmp;
+    self.guardarNuevaCantidadPendiente = guardarNuevaCantidadPendiente;
     self.marcar = marcar;
     
 
@@ -883,6 +884,25 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
       };
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.BUSCAR_FORMULAS, "POST", body, function(data){
+        var error = data.status == 200? 0 : 1;
+        if(!error){
+          callback(error, data.obj);
+        } else {
+          callback(error, data.obj);
+        }
+      });
+    }
+
+    function guardarNuevaCantidadPendiente(esm_pendiente_dispensacion_id, cantidad ,callback){
+      var body = {
+        session : self.session,
+        data : {
+          esm_pendiente_dispensacion_id : esm_pendiente_dispensacion_id,
+          cantidad : cantidad
+        }
+      };
+
+      Request.realizarRequest(API.FORMULACION_EXTERNA.GUARDAD_NUEVA_CANTIDAD_PENDIENTE, "POST", body, function(data){
         var error = data.status == 200? 0 : 1;
         if(!error){
           callback(error, data.obj);

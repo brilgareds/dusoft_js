@@ -40,6 +40,7 @@ define(["angular"], function(angular) {
                 "IMPRIMIR_TODO_DISPENSADO": BASE_URL + "/FormulacionExterna/imprimirTodoDispensado",
                 "CAMBIAR_CODIGO_PENDIENTE": BASE_URL + "/FormulacionExterna/cambiarCodigoPendiente",
                 "ACTUALIZAR_FORMULA_TMP": BASE_URL + "/FormulacionExterna/actualizarFormulaExternaTmp",
+                "GUARDAD_NUEVA_CANTIDAD_PENDIENTE": BASE_URL + "/FormulacionExterna/guardarNuevaCantidadPendiente",
                 "MARCAR": BASE_URL + "/FormulacionExterna/marcar",
             },
             'DISPENSACIONHC':{

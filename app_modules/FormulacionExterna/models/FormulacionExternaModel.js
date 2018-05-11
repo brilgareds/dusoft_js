@@ -1545,21 +1545,6 @@ FormulacionExternaModel.prototype.updateAutorizacionPorMedicamento = function(fe
 };
 
 FormulacionExternaModel.prototype.guardarNuevaCantidadPendiente = function(esm_pendiente_dispensacion_id, cantidad, callback) {
-    /*
-    var query = G.knex('esm_pendientes_por_dispensar')
-        .where('esm_pendiente_dispensacion_id', esm_pendiente_dispensacion_id)
-        .update({
-            codigo_medicamento : codigo_medicamento,
-        });
-    
-    query.then(function(resultado){ 
-       callback(false, resultado);
-    }).catch(function(err){    
-        console.log('el error en cambiarCodigoPendientePorDispensar', err);
-        G.logError("err (/catch) FormulacionExternaModel [updateAutorizacionPorMedicamento]: " +  err);
-        callback("Error al autorizar medicamento");  
-    });
-    */
     var query = G.knex('esm_pendientes_por_dispensar')
         .where('esm_pendiente_dispensacion_id', esm_pendiente_dispensacion_id)
         .update({
@@ -1805,7 +1790,6 @@ FormulacionExternaModel.prototype.listarMedicamentosEsmXLote = function(formula_
 };
 
 FormulacionExternaModel.prototype.obtenerPendientesEnt = function(formula_id, imprimir_actual, callback){
-    console.log('Obtener pendientes ent formula_id', formula_id, 'imprimir_actual', imprimir_actual);
     var date = new Date();
     var fecha_hoy = date.getFullYear()  + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2);
   //G.knex.raw("round(dd.cantidad) as numero_unidades"),

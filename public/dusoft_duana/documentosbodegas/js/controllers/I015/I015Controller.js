@@ -115,7 +115,7 @@ define([
                     }
                 });
             };
-            
+
             /**
              * +Descripcion Metodo encargado de invocar el servicio que lista
              *              el documento seleccionado
@@ -482,7 +482,7 @@ define([
                 var obj = {
                     session: $scope.session,
                     data: {
-                        listado:$scope.datos_view.listado_productos_validados,
+                        listado: $scope.datos_view.listado_productos_validados,
                         doc_tmp_id: $scope.doc_tmp_id
                     }
                 };
@@ -502,53 +502,57 @@ define([
                     }
                 });
             };
-//
-//            $scope.generar_documento = function () {
-//                that.crearDocumento();
-//            };
-//
-//            /**
-//             * @author German Galvis
-//             * @fecha 2018-03-04
-//             * +Descripcion Metodo encargado de Generar el documento definitivo
-//             */
-//            that.crearDocumento = function () {
-//
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        ingreso: {
-//                            tipo_id_tercero: $scope.cliente_seleccionado.tipo_id_tercero,
-//                            tercero_id: $scope.cliente_seleccionado.id,
-//                            nombre_tercero: $scope.cliente_seleccionado.nombre_tercero,
-//                            prefijo_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().prefijo,
-//                            numero_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
-//                            doc_tmp_id: $scope.doc_tmp_id,
-//                            valor_total_factura: $scope.valorTotal,
-//                            usuario_id: Usuario.getUsuarioActual().getId()
-//                        }
-//                    }
-//                };
-//
-//                I012Service.crearDocumento(obj, function (data) {
-//                    if (data.status === 200) {
-//
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//
-//                        that.borrarVariables();
-//
-//                        var nombre = data.obj.nomb_pdf;
-//                        setTimeout(function () {
-//                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-//                        }, 0);
-//                    }
-//
-//                    if (data.status === 500) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//
-//                    }
-//                });
-//            };
+
+            $scope.generar_documento = function () {
+                that.crearDocumento();
+            };
+
+            /**
+             * @author German Galvis
+             * @fecha 2018-05-11
+             * +Descripcion Metodo encargado de Generar el documento definitivo
+             */
+            that.crearDocumento = function () {
+                var usuario = Usuario.getUsuarioActual();
+                var estado = 1;
+                
+                if ($scope.datos_view.listado_productos === undefined || $scope.datos_view.listado_productos === null || $scope.datos_view.listado_productos.length<=0) {
+                    estado = 0;
+                }
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        prefijo_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().prefijo,
+                        numero_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().numero,
+                        bodega_origen: $scope.documento_ingreso.get_bodega_origen(),
+                        bodega_destino: usuario.getEmpresa().getCodigo(),
+                        doc_tmp_id: $scope.doc_tmp_id,
+                        sw_estado: estado,
+                        usuario_id: usuario.getId()
+
+                    }
+                };
+
+                I015Service.crearDocumento(obj, function (data) {
+                    if (data.status === 200) {
+
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                        that.borrarVariables();
+
+                        var nombre = data.obj.nomb_pdf;
+                        setTimeout(function () {
+                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                        }, 0);
+                    }
+
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                    }
+                });
+            };
 
             /*==================================================================================================================================================================
              * 

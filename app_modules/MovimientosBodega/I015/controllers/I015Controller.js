@@ -325,11 +325,8 @@ I015Controller.prototype.eliminarItem = function (req, res) {
             return G.Q.nfcall(that.m_i015.restarCantidadMovimientoD, parametros, transaccion);
 
         }).then(function () {
-//            res.send(G.utils.r(req.url, 'Producto Borrado Correctamente', 200, {eliminarItem: result}));
             transaccion.commit();
         }).fail(function (err) {
-//            console.log("eliminarItem  ", err);
-//            res.send(G.utils.r(req.url, 'Error al borrar Producto', 500, {}));
             transaccion.rollback(err);
         }).done();
     }).then(function (resultado) {
@@ -395,122 +392,131 @@ I015Controller.prototype.listarFarmaciaId = function (req, res) {
         res.send(G.utils.r(req.url, 'Error al listar la farmacia origen', 500, {}));
     }).done();
 };
-//
-///**
-// * @author German Galvis
-// * +Descripcion genera el documento definitivo ETF
-// * @fecha 2018-05-07
-// */
-//I015Controller.prototype.crearDocumento = function (req, res) {
-//    var that = this;
-//    var args = req.body.data;
-//    var usuarioId;
-//    var parametros = {};
-//
-//    if (args.docTmpId === '') {
-//        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
-//        return;
-//    }
-//    if (args.usuario_id === '') {
-//        usuarioId = req.session.user.usuario_id;
-//    } else {
-//        usuarioId = args.usuario_id;
-//    }
-//    
-//    var docTmpId = args.docTmpId;
-//    var cabecera = [];
-//
-//    G.knex.transaction(function (transaccion) {
-//        G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
-//
-//            parametros.empresaId = result.empresa_id;
-//            parametros.prefijoDocumento = result.prefijo_documento;
-//            parametros.numeracionDocumento = result.numeracion_documento;
-//            parametros.docTmpId = args.docTmpId;
-//            parametros.empresa_envia = args.empresa_envia;
-//            parametros.bodega_destino = args.bodega_destino;
-//            parametros.sw_estado = '1';
-//            parametros.usuario_id = usuarioId;
-//            parametros.usuarioId = usuarioId;
-//
-//            return G.Q.nfcall(that.m_i015.agregarMovimientoTrasladoFarmacia, parametros, transaccion);
-//
-//        }).then(function () {
-//            return G.Q.nfcall(that.m_i015.eliminarMovimientoTrasladoFarmacia, parametros, transaccion);
-//
-//        }).then(function (result) {
-//            if (result >= 1) {
-//                return G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal_d, parametros, transaccion);
-//            } else {
-//                throw 'eliminar_movimiento_traslado_farmacia_temporal_d Fallo';
-//            }
-//
-//        }).then(function (result) {
-//
-//            if (result >= 1) {
-//                return G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal, parametros, transaccion);
-//            } else {
-//                throw 'eliminar_documento_temporal_d Fallo';
-//            }
-//
-//        }).then(function (result) {
-//
-//            if (result >= 1) {
-//                transaccion.commit();
-//                return false;
-//            } else {
-//                throw ' Fallo ';
-//            }
-//
-//        }).fail(function (err) {
-//
-//            console.log("Error rollback ", err);
-//            transaccion.rollback(err);
-//
-//        }).done();
-//
-//    }).then(function () {
-//        return G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros);
-//
-//    }).then(function (resultado) {
-//        cabecera = resultado;
-//        if (resultado.length > 0) {
-//            return G.Q.nfcall(that.m_i015.consultar_detalle_documento, parametros);
-//        } else {
-//            throw 'Consulta sin resultados';
-//        }
-//
-//    }).then(function (resultado) {
-//
-//        var fecha = new Date();
-//        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
-//        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
-//        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
-//
-//        if (resultado.length > 0) {
-//
-//            cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
-//            cabecera[0].farmaciaD = parametros.bodega_destino.descripcion;
-//            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
-//                cabecerae: cabecera[0],
-//                detalle: resultado,
-//                impresion: impresion,
-//                archivoHtml: 'documentoE017.html',
-//                reporte: "documentoE017"}, function (nombre_pdf) {
-//                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
-//            });
-//        } else {
-//            throw 'Consulta consultar_detalle_documento sin resultados';
-//        }
-//
-//    }).catch(function (err) {
-//        console.log("crearDocumento>>>>", err);
-//        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
-//    }).done();
-//
-//
-//
-//};
+
+/**
+ * @author German Galvis
+ * +Descripcion genera el documento definitivo ITF
+ * @fecha 2018-05-11
+ */
+I015Controller.prototype.crearDocumento = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId;
+    var parametros = {
+        prefijo_doc_farmacia: args.prefijo_doc_farmacia,
+        numero_doc_farmacia: args.numero_doc_farmacia,
+        bodega_origen: args.bodega_origen.empresa_id,
+        bodega_origen_nombre:args.bodega_origen.descripcion,
+        bodega_destino: args.bodega_destino,
+        docTmpId: args.doc_tmp_id,
+        sw_estado: args.sw_estado
+    };
+
+    if (args.doc_tmp_id === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.usuario_id === '') {
+        usuarioId = req.session.user.usuario_id;
+    } else {
+        usuarioId = args.usuario_id;
+    }
+
+    var docTmpId = args.doc_tmp_id;
+    var cabecera = [];
+
+    G.knex.transaction(function (transaccion) {
+        G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
+
+            parametros.empresaId = result.empresa_id;
+            parametros.prefijoDocumento = result.prefijo_documento;
+            parametros.numeracionDocumento = result.numeracion_documento;
+           // parametros.empresa_envia = args.empresa_envia;
+            parametros.usuario_id = usuarioId;
+            parametros.usuarioId = usuarioId;
+
+            return G.Q.nfcall(that.m_i015.agregarMovimientoIngresoTrasladoFarmacia, parametros, transaccion);
+
+        }).then(function () {
+
+            return G.Q.nfcall(that.m_i015.updateMovimientoTrasladoFarmacia, parametros, transaccion);
+        }).then(function () {
+            return G.Q.nfcall(that.m_i015.eliminarDocumentoTrasladoFarmaciaTemporal, parametros, transaccion);
+
+        }).then(function (result) {
+            if (result >= 1) {
+                return G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal_d, parametros, transaccion);
+            } else {
+                throw 'eliminar_movimiento_traslado_farmacia_temporal_d Fallo';
+            }
+
+        }).then(function (result) {
+
+            if (result >= 1) {
+                return G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal, parametros, transaccion);
+            } else {
+                throw 'eliminar_documento_temporal_d Fallo';
+            }
+
+        }).then(function (result) {
+
+            if (result >= 1) {
+                transaccion.commit();
+                return false;
+            } else {
+                throw ' Fallo ';
+            }
+
+        }).fail(function (err) {
+
+            console.log("Error rollback ", err);
+            transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function () {
+        return G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros);
+
+    }).then(function (resultado) {
+        cabecera = resultado;
+        if (resultado.length > 0) {
+            return G.Q.nfcall(that.m_i015.consultar_detalle_documento, parametros);
+        } else {
+            throw 'Consulta sin resultados';
+        }
+
+    }).then(function (resultado) {
+
+        var fecha = new Date();
+        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+
+        if (resultado.length > 0) {
+
+            cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
+            cabecera[0].farmaciaD = parametros.bodega_origen_nombre;
+            cabecera[0].numeroEtf = parametros.prefijo_doc_farmacia + " - " + parametros.numero_doc_farmacia;
+            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecerae: cabecera[0],
+                detalle: resultado,
+                impresion: impresion,
+                archivoHtml: 'documentoI015.html',
+                reporte: "documentoI015"}, function (nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+        } else {
+            throw 'Consulta consultar_detalle_documento sin resultados';
+        }
+
+    }).catch(function (err) {
+        console.log("crearDocumento>>>>", err);
+        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
+    }).done();
+
+
+
+};
 //
 //// imprime el documento desde buscador de documentos
 //I015Controller.prototype.crearHtmlDocumento = function (req, res) {
@@ -588,48 +594,48 @@ I015Controller.prototype.listarFarmaciaId = function (req, res) {
 //        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
 //    }).done();
 //};
-//
-///*==================================================================================================================================================================
-// * 
-// *                                                          FUNCIONES PRIVADAS
-// * 
-// * ==================================================================================================================================================================*/
-//
-//function __generarPdf(datos, callback) {
-//
-//    G.jsreport.render({
-//        template: {
-//            content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
-//            helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E017/reports/javascripts/rotulos.js', 'utf8'),
-//            recipe: "html",
-//            engine: 'jsrender',
-//            phantom: {
-//                margin: "10px",
-//                width: '700px'
-//            }
-//        },
-//        data: datos
-//    }, function (err, response) {
-//
-//        response.body(function (body) {
-//            var fecha = new Date();
-//
-//            var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + ".html";
-//
-//            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
-//                if (err) {
-//                    console.log("err [__generarPdf]: ", err);
-//                    callback(true, err);
-//                    return;
-//                } else {
-//
-//                    callback(nombreTmp);
-//                    return;
-//                }
-//            });
-//        });
-//    });
-//}
+
+/*==================================================================================================================================================================
+ * 
+ *                                                          FUNCIONES PRIVADAS
+ * 
+ * ==================================================================================================================================================================*/
+
+function __generarPdf(datos, callback) {
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/MovimientosBodega/I015/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function (err, response) {
+
+        response.body(function (body) {
+            var fecha = new Date();
+
+            var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + ".html";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                if (err) {
+                    console.log("err [__generarPdf]: ", err);
+                    callback(true, err);
+                    return;
+                } else {
+
+                    callback(nombreTmp);
+                    return;
+                }
+            });
+        });
+    });
+}
 
 function __updateMovimiento(that, listado, parametros, index, transaccion, callback) {
 

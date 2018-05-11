@@ -196,7 +196,7 @@ DocumentoBodegaI015.prototype.agregarItem = function (parametros, transaccion, c
 
     if (transaccion)
         query.transacting(transaccion);
-    
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -297,7 +297,7 @@ DocumentoBodegaI015.prototype.eliminarItem = function (parametros, transaccion, 
 
     if (transaccion)
         query.transacting(transaccion);
-    
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -315,7 +315,7 @@ DocumentoBodegaI015.prototype.restarCantidadMovimientoD = function (parametros, 
     var query = G.knex("inv_bodegas_movimiento_d")
             .where('movimiento_id', parametros.item_id_compras)
             .update('cantidad_recibida', G.knex.raw('cantidad_recibida -' + parametros.cantidad));
-    
+
     if (transaccion)
         query.transacting(transaccion);
 
@@ -376,82 +376,81 @@ DocumentoBodegaI015.prototype.listarFarmaciaId = function (parametro, callback) 
         callback(err);
     });
 };
-//
-///**
-// * @author German Galvis
-// * +Descripcion agrega un registro a la tabla inv_bodegas_movimiento_traslados_farmacia
-// * @fecha 2018-05-07
-// */
-//DocumentoBodegaE017.prototype.agregarMovimientoTrasladoFarmacia = function (parametros, transaccion, callback) {
-//    var query = G.knex("inv_bodegas_movimiento_traslados_farmacia").
-//            insert({farmacia_id: parametros.bodega_destino.empresa_id, empresa_id: parametros.empresaId, prefijo: parametros.prefijoDocumento,
-//                numero: parametros.numeracionDocumento, sw_estado: parametros.sw_estado, centro_utilidad: parametros.bodega_destino.centro_utilidad,
-//                bodega: parametros.bodega_destino.bodega
-//            });
-//
-//    if (transaccion)
-//        query.transacting(transaccion);
-//
-//    query.then(function (resultado) {
-//        callback(false, resultado);
-//    }).catch(function (err) {
-//        console.log("Error agregarMovimientoTrasladoFarmacia", err);
-//        callback(err);
-//    }).done();
-//};
-//
-///**
-// * @author German Galvis
-// * +Descripcion elimina el registro de la tabla temporal inv_bodegas_movimiento_tmp_traslados_farmacia
-// * @fecha 2018-05-07
-// */
-//DocumentoBodegaE017.prototype.eliminarMovimientoTrasladoFarmacia = function (parametros, transaccion, callback) {
-//    var query = G.knex("inv_bodegas_movimiento_tmp_traslados_farmacia").
-//            where('doc_tmp_id', parametros.docTmpId).
-//            andWhere('usuario_id', parametros.usuarioId).
-//            del();
-//
-//    if (transaccion)
-//        query.transacting(transaccion);
-//
-//    query.then(function (resultado) {
-//        callback(false, resultado);
-//    }).catch(function (err) {
-//        console.log("Error eliminarMovimientoTrasladoFarmacia", err);
-//        callback(err);
-//    });
-//};
-//
-///**
-// * @author German Galvis
-// * +Descripcion consulta los productos pertenecientes al documento a imprimir
-// * @fecha 2018-05-07
-// */
-//DocumentoBodegaE017.prototype.consultar_detalle_documento = function (parametro, callback) {
-//    var columnas = [
-//        "a.codigo_producto",
-//        "a.lote",
-//        G.knex.raw("\"a\".\"cantidad\"::integer"),
-//        G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
-//        G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre"),
-//        "param.torre"
-//    ];
-//
-//    var query = G.knex.select(columnas)
-//            .from('inv_bodegas_movimiento_d  AS a')
-//            .innerJoin("inventarios_productos  AS b ", "a.codigo_producto", "b.codigo_producto")
-//            .leftJoin("param_torreproducto AS param", "param.codigo_producto", "a.codigo_producto")
-//            .where('a.empresa_id', parametro.empresaId)
-//            .andWhere("a.prefijo", parametro.prefijoDocumento)
-//            .andWhere("a.numero", parametro.numeracionDocumento)
-//            .orderBy('param.torre', 'asc');
-//
-//    query.then(function (resultado) {
-//        callback(false, resultado);
-//    }).catch(function (err) {
-//        callback(err);
-//    });
-//};
+
+/**
+ * @author German Galvis
+ * +Descripcion agrega un registro a la tabla inv_bodegas_movimiento_ingresos_traslados_farmacia
+ * @fecha 2018-05-11
+ */
+DocumentoBodegaI015.prototype.agregarMovimientoIngresoTrasladoFarmacia = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_ingresos_traslados_farmacia").
+            insert({empresa_id: parametros.bodega_destino, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento,
+                farmacia_id: parametros.bodega_origen, prefijo_doc_farmacia: parametros.prefijo_doc_farmacia, numero_doc_farmacia: parametros.numero_doc_farmacia
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarMovimientoIngresoTrasladoFarmacia", err);
+        callback(err);
+    }).done();
+};
+
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza el registro de la tabla inv_bodegas_movimiento_traslados_farmacia
+ * @fecha 2018-05-11
+ */
+DocumentoBodegaI015.prototype.updateMovimientoTrasladoFarmacia = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_traslados_farmacia")
+            .where('empresa_id', parametros.bodega_origen)
+            .andWhere('prefijo', parametros.prefijo_doc_farmacia)
+            .andWhere('numero', parametros.numero_doc_farmacia)
+            .update('sw_estado', parametros.sw_estado);
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error updateMovimientoTrasladoFarmacia", err);
+        callback(err);
+    }).done();
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta los productos pertenecientes al documento a imprimir
+ * @fecha 2018-05-11
+ */
+DocumentoBodegaI015.prototype.consultar_detalle_documento = function (parametro, callback) {
+    var columnas = [
+        "a.codigo_producto",
+        "a.lote",
+        G.knex.raw("\"a\".\"cantidad\"::integer"),
+        G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
+        G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre")
+    ];
+
+    var query = G.knex.select(columnas)
+            .from('inv_bodegas_movimiento_d  AS a')
+            .innerJoin("inventarios_productos  AS b ", "a.codigo_producto", "b.codigo_producto")
+            .where('a.empresa_id', parametro.empresaId)
+            .andWhere("a.prefijo", parametro.prefijoDocumento)
+            .andWhere("a.numero", parametro.numeracionDocumento);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    });
+};
 //
 ///**
 // * @author German Galvis

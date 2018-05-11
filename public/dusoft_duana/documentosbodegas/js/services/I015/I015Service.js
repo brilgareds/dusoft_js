@@ -158,18 +158,37 @@ define(["angular", "js/services"], function (angular, services) {
                                 item_id: objs.item_id,
                                 item_id_compras: objs.item_id_compras,
                                 docTmpId: objs.docTmpId,
-                                cantidad: objs.cantidad,
-                                codigo_producto: objs.codigo_producto,
-                                fechaVencimiento: objs.fechaVencimiento,
-                                lote: objs.lote,
-                                numero_doc: objs.numero_doc,
-                                prefijo: objs.prefijo
+                                cantidad: objs.cantidad
                             }
                         };
 
                         Request.realizarRequest(API.I015.ELIMINAR_PRODUCTO, "POST", obj, function (data) {
                             callback(data);
                         });
+                    };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 10/05/2018
+                     * +Descripcion: lista el documento seleccionado
+                     */
+                    self.buscarDocumentoId = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I015.LISTAR_DOCUMENTO_SELECCIONADO,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        numero: obj.data.numero,
+                                        prefijo: obj.data.prefijo
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
                     };
 //
 //                    /*

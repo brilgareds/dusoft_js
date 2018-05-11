@@ -67,7 +67,7 @@ define([
 
             /**
              * +Descripcion Metodo encargado de invocar el servicio que listara 
-             *              las farmacias
+             *              los documentos
              * @author German Andres Galvis
              * @fecha 07/05/2018 DD/MM/YYYY
              */
@@ -91,6 +91,32 @@ define([
                 });
             };
 
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que lista
+             *              el documento seleccionado
+             * @author German Andres Galvis
+             * @fecha 10/05/2018 DD/MM/YYYY
+             */
+            that.buscarDocumentoPorId = function (prefijo, numero) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numero: numero,
+                        prefijo: prefijo
+                    }
+                };
+
+                I015Service.buscarDocumentoId(obj, function (data) {
+console.log("data",data);
+                    if (data.status === 200) {
+                        $scope.documento_ingreso.set_documento_traslado(data.obj.listarDocumento[0]);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+            
             $scope.onBuscarProductosTraslado = function () {
                 that.listarProductosTraslado();
             };
@@ -199,7 +225,7 @@ define([
                         docTmpId: $scope.doc_tmp_id
                     }
                 };
-                
+
                 I015Service.agregarProductoTmp(obj, function (data) {
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -209,7 +235,7 @@ define([
                     }
                 });
             };
-            
+
             /**
              * @author German Galvis
              * @fecha 2018-05-09
@@ -225,8 +251,8 @@ define([
 
                     }
                 };
-                
-                
+
+
                 Request.realizarRequest(API.I015.CONSULTAR_PRODUCTOS_VALIDADOS, "POST", obj, function (data) {
 
                     if (data.status === 200) {
@@ -241,7 +267,7 @@ define([
                 productos.forEach(function (data) {
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
-                            $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id, 0);
+                            $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, 0);
                     producto.setItemIdCompra(data.item_id_compras);
 
                     $scope.datos_view.listado_productos_validados.push(producto);
@@ -329,15 +355,9 @@ define([
                     session: $scope.session,
                     item_id: parametro.item_id,
                     item_id_compras: parametro.itemIdCompra,
-                    cantidad: parametro.cantidad,
-                    codigo_producto: parametro.codigo_producto,
-                    fechaVencimiento: parametro.fecha_vencimiento,
-                    lote: parametro.lote,
-                    numero_doc: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
-                    prefijo: $scope.documento_ingreso.getFacturaDevolucion().prefijo,
-                    docTmpId: $scope.doc_tmp_id
+                    docTmpId: $scope.doc_tmp_id,
+                    cantidad: parametro.cantidad
                 };
-
                 I015Service.eliminarProductoTmp(obj, function (data) {
 
                     if (data.status === 200) {
@@ -349,7 +369,7 @@ define([
                     }
                 });
             };
-            
+
             that.init(function () {
             });
 
@@ -569,26 +589,23 @@ define([
 
                 return disabled;
             };
-//
-//            if (datos_documento.datosAdicionales !== undefined) {
-//                $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
-//                $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
+
+            if (datos_documento.datosAdicionales !== undefined) {
+                console.log("datos", datos_documento.datosAdicionales);
+                $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
+                $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
 //                that.buscarClientePorId(datos_documento.datosAdicionales.tipoTerceroId, datos_documento.datosAdicionales.terceroId, function (result) {
 //                    $scope.cliente_seleccionado = result[0];
 //                    $scope.cliente_seleccionado.id = result[0].tercero_id;
 //                });
-//
-//                that.buscarFacturaPorId(datos_documento.datosAdicionales.prefijoFactura, datos_documento.datosAdicionales.numero_factura, function (result) {
-//                    $scope.documento_ingreso.setFacturaDevolucion(result[0]);
-//                    $scope.tipoDocumento = result[0].fac_agrupada;
-//                    $scope.validarDesdeLink = true;
-//                    that.parametrizacionRetencion();
-//                    that.refrescarVista();
-//                });
-//
-//            } else {
-//                $scope.validarDesdeLink = false;
-//            }
+
+                that.buscarDocumentoPorId(datos_documento.datosAdicionales.prefijo, datos_documento.datosAdicionales.numero);
+                $scope.validarDesdeLink = true;
+                that.refrescarVista();
+
+            } else {
+                $scope.validarDesdeLink = false;
+            }
 
         }]);
 });

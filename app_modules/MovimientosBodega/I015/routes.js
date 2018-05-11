@@ -35,9 +35,10 @@ module.exports = function (app, di_container) {
     app.post('/api/movBodegas/I015/eliminarItem', function (req, res) {
         c_i015.eliminarItem(req, res);
     });
-//    app.post('/api/movBodegas/I015/listarBodegaId', function (req, res) {
-//        c_i015.listarBodegaId(req, res);
-//    });
+    
+    app.post('/api/movBodegas/I015/listarDocumentoId', function (req, res) {
+        c_i015.listarDocumentoId(req, res);
+    });
 //
 //    app.post('/api/movBodegas/I015/crearDocumento', function (req, res) {
 //        c_i015.crearDocumento(req, res);

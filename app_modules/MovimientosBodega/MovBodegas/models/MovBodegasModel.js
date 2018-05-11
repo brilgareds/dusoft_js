@@ -825,6 +825,10 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
         select3 = " dc.numero as numero_factura, dc.tercero_id, dc.tipo_id_tercero, dc.prefijo";
         inner = " join inv_bodegas_movimiento_tmp_devolucion_cliente as dc on (t.usuario_id = dc.usuario_id and t.doc_tmp_id = dc.doc_tmp_id)";
     }
+    if (parametro.tipoDocGeneralId === 'I015') {
+        select3 = " it.numero as numero_factura, it.prefijo";
+        inner = " join inv_bodegas_movimiento_tmp_ingresos_traslados_farmacia as it on (t.usuario_id = it.usuario_id and t.doc_tmp_id = it.doc_tmp_id)";
+    }
 
     if (parametro.numeroDocumento !== '') {
         where = " AND t.doc_tmp_id ilike '%" + parametro.numeroDocumento + "%'";

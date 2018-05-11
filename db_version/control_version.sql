@@ -273,3 +273,21 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.42', 'DOCUMENTOS BODEGA', 'se elimina la opcion de modificar productos para el documento de bodega (I012)');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.43  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.43', 'FORMULACION EXTERNA', 'Se ajustan impresiones para que muestren el consecutivo del producto y no el codigo completo, se ajusta la vista de llamadas para que sea responsive');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.44  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.44', 'FACTURACION CLIENTES', 'se modifica la base que apunta a la generacion de impuestos');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.45  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.45', 'DOCUMENTOS BODEGA', 'se corrige error en buscador de productos E009');
+COMMIT TRANSACTION;

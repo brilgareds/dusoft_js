@@ -83,7 +83,8 @@
             <tr>
                 <td align="center">
                     <table  width="100%" class="modulo_table_list" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:12px; border-collapse :collapse;">
-                        <tr style="border: black 1px solid;" >  
+                        <tr style="border: black 1px solid;" >
+                            <td align="center" style="border: black 1px solid;"><b>TORRE</b></td>
                             <td align="center" style="border: black 1px solid;"><b>CODIGO</b></td>
                             <td align="center" style="border: black 1px solid;"><b>DESCRIPCI&Oacute;N</b></td>
                             <td align="center" style="border: black 1px solid;"><b>FECHA V.</b></td>
@@ -93,6 +94,7 @@
 
                         {{for detalle}}
                         <tr>
+                            <td width='5%' style="border: black 1px solid;">{{:torre}}</td>
                             <td width='12%' style="border: black 1px solid;">{{:codigo_producto}}</td>
                             <td width='52%' style="border: black 1px solid;">{{:nombre}}</td>
                             <td width='10%' align="center" style="border: black 1px solid;">{{:fecha_vencimiento}}</td>

@@ -451,31 +451,30 @@ DocumentoBodegaI015.prototype.consultar_detalle_documento = function (parametro,
         callback(err);
     });
 };
-//
-///**
-// * @author German Galvis
-// * +Descripcion consulta la bodega que pertenezca a la empresa y la bodega
-// * seleccionada
-// * @params obj: bodega
-// * @fecha 2018-05-07
-// */
-//DocumentoBodegaE017.prototype.consultarFarmaciaDestino = function (parametro, callback) {
-//    var query = G.knex
-//            .select()
-//            .from('inv_bodegas_movimiento_traslados_farmacia as a')
-//            .innerJoin("bodegas as b", function () {
-//                this.on("b.empresa_id", "a.farmacia_id")
-//                        .on("b.centro_utilidad", "a.centro_utilidad")
-//                        .on("b.bodega", "a.bodega")
-//            })
-//            .where('a.prefijo', parametro.prefijoDocumento)
-//            .andWhere('a.numero', parametro.numeracionDocumento);
-//
-//    query.then(function (resultado) {
-//        callback(false, resultado);
-//    }).catch(function (err) {
-//        console.log("err [consultarFarmaciaDestino]:", err);
-//        callback(err);
-//    });
-//};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta la bodega de origen
+ * @params obj: bodega
+ * @fecha 2018-05-11
+ */
+DocumentoBodegaI015.prototype.consultarFarmaciaOrigen = function (parametro, callback) {
+    var query = G.knex
+            .select('b.*')
+            .from('inv_bodegas_movimiento as a')
+            .innerJoin("bodegas as b", function () {
+                this.on("b.empresa_id", "a.empresa_id")
+                        .on("b.centro_utilidad", "a.centro_utilidad")
+                        .on("b.bodega", "a.bodega");
+            })
+            .where('a.prefijo', parametro.prefijoFactura)
+            .andWhere('a.numero', parametro.numeroFactura);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [consultarFarmaciaOrigen]:", err);
+        callback(err);
+    });
+};
 module.exports = DocumentoBodegaI015;

@@ -2,6 +2,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
     
     controllers.controller('FormulacionExternaPendientesController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', "API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", formulacionExternaPendientesController]);
     controllers.controller('ProductosController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance',"API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", productosController]);
+    controllers.controller('CambioCantidadPendienteController', ['$scope', '$rootScope', "Request", "$filter", '$state', '$modal', '$modalInstance',"API", "AlertService", 'localStorageService', "Usuario", "socket", "$timeout", "Empresa", "formulaExternaService", "Usuario", cambioCantidadController]);
 
     function formulacionExternaPendientesController($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
         $scope.root = {
@@ -15,6 +16,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         $scope.abrirModalGenerarEntrega = abrirModalGenerarEntrega;
         $scope.imprimirMedicamentosPendientesDispensados = imprimirMedicamentosPendientesDispensados;
         $scope.abrirModalDescartarPendiente = abrirModalDescartarPendiente;
+        $scope.abrirModalCambioCantidadPendiente = abrirModalCambioCantidadPendiente;
         $scope.abrirModalProductos = abrirModalProductos;
 
         $scope.listaPendientes = {
@@ -56,8 +58,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                                 <li ng-if="sw_cambio_codigo_pendiente">\
                                   <a href="javascript:void(0);" ng-click="abrirModalProductos(row.entity)" class="glyphicon glyphicon-transfer">&nbsp;Cambiar</a>\
                                 </li>\
+                                <li>\
+                                  <a href="javascript:void(0);" ng-click="abrirModalCambioCantidadPendiente(row.entity)" class="glyphicon glyphicon-wrench">&nbsp;Cantidad</a>\
+                                </li>\
                               </ul>\
                             </div>'
+
                 }
             ]
         };
@@ -185,7 +191,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         } 
         
         function abrirModalProductos(medicamento){
-
             $scope.opts = {
                 backdropClick: true,
                 dialogFade: false,
@@ -199,6 +204,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             //datos para compartir con el controlador del modal
             formulaExternaService.shared = {
                 medicamentoACambiar : medicamento,
+                formula_id : $scope.root.formula.formula_id
+            };
+
+            var modalInstance = $modal.open($scope.opts);
+            modalInstance.result.then(function(item){
+                cargarGrillas($scope.root.formula.formula_id);
+            },function(){
+                cargarGrillas($scope.root.formula.formula_id);
+            });
+        }
+
+        function abrirModalCambioCantidadPendiente(medicamento){
+            $scope.opts = {
+                backdropClick: true,
+                dialogFade: false,
+                keyboard: true,
+                windowClass: 'app-modal-window-sm',
+                templateUrl: 'views/formulacionExterna/modal/cambioCantidadPendiente.html',
+                scope: $scope,
+                controller: "CambioCantidadPendienteController"
+            };
+
+            //datos para compartir con el controlador del modal
+            formulaExternaService.shared = {
+                medicamento: medicamento,
                 formula_id : $scope.root.formula.formula_id
             };
 
@@ -354,5 +384,41 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             };
         }
         init();
+    }
+    //cambioCantidadController
+    function cambioCantidadController($scope, $rootScope, Request, $filter, $state, $modal, $modalInstance, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, formulaExternaService, Usuario) {
+
+       $scope.cerrar = cerrar;
+       $scope.guardarNuevaCantidadPendiente = guardarNuevaCantidadPendiente;
+
+       function cerrar(){
+            $modalInstance.close();
+       }
+
+       function guardarNuevaCantidadPendiente(esm_pendiente_dispensacion_id, cantidad){
+            var cantidad = parseInt(cantidad);
+            console.log(cantidad);
+            if(cantidad == 0){
+                AlertService.mostrarMensaje("warning", 'Digite una cantidad mayor a cero');
+                return;
+            }
+
+            formulaExternaService.guardarNuevaCantidadPendiente(esm_pendiente_dispensacion_id, cantidad, function(error, resultado){
+                if(error) {
+                    AlertService.mostrarMensaje("warning", 'Ocurrió un error mientras se modificaba la cantidad, intente de nuevo.');
+                    return;
+                }
+
+                $modalInstance.close();
+            });
+       }
+
+
+       function init(){
+            $scope.cantidad = 0;
+            $scope.medicamento = formulaExternaService.shared.medicamento;
+       }
+
+       init();
     }
 });

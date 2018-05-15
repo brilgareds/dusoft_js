@@ -1544,6 +1544,24 @@ FormulacionExternaModel.prototype.updateAutorizacionPorMedicamento = function(fe
     });
 };
 
+FormulacionExternaModel.prototype.guardarNuevaCantidadPendiente = function(esm_pendiente_dispensacion_id, cantidad, callback) {
+    var query = G.knex('esm_pendientes_por_dispensar')
+        .where('esm_pendiente_dispensacion_id', esm_pendiente_dispensacion_id)
+        .update({
+            cantidad : cantidad
+        });
+
+    
+    G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado){ 
+       callback(false, resultado);
+    }).catch(function(err){ 
+        console.log('Error mientras se cambia cantidad pendiente', err);
+        G.logError("err (/catch) FormulacionExternaModel [guardarNuevaCantidadPendiente]: " +  err);
+        callback("Error al cambiar cantidad pendiente del medicamento");  
+    });
+};
+
 FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensarNoOcultos = function(formula_id, callback){
     var columnas = ["producto_id AS codigo_medicamento", G.knex.raw("SUM(numero_unidades) AS total"), G.knex.raw("fc_descripcion_producto_alterno(codigo_medicamento) AS descripcion_prod")];
     var query = G.knex.select(columnas)
@@ -1772,7 +1790,6 @@ FormulacionExternaModel.prototype.listarMedicamentosEsmXLote = function(formula_
 };
 
 FormulacionExternaModel.prototype.obtenerPendientesEnt = function(formula_id, imprimir_actual, callback){
-    console.log('Obtener pendientes ent formula_id', formula_id, 'imprimir_actual', imprimir_actual);
     var date = new Date();
     var fecha_hoy = date.getFullYear()  + '-' +("0" + (date.getMonth() + 1)).slice(-2) + '-' + ("0" + date.getDate()).slice(-2);
   //G.knex.raw("round(dd.cantidad) as numero_unidades"),

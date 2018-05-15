@@ -242,7 +242,6 @@ define([
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "8%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                        <button  class="btn btn-info btn-xs btnClick" ng-click="btn_modificar_producto(row.entity)" ng-disabled="habilitarModificacion()"><span class="glyphicon glyphicon-pencil"></span></button>\
                                         <button class="btn btn-success btn-xs "  ng-click="btn_adicionar_producto(row.entity)" ng-disabled="habilitarAdicion(row.entity)" id="agregarPro"><span class="glyphicon glyphicon-plus-sign"></span></button>\
                                        </div>'}
                 ]
@@ -260,15 +259,6 @@ define([
 
                 if (parseInt(producto.cantidad_ingresada) > parseInt(producto.cantidad_resta)) {
                     AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar la cantidad enviada");
-                    disabled = true;
-                }
-
-                return disabled;
-            };
-
-            $scope.habilitarModificacion = function () {
-                var disabled = false;
-                if ($scope.doc_tmp_id === "00000") {
                     disabled = true;
                 }
 
@@ -392,32 +382,7 @@ define([
             };
 
             that.init(function () {
-//                console.log("hola");
             });
-
-            //  Abre slider para gestionar productos
-            $scope.btn_modificar_producto = function (fila) {
-                $scope.opts = {
-                    size: 'lg',
-                    backdrop: 'static',
-                    dialogClass: "modificar_productos",
-                    templateUrl: 'views/I012/ventanaModificacion.html',
-                    scope: $scope,
-                    controller: "I012ModificarProductoController",
-                    resolve: {
-                        fila: function () {
-                            return fila;
-                        },
-                        empresa: function () {
-                            return  Usuario.getUsuarioActual();
-                        }
-                    }
-                };
-                var modalInstance = $modal.open($scope.opts);
-                modalInstance.result.then(function () {
-
-                });
-            };
 
             $scope.grabar_documento_tmp = function () {
                 that.guardarNewDocTmp();
@@ -729,7 +694,7 @@ define([
 
             $scope.isNoTmp = function () {
                 var disabled = false;
-                if ($scope.doc_tmp_id === "00000" && ($scope.documento_ingreso.getFacturaDevolucion() === undefined ||$scope.documento_ingreso.getFacturaDevolucion() === null)) {
+                if ($scope.doc_tmp_id === "00000" && ($scope.documento_ingreso.getFacturaDevolucion() === undefined || $scope.documento_ingreso.getFacturaDevolucion() === null)) {
                     disabled = true;
                 }
                 return disabled;

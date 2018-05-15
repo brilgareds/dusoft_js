@@ -1447,7 +1447,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             def.resolve();
         }else{
-         
+             
         return G.Q.ninvoke(that.m_facturacion_clientes,'generarTemporalFacturaConsumo',
             {documento_facturacion:documentoFacturacion,
                 consultar_tercero_contrato:consultarTerceroContrato,
@@ -1459,12 +1459,13 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
              
         if(resultado){
-       //     parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+            if(parametros.id_factura_xconsumo === undefined){
+            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+            }
         }
-        
-        
-        var parametrosDetalleFactura = {
-            id_factura_xconsumo:parametros.id_factura_xconsumo, 
+       
+        var parametrosDetalleFactura = {    
+            id_factura_xconsumo : parametros.id_factura_xconsumo,
             tipo_id_vendedor: 'NIT', 
             vendedor_id: '830080649', 
             pedido_cliente_id: parametros.pedidos.pedido, 
@@ -1479,8 +1480,8 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             cantidad_despachada: parametros.documentos.cantidadNueva, 
             cantidad_devuelta: 0, 
             porc_iva: parametros.documentos.porcIva
-        }
-        
+        };
+                
         return G.Q.ninvoke(that.m_facturacion_clientes,'insertarDetalleFacturaConsumo',parametrosDetalleFactura);
             
         
@@ -2465,6 +2466,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function(req, res)
          
         if(resultado){   
             parametrosReporte.cabecera = resultado[0];
+
             return G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id)
         }else{
             throw {msj:'[listarFacturasGeneradas]: Consulta sin resultados', status: 404}; 
@@ -2545,17 +2547,21 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function(req, res)
                 subTotal += parseFloat(row.subtotal_factura);
                 totalIva += parseFloat(row.iva_total);
             });              
-             
+         
             if(subTotal >= resultado[0].base_rtf){
-                retencionFuente = (subTotal * ((parametrosReporte.cabecera.porcentaje_rtf) / 100));
+                
+//                retencionFuente = (subTotal * ((parametrosReporte.cabecera.porcentaje_rtf) / 100));
+                retencionFuente = (subTotal * ((resultado[0].porcentaje_rtf) / 100));
             }
-        
+         
             if(subTotal >= resultado[0].base_ica){
-                retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
+//                retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
+                retencionIca = (subTotal) * (parseFloat(resultado[0].porcentaje_ica) / 1000);
             }
 
             if(subTotal >= resultado[0].base_reteiva){
-                retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
+//                retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
+                retencionIva = (totalIva) * (parseFloat(resultado[0].porcentaje_reteiva) / 100);
             }
 
             totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
@@ -2840,8 +2846,9 @@ function __generarPdf(datos, callback){
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/FacturacionClientes/reports/'+datos.archivoHtml, 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
             recipe: "html",
-            engine: 'jsrender',
+            engine: 'jsrender',           
             phantom: {
                 margin: "10px",
                 width: '700px'

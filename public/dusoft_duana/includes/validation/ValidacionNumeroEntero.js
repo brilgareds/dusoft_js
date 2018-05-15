@@ -21,4 +21,44 @@ define(["angular","js/directive"], function(angular, directive){
         };
     });
 
+    directive.directive('validacionCaracteresEspeciales', function() {
+        function link(scope, elem, attrs, ngModel) {
+            ngModel.$parsers.push(function(viewValue) {
+              var reg = /^[^`~!@#$%\^&*()_+={}|[\]\\:';"<>?¡/¿,.°¬´¨-]*$/;
+              // if view values matches regexp, update model value
+              if (!viewValue){
+                return null;
+              }
+              if (viewValue.match(reg)) {
+                return viewValue;
+              }
+              // keep the model value as it is
+              var transformedValue = ngModel.$modelValue;
+              ngModel.$setViewValue(transformedValue);
+              ngModel.$render();
+              return transformedValue;
+            });
+        }
+
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: link
+        };      
+    });
+
+    directive.directive('ngEnter', function () {
+      return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if (event.which === 13) {
+                scope.$apply(function () {
+                    scope.$eval(attrs.ngEnter);
+                });
+                event.preventDefault();
+            }
+        });
+    };
+  })
+
+
 });

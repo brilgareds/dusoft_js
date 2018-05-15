@@ -676,6 +676,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     where(function(){
         this.where("a.farmacia_id", empresa_id);
         this.orWhere("a.farmacia_id", '03');
+        //this.andWhere("d.empresa_id", empresa_id_actual);
         
     }).
     andWhere(function() {

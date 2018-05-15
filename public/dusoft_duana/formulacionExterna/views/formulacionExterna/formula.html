@@ -1,0 +1,251 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="panel panel-info">
+	        <div class="panel-heading clearfix">
+	        	<div class="col-sm-2 col-md-2 col-lg-1" >
+	        		<h3 style="margin-top: 0.2em !important;"><strong>Paciente</strong></h3>
+				</div>
+	        	<div class="col-sm-6 col-md-6 col-lg-3" >
+					<div class="input-group">
+					    <div class="input-group-btn">
+					        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.tipoDocumentoSeleccionado.descripcion}} <span class="caret"></span> </button>
+					        <ul class="dropdown-menu" ng-selected="">
+					            <li ng-repeat="tipoDocumento in tipoDocumentos">
+					                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(tipoDocumento)">
+					                    {{tipoDocumento.descripcion}}
+					                </a>
+					            </li>
+					        </ul>
+					    </div> 
+					    <input type="text" class="form-control" ng-keypress="buscarFormulas($event, 0);" ng-enter="obtenerAfiliado(root.tipoDocumentoSeleccionado.id, root.documento)"  ng-model="root.documento" placeholder="Buscar" name="" id="" required/>
+					    <div class="input-group-btn">
+					        <button class="btn btn-success pull-right" type="submit" ng-click ="obtenerAfiliado(root.tipoDocumentoSeleccionado.id, root.documento)"><i class="glyphicon glyphicon-search"></i></button>
+					    </div>
+					</div>
+				</div>
+
+	        </div>
+	        <div class="panel-body">
+	            <div class="row">
+	                <div class="col-md-2">
+	                	<fieldset>
+                            <legend><strong>Identificación</strong></legend> 
+                            <div class="row">  
+                                <div class="col-md-12" style="margin-top: -14px">                                          
+                                    <h4 class="ng-binding">
+                                        {{root.afiliado.mostrarPacientes()[0].getTipoIdPaciente()}} {{root.afiliado.mostrarPacientes()[0].getPacienteId()}}
+                                    </h4>
+                                </div>
+                            </div>
+                        </fieldset>
+	                </div>
+	                <div class="col-md-3">
+	                	<fieldset>
+                            <legend><strong>Nombre</strong></legend> 
+                            <div class="row">  
+                                <div class="col-md-12" style="margin-top: -14px">                                          
+                                    <h4 class="ng-binding">
+                                        {{root.afiliado.mostrarPacientes()[0].getNombres()}} {{root.afiliado.mostrarPacientes()[0].getApellidos()}}
+                                    </h4>
+                                </div>
+                            </div>
+                        </fieldset>
+	                </div>
+	                <div class="col-md-4">
+	                	<fieldset>
+                            <legend><strong>Plan</strong></legend> 
+                            <div class="row">  
+                                <div class="col-md-12" style="margin-top: -14px">                                          
+                                    <h4 class="ng-binding">
+                                    	{{root.afiliado.mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()}}
+                                    </h4>
+                                </div>
+                            </div>
+                        </fieldset>
+	                </div>
+	                <div class="col-md-3">
+	                	<fieldset>
+                            <legend><strong>Rango</strong></legend> 
+                            <div class="row">  
+                                <div class="col-md-12" style="margin-top: -14px">                                          
+                                    <h4 class="ng-binding">
+                                    	{{root.afiliado.mostrarPlanAtencion()[0].getRango()}}
+                                    </h4>
+                                </div>
+                            </div>
+                        </fieldset>
+	                </div>
+	            </div>
+	            <div class="row">
+	            	<legend>
+	                <div class="col-md-2" style="margin-top: 10px;">        
+	                	<p class="input-group">
+				            <input type="text" class="form-control readonlyinput" 
+				                   datepicker-popup="{{format}}" 
+				                   max-date="maxDate" 
+				                   ng-model="root.formula.fecha"
+				                   is-open="root.datepicker_fecha_inicial" 
+				                   current-text="Hoy" 
+				                   placeholder="Fecha" 
+				                   show-weeks="false" 
+				                   toggle-weeks-text="#"
+				                   />
+				            <span class="input-group-btn">
+				                <button class="btn btn-success" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()" ng-click="abrirFecha($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+				            </span>
+				        </p>
+				    </div>
+	                <div class="col-md-2" style="margin-top: 10px;">
+					    <input type="text" class="form-control" validacion-caracteres-especiales ng-model="root.formula.formula_papel" placeholder="Número formula" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()"/>
+	                </div>
+	                <div class="col-md-2" style="margin-top: 10px;">
+			            <ui-select ng-model="$parent.root.formula.tipoFormula" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()" theme="select2" class="form-control selectgeneral " style="padding-top: 0px !important">
+			                <ui-select-match  placeholder="Tipo formula" style="height: 33px !important">{{$select.selected.descripcion}}</ui-select-match>
+			                <ui-select-choices repeat="tipoFormula in  tipoFormulas | filter:$select.search">
+			                    {{tipoFormula.descripcion}}
+			                </ui-select-choices>
+			            </ui-select>
+	                </div>
+                    <div class="col-md-4" style="margin-top: 10px;">                                          
+                        <ui-select ng-model="root.formula.profesional" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()" theme="select2" class="form-control selectgeneral" style="padding-top: 0px !important">
+                            <ui-select-match  placeholder="Profesional" style="height: 33px !important">{{ $select.selected.nombre }}</ui-select-match>
+                            <ui-select-choices refresh="buscar('profesional',$select.search)" refresh-delay="0" repeat="profesional in profesionales | filter:$select.search">
+                                {{ profesional.nombre }}
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+	                <div class="col-md-2" style="margin-top: 10px;">                                          
+                        <ui-select ng-model="root.formula.municipio" ng-disabled="!root.afiliado.mostrarPacientes()[0].getPacienteId()" theme="select2" class="form-control selectgeneral" style="padding-top: 0px !important">
+                            <ui-select-match  placeholder="Municipio" style="height: 33px !important">{{ $select.selected.nombre }}</ui-select-match>
+                            <ui-select-choices refresh="buscar('municipio',$select.search)" refresh-delay="0" repeat="municipio in municipios | filter:$select.search">
+                                {{ municipio.nombre }}
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+	            </div>
+
+	        </div>
+	        <div class="panel-footer">
+	        	<div class="row"> 
+	        		<div class="col-md-1 col-md-offset-11"> 
+	        			<button class="btn btn-success pull-right" type="button" ng-disabled="!root.formula.fecha || !root.formula.formula_papel || !root.formula.tipoFormula || !root.formula.profesional" ng-click="guardarFormulaExternaTmp()">
+	        				<i class="glyphicon glyphicon-floppy-disk"></i>
+					      	<span ng-if="!root.formula.tmp_formula_id">Guardar</span>
+					      	<span ng-if="root.formula.tmp_formula_id">Actualizar</span>
+					    </button>
+	        		</div>
+	        	</div>
+	        </div>
+
+	        <div class="panel-body">
+	        	<div class="row" ng-show="root.formula.tmp_formula_id">
+	              	<div class="col-md-5">
+	              		<table class="table table-striped">
+						    <thead>
+						      	<tr>
+						        	<th colspan="2"><h4><strong>Diagnóstico</strong></h4></th>
+						        	<th>
+						        		<button class="btn btn-success pull-right" type="button" ng-click="abrirModal('diagnostico')">
+								        	<i class="glyphicon glyphicon-plus"></i>
+								        </button>
+						        	</th>
+						      	</tr>
+						    </thead>
+						    <tbody>
+							    <tr ng-repeat="diagnostico in diagnosticos">
+							        <td colspan="2">{{diagnostico.nombre}}</td>
+							        <td>
+							        	<button class="btn btn-danger pull-right" type="button" ng-click="eliminarDiagnosticoTmp(root.formula.tmp_formula_id, diagnostico.id)">
+								        	<i class="glyphicon glyphicon-remove"></i>
+								        </button>
+								    </td>
+							    </tr>
+						    </tbody>
+					  	</table>
+	              	</div>    
+	            </div>
+	            <div class="row" style="margin-top: 10px;">
+	            	<div class="col-md-12" >
+    		            <div class="panel panel-info">
+                            <div class="panel-heading clearfix">
+                                <div class="pull-center">
+                                    <h4 class="text-center"><strong>Medicamentos solicitados <button class="btn btn-success" style="margin-left: 5px;" ng-disabled="!root.formula.tmp_formula_id" ng-click="abrirModalBusquedaMedicamentos()" type="button">
+										Adicionar medicamentos &nbsp;<i class="glyphicon glyphicon-plus"></i>
+									</button></strong></h4>
+                                </div>
+                            </div>
+                        </div>
+	            	</div>
+	            </div>
+	            <div class="row">
+	            	<div class="col-sm-12 col-md-12 col-lg-12">
+		            	<!--<div class="table-responsive">-->
+		                    <div class="" style="height: 350px;" ng-grid="lista_productos_seleccionados">
+		                    </div>
+		                <!--</div>-->
+	            	</div>
+	            </div>
+	            <!--
+	           	<div class="row" style="margin-top: 10px;">
+	            	<div class="col-md-1 col-md-offset-5">
+        				<button class="btn btn-success" type="button" ng-click="">
+	        				<i class="glyphicon glyphicon-chevron-left"></i>
+					    </button>
+	            	</div>
+	            	<div class="col-md-1">
+        				<button class="btn btn-success" type="button" ng-click="">
+	        				<i class="glyphicon glyphicon-chevron-right"></i>
+					    </button>
+	            	</div>
+	            </div>-->
+
+	           	<div class="row" style="margin-top: 10px;">
+	            	<div class="col-md-12" >
+    		            <div class="panel panel-info">
+                            <div class="panel-heading clearfix">
+                                <div class="pull-center">
+                                    <h4 class="text-center"><strong>Medicamentos temporales</strong></h4>
+                                </div>
+                            </div>
+                        </div>
+	            	</div>
+	            </div>
+
+	            <div class="row">
+	            	<div class="col-md-12">
+		            	<!--<div class="table-responsive" >-->
+		                    <!--<div class="defaultGrid grid-responsive" style="height: 350px;" ng-grid="lista_productos_lotes_seleccionados">-->
+		                    <div class="" style="height: 350px;" ng-grid="lista_productos_lotes_seleccionados">
+		                    </div>
+		                <!--</div>-->
+	            	</div>
+	            </div>
+	           	<!--<div class="row" style="margin-top: 10px;">
+	            	<div class="col-md-1 col-md-offset-5">
+        				<button class="btn btn-success" type="button" ng-click="">
+	        				<i class="glyphicon glyphicon-chevron-left"></i>
+					    </button>
+	            	</div>
+	            	<div class="col-md-1">
+        				<button class="btn btn-success" type="button" ng-click="">
+	        				<i class="glyphicon glyphicon-chevron-right"></i>
+					    </button>
+	            	</div>
+	            </div>-->
+	            <div class="modal-footer col-md-12 ng-scope" >
+	            	<button class="btn btn-success ng-scope" ng-click="volver()" >
+	                    Volver
+	                </button>
+	                <!--<button class="btn btn-default ng-scope" ng-click="buscarFormulas()">
+	                    <span class="glyphicon glyphicon-cog"></span> Boton de Prueba
+	                </button>-->
+		            <button class="btn btn-success ng-scope" ng-click="abrirModalGenerarEntrega()" ng-disabled="root.productosFormulados.length == 0">
+	                    <span class="glyphicon glyphicon-cog"></span> Realizar entrega
+	                </button>
+	        	</div>
+	        </div>
+
+	    </div>
+	</div>
+</div>
+<visualizar-reporte></visualizar-reporte>

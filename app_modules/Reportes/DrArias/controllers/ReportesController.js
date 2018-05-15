@@ -428,7 +428,7 @@ function __organizaRotacion0(index, data, resultado, callback) {
 
     if (_resultado) {
         callback(false, sortJSON(resultado, 'molecula', 'asc'));
-    }
+}
 
     var resultColumna = {
         codigo_poducto: _resultado.codigo_producto,
@@ -515,8 +515,8 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     });
 }
 ;
-
-
+    
+    
 /**
  * @author Andres M Gonzalez
  * +Descripcion controlador que genera detalle

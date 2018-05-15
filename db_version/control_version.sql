@@ -225,3 +225,81 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.34', 'PEDIDOS', 'se corrige consulta consultar_detalle_pedido ya que traía la fecha_verificacion asc y deberia ser desc');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.35  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.35', 'DOCUMENTOS BODEGA', 'se agrega nuevo documento de bodega (I012)');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.36  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.36', 'FACTURA CLIENTES', 'se modifica controlador porque no dejaba crear inv_facturas_xconsumo_tmp_d ya que no se creaba primero inv_facturas_xconsumo_tmp ');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.37  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.37', 'FACTURA CLIENTES', 'se modifica controlador porque no dejaba crear inv_facturas_xconsumo_tmp_d ya que no se creaba primero inv_facturas_xconsumo_tmp ');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.38  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.38', 'FORMULACION EXTERNA', 'Nuevo modulo formulacion externa');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.39  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.39', 'FORMULACION EXTERNA', 'Validacion al crear una nueva formula, si el paciente no existe emite mensaje de advertencia');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.40  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.40', 'FACTURACION CLIENTES', 'se elimina la funcion de postgres to_char(round((a.valor_unitario * a.cantidad),2),LFM9,999,999.00) porque no muestra el valor en los formulario');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.41  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.41', 'FORMULACION EXTERNA' , 'BugFix en el responsive del modulo y correción de impresiones.');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.42  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.42', 'DOCUMENTOS BODEGA', 'se elimina la opcion de modificar productos para el documento de bodega (I012)');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.43  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.43', 'FORMULACION EXTERNA', 'Se ajustan impresiones para que muestren el consecutivo del producto y no el codigo completo, se ajusta la vista de llamadas para que sea responsive');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.44  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.44', 'FACTURACION CLIENTES', 'se modifica la base que apunta a la generacion de impuestos');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.45  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.45', 'DOCUMENTOS BODEGA', 'se corrige error en buscador de productos E009');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.46  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.46', 'FORMULACION EXTERNA', 'Nueva funcionalidad cambio de cantidad pendiente');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.47  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.47', 'WS', 'se modifica url del ws de Santa Sofia');
+COMMIT TRANSACTION;

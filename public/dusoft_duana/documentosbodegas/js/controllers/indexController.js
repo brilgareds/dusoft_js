@@ -18,10 +18,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "Usuario",
         "GeneralService",
         "E009Service",
+        "E017Service",
         "I011Service",
         "I012Service",
+        "I015Service",
         "TipoDocumentos",
-        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion, GeneralService, E009Service, I011Service, I012Service, TipoDocumentos) {
+        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion, GeneralService,
+                E009Service, E017Service, I011Service, I012Service, I015Service, TipoDocumentos) {
 
             var that = this;
             $scope.claseDoc;
@@ -137,6 +140,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     if (documento.tipo_doc_bodega_id === 'E009') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, empresa_destino: documento.empresa_destino};
                     }
+                    if (documento.tipo_doc_bodega_id === 'E017') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, bodega_destino: documento.bodegatf,
+                            centro_utilidad: documento.centrotf, empresa_id: documento.farmacia_id};
+                    }
                     if (documento.tipo_doc_bodega_id === 'I011') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero: documento.numero_edb,
                             prefijo_edb: documento.prefijo_edb, farmacia_id: documento.farmacia_id, bodega_seleccionada: documento.bodega};
@@ -144,6 +151,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     if (documento.tipo_doc_bodega_id === 'I012') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero_factura: documento.numero_factura,
                             prefijoFactura: documento.prefijo_idc, terceroId: documento.tercero_id, tipoTerceroId: documento.tipo_id_tercero.trim()};
+                    }
+                    if (documento.tipo_doc_bodega_id === 'I015') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero: documento.numero_factura,
+                        prefijo: documento.prefijo_idc};
                     }
                     var datos = {bodegas_doc_id: documento.bodegas_doc_id, prefijo: documento.prefijo, numero: numero, datosAdicionales: datosAdicionales};
                     localStorageService.add("documento_bodega_" + documento.tipo_doc_bodega_id, datos);
@@ -264,8 +275,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      <button class="btn btn-default btn-xs" ng-hide="ocultarAutorizacion(row.entity)" ng-click="btn_imprimirAutorizacion(row.entity)">Imprimir <span class="glyphicon glyphicon-print"></span></button>\
                     </div>\
                  </div>'
-                                //{width: "7%", displayName: "Acciónes", cellClass: "txt-center",
-//                        cellTemplate: '<div class="btn-group">\
                     }
                 ]
             };
@@ -273,7 +282,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.ocultarAutorizacion = function (documento) {
                 var disabled = false;
 
-                if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012") {
+                if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012" || documento.tipo_movimiento === "E017") {
                     disabled = true;
                 }
                 return disabled;
@@ -342,6 +351,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 } else if (documentos.tipo_movimiento === "E009") {
 
                     Request.realizarRequest(API.E009.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "E017") {
+                    Request.realizarRequest(API.E017.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
                         }
@@ -470,11 +489,17 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.tipo_doc_bodega_id === "E009") {
                                 that.eliminarGetDocTemporalE009(data);
                             }
+                            if (data.tipo_doc_bodega_id === "E017") {
+                                that.eliminarGetDocTemporalE017(data);
+                            }
                             if (data.tipo_doc_bodega_id === "I011") {
                                 that.eliminarGetDocTemporalI011(data);
                             }
                             if (data.tipo_doc_bodega_id === "I012") {
                                 that.eliminarGetDocTemporalI012(data);
+                            }
+                            if (data.tipo_doc_bodega_id === "I015") {
+                                that.eliminarGetDocTemporalI015(data);
                             }
                             $modalInstance.close();
                         };
@@ -520,6 +545,29 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 };
                 E009Service.eliminarGetDocTemporal(obj, function (data) {
+                    if (data.status === 200) {
+                        that.listarDocumetosTemporales(true);
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                    if (data.status === 404) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
+
+            that.eliminarGetDocTemporalE017 = function (datos) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        doc_tmp_id: datos.doc_tmp_id
+                    }
+                };
+                E017Service.eliminarGetDocTemporal(obj, function (data) {
                     if (data.status === 200) {
                         that.listarDocumetosTemporales(true);
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -703,6 +751,30 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 return disabled;
             };
 
+            that.eliminarGetDocTemporalI015 = function (datos) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        doc_tmp_id: datos.doc_tmp_id
+                    }
+                };
+
+                I015Service.eliminarGetDocTemporal(obj, function (data) {
+                    if (data.status === 200) {
+                        that.listarDocumetosTemporales(true);
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                    if (data.status === 404) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
+            
             $scope.onBuscar = function (claseDoc, descripDoc) {
                 $scope.selecciontipo = " " + descripDoc + " ";
                 that.getTiposDocumentosBodegaEmpresa(claseDoc);

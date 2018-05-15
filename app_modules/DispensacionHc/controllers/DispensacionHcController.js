@@ -847,10 +847,8 @@ DispensacionHc.prototype.eliminarTemporalFormula  = function(req, res){
  *              
  */
 DispensacionHc.prototype.listarTipoFormula = function(req, res){
-   
     var that = this;
     var args = req.body.data;
-   
     if (!args.listar_tipo_formula) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_tipo_formula: []}));
         return;

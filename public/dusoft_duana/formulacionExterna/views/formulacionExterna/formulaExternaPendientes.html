@@ -1,0 +1,155 @@
+<div ng-controller="FormulacionExternaPendientesController">        
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-heading clearfix">
+                    <div class="pull-left">
+                        <h4 class="text-center"><strong>Informacion Formula</strong></h4>
+                    </div>
+                </div>
+                <div class="panel-body">                    
+                    <div class="row">
+                        <div class="col-md-2">
+                            <fieldset>
+                                <legend><strong>#Formula</strong></legend> 
+                                <div class="row">  
+                                    <div class="col-md-10" style="margin-top: -14px">                                          
+                                        <h4>
+                                            {{root.formula.formula_papel}}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>                        
+                        <div class="col-md-2">
+                            <fieldset>
+                                <legend><strong>Identificacion</strong></legend> 
+                                <div class="row">
+                                    <div class="col-md-7" style="margin-top: -14px">  
+                                        <h4>{{root.formula.tipo_id_paciente}} {{root.formula.paciente_id}}</h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <legend><strong>Paciente</strong></legend> 
+                                <div class="row">  
+                                    <div class="col-md-12" style="margin-top: -14px">                                        
+                                        <h4>
+                                            {{root.formula.nombre_paciente}}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>  
+                        <div class="col-md-3">
+                            <fieldset>
+                                <legend><strong>Plan</strong></legend> 
+                                <div class="row">  
+                                    <div class="col-md-12" style="margin-top: -14px">                                        
+                                        <h4>
+                                            {{root.formula.plan_descripcion}}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>  
+                        <div class="col-md-2">
+                            <fieldset>
+                                <legend><strong>Fecha formula</strong></legend> 
+                                <div class="row">  
+                                    <div class="col-md-7" style="margin-top: -14px">                                          
+                                        <h4>{{root.formula.fecha_formula}}</h4>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>                     
+                    </div>
+                    <div class="row">  
+                        <div class="col-md-12">
+                            <tabset>
+                                <tab heading="Dispensar medicamentos" >
+                                    <br>
+                                    <div class="panel panel-info">
+                                        <div class="panel-heading clearfix">
+                                            <div class="pull-center">
+                                                <h4 class="text-center"><strong>Medicamentos pendientes</strong></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">  
+                                        <div class="col-md-12">
+
+                                            <!--<div class="table-responsive" >-->
+                                                <!--<div class="defaultGrid grid-responsive" ng-grid="listaPendientes" style="clear:both; height: 350px;" > </div>-->
+                                                <div class="" ng-grid="listaPendientes" style="clear:both; height: 350px;" > </div>
+                                            <!--</div>-->
+
+                                        </div>
+                                    </div>   
+                                </tab>                                                                                      
+                            </tabset>
+                            <br>
+                                <div class="panel panel-info">
+                                    <div class="panel-heading clearfix">
+                                        <div class="pull-center">
+                                            <h4 class="text-center"><strong>Medicamentos temporales</strong></h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">  
+                                    <div class="col-md-12">
+                                        <!--<div class="table-responsive" >-->
+                                            <!--<div class="defaultGrid grid-responsive" ng-grid="listaTemporales" style="clear:both; height: 350px;" > </div>-->
+                                            <div class="" ng-grid="listaTemporales" style="clear:both; height: 350px;" > </div>
+                                        <!--</div>-->
+                                    </div>
+                                </div>   
+                            <br>
+
+                            <!--Acciones Cotizacion/ Pedido -->    
+                            <div class="modal-footer col-md-12" ng-if="!datos_view.cartera">
+
+                                <button class="btn btn-success" ng-click="volver()" >
+                                    <span class="glyphicon glyphicon-ok" ></span> volver
+                                </button>
+
+                                <button class="btn btn-success"  ng-click="abrirModalGenerarEntrega()" ng-if="root.medicamentosTemporales.length > '0'">
+                                    <span class="glyphicon glyphicon-cog" ></span> Realizar entrega
+                                </button>
+
+                                <button class="btn btn-success"  ng-click="imprimirMedicamentosPendientes()" ng-if="showBtnImprimir">
+                                    <span class="glyphicon glyphicon-cog" ></span> Imprimir pendientes
+                                </button>
+
+                                <button class="btn btn-success"  ng-click="imprimirMedicamentosDispensados()" ng-if="showBtnImprimir">
+                                    <span class="glyphicon glyphicon-cog" ></span> Imprimir dispensados
+                                </button>
+
+                                <!--<button class="btn btn-success"  ng-click="imprimirMedicamentosPendientesDispensados()" >
+                                    <span class="glyphicon glyphicon-cog" ></span> Boton test
+                                </button>-->
+
+                                <button  class="btn btn-success"  ng-click="ventanaTipoEntregaFormula(2)" ng-if="false" ng-disabled="medicamentosTemporales.length > 0">
+                                    <span class="glyphicon glyphicon-cog" ></span> Todo pendiente 
+                                </button>
+                            </div>                              
+                        </div>
+                    </div>
+                </div>
+            </div>       
+        </div>
+    </div>
+    <div  class="slide" slide-content open-callback="gestionar_productos_clientes" close-callback="cerrar_gestion_productos_clientes"   >
+        <div ng-include src="slideurl"  ></div>
+    </div>
+
+    <visualizar-reporte></visualizar-reporte>
+
+
+
+
+
+</div>
+

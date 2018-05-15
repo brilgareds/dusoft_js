@@ -805,7 +805,12 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
     var select = "''";
     var select2 = "''";
     var select3 = "''";
+    var select4 = "''";
     var where = "";
+    if (parametro.tipoDocGeneralId === 'E017') {
+        select4 = " tf.farmacia_id, tf.centro_utilidad as centroTf, tf.bodega ";
+        inner = " join inv_bodegas_movimiento_tmp_traslados_farmacia as tf on (t.usuario_id= tf.usuario_id and t.doc_tmp_id= tf.doc_tmp_id) ";
+    }
     if (parametro.tipoDocGeneralId === 'I002') {
         select = " cop.codigo_proveedor_id, oc.orden_pedido_id ";
         inner = " join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id) ";
@@ -819,6 +824,10 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
     if (parametro.tipoDocGeneralId === 'I012') {
         select3 = " dc.numero as numero_factura, dc.tercero_id, dc.tipo_id_tercero, dc.prefijo";
         inner = " join inv_bodegas_movimiento_tmp_devolucion_cliente as dc on (t.usuario_id = dc.usuario_id and t.doc_tmp_id = dc.doc_tmp_id)";
+    }
+    if (parametro.tipoDocGeneralId === 'I015') {
+        select3 = " it.numero as numero_factura, it.prefijo";
+        inner = " join inv_bodegas_movimiento_tmp_ingresos_traslados_farmacia as it on (t.usuario_id = it.usuario_id and t.doc_tmp_id = it.doc_tmp_id)";
     }
 
     if (parametro.numeroDocumento !== '') {
@@ -837,6 +846,7 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
 		SU.nombre, \
                 " + select2 + " as prefijo_edb,\
                 " + select3 + " as prefijo_idc,\
+                " + select4 + " as bodegaTf,\
                 " + select + " as orden\
 		FROM inv_bodegas_movimiento_tmp t \
 		JOIN inv_bodegas_documentos as a ON (t.bodegas_doc_id = a.bodegas_doc_id) \

@@ -504,7 +504,23 @@ define([
             };
 
             $scope.generar_documento = function () {
-                that.crearDocumento();
+                var condicion = true;
+                var productos = $scope.datos_view.listado_productos;
+                var productos_devueltos = $scope.datos_view.listado_productos_validados;
+
+                productos_devueltos.forEach(function (data) {
+                    for (var i = 0; i < productos.length; i++) {
+
+                        if (data.itemIdCompra === productos[i].item_id) {
+                            condicion = false;
+                            AlertService.mostrarMensaje("warning", "la cantidad ingresada para el producto " + data.descripcion + " tiene que coincidir con la cantidad devuelta");
+                        }
+                    }
+                });
+
+                if (condicion) {
+                    that.crearDocumento();
+                }
             };
 
             /**
@@ -515,8 +531,8 @@ define([
             that.crearDocumento = function () {
                 var usuario = Usuario.getUsuarioActual();
                 var estado = 1;
-                
-                if ($scope.datos_view.listado_productos === undefined || $scope.datos_view.listado_productos === null || $scope.datos_view.listado_productos.length<=0) {
+
+                if ($scope.datos_view.listado_productos === undefined || $scope.datos_view.listado_productos === null || $scope.datos_view.listado_productos.length <= 0) {
                     estado = 0;
                 }
 

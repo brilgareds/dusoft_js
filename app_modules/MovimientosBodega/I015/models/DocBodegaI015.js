@@ -435,18 +435,15 @@ DocumentoBodegaI015.prototype.consultar_detalle_documento = function (parametro,
         "a.lote",
         G.knex.raw("\"a\".\"cantidad\"::integer"),
         G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
-        G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre"),
-        "param.torre"
+        G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre")
     ];
 
     var query = G.knex.select(columnas)
             .from('inv_bodegas_movimiento_d  AS a')
             .innerJoin("inventarios_productos  AS b ", "a.codigo_producto", "b.codigo_producto")
-            .leftJoin("param_torreproducto AS param", "param.codigo_producto", "a.codigo_producto")
             .where('a.empresa_id', parametro.empresaId)
             .andWhere("a.prefijo", parametro.prefijoDocumento)
             .andWhere("a.numero", parametro.numeracionDocumento)
-            .orderBy('param.torre', 'asc');
 
     query.then(function (resultado) {
         callback(false, resultado);

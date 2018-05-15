@@ -167,7 +167,7 @@ Reportes.prototype.listarPlanes = function(req, res) {
 	    done();
 };
 
-Reportes.prototype.rotacionZonas= function(req, res) {
+Reportes.prototype.rotacionZonas0= function(req, res) {
     var that = this;
     var args = req.body.data;
 
@@ -178,6 +178,137 @@ Reportes.prototype.rotacionZonas= function(req, res) {
 	res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
     }).done();
 };
+
+Reportes.prototype.rotacionZonas= function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function(rotacionZonas) {
+//       console.log("########## ",rotacionZonas[0]);
+        return G.Q.nfcall(__ordenarZonas,rotacionZonas,0,[]);
+        
+    }).then(function(respuesta) {    
+        
+	res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: rotacionZonas}));
+    }).fail(function(err) {
+	console.log("error controller listarPlanes ", err);
+	res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
+    }).done();
+};
+
+function __ordenarZonas(data,index,resultado,callback){
+    var _data = data[index];
+    index++;
+    
+    if(_data){
+        console.log("OK ",resultado);
+      callback(false,resultado); 
+      return;
+    }
+    
+     var bodegas = {
+                        nombreBodega: _data.nombre_bodega,
+                        empresa: _data.empresa_id,
+                        centroUtilidad: _data.centro_utilidad,
+                        fechaRegistro: _data.fecha_registro,
+                        diferenciaDias: _data.diferencia,
+                        swRemitente: _data.sw_remitente,
+                        swEstadoCorreo: _data.sw_estado_correo,
+                        logError: _data.log_error,
+                        remitentes: _data.remitentes,
+                        meses: _data.meses,
+                        bodega: _data.bodega                        
+                    };
+          console.log("aaa",_data.zona);          
+    resultado.push(_data.zona);   
+    
+   return  __ordenarZonas(data,index,resultado,callback)
+}
+function __ordenarZonas0(data,callback){
+    
+    
+    var listaRotacionZonas = [];
+    var rotacionZonas = undefined;
+    var zonaName = "";
+    var i = 0;
+    var entra = false;
+    var zonaRespuesta={};
+    var zonaRespuestas=[];
+    
+    
+                
+                data.forEach(function(data){
+                
+                    var bodegas = {
+                        nombreBodega: data.nombre_bodega,
+                        empresa: data.empresa_id,
+                        centroUtilidad: data.centro_utilidad,
+                        fechaRegistro: data.fecha_registro,
+                        diferenciaDias: data.diferencia,
+                        swRemitente: data.sw_remitente,
+                        swEstadoCorreo: data.sw_estado_correo,
+                        logError: data.log_error,
+                        remitentes: data.remitentes,
+                        meses: data.meses,
+                        bodega: data.bodega                        
+                    };
+                    i++;
+                    
+                     if (data.zona !== zonaName) {   
+                         if(entra){           
+                             console.log("listaRotacionZonas2",listaRotacionZonas);
+                            zonaRespuesta.zona=zonaName;
+                            zonaRespuesta.bodegas=listaRotacionZonas; 
+                            zonaRespuestas.push(zonaRespuesta);
+                            listaRotacionZonas=[];
+                            zonaName="";
+                            
+                         }
+                        entra=true;
+                        zonaName = data.zona;
+                        console.log("zonaName",zonaName);
+                        console.log("listaRotacionZonas",listaRotacionZonas);
+                            
+                     }
+                     
+                    listaRotacionZonas.push(bodegas);
+                    
+                });
+                console.log("_",zonaRespuestas);
+//                for (var i in data) {
+//                    console.log("########## ",i);
+//                    var objt = data.obj.rotacionZonas[i];
+//                    var bodegas = {
+//                        nombreBodega: objt.nombre_bodega,
+//                        empresa: objt.empresa_id,
+//                        centroUtilidad: objt.centro_utilidad,
+//                        fechaRegistro: objt.fecha_registro,
+//                        diferenciaDias: objt.diferencia,
+//                        swRemitente: objt.sw_remitente,
+//                        swEstadoCorreo: objt.sw_estado_correo,
+//                        logError: objt.log_error,
+//                        remitentes: objt.remitentes,
+//                        meses: objt.meses,
+//                        bodega: objt.bodega                        
+//                    };
+//
+//                    if (objt.zona !== zonaName) {
+//                        if (rotacionZonas !== undefined) {
+//                            rotacionZonas.setNombreBodegas(listaRotacionZonasDetalle);
+//                            listaRotacionZonas.push(rotacionZonas);
+//                        }
+//                        zonaName = objt.zona;
+//                        var listaRotacionZonasDetalle = [];
+//                        var rotacionZonas = Zona.get();
+//                        rotacionZonas.setNombreZona(objt.zona);
+//                    }
+//                    listaRotacionZonasDetalle.push(bodegas);
+//                }
+//                $scope.listaRotacionZonas = listaRotacionZonas;
+    
+    callback(false,'ok');
+    return;
+}
 
 
 

@@ -153,7 +153,7 @@ DrAriasModel.prototype.rotacionZonas = function (callback) {
                     .andWhere(G.knex.raw("a.bodega not in (42,77,50,65,63,81)"))
                
             }).orderBy('b.descripcion', 'asc');
-// console.log(G.sqlformatter.format(query.toString()));
+
     query.then(function (resultado) {
         callback(false, resultado);
 

@@ -1,9 +1,10 @@
 
-var Reportes = function(drArias, j_reporteDrAriasJobs, eventos_dr_arias,emails) {
+var Reportes = function(drArias, j_reporteDrAriasJobs, eventos_dr_arias,emails,socket) {
     this.m_drArias = drArias;
     this.j_reporteDrAriasJobs = j_reporteDrAriasJobs;
     this.e_dr_arias = eventos_dr_arias;
     this.emails = emails;
+    this.io = socket;
 };
 
 /**
@@ -180,44 +181,126 @@ Reportes.prototype.rotacionZonas= function(req, res) {
 
 
 
-Reportes.prototype.listarPlanes0 = function(req, res) {
+Reportes.prototype.generarRotaciones = function(req, res) {
     var that = this;
     var args = req.body.data;
-    var name="Man Palo Grande";
-    var archivoName=name+".xlsx";
+    var usuarioId=req.body.session.usuario_id;
     
-    G.Q.ninvoke(that.m_drArias, 'rotacion').then(function(listarPlanes) {
-     
-        return G.Q.nfcall(__organizaRotacion,0,listarPlanes,[]);
+   
+    args.data.bodegas.forEach(function(item){
+        item.remitente=args.data.remitente;  //guardarControlRotacion        
+        item.remitentes=args.data.remitentes;        
+        item.usuarioId=usuarioId;        
+        item.swEstadoCorreo='0';        
+        item.meses=2;        
+        __rotacionesBodegas(that,item,function(data){
+            console.log(data);
+        });
         
-     }).then(function(resultados) {
+    });
+    res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: 'ok'}));
+};
+
+function __rotacionesBodegas(that,bodega,callback){
+   
+    var name;
+    var archivoName;
+    var today = new Date();    
+    var formato = 'YYYY-MM-DD';
+    var fechaToday = G.moment(today).format(formato);
+    var controlRotacionId;
+    var listarPlanes;
+    
+    G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion',bodega).then(function(respuesta) { 
+                
+        bodega.controlRotacionId=respuesta[0];
+        notificacion=bodega;
+     //that.io.sockets.emit('onNotificarRotacion', notificacion);  
+        //that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
+      
+        return G.Q.ninvoke(that.m_drArias, 'rotacion',bodega);
+    
+    }).then(function(respuesta) {
+          
+       if(respuesta.length > 0){ 
+           
+        listarPlanes=respuesta;
+        bodega.swEstadoCorreo=1;
+        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
+        return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion',bodega);
+        
+        }else{
+            throw {estado:403, mensaje:"No hay productos"};
+        }
+         
+    }).then(function(respuesta) {
+        
+        name="Bodega: "+listarPlanes[0].nom_bode;
+        archivoName=listarPlanes[0].nom_bode+"_"+fechaToday+".xlsx";
+        return G.Q.nfcall(__organizaRotacion,0,listarPlanes,[]);       
+        
+    }).then(function(resultados) {
+        
          resultados.nameHoja="Rotacion";
          resultados.nameArchivo=archivoName;
          resultados.name=name;
          return G.Q.nfcall(__creaExcel,resultados);
          
-     }).then(function(resultados) {      
+    }).then(function(resultados) {
+                
+        bodega.swEstadoCorreo=2;
+        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
+        return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion',bodega);
+        
+    }).then(function(resultados) { 
+        
+         var sistemas=G.settings.email_mauricio_barrios+","+G.settings.email_pedro_meneses;
+         var remitente="";
          
-         var subject = "desarrollo1@duanaltda.com";
-         var to = "pedro.meneses@duanaltda.com";
-         var ruta_archivo = "./"+archivoName;
+         if(bodega.remitente === 0){
+             remitente=sistemas;
+         }
+         
+         if(bodega.remitente === 1){
+             remitente=G.settings.email_miguel_duarte;//+","+sistemas;
+         }
+         
+         if(bodega.remitentes.trim() !== ""){
+             remitente +=","+bodega.remitentes;
+         }
+         
+         var subject = "Rotación "+name;
+         var to = remitente;
+         var ruta_archivo = G.dirname + "/files/Rotaciones/" +archivoName;
+                          
          var nombre_archivo = archivoName;
-         var message = "Rotacion DUARTE";
+         var message = "Rotacion DR. DUARTE";
          
         return G.Q.nfcall(__enviar_correo_electronico,that, to, ruta_archivo, nombre_archivo, subject, message);
         
     }).then(function(resultados) {
         
-	res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: resultados}));
+        bodega.swEstadoCorreo=3;
+        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
+        return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion',bodega);
+        
+    }).then(function(resultados) {
+        
+        
+        callback(false,resultados);
         
     }).fail(function(err) {
         
-	console.log("error controller listarPlanes ", err);
-	res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
+        bodega.swEstadoCorreo=4;
+        bodega.logError=err;
+        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
+        G.Q.ninvoke(that.m_drArias, 'editarControlRotacion',bodega,function(){
+           callback(true,err); 
+        });       
         
+	console.log("error controller listarPlanes ", err);
     }).done();
-
-};
+}
 
 function __creaExcel(data, callback) {
     var workbook = new G.Excel.Workbook();
@@ -233,7 +316,7 @@ function __creaExcel(data, callback) {
     var font = {name: 'Calibri', size: 9};
 
     var style = {font: font, border: border};
-// add column headers
+
     worksheet.columns = [
         {header: 'CODIGO', key: 'a', style: style},
         {header: 'PRODUCTO - '+data.name, key: 'b', width: 50, style: style},
@@ -241,13 +324,11 @@ function __creaExcel(data, callback) {
         {header: 'LABORATORIO', key: 'd', style: style},
         {header: 'TIPO PRODUCTO', key: 'e', style: style},
         {header: 'NIVEL', key: 'f', style: style},
-        {header: 'SALIDA 1', key: 'g', style: style},
-        {header: 'SALIDA 2', key: 'h', style: style},
-        {header: 'Promedio Mes', key: 'i', width: 9, style: style},
-        {header: 'Stock Farmacia', key: 'j', width: 8.5, style: style},
-        {header: 'Pedido 60 Dias', key: 'k', width: 7.5, style: style},
-        {header: '', key: 'l', width: 10, style: style},
-        {header: 'Stock Bodega', key: 'm', width: 7.5, style: style}
+        {header: 'Promedio Mes', key: 'g', width: 9, style: style},
+        {header: 'Stock Farmacia', key: 'h', width: 8.5, style: style},
+        {header: 'Pedido 60 Dias', key: 'i', width: 7.5, style: style},
+        {header: '', key: 'j', width: 10, style: style},
+        {header: 'Stock Bodega', key: 'k', width: 7.5, style: style}
     ];
 
     worksheet.views = [
@@ -258,22 +339,18 @@ function __creaExcel(data, callback) {
 
         if (element.color === 'ROJO') {
             worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
-                element.sum1, element.sum2, element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
+              element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
                 color: {argb: 'C42807'}, name: 'Calibri', size: 9
             };
         } else {
             worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
-                element.sum1, element.sum2, element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]);
+             element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]);
         }
 
         worksheet.getColumn('A').hidden = true;
         worksheet.getColumn('D').hidden = true;
         worksheet.getColumn('E').hidden = true;
         worksheet.getColumn('F').hidden = true;
-        worksheet.getColumn('G').hidden = true;
-        worksheet.getColumn('H').hidden = true;
-        worksheet.getColumn('N').hidden = true;
-        worksheet.getColumn('O').hidden = true;
 
         i++;
     });
@@ -306,17 +383,45 @@ function __creaExcel(data, callback) {
     worksheet.getCell('I1').style = style;
     worksheet.getCell('J1').style = style;
     worksheet.getCell('K1').style = style;
-    worksheet.getCell('L1').style = style;
-    worksheet.getCell('M1').style = style;
 
 // save workbook to disk
-    workbook.xlsx.writeFile('./' + data.nameArchivo).then(function () {
+    workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
         console.log("saved");
         callback(false, data.nameArchivo);
     });
 };
 
 function __organizaRotacion(index, data, resultado, callback) {
+
+    var _resultado = data[index];
+    index++;
+
+    if (_resultado) {
+        callback(false, sortJSON(resultado, 'molecula', 'asc'));
+    }
+
+    var resultColumna = {
+        codigo_poducto: _resultado.codigo_producto,
+        poducto: _resultado.producto,
+        molecula: _resultado.molecula,
+        laboratorio: _resultado.laboratorio,
+        tipo_producto: _resultado.tipo_producto,
+    };
+
+    resultColumna.promedioMes = Math.ceil((_resultado.sum) / 2);
+    resultColumna.totalStock = _resultado.existencia;
+    resultColumna.pedido60Dias = ((_resultado.sum)) - (_resultado.existencia) > 0 ? (_resultado.sum) - (_resultado.existencia) : '';
+    resultColumna.stockBodega = _resultado.existencia_bd;
+    resultColumna.nivel = _resultado.nivel;
+    resultColumna.tipo_producto = _resultado.tipo_producto;
+    resultColumna.color = _resultado.existencia / ((Math.ceil((_resultado.sum)) / 2) > 0 ? Math.ceil(((_resultado.sum)) / 2) : 1) >= 5 ? "ROJO" : "N/A";
+
+    resultado.push(resultColumna);
+
+    return __organizaRotacion(index, data, resultado, callback);
+}
+
+function __organizaRotacion0(index, data, resultado, callback) {
 
     var _resultado = data[index];
     index++;
@@ -388,9 +493,9 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     });
 
     var settings = {
-//        from: G.settings.email_compras,
-        from: "desarrollo1@duanaltda.com",
+        from: G.settings.email_desarrollo1,
         to: to,
+        cc: "amgonzalez80@hotmail.com",
         subject: subject,
         html: message,
         attachments: [{'filename': nombre_archivo, 'contents': G.fs.readFileSync(ruta_archivo)}]
@@ -563,7 +668,7 @@ function __editarConsolidadoReporte(that, datos) {
 }
 
 Reportes.$inject = [
-    "m_drArias", "j_reporteDrAriasJobs", "e_dr_arias","emails"
+    "m_drArias", "j_reporteDrAriasJobs", "e_dr_arias","emails", "socket"
 ];
 
 module.exports = Reportes;

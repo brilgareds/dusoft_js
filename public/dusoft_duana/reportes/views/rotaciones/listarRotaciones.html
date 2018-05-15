@@ -1,36 +1,123 @@
+<style>
+
+    .float{
+        position:fixed;
+        width:100px;
+        height:100px;
+        right:20px;
+        background-color:#0D325F;
+        color:#FFF;
+        border-radius:50px;        
+        box-shadow: 2px 2px 3px #5A99E7;
+        z-index: 2;
+    }
+
+    .radios{
+        position: fixed;
+        width:15px;
+        height:15px; 
+        text-align:center;
+    }
+
+</style>
+<button type="button" class="btn btn-default float" ng-click="enviar()"><b>ENVIAR</b></button>
 <div>
     <div class="row">
         <div class="col-md-12 col-lg-12">
-            <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
-
-
-                <div  ng-repeat="listaRotacionZona in listaRotacionZonas">
-                        <div class="row" ng-if="(listaRotacionZona.getNombreZona() === 'Cali')">
-                           
-                            <div class="col-lg-12">
-                                <div class="panel panel-primary">
-                                    <div class="panel-heading">{{listaRotacionZona.getNombreZona()}}</div>
-                                    <div class="panel-body">
-                                        <div  ng-repeat="listaRotacion in listaRotacionZona.nombreBodegas[0]">
-                                            <div>
-                                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                                <label class="form-check-label" for="exampleCheck1">{{listaRotacion.nombreBodega}}</label>
-                                            </div>
-                                        </div>
-                                    </div>
+            <div class="panel panel-primary">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-1 col-lg-1">
+                            <label >Email: </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1 col-lg-2">
+                            <div class="form-check form-check-inline">
+                                <div class="col-md-1 col-lg-1">
+                                    <input class="form-check-input radios" type="radio" name="inlineRadioOptions" id="inlineRadio" ng-click="email(1)" >
                                 </div>
-                            </div>      
-                        </div >
+                                <div class="col-md-1 col-lg-2  col-md-offset-1">
+                                    <label class="form-check-label " for="inlineRadio1">Dr. Duarte:</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-lg-2">
+                            <div class="form-check form-check-inline">
+                                <div class="col-md-1 col-lg-1">
+                                    <input class="form-check-input radios" type="radio" name="inlineRadioOptions" id="inlineRadio" ng-click="email(0)" >
+                                </div>
+                                <div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+                                    <label class="form-check-label" for="inlineRadio2">Sistemas:</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-lg-4">
+                            <input type="text" class="form-control" ng-model="emails_envio" aria-describedby="emailHelp" placeholder="Enter email">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-lg-3">
+                        </div>
+                    </div>
                 </div>
-
             </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            
+            <div  ng-repeat="listaRotacionZona in listaRotacionZonas">
+                <div class="row" >
+                    <div class="col-lg-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading"><b>{{listaRotacionZona.getNombreZona() | uppercase}}</b></div>
+                            <div class="panel-body">
+                                <ul class="list-group">
+                                    <div  ng-repeat="listaRotacion in listaRotacionZona.nombreBodegas[0]">
+                                        <li class="list-group-item">
+                                            <div class="row">
+
+                                                <div class="col-lg-1 text-right">
+                                                    <input type="checkbox" class="form-check-input" ng-model="listaRotacions"
+                                                           ng-click="agregar($event.currentTarget.checked, listaRotacion)" >
+                                                </div>
+                                                <div class="col-lg-5">
+                                                    <label class="form-check-label" for="exampleCheck1">{{listaRotacion.nombreBodega}}</label>
+                                                </div>
+                                                <div class="col-lg-6">                                                    
+                                                    
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='0 '" ><span class="glyphicon glyphicon-cog"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='1 '" ><span class="glyphicon glyphicon-file"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='2 '" ><span class="glyphicon glyphicon-envelope"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='3 '" ><span class="glyphicon glyphicon-envelope"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='4 '" ><span class="glyphicon glyphicon-remove-sign"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='5 '" ><span class="glyphicon glyphicon-remove-circle"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.fechaRegistro!==null" >{{listaRotacion.fechaRegistro}}</label>
+                                                    <!--<label class="form-check-label" ng-if="listaRotacion.swRemitente!=='0'">Enviado a Sistemas</label>-->
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.diferenciaDias > 0" >{{listaRotacion.diferenciaDias}} Dia(s)</label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swRemitente==='1'">Enviado al Dr. Duarte</label>
+<!--                                                    <label class="form-check-label" ng-if="listaRotacion.remitentes!==' '">Remitente: {{listaRotacion.remitentes}}</label>
+                                                    <label class="form-check-label" ng-if="listaRotacion.meses!==null">Meses: {{listaRotacion.meses}}</label>-->
+                                                </div>                                                
+                                            </div>
+                                        </li>
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>                           
+                    </div>      
+                </div>
+            </div>           
         </div>
     </div>
     <br>
     <div class="row">    
         <div class="col-md-12 col-lg-12">
             <div class="table-responsive" >
-
             </div>
             <visualizar-reporte></visualizar-reporte>
         </div>

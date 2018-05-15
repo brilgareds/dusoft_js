@@ -14,7 +14,8 @@ define(["angular"], function(angular) {
                 'LISTAR_EMPRESAS': BASE_URL+"/Empresas/listarEmpresas",
                 'LISTAR_PLANES':BASE_URL+'/Reportes/DrArias/listarPlanes',
                 "REPORTES_GENERADOS": BASE_URL + "/Reportes/DrArias/reportesGenerados",
-                "ROTACION_ZONAS": BASE_URL + "/Reportes/DrArias/rotacionZonas"
+                "ROTACION_ZONAS": BASE_URL + "/Reportes/DrArias/rotacionZonas",
+                "GENERAR_ROTACIONES": BASE_URL + "/Reportes/DrArias/generarRotaciones"
             }
         }
     };

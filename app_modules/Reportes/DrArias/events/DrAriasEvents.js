@@ -20,6 +20,19 @@ DrAriasEvents.prototype.onNotificarEstadoDescargaReporte = function(usuario_id,e
      });
 };
 
+DrAriasEvents.prototype.onNotificarRotacion = function(usuario_id,data) {
+
+    var that = this;
+    G.auth.getSessionsUser(usuario_id,function(err, sessions) {
+        
+         sessions.forEach(function(session) {
+
+            that.io.to(session.socket_id).emit('onNotificarRotacion', {data: data});	        
+
+         });
+     });
+};
+
 
 DrAriasEvents.$inject = ["socket", "m_drArias", "m_terceros"];
 

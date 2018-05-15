@@ -123,9 +123,16 @@ DrAriasModel.prototype.rotacionZonas = function (callback) {
     var columna = [
         "b.descripcion as zona",
         "a.descripcion as nombre_bodega",
-        "empresa_id",
-        "centro_utilidad",
-        "bodega"
+        "a.empresa_id",
+        "a.centro_utilidad",
+        "a.bodega",
+        G.knex.raw("to_char(c.fecha_registro,'dd-MM-yyyy') as fecha_registro"),       
+        G.knex.raw("extract(days from (now() - c.fecha_registro )) as diferencia"),
+        "c.sw_remitente",
+        "c.remitentes",
+        "c.sw_estado_correo",
+        "c.log_error",
+        "c.meses"
     ];
 
     var query = G.knex.select(columna)
@@ -134,13 +141,19 @@ DrAriasModel.prototype.rotacionZonas = function (callback) {
                     function () {
                         this.on("a.zona_id", "b.id");
                     })
+            .leftJoin(G.knex.raw('(select distinct on (d.bodega)  max(d.fecha_registro), d.* from  control_rotaciones as d GROUP BY 2,3,4,5,6,7,8,9,10,11,12) as c'),
+                    function () {
+                        this.on("a.empresa_id", "c.empresa_id")
+                            .on("a.centro_utilidad", "c.centro_utilidad")
+                            .on("a.bodega", "c.bodega");
+                    })
             .where(function () {
-                this.andWhere("empresa_id","FD")
+                this.andWhere("a.empresa_id","FD")
                     .andWhere("a.estado","1")
-                    .andWhere(G.knex.raw("bodega not in (42,77,50,65,63,81)"))
+                    .andWhere(G.knex.raw("a.bodega not in (42,77,50,65,63,81)"))
                
-            });
-
+            }).orderBy('b.descripcion', 'asc');
+// console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -218,15 +231,12 @@ var selectPrimerUnion = [
  * @fecha 2016-06-17
  */
 DrAriasModel.prototype.rotacion = function(obj,callback) {
-    
-    var sql = "select codigo_producto, descripcion_producto as producto,farmacia as nom_bode,stock_farmacia as existencia,    \
+    var sql=" select codigo_producto, descripcion_producto as producto,farmacia as nom_bode,stock_farmacia as existencia,    \
                 periodo as mes, stock_bodega as existencia_bd,laboratorio,molecula,cantidad_total_despachada as sum,    \
                 case when  tipo_producto = 'Normales' then nivel else '' end  as nivel, \
                 tipo_producto   \
                 from   \
-(   \
-(   \
- select    \
+(select    \
             'salida 1' as periodo,   \
             cc.descripcion as farmacia,   \
             aa.codigo_producto,   \
@@ -270,8 +280,8 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
                   inner join bodegas_documentos j on d.bodegas_doc_id = j.bodegas_doc_id and d.numeracion = j.numeracion   \
                   inner JOIN bodegas_doc_numeraciones e ON d.bodegas_doc_id= e.bodegas_doc_id    \
                   inner join bodegas f ON e.empresa_id= f.empresa_id AND e.centro_utilidad= f.centro_utilidad AND e.bodega= f.bodega    \
-                  where cast (j.fecha_registro as date) between (current_date - interval '2 month') and (current_date - interval '1 month' - interval '1 day')    \
-                  and f.bodega= '54' and a.sw_estado <>'2'    \
+                  where cast (j.fecha_registro as date) between (current_date - interval '2 month') and now()     \
+                  and f.bodega= '"+obj.bodega+"' and a.sw_estado <>'2'    \
                   group by 1    \
                   UNION   \
                   select    \
@@ -291,103 +301,73 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
                   inner join bodegas_documentos j on d.bodegas_doc_id = j.bodegas_doc_id and d.numeracion = j.numeracion   \
                   inner JOIN bodegas_doc_numeraciones e ON d.bodegas_doc_id= e.bodegas_doc_id    \
                   inner join bodegas f ON e.empresa_id= f.empresa_id AND e.centro_utilidad= f.centro_utilidad AND e.bodega= f.bodega    \
-                  where cast (j.fecha_registro as date) between (current_date - interval '2 month') and (current_date - interval '1 month' - interval '1 day')    \
-                  and f.bodega= '54'   \
+                  where cast (j.fecha_registro as date) between (current_date - interval '2 month') and now()     \
+                  and f.bodega= '"+obj.bodega+"'   \
                   group by 1   \
                 ) AS aa group by 1                              \
             ) as bb on aa.codigo_producto = bb.codigo_producto   \
-            where aa.empresa_id =  'FD' and aa.centro_utilidad=  '54' and aa.bodega =  '54'   \
-            and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0)    \
-)   \
-   \
-union all   \
-   \
-(   \
- select    \
-            'salida 2' as periodo,   \
-            cc.descripcion as farmacia,   \
-            aa.codigo_producto,   \
-            fc_descripcion_producto(aa.codigo_producto) as descripcion_producto,   \
-            ee.descripcion as molecula,   \
-            ff.descripcion as laboratorio,   \
-            gg.descripcion  as tipo_producto,   \
-            aa.existencia::integer as stock_farmacia,   \
-            (   \
-              select sum(aaa.existencia)::integer from existencias_bodegas aaa    \
-              where aaa.empresa_id = '03' and aaa.bodega = '03' and aaa.codigo_producto= aa.codigo_producto   \
-            ) as stock_bodega,   \
-            COALESCE(bb.cantidad_total_despachada, 0) as cantidad_total_despachada,   \
-            nivel    \
-            from existencias_bodegas aa   \
-            inner join bodegas cc on aa.empresa_id = cc.empresa_id and aa.bodega = cc.bodega and aa.centro_utilidad = cc.centro_utilidad    \
-            inner join inventarios_productos dd on aa.codigo_producto = dd.codigo_producto   \
-            inner join inv_subclases_inventarios ee on dd.grupo_id = ee.grupo_id and dd.clase_id=ee.clase_id and dd.subclase_id= ee.subclase_id   \
-            inner join inv_clases_inventarios ff on ee.clase_id = ff.clase_id and ee.grupo_id = ff.grupo_id   \
-            inner join inv_tipo_producto gg on dd.tipo_producto_id = gg.tipo_producto_id   \
-            left join param_torreproducto as pt on aa.codigo_producto = pt.codigo_producto  and aa.empresa_id =  'FD'   \
-            left join (   \
-                select    \
-                aa.codigo_producto,   \
-                (sum(aa.cantidad_total_despachada))::integer as cantidad_total_despachada   \
-                from (   \
-                  select   \
-                  d.codigo_producto,   \
-                  (sum(d.cantidad))::integer as cantidad_total_despachada,1   \
-                  from esm_formula_externa a    \
-                  inner join (     \
-                    SELECT formula_id,bodegas_doc_id,numeracion,1   \
-                    FROM esm_formulacion_despachos_medicamentos     \
-                    GROUP BY formula_id,bodegas_doc_id,numeracion     \
-                    UNION     \
-                    SELECT formula_id,bodegas_doc_id,numeracion,2     \
-                    FROM esm_formulacion_despachos_medicamentos_pendientes     \
-                    GROUP BY formula_id,bodegas_doc_id,numeracion    \
-                  ) as c on a.formula_id = c.formula_id    \
-                  inner join bodegas_documentos_d d ON c.bodegas_doc_id = d.bodegas_doc_id and c.numeracion = d.numeracion    \
-                  inner join bodegas_documentos j on d.bodegas_doc_id = j.bodegas_doc_id and d.numeracion = j.numeracion   \
-                  inner JOIN bodegas_doc_numeraciones e ON d.bodegas_doc_id= e.bodegas_doc_id    \
-                  inner join bodegas f ON e.empresa_id= f.empresa_id AND e.centro_utilidad= f.centro_utilidad AND e.bodega= f.bodega    \
-                  where cast (j.fecha_registro as date) between (current_date - interval '1 month') and now()    \
-                  and f.bodega= '54' and a.sw_estado <>'2'    \
-                  group by 1    \
-                  UNION   \
-                  select    \
-                  d.codigo_producto,   \
-                  (sum(d.cantidad))::integer as cantidad_total_despachada,2   \
-                  from hc_evoluciones a   \
-                  inner join (   \
-                      select evolucion_id, bodegas_doc_id, numeracion,1   \
-                      from hc_formulacion_despachos_medicamentos   \
-                      group by evolucion_id, bodegas_doc_id, numeracion   \
-                      UNION   \
-                      select evolucion_id, bodegas_doc_id, numeracion,1   \
-                      from hc_formulacion_despachos_medicamentos_pendientes   \
-                      group by evolucion_id, bodegas_doc_id, numeracion,2   \
-                  ) as c on a.evolucion_id = c.evolucion_id   \
-                  inner join bodegas_documentos_d d ON c.bodegas_doc_id = d.bodegas_doc_id and c.numeracion = d.numeracion    \
-                  inner join bodegas_documentos j on d.bodegas_doc_id = j.bodegas_doc_id and d.numeracion = j.numeracion   \
-                  inner JOIN bodegas_doc_numeraciones e ON d.bodegas_doc_id= e.bodegas_doc_id    \
-                  inner join bodegas f ON e.empresa_id= f.empresa_id AND e.centro_utilidad= f.centro_utilidad AND e.bodega= f.bodega                   \
-                 where cast (j.fecha_registro as date) between (current_date - interval '1 month') and now()    \
-                  and f.bodega= '54'   \
-                  group by 1   \
-                ) AS aa group by 1                              \
-            ) as bb on aa.codigo_producto = bb.codigo_producto   \
-            where aa.empresa_id = 'FD' and aa.centro_utilidad=  '54' and aa.bodega =  '54'   \
-            and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0) )   \
-   ) as w    \
-  order by 1,5";
-
-    var query = G.knex.raw(sql);
+            where aa.empresa_id =  '"+obj.empresa+"' and aa.centro_utilidad=  '"+obj.centroUtilidad+"' and aa.bodega =  '"+obj.bodega+"'   \
+            and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0) \
+            order by 1,5 \
+            ) as a   \
+             \
+";
+     var query = G.knex.raw(sql);
     query.then(function(resultado) {
-        console.log("AAAAAAAA ",resultado);
+//        console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
+        G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);
     }). catch (function(err) {
+//        console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
 	console.log("Error [listarPlanes] Parametros: ", err);
 	callback(err);
     });
+}
+
+DrAriasModel.prototype.guardarControlRotacion = function(datos, callback) {
+
+    var query = G.knex("control_rotaciones").insert({
+	empresa_id: datos.empresa,
+	centro_utilidad: datos.centroUtilidad,
+	bodega: datos.bodega,
+	usuario_id: datos.usuarioId,
+	fecha_registro: 'now()',
+	sw_remitente: datos.remitente,
+	remitentes: datos.remitentes,
+	sw_estado_correo: datos.swEstadoCorreo,
+        meses: datos.meses
+    }).returning('control_rotacion_id') ;
+
+    query.then(function(resultado) {
+console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
+	callback(false, resultado);
+
+    }). catch (function(err) {
+	console.log("ERROR:::guardarControlRotacion ", err);
+	callback(err);
+    }).done();
 };
 
+DrAriasModel.prototype.editarControlRotacion = function(datos, callback) {
+    
+    var select={
+        sw_estado_correo: datos.swEstadoCorreo,
+        log_error: datos.logError
+    };
+ 
+    var query=G.knex("control_rotaciones").
+	    where("control_rotacion_id", datos.controlRotacionId).
+	    update(select);
+    
+    query.then(function(resultado) {
+        console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
+	callback(false, resultado);
+        
+    }). catch (function(err) {
+	console.log("Error [editarControlRotacion] Parametros: ", datos, err);
+	callback(err);
+    });
+};
 
 DrAriasModel.prototype.guardarEstadoReporte = function(datos, callback) {
 

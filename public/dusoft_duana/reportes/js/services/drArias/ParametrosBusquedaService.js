@@ -70,6 +70,27 @@ define(["angular", "js/services"], function(angular, services) {
                         );
 
                     };
+                    
+                    /*
+                     * @Author: Andres Mauricio Gonzalez T.
+                     * @fecha 05/09/2018
+                     * +Descripcion: zonas para rotaciones
+                     */
+                    self.generarRotaciones = function (obj, callback) {
+
+                        Request.realizarRequest(
+                                API.REPORTES.GENERAR_ROTACIONES,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: obj
+                                },
+                                function (data) {
+                                    callback(data);
+                                }
+                        );
+
+                    };
 
                     return this;
                 }]);

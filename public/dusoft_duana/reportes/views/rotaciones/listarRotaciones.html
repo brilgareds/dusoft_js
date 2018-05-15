@@ -52,6 +52,24 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-1 col-lg-2">
+                            <div class="form-check form-check-inline">                               
+                                <div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+                                    <label class="form-check-label" for="inlineRadio2">Mes:</label>
+                                </div>
+                                <div class="col-md-1 col-lg-3">
+                                    <ui-select ng-model="mes"
+                                               theme="select2"
+                                               class="form-control selectgeneral pull-left col-md-3"
+                                               ng-change="onSeleccionMes($select.selected)">
+                                        <ui-select-match  placeholder="Seleccionar Mes">{{ $select.selected.mes}}</ui-select-match>
+                                        <ui-select-choices repeat="item in meses">
+                                            {{ item.id}}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 col-lg-4">
@@ -66,10 +84,10 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-md-12 col-lg-12">
-            
+
             <div  ng-repeat="listaRotacionZona in listaRotacionZonas">
                 <div class="row" >
                     <div class="col-lg-12">
@@ -89,19 +107,19 @@
                                                     <label class="form-check-label" for="exampleCheck1">{{listaRotacion.nombreBodega}}</label>
                                                 </div>
                                                 <div class="col-lg-6">                                                    
-                                                    
-                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='0 '" ><span class="glyphicon glyphicon-cog"></span></label>
-                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='1 '" ><span class="glyphicon glyphicon-file"></span></label>
-                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='2 '" ><span class="glyphicon glyphicon-envelope"></span></label>
-                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='3 '" ><span class="glyphicon glyphicon-envelope"></span></label>
-                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='4 '" ><span class="glyphicon glyphicon-remove-sign"></span></label>
-                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo==='5 '" ><span class="glyphicon glyphicon-remove-circle"></span></label>
-                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.fechaRegistro!==null" >{{listaRotacion.fechaRegistro}}</label>
+
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '0 '" ><span class="glyphicon glyphicon-cog"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '1 '" ><span class="glyphicon glyphicon-file"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '2 '" ><span class="glyphicon glyphicon-envelope"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '3 '" ><span class="glyphicon glyphicon-envelope"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '4 '" ><span class="glyphicon glyphicon-remove-sign"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '5 '" ><span class="glyphicon glyphicon-remove-circle"></span></label>
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.fechaRegistro !== null" >{{listaRotacion.fechaRegistro}}</label>
                                                     <!--<label class="form-check-label" ng-if="listaRotacion.swRemitente!=='0'">Enviado a Sistemas</label>-->
                                                     <label class="form-check-label col-lg-2" ng-if="listaRotacion.diferenciaDias > 0" >{{listaRotacion.diferenciaDias}} Dia(s)</label>
-                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swRemitente==='1'">Enviado al Dr. Duarte</label>
-<!--                                                    <label class="form-check-label" ng-if="listaRotacion.remitentes!==' '">Remitente: {{listaRotacion.remitentes}}</label>
-                                                    <label class="form-check-label" ng-if="listaRotacion.meses!==null">Meses: {{listaRotacion.meses}}</label>-->
+                                                    <label class="form-check-label col-lg-2" ng-if="listaRotacion.swRemitente === '1'">Enviado al Dr. Duarte</label>
+                                                    <!--                                                    <label class="form-check-label" ng-if="listaRotacion.remitentes!==' '">Remitente: {{listaRotacion.remitentes}}</label>
+                                                                                                        <label class="form-check-label" ng-if="listaRotacion.meses!==null">Meses: {{listaRotacion.meses}}</label>-->
                                                 </div>                                                
                                             </div>
                                         </li>

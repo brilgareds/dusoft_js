@@ -280,7 +280,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
                   inner join bodegas_documentos j on d.bodegas_doc_id = j.bodegas_doc_id and d.numeracion = j.numeracion   \
                   inner JOIN bodegas_doc_numeraciones e ON d.bodegas_doc_id= e.bodegas_doc_id    \
                   inner join bodegas f ON e.empresa_id= f.empresa_id AND e.centro_utilidad= f.centro_utilidad AND e.bodega= f.bodega    \
-                  where cast (j.fecha_registro as date) between (current_date - interval '2 month') and now()     \
+                  where cast (j.fecha_registro as date) between (current_date - interval '"+obj.meses+" month') and now()     \
                   and f.bodega= '"+obj.bodega+"' and a.sw_estado <>'2'    \
                   group by 1    \
                   UNION   \
@@ -301,7 +301,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
                   inner join bodegas_documentos j on d.bodegas_doc_id = j.bodegas_doc_id and d.numeracion = j.numeracion   \
                   inner JOIN bodegas_doc_numeraciones e ON d.bodegas_doc_id= e.bodegas_doc_id    \
                   inner join bodegas f ON e.empresa_id= f.empresa_id AND e.centro_utilidad= f.centro_utilidad AND e.bodega= f.bodega    \
-                  where cast (j.fecha_registro as date) between (current_date - interval '2 month') and now()     \
+                  where cast (j.fecha_registro as date) between (current_date - interval '"+obj.meses+" month') and now()     \
                   and f.bodega= '"+obj.bodega+"'   \
                   group by 1   \
                 ) AS aa group by 1                              \
@@ -314,7 +314,6 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
 ";
      var query = G.knex.raw(sql);
     query.then(function(resultado) {
-//        console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
         G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);
     }). catch (function(err) {
@@ -339,7 +338,6 @@ DrAriasModel.prototype.guardarControlRotacion = function(datos, callback) {
     }).returning('control_rotacion_id') ;
 
     query.then(function(resultado) {
-console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
 	callback(false, resultado);
 
     }). catch (function(err) {
@@ -360,7 +358,6 @@ DrAriasModel.prototype.editarControlRotacion = function(datos, callback) {
 	    update(select);
     
     query.then(function(resultado) {
-        console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
 	callback(false, resultado);
         
     }). catch (function(err) {

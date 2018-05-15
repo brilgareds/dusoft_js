@@ -23,9 +23,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
-            };           
+            }; 
+            
+            $scope.meses = [                
+                    {id: 2,mes: 2},
+                    {id: 3,mes: 3},
+                    {id: 4,mes: 4},
+                    {id: 5,mes: 5},
+                    {id: 6,mes: 6}
+                  ];
+            
+            $scope.mes={id:2,mes: 2};
+            
+            $scope.onSeleccionMes=function(data){
+                $scope.mes=data;
+            };
              
-             $scope.item=0;
+            $scope.item=0;
             
             $scope.itemValida=function(item){
                 console.log(item);
@@ -94,8 +108,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             var i=0;
             socket.on("onNotificarRotacion", function(datos){
-                console.log("AAAAAAAAAAAAAAAA",i);
-                console.log("AAAAAAAAAAAAAAAA",datos);
                 if(that.listRotacionBodegas.length*3 === i){
                    that.listRotacionBodegas=[];
                    that.buscarRotacionZonas();
@@ -114,7 +126,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              *              listar todos los reportes generados
              */
             that.buscarRotaciones= function(parametros) {
-                
+                parametros.meses=$scope.mes.id;
                 var obj = {
                     session: $scope.session,
                     data : parametros

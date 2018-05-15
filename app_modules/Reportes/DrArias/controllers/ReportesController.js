@@ -190,9 +190,10 @@ Reportes.prototype.generarRotaciones = function(req, res) {
     args.data.bodegas.forEach(function(item){
         item.remitente=args.data.remitente;  //guardarControlRotacion        
         item.remitentes=args.data.remitentes;        
+        item.meses=args.data.meses;        
         item.usuarioId=usuarioId;        
-        item.swEstadoCorreo='0';        
-        item.meses=2;        
+        item.swEstadoCorreo='0';   
+    
         __rotacionesBodegas(that,item,function(data){
             console.log(data);
         });
@@ -225,6 +226,7 @@ function __rotacionesBodegas(that,bodega,callback){
        if(respuesta.length > 0){ 
            
         listarPlanes=respuesta;
+        listarPlanes.meses=bodega.meses;
         bodega.swEstadoCorreo=1;
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion',bodega);
@@ -236,7 +238,7 @@ function __rotacionesBodegas(that,bodega,callback){
     }).then(function(respuesta) {
         
         name="Bodega: "+listarPlanes[0].nom_bode;
-        archivoName=listarPlanes[0].nom_bode+"_"+fechaToday+".xlsx";
+        archivoName=listarPlanes[0].nom_bode+"_"+fechaToday+"_"+bodega.meses+".xlsx";
         return G.Q.nfcall(__organizaRotacion,0,listarPlanes,[]);       
         
     }).then(function(resultados) {
@@ -392,7 +394,7 @@ function __creaExcel(data, callback) {
 };
 
 function __organizaRotacion(index, data, resultado, callback) {
-
+console.log("datadatadata",data.meses);
     var _resultado = data[index];
     index++;
 
@@ -408,13 +410,13 @@ function __organizaRotacion(index, data, resultado, callback) {
         tipo_producto: _resultado.tipo_producto,
     };
 
-    resultColumna.promedioMes = Math.ceil((_resultado.sum) / 2);
+    resultColumna.promedioMes = Math.ceil((_resultado.sum) / data.meses);
     resultColumna.totalStock = _resultado.existencia;
     resultColumna.pedido60Dias = ((_resultado.sum)) - (_resultado.existencia) > 0 ? (_resultado.sum) - (_resultado.existencia) : '';
     resultColumna.stockBodega = _resultado.existencia_bd;
     resultColumna.nivel = _resultado.nivel;
     resultColumna.tipo_producto = _resultado.tipo_producto;
-    resultColumna.color = _resultado.existencia / ((Math.ceil((_resultado.sum)) / 2) > 0 ? Math.ceil(((_resultado.sum)) / 2) : 1) >= 5 ? "ROJO" : "N/A";
+    resultColumna.color = _resultado.existencia / ((Math.ceil((_resultado.sum)) / resultado.meses) > 0 ? Math.ceil(((_resultado.sum)) / data.meses) : 1) >= 5 ? "ROJO" : "N/A";
 
     resultado.push(resultColumna);
 

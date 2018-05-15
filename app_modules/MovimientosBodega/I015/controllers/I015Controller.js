@@ -11,7 +11,7 @@ var I015Controller = function (movimientos_bodegas, m_i015) {
  * @fecha 2018-05-07
  */
 I015Controller.prototype.listarBodegas = function (req, res) {
-    var that = this;
+    var that = this; 
     var args = req.body.data;
 
     G.Q.nfcall(that.m_i015.listarBodegas, args).

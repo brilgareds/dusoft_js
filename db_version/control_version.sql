@@ -309,3 +309,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.48', 'DOCUMENTOS BODEGA', 'se crean los documentos de traslado I015 y E017');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.49  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.49', 'DOCUMENTOS BODEGA', 'se agrega filtro al buscador de farmacia de origen al I015');
+COMMIT TRANSACTION;

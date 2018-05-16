@@ -10,15 +10,29 @@ var DocumentoBodegaI015 = function () {
  */
 DocumentoBodegaI015.prototype.listarBodegas = function (parametro, callback) {
     var query = G.knex
+            .distinct('a.*')
             .select()
-            .from('bodegas')
-            .whereNot('bodega', parametro.bodega)
-            .andWhere('empresa_id', 'FD')
-            .orderBy('descripcion', 'asc');
-
-    query.then(function (resultado) {
-        callback(false, resultado);
-    }).catch(function (err) {
+            .from('inv_bodegas_movimiento_traslados_farmacia as c')
+            .innerJoin("inv_bodegas_movimiento  as b", function () {
+                this.on("b.prefijo", "c.prefijo")
+                        .on("b.numero", "c.numero");
+            })
+            .innerJoin("bodegas as a", function () {
+                this.on("b.empresa_id ", "a.empresa_id")
+                        .on("b.centro_utilidad", "a.centro_utilidad")
+                        .on("b.bodega", "a.bodega");
+            })
+            .whereNot('a.bodega', parametro.bodega)
+            .andWhere('a.empresa_id', 'FD')
+            .andWhere('c.farmacia_id', parametro.empresa)
+            .andWhere('c.centro_utilidad', parametro.centro)
+            .andWhere('c.bodega', parametro.bodega)
+            .andWhere('c.sw_estado', '1')
+            .orderBy('a.descripcion', 'asc');
+    
+            query.then(function (resultado) {
+                callback(false, resultado);
+            }).catch(function (err) {
         console.log("err [listarBodegas]:", err);
         callback(err);
     });
@@ -203,6 +217,33 @@ DocumentoBodegaI015.prototype.agregarItem = function (parametros, transaccion, c
         console.log("Error agregarItem", err);
         callback(err);
     }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza el producto devuelto del temporal
+ * @fecha 2018-05-10
+ */
+DocumentoBodegaI015.prototype.modificarAgregarItem = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_tmp_d")
+            .where('empresa_id', parametros.empresaId)
+            .andWhere('doc_tmp_id', parametros.docTmpId)
+            .andWhere('centro_utilidad', parametros.centroUtilidad)
+            .andWhere('bodega', parametros.bodega)
+            .andWhere('codigo_producto', parametros.codigoProducto)
+            .andWhere('lote', parametros.lote)
+            .andWhere('fecha_vencimiento', parametros.fechaVencimiento)
+            .update('cantidad', G.knex.raw('cantidad +' + parametros.cantidad_enviada));
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
 };
 
 /**

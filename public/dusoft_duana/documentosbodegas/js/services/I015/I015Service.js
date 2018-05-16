@@ -20,7 +20,9 @@ define(["angular", "js/services"], function (angular, services) {
                                 {
                                     session: obj.session,
                                     data: {
-                                        bodega: obj.data.bodega
+                                        bodega: obj.data.bodega,
+                                        centro: obj.data.centro,
+                                        empresa: obj.data.empresa
                                     }
                                 },
                                 function (data) {

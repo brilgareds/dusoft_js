@@ -246,7 +246,7 @@ I015Controller.prototype.agregarItem = function (req, res) {
 
         G.Q.nfcall(that.m_i015.consultarItem, parametros).then(function (result) {
             if (result.length > 0) {
-                msj = "El producto " + parametros.codigoProducto + " ya se encuentra registrado en el documento de traslado.";
+                return G.Q.nfcall(that.m_i015.modificarAgregarItem, parametros, transaccion);
             } else {
                 msj = "producto agregado correctamente";
                 return G.Q.nfcall(that.m_i015.agregarItem, parametros, transaccion);

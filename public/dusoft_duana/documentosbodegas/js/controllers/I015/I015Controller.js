@@ -47,7 +47,9 @@ define([
                 var obj = {
                     session: $scope.session,
                     data: {
-                        bodega: usuario.empresa.centroUtilidad.bodega.codigo
+                        bodega: usuario.empresa.centroUtilidad.bodega.codigo,
+                        centro: usuario.empresa.centroUtilidad.codigo,
+                        empresa: usuario.empresa.codigo
                     }
                 };
 
@@ -517,6 +519,11 @@ define([
                         }
                     }
                 });
+
+                if (productos.length > 0) {
+                    condicion = false;
+                    AlertService.mostrarMensaje("warning", "Se debe dar ingreso a todos los productos trasladados");
+                }
 
                 if (condicion) {
                     that.crearDocumento();

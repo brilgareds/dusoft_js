@@ -93,6 +93,31 @@ define([
 
             /**
              * +Descripcion Metodo encargado de invocar el servicio que lista
+             *              la farmacia origen
+             * @author German Andres Galvis
+             * @fecha 10/05/2018 DD/MM/YYYY
+             */
+            that.buscarFarmaciaOrigenPorId = function (prefijo, numero) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numero: numero,
+                        prefijo: prefijo
+                    }
+                };
+
+                I015Service.buscarFarmaciaOrigenId(obj, function (data) {
+                    if (data.status === 200) {
+                        $scope.documento_ingreso.set_bodega_origen(data.obj.listarFarmaciaOrigen[0]);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que lista
              *              el documento seleccionado
              * @author German Andres Galvis
              * @fecha 10/05/2018 DD/MM/YYYY
@@ -108,15 +133,15 @@ define([
                 };
 
                 I015Service.buscarDocumentoId(obj, function (data) {
-console.log("data",data);
                     if (data.status === 200) {
                         $scope.documento_ingreso.set_documento_traslado(data.obj.listarDocumento[0]);
+                        that.refrescarVista();
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
                 });
             };
-            
+
             $scope.onBuscarProductosTraslado = function () {
                 that.listarProductosTraslado();
             };
@@ -449,7 +474,7 @@ console.log("data",data);
 
             /**
              * @author German Galvis
-             * @fecha 2018-03-27
+             * @fecha 2018-05-09
              * +Descripcion Metodo encargado de invocar el servicio que
              *              borra los DocTemporal
              */
@@ -457,6 +482,7 @@ console.log("data",data);
                 var obj = {
                     session: $scope.session,
                     data: {
+                        listado: $scope.datos_view.listado_productos_validados,
                         doc_tmp_id: $scope.doc_tmp_id
                     }
                 };
@@ -476,53 +502,73 @@ console.log("data",data);
                     }
                 });
             };
-//
-//            $scope.generar_documento = function () {
-//                that.crearDocumento();
-//            };
-//
-//            /**
-//             * @author German Galvis
-//             * @fecha 2018-03-04
-//             * +Descripcion Metodo encargado de Generar el documento definitivo
-//             */
-//            that.crearDocumento = function () {
-//
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        ingreso: {
-//                            tipo_id_tercero: $scope.cliente_seleccionado.tipo_id_tercero,
-//                            tercero_id: $scope.cliente_seleccionado.id,
-//                            nombre_tercero: $scope.cliente_seleccionado.nombre_tercero,
-//                            prefijo_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().prefijo,
-//                            numero_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
-//                            doc_tmp_id: $scope.doc_tmp_id,
-//                            valor_total_factura: $scope.valorTotal,
-//                            usuario_id: Usuario.getUsuarioActual().getId()
-//                        }
-//                    }
-//                };
-//
-//                I012Service.crearDocumento(obj, function (data) {
-//                    if (data.status === 200) {
-//
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//
-//                        that.borrarVariables();
-//
-//                        var nombre = data.obj.nomb_pdf;
-//                        setTimeout(function () {
-//                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-//                        }, 0);
-//                    }
-//
-//                    if (data.status === 500) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//
-//                    }
-//                });
-//            };
+
+            $scope.generar_documento = function () {
+                var condicion = true;
+                var productos = $scope.datos_view.listado_productos;
+                var productos_devueltos = $scope.datos_view.listado_productos_validados;
+
+                productos_devueltos.forEach(function (data) {
+                    for (var i = 0; i < productos.length; i++) {
+
+                        if (data.itemIdCompra === productos[i].item_id) {
+                            condicion = false;
+                            AlertService.mostrarMensaje("warning", "la cantidad ingresada para el producto " + data.descripcion + " tiene que coincidir con la cantidad devuelta");
+                        }
+                    }
+                });
+
+                if (condicion) {
+                    that.crearDocumento();
+                }
+            };
+
+            /**
+             * @author German Galvis
+             * @fecha 2018-05-11
+             * +Descripcion Metodo encargado de Generar el documento definitivo
+             */
+            that.crearDocumento = function () {
+                var usuario = Usuario.getUsuarioActual();
+                var estado = 1;
+
+                if ($scope.datos_view.listado_productos === undefined || $scope.datos_view.listado_productos === null || $scope.datos_view.listado_productos.length <= 0) {
+                    estado = 0;
+                }
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        prefijo_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().prefijo,
+                        numero_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().numero,
+                        bodega_origen: $scope.documento_ingreso.get_bodega_origen(),
+                        bodega_destino: usuario.getEmpresa().getCodigo(),
+                        doc_tmp_id: $scope.doc_tmp_id,
+                        sw_estado: estado,
+                        usuario_id: usuario.getId()
+
+                    }
+                };
+
+                I015Service.crearDocumento(obj, function (data) {
+                    if (data.status === 200) {
+
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                        that.borrarVariables();
+
+                        var nombre = data.obj.nomb_pdf;
+                        setTimeout(function () {
+                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                        }, 0);
+                    }
+
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                    }
+                });
+            };
 
             /*==================================================================================================================================================================
              * 
@@ -591,17 +637,11 @@ console.log("data",data);
             };
 
             if (datos_documento.datosAdicionales !== undefined) {
-                console.log("datos", datos_documento.datosAdicionales);
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
                 $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
-//                that.buscarClientePorId(datos_documento.datosAdicionales.tipoTerceroId, datos_documento.datosAdicionales.terceroId, function (result) {
-//                    $scope.cliente_seleccionado = result[0];
-//                    $scope.cliente_seleccionado.id = result[0].tercero_id;
-//                });
-
+                that.buscarFarmaciaOrigenPorId(datos_documento.datosAdicionales.prefijo, datos_documento.datosAdicionales.numero);
                 that.buscarDocumentoPorId(datos_documento.datosAdicionales.prefijo, datos_documento.datosAdicionales.numero);
                 $scope.validarDesdeLink = true;
-                that.refrescarVista();
 
             } else {
                 $scope.validarDesdeLink = false;

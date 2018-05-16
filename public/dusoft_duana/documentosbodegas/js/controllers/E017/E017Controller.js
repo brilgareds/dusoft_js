@@ -91,7 +91,7 @@ define([
             //  Abre slider para seleccionar el cliente
             $scope.btn_seleccionar_productos = function () {
                 $scope.opts = {
-                    windowClass: 'app-modal-window-ls-xlg-ls',
+                    windowClass: 'app-modal-window-ls-xxlg-ls',
                     backdrop: 'static',
                     dialogClass: "buscador_productos",
                     templateUrl: 'views/E017/buscadorProductos.html',

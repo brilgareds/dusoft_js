@@ -156,7 +156,7 @@ define([
                     parent_name : "DocumentosBodegas",
                     controller: 'I012Controller'
                 });
-                /*/ E017 
+                // E017 
                 documentos_bodegas.stateProvider.state('E017', {
                     url: "/E017",
                     text: "Administración Documentos de Bodega [E017]",
@@ -171,7 +171,7 @@ define([
                     templateUrl: "views/I015/index.html",
                     parent_name : "DocumentosBodegas",
                     controller: 'I015Controller'
-                });*/
+                });
                 // E009
                 documentos_bodegas.stateProvider.state('E009', {
                     url: "/E009",

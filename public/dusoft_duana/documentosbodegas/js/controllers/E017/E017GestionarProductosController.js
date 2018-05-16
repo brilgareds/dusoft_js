@@ -127,13 +127,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Descripcion', width: "35%", enableCellEdit: false},
-                    {field: 'subClase', displayName: 'Molecula', width: "15%", enableCellEdit: false},
+                    //{field: 'subClase', displayName: 'Molecula', width: "15%", enableCellEdit: false},
                     {field: 'existencia', displayName: 'Existencias', width: "10%", enableCellEdit: false},
-                    {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "8%", enableCellEdit: false,
+                    {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false},
-                    {field: 'lote', displayName: 'Lote', width: "7%", enableCellEdit: false},
-                    {width: "6%", displayName: "Opcion", cellClass: "txt-center",
+                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "13%", enableCellEdit: false},
+                    {field: 'lote', displayName: 'Lote', width: "10%", enableCellEdit: false},
+                    {width: "9%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="btn_adicionar_producto(row.entity)" ng-disabled="habilitarCheck(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}

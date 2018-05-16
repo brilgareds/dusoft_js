@@ -886,6 +886,10 @@ MovimientosBodegasModel.prototype.getDocumentosBodegaUsuario = function (paramet
         select = " df.numero_doc_farmacia as numero_doc_cliente, df.prefijo_doc_farmacia as prefijo_doc_cliente";
         inner = " join inv_bodegas_movimiento_devolucion_farmacia as df on (m.prefijo = df.prefijo and m.numero = df.numero)";
     }
+    if (parametro.tipoDocGeneralId === 'I015') {
+        select = " itf.numero_doc_farmacia as numero_doc_cliente, itf.prefijo_doc_farmacia as prefijo_doc_cliente";
+        inner = " join inv_bodegas_movimiento_ingresos_traslados_farmacia as itf on (m.prefijo = itf.prefijo and m.numero = itf.numero)";
+    }
 
     var sql = "  * from (\
                         select \

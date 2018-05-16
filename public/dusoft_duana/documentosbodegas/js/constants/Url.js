@@ -82,7 +82,10 @@ define(["angular"], function(angular) {
                 'AGREGAR_ITEM': BASE_URL + '/movBodegas/I015/agregarItem',
                 'CONSULTAR_PRODUCTOS_VALIDADOS': BASE_URL + '/movBodegas/I015/listarProductosValidados',
                 'ELIMINAR_PRODUCTO': BASE_URL + '/movBodegas/I015/eliminarItem',
-                'LISTAR_DOCUMENTO_SELECCIONADO': BASE_URL + '/movBodegas/I015/listarDocumentoId'
+                'LISTAR_DOCUMENTO_SELECCIONADO': BASE_URL + '/movBodegas/I015/listarDocumentoId',
+                'LISTAR_FARMACIA_SELECCIONADA': BASE_URL + '/movBodegas/I015/listarFarmaciaId',
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/I015/crearDocumento',
+                'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I015/crearHtmlDocumento'
             },
             'E007': {
             },

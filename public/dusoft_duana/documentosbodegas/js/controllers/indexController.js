@@ -154,7 +154,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                     if (documento.tipo_doc_bodega_id === 'I015') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero: documento.numero_factura,
-                        prefijo: documento.prefijo_idc};
+                            prefijo: documento.prefijo_idc};
                     }
                     var datos = {bodegas_doc_id: documento.bodegas_doc_id, prefijo: documento.prefijo, numero: numero, datosAdicionales: datosAdicionales};
                     localStorageService.add("documento_bodega_" + documento.tipo_doc_bodega_id, datos);
@@ -282,7 +282,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.ocultarAutorizacion = function (documento) {
                 var disabled = false;
 
-                if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012" || documento.tipo_movimiento === "E017") {
+                if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012" || documento.tipo_movimiento === "E017"
+                        || documento.tipo_movimiento === "I015") {
                     disabled = true;
                 }
                 return disabled;
@@ -340,6 +341,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     obj.data.numeroFactura = documentos.numeroFactura;
 
                     Request.realizarRequest(API.I012.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "I015") {
+
+                    obj.data.prefijoFactura = documentos.prefijoFactura;
+                    obj.data.numeroFactura = documentos.numeroFactura;
+
+                    Request.realizarRequest(API.I015.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
                         }
@@ -752,29 +767,71 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             that.eliminarGetDocTemporalI015 = function (datos) {
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        doc_tmp_id: datos.doc_tmp_id
-                    }
-                };
 
-                I015Service.eliminarGetDocTemporal(obj, function (data) {
-                    if (data.status === 200) {
-                        that.listarDocumetosTemporales(true);
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }
+                that.listarProductosValidadosI015(datos.doc_tmp_id, function (condicional) {
 
-                    if (data.status === 404) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }
+                    if (condicional) {
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listado: $scope.listado_productos,
+                                doc_tmp_id: datos.doc_tmp_id
+                            }
+                        };
 
-                    if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        I015Service.eliminarGetDocTemporal(obj, function (data) {
+                            if (data.status === 200) {
+                                that.listarDocumetosTemporales(true);
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 404) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                        });
                     }
                 });
             };
-            
+
+            that.listarProductosValidadosI015 = function (doc_id, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numero_doc: doc_id
+
+                    }
+                };
+
+
+                Request.realizarRequest(API.I015.CONSULTAR_PRODUCTOS_VALIDADOS, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        that.renderProductosValidadosI015(data.obj.listarProductos);
+                        callback(true);
+                    } else {
+                        callback(false);
+
+                    }
+
+                });
+            };
+
+            that.renderProductosValidadosI015 = function (productos) {
+                $scope.listado_productos = [];
+                productos.forEach(function (data) {
+
+                    var producto = {};
+                    producto.itemIdCompra = data.item_id_compras;
+                    producto.cantidad = data.cantidad;
+                    $scope.listado_productos.push(producto);
+                });
+            };
+
             $scope.onBuscar = function (claseDoc, descripDoc) {
                 $scope.selecciontipo = " " + descripDoc + " ";
                 that.getTiposDocumentosBodegaEmpresa(claseDoc);

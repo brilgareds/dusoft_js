@@ -321,3 +321,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.50', 'FORMULACION EXTERNA', 'Se ajustan los campos de tipo de documento para que por defecto se mantenga seleccionada Cedula, la fecha de formula por defecto la fecha del dia y los lotes por defecto la cantidad sea la cantidad pendiente.');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.51  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.51', 'FORMULACION EXTERNA', 'Se ajusta la busqueda de paciente para que traiga el registro mas reciente.');
+COMMIT TRANSACTION;

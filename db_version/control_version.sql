@@ -315,3 +315,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.49', 'DOCUMENTOS BODEGA', 'se agrega filtro al buscador de farmacia de origen al I015');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.50  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.50', 'FORMULACION EXTERNA', 'Se ajustan los campos de tipo de documento para que por defecto se mantenga seleccionada Cedula, la fecha de formula por defecto la fecha del dia y los lotes por defecto la cantidad sea la cantidad pendiente.');
+COMMIT TRANSACTION;

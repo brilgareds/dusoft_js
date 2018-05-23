@@ -2626,7 +2626,7 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
                   :2 as valor_total_cotizacion,\
                   COALESCE(b.sw_facturacion_agrupada, '0') as pedido_multiple_farmacia\
                   from ventas_ordenes_pedidos_tmp a\
-                  left join vnts_contratos_clientes AS b on b.tipo_id_tercero = a.tipo_id_tercero and b.tercero_id = a.tercero_id\
+                  left join vnts_contratos_clientes AS b on b.tipo_id_tercero = a.tipo_id_tercero and b.tercero_id = a.tercero_id and b.empresa_id = a.empresa_id\
                   where a.pedido_cliente_id_tmp = :1\
                   and b.estado = '1'\
                 ) returning pedido_cliente_id as numero_pedido ";

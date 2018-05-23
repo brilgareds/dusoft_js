@@ -1307,7 +1307,6 @@ DocumentoBodegaE008.prototype.obtenerDocumento = function(obj, callback) {
  * +Descripcion Metodo encargado listar los despachos auditados
  */
 DocumentoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback){
-   console.log("listarDespachosAuditados");
      var fecha = "";
     
      if(!obj.registroUnico){

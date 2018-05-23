@@ -1316,7 +1316,7 @@ DocumentoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
      var prefijos;
      
      if(obj.empresa_id==='03'){
-         prefijos = 'DTM','EFM','EDFM','EFC';
+         prefijos = "'DTM','EFM','EDFM','EFC'";
      }
      if(obj.empresa_id==='BQ'){
          prefijos = "'EFB'";

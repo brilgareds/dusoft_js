@@ -1891,9 +1891,9 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
     leftJoin("ventas_ordenes_pedidos as h", "a.numero_cotizacion", "h.pedido_cliente_id_tmp").
     leftJoin("vnts_contratos_clientes as j", function(){
        this.on("a.tipo_id_tercero", "j.tipo_id_tercero").
-       on("a.tercero_id", "j.tercero_id").
+       on("a.tercero_id", "j.tercero_id").on("a.empresa_id", "j.empresa_id").
        on(G.knex.raw("j.estado = '1'"));
-    }).
+    }).//where("j.empresa_id", empresa_id).
     //where("j.estado", "1").
     then(function(resultado) {
         callback(false, resultado);

@@ -141,7 +141,18 @@ DrAriasModel.prototype.rotacionZonas = function (callback) {
                     function () {
                         this.on("a.zona_id", "b.id");
                     })
-            .leftJoin(G.knex.raw('(select distinct on (d.bodega)  max(d.fecha_registro), d.* from  control_rotaciones as d GROUP BY 2,3,4,5,6,7,8,9,10,11,12) as c'),
+            .leftJoin(G.knex.raw('(\
+                        SELECT \
+			t1.control_rotacion_id ,t1.fecha_registro,empresa_id,centro_utilidad,t1.bodega,t1.sw_remitente,t1.remitentes,t1.sw_estado_correo,\
+			t1.log_error,t1.meses\
+			FROM control_rotaciones as t1 \
+			INNER JOIN ( \
+			SELECT \
+			bodega,MAX(fecha_registro)as fecha_registro \
+			FROM control_rotaciones GROUP BY bodega\
+			)as t2 ON t1.fecha_registro = t2.fecha_registro AND t1.bodega = t2.bodega\
+			ORDER BY t1.control_rotacion_id\
+                        ) as c'),
                     function () {
                         this.on("a.empresa_id", "c.empresa_id")
                             .on("a.centro_utilidad", "c.centro_utilidad")
@@ -153,7 +164,7 @@ DrAriasModel.prototype.rotacionZonas = function (callback) {
                     .andWhere(G.knex.raw("a.bodega not in (42,77,50,65,63,81)"))
                
             }).orderBy('b.descripcion', 'asc');
-
+//console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
 

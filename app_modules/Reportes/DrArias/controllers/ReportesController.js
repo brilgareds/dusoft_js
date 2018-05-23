@@ -1,5 +1,5 @@
 
-var Reportes = function(drArias, j_reporteDrAriasJobs, eventos_dr_arias,emails,socket) {
+var Reportes = function (drArias, j_reporteDrAriasJobs, eventos_dr_arias, emails, socket) {
     this.m_drArias = drArias;
     this.j_reporteDrAriasJobs = j_reporteDrAriasJobs;
     this.e_dr_arias = eventos_dr_arias;
@@ -13,7 +13,7 @@ var Reportes = function(drArias, j_reporteDrAriasJobs, eventos_dr_arias,emails,s
  * @params detalle: 
  * @fecha 2016-06-03
  */
-Reportes.prototype.listarDrArias = function(req, res) {
+Reportes.prototype.listarDrArias = function (req, res) {
     var that = this;
     var args = req.body.data;
     var filtro = args;
@@ -29,50 +29,51 @@ Reportes.prototype.listarDrArias = function(req, res) {
     datos.usuario = filtro.session.usuario_id;
     datos.estado = '0';
     datos.busqueda = filtro;
-    G.Q.nfcall(__guardarEstadoReporte, that, datos).then(function(resultados) {
+    G.Q.nfcall(__guardarEstadoReporte, that, datos).then(function (resultados) {
 
-	//estado del reporte 0- En proceso 1- generado 2- error al generar 3- reporte con cero registros
-	that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
-	res.send(G.utils.r(req.url, 'Generando Informe...', 200, {listarDrArias: 'pendiente'}));
+        //estado del reporte 0- En proceso 1- generado 2- error al generar 3- reporte con cero registros
+        that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
+        res.send(G.utils.r(req.url, 'Generando Informe...', 200, {listarDrArias: 'pendiente'}));
 
-	return G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro);
+        return G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro);
 
-    }).then(function(resultados) {
+    }).then(function (resultados) {
 
-	resultado = resultados;
-	if (resultado !== -1) {
+        resultado = resultados;
+        if (resultado !== -1) {
 
-	    return G.Q.nfcall(__generarCsvDrArias, resultado, filtro);
+            return G.Q.nfcall(__generarCsvDrArias, resultado, filtro);
 
-	} else {
-	    return 0;
-	}
+        } else {
+            return 0;
+        }
 
-    }).then(function(tamaño) {
+    }).then(function (tamaño) {
 
-	datos.fecha_fin = G.moment().format();
-	if (tamaño > 0) {
-	    datos.estado = '1';
-	    return G.Q.nfcall(__generarDetalle, resultado, datos, that);
-	} else {
-	    datos.estado = '3';
-	    return true;
-	}
+        datos.fecha_fin = G.moment().format();
+        if (tamaño > 0) {
+            datos.estado = '1';
+            return G.Q.nfcall(__generarDetalle, resultado, datos, that);
+        } else {
+            datos.estado = '3';
+            return true;
+        }
 
-    }).then(function(result) {
-	return G.Q.nfcall(__editarEstadoReporte, that, datos);
+    }).then(function (result) {
+        return G.Q.nfcall(__editarEstadoReporte, that, datos);
 
-    }).then(function(result) {
-	that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
+    }).then(function (result) {
+        that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
 
-    }).fail(function(err) {
-	datos.fecha_fin = G.moment().format();
-	datos.estado = '2';
-	return G.Q.nfcall(__editarEstadoReporte, that, datos);
-	that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
+    }).fail(function (err) {
+        datos.fecha_fin = G.moment().format();
+        datos.estado = '2';
+        return G.Q.nfcall(__editarEstadoReporte, that, datos);
+        that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
     }).done();
 };
-Reportes.prototype.listarDrArias0 = function(req, res) {
+
+Reportes.prototype.listarDrArias0 = function (req, res) {
     var that = this;
     var args = req.body.data;
     var filtro = args;
@@ -92,37 +93,37 @@ Reportes.prototype.listarDrArias0 = function(req, res) {
     that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
     res.send(G.utils.r(req.url, 'Generando Informe...', 200, {listarDrArias: 'pendiente'}));
 
-    G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro).then(function(resultado) {
-	if (resultado !== -1) {
+    G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro).then(function (resultado) {
+        if (resultado !== -1) {
 
-	    __generarCsvDrArias(resultado, filtro, function(tamaño) {
-		datos.fecha_fin = G.moment().format();
-		if (tamaño > 0) {
-		    datos.estado = '1';
-		    __generarDetalle(resultado, datos, that, function() {
-		    });
-		} else {
-		    datos.estado = '3';
-		}
-		__editarEstadoReporte(that, datos);
-		that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
-	    });
-	} else {
-	    datos.fecha_fin = G.moment().format();
-	    datos.estado = '2';
-	    __editarEstadoReporte(that, datos);
-	    that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
-	}
+            __generarCsvDrArias(resultado, filtro, function (tamaño) {
+                datos.fecha_fin = G.moment().format();
+                if (tamaño > 0) {
+                    datos.estado = '1';
+                    __generarDetalle(resultado, datos, that, function () {
+                    });
+                } else {
+                    datos.estado = '3';
+                }
+                __editarEstadoReporte(that, datos);
+                that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
+            });
+        } else {
+            datos.fecha_fin = G.moment().format();
+            datos.estado = '2';
+            __editarEstadoReporte(that, datos);
+            that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
+        }
     }).
-	    fail(function(err) {
-	console.log("error controller ", err);
-	datos.fecha_fin = G.moment().format();
-	datos.estado = '2';
-	__editarEstadoReporte(that, datos);
-	that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
-	res.send(G.utils.r(req.url, 'Error Listado Dr Arias', 500, {listarDrArias: err}));
-    }).
-	    done();
+            fail(function (err) {
+                console.log("error controller ", err);
+                datos.fecha_fin = G.moment().format();
+                datos.estado = '2';
+                __editarEstadoReporte(that, datos);
+                that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
+                res.send(G.utils.r(req.url, 'Error Listado Dr Arias', 500, {listarDrArias: err}));
+            }).
+            done();
 };
 
 /*
@@ -132,18 +133,18 @@ Reportes.prototype.listarDrArias0 = function(req, res) {
  * @param {type} res
  * @returns {datos de consulta}
  */
-Reportes.prototype.reportesGenerados = function(req, res) {
+Reportes.prototype.reportesGenerados = function (req, res) {
 
     var that = this;
     var args = req.body.data;
     var datos = {};
     datos.usuario = args.session.usuario_id;
-    that.m_drArias.reportesGenerados(datos, function(err, reportes) {
-	if (err) {
-	    res.send(G.utils.r(req.url, 'Error listando los reportes generados', 500, {reportes: err}));
-	} else {
-	    res.send(G.utils.r(req.url, 'Lista de reportes generados OK', 200, {reportes: reportes}));
-	}
+    that.m_drArias.reportesGenerados(datos, function (err, reportes) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando los reportes generados', 500, {reportes: err}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de reportes generados OK', 200, {reportes: reportes}));
+        }
     });
 };
 
@@ -153,217 +154,231 @@ Reportes.prototype.reportesGenerados = function(req, res) {
  * @params detalle: 
  * @fecha 2016-06-17
  */
-Reportes.prototype.listarPlanes = function(req, res) {
+Reportes.prototype.listarPlanes = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_drArias, 'listarPlanes').then(function(listarPlanes) {
-	res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: listarPlanes}));
+    G.Q.ninvoke(that.m_drArias, 'listarPlanes').then(function (listarPlanes) {
+        res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: listarPlanes}));
     }).
-	    fail(function(err) {
-	console.log("error controller listarPlanes ", err);
-	res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
-    }).
-	    done();
+            fail(function (err) {
+                console.log("error controller listarPlanes ", err);
+                res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
+            }).
+            done();
 };
 
-Reportes.prototype.rotacionZonas0= function(req, res) {
+Reportes.prototype.rotacionZonas0 = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function(rotacionZonas) {
-	res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: rotacionZonas}));
-    }).fail(function(err) {
-	console.log("error controller listarPlanes ", err);
-	res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function (rotacionZonas) {
+        res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: rotacionZonas}));
+    }).fail(function (err) {
+        console.log("error controller listarPlanes ", err);
+        res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
     }).done();
 };
 
-Reportes.prototype.rotacionZonas= function(req, res) {
+Reportes.prototype.rotacionZonas = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function(rotacionZonas) {
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function (rotacionZonas) {
 
-	res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: rotacionZonas}));
-        
-    }).fail(function(err) {
-	console.log("error controller listarPlanes ", err);
-	res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
+        res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: rotacionZonas}));
+
+    }).fail(function (err) {
+        console.log("error controller listarPlanes ", err);
+        res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
     }).done();
 };
 
-Reportes.prototype.rotacionZonasMovil= function(req, res) {
+Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function(rotacionZonas) {
-        return G.Q.nfcall(__ordenarZonas,rotacionZonas,0,[],'',[]);
-        
-    }).then(function(respuesta) {    
-        
-	res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
-    }).fail(function(err) {
-	console.log("error controller listarPlanes ", err);
-	res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function (rotacionZonas) {
+        return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
+
+    }).then(function (respuesta) {
+
+        res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
+    }).fail(function (err) {
+        console.log("error controller listarPlanes ", err);
+        res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
     }).done();
 };
 
-function __ordenarZonas(data,index,resultado,controlZona,bodegas,callback){
+function __ordenarZonas(data, index, resultado, controlZona, bodegas, callback) {
     var _data = data[index];
     index++;
-    
-    if(!_data){
-      var json={zona:controlZona,bodegas:bodegas};
-      resultado.push(json);
-      callback(false,resultado); 
-      return;
+
+    if (!_data) {
+        var json = {zona: controlZona, bodegas: bodegas};
+        resultado.push(json);
+        callback(false, resultado);
+        return;
     }
-    
-     var cabecera = {
-                        nombreBodega: _data.nombre_bodega,
-                        empresa: _data.empresa_id,
-                        centroUtilidad: _data.centro_utilidad,
-                        fechaRegistro: _data.fecha_registro,
-                        diferenciaDias: _data.diferencia,
-                        swRemitente: _data.sw_remitente,
-                        swEstadoCorreo: _data.sw_estado_correo,
-                        logError: _data.log_error,
-                        remitentes: _data.remitentes,
-                        meses: _data.meses,
-                        bodega: _data.bodega                        
-                    };
-        if(controlZona!==_data.zona){
-            var json={zona:controlZona,bodegas:bodegas};
-            bodegas=[];
-            resultado.push(json); 
-            controlZona=_data.zona;            
-         }
-      bodegas.push(cabecera);
-    
-   return  __ordenarZonas(data,index,resultado,controlZona,bodegas,callback)
+
+    var cabecera = {
+        nombreBodega: _data.nombre_bodega,
+        empresa: _data.empresa_id,
+        centroUtilidad: _data.centro_utilidad,
+        fechaRegistro: _data.fecha_registro,
+        diferenciaDias: _data.diferencia,
+        swRemitente: _data.sw_remitente,
+        swEstadoCorreo: _data.sw_estado_correo,
+        logError: _data.log_error,
+        remitentes: _data.remitentes,
+        meses: _data.meses,
+        bodega: _data.bodega
+    };
+    if (controlZona !== _data.zona) {
+        var json = {zona: controlZona, bodegas: bodegas};
+        bodegas = [];
+        resultado.push(json);
+        controlZona = _data.zona;
+    }
+    bodegas.push(cabecera);
+
+    return  __ordenarZonas(data, index, resultado, controlZona, bodegas, callback)
 }
 
-Reportes.prototype.generarRotaciones = function(req, res) {
+Reportes.prototype.generarRotaciones = function (req, res) {
     var that = this;
     var args = req.body.data;
-    var usuarioId=req.body.session.usuario_id;
-    
-   
-    args.data.bodegas.forEach(function(item){
-        item.remitente=args.data.remitente;  //guardarControlRotacion        
-        item.remitentes=args.data.remitentes;        
-        item.meses=args.data.meses;        
-        item.usuarioId=usuarioId;        
-        item.swEstadoCorreo='0';   
-    
-        __rotacionesBodegas(that,item,function(data){
-            console.log(data);
+    var usuarioId = req.body.session.usuario_id;
+    var today = new Date();
+    var formato = 'DD-MM-YYYY hh:mm:ss a';
+    var fechaToday = G.moment(today).format(formato);
+
+    args.data.bodegas.forEach(function (item) {
+        item.remitente = args.data.remitente;  //guardarControlRotacion   0     
+        item.remitentes = args.data.remitentes;
+        item.meses = args.data.meses;
+        item.usuarioId = usuarioId;
+        item.swEstadoCorreo = '0';
+        item.logError = '';
+
+        __rotacionesBodegas(that, item, function (data) {
+
+            if (data.estado !== 200) {
+                if (item.remitente === '1') {
+                    console.log("Error", data);
+                    var subject = "Error al Generar Rotación (ver detalles) " + fechaToday;
+                    var to = G.settings.email_desarrollo1;
+                    var ruta_archivo = "";
+                    var nombre_archivo = "";
+                    var enviado = "";
+                    enviado = "Enviado al Dr Duarte. " + fechaToday;
+                    var message = "Rotacion Dr. DUARTE <br><br>" + enviado + "<br> Error:  " + JSON.stringify(data) + " <br><br> Parametros: " + JSON.stringify(item);
+                    __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, function () {});
+                }
+            }
         });
-        
+
     });
     res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: 'ok'}));
 };
 
-function __rotacionesBodegas(that,bodega,callback){
-   
+function __rotacionesBodegas(that, bodega, callback) {
+
     var name;
     var archivoName;
-    var today = new Date();    
+    var today = new Date();
     var formato = 'YYYY-MM-DD';
     var fechaToday = G.moment(today).format(formato);
     var controlRotacionId;
     var listarPlanes;
-    
-    G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion',bodega).then(function(respuesta) { 
-                
-        bodega.controlRotacionId=respuesta[0];
-        notificacion=bodega;
-     //that.io.sockets.emit('onNotificarRotacion', notificacion);  
-        //that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
-      
-        return G.Q.ninvoke(that.m_drArias, 'rotacion',bodega);
-    
-    }).then(function(respuesta) {
-          
-       if(respuesta.length > 0){ 
-           
-        listarPlanes=respuesta;
-        listarPlanes.meses=bodega.meses;
-        bodega.swEstadoCorreo=1;
-        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
-        return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion',bodega);
-        
-        }else{
-            throw {estado:403, mensaje:"No hay productos"};
+
+    G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion', bodega).then(function (respuesta) {
+
+        bodega.controlRotacionId = respuesta[0]; 
+        bodega.swEstadoCorreo = 0;
+        notificacion = bodega;
+       
+        //that.io.sockets.emit('onNotificarRotacion', notificacion);  
+        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
+
+        return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);
+
+    }).then(function (respuesta) {
+
+        if (respuesta.length > 0) {
+
+            listarPlanes = respuesta;
+            listarPlanes.meses = bodega.meses;
+            bodega.swEstadoCorreo = 1;
+            that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
+            return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
+
+        } else {
+            throw {estado: 403, mensaje: "No hay productos"};
         }
-         
-    }).then(function(respuesta) {
-        
-        name="Bodega: "+listarPlanes[0].nom_bode;
-        archivoName=listarPlanes[0].nom_bode+"_"+fechaToday+"_"+bodega.meses+".xlsx";
-        return G.Q.nfcall(__organizaRotacion,0,listarPlanes,[]);       
-        
-    }).then(function(resultados) {
-        
-         resultados.nameHoja="Rotacion";
-         resultados.nameArchivo=archivoName;
-         resultados.name=name;
-         return G.Q.nfcall(__creaExcel,resultados);
-         
-    }).then(function(resultados) {
-                
-        bodega.swEstadoCorreo=2;
-        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
-        return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion',bodega);
-        
-    }).then(function(resultados) { 
-        
-         var sistemas=G.settings.email_mauricio_barrios+","+G.settings.email_pedro_meneses;
-         var remitente="";
-         
-         if(bodega.remitente === 0){
-             remitente=sistemas;
-         }
-         
-         if(bodega.remitente === 1){
-             remitente=G.settings.email_miguel_duarte;//+","+sistemas;
-         }
-         
-         if(bodega.remitentes.trim() !== ""){
-             remitente +=","+bodega.remitentes;
-         }
-         
-         var subject = "Rotación "+name;
-         var to = remitente;
-         var ruta_archivo = G.dirname + "/files/Rotaciones/" +archivoName;
-                          
-         var nombre_archivo = archivoName;
-         var message = "Rotacion DR. DUARTE";
-         
-        return G.Q.nfcall(__enviar_correo_electronico,that, to, ruta_archivo, nombre_archivo, subject, message);
-        
-    }).then(function(resultados) {
-        
-        bodega.swEstadoCorreo=3;
-        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
-        return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion',bodega);
-        
-    }).then(function(resultados) {
-        
-        
-        callback(false,resultados);
-        
-    }).fail(function(err) {
-        
-        bodega.swEstadoCorreo=4;
-        bodega.logError=err;
-        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
-        G.Q.ninvoke(that.m_drArias, 'editarControlRotacion',bodega,function(){
-           callback(true,err); 
-        });       
-        
-	console.log("error controller listarPlanes ", err);
+
+    }).then(function (respuesta) {
+
+        name = "Bodega: " + listarPlanes[0].nom_bode;
+        archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";
+        return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);
+
+    }).then(function (resultados) {
+
+        resultados.nameHoja = "Rotacion";
+        resultados.nameArchivo = archivoName;
+        resultados.name = name;
+        return G.Q.nfcall(__creaExcel, resultados);
+
+    }).then(function (resultados) {
+
+        bodega.swEstadoCorreo = 2;
+        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
+        return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
+
+    }).then(function (resultados) {
+
+        var sistemas = G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses;
+        var remitente = "";
+
+        if (bodega.remitente === 0) {
+            remitente = sistemas;
+        }
+
+        if (bodega.remitente === 1) {
+            remitente = G.settings.email_miguel_duarte;//+","+sistemas;
+        }
+
+        if (bodega.remitentes.trim() !== "") {
+            remitente += "," + bodega.remitentes;
+        }
+
+        var subject = "Rotación " + name;
+        var to = remitente;
+        var ruta_archivo = G.dirname + "/files/Rotaciones/" + archivoName;
+
+        var nombre_archivo = archivoName;
+        var message = "Rotacion Dr. DUARTE";
+
+        return G.Q.nfcall(__enviar_correo_electronico, that, to, ruta_archivo, nombre_archivo, subject, message);
+
+    }).then(function (resultados) {
+        bodega.swEstadoCorreo = 3;
+        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
+        return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
+
+    }).then(function (resultados) {
+        callback(false, resultados);
+
+    }).fail(function (err) {
+        bodega.swEstadoCorreo = 4;
+        bodega.logError = err;
+        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
+        G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega, function () {
+            callback(err);
+        });
+
+        console.log("error controller listarPlanes ", err);
     }).done();
 }
 
@@ -384,7 +399,7 @@ function __creaExcel(data, callback) {
 
     worksheet.columns = [
         {header: 'CODIGO', key: 'a', style: style},
-        {header: 'PRODUCTO - '+data.name, key: 'b', width: 50, style: style},
+        {header: 'PRODUCTO - ' + data.name, key: 'b', width: 50, style: style},
         {header: 'MOLECULA', key: 'c', width: 25, style: style},
         {header: 'LABORATORIO', key: 'd', style: style},
         {header: 'TIPO PRODUCTO', key: 'e', style: style},
@@ -404,12 +419,12 @@ function __creaExcel(data, callback) {
 
         if (element.color === 'ROJO') {
             worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
-              element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
+                element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
                 color: {argb: 'C42807'}, name: 'Calibri', size: 9
             };
         } else {
             worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
-             element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]);
+                element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]);
         }
 
         worksheet.getColumn('A').hidden = true;
@@ -454,10 +469,11 @@ function __creaExcel(data, callback) {
         console.log("saved");
         callback(false, data.nameArchivo);
     });
-};
+}
+;
 
 function __organizaRotacion(index, data, resultado, callback) {
-console.log("datadatadata",data.meses);
+
     var _resultado = data[index];
     index++;
 
@@ -479,7 +495,16 @@ console.log("datadatadata",data.meses);
     resultColumna.stockBodega = _resultado.existencia_bd;
     resultColumna.nivel = _resultado.nivel;
     resultColumna.tipo_producto = _resultado.tipo_producto;
-    resultColumna.color = _resultado.existencia / ((Math.ceil((_resultado.sum)) / resultado.meses) > 0 ? Math.ceil(((_resultado.sum)) / data.meses) : 1) >= 5 ? "ROJO" : "N/A";
+   // resultColumna.color = (_resultado.existencia / ((Math.ceil((_resultado.sum)) / resultado.meses) > 0 ? Math.ceil(((_resultado.sum)) / data.meses) : 1) >= 5)  ? "ROJO" : "N/A"; //&& resultColumna.pedido60Dias === 0 || 
+
+var promedio_dia= (((resultColumna.promedioMes/30)*60)-resultColumna.totalStock);
+console.log("promedio_dia ",promedio_dia);
+var mxm = resultColumna.totalStock/resultColumna.promedioMes;
+console.log("mxm ",mxm);
+var mayor5 = resultColumna.totalStock>5;
+console.log("mayor5 ",mayor5);
+
+resultColumna.color = (promedio_dia < 0 &&  mayor5 === true && (mxm >= 5 || mxm === Infinity))?"ROJO" : "N/A";
 
     resultado.push(resultColumna);
 
@@ -493,7 +518,7 @@ function __organizaRotacion0(index, data, resultado, callback) {
 
     if (_resultado) {
         callback(false, sortJSON(resultado, 'molecula', 'asc'));
-}
+    }
 
     var resultColumna = {
         codigo_poducto: _resultado.codigo_producto,
@@ -521,8 +546,10 @@ function __organizaRotacion0(index, data, resultado, callback) {
     resultColumna.stockBodega = _resultado.existencia_bd;
     resultColumna.nivel = _resultado.nivel;
     resultColumna.tipo_producto = _resultado.tipo_producto;
-    resultColumna.color = _resultado.existencia / ((Math.ceil((resultColumna.sum2 + resultColumna.sum1)) / 2) > 0 ? Math.ceil(((resultColumna.sum2 + resultColumna.sum1)) / 2) : 1) >= 5 ? "ROJO" : "N/A";
-
+   // resultColumna.color = _resultado.existencia / ((Math.ceil((resultColumna.sum2 + resultColumna.sum1)) / 2) > 0 ? Math.ceil(((resultColumna.sum2 + resultColumna.sum1)) / 2) : 1) >= 5 ? "ROJO" : "N/A";
+    var promedio = resultColumna.promedioMes===0?1:resultColumna.promedioMes;    
+    resultColumna.color = _resultado.existencia / promedio >=5 ? "ROJO" : "N/A"; 
+    
     resultado.push(resultColumna);
 
     return __organizaRotacion(index, data, resultado, callback);
@@ -546,7 +573,7 @@ function sortJSON(data, key, orden) {
 // Funcion para enviar correos electronicos usando nodemailer
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
-   
+
     var smtpTransport = that.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname
         secureConnection: true, // use SSL
@@ -562,26 +589,26 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
         to: to,
         cc: "amgonzalez80@hotmail.com",
         subject: subject,
-        html: message,
-        attachments: [{'filename': nombre_archivo, 'contents': G.fs.readFileSync(ruta_archivo)}]
+        html: message
     };
 
-    smtpTransport.sendMail(settings, function(error, response) {
-
-        if (error) {
-            console.log("Error ",error);
-            callback(true);
+    if (ruta_archivo !== "") {
+        settings.attachments = [{'filename': nombre_archivo, 'contents': G.fs.readFileSync(ruta_archivo)}];
+    }
+    smtpTransport.sendMail(settings, function (error, response) {
+        if (error !== null) {
+            callback({estado: 505, mensaje: error});
             return;
         } else {
-            smtpTransport.close();            
-            callback(false,"ok");
+            smtpTransport.close();
+            callback(false, {estado: 200, mensaje: "Correo Enviado"});
             return;
         }
     });
 }
 ;
-    
-    
+
+
 /**
  * @author Andres M Gonzalez
  * +Descripcion controlador que genera detalle
@@ -607,45 +634,45 @@ function __generarDetalle(resultado, datos, that, callback) {
     var countPaciente_2 = 0;
     var countFormula_2 = 0;
     for (var key in resultado) {
-	i++;
-	var value = resultado[key];
-	if (control) {
-	    bodega = value.nom_bode;
-	    control = false;
-	    countPaciente_2 = 0;
-	    countFormula_2 = 0;
-	}
-	if (value.formula_id !== formula) {
-	    countFormula++;
-	    countFormula_2++;
-	    formula = value.formula_id;
-	    consolidado.countformula = countFormula_2;
-	}
-	if (value.paciente_id !== paciente) {
-	    countPaciente++;
-	    countPaciente_2++;
-	    consolidado.countpaciente = countPaciente_2;
-	    paciente = value.paciente_id;
-	}
+        i++;
+        var value = resultado[key];
+        if (control) {
+            bodega = value.nom_bode;
+            control = false;
+            countPaciente_2 = 0;
+            countFormula_2 = 0;
+        }
+        if (value.formula_id !== formula) {
+            countFormula++;
+            countFormula_2++;
+            formula = value.formula_id;
+            consolidado.countformula = countFormula_2;
+        }
+        if (value.paciente_id !== paciente) {
+            countPaciente++;
+            countPaciente_2++;
+            consolidado.countpaciente = countPaciente_2;
+            paciente = value.paciente_id;
+        }
 
-	var tt = value.total.replace(",", ".");
-	var prc = value.precio.replace(",", ".");
-	total = total + parseFloat(tt);
-	precio = precio + parseFloat(prc);
-	cantidades += parseInt(value.cantidad);
-	totalDetalle = totalDetalle + parseFloat(tt);
-	consolidado.total = totalDetalle;
+        var tt = value.total.replace(",", ".");
+        var prc = value.precio.replace(",", ".");
+        total = total + parseFloat(tt);
+        precio = precio + parseFloat(prc);
+        cantidades += parseInt(value.cantidad);
+        totalDetalle = totalDetalle + parseFloat(tt);
+        consolidado.total = totalDetalle;
 
-	if (value.nom_bode !== bodega || resultado.length == i) {
-	    consolidado.bodega = bodega;
-	    bodegas[bodega] = consolidado;
-	    bga.push(consolidado);
-	    bodega = value.nom_bode;
-	    countPaciente_2 = 0;
-	    countFormula_2 = 0;
-	    totalDetalle = 0;
-	    consolidado = {};
-	}
+        if (value.nom_bode !== bodega || resultado.length == i) {
+            consolidado.bodega = bodega;
+            bodegas[bodega] = consolidado;
+            bga.push(consolidado);
+            bodega = value.nom_bode;
+            countPaciente_2 = 0;
+            countFormula_2 = 0;
+            totalDetalle = 0;
+            consolidado = {};
+        }
 
 
     }
@@ -672,68 +699,68 @@ function __generarCsvDrArias(datos, filtro, callback) {
 
 
     var fields = ["fecha", "fecha_formula", "formula_id", "formula_papel", "nom_bode", "plan_descripcion", "usuario_digita",
-	"descripcion_tipo_formula", "paciente_id", "paciente", "tercero_id", "medico", "especialidad",
-	"codigo_producto", "codigo_cum", "producto", "cantidad", "precio", "total", "eps_punto_atencion_nombre"];
+        "descripcion_tipo_formula", "paciente_id", "paciente", "tercero_id", "medico", "especialidad",
+        "codigo_producto", "codigo_cum", "producto", "cantidad", "precio", "total", "eps_punto_atencion_nombre"];
 
     var fieldNames = ["FECHA", "FECHA FORMULA", "FORMULA_ID", "FORMULA", "FARMACIA", "PROGRAMA", "USUARIO FARMACIA",
-	"TIPO FORMULA", "CC. PACIENTE", "NOMBRES PACIENTE", "CC. MEDICO", "MEDICO", "ESPECIALIDAD",
-	"CODIGO", "CODIGO CUM", "PRODUCTO", "CANTIDAD", "PRECIO UNITARIO", "PRECIO TOTAL", "PUNTO DE ATENCION"];
+        "TIPO FORMULA", "CC. PACIENTE", "NOMBRES PACIENTE", "CC. MEDICO", "MEDICO", "ESPECIALIDAD",
+        "CODIGO", "CODIGO CUM", "PRODUCTO", "CANTIDAD", "PRECIO UNITARIO", "PRECIO TOTAL", "PUNTO DE ATENCION"];
     var opts = {
-	data: datos,
-	fields: fields,
-	fieldNames: fieldNames,
-	del: ';',
-	hasCSVColumnTitle: 'Dr Arias'
+        data: datos,
+        fields: fields,
+        fieldNames: fieldNames,
+        del: ';',
+        hasCSVColumnTitle: 'Dr Arias'
     };
 
-    G.json2csv(opts, function(err, csv) {
-	if (err)
-	    console.log("Eror de Archivo: ", err);
-	var nombreReporte = filtro.nombre;
-	G.fs.writeFile(G.dirname + "/public/reports/" + nombreReporte, csv, function(err) {
-	    if (err) {
-		console.log('Error __generarCsvDrArias', err);
-		throw err;
-	    }
-	    callback(false, datos.length);
+    G.json2csv(opts, function (err, csv) {
+        if (err)
+            console.log("Eror de Archivo: ", err);
+        var nombreReporte = filtro.nombre;
+        G.fs.writeFile(G.dirname + "/public/reports/" + nombreReporte, csv, function (err) {
+            if (err) {
+                console.log('Error __generarCsvDrArias', err);
+                throw err;
+            }
+            callback(false, datos.length);
 
-	});
+        });
     });
 }
 
 
 function __guardarEstadoReporte(that, datos, callback) {
-    G.Q.ninvoke(that.m_drArias, 'guardarEstadoReporte', datos).then(function(resultado) {
+    G.Q.ninvoke(that.m_drArias, 'guardarEstadoReporte', datos).then(function (resultado) {
 
-	callback(false, resultado.rowCount);
-	return;
-    }).fail(function(err) {
-	console.log("error controller __guardarEstadoReporte ", err);
-	callback(err);
+        callback(false, resultado.rowCount);
+        return;
+    }).fail(function (err) {
+        console.log("error controller __guardarEstadoReporte ", err);
+        callback(err);
     }).done();
 }
 
 function __editarEstadoReporte(that, datos, callback) {
-    G.Q.ninvoke(that.m_drArias, 'editarEstadoReporte', datos).then(function(resultado) {
-	callback(false, resultado);
-	return;
-    }).fail(function(err) {
-	console.log("error controller __editarEstadoReporte ", err);
-	callback(err);
+    G.Q.ninvoke(that.m_drArias, 'editarEstadoReporte', datos).then(function (resultado) {
+        callback(false, resultado);
+        return;
+    }).fail(function (err) {
+        console.log("error controller __editarEstadoReporte ", err);
+        callback(err);
     }).done();
 }
 
 function __editarConsolidadoReporte(that, datos) {
-    G.Q.ninvoke(that.m_drArias, 'editarConsolidadoReporte', datos).then(function(resultado) {
+    G.Q.ninvoke(that.m_drArias, 'editarConsolidadoReporte', datos).then(function (resultado) {
     }).
-	    fail(function(err) {
-	console.log("error controller __editarConsolidadoReporte ", err);
-    }).
-	    done();
+            fail(function (err) {
+                console.log("error controller __editarConsolidadoReporte ", err);
+            }).
+            done();
 }
 
 Reportes.$inject = [
-    "m_drArias", "j_reporteDrAriasJobs", "e_dr_arias","emails", "socket"
+    "m_drArias", "j_reporteDrAriasJobs", "e_dr_arias", "emails", "socket"
 ];
 
 module.exports = Reportes;

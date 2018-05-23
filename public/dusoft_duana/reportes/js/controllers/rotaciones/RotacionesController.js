@@ -34,33 +34,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                   ];
             
             $scope.mes={id:2,mes: 2};
+            $scope.item=0;
+            $scope.listaRotacions={};
+            $scope.emails_envio="";
+            $scope.email_envio="";
+            that.listRotacionBodegas=[];
             
             $scope.onSeleccionMes=function(data){
                 $scope.mes=data;
             };
              
-            $scope.item=0;
             
             $scope.itemValida=function(item){
-                console.log(item);
                 item++;
                 var valida=true;
                 if(item%2===0){
                   valida=false;
                 }
-                console.log(valida);
                 return valida;
             };
-            
-            $scope.listaRotacions={};
-            $scope.emails_envio="";
-            $scope.email_envio="";
+                        
             that.init = function(callback) {
                 $scope.root = {};         
                 callback();
             };
-            
-            that.listRotacionBodegas=[];
+                        
             $scope.agregar = function (check,dato) {    
                 console.log(dato);
                 if (check) {
@@ -84,13 +82,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                $scope.email_envio=dato;
             };  
             
+            var color="";
+            $scope.validarColor=function(dato){ 
+                color="list-group-item ";
+                if (dato==='0 '){
+                  color+="list-group-item-success";  
+                }
+                if (dato==='1 '){
+                  color+="list-group-item-info";  
+                }
+                if (dato==='2 '){
+                  color+="list-group-item-warning";  
+                }
+                if (dato==='4 '){
+                  color+="list-group-item-danger";  
+                }
+                return color;
+            }; 
+            
             $scope.enviar = function () {//self.generarRotaciones
                 
                 if (that.listRotacionBodegas.length > 0 && ($scope.emails_envio !== "" || $scope.email_envio !== "")) {
                     var parametros ={
                         bodegas :that.listRotacionBodegas,
                         remitente : $scope.email_envio,
-                        remitentes: $scope.emails_envio
+                        remitentes: $scope.emails_envio,
+                        meses:$scope.mes.id
                     };
                     that.buscarRotaciones(parametros);
                     
@@ -106,16 +123,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
             };  
             
-            var i=0;
-            socket.on("onNotificarRotacion", function(datos){
-                if(that.listRotacionBodegas.length*3 === i){
-                   that.listRotacionBodegas=[];
-                   that.buscarRotacionZonas();
-                }
-                if(i === 2){
-                   that.buscarRotacionZonas();
-                }
-                i++;
+            
+            socket.on("onNotificarRotacion", function (datos) {
+                that.listRotacionBodegas = [];
+                var timer = setTimeout(function () {
+
+                    that.buscarRotacionZonas();
+
+                    clearTimeout(timer);
+
+                }, 100);
             });
             
             
@@ -126,43 +143,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              *              listar todos los reportes generados
              */
             that.buscarRotaciones= function(parametros) {
-                parametros.meses=$scope.mes.id;
+                
                 var obj = {
                     session: $scope.session,
                     data : parametros
                 };
                 ParametrosBusquedaService.generarRotaciones(obj, function(data) {
                     if (data.status === 200) {
-                      // that.renderRotacionZonas(data); 
-                       console.log("Zonas",$scope.listaRotacionZonas);
+                      that.limpiar();  
                     } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema ReportesBloqueados: ", data.msj);
+                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
                     }
                 });
             };
             
-            
-            /*
-             * @Author: Andres M.
-             * +Descripcion: Evento que actualiza la vista 
-             */
-//           socket.on("onNotificarEstadoDescargaReporte", function(datos) {
-//	      
-//               if(datos.estado ==='ok'){                
-//	
-//		var timer = setTimeout(function(){
-//             
-//		   that.buscarReportesBloqueados();
-//
-//		    clearTimeout(timer);
-//
-//		   }, 0);	
-//		
-//               }
-//            }); 
-            
-        
-             
+            that.limpiar=function(){
+               that.listRotacionBodegas=[];
+               $scope.email_envio="";
+               $scope.emails_envio="";
+               $scope.mes={id:2,mes: 2};
+            };
+                  
              
              $scope.onDescagarArchivo=function(nombre_reporte){
               $scope.visualizarReporte("/reports/" + nombre_reporte, nombre_reporte, "download");

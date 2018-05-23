@@ -680,6 +680,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                    device:"web",
                    appId: "dusoft-web"
                 };
+                 console.log("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ",datos);
                 //localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });

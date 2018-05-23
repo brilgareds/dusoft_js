@@ -118,10 +118,11 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
            
         var opciones = (parametrizacion.modulosJson && parametrizacion.modulosJson.dashboard) ? parametrizacion.modulosJson.dashboard.opciones : {};
         
-        if(conexiones.length > 0 && !opciones.sw_multiples_conexiones && appId === 'dusoft-web'){
+        
+        if(conexiones.length > 0 && !opciones.sw_multiples_conexiones){
             throw {status:403, msj:"El usuario tiene sesiones activas", obj: {conexiones : conexiones}};
         } else {
-
+console.log("socket>>>>>>>>>>>>>>>> ",usuario);
             return G.Q.ninvoke(G.auth, "set", usuario);
         }
       

@@ -1578,7 +1578,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
     var that = this;
     var args = req.body.data;
     var usuario = req.session.user.usuario_id;    
-      
+    var empresa_id = req.session.user.empresa;
     if (args.listar_facturas_temporal.paginaActual === '') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {imprimir_reporte_factura: []}));
         return;
@@ -1589,6 +1589,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
     var paginaActual = args.listar_facturas_temporal.paginaActual;
     
     var parametros = {tipo_id_tercero:'', 
+        empresa_id : empresa_id,
         tercero_id: '', 
         sw_facturacion:'', 
         paginaActual: paginaActual,

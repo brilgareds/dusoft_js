@@ -337,5 +337,11 @@ COMMIT TRANSACTION;
 ------------------------------  Version 2.00.53  ------------------------------
 -----------------------------------------------------------------------------
 BEGIN TRANSACTION;
-INSERT INTO version (version, modulo, comentario) VALUES ('02.00.52', 'PEDIDOS CLIENTES', 'Se valida en la consulta listarDespachosAuditados el prefijo dependiendo la empresa');
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.53', 'PEDIDOS CLIENTES', 'Se valida en la consulta listarDespachosAuditados el prefijo dependiendo la empresa');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.54  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.54', 'PEDIDOS CLIENTES', 'Se valida en la consulta listarDespachosAuditados el prefijo dependiendo la empresa');
 COMMIT TRANSACTION;

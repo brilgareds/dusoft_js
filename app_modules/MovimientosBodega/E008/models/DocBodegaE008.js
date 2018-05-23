@@ -1139,8 +1139,8 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 and a.numero = :1";
     
     
-    G.knex.raw(sql, {1:numero, 2:prefijo, 3:empresa, 4:usuario_id}).
-    then(function(resultado){
+    var query=G.knex.raw(sql, {1:numero, 2:prefijo, 3:empresa, 4:usuario_id});
+    query.then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
         console.log("err ", err)
@@ -1307,14 +1307,22 @@ DocumentoBodegaE008.prototype.obtenerDocumento = function(obj, callback) {
  * +Descripcion Metodo encargado listar los despachos auditados
  */
 DocumentoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback){
-   
+   console.log("listarDespachosAuditados");
      var fecha = "";
     
      if(!obj.registroUnico){
         fecha = "a.fecha_registro between :fechaInicial and :fechaFinal and";
 
      }
+     var prefijos;
      
+     if(obj.empresa_id==='03'){
+         prefijos = 'DTM','EFM','EDFM','EFC';
+     }
+     if(obj.empresa_id==='BQ'){
+         prefijos = "'EFB'";
+     }
+
      var sql = "a.prefijo,\
                 a.numero,\
                 b.razon_social,\
@@ -1339,7 +1347,7 @@ DocumentoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
                     a.numero  :: varchar "+G.constants.db().LIKE+"  :numero\
                    \
                 ) AND a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa_id\
-                AND a.prefijo IN ('DTM','EFM','EDFM','EFC')";
+                AND a.prefijo IN ("+prefijos+")";
    
     var parametros = {
         fechaInicial: obj.fechaInicial, 
@@ -1351,11 +1359,10 @@ DocumentoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
     
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.prefijo", "desc").then(function(resultado){
-        
+    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.prefijo", "desc");
+        query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-     
         callback(err);
        
     });

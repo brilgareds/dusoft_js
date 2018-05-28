@@ -1,0 +1,26 @@
+<div>
+    <div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div>
+                            <div class="row text-center">
+
+                                <h4 class="text-center"><strong>Defina el lote que desea trasladar para el producto {{producto.descripcion}}</strong>
+                                    <strong> de codigo ({{producto.codigo_producto}}).</strong></h4>
+                            </div>
+                            <br>
+                            <div class="gridExistencias" ng-grid="listadoLotes"> </div>  
+                        </div>
+                    </div>
+                </div>       
+            </div>
+            <br/>
+        </div>        
+    </div>
+    <div class="row text-center">
+        <button class="btn btn-warning" ng-click="onCerrar()">Cancelar</button>
+
+    </div>
+</div>

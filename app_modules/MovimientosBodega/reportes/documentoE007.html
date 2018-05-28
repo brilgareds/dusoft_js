@@ -1,0 +1,121 @@
+<html>
+    <head>
+        <title>&nbsp;</title>
+
+        <link href="{{:serverUrl}}stylesheets/documentosbodegas/style.css" rel=stylesheet type=text/css >
+        <link href="{{:serverUrl}}stylesheets/documentosbodegas/style-print.css" rel=stylesheet type=text/css media="print">
+
+        <script>
+
+
+            var imprimir = function () {
+
+                document.getElementById("btnImprimir").style.display = 'none';
+                window.print();
+
+            }
+        </script>
+
+    </head>
+    <body>
+        <br>
+        <p class="normal_10AN" align="center" >{{:cabecerae.descripcion}}</p>
+
+        <table width="100%" border ='0' >
+            <tr>
+                <td align="center">
+                    <hr />
+                    <table width="90%"  class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:12px">
+                        <tr >
+                            <td >BODEGA:</td>
+                            <td >{{:cabecerae.bodega}}</td>
+
+                        </tr>
+                        <tr>
+                            <td >DESCRIPCI&Oacute;N</td>
+                            <td colspan='3'> {{:cabecerae.tipo_clase_documento}}</td> 
+                        </tr>
+                        <tr>
+                            <td >NUMERO</td>
+                            <td colspan='2'> {{:cabecerae.prefijo}} {{:cabecerae.numero}}</td>
+                            <td >FECHA </td>
+                            <td colspan='3'> {{:cabecerae.fecha_registro}}</td>                          
+                        </tr>
+                        <tr>
+                            <td >OBSERVACI&Oacute;N</td>
+                            <td colspan='5'> {{:cabecerae.observacion}}</td>                              
+                        </tr>
+                        <tr>
+                            <td >USUARIO</td>
+                            <td colspan='2'>{{:cabecerae.nombre}}</td>                              
+                        </tr>
+                    </table>
+                    <hr />
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <hr />
+                    <table width="90%"  class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:12px">
+                        <tr >
+                            <td colspan='2' align="center">DATOS ADICIONALES</td>
+                        </tr>
+                        <tr>
+                            <td >TIPO EGRESO</td>
+                            <td colspan='3'> {{:cabecerae.egreso}}</td> 
+                        </tr>
+                        <tr>
+                            <td >CLIENTE</td>
+                            <td colspan='3'> {{:cabecerae.cliente}}</td> 
+                        </tr>
+                    </table>
+                    <hr />
+                </td>
+            </tr>
+        </table>
+        <table width="100%" cellspacing="2">
+            <tr>
+                <td align="center">
+                    <table  width="100%" class="modulo_table_list" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:12px; border-collapse :collapse;">
+                        <tr style="border: black 1px solid;" >  
+                            <td align="center" style="border: black 1px solid;"><b>CODIGO</b></td>
+                            <td align="center" style="border: black 1px solid;"><b>DESCRIPCI&Oacute;N</b></td>
+                            <td align="center" style="border: black 1px solid;"><b>CANT</b></td>
+                        </tr>
+
+                        {{for detalle}}
+                        <tr>
+                            <td width='12%' style="border: black 1px solid;">{{:codigo_producto}}</td>
+                            <td width='52%' style="border: black 1px solid;">{{:nombre}}</td>
+                            <td width='5%' align="right" style="border: black 1px solid;">{{:cantidad}}</td>
+
+                        </tr>
+                        {{/for}}
+                    </table>
+                </td>
+            </tr>
+        </table> 
+        <br />      
+        <div>
+            <p class="label">Revisado Por: ________________________________________ </p> 
+        </div>
+        <br>
+        <br>
+
+        <br>
+        <div id = "btnImprimir"><input type="button" name="imprimir" value="Imprimir" onclick="imprimir()" ></div>
+    </body>
+    <footer>
+        <table class="modulo_table_list" align="center" border ='1' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:10px; border-collapse :collapse;">
+            <tr>
+                <td align="right">FECHA DE IMPRESION:</td>
+                <td align="left">{{:impresion.formatoFecha}}</td>
+                <td align="right">USUARIO IMPRESION:</td>
+                <td align="left">{{:impresion.usuarioId}}</td>
+            </tr>
+        </table>
+    </footer>
+</HTML>
+
+
+

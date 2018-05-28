@@ -17,6 +17,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "DocumentoBodega",
         "Usuario",
         "GeneralService",
+        "E007Service",
         "E009Service",
         "E017Service",
         "I011Service",
@@ -24,7 +25,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "I015Service",
         "TipoDocumentos",
         function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion, GeneralService,
-                E009Service, E017Service, I011Service, I012Service, I015Service, TipoDocumentos) {
+                E007Service, E009Service, E017Service, I011Service, I012Service, I015Service, TipoDocumentos) {
 
             var that = this;
             $scope.claseDoc;
@@ -128,7 +129,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             that.gestionarDocumentoSeleccionado = function (documento) {
                 var result = $state.get().filter(function (obj) {
-                    return obj.name === documento.tipo_doc_bodega_id;
+                        return obj.name === documento.tipo_doc_bodega_id;
                 });
 
                 if (result.length > 0) {
@@ -136,6 +137,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     var datosAdicionales;
                     if (documento.tipo_doc_bodega_id === 'I002') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, orden: documento.orden, codigo_proveedor_id: documento.codigo_proveedor_id};
+                    }
+                    if (documento.tipo_doc_bodega_id === 'E007') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
+                                            tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
                     }
                     if (documento.tipo_doc_bodega_id === 'E009') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, empresa_destino: documento.empresa_destino};
@@ -167,7 +172,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.gestionar_documento = function (documento) {
 
                 var result = $state.get().filter(function (obj) {
-                    return obj.name === documento.get_tipo();
+                        return obj.name === documento.get_tipo();
                 });
 
                 if (result.length > 0) {
@@ -501,6 +506,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.tipo_doc_bodega_id === "I002") {
                                 that.eliminarGetDocTemporal(data);
                             }
+                            if (data.tipo_doc_bodega_id === "E007") {
+                                that.eliminarGetDocTemporalE007(data);
+                            }
                             if (data.tipo_doc_bodega_id === "E009") {
                                 that.eliminarGetDocTemporalE009(data);
                             }
@@ -549,6 +557,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
+                });
+            };
+
+            that.eliminarGetDocTemporalE007 = function (datos) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        doc_tmp_id: datos.doc_tmp_id
+                    }
+                };
+                E007Service.eliminarGetDocTemporal(obj, function (data) {
+                    if (data.status === 200) {
+                        that.listarDocumetosTemporales(true);
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
                 });
             };
 

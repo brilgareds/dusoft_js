@@ -811,6 +811,10 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
         select4 = " tf.farmacia_id, tf.centro_utilidad as centroTf, tf.bodega ";
         inner = " join inv_bodegas_movimiento_tmp_traslados_farmacia as tf on (t.usuario_id= tf.usuario_id and t.doc_tmp_id= tf.doc_tmp_id) ";
     }
+    if (parametro.tipoDocGeneralId === 'E007') {
+        select4 = " ce.tipo_id_tercero, ce.tercero_id, ce.concepto_egreso_id ";
+        inner = " join inv_bodegas_movimiento_tmp_conceptos_egresos as ce on (t.usuario_id= ce.usuario_id and t.doc_tmp_id= ce.doc_tmp_id) ";
+    }
     if (parametro.tipoDocGeneralId === 'I002') {
         select = " cop.codigo_proveedor_id, oc.orden_pedido_id ";
         inner = " join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id) ";
@@ -855,7 +859,8 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
 		JOIN tipos_doc_generales as c ON (b.tipo_doc_general_id = c.tipo_doc_general_id) \
 		JOIN system_usuarios as SU ON (t.usuario_id = SU.usuario_id) \
                 " + inner + "\
-		WHERE TRUE AND a.empresa_id = :1 AND a.centro_utilidad = :2 AND a.bodega = :3 AND b.tipo_doc_general_id = :4 AND c.inv_tipo_movimiento = :5 " + where;
+		WHERE TRUE AND a.empresa_id = :1 AND a.centro_utilidad = :2 AND a.bodega = :3 AND b.tipo_doc_general_id = :4 AND c.inv_tipo_movimiento = :5 " + where + "\
+                ORDER BY t.fecha_registro desc";
 
     var datos = {1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento};
     var query = G.knex.select(G.knex.raw(sql, datos)).

@@ -88,6 +88,20 @@ define(["angular"], function(angular) {
                 'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I015/crearHtmlDocumento'
             },
             'E007': {
+                'LISTAR_EGRESO': BASE_URL + '/movBodegas/E007/listarEgresos',
+                'LISTAR_TIPOS_TERCEROS': BASE_URL + "/movBodegas/E007/listarTiposTerceros",
+                'LISTAR_CLIENTES': BASE_URL + "/movBodegas/E007/listarClientes",
+                'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/E007/newDocTemporal',
+                'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/E007/eliminarGetDocTemporal',
+                'LISTAR_PRODUCTOS': BASE_URL + '/movBodegas/E007/listarProductos',
+                'AGREGAR_ITEM': BASE_URL + '/movBodegas/E007/agregarItem',
+                'CONSULTAR_LOTES_PRODUCTO': BASE_URL + '/movBodegas/E007/consultarLotesProducto',
+                'CONSULTAR_PRODUCTOS_TRASLADO': BASE_URL + "/movBodegas/E007/listarProductosTraslado",
+                'ELIMINAR_PRODUCTO_TRASLADO': BASE_URL + '/movBodegas/E007/eliminarItem',
+                'LISTAR_CLIENTE_ID': BASE_URL + "/movBodegas/E007/listarClienteId",
+                'LISTAR_EGRESO_ID': BASE_URL + "/movBodegas/E007/listarEgresoId",
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/E007/crearDocumento'
+                
             },
             'E009': {
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/E009/crearDocumento',

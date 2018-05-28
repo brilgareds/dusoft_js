@@ -495,7 +495,9 @@ DocumentoBodegaE007.prototype.eliminarMovimientoConceptoEgreso = function (param
 DocumentoBodegaE007.prototype.consultar_detalle_documento = function (parametro, callback) {
     var columnas = [
         "a.codigo_producto",
+        "a.lote",
         G.knex.raw("\"a\".\"cantidad\"::integer"),
+        G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
         G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre"),
         "param.torre"
     ];

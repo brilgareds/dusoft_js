@@ -385,6 +385,7 @@ E007Controller.prototype.crearDocumento = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId;
+    var nombreTercero = args.nombreTercero;
     var parametros = {};
 
     if (args.docTmpId === '') {
@@ -399,10 +400,6 @@ E007Controller.prototype.crearDocumento = function (req, res) {
 
     var docTmpId = args.docTmpId;
     var cabecera = [];
-
-    console.log("----------------------------------------------------");
-    console.log("antes", args);
-    console.log("----------------------------------------------");
 
     G.knex.transaction(function (transaccion) {
         G.Q.nfcall(that.m_e007.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
@@ -477,6 +474,8 @@ E007Controller.prototype.crearDocumento = function (req, res) {
         if (resultado.length > 0) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
+            cabecera[0].cliente = parametros.tipo_id_tercero + " " + parametros.tercero_id + " : " + nombreTercero;
+            cabecera[0].egreso = args.concepto_egreso;
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],
                 detalle: resultado,

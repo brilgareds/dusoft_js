@@ -242,8 +242,10 @@ define(["angular", "js/services"], function (angular, services) {
                             data: {
                                 empresaId: objs.data.empresaId,
                                 concepto_egreso_id: objs.data.concepto_egreso_id,
+                                concepto_egreso: objs.data.concepto_egreso,
                                 tipo_id_tercero: objs.data.tipo_id_tercero,
                                 tercero_id: objs.data.tercero_id,
+                                nombreTercero: objs.data.nombreTercero,
                                 docTmpId: objs.data.doc_tmp_id,
                                 usuario_id: objs.data.usuario_id
                             }

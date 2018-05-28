@@ -433,15 +433,15 @@ define([
                     data: {
                         empresaId: usuario.getEmpresa().getCodigo(),
                         concepto_egreso_id: $scope.documento_ingreso.egreso.concepto_egreso_id,
+                        concepto_egreso: $scope.documento_ingreso.egreso.descripcion,
                         tipo_id_tercero: $scope.cliente_seleccionado.tipo_id_tercero,
                         tercero_id: $scope.cliente_seleccionado.tercero_id,
+                        nombreTercero: $scope.cliente_seleccionado.nombre_tercero,
                         doc_tmp_id: $scope.doc_tmp_id,
                         usuario_id: Usuario.getUsuarioActual().getId()
 
                     }
                 };
-
-                console.log("obj", obj);
 
                 E007Service.crearDocumento(obj, function (data) {
                     if (data.status === 200) {

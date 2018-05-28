@@ -250,7 +250,6 @@ define(["angular", "js/services"], function (angular, services) {
                                 usuario_id: objs.data.usuario_id
                             }
                         };
-                        console.log("obj",obj);
                         Request.realizarRequest(API.E007.CREAR_DOCUMENTO, "POST", obj, function (data) {
                             callback(data);
                         });

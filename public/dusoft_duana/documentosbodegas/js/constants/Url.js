@@ -100,7 +100,8 @@ define(["angular"], function(angular) {
                 'ELIMINAR_PRODUCTO_TRASLADO': BASE_URL + '/movBodegas/E007/eliminarItem',
                 'LISTAR_CLIENTE_ID': BASE_URL + "/movBodegas/E007/listarClienteId",
                 'LISTAR_EGRESO_ID': BASE_URL + "/movBodegas/E007/listarEgresoId",
-                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/E007/crearDocumento'
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/E007/crearDocumento',
+                'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/E007/crearHtmlDocumento'
                 
             },
             'E009': {

@@ -244,7 +244,7 @@ define([
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento', width: "10%", enableCellEdit: false},
                     {field: 'cantidad', displayName: 'Cantidad', width: "10%", enableCellEdit: false},
                     {field: 'disponible', displayName: 'Disponibilidad', width: "10%", enableCellEdit: false},
-                    {width: "8%", displayName: "Opcion", cellClass: "txt-center",
+                    {width: "9%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                         <button  class="btn btn-danger btn-xs btnClick" ng-click="btn_eliminar_producto(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'}

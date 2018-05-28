@@ -54,9 +54,9 @@ module.exports = function (app, di_container) {
      app.post('/api/movBodegas/E007/consultarLotesProducto', function (req, res) {
      c_e007.consultarLotesProducto(req, res);
      });
-//     
-//     app.post('/api/movBodegas/E007/crearHtmlDocumento', function (req, res) {
-//     c_e007.crearHtmlDocumento(req, res);
-//     });
+     
+     app.post('/api/movBodegas/E007/crearHtmlDocumento', function (req, res) {
+     c_e007.crearHtmlDocumento(req, res);
+     });
 
 };

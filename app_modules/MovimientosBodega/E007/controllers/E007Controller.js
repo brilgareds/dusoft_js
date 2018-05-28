@@ -494,108 +494,111 @@ E007Controller.prototype.crearDocumento = function (req, res) {
     }).done();
 
 };
-//
-//// imprime el documento desde buscador de documentos
-//E007Controller.prototype.crearHtmlDocumento = function (req, res) {
-//    var that = this;
-//    var args = req.body.data;
-//    var nombreTercero = "";
-//    var valorTotalFactura = "0";
-//    var cabecera = [];
-//    var detallea = [];
-//
-//    if (args.empresaId === '' || args.empresaId === undefined) {
-//        res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
-//        return;
-//    }
-//    if (args.prefijo === '' || args.prefijo === undefined) {
-//        res.send(G.utils.r(req.url, 'El prefijo esta vacío', 404, {}));
-//        return;
-//    }
-//    if (args.numeracion === '' || args.numeracion === undefined) {
-//        res.send(G.utils.r(req.url, 'El numeracion esta vacío', 404, {}));
-//        return;
-//    }
-//
-//    var parametros = {
-//        empresaId: args.empresaId,
-//        empresa_id: args.empresaId,
-//        prefijoDocumento: args.prefijo,
-//        numeracionDocumento: args.numeracion,
-//        prefijo_doc_cliente: args.prefijoFactura,
-//        numero_doc_cliente: args.numeroFactura,
-//        tipo_id_tercero: args.tipoTercero,
-//        tercero_id: args.terceroId,
-//        id: args.terceroId,
-//        tipoId: args.tipoTercero.trim()
-//    };
-//
-//    try {
-//        var nomb_pdf = "documentoI012" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
-//        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
-//            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
-//            return;
-//        }
-//    } catch (e) {
-//        console.log("NO EXISTE ARCHIVO  ");
-//    }
-//
-//    G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros).then(function (result) {
-//        cabecera = result;
-//        if (result.length > 0) {
-//            
-//            valorTotalFactura = parseFloat(cabecera[0].total_costo).toFixed(2);
-//            
-//            return G.Q.nfcall(that.m_e007.consultar_detalle_documento, parametros);
-//        } else {
-//            throw 'Consulta getDoc sin resultados';
-//        }
-//    }).then(function (resultado) {
-//        detallea = resultado;
-//
-//        return G.Q.nfcall(that.m_e007.listarClienteId, parametros);
-//
-//    }).then(function (resultado) {
-//
-//        if (resultado.length > 0) {
-//
-//            nombreTercero = resultado[0].nombre_tercero;
-//        }
-//
-//        var fecha = new Date();
-//        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
-//        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
-//        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
-//
-//        if (detallea.length > 0) {
-//
-//            cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
-//            cabecera[0].cliente = parametros.tipo_id_tercero + " " + parametros.tercero_id + " : " + nombreTercero;
-//            cabecera[0].num_factura = parametros.prefijo_doc_cliente + " - " + parametros.numero_doc_cliente;
-//            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
-//                cabecerae: cabecera[0],
-//                detalle: detallea,
-//                impresion: impresion,
-//                valorTotal: valorTotalFactura,
-//                archivoHtml: 'documentoI012.html',
-//                reporte: "documentoI012"}, function (nombre_pdf) {
-//                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
-//            });
-//        } else {
-//            throw 'Consulta consultar_detalle_documento sin resultados';
-//        }
-//
-//    }).catch(function (err) {
-//        console.log("crearDocumento>>>>", err);
-//        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
-//    }).done();
-//};
-//
-///*==================================================================================================================================================================
-// * 
-// *                                                          FUNCIONES PRIVADAS
-// * 
-// * ==================================================================================================================================================================*/
+
+// imprime el documento desde buscador de documentos
+E007Controller.prototype.crearHtmlDocumento = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var nombreTercero = "";
+    var concepto_egreso = "";
+    var cabecera = [];
+    var detallea = [];
+
+    if (args.empresaId === '' || args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.prefijo === '' || args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo esta vacío', 404, {}));
+        return;
+    }
+    if (args.numeracion === '' || args.numeracion === undefined) {
+        res.send(G.utils.r(req.url, 'El numeracion esta vacío', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        prefijoDocumento: args.prefijo,
+        numeracionDocumento: args.numeracion,
+        tipo_id_tercero: args.tipoTercero,
+        tercero_id: args.terceroId,
+        egreso_id: args.egreso_id,
+        id: args.terceroId,
+        tipoId: args.tipoTercero
+    };
+
+    try {
+        var nomb_pdf = "documentoE007" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
+        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
+            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
+            return;
+        }
+    } catch (e) {
+        console.log("NO EXISTE ARCHIVO  ");
+    }
+
+    G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros).then(function (result) {
+        cabecera = result;
+        if (result.length > 0) {
+
+            return G.Q.nfcall(that.m_e007.consultar_detalle_documento, parametros);
+        } else {
+            throw 'Consulta getDoc sin resultados';
+        }
+    }).then(function (resultado) {
+        detallea = resultado;
+
+        return G.Q.nfcall(that.m_e007.listarClienteId, parametros);
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            nombreTercero = resultado[0].nombre_tercero;
+        }
+        return G.Q.nfcall(that.m_e007.listarEgresoId, parametros);
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            concepto_egreso = resultado[0].descripcion;
+        }
+
+        var fecha = new Date();
+        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+
+        if (detallea.length > 0) {
+
+            cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
+            cabecera[0].cliente = parametros.tipo_id_tercero + " " + parametros.tercero_id + " : " + nombreTercero;
+            cabecera[0].egreso = concepto_egreso;
+            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecerae: cabecera[0],
+                detalle: detallea,
+                impresion: impresion,
+                archivoHtml: 'documentoE007.html',
+                reporte: "documentoE007"}, function (nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+        } else {
+            throw 'Consulta consultar_detalle_documento sin resultados';
+        }
+
+    }).catch(function (err) {
+        console.log("crearDocumento>>>>", err);
+        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
+    }).done();
+};
+
+/*==================================================================================================================================================================
+ * 
+ *                                                          FUNCIONES PRIVADAS
+ * 
+ * ==================================================================================================================================================================*/
 
 function __generarPdf(datos, callback) {
     G.jsreport.render({

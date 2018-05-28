@@ -129,7 +129,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             that.gestionarDocumentoSeleccionado = function (documento) {
                 var result = $state.get().filter(function (obj) {
-                        return obj.name === documento.tipo_doc_bodega_id;
+                    return obj.name === documento.tipo_doc_bodega_id;
                 });
 
                 if (result.length > 0) {
@@ -140,7 +140,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                     if (documento.tipo_doc_bodega_id === 'E007') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
-                                            tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
+                            tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
                     }
                     if (documento.tipo_doc_bodega_id === 'E009') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, empresa_destino: documento.empresa_destino};
@@ -172,7 +172,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.gestionar_documento = function (documento) {
 
                 var result = $state.get().filter(function (obj) {
-                        return obj.name === documento.get_tipo();
+                    return obj.name === documento.get_tipo();
                 });
 
                 if (result.length > 0) {
@@ -288,7 +288,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var disabled = false;
 
                 if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012" || documento.tipo_movimiento === "E017"
-                        || documento.tipo_movimiento === "I015") {
+                        || documento.tipo_movimiento === "I015" || documento.tipo_movimiento === "E007") {
                     disabled = true;
                 }
                 return disabled;
@@ -360,6 +360,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     obj.data.numeroFactura = documentos.numeroFactura;
 
                     Request.realizarRequest(API.I015.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "E007") {
+                    obj.data.tipoTercero = documentos.tipoTercero;
+                    obj.data.terceroId = documentos.terceroId;
+                    obj.data.egreso_id = documentos.numeroFactura;
+                    Request.realizarRequest(API.E007.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
                         }

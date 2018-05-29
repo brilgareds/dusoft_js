@@ -48521,6 +48521,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                    device:"web",
                    appId: "dusoft-web"
                 };
+                 console.log("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ",datos);
                 //localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });

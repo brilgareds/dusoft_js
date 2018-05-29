@@ -199,11 +199,13 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function (rotacionZonas) {
+
         return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
 
     }).then(function (respuesta) {
 
         res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
+        
     }).fail(function (err) {
         console.log("error controller listarPlanes ", err);
         res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));

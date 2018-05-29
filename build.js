@@ -21,7 +21,9 @@ function minificarModulo(modulos, callback){
 
     exec(cmd, function(error, stdout, stderr) {
         if(error){
-            console.log("error ", error);
+            console.log("Error:", error);
+            console.log("Stdout:", stdout);
+            console.log("Stderr:", stderr);
         }
         
         console.log("modulo compilado ", modulo, cmd);

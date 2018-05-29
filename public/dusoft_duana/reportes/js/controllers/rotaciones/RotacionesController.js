@@ -32,6 +32,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {id: 5,mes: 5},
                     {id: 6,mes: 6}
                   ];
+                  
+            $scope.checkedDuarte=false;      
+            $scope.checkedSistemas=false;      
             
             $scope.mes={id:2,mes: 2};
             $scope.item=0;
@@ -79,6 +82,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             $scope.email=function(dato){
+               
+                if(dato===1){
+                    console.log("11111",dato);
+                   $scope.checkedSistemas=false; 
+                   $scope.checkedDuarte=true; 
+                }
+                if(dato===0){
+                    console.log("0000",dato);
+                   $scope.checkedDuarte=false; 
+                   $scope.checkedSistemas=true;
+                }
                $scope.email_envio=dato;
             };  
             
@@ -180,10 +194,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var obj = {
                     session: $scope.session
                 };
-                ParametrosBusquedaService.rotacionZonas(obj, function(data) {
+                ParametrosBusquedaService.rotacionZonasMovil(obj, function(data) {
                     if (data.status === 200) {
-                       that.renderRotacionZonas(data); 
-                       console.log("Zonas",$scope.listaRotacionZonas);
+//                        console.log(data.obj.rotacionZonas);
+                       that.renderRotacionZonasMovil(data.obj.rotacionZonas); 
+//                       console.log("Zonas",$scope.listaRotacionZonas);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema ReportesBloqueados: ", data.msj);
                     }
@@ -196,7 +211,85 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @fecha: 11/05/2016
              * @returns {objeto}
              */
+            that.renderRotacionZonasMovil = function (data) {
+//                console.log(data);
+                 var listaRotacionZona = [];
+                data.forEach(function(objt) {
+                     
+            if(objt.zona!==""){  console.log("1-"+objt.zona); 
+                    var listaRotacionZonasDetalle = [];
+                    var rotacionZonas = Zona.get();
+                    rotacionZonas.setNombreZona(objt.zona);
+                    objt.bodegas.forEach(function(obj) {                         
+                         
+                       var bodegas = {
+                        nombreBodega: obj.nombreBodega,
+                        empresa: obj.empresa,
+                        centroUtilidad: obj.centroUtilidad,
+                        fechaRegistro: obj.fechaRegistro,
+                        diferenciaDias: obj.diferenciaDias,
+                        swRemitente: obj.swRemitente,
+                        swEstadoCorreo: obj.swEstadoCorreo,
+                        logError: obj.logError,
+                        remitentes: obj.remitentes,
+                        meses: obj.meses,
+                        bodega: obj.bodega                        
+                      };
+                      listaRotacionZonasDetalle.push(bodegas);
+                     
+                    });
+                    
+                     rotacionZonas.setNombreBodegas(listaRotacionZonasDetalle); 
+                      listaRotacionZona.push(rotacionZonas);
+                    
+                   }  
+                    
+                    
+                  });
+                  $scope.listaRotacionZonas = listaRotacionZona;
+                
+//                var listaRotacionZonas = [];
+//                var rotacionZonas = undefined;
+//                var zonaName = "";
+//                
+//                for (var i in data.obj.rotacionZonas) {
+//                    var objt = data.obj.rotacionZonas[i];
+//                    var bodegas = {
+//                        nombreBodega: objt.nombre_bodega,
+//                        empresa: objt.empresa_id,
+//                        centroUtilidad: objt.centro_utilidad,
+//                        fechaRegistro: objt.fecha_registro,
+//                        diferenciaDias: objt.diferencia,
+//                        swRemitente: objt.sw_remitente,
+//                        swEstadoCorreo: objt.sw_estado_correo,
+//                        logError: objt.log_error,
+//                        remitentes: objt.remitentes,
+//                        meses: objt.meses,
+//                        bodega: objt.bodega                        
+//                    };
+//
+//                    if (objt.zona !== zonaName) {
+//                        if (rotacionZonas !== undefined) {
+//                            rotacionZonas.setNombreBodegas(listaRotacionZonasDetalle);
+//                            listaRotacionZonas.push(rotacionZonas);
+//                        }
+//                        zonaName = objt.zona;
+//                        var listaRotacionZonasDetalle = [];
+//                        var rotacionZonas = Zona.get();
+//                        rotacionZonas.setNombreZona(objt.zona);
+//                    }
+//                    listaRotacionZonasDetalle.push(bodegas);
+//                }
+//                $scope.listaRotacionZonas = listaRotacionZonas;
+            };
+            /**
+             * +Descripcion:renderizar la consulta al modelo
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {objeto}
+             */
             that.renderRotacionZonas = function (data) {
+                console.log(data);
                 var listaRotacionZonas = [];
                 var rotacionZonas = undefined;
                 var zonaName = "";

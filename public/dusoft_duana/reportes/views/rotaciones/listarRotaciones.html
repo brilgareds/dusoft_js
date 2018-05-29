@@ -20,10 +20,11 @@
     }
 
 </style>
-<button type="button" class="btn btn-default float" ng-click="enviar()"><b>ENVIAR</b></button>
+<button type="button" class="btn btn-default float col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-click="enviar()"><b>ENVIAR</b></button>
+<a class='flotante' href='#' ><img src='boton-flotante.png' border="0"/></a>
 <div>
     <div class="row">
-        <div class="col-md-12 col-lg-12">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="panel panel-primary">
                 <div class="panel-body">
                     <div class="row">
@@ -32,35 +33,35 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-1 col-lg-2">
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <div class="form-check form-check-inline">
-                                <div class="col-md-1 col-lg-1">
-                                    <input class="form-check-input radios" type="radio" name="inlineRadioOptions" id="inlineRadio" ng-click="email(1)" >
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <input type="checkbox" class="form-check-input" ng-checked="checkedDuarte" name="inlineRadioOptions" id="inlineRadio" ng-click="email(1)" >
                                 </div>
-                                <div class="col-md-1 col-lg-2  col-md-offset-1">
-                                    <label class="form-check-label " for="inlineRadio1">Dr. Duarte:</label>
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <label class="form-check-label " for="inlineRadio1">Dr. Duarte</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-1 col-lg-2">
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <div class="form-check form-check-inline">
-                                <div class="col-md-1 col-lg-1">
-                                    <input class="form-check-input radios" type="radio" name="inlineRadioOptions" id="inlineRadio" ng-click="email(0)" >
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <input type="checkbox" class="form-check-input" ng-checked="checkedSistemas" name="inlineRadioOptions" id="inlineRadio" ng-click="email(0)" >
                                 </div>
-                                <div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
-                                    <label class="form-check-label" for="inlineRadio2">Sistemas:</label>
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <label class="form-check-label" for="inlineRadio2">Sistemas</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-1 col-lg-2">
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <div class="form-check form-check-inline">                               
-                                <div class="col-md-2 col-md-offset-1 col-lg-2 col-lg-offset-1">
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                     <label class="form-check-label" for="inlineRadio2">Mes:</label>
                                 </div>
-                                <div class="col-md-1 col-lg-3">
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                                     <ui-select ng-model="mes"
                                                theme="select2"
-                                               class="form-control selectgeneral pull-left col-md-4"
+                                               class="form-control selectgeneral pull-left col-xs-6 col-sm-6 col-md-4 col-lg-4 "
                                                ng-change="onSeleccionMes($select.selected)">
                                         <ui-select-match  placeholder="Seleccionar Mes">{{ $select.selected.mes}}</ui-select-match>
                                         <ui-select-choices repeat="item in meses">
@@ -72,12 +73,12 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 col-lg-4">
-                            <input type="text" class="form-control" ng-model="emails_envio" aria-describedby="emailHelp" placeholder="Enter email">
+                        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                            <input type="text" class="form-control" ng-model="emails_envio" aria-describedby="emailHelp" placeholder="Remitentes email">
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3 col-lg-3">
+                        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
                         </div>
                     </div>
                 </div>
@@ -86,7 +87,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12 col-lg-12">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 
             <div  ng-repeat="listaRotacionZona in listaRotacionZonas">
                 <div class="row" >

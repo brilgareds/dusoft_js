@@ -15,6 +15,7 @@ define(["angular"], function(angular) {
                 'LISTAR_PLANES':BASE_URL+'/Reportes/DrArias/listarPlanes',
                 "REPORTES_GENERADOS": BASE_URL + "/Reportes/DrArias/reportesGenerados",
                 "ROTACION_ZONAS": BASE_URL + "/Reportes/DrArias/rotacionZonas",
+                "ROTACION_ZONAS_MOVIL": BASE_URL + "/Reportes/DrArias/rotacionZonasMovil",
                 "GENERAR_ROTACIONES": BASE_URL + "/Reportes/DrArias/generarRotaciones"
             }
         }

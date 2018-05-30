@@ -124,15 +124,19 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             filterOptions: $scope.filtroGrid,
             columnDefs: [
 
+                {displayName: " # Factura", cellClass: "txt-center dropdown-button", width: "6%",
+                cellTemplate: '<div>\
+                              {{row.entity.prefijo}} - {{row.entity.facturaFiscal}}\
+                              </div>'},
                 {field: 'producto',  cellClass: "ngCellText", width: "8%", displayName: 'Producto'},
-                {field: 'descripcionProducto',  cellClass: "ngCellText", width: "35%", displayName: 'Producto'},
+                {field: 'descripcionProducto',  cellClass: "ngCellText", width: "45%", displayName: 'Producto'},
                 {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "8%", displayName: 'Cant a despachar'},
                 {field: 'lote',  cellClass: "ngCellText", width: "8%", displayName: 'Lote'},
-                {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha vto'},
+                {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "5%", displayName: 'Fecha vto'},//10
                 {field: 'valorUnitario',  cellClass: "ngCellText", width: "10%", displayName: 'Valor unitario'},
-                {field: 'porcIvaTotal',  cellClass: "ngCellText", width: "10%", displayName: 'Iva'},
+                {field: 'porcIvaTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Iva'},//5
                 
-                { displayName: "Opc", cellClass: "txt-center",
+                { displayName: "Opc", cellClass: "txt-center", width: "5%",
                 cellTemplate: '<button\
                     class="btn btn-default btn-xs" \n\
                     ng-validate-events="{{ habilitar_seleccion_producto() }}" \n\
@@ -262,6 +266,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 
                 if(data.status === 200){
                     AlertService.mostrarMensaje("success", data.msj);
+                    $scope.root.idFacturaXconsumo=data.obj.facturas_consumo.id_factura_xconsumo;
                     that.listarDetalleTmpFacturaConsumo();
                     $scope.onDocumentoSeleccionado();
                 }else{
@@ -378,7 +383,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
            
                 var sumTotalIva = 0;
                 if(data.status === 200){
-                    
+                   console.log("WWW",data.obj.procesar_factura_cosmitet); 
                     data.obj.procesar_factura_cosmitet.forEach(function(row){
                        sumTotalIva += parseInt(row.porc_iva_total);
                     });

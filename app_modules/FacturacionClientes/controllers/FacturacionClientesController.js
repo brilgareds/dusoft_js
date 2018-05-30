@@ -1251,7 +1251,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
    
     var that = this;
     var args = req.body.data;
-    
+
     /**
      * +Descripcion Variable encargada de capturar la ip del cliente que se conecta
      * @example '::ffff:10.0.2.158'
@@ -1325,7 +1325,6 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         fechaCorte: args.facturas_consumo.fechaCorte
     };
     
-    
     var parametrosDetalleTmp = {
         codigo_producto: args.facturas_consumo.documentoDetalle.producto,
         lote: args.facturas_consumo.documentoDetalle.lote,
@@ -1348,7 +1347,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         res.send(G.utils.r(req.url, 'La cantidad debe ser mayor a Cero (0)', 404, {procesar_factura_cosmitet: []}));
         return;
     }
-    
+  
     /**
     * +Descripcion Se valida la cantidad temporal hasta el momento que se ha facturado
     *              del efc del producto
@@ -1357,7 +1356,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
          
         if(resultado.length >0){
             var cantidadRestante = parseInt(args.facturas_consumo.documentoDetalle.cantidadDespachada) - parseInt(resultado[0].cantidad_despachada);
-          
+                    
             if(parseInt(args.facturas_consumo.documentoDetalle.cantidadNueva) > cantidadRestante){
               
                 throw {msj:'La nueva cantidad no debe superar a la cantidad a facturar', status: 404}; 
@@ -1387,7 +1386,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
          
         
     }).then(function(resultado){
-        
+       
         documentoFacturacion = resultado;
        
         if(resultado.length >0){
@@ -1397,7 +1396,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         }
         
     }).then(function(resultado){
-        
+                 
         consultarTerceroContrato = resultado;
     
         if(resultado.length >0){
@@ -1407,12 +1406,12 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         }
 
     }).then(function(resultado){  
-        
+
         consultarParametrosRetencion = resultado;
    
         if(resultado.length > 0){
-            
-            if(ip.substr(0, 6) === '::ffff'){               
+ ip='::ffff:10.0.2.158';
+            if(ip.substr(0, 6) === '::ffff'){ 
                 return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
             }else{                
                 def.resolve();                
@@ -1426,25 +1425,30 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
          
     }).then(function(resultado){
        
-        if(!resultado || resultado.length > 0){
-            parametros.direccion_ip = ip;
-            
+        if(resultado !== undefined ){ 
+            if(resultado.length > 0){
+                
+            parametros.direccion_ip = ip;    
+             console.log("consultarTemporalFacturaConsumo_________________________________________________________"); 
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',
             {tipo_id_tercero:parametros.tipoIdTercero, 
             tercero_id: parametros.terceroId, 
-            sw_facturacion:0, 
-            paginaActual:1, terminoBusqueda: '',filtro: ''});
+//            sw_facturacion:0, 
+            paginaActual:1, terminoBusqueda: '',filtro: '',empresa_id:args.facturas_consumo.documentos.empresa
+            });
             
-             
+            }else{
+                throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
+            }
              
         }else{
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
         
     }).then(function(resultado){
-         
+                 
         if(resultado.length > 0){
-           //estaba comentado por que ya traia id_factura_xconsumo
+           //estaba comentado por que ya traia id_factura_xconsumo         
            //
             parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             def.resolve();
@@ -1483,6 +1487,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             cantidad_devuelta: 0, 
             porc_iva: parametros.documentos.porcIva
         };
+ 
                 
         return G.Q.ninvoke(that.m_facturacion_clientes,'insertarDetalleFacturaConsumo',parametrosDetalleFactura);
             
@@ -1490,16 +1495,18 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
          
         if(resultado.rowCount > 0){
-          
+console.log("_________________________________________________________");    
+console.log("resultado::: ",resultado);
+console.log("_________________________________________________________");   
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',
-            {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo});
+            {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo,prefijo: parametros.pedidos.prefijo,factura_fiscal: parametros.pedidos.numero});
         }else{
             throw {msj:'No se registro ninguna unidad', status: 404}; 
             return;
         }
         
     }).then(function(resultado){
-      
+      console.log("resultado5 ",resultado);//return
         if(resultado.length > 0){    
             
             resultado.forEach(function(row){
@@ -1540,7 +1547,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
         
         if(resultado > 0){
-            res.send(G.utils.r(req.url, 'Se registra el temporal satisfactoriamente', 200, {facturas_consumo: []}));
+            res.send(G.utils.r(req.url, 'Se registra el temporal satisfactoriamente', 200, {facturas_consumo: parametros}));
             return;
         }else{
             throw {msj:'No se registro el producto en temporal', status: 404}; 
@@ -1549,6 +1556,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
        
         
     }).fail(function(err){  
+        console.log("Error",err );
         logger.error("-----------------------------------");
         logger.error({"metodo":"FacturacionClientes.prototype.generarTemporalFacturaConsumo",
             "usuario_id": usuario,
@@ -1599,6 +1607,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
         
         if(resultado.length >0){
+            console.log(resultado.length);
             return res.send(G.utils.r(req.url, 'Lista de facturas temporales', 200,{listar_facturas_temporal:resultado}));
         }else{
             throw {msj:'[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404}; 

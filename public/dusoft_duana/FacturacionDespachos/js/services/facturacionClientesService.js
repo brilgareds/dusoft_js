@@ -548,13 +548,14 @@ define(["angular", "js/services"], function (angular, services) {
                     self.renderDetalleTmpFacturaConsumo = function (datos) {      
                       
                         var detalleFacturaTmp = [];
-                        for (var i in datos) {
-                            
+                        for (var i in datos) {                                            
                             var _documento = DocumentoDetalleConsumo.get(datos[i].codigo_producto, 
                             datos[i].cantidad_despachada, 
                             datos[i].lote, 
-                            datos[i].fecha_vencimiento);
-                            
+                            datos[i].fecha_vencimiento,
+                            datos[i].prefijo,
+                            datos[i].factura_fiscal);
+                                                     
                             _documento.setValorUnitario(datos[i].valor_unitario);                          
                             _documento.setPorcIva(datos[i].porc_iva);                          
                             _documento.setPorcIvaTotal(datos[i].porc_iva_total);                          

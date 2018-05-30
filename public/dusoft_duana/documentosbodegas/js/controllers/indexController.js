@@ -17,6 +17,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "DocumentoBodega",
         "Usuario",
         "GeneralService",
+        "E007Service",
         "E009Service",
         "E017Service",
         "I011Service",
@@ -24,7 +25,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "I015Service",
         "TipoDocumentos",
         function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion, GeneralService,
-                E009Service, E017Service, I011Service, I012Service, I015Service, TipoDocumentos) {
+                E007Service, E009Service, E017Service, I011Service, I012Service, I015Service, TipoDocumentos) {
 
             var that = this;
             $scope.claseDoc;
@@ -136,6 +137,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     var datosAdicionales;
                     if (documento.tipo_doc_bodega_id === 'I002') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, orden: documento.orden, codigo_proveedor_id: documento.codigo_proveedor_id};
+                    }
+                    if (documento.tipo_doc_bodega_id === 'E007') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
+                            tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
                     }
                     if (documento.tipo_doc_bodega_id === 'E009') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, empresa_destino: documento.empresa_destino};
@@ -283,7 +288,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var disabled = false;
 
                 if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012" || documento.tipo_movimiento === "E017"
-                        || documento.tipo_movimiento === "I015") {
+                        || documento.tipo_movimiento === "I015" || documento.tipo_movimiento === "E007") {
                     disabled = true;
                 }
                 return disabled;
@@ -355,6 +360,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     obj.data.numeroFactura = documentos.numeroFactura;
 
                     Request.realizarRequest(API.I015.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "E007") {
+                    obj.data.tipoTercero = documentos.tipoTercero;
+                    obj.data.terceroId = documentos.terceroId;
+                    obj.data.egreso_id = documentos.numeroFactura;
+                    Request.realizarRequest(API.E007.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
                         }
@@ -501,6 +519,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.tipo_doc_bodega_id === "I002") {
                                 that.eliminarGetDocTemporal(data);
                             }
+                            if (data.tipo_doc_bodega_id === "E007") {
+                                that.eliminarGetDocTemporalE007(data);
+                            }
                             if (data.tipo_doc_bodega_id === "E009") {
                                 that.eliminarGetDocTemporalE009(data);
                             }
@@ -549,6 +570,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
+                });
+            };
+
+            that.eliminarGetDocTemporalE007 = function (datos) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        doc_tmp_id: datos.doc_tmp_id
+                    }
+                };
+                E007Service.eliminarGetDocTemporal(obj, function (data) {
+                    if (data.status === 200) {
+                        that.listarDocumetosTemporales(true);
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
                 });
             };
 

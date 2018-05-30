@@ -670,10 +670,6 @@ define([
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
                 $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
                 $scope.documento_ingreso.set_bodega(datos_documento.datosAdicionales.bodega_seleccionada);
-                /*that.buscarBodegaPorId(datos_documento.datosAdicionales.bodega_seleccionada, function (result) {
-                 $scope.bodegas = result[0];
-                 $scope.documento_ingreso.set_bodega(result[0].bodega);
-                 });*/
                 var doc_devolucion = {
                     numero: datos_documento.datosAdicionales.numero,
                     prefijo: datos_documento.datosAdicionales.prefijo_edb,

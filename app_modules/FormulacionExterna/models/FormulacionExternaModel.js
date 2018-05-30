@@ -32,8 +32,8 @@ FormulacionExternaModel.prototype.obtenerAfiliado = function(tipoIdentificacion,
                         .innerJoin('tipos_planes as tp', function(){
                             this.on('tp.sw_tipo_plan', 'pa.sw_tipo_plan')
                         })
-                        .where('p.tipo_id_paciente', tipoIdentificacion).andWhere("p.paciente_id","=", identificacion).orderBy("ea.fecha_registro").limit(1);
-    G.logError(G.sqlformatter.format(query.toString()));
+                        .where('p.tipo_id_paciente', tipoIdentificacion).andWhere("p.paciente_id","=", identificacion).orderBy("ea.fecha_ultima_actualizacion").limit(1);
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){

@@ -32,7 +32,8 @@ FormulacionExternaModel.prototype.obtenerAfiliado = function(tipoIdentificacion,
                         .innerJoin('tipos_planes as tp', function(){
                             this.on('tp.sw_tipo_plan', 'pa.sw_tipo_plan')
                         })
-                        .where('p.tipo_id_paciente', tipoIdentificacion).andWhere("p.paciente_id","=", identificacion);
+                        .where('p.tipo_id_paciente', tipoIdentificacion).andWhere("p.paciente_id","=", identificacion).orderBy("ea.fecha_ultima_actualizacion", "desc").limit(1);
+
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);
@@ -374,7 +375,7 @@ fc_descripcion_producto_molecula
                             this.andWhere('invp.codigo_barras', 'ilike', '%' + codigo_barras + '%');
                         }
                     }).orderBy('existencia', 'desc'); 
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){   
         callback(false, resultado);

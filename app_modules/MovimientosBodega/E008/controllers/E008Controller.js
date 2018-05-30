@@ -2899,7 +2899,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
 
 
     that.m_e008.consultar_documento_despacho(numero, prefijo, empresa, req.session.user.usuario_id, function (err, rows) {
-
+console.log("rows::",rows);
         if (err || rows.length === 0) {
 
             res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));

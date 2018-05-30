@@ -1326,7 +1326,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
                 .andWhere("a.tercero_id",obj.tercero_id)     
                 .andWhere("sw_facturacion",obj.sw_facturacion);
             }
-        });     
+        }).andWhere("a.empresa_id", obj.empresa_id);     
    
     query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){          
         callback(false, resultado);

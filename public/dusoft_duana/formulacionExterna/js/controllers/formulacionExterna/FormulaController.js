@@ -18,7 +18,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
         today.setMonth(today.getMonth());
         $scope.maxDate = new Date(today.getFullYear(),today.getMonth() , today.getDate());
         $scope.root = {
-            tipoDocumentoSeleccionado : {'descripcion' : 'Tipo Documento'},
+            tipoDocumentoSeleccionado : {'id' : 'CC','descripcion' : 'Cedula'},
             documento : '',
             paciente : {},
             formula : {
@@ -77,8 +77,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             Definicion de funciones
         ***********************************/
 
-
-
         function obtenerAfiliado(tipoIdentificacion, identificacion){
             //validacion si el tipo de identificacion no esta seleccionado
             if(!tipoIdentificacion){
@@ -94,7 +92,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             formulaExternaService.obtenerAfiliado(tipoIdentificacion, identificacion, function(error, afiliado){
                 //limpiar los campos para una segunda busqueda
                 $scope.root = {
-                    tipoDocumentoSeleccionado : {'descripcion' : 'Tipo Documento'},
+                    tipoDocumentoSeleccionado : {'id' : 'CC','descripcion' : 'Cedula'},
                     documento : '',
                     paciente : {},
                     formula : {
@@ -239,7 +237,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                     }
 
                     var empresa_id = Usuario.getUsuarioActual().getEmpresa().getCodigo();
-                    var fecha_formula = $scope.root.formula.fecha? $scope.root.formula.fecha.getFullYear().toString() + '-' + ($scope.root.formula.fecha.getMonth() + 101).toString().slice(-2) + '-'+ ($scope.root.formula.fecha.getDate() + 100).toString().slice(-2) : false;
+                    var fecha_formula = typeof $scope.root.formula.fecha == 'string' ? $scope.root.formula.fecha : $scope.root.formula.fecha.getFullYear().toString() + '-' + ($scope.root.formula.fecha.getMonth() + 101).toString().slice(-2) + '-'+ ($scope.root.formula.fecha.getDate() + 100).toString().slice(-2);
                     var tipo_formula = $scope.root.formula.tipoFormula.id;
                     var tipo_id_tercero = $scope.root.formula.profesional? $scope.root.formula.profesional.tipo_id_tercero: false;
                     var tercero_id = $scope.root.formula.profesional? $scope.root.formula.profesional.tercero_id : false;
@@ -338,6 +336,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 }
 
                 $scope.root.formula = formulaExternaTmp;
+                //inicializa el datepicker en la fecha del dia
+                var date = new Date();
+                var fecha_actual = date.getFullYear().toString() + '-' + (date.getMonth() + 101).toString().slice(-2) + '-'+ (date.getDate() + 100).toString().slice(-2);
+                $scope.root.formula.fecha = fecha_actual;
                 //Se obtienen los diagnosticos de la formula
                 if($scope.root.formula.tmp_formula_id){
                     //obtiene los diagnosticos guardados en temporal
@@ -536,6 +538,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             Funcion inicializadora del modulo
         ***********************************/
         function init(){
+
             //Inicializa el service con los datos de session de usuario para poder realizar peticiones
             formulaExternaService.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
@@ -820,7 +823,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                         }
                     });
                 }
+                //Se fija la cantidad pendiente como la cantidad despachada para que los input   
+                data.forEach(function(obj, index){
+                    obj.cantidad_despachada = $scope.data.producto.cantidad_pendiente;
+                });
+
                 $scope.data.productos = data;
+                console.log('$scope.data.productos', $scope.data.productos);
             });
         }
 

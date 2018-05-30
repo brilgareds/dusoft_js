@@ -251,8 +251,8 @@ define([
                 ]
             };
 
-            $scope.grabar_documento_tmp = function () {
-                that.guardarNewDocTmp();
+            $scope.grabar_documento_tmp = function (callback) {
+                that.guardarNewDocTmp(callback);
             };
 
             /**
@@ -260,7 +260,7 @@ define([
              * +Descripcion Metodo encargado de guardar NewDocTmp
              * @fecha 2018-05-19
              */
-            that.guardarNewDocTmp = function () {
+            that.guardarNewDocTmp = function (callback) {
                 var usuario = Usuario.getUsuarioActual();
                 var obj = {
                     session: $scope.session,
@@ -279,12 +279,15 @@ define([
                         $scope.doc_tmp_id = data.obj.movimiento_temporal_id;
                         $scope.validarDesdeLink = true;
                         $scope.isTmp();
+                        callback(true);
                     }
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
+                        callback(false);
                     }
                     if (data.status === 404) {
                         AlertService.mostrarMensaje("warning", data.msj);
+                        callback(false);
                     }
                 });
             };

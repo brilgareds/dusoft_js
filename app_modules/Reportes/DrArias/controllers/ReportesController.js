@@ -200,11 +200,11 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
 
     G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function (rotacionZonas) {
 
-        return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
+       // return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
 
-    }).then(function (respuesta) {
-
-        res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
+    //}).then(function (respuesta) {
+        console.log('respuesta', rotacionZonas);
+        res.send(rotacionZonas);
         
     }).fail(function (err) {
         console.log("error controller listarPlanes ", err);
@@ -284,8 +284,47 @@ Reportes.prototype.generarRotaciones = function (req, res) {
     res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: 'ok'}));
 };
 
-function __rotacionesBodegas(that, bodega, callback) {
+Reportes.prototype.generarRotacionesMovil = function (req, res) {
+    var that = this;
+    var args = req.body;
+    var usuarioId = req.body.session.usuario_id;
+    var today = new Date();
+    var formato = 'DD-MM-YYYY hh:mm:ss a';
+    var fechaToday = G.moment(today).format(formato);
 
+
+    console.log('req.body.data', req.body.data);
+
+    args.data.bodegas.forEach(function (item) {
+        console.log('item', item);
+        item.remitente = item.sw_remitente;  //guardarControlRotacion   0     
+        //item.remitentes = args.data.remitentes;
+        //item.meses = args.data.meses;
+        item.usuarioId = usuarioId;
+        item.swEstadoCorreo = '0';
+        item.logError = '';
+        __rotacionesBodegas(that, item, function (data) {
+
+            if (data.estado !== 200) {
+                if (item.remitente === '1') {
+                    console.log("Error", data);
+                    var subject = "Error al Generar Rotación (ver detalles) " + fechaToday;
+                    var to = G.settings.email_desarrollo1;
+                    var ruta_archivo = "";
+                    var nombre_archivo = "";
+                    var enviado = "";
+                    enviado = "Enviado al Dr Duarte. " + fechaToday;
+                    var message = "Rotacion Dr. DUARTE <br><br>" + enviado + "<br> Error:  " + JSON.stringify(data) + " <br><br> Parametros: " + JSON.stringify(item);
+                    __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, function () {});
+                }
+            }
+        });
+
+    });
+    res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: 'ok'}));
+};
+
+function __rotacionesBodegas(that, bodega, callback) {
     var name;
     var archivoName;
     var today = new Date();

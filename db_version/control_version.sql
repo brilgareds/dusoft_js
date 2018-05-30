@@ -315,3 +315,33 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.49', 'DOCUMENTOS BODEGA', 'se agrega filtro al buscador de farmacia de origen al I015');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.50  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.50', 'FORMULACION EXTERNA', 'Se ajustan los campos de tipo de documento para que por defecto se mantenga seleccionada Cedula, la fecha de formula por defecto la fecha del dia y los lotes por defecto la cantidad sea la cantidad pendiente.');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.51  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.51', 'FORMULACION EXTERNA', 'Se ajusta la busqueda de paciente para que traiga el registro mas reciente.');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.52  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.52', 'PEDIDOS CLIENTES', 'Se valida en la consulta listarDespachosAuditados el prefijo dependiendo la empresa');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.53  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.53', 'PEDIDOS CLIENTES', 'Se valida en la consulta listarDespachosAuditados el prefijo dependiendo la empresa');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.54  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.54', 'PEDIDOS CLIENTES', 'Se valida en la consulta listarDespachosAuditados el prefijo dependiendo la empresa');
+COMMIT TRANSACTION;

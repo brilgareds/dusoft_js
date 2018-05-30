@@ -351,3 +351,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.55', 'FORMULACION EXTERNA', 'Se ajusta la busqueda de pacientes para que obtenga el registro de eps_afiliados segun la fecha_ultima_actualizacion');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.56  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.56', 'DOCUMENTOS BODEGA', 'Se ajusta la busqueda de productos para el documento ETF');
+COMMIT TRANSACTION;

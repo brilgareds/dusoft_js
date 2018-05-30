@@ -345,3 +345,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.54', 'PEDIDOS CLIENTES', 'Se valida en la consulta listarDespachosAuditados el prefijo dependiendo la empresa');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.55  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.55', 'FORMULACION EXTERNA', 'Se ajusta la busqueda de pacientes para que obtenga el registro de eps_afiliados segun la fecha_ultima_actualizacion');
+COMMIT TRANSACTION;

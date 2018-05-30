@@ -357,3 +357,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.56', 'DOCUMENTOS BODEGA', 'Se ajusta la busqueda de productos para el documento ETF');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.57  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.57', 'FORMULACION EXTERNA', 'Se adiciona la identificacion a las impresiones.');
+COMMIT TRANSACTION;

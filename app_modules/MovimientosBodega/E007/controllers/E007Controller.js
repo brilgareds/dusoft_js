@@ -290,7 +290,6 @@ E007Controller.prototype.agregarItem = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
-
     var parametros = {
         usuarioId: usuarioId,
         cantidad: args.cantidad,
@@ -304,17 +303,22 @@ E007Controller.prototype.agregarItem = function (req, res) {
         docTmpId: args.docTmpId
 
     };
+    G.Q.nfcall(that.m_e007.consultarItem, parametros).then(function (result) {
+        if (result.length > 0) {
+            msj = "El producto " + parametros.codigoProducto + " ya se encuentra registrado en el documento de traslado.";
+        } else {
+            msj = "producto agregado correctamente";
+            return G.Q.nfcall(that.m_e007.agregarItem, parametros);
+        }
+//G.Q.nfcall(that.m_e007.agregarItem, parametros)
 
-    G.Q.nfcall(that.m_e007.agregarItem, parametros)
-
-            .then(function (resultado) {
-                res.send(G.utils.r(req.url, 'producto agregado correctamente', 200, {agregarItem: resultado}));
-            }).fail(function (err) {
+    }).then(function (resultado) {
+        res.send(G.utils.r(req.url, msj, 200, {agregarItem: resultado}));
+    }).fail(function (err) {
         console.log("EROR ", err);
         res.send(G.utils.r(req.url, 'Error al insertar el cuerpo del temporal', 500, {}));
     }).done();
 };
-
 /**
  * @author German Galvis
  * +Descripcion lista los productos del documento tmp
@@ -342,7 +346,6 @@ E007Controller.prototype.consultarProductosTraslado = function (req, res) {
             }).
             done();
 };
-
 /**
  * @author German Galvis
  * +Descripcion Elimina un  producto del documento temporal
@@ -352,7 +355,6 @@ E007Controller.prototype.eliminarItem = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
-
     if (args.item_id === undefined) {
         res.send(G.utils.r(req.url, 'El item_id NO estan definido', 404, {}));
         return;
@@ -363,8 +365,6 @@ E007Controller.prototype.eliminarItem = function (req, res) {
         docTmpId: args.docTmpId,
         usuarioId: usuarioId
     };
-
-
     G.Q.nfcall(that.m_e007.eliminarItem, parametros)
 
             .then(function (resultado) {
@@ -374,8 +374,6 @@ E007Controller.prototype.eliminarItem = function (req, res) {
         res.send(G.utils.r(req.url, 'Error al borrar Producto', 500, {}));
     }).done();
 };
-
-
 /**
  * @author German Galvis
  * +Descripcion genera el documento definitivo ETB
@@ -387,7 +385,6 @@ E007Controller.prototype.crearDocumento = function (req, res) {
     var usuarioId;
     var nombreTercero = args.nombreTercero;
     var parametros = {};
-
     if (args.docTmpId === '') {
         res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
         return;
@@ -400,7 +397,6 @@ E007Controller.prototype.crearDocumento = function (req, res) {
 
     var docTmpId = args.docTmpId;
     var cabecera = [];
-
     G.knex.transaction(function (transaccion) {
         G.Q.nfcall(that.m_e007.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
 
@@ -414,14 +410,12 @@ E007Controller.prototype.crearDocumento = function (req, res) {
             parametros.docTmpId = args.docTmpId;
             parametros.usuario_id = usuarioId;
             parametros.usuarioId = usuarioId;
-
             return G.Q.nfcall(that.m_e007.agregarMovimientoConceptoEgreso, parametros, transaccion);
         }).then(function () {
             return G.Q.nfcall(that.m_e007.agregardocumento_d, parametros, transaccion);
         }).then(function () {
             console.log("agregardocumento_d");
             return G.Q.nfcall(that.m_e007.eliminarMovimientoConceptoEgreso, parametros, transaccion);
-
         }).then(function (result) {
             if (result >= 1) {
                 return G.Q.nfcall(that.m_e007.eliminarDocumentoTemporal_d, parametros, transaccion);
@@ -450,12 +444,9 @@ E007Controller.prototype.crearDocumento = function (req, res) {
 
             console.log("Error rollback ", err);
             transaccion.rollback(err);
-
         }).done();
-
     }).then(function () {
         return G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros);
-
     }).then(function (resultado) {
         cabecera = resultado;
         if (resultado.length > 0) {
@@ -470,7 +461,6 @@ E007Controller.prototype.crearDocumento = function (req, res) {
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
-
         if (resultado.length > 0) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
@@ -492,9 +482,7 @@ E007Controller.prototype.crearDocumento = function (req, res) {
         console.log("crearDocumento>>>>", err);
         res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
     }).done();
-
 };
-
 // imprime el documento desde buscador de documentos
 E007Controller.prototype.crearHtmlDocumento = function (req, res) {
     var that = this;
@@ -503,7 +491,6 @@ E007Controller.prototype.crearHtmlDocumento = function (req, res) {
     var concepto_egreso = "";
     var cabecera = [];
     var detallea = [];
-
     if (args.empresaId === '' || args.empresaId === undefined) {
         res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
         return;
@@ -528,7 +515,6 @@ E007Controller.prototype.crearHtmlDocumento = function (req, res) {
         id: args.terceroId,
         tipoId: args.tipoTercero
     };
-
     try {
         var nomb_pdf = "documentoE007" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
         if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
@@ -549,9 +535,7 @@ E007Controller.prototype.crearHtmlDocumento = function (req, res) {
         }
     }).then(function (resultado) {
         detallea = resultado;
-
         return G.Q.nfcall(that.m_e007.listarClienteId, parametros);
-
     }).then(function (resultado) {
 
         if (resultado.length > 0) {
@@ -570,7 +554,6 @@ E007Controller.prototype.crearHtmlDocumento = function (req, res) {
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
-
         if (detallea.length > 0) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
@@ -593,7 +576,6 @@ E007Controller.prototype.crearHtmlDocumento = function (req, res) {
         res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
     }).done();
 };
-
 /*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS
@@ -617,9 +599,7 @@ function __generarPdf(datos, callback) {
 
         response.body(function (body) {
             var fecha = new Date();
-
             var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + ".html";
-
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {
                     console.log("err [__generarPdf]: ", err);
@@ -635,7 +615,5 @@ function __generarPdf(datos, callback) {
     });
 }
 ;
-
-
 E007Controller.$inject = ["m_movimientos_bodegas", "m_e007"];
 module.exports = E007Controller;

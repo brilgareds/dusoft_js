@@ -122,14 +122,14 @@ define([
                     templateUrl: "views/index.html",
                 });
 
-                // E007 
+                /*/ E007 
                 documentos_bodegas.stateProvider.state('E007', {
                     url: "/E007",
                     text: "Administración Documentos de Bodega [E007]",
                     templateUrl: "views/E007/index.html",
                     parent_name: "DocumentosBodegas",
                     controller: 'E007Controller'
-                });
+                });*/
 
                 // I002 
                 documentos_bodegas.stateProvider.state('I002', {

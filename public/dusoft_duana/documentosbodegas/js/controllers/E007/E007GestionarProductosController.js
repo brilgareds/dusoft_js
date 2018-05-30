@@ -104,7 +104,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo ', width: "12%", enableCellEdit: false,
+                    {field: 'codigo_producto', displayName: 'Codigo ', width: "16%", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
                                                 <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
@@ -119,32 +119,33 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
                     },
-                    {field: 'descripcion', displayName: 'Descripcion', width: "48%", enableCellEdit: false},
-                    {field: 'existencia', displayName: 'Existencias', width: "10%", enableCellEdit: false},
-                    {field: 'disponible', displayName: 'Disponibilidad', width: "10%", enableCellEdit: false},
-                    {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "12%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {width: "8%", displayName: "Opcion", cellClass: "txt-center",
+                    {field: 'descripcion', displayName: 'Descripcion', width: "50%", enableCellEdit: false},
+                    {field: 'existencia', displayName: 'Existencias', width: "12%", enableCellEdit: false},
+                    {field: 'disponible', displayName: 'Disponibilidad', width: "12%", enableCellEdit: false},
+//                    {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "12%", enableCellEdit: false,
+//                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {width: "10%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="btn_adicionar_producto(row.entity)" ng-disabled="habilitarCheck(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_adicionar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                 ]
+//                        <button class="btn btn-default btn-xs" ng-click="btn_adicionar_producto(row.entity)" ng-disabled="habilitarCheck(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
             };
 
 
-            $scope.habilitarCheck = function (producto) {
-                var disabled = false;
-
-                if (producto.cantidad === undefined || producto.cantidad === "" || parseInt(producto.cantidad) <= 0) {
-                    disabled = true;
-                }
-                if (parseInt(producto.cantidad) > parseInt(producto.existencia)) {
-                    AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar las existencias");
-                    disabled = true;
-                }
-
-                return disabled;
-            };
+//            $scope.habilitarCheck = function (producto) {
+//                var disabled = false;
+//
+//                if (producto.cantidad === undefined || producto.cantidad === "" || parseInt(producto.cantidad) <= 0) {
+//                    disabled = true;
+//                }
+//                if (parseInt(producto.cantidad) > parseInt(producto.existencia)) {
+//                    AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar las existencias");
+//                    disabled = true;
+//                }
+//
+//                return disabled;
+//            };
 
 
             function sumarDias(fecha, dias) {
@@ -162,7 +163,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     var lotes = [];
                     for (var i in result) {
                         var fecha = sumarDias(new Date(result[i].fecha_vencimiento), 1);
-                        var _lote = {lote: result[i].lote, fecha_vencimiento: $filter('date')(fecha, "dd/MM/yyyy")};
+                        var _lote = {lote: result[i].lote, existencia: result[i].existencia_actual, fecha_vencimiento: $filter('date')(fecha, "dd/MM/yyyy"), cantidad: 0};
                         lotes.push(_lote);
                     }
                     that.listar_lotes(fila, lotes);
@@ -192,21 +193,74 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 enableHighlighting: true,
                                 size: 'sm',
                                 columnDefs: [
-                                    {field: 'lote', displayName: 'Lote', width: "30%", enableCellEdit: false},
-                                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "50%", enableCellEdit: false},
-                                    {width: "20%", displayName: "Opcion", cellClass: "txt-center",
+                                    {field: 'lote', displayName: 'Lote', width: "25%", enableCellEdit: false},
+                                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "30%", enableCellEdit: false},
+                                    {field: 'existencia', displayName: 'Existencias', width: "25%", enableCellEdit: false},
+                                    {field: 'cantidad | number : "0" ', displayName: 'Cantidad', width: "12%", enableCellEdit: false,
+                                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                                    {width: "10%", displayName: "Opcion", cellClass: "txt-center",
                                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="btn_adicionar_lote(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_adicionar_lote(row.entity)" ng-disabled="habilitarCheck(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                                 ]
 
                             };
 
+                            $scope.habilitarCheck = function (producto) {
+                                var disabled = false;
+
+                                if (producto.cantidad === undefined || producto.cantidad === "" || parseInt(producto.cantidad) <= 0) {
+                                    disabled = true;
+                                }
+                                if (parseInt(producto.cantidad) > parseInt(producto.existencia)) {
+                                    AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar las existencias");
+                                    disabled = true;
+                                }
+
+                                return disabled;
+                            };
+
+
                             $scope.btn_adicionar_lote = function (lote) {
                                 $scope.producto.lote = lote.lote;
+                                $scope.producto.cantidad = lote.cantidad;
                                 $scope.producto.fecha_vencimiento = $filter('date')(lote.fecha_vencimiento, "dd/MM/yyyy");
-                                $modalInstance.close($scope.producto);
+//                                $modalInstance.close($scope.producto);
+                                that.guardarProductoTmp($scope.producto);
                             };
+
+                            /*
+                             * Descripcion: agrega los productos al tmp 
+                             * @author German Andres Galvis
+                             * @fecha  23/05/2018
+                             */
+                            that.guardarProductoTmp = function (producto) {
+
+                                var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        empresa_id: Empresa.getCodigo(),
+                                        centro_utilidad: Empresa.centroUtilidad.codigo,
+                                        bodega: Empresa.centroUtilidad.bodega.codigo,
+                                        codigoProducto: producto.codigo_producto,
+                                        cantidad: producto.cantidad,
+                                        lote: producto.lote,
+                                        fechaVencimiento: producto.fecha_vencimiento,
+                                        disponible: producto.disponible,
+                                        docTmpId: DocTmp
+                                    }
+                                };
+
+                                E007Service.agregarProductoTmp(obj, function (data) {
+                                    if (data.status === 200) {
+                                        AlertService.mostrarMensaje("warning", data.msj);
+                                    } else {
+                                        AlertService.mostrarMensaje("warning", data.msj);
+                                    }
+                                });
+                            };
+
+
 
                             $scope.onCerrar = function () {
                                 $modalInstance.close();
@@ -217,41 +271,41 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 };
                 var modalInstance = $modal.open($scope.opts);
                 modalInstance.result.then(function (resul) {
-                    that.guardarProductoTmp(resul);
+//                    that.guardarProductoTmp(resul);
                 });
 
             };
 
-            /*
-             * Descripcion: agrega los productos al tmp 
-             * @author German Andres Galvis
-             * @fecha  23/05/2018
-             */
-            that.guardarProductoTmp = function (producto) {
-
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        empresa_id: Empresa.getCodigo(),
-                        centro_utilidad: Empresa.centroUtilidad.codigo,
-                        bodega: Empresa.centroUtilidad.bodega.codigo,
-                        codigoProducto: producto.codigo_producto,
-                        cantidad: producto.cantidad,
-                        lote: producto.lote,
-                        fechaVencimiento: producto.fecha_vencimiento,
-                        disponible: producto.disponible,
-                        docTmpId: DocTmp
-                    }
-                };
-
-                E007Service.agregarProductoTmp(obj, function (data) {
-                    if (data.status === 200) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    } else {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }
-                });
-            };
+//            /*
+//             * Descripcion: agrega los productos al tmp 
+//             * @author German Andres Galvis
+//             * @fecha  23/05/2018
+//             */
+//            that.guardarProductoTmp = function (producto) {
+//
+//                var obj = {
+//                    session: $scope.session,
+//                    data: {
+//                        empresa_id: Empresa.getCodigo(),
+//                        centro_utilidad: Empresa.centroUtilidad.codigo,
+//                        bodega: Empresa.centroUtilidad.bodega.codigo,
+//                        codigoProducto: producto.codigo_producto,
+//                        cantidad: producto.cantidad,
+//                        lote: producto.lote,
+//                        fechaVencimiento: producto.fecha_vencimiento,
+//                        disponible: producto.disponible,
+//                        docTmpId: DocTmp
+//                    }
+//                };
+//
+//                E007Service.agregarProductoTmp(obj, function (data) {
+//                    if (data.status === 200) {
+//                        AlertService.mostrarMensaje("warning", data.msj);
+//                    } else {
+//                        AlertService.mostrarMensaje("warning", data.msj);
+//                    }
+//                });
+//            };
 
             /**
              * +Descripcion Metodo encargado de invocar el servicio que listara 

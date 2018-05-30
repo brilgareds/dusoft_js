@@ -646,6 +646,30 @@ DocumentoBodegaE007.prototype.agregardocumento_d = function (parametros, transac
 };
 
 
+/**
+ * @author German Galvis
+ * +Descripcion consulta los productos del documento tmp
+ * @fecha 29/05/2018
+ */
+DocumentoBodegaE007.prototype.consultarItem = function (parametros, callback) {
+    var query = G.knex
+            .select()
+            .from('inv_bodegas_movimiento_tmp_d')
+            .where('empresa_id', parametros.empresa)
+            .andWhere('doc_tmp_id', parametros.docTmpId)
+            .andWhere('centro_utilidad', parametros.centro)
+            .andWhere('bodega', parametros.bodega)
+            .andWhere('codigo_producto', parametros.codigoProducto)
+            .andWhere('lote', parametros.lote)
+            .andWhere('fecha_vencimiento', parametros.fechaVencimiento);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error consultarItem", err);
+        callback(err);
+    }).done();
+};
 /*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS

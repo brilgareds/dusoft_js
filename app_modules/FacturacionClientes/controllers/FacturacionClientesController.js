@@ -1687,13 +1687,15 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         sw_facturacion:0,
         paginaActual: 1,
         terminoBusqueda: '',
-        filtro: ''
+        filtro: '',
+        empresa_id:args.generar_factura_consumo.empresa_id,
+        idFacturaXconsumo:args.generar_factura_consumo.idFacturaXconsumo
     };
     var parametrosDetalle = {
         tipoIdTercero:args.generar_factura_consumo.tipoTerceroId, 
         terceroId: args.generar_factura_consumo.terceroId,
         empresaId: args.generar_factura_consumo.empresa_id,
-        estado: 2
+        estado: 2        
     };
     var resultadoFacturasXConsumo;
     var documentoFacturacion = "";
@@ -1705,7 +1707,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
     res.send(G.utils.r(req.url, 'Generando facturacion X consumo...', 200, {generar_factura_consumo: ''}));     
           
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
-         
+        
         if(resultado.length >0){
             datosDocumentosXConsumo.cabecera = resultado;
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',parametrosDetalle)
@@ -1714,7 +1716,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         }
        
     }).then(function(resultado){
-        
+       
         if(resultado.length >0){           
             datosDocumentosXConsumo.detalle = resultado;
             datosDocumentosXConsumo.temporal = resultado;
@@ -1726,7 +1728,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         }
         
     }).then(function(resultado){
-         
+    
         if(resultado >0){
         
             return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
@@ -1735,7 +1737,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         }
          
     }).then(function(resultado){
-        
+              
        if(resultado.length >0){
             parametros.documentoId = resultado[0].valor;
             return G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros)
@@ -1759,7 +1761,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         consultarParametrosRetencion = resultado;
        
         if(resultado.length > 0){
-            
+       ip='::ffff:10.0.2.158';     
             if(ip.substr(0, 6) === '::ffff'){               
                 return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
             }else{                
@@ -1780,7 +1782,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
             datosDocumentosXConsumo.cabecera[0].prefijo = documentoFacturacion[0].id;
             datosDocumentosXConsumo.cabecera[0].documento_id = documentoFacturacion[0].documento_id;
              
-            var parametrosCabecera = {empresa_id: datosDocumentosXConsumo.cabecera[0].empresa_id,
+            var parametrosCabecera = {empresa_id: datosDocumentosXConsumo.cabecera[0].empresa,
                 tipo_id_tercero: datosDocumentosXConsumo.cabecera[0].tipo_id_tercero,
                 tercero_id: datosDocumentosXConsumo.cabecera[0].tercero_id,
                 factura_fiscal: datosDocumentosXConsumo.cabecera[0].factura_fiscal,
@@ -1797,15 +1799,16 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
                 facturacion_cosmitet: 0
                 
             }; 
-            
+           
             return G.Q.ninvoke(that.m_facturacion_clientes,'generarFacturaXConsumo', 
             {parametrosCabecera:parametrosCabecera, datosDocumentosXConsumo: datosDocumentosXConsumo});
             
-        }else{
+        } else{
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
         }
         
-    }).then(function(){
+    }).then(function(resultado){
+        console.log("BBBBBB",resultado);
          //CAMBIAR LA CONSULTA PARA QUE VAYA A LA TEMPORAL
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           

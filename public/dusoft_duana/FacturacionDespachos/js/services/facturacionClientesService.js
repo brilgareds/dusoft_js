@@ -244,6 +244,7 @@ define(["angular", "js/services"], function (angular, services) {
                      *              
                      */
                     self.eliminarTotalTemporalFacturaConsumo = function (obj, callback) {
+                        console.log("eliminarTotalTemporalFacturaConsumo>>",obj);
                         Request.realizarRequest(API.FACTURACIONCLIENTES.ELIMINAR_TOTAL_TEMPORAL_FACTURA_CONSUMO, "POST", obj, function (data) {
                             callback(data);
                         });

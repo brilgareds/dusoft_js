@@ -1043,7 +1043,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(estado,obj
     }
     
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
-    
+     console.log("qq>>> ",G.sqlformatter.format(query.toString()));  
     if(transaccion) query.transacting(transaccion);
     query.then(function(resultado){     
         
@@ -1209,7 +1209,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
     }; 
     
     var query = G.knex(tabla).insert(parametros);     
-     
+  console.log(">>> ",G.sqlformatter.format(query.toString()));   
    if(transaccion) query.transacting(transaccion);     
     query.then(function(resultado){
         callback(false, resultado);
@@ -1285,8 +1285,10 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
  */          
 FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(obj, callback){
                                   
-                
-    var query = G.knex.select(["a.*","b.*",
+       console.log("consultarTemporalFacturaConsumo");         
+       console.log("--------------------------------");         
+       console.log("--------------------------------",obj);         
+    var query = G.knex.select(["a.empresa_id as empresa","a.*","b.*",
        G.knex.raw("case when a.tipo_pago_id=1 then 'Efectivo' \
         when a.tipo_pago_id=2 then 'Cheque'\
         when a.tipo_pago_id=3 then 'Credito' end as descripcion_tipo_pago"),
@@ -1327,11 +1329,17 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
                 .andWhere("a.tercero_id",obj.tercero_id)     
 //                .andWhere("sw_facturacion",obj.sw_facturacion)
             }
+            
+            if(obj.idFacturaXconsumo!==undefined && obj.idFacturaXconsumo!==""){
+                this.andWhere("a.id_factura_xconsumo",obj.idFacturaXconsumo)
+            }
+            
+            
         }).andWhere("a.empresa_id", obj.empresa_id);     
    
     query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
-    
-//     console.log(">>> ",G.sqlformatter.format(query.toString())); 
+     console.log("--------------------------------"); 
+    // console.log(">>> ",G.sqlformatter.format(query.toString())); 
     
     query.then(function(resultado){          
         callback(false, resultado);
@@ -1509,7 +1517,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
 //            }
         })
         .groupBy(camposGroupBy);
-      console.log(G.sqlformatter.format(query.toString())); 
+//      console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){    
         callback(false, resultado);
     }).catch(function(err){
@@ -1647,7 +1655,7 @@ FacturacionClientesModel.prototype.actualizarValorTotalTemporalFacturaConsumo = 
         .update(parametros);    
       
     query.then(function(resultado){ 
-      
+       
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [actualizarValorTotalTemporalFacturaConsumo]: ", err);        

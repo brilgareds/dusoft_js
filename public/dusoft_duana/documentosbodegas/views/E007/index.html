@@ -5,7 +5,7 @@
         width:100px;
         height:48px;
         right:20px;
-        bottom:20px;
+        bottom:30px;
         background-color:#398439;
         color:#FFF;
         border-radius:20px;        
@@ -13,12 +13,12 @@
         z-index: 2;
     }
 
-/*    .radios{
-        position: fixed;
-        width:15px;
-        height:15px; 
-        text-align:center;
-    }*/
+    /*    .radios{
+            position: fixed;
+            width:15px;
+            height:15px; 
+            text-align:center;
+        }*/
 
 </style>
 <button type="button" class="btn btn-default float col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-click="generar_documento()" ng-if="!isTmp()"><b>Crear</b><br><b>Documento</b></button>
@@ -133,15 +133,17 @@
                         </div>
                         <div ng-if="!isTmp()">    
                             <div class="modal-footer col-md-12">
-                                <button class="btn btn-default" ng-click="cancelar_documento()">
-                                    <span class="glyphicon glyphicon-share-alt" ></span> Volver
-                                </button>
-                                <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
-                                    <span class="glyphicon glyphicon-trash" ></span> Eliminar
-                                </button>
-<!--                                <button class="btn btn-success" ng-click="generar_documento()" >
-                                    <span class="glyphicon glyphicon-ok" ></span> Crear Documento
-                                </button>-->
+                                <div class="container text-center">
+                                    <button class="btn btn-default" ng-click="cancelar_documento()">
+                                        <span class="glyphicon glyphicon-share-alt" ></span> Volver
+                                    </button>
+                                    <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
+                                        <span class="glyphicon glyphicon-trash" ></span> Eliminar
+                                    </button>
+                                    <!--                                <button class="btn btn-success" ng-click="generar_documento()" >
+                                                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento
+                                                                    </button>-->
+                                </div>  
                             </div>  
                         </div>
                     </div>

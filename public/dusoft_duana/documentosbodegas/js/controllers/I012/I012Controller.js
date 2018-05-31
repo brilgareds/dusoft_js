@@ -249,9 +249,9 @@ define([
 
             $scope.habilitarAdicion = function (producto) {
                 var disabled = false;
-                if ($scope.doc_tmp_id === "00000") {
-                    disabled = true;
-                }
+//                if ($scope.doc_tmp_id === "00000") {
+//                    disabled = true;
+//                }
 
                 if (producto.cantidad_ingresada === undefined || producto.cantidad_ingresada === "" || parseInt(producto.cantidad_ingresada) <= 0) {
                     disabled = true;
@@ -393,7 +393,7 @@ define([
              * +Descripcion Metodo encargado de guardar NewDocTmp
              * @fecha 2018-03-27
              */
-            that.guardarNewDocTmp = function () {
+            that.guardarNewDocTmp = function (fila) {
                 var usuario = Usuario.getUsuarioActual();
                 var obj = {
                     session: $scope.session,
@@ -415,6 +415,7 @@ define([
                         $scope.validarDesdeLink = true;
                         $scope.isTmp();
                         that.parametrizacionRetencion();
+                        that.guardarProductoTmp(fila);
                     }
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -426,7 +427,12 @@ define([
             };
 
             $scope.btn_adicionar_producto = function (fila) {
-                that.guardarProductoTmp(fila);
+                
+                if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
+                    that.guardarNewDocTmp (fila);
+                } else {
+                    that.guardarProductoTmp(fila);
+                }
             };
 
             that.guardarProductoTmp = function (producto) {

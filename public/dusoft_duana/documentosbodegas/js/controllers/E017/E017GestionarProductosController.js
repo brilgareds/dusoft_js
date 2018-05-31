@@ -176,8 +176,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     AlertService.mostrarMensaje("warning", "No se permite trasladar productos vencidos");
                     return;
                 }
-
-                that.guardarProductoTmp(fila);
+                if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
+                    $scope.grabar_documento_tmp(function callback(resul) {
+                        if (resul) {
+                            that.guardarProductoTmp(fila);
+                        }
+                    });
+                } else {
+                    that.guardarProductoTmp(fila);
+                }
             };
 
             /*
@@ -197,7 +204,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         cantidad: producto.cantidad,
                         lote: producto.lote,
                         fechaVencimiento: producto.fecha_vencimiento,
-                        docTmpId: DocTmp
+                        docTmpId: $scope.doc_tmp_id
                     }
                 };
 

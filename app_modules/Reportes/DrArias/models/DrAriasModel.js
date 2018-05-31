@@ -118,9 +118,13 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
 
 
 
-
+/*
+ * 
+ * @param {type} callback
+ * @returns {undefined}
+ */
 DrAriasModel.prototype.rotacionZonas = function (callback) {
-    var columna = [
+    var columna = [ 
         "b.descripcion as zona",
         "a.descripcion as nombre_bodega",
         "a.empresa_id",

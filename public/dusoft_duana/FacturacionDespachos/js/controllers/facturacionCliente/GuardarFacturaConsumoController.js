@@ -124,7 +124,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             filterOptions: $scope.filtroGrid,
             columnDefs: [
 
-                {displayName: " # Factura", cellClass: "txt-center dropdown-button", width: "6%",
+                {displayName: " # Factura", cellClass: "txt-center ngCellText", width: "6%",
                 cellTemplate: '<div>\
                               {{row.entity.prefijo}} - {{row.entity.facturaFiscal}}\
                               </div>'},
@@ -160,7 +160,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
          * @fecha 10-08-2017 DD-MM-YYYY
          */
         $scope.eliminarTemporalFacturaConsumo = function(documento){
-        console.log("eliminarTemporalFacturaConsumo");   
+           
             var obj = {            
                 session: $scope.session,
                 data: {
@@ -178,7 +178,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 
                 if(data.status === 200){
                     AlertService.mostrarMensaje("success", data.msj);
-                  //  that.listarDetalleTmpFacturaConsumo();
+                    that.listarDetalleTmpFacturaConsumo();
                     $scope.onDocumentoSeleccionado();
                 }else{
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -266,8 +266,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 
                 if(data.status === 200){
                     AlertService.mostrarMensaje("success", data.msj);
-                    $scope.root.idFacturaXconsumo=data.obj.facturas_consumo.id_factura_xconsumo;
-                    //that.listarDetalleTmpFacturaConsumo();
+                    that.listarDetalleTmpFacturaConsumo();
                     $scope.onDocumentoSeleccionado();
                 }else{
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -333,8 +332,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                         empresa_id:$scope.root.documento.get_empresa(),
                         tipoTerceroId: $scope.root.cliente.getTipoId(),
                         terceroId:$scope.root.cliente.getId(),
-                        contratoClienteId: $scope.root.cliente.contratoClienteId,
-                        idFacturaXconsumo:$scope.root.idFacturaXconsumo
+                        contratoClienteId: $scope.root.cliente.contratoClienteId
                     }
                 }
             };
@@ -384,7 +382,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
            
                 var sumTotalIva = 0;
                 if(data.status === 200){
-                   console.log("WWW",data.obj.procesar_factura_cosmitet); 
+                    
                     data.obj.procesar_factura_cosmitet.forEach(function(row){
                        sumTotalIva += parseInt(row.porc_iva_total);
                     });
@@ -590,7 +588,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                             $scope.root.observacion = lsTemp.observaciones;
                             $scope.root.idFacturaXconsumo =lsTemp.id_factura_xconsumo;
                             $scope.root.estadoConsulta =lsTemp.estado;
-                            
+                            console.log("AAAAAAAAAAAAAA",$scope.root.estadoConsulta);
                             that.listarCliente(lsTemp.nombre_tercero, function(estado){
                                 if(estado){
                                     $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 

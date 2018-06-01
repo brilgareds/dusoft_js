@@ -27,9 +27,9 @@ define(["angular", "js/models", "includes/classes/DocumentoDetalle"], function(a
         DocumentoDetalleConsumo.prototype = Object.create(DocumentoDetalle.getClass().prototype);
         
         this.get = function(producto, cantidadDespachada, lote, fechaVencimiento, prefijo ,facturaFiscal){
-            return new DocumentoDetalleConsumo(producto, cantidadDespachada, lote, fechaVencimiento, prefijo ,facturaFiscal)
+            return new DocumentoDetalleConsumo(producto, cantidadDespachada, lote, fechaVencimiento, prefijo ,facturaFiscal);
         };
-        
+
         return this;
 
     }]);

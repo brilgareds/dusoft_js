@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>&nbsp;</title>
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style.css" rel=stylesheet type=text/css >
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style-print.css" rel=stylesheet type=text/css media="print">
+        <link rel="stylesheet" href="{{:style}}" />       
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css' /> 
+    </head>
+    <body>
+        <TABLE width='100%' border=0 cellpadding='4' cellspacing='4'>
+            <TR>
+                <TD rowspan='2'><img  src="{{:serverUrl}}images/DispensacionHc/logocliente.png" align='left' border=0></TD>
+                <TD width='100%' align='center' valign='center'>
+                    <table width="70%" align="center"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-weight:bold;font-size:20pt" rules="all">
+                        <tr class="label">
+                            <td align="center">{{:cabecera.razon_social}}  {{:cabecera.tipo_id_empresa}}: {{:cabecera.id}}- {{:cabecera.digito_verificacion}}</td>
+                        </tr>
+                        <tr class="label">
+                            <td align="center">{{:cabecera.texto2}} </td>
+                        </tr>
+                        <tr class="label">
+                            <td align="center">{{:cabecera.municipio_empresa}} </td>
+                        </tr>
+                    </table>
+                </TD>
+            </TR>
+            <TR>
+                <TD align='center' valign='top'> </TD>
+            </TR>
+        </TABLE>
+        <BR>
+        <table width="100%" align="center" style="border:1px solid #000000;" >
+            <tr class="label" align="right">
+                <td class="label" >
+                    <h2>FACTURA DE VENTA  {{:cabecera.prefijo}} {{:cabecera.factura_fiscal}}</h2>
+                </td>
+            </tr>
+            <tr class="label" align="center">
+                <td class="label" >
+                    <table width="100%" align="center" style="border:1px solid #000000;font-size:8.5px" >
+                        <tr  align="center">
+                            <td> <b>DIRECCION:</b> {{:cabecera.direccion_empresa}} </td>
+                            <td> <b>TELEFONOS:</b> {{:cabecera.telefono_empresa}} </td>
+                            <td> <b>UBICACION:</b> {{:cabecera.pais_empresa}} - {{:cabecera.departamento_empresa}} - {{:cabecera.municipio_empresa}}</td>
+                        </tr>
+                        <tr align="center">
+                            <td colspan="3"> <b>{{:cabecera.texto3}}</b> </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr  align="center">
+                <td >
+                    <table width="100%" align="center" style="border:1px solid #000000;font-size:8.5px" >
+                        <tr align="center">
+                            <td ><b>VENDEDOR:</b>{{:cabecera.nombre}} </td>
+                            <td ></td>
+                            <td ></td>
+                        </tr>
+                        <tr align="center">
+                            <td ><b>VENDIDO A:</b> {{:cabecera.tipo_id_tercero}} {{:cabecera.tercero_id}} {{:cabecera.nombre_tercero}}</td>
+                            <td ><b>DIRECCION:</b> {{:cabecera.direccion}}  TELEFONO: {{:cabecera.telefono}}</td>
+                            <td ><b>UBICACION:</b> {{:cabecera.ubicacion}} </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr align="center">
+                <td >
+                    <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
+                        <tr align="center">
+                            <td><b>PEDIDO No</b></td>
+                            <td><b>FECHA FACTURA</b></td>
+                            <td><b>FECHA VENCIMIENTO</b></td>
+                            <td><b>CONDICIONES</b></td>
+                        </tr>
+                        <tr align="center">
+                            <td >{{:cabecera.pedido_cliente_id}}</td>
+                            <td >{{:cabecera.fecha_registro}}</td>
+                            <td >{{:cabecera.fecha_vencimiento_factura}}</td>
+                            <td >{{:cabecera.observaciones}}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <br>  <br>	
+        <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" rules="all">
+            <tr class="label">
+                <td align="center" colspan="7">PRODUCTOS</td>
+            </tr>
+            <tr class="label" align="center">
+                <td>CODIGO</td>
+                <td>PRODUCTO</td>
+                <td>LOTE</td>
+                <td>F.VTO</td>
+                <td>CUM</td>
+                <td>CODIGO INVIMA</td>
+                <td>CANTIDAD</td>
+                <td>VALOR UNIT</td>
+                <td>VALOR TOTAL</td>
+                <td>%IVA</td>
+            </tr>
+            {{for productos }}
+            <tr>
+                <td>{{:codigo_producto}}</td>
+                <td>{{:descripcion}}</td>
+                <td>{{:lote}}</td>
+                <td>{{:fecha_vencimiento}}</td>
+                <td>{{:codigo_cum}}</td>
+                <td>{{:codigo_invima}}</td>
+                <td>{{:cantidad}}</td>
+                <td>{{:valor_unitario}}</td>
+                <td>{{:subtotal}}</td>
+                <td>%{{:porc_iva}}</td>
+            </tr>
+            {{/for}}
+         </table>
+        <br>
+        <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
+            <tr align="left"> <td > <B>{{:cabecera.texto1}}</B></td></tr>
+            <tr class="label" align="center">
+                <td class="label" ><table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
+
+                        <tr align="center">
+                            <td><B>SUBTOTAL</B></td>
+                            <td><B>IVA</B></td>
+                            <td><B>RET-FTE</B></td>
+                            <td><B>RETE-ICA</B></td>
+                            <td><B>RETE-IVA</B></td>
+                            <td><B>VALOR TOTAL</B></td>
+                        </tr>
+                        <tr align="center">
+                            <td><B>${{:valores.subTotal}}</B></td>
+                            <td><B>${{:valores.ivaTotal}}</B></td>
+                            <td><B>${{:valores.retencionFuente}}</B></td>
+                            <td><B>${{:valores.retencionIca}}</B></td>
+                            <td><B>${{:valores.retencionIva}}</B></td>
+                            <td><B>${{:valores.totalFactura}}</B></td>
+
+                        </tr>
+                        <tr align="left">
+                            <td colspan="6"><B>{{:valores.totalFacturaLetra}} pesos</B></td></tr>
+                    </table>			</td>
+            </tr>
+            <tr align="left">
+                <td > <B>{{:cabecera.mensaje}}</B></td></tr>
+
+            <tr align="center">
+                <td ><b>OBSERVACION PEDIDO : {{:detalle[0].observacion}}</b></td>	   	
+            </tr>		
+            <tr align="center">
+                <td ><b>OBSERVACION DESPACHO : {{:detalle[0].obs_despacho}}</b></td>	   	
+            </tr>	
+        </table>  <br>	<table width="100%" align="center" style="border:0px solid #000000;font-size:7px" >
+
+            <tr>
+                <td WIDTH="31.3%"><table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px">
+                        <tr>
+                            <td align="left">ATENTAMENTE : </td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <hr width="100%"></td>
+                        </tr>
+                    </table>
+                </td>
+                <td WIDTH="31.3%">
+                    <table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px">
+                        <tr>
+                            <td align="left">FIRMA Y SELLO DEL CLIENTE :  </td> 
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <hr width="100%">
+                            </td>
+                        </tr>
+                    </table>
+                <td WIDTH="37.3%">
+                    <table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px">
+                        <tr>
+
+                            <td align="left">
+                                <table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px"">
+                                    <tr><td>NOMBRE QUIEN RECIBE : </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center">
+                                            <hr width="100%"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>NUMERO IDENTIFICACION :</td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center">
+                                            <hr width="100%"></td></tr><tr><td> FECHA - RECIBIDO : </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center">
+                                            <hr width="100%"></td></tr>
+                                </table></td>
+                        </tr>
+                    </table>
+                </td></td>		</tr>
+        </table>	<br><table border='0' width="100%">
+
+            <tr>
+                <td align="justify" width="50%">
+                    <font size='1' face='arial'>
+                    Imprimió: {{:imprimio.usuario}}
+                    </font>
+                </td>
+                <td align="right" width="50%">
+                    <font size='1' face='arial'>
+                    Fecha Impresión : {{:imprimio.fecha}}
+                    </font>
+
+                </td>
+            </tr>
+        </table>
+    </BODY>
+</HTML>
+

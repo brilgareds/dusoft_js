@@ -133,7 +133,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 {field: 'porcIvaTotal',  cellClass: "ngCellText", width: "10%", displayName: 'Iva'},
                 
                 { displayName: "Opc", cellClass: "txt-center",
-                cellTemplate: '<button\
+                 cellTemplate: '<button\
                     class="btn btn-default btn-xs" \n\
                     ng-validate-events="{{ habilitar_seleccion_producto() }}" \n\
                     ng-click="eliminarTemporalFacturaConsumo(row.entity)" ><span class="glyphicon glyphicon-remove"></span></button>\

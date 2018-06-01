@@ -199,13 +199,7 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function (rotacionZonas) {
-
-       // return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
-
-    //}).then(function (respuesta) {
-        console.log('respuesta', rotacionZonas);
         res.send(rotacionZonas);
-        
     }).fail(function (err) {
         console.log("error controller listarPlanes ", err);
         res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
@@ -292,22 +286,17 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
     var formato = 'DD-MM-YYYY hh:mm:ss a';
     var fechaToday = G.moment(today).format(formato);
 
-
-    console.log('req.body.data', req.body.data);
-
     args.data.bodegas.forEach(function (item) {
-        console.log('item', item);
-        item.remitente = item.sw_remitente;  //guardarControlRotacion   0     
-        //item.remitentes = args.data.remitentes;
-        //item.meses = args.data.meses;
+        item.remitente = item.sw_remitente;
         item.usuarioId = usuarioId;
         item.swEstadoCorreo = '0';
         item.logError = '';
-        __rotacionesBodegas(that, item, function (data) {
+        item.empresa = item.empresa_id;
+        item.centroUtilidad = item.centro_utilidad;
 
+        __rotacionesBodegas(that, item, function (data) {
             if (data.estado !== 200) {
                 if (item.remitente === '1') {
-                    console.log("Error", data);
                     var subject = "Error al Generar Rotación (ver detalles) " + fechaToday;
                     var to = G.settings.email_desarrollo1;
                     var ruta_archivo = "";
@@ -319,9 +308,8 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
                 }
             }
         });
-
     });
-    res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: 'ok'}));
+    //res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: 'ok'}));
 };
 
 function __rotacionesBodegas(that, bodega, callback) {
@@ -340,7 +328,7 @@ function __rotacionesBodegas(that, bodega, callback) {
         notificacion = bodega;
        
         //that.io.sockets.emit('onNotificarRotacion', notificacion);  
-        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
+        //that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
 
         return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);
 
@@ -351,7 +339,7 @@ function __rotacionesBodegas(that, bodega, callback) {
             listarPlanes = respuesta;
             listarPlanes.meses = bodega.meses;
             bodega.swEstadoCorreo = 1;
-            that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
+            //that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
             return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
 
         } else {
@@ -374,7 +362,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     }).then(function (resultados) {
 
         bodega.swEstadoCorreo = 2;
-        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
+        //that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
 
     }).then(function (resultados) {
@@ -409,6 +397,7 @@ function __rotacionesBodegas(that, bodega, callback) {
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
 
     }).then(function (resultados) {
+        //res.send({});
         callback(false, resultados);
 
     }).fail(function (err) {

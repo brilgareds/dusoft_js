@@ -369,3 +369,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.58', 'Facturacion Despachos', 'Se modifica la consulta y la vista para que muestre los efc de los productos seleccionados y se corrige la empresa_id de la consulta');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.59  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.59', 'Facturacion Despachos', 'Se modifica la consulta y la vista para que muestre los efc de los productos seleccionados y se corrige la empresa_id de la consulta');
+COMMIT TRANSACTION;

@@ -345,3 +345,21 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.54', 'PEDIDOS CLIENTES', 'Se valida en la consulta listarDespachosAuditados el prefijo dependiendo la empresa');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.55  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.55', 'FORMULACION EXTERNA', 'Se ajusta la busqueda de pacientes para que obtenga el registro de eps_afiliados segun la fecha_ultima_actualizacion');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.56  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.56', 'DOCUMENTOS BODEGA', 'Se ajusta la busqueda de productos para el documento ETF');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.57  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.57', 'FORMULACION EXTERNA', 'Se adiciona la identificacion a las impresiones.');
+COMMIT TRANSACTION;

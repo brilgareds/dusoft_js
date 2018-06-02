@@ -6,6 +6,7 @@ define(["angular", "js/models", "includes/classes/DocumentoDetalle"], function(a
             DocumentoDetalle.getClass().call(this, producto, cantidadDespachada, lote, fechaVencimiento);
             this.prefijo = prefijo;
             this.facturaFiscal = facturaFiscal;
+            this.prefijofacturaFiscal = prefijo+" - "+facturaFiscal;
         };
         
         DocumentoDetalleConsumo.prototype.setPrefijo = function(prefijo){
@@ -22,6 +23,14 @@ define(["angular", "js/models", "includes/classes/DocumentoDetalle"], function(a
             
         DocumentoDetalleConsumo.prototype.getFacturaFiscal = function(){
             return this.facturaFiscal;
+        };
+        
+        DocumentoDetalleConsumo.prototype.setPrefijofacturaFiscal = function(prefijofacturaFiscal){
+            this.prefijofacturaFiscal = prefijofacturaFiscal;
+        };
+            
+        DocumentoDetalleConsumo.prototype.getPrefijofacturaFiscal = function(){
+            return this.prefijofacturaFiscal;
         };
         
         DocumentoDetalleConsumo.prototype = Object.create(DocumentoDetalle.getClass().prototype);

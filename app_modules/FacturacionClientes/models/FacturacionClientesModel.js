@@ -1043,7 +1043,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(estado,obj
     }
     
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
-     console.log("qq>>> ",G.sqlformatter.format(query.toString()));  
+//     console.log("qq>>> ",G.sqlformatter.format(query.toString()));  
     if(transaccion) query.transacting(transaccion);
     query.then(function(resultado){     
         
@@ -1517,7 +1517,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
 //            }
         })
         .groupBy(camposGroupBy);
-//      console.log(G.sqlformatter.format(query.toString())); 
+      console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){    
         callback(false, resultado);
     }).catch(function(err){

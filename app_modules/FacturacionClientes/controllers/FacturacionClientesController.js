@@ -1449,8 +1449,9 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
                  
         if(resultado.length > 0){
            //estaba comentado por que ya traia id_factura_xconsumo         
-           //
+           if(parametros.id_factura_xconsumo===undefined || parametros.id_factura_xconsumo===""){
             parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+           }
             def.resolve();
         }else{
              
@@ -1465,7 +1466,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
              
         if(resultado){
-            if(parametros.id_factura_xconsumo === undefined){
+            if(parametros.id_factura_xconsumo === undefined || parametros.id_factura_xconsumo===""){
             parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             }
         }
@@ -1808,7 +1809,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         }
         
     }).then(function(resultado){
-        console.log("BBBBBB",resultado);
+        
          //CAMBIAR LA CONSULTA PARA QUE VAYA A LA TEMPORAL
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           

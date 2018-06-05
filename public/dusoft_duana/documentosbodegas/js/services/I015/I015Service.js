@@ -20,7 +20,9 @@ define(["angular", "js/services"], function (angular, services) {
                                 {
                                     session: obj.session,
                                     data: {
-                                        bodega: obj.data.bodega
+                                        bodega: obj.data.bodega,
+                                        centro: obj.data.centro,
+                                        empresa: obj.data.empresa
                                     }
                                 },
                                 function (data) {
@@ -110,6 +112,7 @@ define(["angular", "js/services"], function (angular, services) {
                         var obj = {
                             session: parametro.session,
                             data: {
+                                listado: parametro.data.listado,
                                 doc_tmp_id: parametro.data.doc_tmp_id
                             }
                         };
@@ -190,31 +193,52 @@ define(["angular", "js/services"], function (angular, services) {
                         );
 
                     };
-//
-//                    /*
-//                     * @Author: German Galvis.
-//                     * @fecha 03/04/2018
-//                     * +Descripcion: Crea documento Definitivo
-//                     */
-//                    self.crearDocumento = function (objs, callback) {
-//                        var obj = {
-//                            session: objs.session,
-//                            data: {
-//                                tipo_id_tercero: objs.data.ingreso.tipo_id_tercero,
-//                                tercero_id: objs.data.ingreso.tercero_id,
-//                                nombreTercero: objs.data.ingreso.nombre_tercero,
-//                                prefijo_doc_cliente: objs.data.ingreso.prefijo_doc_cliente,
-//                                numero_doc_cliente: objs.data.ingreso.numero_doc_cliente,
-//                                docTmpId: objs.data.ingreso.doc_tmp_id,
-//                                valorTotalFactura: objs.data.ingreso.valor_total_factura,
-//                                usuario_id: objs.data.ingreso.usuario_id
-//                            }
-//                        };
-//                        Request.realizarRequest(API.I012.CREAR_DOCUMENTO, "POST", obj, function (data) {
-//                            callback(data);
-//                        });
-//                    };
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 10/05/2018
+                     * +Descripcion: lista la farmacia origen
+                     */
+                    self.buscarFarmaciaOrigenId = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I015.LISTAR_FARMACIA_SELECCIONADA,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                        numero: obj.data.numero,
+                                        prefijo: obj.data.prefijo
+                                    }
+                                },
+                                function (data) {
 
+                                    callback(data);
+                                }
+                        );
+
+                    };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 11/05/2018
+                     * +Descripcion: Crea documento Definitivo
+                     */
+                    self.crearDocumento = function (objs, callback) {
+                        var obj = {
+                            session: objs.session,
+                            data: {
+                                prefijo_doc_farmacia: objs.data.prefijo_doc_farmacia,
+                                numero_doc_farmacia: objs.data.numero_doc_farmacia,
+                                bodega_origen: objs.data.bodega_origen,
+                                bodega_destino: objs.data.bodega_destino,
+                                doc_tmp_id: objs.data.doc_tmp_id,
+                                sw_estado: objs.data.sw_estado,
+                                usuario_id: objs.data.usuario_id
+                            }
+                        };
+                        Request.realizarRequest(API.I015.CREAR_DOCUMENTO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
 
                     return this;
                 }]);

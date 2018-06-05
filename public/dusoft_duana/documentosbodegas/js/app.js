@@ -37,6 +37,9 @@ define([
     "models/I002/OrdenCompraIngreso",
     "models/I002/DocumentoIngreso",
     "models/I002/ProveedorIngreso",
+    "models/E007/DocumentoE007",
+    "models/E007/ClientesE007",
+    "models/E007/ProductoE007",
     "models/E009/ProductoDevolucion",
     "models/E009/DocumentoDevolucion",
     "models/E017/ProductoDevolucionE017",
@@ -55,6 +58,9 @@ define([
     "controllers/indexController",
     "controllers/I002/I002Controller",
     "controllers/I002/GestionarProductosController",
+    "controllers/E007/E007Controller",
+    "controllers/E007/E007GestionarClientesController",
+    "controllers/E007/E007GestionarProductosController",
     "controllers/E009/E009Controller",
     "controllers/E009/E009GestionarProductosController",
     "controllers/I011/I011Controller",
@@ -66,13 +72,13 @@ define([
     "controllers/I015/I015Controller",
     "webNotification",
     "services/general/GeneralService",
+    "services/E007/E007Service",
     "services/E009/E009Service",
     "services/E017/E017Service",
     "services/I011/I011Service",
     "services/I012/I012Service",
     "services/I015/I015Service",
-    
-], function(angular) {
+], function (angular) {
 
     /* App Module and its dependencies */
 
@@ -94,17 +100,17 @@ define([
     documentos_bodegas.urlRouterProvider;
     documentos_bodegas.stateProvider;
 
-    documentos_bodegas.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
+    documentos_bodegas.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function ($stateProvider, $urlRouterProvider, $httpProvider) {
 
             $httpProvider.interceptors.push('HttpInterceptor');
             documentos_bodegas.urlRouterProvider = $urlRouterProvider;
             documentos_bodegas.stateProvider = $stateProvider;
 
-        }]).run(["$rootScope", "localStorageService", "Usuario", "$state", "$location", function($rootScope, localStorageService, Usuario, $state, $location) {
+        }]).run(["$rootScope", "localStorageService", "Usuario", "$state", "$location", function ($rootScope, localStorageService, Usuario, $state, $location) {
 
             $rootScope.name = "Administración Documentos de Bodega";
 
-            $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion) {
+            $rootScope.$on("parametrizacionUsuarioLista", function (e, parametrizacion) {
 
                 var vista_predeterminada = "DocumentosBodegas";
 
@@ -116,52 +122,53 @@ define([
                     templateUrl: "views/index.html",
                 });
 
-                // E007 
+                /*/ E007 
                 documentos_bodegas.stateProvider.state('E007', {
                     url: "/E007",
                     text: "Administración Documentos de Bodega [E007]",
                     templateUrl: "views/E007/index.html",
-                    parent_name : "DocumentosBodegas"
-                });
-                
+                    parent_name: "DocumentosBodegas",
+                    controller: 'E007Controller'
+                });*/
+
                 // I002 
                 documentos_bodegas.stateProvider.state('I002', {
                     url: "/I002",
                     text: "Administración Documentos de Bodega [I002]",
                     templateUrl: "views/I002/index.html",
-                    parent_name : "DocumentosBodegas",
+                    parent_name: "DocumentosBodegas",
                     controller: 'I002Controller'
                 });
-                
+
                 // I0011 
                 documentos_bodegas.stateProvider.state('I011', {
                     url: "/I011",
                     text: "Administración Documentos de Bodega [I011]",
                     templateUrl: "views/I011/index.html",
-                    parent_name : "DocumentosBodegas",
+                    parent_name: "DocumentosBodegas",
                     controller: 'I011Controller'
                 }).state('modificarProducto', {
                     url: "/modificarProducto",
                     text: "modificador de productos",
                     templateUrl: "views/I011/ventanaModificacion.html",
-                    parent_name : "DocumentosBodegas",
+                    parent_name: "DocumentosBodegas",
                     controller: 'ModificarProductoController'
                 });
-                                
+
                 // I012 
                 documentos_bodegas.stateProvider.state('I012', {
                     url: "/I012",
                     text: "Administración Documentos de Bodega [I012]",
                     templateUrl: "views/I012/index.html",
-                    parent_name : "DocumentosBodegas",
+                    parent_name: "DocumentosBodegas",
                     controller: 'I012Controller'
                 });
-                /*/ E017 
+                // E017 
                 documentos_bodegas.stateProvider.state('E017', {
                     url: "/E017",
                     text: "Administración Documentos de Bodega [E017]",
                     templateUrl: "views/E017/index.html",
-                    parent_name : "DocumentosBodegas",
+                    parent_name: "DocumentosBodegas",
                     controller: 'E017Controller'
                 });
                 // I015 
@@ -169,21 +176,21 @@ define([
                     url: "/I015",
                     text: "Administración Documentos de Bodega [I015]",
                     templateUrl: "views/I015/index.html",
-                    parent_name : "DocumentosBodegas",
+                    parent_name: "DocumentosBodegas",
                     controller: 'I015Controller'
-                });*/
+                });
                 // E009
                 documentos_bodegas.stateProvider.state('E009', {
                     url: "/E009",
                     text: "Administración Documentos de Bodega [E009]",
                     templateUrl: "views/E009/index.html",
-                    parent_name : "DocumentosBodegas",
+                    parent_name: "DocumentosBodegas",
                     controller: 'E009Controller'
                 }).state('buscarProductos', {
                     url: "/buscarProductos",
                     text: "Buscador de productos",
                     templateUrl: "views/E009/gestionarproductosE009.html",
-                    parent_name : "DocumentosBodegas",
+                    parent_name: "DocumentosBodegas",
                     controller: 'E009GestionarProductosController'
                 });
 

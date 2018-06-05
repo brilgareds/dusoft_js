@@ -247,8 +247,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
               numero_documento : '',
               nombre_paciente : '',
               filtro : {
-                id: false ,
-                descripcion : 'Tipo Doc'
+                id: 'CC' ,
+                descripcion : 'Cedula'
               },
               pagina : 1
             }

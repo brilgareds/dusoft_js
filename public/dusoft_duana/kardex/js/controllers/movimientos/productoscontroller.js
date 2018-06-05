@@ -14,7 +14,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 Usuario, socket, CentroUtilidad, Bodega, $timeout) {
 
             var that = this;
-            $scope.Empresa = Empresa.get("DUANA LTDA", "03");
+            $scope.session = {
+                 usuario_id: Usuario.getUsuarioActual().getId(),
+                 auth_token: Usuario.getUsuarioActual().getToken()
+            };
+            var infoEmpresa=Usuario.getUsuarioActual().empresa;
+            $scope.Empresa = Empresa.get(infoEmpresa.nombre, infoEmpresa.codigo);
             var fechaActual = new Date();
             $scope.paginas = 0;
             $scope.items = 0;
@@ -41,10 +46,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
             $scope.abrirfechafinal = false;
 
-            $scope.session = {
-                 usuario_id: Usuario.getUsuarioActual().getId(),
-                 auth_token: Usuario.getUsuarioActual().getToken()
-            };
+            
             
             that.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             //permisos kardex
@@ -527,15 +529,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
           
             that.traerEmpresas(function() {
                 $timeout(function() {
-                    $scope.filtro.empresa_seleccion = '03';
+                    $scope.filtro.empresa_seleccion = infoEmpresa.codigo;
                     that.consultarCentrosUtilidadPorEmpresa(function() {
 
                         $timeout(function() {
-                            $scope.filtro.centro_seleccion = '1 ';
+                            $scope.filtro.centro_seleccion = infoEmpresa.centroUtilidad.codigo;
                             that.consultarBodegasPorEmpresa(function() {
 
                                 $timeout(function() {
-                                    $scope.filtro.bodega_seleccion = '03';
+                                    
+                                    $scope.filtro.bodega_seleccion = infoEmpresa.centroUtilidad.bodega.codigo;
                                     $scope.buscarProductos("");
                                 });
 

@@ -179,7 +179,8 @@ DocumentoBodegaE017.prototype.listarProductos = function (parametros, callback) 
         "exisLote.lote",
         "exisLote.fecha_vencimiento"
     ];
-    var query = G.knex.column(columnas)
+    var query = G.knex.distinct()
+            .column(columnas)
             .from("existencias_bodegas as exisBodega")
             .innerJoin("inventarios_productos as invenPro", "exisBodega.codigo_producto", "invenPro.codigo_producto")
             .innerJoin("inv_subclases_inventarios AS subclase", function () {
@@ -384,18 +385,15 @@ DocumentoBodegaE017.prototype.consultar_detalle_documento = function (parametro,
         "a.lote",
         G.knex.raw("\"a\".\"cantidad\"::integer"),
         G.knex.raw("to_char(\"a\".\"fecha_vencimiento\", 'dd-mm-yyyy') as fecha_vencimiento"),
-        G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre"),
-        "param.torre"
+        G.knex.raw("fc_descripcion_producto(\"b\".\"codigo_producto\") as nombre")
     ];
 
     var query = G.knex.select(columnas)
             .from('inv_bodegas_movimiento_d  AS a')
             .innerJoin("inventarios_productos  AS b ", "a.codigo_producto", "b.codigo_producto")
-            .leftJoin("param_torreproducto AS param", "param.codigo_producto", "a.codigo_producto")
             .where('a.empresa_id', parametro.empresaId)
             .andWhere("a.prefijo", parametro.prefijoDocumento)
-            .andWhere("a.numero", parametro.numeracionDocumento)
-            .orderBy('param.torre', 'asc');
+            .andWhere("a.numero", parametro.numeracionDocumento);
 
     query.then(function (resultado) {
         callback(false, resultado);

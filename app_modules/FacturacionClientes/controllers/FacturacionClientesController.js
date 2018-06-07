@@ -1446,21 +1446,22 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         }
         
     }).then(function(resultado){
-                 
-        if(resultado.length > 0){
-           //estaba comentado por que ya traia id_factura_xconsumo         
-           if(parametros.id_factura_xconsumo===undefined || parametros.id_factura_xconsumo===""){
-            parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
-           }
+          
+        if(resultado.length > 0 && (parametros.id_factura_xconsumo!==undefined && parametros.id_factura_xconsumo!=="")){
+            //estaba comentado por que ya traia id_factura_xconsumo  
+            //se comenta porque al crear un nuevo temporal, la consulta anterior carga el id_factura_xconsumo de la consulta          
+            //if(parametros.id_factura_xconsumo===undefined || parametros.id_factura_xconsumo===""){
+            //parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
+            //}  
             def.resolve();
         }else{
-             
+         
         return G.Q.ninvoke(that.m_facturacion_clientes,'generarTemporalFacturaConsumo',
             {documento_facturacion:documentoFacturacion,
                 consultar_tercero_contrato:consultarTerceroContrato,
                 consultar_parametros_retencion:consultarParametrosRetencion,
                 parametros:parametros
-             });
+            });
         }
              
     }).then(function(resultado){

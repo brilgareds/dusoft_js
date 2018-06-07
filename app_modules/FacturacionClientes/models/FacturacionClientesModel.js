@@ -1339,7 +1339,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
    
     query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
      console.log("--------------------------------"); 
-    // console.log(">>> ",G.sqlformatter.format(query.toString())); 
+     console.log(">>> ",G.sqlformatter.format(query.toString())); 
     
     query.then(function(resultado){          
         callback(false, resultado);
@@ -1485,7 +1485,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
                 this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
                 .andWhere("a.tercero_id", obj.terceroId)           
                 .andWhere("b.empresa_id", obj.empresaId)
-//                .andWhere("a.sw_facturacion",0)
+                .andWhere("a.sw_facturacion",0)
 //                .andWhere("b.prefijo",obj.prefijo)
 //                .andWhere("b.factura_fiscal",obj.numero)                
             }
@@ -1517,7 +1517,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
 //            }
         })
         .groupBy(camposGroupBy);
-      console.log(G.sqlformatter.format(query.toString())); 
+//      console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){    
         callback(false, resultado);
     }).catch(function(err){

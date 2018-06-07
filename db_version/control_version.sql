@@ -381,3 +381,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.60', 'Kardex', 'Se modifica la empresa por defecto para que la tome de la seccion');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.61  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.61', 'Facturacion Despachos', 'Se modifica el controlador para que genere el id del temporal');
+COMMIT TRANSACTION;

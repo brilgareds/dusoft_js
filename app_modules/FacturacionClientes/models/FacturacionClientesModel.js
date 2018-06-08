@@ -714,7 +714,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
     if(obj.procesoFacturacion === 1){
         query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)
     }
-    console.log(G.sqlformatter.format(query.toString()));
+//    console.log(G.sqlformatter.format(query.toString()));
     //inv_facturas_xconsumo_tmp_d
     query.then(function (resultado) {      
         callback(false, resultado)
@@ -968,10 +968,11 @@ FacturacionClientesModel.prototype.consultarFacturaAgrupada = function (obj,call
  */
 FacturacionClientesModel.prototype.consultarDireccionIp = function(obj, callback){
 
-    G.knex.select('*')
-    .from('pc_crea_facturacion')
-    .where("ip", obj.direccionIp)
-    .then(function (resultado) {
+    var query=G.knex.select('*')
+                .from('pc_crea_facturacion')
+                .where("ip", obj.direccionIp);
+     
+    query.then(function (resultado) {
          callback(false, resultado)
     }).catch(function (err) {
         console.log("err [consultarDireccionIp]:", err);
@@ -1042,7 +1043,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(estado,obj
     }
     
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
-    
+//     console.log("qq>>> ",G.sqlformatter.format(query.toString()));  
     if(transaccion) query.transacting(transaccion);
     query.then(function(resultado){     
         
@@ -1208,7 +1209,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
     }; 
     
     var query = G.knex(tabla).insert(parametros);     
-     
+  console.log(">>> ",G.sqlformatter.format(query.toString()));   
    if(transaccion) query.transacting(transaccion);     
     query.then(function(resultado){
         callback(false, resultado);
@@ -1284,8 +1285,10 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
  */          
 FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(obj, callback){
                                   
-                
-    var query = G.knex.select(["a.*","b.*",
+       console.log("consultarTemporalFacturaConsumo");         
+       console.log("--------------------------------");         
+       console.log("--------------------------------",obj);         
+    var query = G.knex.select(["a.empresa_id as empresa","a.*","b.*",
        G.knex.raw("case when a.tipo_pago_id=1 then 'Efectivo' \
         when a.tipo_pago_id=2 then 'Cheque'\
         when a.tipo_pago_id=3 then 'Credito' end as descripcion_tipo_pago"),
@@ -1324,13 +1327,24 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
             if(obj.tipo_id_tercero){
                 this.andWhere("a.tipo_id_tercero",obj.tipo_id_tercero)
                 .andWhere("a.tercero_id",obj.tercero_id)     
-                .andWhere("sw_facturacion",obj.sw_facturacion);
+//                .andWhere("sw_facturacion",obj.sw_facturacion)
             }
-        });     
+            
+            if(obj.idFacturaXconsumo!==undefined && obj.idFacturaXconsumo!==""){
+                this.andWhere("a.id_factura_xconsumo",obj.idFacturaXconsumo)
+            }
+            
+            
+        }).andWhere("a.empresa_id", obj.empresa_id);     
    
-    query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){          
+    query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
+     console.log("--------------------------------"); 
+    // console.log(">>> ",G.sqlformatter.format(query.toString())); 
+    
+    query.then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){
+        console.log(">>> ",G.sqlformatter.format(query.toString())); 
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
         callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
     }); 
@@ -1390,7 +1404,8 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
  * @fecha 2017-15-05 YYYY-DD-MM
  */
 FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
-   console.log("parametros ",obj);
+   console.log("/////////////////////////////////");
+   console.log("consultarDetalleTemporalFacturaConsumo ",obj);
     var campos = [
         G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
         "b.tipo_id_vendedor",
@@ -1470,8 +1485,15 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
                 this.andWhere("a.tipo_id_tercero",obj.tipoIdTercero) 
                 .andWhere("a.tercero_id", obj.terceroId)           
                 .andWhere("b.empresa_id", obj.empresaId)
-                .andWhere("a.sw_facturacion",0)
+//                .andWhere("a.sw_facturacion",0)
+//                .andWhere("b.prefijo",obj.prefijo)
+//                .andWhere("b.factura_fiscal",obj.numero)                
             }
+            
+            if(obj.idFacturaXconsumo!==undefined && obj.idFacturaXconsumo!==""){
+               this.andWhere("a.id_factura_xconsumo",obj.idFacturaXconsumo)
+             }
+                
             if(obj.estado === 5){
                 this.andWhere("a.id_factura_xconsumo",obj.id_factura_xconsumo)               
             }
@@ -1499,7 +1521,7 @@ FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = func
     query.then(function(resultado){    
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
+        console.log("err (/catch) [consultarDetalleTemporalFacturaConsumo]: ", err);     
         callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
     }); 
 };
@@ -1633,7 +1655,7 @@ FacturacionClientesModel.prototype.actualizarValorTotalTemporalFacturaConsumo = 
         .update(parametros);    
       
     query.then(function(resultado){ 
-      
+       
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [actualizarValorTotalTemporalFacturaConsumo]: ", err);        
@@ -1764,7 +1786,7 @@ FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function(obj,
         porcentaje_cree: porcentajeCree, usuario: obj.parametros.usuario, 
         tipoPago: obj.parametros.tipoPago
     };
-
+//console.log("parametroInsertarFactura ",parametroInsertarFactura);
     G.Q.ninvoke(that,'insertarFacturaConsumo',parametroInsertarFactura).then(function(resultado){         
 
         callback(false, resultado);

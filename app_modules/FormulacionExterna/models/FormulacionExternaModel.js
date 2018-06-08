@@ -32,7 +32,8 @@ FormulacionExternaModel.prototype.obtenerAfiliado = function(tipoIdentificacion,
                         .innerJoin('tipos_planes as tp', function(){
                             this.on('tp.sw_tipo_plan', 'pa.sw_tipo_plan')
                         })
-                        .where('p.tipo_id_paciente', tipoIdentificacion).andWhere("p.paciente_id","=", identificacion);
+                        .where('p.tipo_id_paciente', tipoIdentificacion).andWhere("p.paciente_id","=", identificacion).orderBy("ea.fecha_ultima_actualizacion", "desc").limit(1);
+
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);
@@ -374,7 +375,7 @@ fc_descripcion_producto_molecula
                             this.andWhere('invp.codigo_barras', 'ilike', '%' + codigo_barras + '%');
                         }
                     }).orderBy('existencia', 'desc'); 
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){   
         callback(false, resultado);
@@ -1574,7 +1575,7 @@ FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensarNoOcul
                                 .innerJoin("inventarios_productos as ip", function(){
                                     this.on("ip.codigo_producto", "dc.codigo_medicamento");
                                 })
-                                .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").andWhere("sw_ocultar", "=", "0").groupBy("ip.producto_id", "dc.codigo_medicamento").as("a");
+                                .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").groupBy("ip.producto_id", "dc.codigo_medicamento").as("a");
                         })
                         .groupBy("producto_id", "codigo_medicamento");
     //G.logError(G.sqlformatter.format(query.toString()));
@@ -1605,10 +1606,10 @@ FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensar = fun
                                 .innerJoin("esm_formula_externa_medicamentos AS fem", function(){
                                     this.on("dc.codigo_medicamento", "fem.codigo_producto").andOn("fem.formula_id", "dc.formula_id");
                                 })
-                                .innerJoin("medicamentos as med", function(){
+                                .leftJoin("medicamentos as med", function(){
                                     this.on("med.codigo_medicamento", "fem.codigo_producto")
                                 })
-                                .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").andWhere("sw_ocultar", "=", "0").groupBy("fem.fe_medicamento_id", "dc.codigo_medicamento", "fem.sw_autorizado", "med.cod_principio_activo", "dc.esm_pendiente_dispensacion_id").as("a");
+                                .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").groupBy("fem.fe_medicamento_id", "dc.codigo_medicamento", "fem.sw_autorizado", "med.cod_principio_activo", "dc.esm_pendiente_dispensacion_id").as("a");
                         })
                         .groupBy("fe_medicamento_id","codigo_medicamento", "sw_autorizado", "cod_principio_activo", "esm_pendiente_dispensacion_id");
     //G.logError(G.sqlformatter.format(query.toString()));

@@ -22,7 +22,7 @@ E017Controller.prototype.listarBodegas = function (req, res) {
                 res.send(G.utils.r(req.url, 'Error al Consultar listado de bodegas', 500, {listarBodegas: {}}));
             }).
             done();
-
+ 
 };
 
 

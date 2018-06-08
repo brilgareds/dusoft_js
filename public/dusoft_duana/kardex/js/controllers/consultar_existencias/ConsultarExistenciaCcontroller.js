@@ -13,7 +13,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 Usuario, socket, CentroUtilidad, Bodega, $timeout) {
 
             var that = this;
-            $scope.Empresa = Empresa.get("DUANA LTDA", "03");
+            var infoEmpresa=Usuario.getUsuarioActual().empresa;
+            $scope.Empresa = Empresa.get(infoEmpresa.nombre, infoEmpresa.codigo);
             $scope.EmpresasProductos = [];
             $scope.paginas = 0;
             $scope.items = 0;
@@ -200,7 +201,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             that.traerEmpresas(function() {
                 $timeout(function() {
-                    $scope.filtro.empresa_seleccion = '03';
+                    $scope.filtro.empresa_seleccion = infoEmpresa.codigo;
                      $scope.buscarProductos("");
                 });
 

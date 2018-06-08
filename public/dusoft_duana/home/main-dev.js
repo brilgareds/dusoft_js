@@ -22,7 +22,7 @@ requirejs.config({
         loader:"../includes/loader/loader",
         url:"js/constants/Url",
         socket:"../includes/socket/socket.io/socket.io",
-        socketservice:"../includes/socket/socket",        
+        socketservice:"../includes/socket/socket",
         uiselect2: "../../javascripts/select",
         //uiselect2:"../../javascripts/uiselect2",
         storage:"../../javascripts/angular/storage",
@@ -30,7 +30,10 @@ requirejs.config({
         dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone",
         fileupload:"../../javascripts/fileupload/fileupload",
         desktopNotify:"../../javascripts/notifications/desktop-notify-min",
-        webNotification:"../../javascripts/notifications/angular-web-notification"
+        webNotification:"../../javascripts/notifications/angular-web-notification",
+        d3:"../../javascripts/charts/d3.min",
+        nvd3:"../../javascripts/charts/nv.d3.min",
+        chart:"../../javascripts/charts/angularjs-nvd3-directives.min"
     },
     shim: {
         "angular": {
@@ -57,7 +60,7 @@ requirejs.config({
         },
         "treemenu":{
             deps:["tree"]
-        },        
+        },
         "select":{
             deps:["jquery"]
         },
@@ -88,6 +91,15 @@ requirejs.config({
         },
         "webNotification":{
             deps:["desktopNotify"]
+        },
+        "d3":{
+            deps:["angular"]
+        },
+        "nvd3":{
+            deps:["d3"]
+        },
+        "chart":{
+            deps:["angular","nvd3"]
         }
     }
 });

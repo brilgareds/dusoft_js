@@ -501,7 +501,8 @@ define([
 
                 var disabled = false;
 
-                if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
+                if ($scope.documento_ingreso.getEgreso() === undefined || $scope.documento_ingreso.getEgreso() === null ||
+                        $scope.cliente_seleccionado.tercero_id === undefined || $scope.cliente_seleccionado.tercero_id === null) {
                     disabled = true;
                 }
 

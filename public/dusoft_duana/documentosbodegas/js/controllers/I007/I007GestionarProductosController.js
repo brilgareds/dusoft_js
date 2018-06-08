@@ -1,12 +1,12 @@
 
 define(["angular", "js/controllers"], function (angular, controllers) {
 
-    controllers.controller('E017GestionarProductosController', [
-        '$scope', '$rootScope', 'Request', "E017Service",
+    controllers.controller('I007GestionarProductosController', [
+        '$scope', '$rootScope', 'Request', "I007Service",
         '$modal', '$modalInstance', 'API', "socket", "$timeout", "$filter", "Usuario",
-        "AlertService", "$state", 'Usuario', "ProductoDevolucion", 'Empresa', 'DocTmp',
-        function ($scope, $rootScope, Request, E017Service, $modal, $modalInstance, API, socket, $timeout, $filter, Sesion,
-                AlertService, $state, Usuario, Producto, Empresa, DocTmp) {
+        "AlertService", "$state", "ProductoI007", 'Empresa',
+        function ($scope, $rootScope, Request, I007Service, $modal, $modalInstance, API, socket, $timeout, $filter, Sesion,
+                AlertService, $state, Producto, Empresa) {
 
             var that = this;
             $scope.parametros = '';
@@ -18,7 +18,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $scope.datos_form = {
-                listado_clientes: []
+                listado_productos: []
             };
 
             $scope.onCerrar = function () {
@@ -40,7 +40,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             /**
              * @author German Galvis
-             * @fecha 03/05/2018
+             * @fecha 01/06/2018
              * +Descripcion Metodo encargado de invocar el servicio que
              *              listara los productos para trasladar
              *  @parametros ($event = eventos del teclado)
@@ -53,10 +53,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
             /*
-             * Descripcion: lista todos los productos de la farmacia 
-             * que cuenten con existencias
+             * Descripcion: lista todos los productos de la bodega
              * @author German Andres Galvis
-             * @fecha  03/05/2018
+             * @fecha  01/06/2018
              */
             that.listarProductos = function () {
 
@@ -72,14 +71,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 };
 
-                E017Service.listarProductos(obj, function (data) {
+                I007Service.listarProductos(obj, function (data) {
                     if (data.status === 200) {
                         $scope.root.cantidad_consulta = data.obj.listarProductos.length;
 
                         if ($scope.root.cantidad_consulta === 0) {
                             AlertService.mostrarMensaje("warning", "no se encontraron registros");
                         }
-
                         that.renderProductos(data.obj.listarProductos);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -91,18 +89,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             that.renderProductos = function (productos) {
                 $scope.datos_form.listado_productos = [];
                 productos.forEach(function (data) {
-                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
-                    var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
-                            data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"));
-                    producto.setNombreTipo(data.nombreTipo);
+                    var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, 0,
+                            parseFloat(data.porc_iva).toFixed(), parseFloat(data.costo).toFixed(2));
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
-
-            function sumarDias(fecha, dias) {
-                fecha.setDate(fecha.getDate() + dias);
-                return fecha;
-            }
 
             $scope.lista_productos = {
                 data: 'datos_form.listado_productos',
@@ -126,33 +117,56 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
                     },
-                    {field: 'descripcion', displayName: 'Descripcion', width: "35%", enableCellEdit: false},
-                    {field: 'existencia', displayName: 'Existencias', width: "10%", enableCellEdit: false},
+                    {field: 'descripcion', displayName: 'Descripcion', width: "40%", enableCellEdit: false},
+                    {field: 'valorU', displayName: 'VLR/U', width: "8%", enableCellEdit: false},
                     {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', width: "13%", enableCellEdit: false},
-                    {field: 'lote', displayName: 'Lote', width: "10%", enableCellEdit: false},
-                    {width: "9%", displayName: "Opcion", cellClass: "txt-center",
+                    {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', cellClass: "dropdown-button", width: "14%",
+                        cellTemplate: ' <div class="col-xs-12" cambiar-foco >\
+                                            <p class="input-group" cambiar-foco  >\
+                                                <input type="text" class="form-control grid-inline-input readonlyinput calendario"  \
+                                                    datepicker-popup="{{format}}" ng-model="row.entity.fecha_vencimiento" is-open="row.entity.datepicker_fecha_inicial" \
+                                                    min="minDate"   readonly  close-text="Cerrar" clear-text="Borrar" current-text="Hoy" show-weeks="false" toggle-weeks-text="#"/> \
+                                                <span class="input-group-btn">\
+                                                    <button class="btn btn-xs btnCalendario" style="margin-top: 3px;" ng-click="abrir_fecha_vencimiento(row.entity,$event);"><i class="glyphicon glyphicon-calendar"></i></button>\
+                                                </span>\
+                                            </p>\
+                                        </div>'},
+                    {field: 'lote', displayName: 'Lote', width: "10%", enableCellEdit: false,
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-model="row.entity.lote" class="form-control grid-inline-input" name="lote" id="lote" /> </div>'},
+                    {width: "8%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="btn_adicionar_producto(row.entity)" ng-disabled="habilitarCheck(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_adicionar_producto(row.entity)" ng-disabled="habilitarCheck(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                 ]
+            };
+
+            $scope.abrir_fecha_vencimiento = function (producto, $event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                producto.datepicker_fecha_inicial = true;
             };
 
 
             $scope.habilitarCheck = function (producto) {
                 var disabled = false;
 
-                if (producto.cantidad === undefined || producto.cantidad === "" || parseInt(producto.cantidad) <= 0) {
+                if (producto.lote === undefined || producto.lote === "") {
                     disabled = true;
                 }
-                if (parseInt(producto.cantidad) > parseInt(producto.existencia)) {
-                    AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar las existencias");
+                if (producto.fecha_vencimiento === undefined || producto.fecha_vencimiento === "") {
+                    disabled = true;
+                }
+
+                if (producto.cantidad === undefined || producto.cantidad === "" || parseInt(producto.cantidad) <= 0) {
                     disabled = true;
                 }
 
                 return disabled;
             };
+
 
             $scope.restaFechas = function (f1, f2)
             {
@@ -166,11 +180,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
 
+            /**
+             * @author German Galvis
+             * +Descripcion Metodo encargado de guardar un nuevo item en el doctmp
+             * @fecha 2018-06-06
+             */
             $scope.btn_adicionar_producto = function (fila) {
 
                 var fecha_actual = new Date();
+                var fecha_ven = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-                var diferencia = $scope.restaFechas(fecha_actual, fila.fecha_vencimiento);
+                fecha_ven = $filter('date')(new Date(fila.fecha_vencimiento), "dd/MM/yyyy");
+                var diferencia = $scope.restaFechas(fecha_actual, fecha_ven)
+
                 if (diferencia <= 0) {
                     AlertService.mostrarMensaje("warning", "No se permite trasladar productos vencidos");
                     return;
@@ -186,10 +208,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 }
             };
 
+
             /*
              * Descripcion: agrega los productos al tmp 
              * @author German Andres Galvis
-             * @fecha  04/05/2018
+             * @fecha  06/06/2018
              */
             that.guardarProductoTmp = function (producto) {
 
@@ -202,13 +225,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         codigoProducto: producto.codigo_producto,
                         cantidad: producto.cantidad,
                         lote: producto.lote,
+                        gravemen: producto.porc_iva,
+                        costo: producto.valorU,
                         fechaVencimiento: producto.fecha_vencimiento,
                         docTmpId: $scope.doc_tmp_id
                     }
                 };
-
-
-                E017Service.agregarProductoTmp(obj, function (data) {
+                I007Service.agregarProductoTmp(obj, function (data) {
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     } else {

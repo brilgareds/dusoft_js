@@ -18,7 +18,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $scope.datos_form = {
-                listado_clientes: []
+                listado_productos: []
             };
 
             $scope.onCerrar = function () {

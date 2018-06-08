@@ -51,7 +51,7 @@ define(["angular", "js/controllers",
                 $scope.root.bodegaMultiple=resultadoStorage;
                 $scope.root.bodegaMultiple.bools=resultadoStorage.multiple===1?true:false;
                 if($scope.root.bodegaMultiple.bools){                   
-                    
+                                               
                     var empresa = EmpresaPedidoFarmacia.get(
                         Usuario.getUsuarioActual().getEmpresa().nombre,
                         Usuario.getUsuarioActual().getEmpresa().codigo

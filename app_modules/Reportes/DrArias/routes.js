@@ -35,4 +35,20 @@ module.exports = function(app, di_container) {
         c_Reportes.rotacionZonasMovil(req, res);
     });
 
+    app.post('/api/Reportes/DrArias/obtenerUsuarios', function(req, res) {
+        c_Reportes.obtenerUsuarios(req, res);
+    });
+
+    app.post('/api/Reportes/DrArias/guardarUsuario', function(req, res) {
+        c_Reportes.guardarUsuario(req, res);
+    });
+
+    app.post('/api/Reportes/DrArias/obtenerUsuariosAsociados', function(req, res) {
+        c_Reportes.obtenerUsuariosAsociados(req, res);
+    });
+
+    app.post('/api/Reportes/DrArias/eliminarUsuarioAsociado', function(req, res) {
+        c_Reportes.eliminarUsuarioAsociado(req, res);
+    });
+
 };

@@ -246,6 +246,7 @@ var selectPrimerUnion = [
  * @fecha 2016-06-17
  */
 DrAriasModel.prototype.rotacion = function(obj,callback) {
+  console.log('inicia rotacion');
     var sql=" select codigo_producto, descripcion_producto as producto,farmacia as nom_bode,stock_farmacia as existencia,    \
                 periodo as mes, stock_bodega as existencia_bd,laboratorio,molecula,cantidad_total_despachada as sum,    \
                 case when  tipo_producto = 'Normales' then nivel else '' end  as nivel, \
@@ -327,15 +328,17 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
             ) as a   \
              \
 ";
-     var query = G.knex.raw(sql);
+    console.log('antes ejecutar consulta');
+    var query = G.knex.raw(sql);
     query.then(function(resultado) {
-        //G.logError(G.sqlformatter.format(query.toString()));
-  callback(false, resultado.rows);
+      //G.logError(G.sqlformatter.format(query.toString()));
+      console.log('despues de ejecutar consulta');
+      callback(false, resultado.rows);
     }). catch (function(err) {
+      //console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
       G.logError(G.sqlformatter.format(query.toString()));
-//        console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
-  console.log("Error [listarPlanes] Parametros: ", err);
-  callback(err);
+      console.log("Error [listarPlanes] Parametros: ", err);
+      callback(err);
     });
 }
 
@@ -359,6 +362,76 @@ DrAriasModel.prototype.guardarControlRotacion = function(datos, callback) {
     }). catch (function(err) {
   console.log("ERROR:::guardarControlRotacion ", err);
   callback(err);
+    }).done();
+};
+
+DrAriasModel.prototype.obtenerUsuarios = function(term, id_usuario, callback) {
+  var query = G.knex.select([G.knex.raw("usuario_id AS id_usuario"), "nombre"])
+                    .from("system_usuarios")
+                    .where("nombre", "ilike", "%" + term + "%").whereNotIn("usuario_id", G.knex.select(["id_usuario_asociado"])
+                                                        .from("usuarios_asociados_rotaciones")
+                                                        .where("id_usuario", id_usuario)).orderBy("nombre").limit(20);
+  //G.logError(G.sqlformatter.format(query.toString()));
+  query.then(function(resultado) {
+    callback(false, resultado);
+  }).catch (function(err) {
+    console.log("Error [obtenerUsuarios] err: ", err);
+    callback(err);
+  });  
+};
+
+DrAriasModel.prototype.obtenerUsuariosAsociados = function(id_usuario, callback) {
+  var query = G.knex.select([G.knex.raw("su.usuario_id AS id_usuario"), "su.nombre"])
+                    .from("usuarios_asociados_rotaciones as uas")
+                    .innerJoin("system_usuarios AS su",function(){
+                      this.on("su.usuario_id", "uas.id_usuario_asociado")
+                    })
+                    .where("uas.id_usuario", id_usuario);
+  //G.logError(G.sqlformatter.format(query.toString()));
+  query.then(function(resultado) {
+    callback(false, resultado);
+  }).catch (function(err) {
+    console.log("Error [obtenerUsuarios] err: ", err);
+    callback(err);
+  });  
+};
+
+DrAriasModel.prototype.eliminarUsuarioAsociado = function(id_usuario, id_usuario_asociado,callback) {
+  var query = G.knex('usuarios_asociados_rotaciones')
+    .where('id_usuario', id_usuario)
+    .andWhere('id_usuario_asociado', id_usuario_asociado).del();
+
+  //G.logError(G.sqlformatter.format(query.toString()));
+  query.then(function(resultado) {
+    callback(false, resultado);
+  }).catch (function(err) {
+    console.log("Error [eliminarUsuarioAsociado] err: ", err);
+    callback(err);
+  });  
+};
+
+DrAriasModel.prototype.consultarCorreoUsuario = function(ids_remitentes ,callback) {
+  var query = G.knex.select(["email"])
+    .from('system_usuarios')
+    .whereIn('usuario_id', ids_remitentes).whereNotNull('email');
+
+  //G.logError(G.sqlformatter.format(query.toString()));
+  query.then(function(resultado) {
+    callback(false, resultado);
+  }).catch (function(err) {
+    console.log("Error [consultarCorreoUsuario] err: ", err);
+    callback(err);
+  });  
+};
+
+DrAriasModel.prototype.guardarUsuario = function(id_usuario, id_usuario_asociado, callback) {
+    G.knex.insert({id_usuario: id_usuario,
+        id_usuario_asociado: id_usuario_asociado,
+    }).into("usuarios_asociados_rotaciones").then(function(rows) {
+      callback(false, rows);
+    }). catch (function(err) {
+      console.log("Error [guardarUsuario] Parametros: ", err);
+      callback(err);
     }).done();
 };
 
@@ -422,8 +495,6 @@ DrAriasModel.prototype.guardarControlCopias = function(datos, callback) {
   console.log("Error [guardarControlCopias] Parametros: ", datos, err);
   callback(err);
     }).done();
-
-
 };
 
 /**

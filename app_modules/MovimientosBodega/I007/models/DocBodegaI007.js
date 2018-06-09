@@ -351,7 +351,7 @@ DocumentoBodegaI007.prototype.eliminarItem = function (parametros, callback) {
 /**
  * @author German Galvis
  * +Descripcion agrega un registro a la tabla inv_bodegas_movimiento_prestamos
- * @fecha 24/05/2018
+ * @fecha 08/06/2018
  */
 DocumentoBodegaI007.prototype.agregarMovimientoPrestamo = function (parametros, transaccion, callback) {
     var query = G.knex("inv_bodegas_movimiento_prestamos").

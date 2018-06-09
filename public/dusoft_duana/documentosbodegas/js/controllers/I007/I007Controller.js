@@ -256,7 +256,6 @@ define([
              * @fecha 2018-06-06
              */
             that.guardarNewDocTmp = function (callback) {
-                var usuario = Usuario.getUsuarioActual();
                 var obj = {
                     session: $scope.session,
                     data: {

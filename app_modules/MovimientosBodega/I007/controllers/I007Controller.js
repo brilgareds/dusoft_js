@@ -325,7 +325,7 @@ I007Controller.prototype.consultarProductosTraslado = function (req, res) {
 /**
  * @author German Galvis
  * +Descripcion Elimina un  producto del documento temporal
- * @fecha 2018-05-24
+ * @fecha 2018-06-07
  */
 I007Controller.prototype.eliminarItem = function (req, res) {
     var that = this;

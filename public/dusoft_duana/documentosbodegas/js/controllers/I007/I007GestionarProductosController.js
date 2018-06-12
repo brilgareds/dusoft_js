@@ -118,7 +118,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Descripcion', width: "40%", enableCellEdit: false},
-                    {field: 'valorU', displayName: 'VLR/U', width: "8%", enableCellEdit: false},
+                    {field: 'valorU', displayName: 'Costo', width: "8%", enableCellEdit: false},
                     {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'fecha_vencimiento', displayName: 'Fecha. Vencimiento', cellClass: "dropdown-button", width: "14%",
@@ -186,6 +186,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
              * @fecha 2018-06-06
              */
             $scope.btn_adicionar_producto = function (fila) {
+
+                if (fila.valorU <= 0) {
+                    AlertService.mostrarMensaje("warning", "No se permite ingresar productos de costo 0");
+                    return;
+                }
 
                 var fecha_actual = new Date();
                 var fecha_ven = new Date();

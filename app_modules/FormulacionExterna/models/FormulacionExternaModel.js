@@ -918,7 +918,6 @@ function __cantidadProductoTemporal(formula_id_tmp, formula_id, codigo_producto,
     var columnas = [
         G.knex.raw("COALESCE(sum(cantidad_despachada),0) as total")
     ];
-    console.log('----------------------------------> formula_id', formula_id, 'formula_id_tmp', formula_id_tmp == null);
 
     var query = G.knex.select(columnas).from("esm_dispensacion_medicamentos_tmp").where(function(){
         if(formula_id_tmp == '' || formula_id_tmp == 'undefined' || formula_id_tmp == null){
@@ -928,7 +927,7 @@ function __cantidadProductoTemporal(formula_id_tmp, formula_id, codigo_producto,
         }
     });
 
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){            
             callback(false, resultado[0].total);

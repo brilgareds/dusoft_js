@@ -387,3 +387,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.61', 'Facturacion Despachos', 'Se modifica el controlador para que genere el id del temporal');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.62  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.62', 'Formulacion Externa', 'Se ajusta en dispensacion de pendientes, el formula_id no se enviaba para calcular la cantidad dispensada dle pendiente.');
+COMMIT TRANSACTION;

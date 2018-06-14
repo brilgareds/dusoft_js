@@ -393,3 +393,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.62', 'Formulacion Externa', 'Se ajusta en dispensacion de pendientes, el formula_id no se enviaba para calcular la cantidad dispensada dle pendiente.');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.63  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.63', 'Formulacion Externa', 'Se ajusta en dispensacion de pendientes, validacion en formula_id y formula_id_tmp al momento de buscar los medicamentos en temporal');
+COMMIT TRANSACTION;

@@ -286,7 +286,16 @@ FormulacionExterna.prototype.insertarDispensacionMedicamentoTmp = function(req, 
     var args = req.body.data;
 
     var usuario_id = req.session.user.usuario_id;
-    G.Q.ninvoke(that.m_formulacionExterna,'verificarLoteEstaInsertado', args.formula_id_tmp, args.codigo_producto, args.fecha_vencimiento, args.lote).then(function(resultado){
+
+
+    var formula_id;
+    if(args.formula_id_tmp == '' || args.formula_id_tmp == 'undefined' || args.formula_id_tmp == null){
+        formula_id = args.formula_id;
+    }else{
+        formula_id = args.formula_id_tmp;
+    }
+
+    G.Q.ninvoke(that.m_formulacionExterna,'verificarLoteEstaInsertado', formula_id, args.codigo_producto, args.fecha_vencimiento, args.lote).then(function(resultado){
         if(resultado.length > 0){
             throw 'El lote ya se encuentra registrado en temporal';
         }else{

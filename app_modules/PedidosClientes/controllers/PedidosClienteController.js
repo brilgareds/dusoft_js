@@ -1216,10 +1216,34 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
         return;
     }
+    var parametros = {
+        cotizacion :cotizacion,
+        bodegaActual : args.pedidos_clientes.bodega,
+        bodegaDestino : args.pedidos_clientes.bodega,
+        that :that,
+        clienteMultiple : args.pedidos_clientes.clienteMultiple
+    };
+    
 
     G.Q.nfcall(that.m_pedidos_clientes.actualizarCabeceraCotizacion, cotizacion).then(function (rows) {
+         
+      return parametros.clienteMultiple===1?true:false;
+        
+    }).then(function (resultado) {   
+        
+        if(resultado){
+            
+         return G.Q.nfcall(__insertarCabeceraDetalleBodegasMultiple,parametros);
+         
+        }else{
+            
+          return false; 
+          
+        }
+        
+    }).then(function (resultado) {   
 
-        res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {pedidos_clientes: rows}));
+        res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {pedidos_clientes: ''}));
 
     }).fail(function (err) {
 
@@ -1228,6 +1252,144 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
     }).done();
 
 };
+
+function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
+    
+    G.Q.ninvoke(parametros.that.m_pedidos_clientes,"consultar_detalle_cotizacion", parametros.cotizacion,"").then(function (rows) {
+   
+        return G.Q.nfcall(__agruparProductosPorBodega,rows[0]);
+     
+    }).then(function (resultado) { 
+         
+          return G.Q.nfcall(__insertarCabeceraClientesCotizacion,resultado,parametros,0);
+ 
+        
+    }).then(function (resultado) {    
+        
+        callback(false);
+        
+    }).fail(function (err) {
+//console.log("Error __insertarCabeceraDetalleBodegasMultiple",err);
+   callback(err);     
+
+    }).done();
+    
+}
+
+function __agruparProductosPorBodega(data,callback){
+   var agrupacion=[];
+   
+   data.forEach(function(item){
+       
+       if(Array.isArray(agrupacion[item.bodega_origen_producto])){           
+           agrupacion[item.bodega_origen_producto].push(item);
+       }else{
+           agrupacion[item.bodega_origen_producto]=[];
+           agrupacion[item.bodega_origen_producto].push(item);
+       }
+       
+   });
+    callback(false,agrupacion);    
+}
+
+function __insertarCabeceraClientesCotizacion(datos,parametros,index,callback){
+ 
+  
+ if(!Object.keys(datos)[index]){
+   callback(false);   
+ }
+
+   var cabecera={ bodega : Object.keys(datos)[index], numero_cotizacion : datos[Object.keys(datos)[index]][0].numero_cotizacion};
+   var empresa=datos[Object.keys(datos)[index]][0].empresa_origen_producto;
+   var centro_utilidad=datos[Object.keys(datos)[index]][0].centro_utilidad_origen_producto;
+   var bodega=datos[Object.keys(datos)[index]][0].bodega_origen_producto;
+   var productos=datos[Object.keys(datos)[index]];
+   index++;
+   
+ if(parametros.bodegaActual !== cabecera.bodega){
+
+    G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_encabezado_pedido_cliente", cabecera).then(function (rows) {
+   
+         parametros.bodega=cabecera.bodega;
+         parametros.numeroPedido=rows.rows[0].numero_pedido;
+         parametros.numeroPedidoorigen=cabecera.numero_cotizacion;
+
+         return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_detalle_pedido_cliente",parametros);
+        
+    }).then(function (resultado) {  
+        
+        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",parametros);
+        
+    }).then(function (resultado) {  
+      
+        return G.Q.nfcall(__totalizarPedido,productos,0,0);
+        
+    }).then(function (resultado) { 
+       
+       var  cotizacion=  {numero_cotizacion:parametros.numeroPedido, total:resultado,empresa_id:empresa,centro_utilidad_id:centro_utilidad,bodega_id:bodega};
+    
+       return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"generar_pedido_cliente",cotizacion);
+        
+    }).then(function (resultado) {
+        
+        __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
+       
+    }).fail(function (err) {
+
+     callback(err);  
+
+    }).done();
+    
+    }else{ 
+        
+     __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
+    
+    }
+}
+
+
+function __totalizarPedido(productos,index,total,callback){
+    var producto=productos[index];
+    if(!producto){
+        callback(false,total);
+    }
+    total+=parseFloat(producto.total);
+    index++;
+    __totalizarPedido(productos,index,total,callback);        
+}
+
+PedidosCliente.prototype.consultarPedidoMultipleCliente = function (req, res) {
+     var that = this;
+     var args = req.body.data;
+     parametros= {cotizacion:args.cotizacion};
+     
+    G.Q.nfcall(that.m_pedidos_clientes.consultarPedidoMultipleCliente,parametros ).then(function (rows) {
+
+        res.send(G.utils.r(req.url, 'Consulta correcta', 200, {consultarPedidoMultipleCliente: rows}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, "Se ha generado un error", 500, {consultarPedidoMultipleCliente: err}));
+    }).done();
+     
+}
+
+PedidosCliente.prototype.actualizarBodegaCotizacionClientesMultiples = function (req, res) {
+     var that = this;
+     var args = req.body.data;
+     parametros= {cotizacion:args.cotizacion,bodega:args.bodega};
+     
+    G.Q.nfcall(that.m_pedidos_clientes.actualizarBodegaCotizacionClientesMultiples,parametros ).then(function (rows) {
+
+        res.send(G.utils.r(req.url, 'Consulta correcta', 200, {actualizarBodegaCotizacionClientesMultiples: rows}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, "Se ha generado un error", 500, {actualizarBodegaCotizacionClientesMultiples: err}));
+    }).done();
+     
+}
+
 
 /*
  * Author : Eduar Garcia
@@ -1311,14 +1473,16 @@ PedidosCliente.prototype.listarCotizaciones = function (req, res) {
     var pagina_actual = args.pedidos_clientes.pagina_actual;
 
     var estadoCotizacion = args.pedidos_clientes.estado_cotizacion;
-
+    var bodega=args.pedidos_clientes.bodega.codigo;
+console.log("req.session",req.session);
+console.log("args.pedidos_clientes",args.pedidos_clientes.bodega.codigo);
     that.m_pedidos_clientes.listar_cotizaciones(empresa_id,
             fecha_inicial,
             fecha_final,
             termino_busqueda,
             pagina_actual,
             estadoCotizacion,
-            filtros, function (err, lista_cotizaciones) {
+            filtros,bodega, function (err, lista_cotizaciones) {
 
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));

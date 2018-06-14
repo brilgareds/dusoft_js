@@ -585,7 +585,7 @@ define(["angular", "js/controllers",
             };
            
             
-            $scope.generarDocumento = function(documento) {
+            $scope.generarDocumento = function(documento) { 
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {

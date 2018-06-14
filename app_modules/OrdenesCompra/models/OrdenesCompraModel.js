@@ -124,6 +124,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(obj, callback) {
 
     /*callback(true, query.toSQL());
     return;*/
+ console.log(G.sqlformatter.format(queryPrincipal.toString()));
     queryPrincipal.then(function(rows){
         callback(false, rows);
     }).

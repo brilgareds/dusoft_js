@@ -116,7 +116,7 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-
+                 
                 //valida si la cantidad solicitada del producto en la cotizacion es mayor que 0
                 if(obj.data.pedidos_clientes.cotizacion.productos[0].cantidad_solicitada > 0){
 
@@ -187,7 +187,7 @@ define(["angular", "js/controllers",
             // Insertar Productos al pedido
             that.insertar_detalle_pedido = function(callback) {
                 
-                
+              
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());

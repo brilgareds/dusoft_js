@@ -246,5 +246,21 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.actualizarEstadoPedido(req, res);
     });
     
+    
+    /**
+     *@author Andres Gonzalez
+     * +Descripcion: Servicio encargado de consultar los pedidos clientes que se hacen desde otra bodega
+    */
+    app.post('/api/PedidosClientes/consultarPedidoMultipleCliente', function(req, res) {
+        c_pedidos_clientes.consultarPedidoMultipleCliente(req, res);
+    });
+    /**
+     *@author Andres Gonzalez
+     * +Descripcion: Servicio encargado de actualizar la bodega para que quede con el id de la bodega que genera la cotizacion inicial
+    */
+    app.post('/api/PedidosClientes/actualizarBodegaCotizacionClientesMultiples', function(req, res) {
+        c_pedidos_clientes.actualizarBodegaCotizacionClientesMultiples(req, res);
+    });
+    
      
 };

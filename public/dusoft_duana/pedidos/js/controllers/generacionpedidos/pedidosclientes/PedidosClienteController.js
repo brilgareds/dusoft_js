@@ -46,6 +46,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 usuario: Sesion.getUsuarioActual()
             };
             $scope.notificacionPedidoAutorizar = 0;
+            $scope.validarCotizacionClienteMultiple = 0;
 
             that.consultarEstadoPedidoCotizacion = function (tipo, numero) {
 
@@ -1224,7 +1225,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     var parametros = {busqueda: cotizacion.numero_cotizacion,
                         pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
                     };
-                    localStorageService.add("terminoBusqueda", parametros);
+                    localStorageService.add("terminoBusqueda", parametros);                 
                 }
 
                 /*var pedido = localStorageService.get("pedido");
@@ -1321,6 +1322,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @returns {undefined}
              */
             that.actualizarCabeceraPedidoCliente = function () {
+               var crearCotizacionDoble=0;                
+               var arreglo=Sesion.getUsuarioActual().getModuloActual().variables.Clientesfarmaciacosmitet.split(",");
+               
+               arreglo.forEach(function(data){                   
+                   if(data === $scope.Pedido.cliente.tipo_id_tercero+'-'+$scope.Pedido.cliente.id){
+                      crearCotizacionDoble=1;
+                   }
+               });
+                
+                 console.log("crearCotizacionDoble",crearCotizacionDoble);
+  
 
                 var obj = {};
                 var url = '';
@@ -1332,11 +1344,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         session: $scope.session,
                         data: {
                             pedidos_clientes: {
-                                cotizacion: $scope.Pedido
+                                cotizacion: $scope.Pedido,
+                                bodega : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                                clienteMultiple:crearCotizacionDoble
                             }
                         }
                     };
                 }
+               
                 Request.realizarRequest(url, "POST", obj, function (data) {
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("success", data.msj);
@@ -1773,8 +1788,8 @@ console.log(data.obj.pedidos_clientes.producto.length);
                     that.consultarDetalleProductosCotizacion('1',bodegaCotizacion,function (estado, resultado) {
                         
                         if ($scope.Pedido.observacion_cartera.length > 0) {
-                            if (estado && resultado[0].estado_multiple_pedido === "1") {
-                                
+                            if (estado && resultado[0].estado_multiple_pedido === "1" && $scope.validarCotizacionClienteMultiple.lenght <=0 ) {
+                               
                                 that.generarPedidoModuloCliente(2,resultado,aprobado, denegar);
                                
                             }else{
@@ -1855,7 +1870,7 @@ console.log(data.obj.pedidos_clientes.producto.length);
                 var cotizacion = localStorageService.get("cotizacion");
 
                 if (cotizacion) {
-
+                   that.verificarPedidoCliente();
                     var parametros = {busqueda: cotizacion.numero_cotizacion,
                         pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
                     };
@@ -1876,6 +1891,29 @@ console.log(data.obj.pedidos_clientes.producto.length);
                 $scope.ocultarOpciones = 0;
 
             };
+            /*
+             * verifica si se creo un pedido cliente apartir de una cotizacion de otra bodega 
+             */
+            that.verificarPedidoCliente=function(){
+                
+                url = API.PEDIDOS.CLIENTES.CONSULTAR_PEDIDO_MULTIPLE_CLIENTE;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                                cotizacion: $scope.Pedido.get_numero_cotizacion()                           
+                        }
+                    };
+                    
+                    Request.realizarRequest(url, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        $scope.validarCotizacionClienteMultiple=data.obj.consultarPedidoMultipleCliente;
+                         console.log("okkkk",data.obj.consultarPedidoMultipleCliente);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            }
 
             /**
              * @author Cristian Manuel Ardila Troches
@@ -1894,13 +1932,32 @@ console.log(data.obj.pedidos_clientes.producto.length);
 
                 that.validarDisponibleProductosCotizacion(1, productos, function (estado) {
 
-                    if (estado) {
+                    if (estado) { 
+                        that.actualizarBodegaCotizacionClientesMultiple();
                         that.generarObservacionCartera(aprobado);
                     }
                 });
 
             };
-
+            
+            that.actualizarBodegaCotizacionClientesMultiple = function () {
+                var url = API.PEDIDOS.CLIENTES.ACTUALIZAR_BODEGA_COTIZACION_CLIENTES_MULTIPLE;
+                var obj = {
+                        session: $scope.session,
+                        data: {                           
+                                cotizacion: $scope.Pedido.get_numero_cotizacion(),
+                                bodega: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                            }
+                    };
+                Request.realizarRequest(url, "POST", obj, function (data) {
+                  if (data.status === 200) {
+                       console.log("data >>>> ",data);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+            
             that.generarObservacionCartera = function (aprobado) {
 
                 var obj = {};

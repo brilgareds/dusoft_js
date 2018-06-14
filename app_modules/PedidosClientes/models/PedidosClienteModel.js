@@ -433,7 +433,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");
     
     queryPrincipal.then(function(rows) {
-console.log(G.sqlformatter.format(queryPrincipal.toString()));
+//console.log(G.sqlformatter.format(queryPrincipal.toString()));
         callback(false, rows);
     }). catch (function(err) {
         console.log("err [listar_pedidos_clientes]: ", err);
@@ -584,6 +584,9 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
         "c.vendedor_id as idetificacion_vendedor",
         "c.nombre as nombre_vendedor",
         "a.estado",
+        "a.centro_destino",
+        "a.bodega_destino",
+        "a.empresa_id",
         G.knex.raw("case when a.estado = '0' then 'Inactivo '\
              when a.estado = '1' then 'Activo'\
              when a.estado = '2' then 'Anulado'\
@@ -814,6 +817,7 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
 
 PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {
 
+console.log("QUERY");
     var columnas = [
         "a.empresa_id as empresa_destino",
         "a.centro_destino",
@@ -1704,6 +1708,158 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 
 };
 
+PedidosClienteModel.prototype.insertar_encabezado_pedido_cliente = function(cotizacion,callback) {
+
+
+    var sql = " INSERT INTO ventas_ordenes_pedidos_tmp(\
+                empresa_id,\
+                tipo_id_tercero,\
+                tercero_id,\
+                fecha_registro,\
+                usuario_id,\
+                fecha_envio,\
+                tipo_id_vendedor,\
+                vendedor_id,\
+                estado,\
+                observaciones,\
+                tipo_producto,\
+                centro_utilidad_id,\
+                bodega_id,\
+                observacion_cartera,\
+                sw_aprobado_cartera,\
+                centro_destino,\
+                bodega_destino,\
+                estado_multiple_pedido\
+                    ) (\
+                  select\
+                    empresa_id,\
+                    tipo_id_tercero,\
+                    tercero_id,\
+                    fecha_registro,\
+                    usuario_id,\
+                    fecha_envio,\
+                    tipo_id_vendedor,\
+                    vendedor_id,\
+                    '5' as estado,\
+                    observaciones,\
+                    tipo_producto,\
+                    centro_utilidad_id,\
+                    '"+cotizacion.bodega+"' as bodega_id,\
+                    'Aprobado automatico' as observacion_cartera,\
+                    '1' as sw_aprobado_cartera,\
+                    centro_destino,\
+                    '"+cotizacion.bodega+"' as bodega_destino,\
+                    estado_multiple_pedido\
+                  from ventas_ordenes_pedidos_tmp\
+                  where pedido_cliente_id_tmp = :1\
+                ) returning pedido_cliente_id_tmp as numero_pedido ";
+
+
+    var query = G.knex.raw(sql, {1: cotizacion.numero_cotizacion});
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        callback(err);
+    });
+
+
+};
+
+
+PedidosClienteModel.prototype.insertar_detalle_pedido_cliente = function(cotizacion,callback) {
+
+    var parametros = {1: cotizacion.numeroPedidoorigen,2:cotizacion.bodega};
+    var sql = " INSERT INTO ventas_ordenes_pedidos_d_tmp(\
+                    pedido_cliente_id_tmp, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    fecha_registro, \
+                    usuario_id, \
+                    empresa_origen_producto, \
+                    centro_utilidad_origen_producto, \
+                    bodega_origen_producto, \
+                    pedido_farmacia, \
+                    nombre_bodega\
+                )(\
+                    SELECT \
+                    '"+cotizacion.numeroPedido+"' as pedido_cliente_id_tmp, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    fecha_registro, \
+                    usuario_id, \
+                    empresa_origen_producto, \
+                    centro_utilidad_origen_producto, \
+                    '"+cotizacion.bodega+"' as bodega_origen_producto, \
+                    pedido_farmacia, \
+                    nombre_bodega\
+                    FROM ventas_ordenes_pedidos_d_tmp \
+                    WHERE pedido_cliente_id_tmp = :1 \
+                    AND bodega_origen_producto = :2 \
+                ) ;";                            
+   
+    var query = G.knex.raw(sql, parametros);
+
+    query.then(function(resultado) {
+
+        callback(false, resultado);
+    }). catch (function(err) {
+console.log("ERROR",err);
+        callback(err);
+    });
+
+};
+
+PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_clientes = function(obj,callback){
+ 
+    var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
+        .insert(
+        {
+        id_orden_pedido_origen: obj.numeroPedidoorigen,
+        id_orden_pedido_destino: obj.numeroPedido
+        }
+            );
+           
+        query.then(function(resultado){    
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [insertarDespachoMedicamentosPendientes]: ", err);
+            callback({err:err, msj: "Error al generar el despacho de los medicamentos pendientes"});   
+        });  
+};
+
+PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function(obj,callback){
+ 
+    var query =  G.knex('ventas_ordenes_pedido_multiple_clientes').where({
+                    id_orden_pedido_origen: obj.cotizacion
+                  }).select(['id_orden_pedido_origen','id_orden_pedido_destino']);
+           
+        query.then(function(resultado){    
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [consultarPedidoMultipleCliente]: ", err);
+            callback({err:err, msj: "Error al generar el la consulta Pedido Multiple Cliente"});   
+        });  
+};
+
+PedidosClienteModel.prototype.actualizarBodegaCotizacionClientesMultiples = function(obj,callback){
+ 
+    var query =  G.knex('ventas_ordenes_pedidos_d_tmp').where({
+                    pedido_cliente_id_tmp: obj.cotizacion
+                  }).update({bodega_origen_producto:obj.bodega});
+
+        query.then(function(resultado){    
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [consultarPedidoMultipleCliente]: ", err);
+            callback({err:err, msj: "Error al generar el la consulta Pedido Multiple Cliente"});   
+        });  
+};
+
 
 /*
  * @author : Cristian Ardila
@@ -1789,11 +1945,11 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
  * Modificacion: Se migra a KNEX.js
  * @fecha: 04/12/2015 5:24 pm
  */
-PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina, estadoCotizacion, filtros, callback) {
+PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina, estadoCotizacion, filtros,bodega, callback) {
 
     var filtroCotizacion = "";
     var filtroEstadoCotizacion = "";
-    var parametros = {1: empresa_id, 2: fecha_inicial, 3: fecha_final};
+    var parametros = {1: empresa_id, 2: fecha_inicial, 3: fecha_final,4:bodega};
 
     /**
      * +Descripcion Se valida si se envia el estado de cotizacion=6 cuando se
@@ -1865,7 +2021,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      inner join tipo_dptos d on c.tipo_pais_id = d.tipo_pais_id and c.tipo_dpto_id = d.tipo_dpto_id\
      inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
      inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
-     where a.empresa_id= :1 and a.fecha_registro between :2 and :3 \
+     where a.empresa_id= :1 and a.bodega_id = :4 and a.fecha_registro between :2 and :3 \
      " + filtroCotizacion + " " + filtroEstadoCotizacion;
 
 
@@ -1893,9 +2049,11 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
        this.on("a.tipo_id_tercero", "j.tipo_id_tercero").
        on("a.tercero_id", "j.tercero_id").on("a.empresa_id", "j.empresa_id").
        on(G.knex.raw("j.estado = '1'"));
-    }).//where("j.empresa_id", empresa_id).
+    });//where("j.empresa_id", empresa_id).
     //where("j.estado", "1").
-    then(function(resultado) {
+    queryPrincipal.then(function(resultado) {
+        
+// console.log(G.sqlformatter.format("AAAAAA",queryPrincipal.toString()));
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [listar_cotizaciones]: ", err);
@@ -2410,6 +2568,7 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
     }). catch (function(err) {
 
         callback(err);
+        
     }).done();
 
 };

@@ -81,7 +81,9 @@ define(["angular"], function(angular) {
  
                     'ACTUALIZAR_PRODUCTO_COTIZACION_COSMITET': BASE_URL +'/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet',
                     'CONSULTAR_ESTADO_AUTORIZACION': BASE_URL +'/PedidosClientes/consultarEstadoAutorizacion',
-                    'ACTUALIZAR_ESTADO_PEDIDO': BASE_URL +'/PedidosClientes/actualizarEstadoPedido'
+                    'ACTUALIZAR_ESTADO_PEDIDO': BASE_URL +'/PedidosClientes/actualizarEstadoPedido',
+                    'CONSULTAR_PEDIDO_MULTIPLE_CLIENTE': BASE_URL +'/PedidosClientes/consultarPedidoMultipleCliente',
+                    'ACTUALIZAR_BODEGA_COTIZACION_CLIENTES_MULTIPLE': BASE_URL +'/PedidosClientes/actualizarBodegaCotizacionClientesMultiples'
                     
                 },
                 FARMACIAS :{

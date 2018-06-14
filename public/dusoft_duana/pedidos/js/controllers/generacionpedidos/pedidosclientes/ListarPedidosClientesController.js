@@ -34,7 +34,7 @@ define(["angular", "js/controllers",
             var that = this;
 
             // Definicion Variables de Sesion
-            $scope.session = {
+            $scope.session = { 
                 usuario_id: Sesion.getUsuarioActual().getId(),
                 auth_token: Sesion.getUsuarioActual().getToken()
             };
@@ -413,7 +413,8 @@ define(["angular", "js/controllers",
                             termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones===undefined?'':$scope.datos_view.termino_busqueda_cotizaciones,
                             pagina_actual: $scope.datos_view.pagina_actual_cotizaciones,
                             estado_cotizacion: estado,
-                            filtro: $scope.datos_view.filtro
+                            filtro: $scope.datos_view.filtro,
+                            bodega:Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega
                         }
                     }
                 };
@@ -1286,7 +1287,7 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-                localStorageService.remove("multiple_pedido");
+                //localStorageService.remove("multiple_pedido"); se comenta para que funcione pedidos multiples
                 socket.remove(['onListarEstadoCotizacion','onListarPedidosClientes','onListarEstadoPedido']);  
                                      
             });

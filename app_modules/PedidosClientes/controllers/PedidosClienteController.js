@@ -556,15 +556,9 @@ PedidosCliente.prototype.__listarProductosClientes = function (args, callback) {
 
     var that = this;
 
-    var empresa_id = (args.pedidos_clientes.empresa_id === undefined)
-            ? args.pedidos_clientes.cotizacion.empresa_id
-            : args.pedidos_clientes.empresa_id;
-    var centro_utilidad = (args.pedidos_clientes.centro_utilidad_id === undefined)
-            ? args.pedidos_clientes.cotizacion.centro_utilidad_id
-            : args.pedidos_clientes.centro_utilidad_id;
-    var bodega = (args.pedidos_clientes.bodega_id === undefined)
-            ? args.pedidos_clientes.cotizacion.bodega_id
-            : args.pedidos_clientes.bodega_id;
+    var empresa_id = (args.pedidos_clientes.empresa_id === undefined) ? args.pedidos_clientes.cotizacion.empresa_id : args.pedidos_clientes.empresa_id;
+    var centro_utilidad = (args.pedidos_clientes.centro_utilidad_id === undefined) ? args.pedidos_clientes.cotizacion.centro_utilidad_id : args.pedidos_clientes.centro_utilidad_id;
+    var bodega = (args.pedidos_clientes.bodega_id === undefined) ? args.pedidos_clientes.cotizacion.bodega_id : args.pedidos_clientes.bodega_id;
     var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
     var estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
 
@@ -591,7 +585,8 @@ PedidosCliente.prototype.__listarProductosClientes = function (args, callback) {
     var pagina = args.pedidos_clientes.pagina_actual;
 
 
-    var parametros = {estadoMultiplePedido: estadoMultiplePedido,
+    var parametros = {
+        estadoMultiplePedido: estadoMultiplePedido,
         empresa_id: empresa_id,
         centro_utilidad: centro_utilidad,
         bodega: bodega,
@@ -603,59 +598,64 @@ PedidosCliente.prototype.__listarProductosClientes = function (args, callback) {
     };
 
     var objBodegaPedido = {sw_modulo: '1'};
-  
-    G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos", objBodegaPedido).then(function (bodegasPedidos) {
+    var tmp = {};
 
-
-        if (estadoMultiplePedido === 0) {
-
+    G.Q.ninvoke(that.m_pedidos_clientes, "generadoEnCosmitet", filtro.numero_cotizacion).then(function(response){
+        //console.log('response', response);
+        if(response.length > 0){
+            tmp.generadoEnOtraBodega = true;
+        } else {
+            tmp.generadoEnOtraBodega = false;
+        }
+        return G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos", objBodegaPedido);
+    }).then(function (bodegasPedidos) {
+        //console.log('generado en otra Bodega', tmp.generadoEnOtraBodega);
+        if (estadoMultiplePedido === 0 ) {
             bodegasPedidos = [];
-            bodegasPedidos [0] = {empresa_id: empresa_id,
+            bodegasPedidos [0] = {
+                empresa_id: empresa_id,
                 centro_utilidad_id: centro_utilidad,
                 bodega_id: bodega,
-                orden: 1}
-
+                orden: 1
+            };
         }
-        if (bodegasPedidos.length === 0) {
 
+        if(tmp.generadoEnOtraBodega){
+            bodegasPedidos = [];
+            bodegasPedidos [0] = {
+                empresa_id: empresa_id,
+                centro_utilidad_id: centro_utilidad,
+                bodega_id: bodega,
+                orden: 1
+            };
+        }
+
+        //console.log('bodegas_pedidos', bodegasPedidos);
+        if (bodegasPedidos.length === 0) {
             throw {msj: 'No hay bodegas parametrizadas', status: 401, pedidos_clientes: {}};
         }
 
-        return G.Q.nfcall(__bodegasPedidos, that, 0, bodegasPedidos, [], empresa_id,
-                centro_utilidad,
-                bodega,
-                contrato_cliente,
-                filtro,
-                pagina,
-                filtros, filtroAvanzado);
-
-
+        return G.Q.nfcall(__bodegasPedidos, that, 0, bodegasPedidos, [], empresa_id, centro_utilidad, bodega, contrato_cliente, filtro, pagina, filtros, filtroAvanzado);
     }).then(function (productos) {
 
         return G.Q.nfcall(__productosBodegas, that, 0, productos, []);
-
-
     }).then(function (productos) {
 
         if (productos.length > 0) {
-
             callback(false, {status: 200, msj: 'Lista de productos', data: {productos: productos.sort(dynamicSort("bodega"))}});
-
         } else {
             throw {msj: 'El producto no existe', status: 401, pedidos_clientes: {}};
         }
-
     }).fail(function (err) {
         var msj = "Erro Interno";
         var status = 500;
-
+        console.log('el error', err);
         if (err.status) {
             msj = err.msj;
             status = err.status;
         }
 
         callback(err, {status: status, msj: msj, data: {productos: {}}});
-
     }).done();
 
 };

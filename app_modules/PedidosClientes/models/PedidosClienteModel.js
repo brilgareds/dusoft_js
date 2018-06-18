@@ -2211,7 +2211,7 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
 };
 
 
-
+//left join ventas_ordenes_pedido_multiple_clientes vopmc ON a.pedido_cliente_id_tmp = vopmc.id_orden_pedido_origen\
 
 /*
  * Author : Camilo Orozco
@@ -2321,6 +2321,24 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
     });
 
 };
+
+PedidosClienteModel.prototype.generadoEnCosmitet = function(numero_cotizacion, callback)
+{
+    console.log('el numero de cotizacion', numero_cotizacion);
+    var query = G.knex.select('id_orden_cotizacion_origen')
+            .from('ventas_ordenes_pedido_multiple_clientes')
+            .where('id_orden_cotizacion_origen', numero_cotizacion);
+
+    //G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(rows) {
+        callback(false, rows);
+    }). catch (function(error) {
+        console.log("err [solicitarAutorizacion]: ", error);
+        callback(error);
+    });
+
+};
+
 
 /*
  * @author : Cristian Ardila

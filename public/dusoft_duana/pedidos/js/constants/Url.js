@@ -193,6 +193,11 @@ define(["angular"], function(angular) {
             'DOCUMENTOS_DESPACHO': {
                 'IMPRIMIR_DOCUMENTO_DESPACHO': BASE_URL + "/movBodegas/E008/imprimirDocumentoDespacho",
                 'SINCRONIZAR_DOCUMENTO' : BASE_URL + '/movBodegas/E008/sincronizarDocumentoDespacho'
+            },
+            'I002': {
+                'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/I002/newDocTemporal',
+                'ADD_ITEM_DOC_TEMPORAL': BASE_URL + '/movBodegas/addItemDocTemporal',
+                'EXEC_CREAR_DOCUMENTOS': BASE_URL + '/movBodegas/I002/execCrearDocumento',
             }
         },
         'STATIC': {

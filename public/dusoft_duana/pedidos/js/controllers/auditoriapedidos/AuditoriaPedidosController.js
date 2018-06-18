@@ -736,6 +736,121 @@ define(["angular", "js/controllers",
                 });
 
             };
+            
+            console.log(">>>>>>>>>>",$scope.productosAuditados);
+            
+            socket.on("onNotificarGenerarI002", function(datos){
+                
+//                console.log("onNotificarGenerarI002",datos);
+//                console.log("onNotificarGenerarI002",datos.parametros.data);
+                if(datos.parametros.status){
+                     console.log("QQQQQQQQ1111",datos.parametros.data.numero_orden);//numero_orden
+//                     console.log("QQQQQQQQ2222",datos.parametros.data.parametros);
+                     that.generarIngresoI002(datos.parametros.data,function(asd){
+                         console.log("asd",asd);
+                     });
+                }
+                 
+            });
+            
+            that.generarIngresoI002=function(data,callback){
+                console.log("generarIngresoI0020000 ",data);
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        orden_pedido_id: data.numero_orden,
+                        bodegas_doc_id : '81',
+                        observacion:  data.parametros.encabezado.observacion
+                    }
+                };
+
+                Request.realizarRequest(API.I002.CREAR_NEW_DOCUMENTO_TEMPORAL, "POST", obj, function(datas) {
+                    if (datas.status === 200) {
+                       // AlertService.mostrarMensaje("warning", data.msj);
+                        console.log("data.obj.movimiento_temporal_id ",datas.obj.movimiento_temporal_id);
+                        $scope.doc_tmp_id=datas.obj.movimiento_temporal_id;
+                        generarIngresoDetalleI002(data,0,function(){
+                            console.log("Andres");
+                          //  that.ejecutarDocumento(data.numero_orden);
+                            callback(true);
+                        });
+                    }
+                    if (datas.status === 500) {
+                        AlertService.mostrarMensaje("warning", datas.msj);
+                    }
+                    if (datas.status === 404) {
+                        AlertService.mostrarMensaje("warning", datas.msj);
+                    }
+                });                
+            };
+            
+              function generarIngresoDetalleI002(data,index,callback){
+//                console.log("______________________index: ",index);
+               if(data.productos[index] === undefined){
+                   callback(false);
+                   return;
+               }
+                var productos = data.productos[index];
+//                console.log(index+"generarIngresoDetalleI002111 ",data);
+//                console.log(index+"generarIngresoDetalleI002222 ",data.productos);
+//                console.log(index+"generarIngresoDetalleI002333 ",data.productos[index]); 
+//              
+                     var movimientos_bodegas = {
+                        doc_tmp_id: $scope.doc_tmp_id,
+                        bodegas_doc_id: '81',
+                        codigo_producto: productos.codigo_producto,
+                        cantidad: productos.numero_unidades,
+                        porcentaje_gravamen: productos.porc_iva,
+                        total_costo: productos.valor*productos.numero_unidades,
+                        fecha_vencimiento: productos.fecha_vencimiento_temp,
+                        lote: productos.lote_temp,
+                        localizacion: 'NA',
+                        total_costo_ped: '0',
+                        valor_unitario: '0',
+                        usuario_id: $scope.session.usuario_id,
+                        item_id_compras: productos.item_id
+                     }; 
+//                console.log("movimientos_bodegas",movimientos_bodegas);
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        movimientos_bodegas: movimientos_bodegas
+                    }
+                };
+                
+                Request.realizarRequest(API.I002.ADD_ITEM_DOC_TEMPORAL, "POST", obj, function(datos) {
+                    index++;
+                    generarIngresoDetalleI002(data,index,callback);
+                 });               
+            };
+            
+            that.ejecutarDocumento = function(orden){
+                
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        movimientos_bodegas: {
+                            orden_pedido_id: orden,
+                            doc_tmp_id: $scope.doc_tmp_id,
+                            usuario_id: $scope.session.usuario_id
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
+                   if (data.status === 200) {
+		
+			var nombre = data.obj.nomb_pdf;
+			setTimeout(function() {
+			    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+			}, 4000);
+                    }
+		    
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);2
+                    }
+                 }); 
+            };            
             /**
              * +Descripcion: metodo que se emite al auditar un producto prosiguiendo
              * a consultar los productos auditados

@@ -1269,7 +1269,7 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
         callback(false);
         
     }).fail(function (err) {
-//console.log("Error __insertarCabeceraDetalleBodegasMultiple",err);
+
    callback(err);     
 
     }).done();
@@ -1332,6 +1332,12 @@ function __insertarCabeceraClientesCotizacion(datos,parametros,index,callback){
         
     }).then(function (resultado) {
         
+        var obj = {cotizacion: cabecera.numero_cotizacion, numero_pedido : resultado.numero_pedido};
+        
+        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"actualizarPedidoMultipleCliente",obj);
+        
+    }).then(function (resultado) {
+      
         __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
        
     }).fail(function (err) {
@@ -1378,8 +1384,17 @@ PedidosCliente.prototype.actualizarBodegaCotizacionClientesMultiples = function 
      var that = this;
      var args = req.body.data;
      parametros= {cotizacion:args.cotizacion,bodega:args.bodega};
-     
-    G.Q.nfcall(that.m_pedidos_clientes.actualizarBodegaCotizacionClientesMultiples,parametros ).then(function (rows) {
+  
+    G.Q.nfcall(that.m_pedidos_clientes.consultarProductosRepetidosMultiple,parametros ).then(function (rows) {
+      console.log("WWWWWWWWWWWWWWWWWWWW",rows.rows[0]);
+      
+      return G.Q.nfcall(__procesoUnificarProductosMultiples,that,rows.rows,0,parametros);
+      
+   }).then(function (rows) {
+       
+      return G.Q.nfcall(that.m_pedidos_clientes.actualizarBodegaCotizacionClientesMultiples,parametros);  
+                
+     }).then(function (rows) {
 
         res.send(G.utils.r(req.url, 'Consulta correcta', 200, {actualizarBodegaCotizacionClientesMultiples: rows}));
 
@@ -1388,8 +1403,33 @@ PedidosCliente.prototype.actualizarBodegaCotizacionClientesMultiples = function 
         res.send(G.utils.r(req.url, "Se ha generado un error", 500, {actualizarBodegaCotizacionClientesMultiples: err}));
     }).done();
      
-}
+};
 
+function __procesoUnificarProductosMultiples(that,productos,index,parametros,callback){
+   var producto= productos[index];
+   if(!producto){
+       callback(false);
+       return;
+   }
+   var obj ={
+       codigo_producto:producto.codigo_producto,
+       cotizacion:parametros.cotizacion,
+       bodega:parametros.bodega,
+       numero_unidades:producto.numero_unidades};
+   
+   G.Q.nfcall(that.m_pedidos_clientes.actualizarNumeroProductosMultiple,obj).then(function (rows) {
+    
+       return G.Q.nfcall(that.m_pedidos_clientes.eliminaNumeroProductosMultiple,obj);       
+   
+   }).then(function (rows) {
+       
+     index++;
+     __procesoUnificarProductosMultiples(that,productos,index,parametros,callback)
+
+   }).fail(function (err) {
+      callback(true);        
+   }).done();
+}
 
 /*
  * Author : Eduar Garcia
@@ -1474,8 +1514,7 @@ PedidosCliente.prototype.listarCotizaciones = function (req, res) {
 
     var estadoCotizacion = args.pedidos_clientes.estado_cotizacion;
     var bodega=args.pedidos_clientes.bodega.codigo;
-console.log("req.session",req.session);
-console.log("args.pedidos_clientes",args.pedidos_clientes.bodega.codigo);
+
     that.m_pedidos_clientes.listar_cotizaciones(empresa_id,
             fecha_inicial,
             fecha_final,
@@ -2545,7 +2584,7 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function (req, res) {
                 }
 
 
-            }).then(function (resultado) {
+    }).then(function (resultado) {
         if (resultado.rowCount === 0) {
             throw 'Error actualizando la observacion de cartera';
         } else {
@@ -2553,8 +2592,10 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function (req, res) {
         }
 
     }).then(function (resultado) {
+        
         res.send(G.utils.r(req.url, 'Observacion registrada correctamente', 200, {pedidos_clientes: {}}));
-        that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion);
+        
+         that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
 
         if (resultado.length > 0) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogCliente);

@@ -441,6 +441,7 @@ MovBodegasController.prototype.execCrearDocumento=function(req,res){
                
                     
            }).then(function(err){
+               console.log("execCrearDocumento::: ",err);
                  return G.Q.nfcall(__eliminar_documento_temporal_farmacias,documento_temporal_id, usuario_id, transaccion);
            }).fail(function(err){
                console.log("error generado >>>>>>>>>>>>", err);

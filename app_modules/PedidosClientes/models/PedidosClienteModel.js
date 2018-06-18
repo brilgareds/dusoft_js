@@ -1819,8 +1819,8 @@ PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_clientes =
     var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
         .insert(
         {
-        id_orden_pedido_origen: obj.numeroPedidoorigen,
-        id_orden_pedido_destino: obj.numeroPedido
+        id_orden_cotizacion_origen: obj.numeroPedidoorigen,
+        id_orden_cotizacion_destino: obj.numeroPedido
         }
             );
            
@@ -1828,16 +1828,40 @@ PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_clientes =
             callback(false, resultado);
         }).catch(function(err){
             console.log("err (/catch) [insertarDespachoMedicamentosPendientes]: ", err);
-            callback({err:err, msj: "Error al generar el despacho de los medicamentos pendientes"});   
+            callback({err:err, msj: "Error al insertar ventas ordenes pedido multiple clientes"});   
+        });  
+};
+
+PedidosClienteModel.prototype.actualizarPedidoMultipleCliente = function(obj,callback){
+ 
+    
+    var query =  G.knex('ventas_ordenes_pedido_multiple_clientes').where({
+                    id_orden_cotizacion_origen: obj.cotizacion
+                  }).update({id_orden_pedido_origen:obj.numero_pedido});
+           
+        query.then(function(resultado){    
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [actualizarPedidoMultipleCliente]: ", err);
+            callback({err:err, msj: "Error al  actualizar Pedido Multiple Cliente"});   
         });  
 };
 
 PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function(obj,callback){
- 
-    var query =  G.knex('ventas_ordenes_pedido_multiple_clientes').where({
-                    id_orden_pedido_origen: obj.cotizacion
-                  }).select(['id_orden_pedido_origen','id_orden_pedido_destino']);
-           
+
+    var query =  G.knex('ventas_ordenes_pedido_multiple_clientes')
+                  .where(function() {
+                      if(obj.numero_pedido!==undefined){
+                         this.andWhere("id_orden_pedido_origen", obj.numero_pedido) 
+                      }
+                        
+                      if(obj.cotizacion!==undefined){
+                         this.andWhere("id_orden_cotizacion_origen", obj.cotizacion) 
+                      }
+                        
+                    })
+                  .select(['id_orden_pedido_origen','id_orden_pedido_destino','id_orden_cotizacion_origen','id_orden_cotizacion_destino']);
+      
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
@@ -1852,11 +1876,68 @@ PedidosClienteModel.prototype.actualizarBodegaCotizacionClientesMultiples = func
                     pedido_cliente_id_tmp: obj.cotizacion
                   }).update({bodega_origen_producto:obj.bodega});
 
+ console.log(G.sqlformatter.format(query.toString()));
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
-            console.log("err (/catch) [consultarPedidoMultipleCliente]: ", err);
-            callback({err:err, msj: "Error al generar el la consulta Pedido Multiple Cliente"});   
+            console.log("err (/catch) [actualizarBodegaCotizacionClientesMultiples]: ", err);
+            callback({err:err, msj: "Error al generar actualizar Bodega otizacion Clientes Multiples"});   
+        });  
+};
+
+
+PedidosClienteModel.prototype.actualizarNumeroProductosMultiple = function(obj,callback){
+ 
+    var query =  G.knex('ventas_ordenes_pedidos_d_tmp').where({
+                    pedido_cliente_id_tmp: obj.cotizacion,
+                    codigo_producto	: obj.codigo_producto,
+                    bodega_origen_producto: obj.bodega
+                  }).update({numero_unidades:obj.numero_unidades});
+console.log(G.sqlformatter.format(query.toString()));
+        query.then(function(resultado){    
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [actualizar Numero Productos Multiple]: ", err);
+            callback({err:err, msj: "Error al generar actualizar Numero Productos Multiple"});   
+        });  
+};
+
+PedidosClienteModel.prototype.eliminaNumeroProductosMultiple = function(obj,callback){
+ console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    var query =  G.knex('ventas_ordenes_pedidos_d_tmp').where({
+                    pedido_cliente_id_tmp: obj.cotizacion,
+                    codigo_producto	: obj.codigo_producto
+                  }).andWhere(G.knex.raw("bodega_origen_producto != '"+obj.bodega+"'")).del();
+                                    
+console.log(G.sqlformatter.format(query.toString()));
+
+        query.then(function(resultado){    
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [eliminaNumeroProductosMultiple]: ", err);
+            callback({err:err, msj: "Error al generar elimina Numero Producto sMultiple"});   
+        });  
+};
+
+PedidosClienteModel.prototype.consultarProductosRepetidosMultiple = function(obj,callback){
+ 
+       var parametros={1:obj.cotizacion};
+        var sql="select \
+                    codigo_producto,sum(numero_unidades) as numero_unidades,count(*) as numero_productos \
+                    from \
+                    ventas_ordenes_pedidos_d_tmp\
+                    where\
+                    pedido_cliente_id_tmp = :1\
+                    GROUP BY 1 \
+                    having count(*) >1";
+    
+        var query = G.knex.raw(sql, parametros);  
+        
+        query.then(function(resultado) {
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [consultarProductosRepetidosMultiple]: ", err);
+            callback({err:err, msj: "Error al generar consultar Productos Repetidos Multiple"});   
         });  
 };
 
@@ -2174,14 +2255,16 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizaci
     if (cotizacion.aprobado_cartera === 1)
         sql_aux = '3'; // Estado Aprobado Cartera
 
-    G.knex('ventas_ordenes_pedidos_tmp')
+    var query=G.knex('ventas_ordenes_pedidos_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
             .update({
         observacion_cartera: cotizacion.observacion_cartera,
         sw_aprobado_cartera: cotizacion.aprobado_cartera,
         estado: sql_aux
 
-    }).then(function(resultado) {
+    });
+    console.log("observacion_cartera_cotizacion",G.sqlformatter.format(query.toString()));
+    query.then(function(resultado) {
 
         callback(false, resultado.rows, resultado);
     }). catch (function(error) {
@@ -2470,10 +2553,11 @@ PedidosClienteModel.prototype.consultarExistenciaPedidoCotizacion = function(num
  */
 PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizacion, callback) {
 
-
-    G.knex('ventas_ordenes_pedidos_tmp').where({
+    var query=G.knex('ventas_ordenes_pedidos_tmp').where({
         pedido_cliente_id_tmp: numeroCotizacion
-    }).select('estado', 'usuario_id', 'estado_multiple_pedido').then(function(rows) {
+    }).select('estado', 'usuario_id', 'estado_multiple_pedido');
+     
+     query.then(function(rows) {
 
         callback(false, rows);
     }). catch (function(error){

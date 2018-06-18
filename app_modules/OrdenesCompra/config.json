@@ -33,8 +33,13 @@
                     "module": "Usuarios",
                     "model": "UsuariosModel",
                     "alias": "m_usuarios"
+                },
+                "m_actasTecnicas": {
+                    "module": "ActasTecnicas",
+                    "model": "ActasTecnicasModel",
+                    "alias": "m_actasTecnicas"
                 }
-            }],
+        }],
         "events": [{
                 "pedidos_clientes_events": {
                     "module": "OrdenesCompra",

@@ -237,6 +237,9 @@ ActasTecnicasModel.prototype.listarProductosParaActas = function (obj, callback)
         "b.numero_unidades",
         "b.valor",
         "b.porc_iva",
+        "b.fecha_vencimiento_temp",
+        "b.lote_temp",
+        "b.item_id",
         G.knex.raw("CASE WHEN  b.codigo_producto in (\
                              select a.codigo_producto \
                              from esm_acta_tecnica a \
@@ -255,7 +258,7 @@ ActasTecnicasModel.prototype.listarProductosParaActas = function (obj, callback)
             .where(function () {
                 this.andWhere("b.orden_pedido_id", obj.ordenPedido);
             });
-
+console.log("***********",G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
 
         callback(false, resultado);

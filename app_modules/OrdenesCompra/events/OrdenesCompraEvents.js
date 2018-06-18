@@ -32,6 +32,20 @@ OrdenesCompraEvents.prototype.onNotificarProgresoArchivoPlanoOrdenes = function(
      });
 };
 
+OrdenesCompraEvents.prototype.onNotificarGenerarI002 = function(usuario_id, parametros) {
+
+    var that = this;
+    G.auth.getSessionsUser(usuario_id, function(err, sessions) {
+
+         //Se recorre cada una de las sesiones abiertas por el usuario
+         sessions.forEach(function(session) {
+             //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
+             that.io.to(session.socket_id).emit('onNotificarGenerarI002', {parametros: parametros});
+         });
+
+     });
+};
+
 
 OrdenesCompraEvents.$inject = ["socket", "m_ordenes_compra"];
 

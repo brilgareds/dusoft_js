@@ -1909,7 +1909,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
         return G.Q.ninvoke(that.m_pedidos_clientes, "terminar_estado_pedido", numero_pedido, [estado, '7'], '1');
     }).then(function (rows) {
         return G.Q.ninvoke(that.m_e008, "marcar_cajas_como_despachadas", documento_temporal_id, numero_pedido, '1');
-    })/*.then(function(rows){
+    /*.then(function(rows){
      
      var def = G.Q.defer();
      var bodega = "BD";
@@ -1943,18 +1943,26 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
      }
      
      }).*/
-            .then(function (rows) {
+    }).then(function (rows) {
+        
+        var obj ={numero_pedido:numero_pedido};
+        console.log();
+        return G.Q.ninvoke(that.m_pedidos_clientes, "consultarPedidoMultipleCliente",obj);
+        
+    }).then(function (rows) {
+     
                 that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
                 res.send(G.utils.r(req.url, 'Se ha generado el documento', 200,
                         {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
 
 
-//        if (empresa_id === '03' && (pedido.bodega_id === '03' || pedido.bodega_id === '06')) {
+        if (rows.length > 0) {
+            
             pedido.centro_utilidad=pedido.centro_destino;
             pedido.bodega_id=pedido.bodega_destino;
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespacho", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento, numeroDocumento: numero_documento});
 
-//        }
+        }
 
     }).then(function (detalleDocumento) {
 
@@ -1975,12 +1983,11 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
             };
          
             G.eventEmitter.emit("onGenerarOrdenDeCompra", parametros);
-        }
-        ;
+        };
+    
 
-
-            }).fail(function (err) {
-        console.log("errorr aqui >>>>>>>>>>>>>>> ", err);
+    }).fail(function (err) {
+        console.log("Error Generar Documento Despacho Clientes ", err);
         if (err.status) {
             res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
         } else {

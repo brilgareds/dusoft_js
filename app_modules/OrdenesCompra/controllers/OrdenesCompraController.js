@@ -1,5 +1,5 @@
 
-var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails, m_usuarios) {
+var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails, m_usuarios,m_actasTecnicas) {
 
 
     this.m_ordenes_compra = ordenes_compras;
@@ -7,6 +7,7 @@ var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras
     this.e_ordenes_compra = eventos_ordenes_compras;
     this.emails = emails;
     this.m_usuarios = m_usuarios;
+    this.m_actasTecnicas = m_actasTecnicas;
 };
 
 
@@ -2300,15 +2301,23 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         
     }).then(function(resultado){
         
-        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", 
-            {
+        var param = {
+         ordenPedido: parametros.encabezado.ordenId
+         };
+        return G.Q.ninvoke(that.m_actasTecnicas, "listarProductosParaActas",param);
+//        
+    }).then(function(resultado){
+
+        var respuesta= {
                 msj: "La orden de compra # " + parametros.encabezado.ordenId + " se ha generado satisfactoriamente",
                 status: 200,
-                data: {numero_orden: parametros.encabezado.ordenId}
-            }
-        );
-          //res.send(G.utils.r(req.url,"La orden de compra # " + parametros.encabezado.ordenId + " se ha generado satisfactoriamente", 200, {data: {numero_orden: parametros.encabezado.ordenId}}));
-         
+                data: {numero_orden: parametros.encabezado.ordenId,parametros:parametros,productos:resultado}
+            };
+            
+        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta",respuesta);
+
+        that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);
+          
     }).fail(function (err) {
         console.log("err [generarOrdenDeCompraAuditado]: ", err);
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:err.msj, status: err.status, data: err});
@@ -2375,6 +2384,6 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
 
 
 
-OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios"];
+OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios","m_actasTecnicas"];
 
 module.exports = OrdenesCompra;

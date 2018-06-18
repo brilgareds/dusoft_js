@@ -20,7 +20,7 @@ var I002Controller = function(movimientos_bodegas, m_I002, e_I002, pedidos_clien
 
 
 I002Controller.prototype.newDocTemporal = function(req, res) {
-
+console.log("**********newDocTemporal**********");
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
@@ -45,14 +45,14 @@ I002Controller.prototype.newDocTemporal = function(req, res) {
 
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificicador_movimiento_temporal", usuarioId).then(function(doc_tmp_id) {
-
+        console.log("obtener_identificicador_movimiento_temporal ",doc_tmp_id);
         movimiento_temporal_id = doc_tmp_id;
 
         G.knex.transaction(function(transaccion) {
 
             G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal,
                     movimiento_temporal_id, usuarioId, bodegas_doc_id, observacion, transaccion).then(function() {
-
+console.log("ingresar_movimiento_bodega_temporal ");
                 var parametros = {
                     usuario_id: usuarioId,
                     doc_tmp_id: movimiento_temporal_id,
@@ -61,6 +61,7 @@ I002Controller.prototype.newDocTemporal = function(req, res) {
                 return G.Q.nfcall(that.m_I002.insertarBodegasMovimientoOrdenesCompraTmp, parametros, transaccion);
 
             }).then(function() {
+                console.log("transaccion ingresar_movimiento_bodega_temporal ");
                 transaccion.commit(movimiento_temporal_id);
             }).fail(function(err) {
                 transaccion.rollback(err);
@@ -69,7 +70,7 @@ I002Controller.prototype.newDocTemporal = function(req, res) {
         }).then(function(movimiento_temporal_id) {
             res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {movimiento_temporal_id: movimiento_temporal_id}));
         }). catch (function(err) {
-	    console.log("EROR ",err);
+	    console.log("Error newDocTemporal ",err);
             res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
         }).done();
 
@@ -416,7 +417,7 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
     G.knex.transaction(function(transaccion) {
 
         G.Q.ninvoke(that.m_movimientos_bodegas, "crear_documento", docTmpId, usuarioId, transaccion).then(function(result) {
-
+console.log("execCrearDocumento111 ",result);
             parametros.empresaId = result.empresa_id;
             parametros.empresa_id = result.empresa_id;
             parametros.prefijoDocumento = result.prefijo_documento;

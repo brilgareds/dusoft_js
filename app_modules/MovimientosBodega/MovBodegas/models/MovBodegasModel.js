@@ -1110,8 +1110,9 @@ function __consultar_documento_bodega_temporal(documento_temporal_id, usuario_id
                 INNER JOIN tipos_doc_generales c ON b.tipo_doc_general_id = c.tipo_doc_general_id\
                 WHERE doc_tmp_id = :1 AND usuario_id = :2;";
 
-    G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id}).
-            then(function (resultado) {
+    var query= G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id});
+//    console.log(G.sqlformatter.format(query.toString()));
+        query.then(function (resultado) {
                 callback(false, resultado.rows.length > 0 ? resultado.rows[0] : null);
             }).catch(function (err) {
         callback(err);
@@ -1156,8 +1157,9 @@ function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, u
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
                 where a.doc_tmp_id = :1 and a.usuario_id = :2 ";
 
-    G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id}).
-            then(function (resultado) {
+    var query=G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id});
+//    console.log("__consultar_detalle_movimiento_bodega_temporal",G.sqlformatter.format(query.toString()));
+            query.then(function (resultado) {
                 callback(false, resultado.rows);
             }).catch(function (err) {
         callback(err);

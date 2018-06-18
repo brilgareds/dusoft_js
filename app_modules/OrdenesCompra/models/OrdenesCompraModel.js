@@ -1571,7 +1571,9 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
         13: datos.orden
     };
 
-    G.knex.raw(sql, parametros).then(function(resultado) {
+    var query=G.knex.raw(sql, parametros);
+    console.log(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado) {
       
         callback(false, resultado.rows, resultado);
     }).catch (function(err) {
@@ -1626,11 +1628,13 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(dato
     };
 
 
-    G.knex.raw(sql, parametros).then(function(resultado) {
+    var query=G.knex.raw(sql, parametros);
+    console.log(G.sqlformatter.format(query.toString()));
+            query.then(function(resultado) {
       
         callback(false, resultado.rows, resultado);
     }).catch (function(err) {
-        console.log("err (/catch) [ingresarBodegaMovimientoTmp]: ", err);
+        console.log("err (/catch) [ingresarBodegaMovimientoTmpProducto]: ", err);
         callback(err);
     });
 };

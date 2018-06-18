@@ -1781,14 +1781,13 @@ console.log(data.obj.pedidos_clientes.producto.length);
              *              de lo contrario se generara el pedido normal
              */
             that.generarPedidoBodegaMultiple = function (aprobado, denegar) {
-                
                 var bodegaCotizacion = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
                 
                 if (aprobado === 1) {
                     that.consultarDetalleProductosCotizacion('1',bodegaCotizacion,function (estado, resultado) {
                         
                         if ($scope.Pedido.observacion_cartera.length > 0) {
-                            if (estado && resultado[0].estado_multiple_pedido === "1" && $scope.validarCotizacionClienteMultiple.lenght <=0 ) {
+                            if (estado && resultado[0].estado_multiple_pedido === "1" && $scope.validarCotizacionClienteMultiple.length <=0 ) {
                                
                                 that.generarPedidoModuloCliente(2,resultado,aprobado, denegar);
                                
@@ -1864,37 +1863,37 @@ console.log(data.obj.pedidos_clientes.producto.length);
             };
 
             $scope.gestion_cartera = function (aprobado, denegar) {
+                that.verificarPedidoCliente(function(){
+                    var aprobarEstadoPedidoGenerarPedido = localStorageService.get("aprobarEstadoPedidoGenerarPedido");
 
-                var aprobarEstadoPedidoGenerarPedido = localStorageService.get("aprobarEstadoPedidoGenerarPedido");
+                    var cotizacion = localStorageService.get("cotizacion");
 
-                var cotizacion = localStorageService.get("cotizacion");
+                    if (cotizacion) {
 
-                if (cotizacion) {
-                   that.verificarPedidoCliente();
-                    var parametros = {busqueda: cotizacion.numero_cotizacion,
-                        pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
-                    };
-                    localStorageService.add("terminoBusqueda", parametros);
-                    that.generarPedidoBodegaMultiple(aprobado, denegar);
+                        var parametros = {busqueda: cotizacion.numero_cotizacion,
+                            pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
+                        };
+                        localStorageService.add("terminoBusqueda", parametros);
+                        that.generarPedidoBodegaMultiple(aprobado, denegar);
 
-                } ;
+                    } ;
 
-                var pedido = localStorageService.get("pedido");
+                    var pedido = localStorageService.get("pedido");
 
-                if (pedido) {
-                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.numero_pedido, activar: true, filtro_actual_pedido: {nombre: "Numero", tipo_busqueda: 0}});
+                    if (pedido) {
+                        localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.numero_pedido, activar: true, filtro_actual_pedido: {nombre: "Numero", tipo_busqueda: 0}});
 
-                    if (aprobarEstadoPedidoGenerarPedido.estado === 1) {
-                        that.autorizarCotizacionCartera(aprobado, denegar);
+                        if (aprobarEstadoPedidoGenerarPedido.estado === 1) {
+                            that.autorizarCotizacionCartera(aprobado, denegar);
+                        }
                     }
-                }
-                $scope.ocultarOpciones = 0;
-
+                    $scope.ocultarOpciones = 0;
+               });
             };
             /*
              * verifica si se creo un pedido cliente apartir de una cotizacion de otra bodega 
              */
-            that.verificarPedidoCliente=function(){
+            that.verificarPedidoCliente=function(callback){
                 
                 url = API.PEDIDOS.CLIENTES.CONSULTAR_PEDIDO_MULTIPLE_CLIENTE;
                     obj = {
@@ -1907,11 +1906,13 @@ console.log(data.obj.pedidos_clientes.producto.length);
                     Request.realizarRequest(url, "POST", obj, function (data) {
 
                     if (data.status === 200) {
+                        console.log("okkkk",data.obj.consultarPedidoMultipleCliente);
                         $scope.validarCotizacionClienteMultiple=data.obj.consultarPedidoMultipleCliente;
-                         console.log("okkkk",data.obj.consultarPedidoMultipleCliente);
+                         
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
+                    callback(true);
                 });
             }
 
@@ -1927,13 +1928,16 @@ console.log(data.obj.pedidos_clientes.producto.length);
              * @fecha 17/11/2016
              */
             that.generarPedidoCartera = function (aprobado, denegar) {
-
+console.log("generarPedidoCartera");
                 var productos = [];
 
                 that.validarDisponibleProductosCotizacion(1, productos, function (estado) {
-
+console.log("estado>>>>>>>",estado);
                     if (estado) { 
-                        that.actualizarBodegaCotizacionClientesMultiple();
+          console.log("validarCotizacionClienteMultiple>>>>>>>",$scope.validarCotizacionClienteMultiple.length);              
+                        if($scope.validarCotizacionClienteMultiple.length >= 1){
+                          that.actualizarBodegaCotizacionClientesMultiple();
+                        }
                         that.generarObservacionCartera(aprobado);
                     }
                 });

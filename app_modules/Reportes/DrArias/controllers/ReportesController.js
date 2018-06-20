@@ -384,12 +384,17 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
                         var message = "Rotacion Dr. DUARTE <br><br>" + enviado + "<br> Error:  " + JSON.stringify(data) + " <br><br> Parametros: " + JSON.stringify(item);
                         __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, function () {});
                     }
+                    if(!data){
+                        data = {estado:200, mensaje:'Generado'};
+                    }
+                    res.send(data);
                 }
             });
         });
     }).fail(function (err) {
         console.log("error consultarCorreoUsuario", err);
-    }).done();
+    }).done(function(){
+    });
 
 };
 
@@ -573,22 +578,20 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
 
     }).then(function (resultados) {
-        //res.send({});
         callback(false, resultados);
 
     }).fail(function (err) {
         bodega.swEstadoCorreo = 4;
         bodega.logError = err;
-        //that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
         G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega, function () {
             callback(err);
         });
 
         console.log("error controller listarPlanes ", err);
+
     }).done(function(){
-        res.send({});
-        }
-    );
+
+    });
 }
 
 function __creaExcel(data, callback) {

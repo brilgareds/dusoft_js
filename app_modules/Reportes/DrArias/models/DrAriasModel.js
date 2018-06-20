@@ -246,7 +246,6 @@ var selectPrimerUnion = [
  * @fecha 2016-06-17
  */
 DrAriasModel.prototype.rotacion = function(obj,callback) {
-  console.log('inicia rotacion');
     var sql=" select codigo_producto, descripcion_producto as producto,farmacia as nom_bode,stock_farmacia as existencia,    \
                 periodo as mes, stock_bodega as existencia_bd,laboratorio,molecula,cantidad_total_despachada as sum,    \
                 case when  tipo_producto = 'Normales' then nivel else '' end  as nivel, \
@@ -328,11 +327,8 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
             ) as a   \
              \
 ";
-    console.log('antes ejecutar consulta');
     var query = G.knex.raw(sql);
     query.then(function(resultado) {
-      //G.logError(G.sqlformatter.format(query.toString()));
-      console.log('despues de ejecutar consulta');
       callback(false, resultado.rows);
     }). catch (function(err) {
       //console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));

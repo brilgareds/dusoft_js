@@ -124,7 +124,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(obj, callback) {
 
     /*callback(true, query.toSQL());
     return;*/
- console.log(G.sqlformatter.format(queryPrincipal.toString()));
+
     queryPrincipal.then(function(rows){
         callback(false, rows);
     }).
@@ -1572,7 +1572,7 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
     };
 
     var query=G.knex.raw(sql, parametros);
-    console.log(G.sqlformatter.format(query.toString()));
+
     query.then(function(resultado) {
       
         callback(false, resultado.rows, resultado);
@@ -1629,7 +1629,7 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(dato
 
 
     var query=G.knex.raw(sql, parametros);
-    console.log(G.sqlformatter.format(query.toString()));
+
             query.then(function(resultado) {
       
         callback(false, resultado.rows, resultado);

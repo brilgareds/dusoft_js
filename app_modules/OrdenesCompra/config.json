@@ -38,6 +38,11 @@
                     "module": "ActasTecnicas",
                     "model": "ActasTecnicasModel",
                     "alias": "m_actasTecnicas"
+                },
+                "E008_model": {
+                    "module": "MovimientosBodega/E008",
+                    "model": "DocBodegaE008",
+                    "alias": "m_e008"
                 }
         }],
         "events": [{

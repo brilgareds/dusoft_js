@@ -566,7 +566,7 @@ PedidosCliente.prototype.__listarProductosClientes = function (args, callback) {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
         laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
-        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
+        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? 0 : args.pedidos_clientes.numero_cotizacion,
         numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido,
         filtro_producto: 0
     };
@@ -601,7 +601,7 @@ PedidosCliente.prototype.__listarProductosClientes = function (args, callback) {
     var tmp = {};
 
     G.Q.ninvoke(that.m_pedidos_clientes, "generadoEnCosmitet", filtro.numero_cotizacion).then(function(response){
-        //console.log('response', response);
+        console.log('response**********************', response);
         if(response.length > 0){
             tmp.generadoEnOtraBodega = true;
         } else {
@@ -1386,8 +1386,7 @@ PedidosCliente.prototype.actualizarBodegaCotizacionClientesMultiples = function 
      parametros= {cotizacion:args.cotizacion,bodega:args.bodega};
   
     G.Q.nfcall(that.m_pedidos_clientes.consultarProductosRepetidosMultiple,parametros ).then(function (rows) {
-      console.log("WWWWWWWWWWWWWWWWWWWW",rows.rows[0]);
-      
+           
       return G.Q.nfcall(__procesoUnificarProductosMultiples,that,rows.rows,0,parametros);
       
    }).then(function (rows) {

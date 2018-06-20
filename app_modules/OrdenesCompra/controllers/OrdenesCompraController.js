@@ -1,5 +1,5 @@
 
-var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails, m_usuarios,m_actasTecnicas) {
+var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails, m_usuarios,m_actasTecnicas,m_e008) {
 
 
     this.m_ordenes_compra = ordenes_compras;
@@ -8,6 +8,7 @@ var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras
     this.emails = emails;
     this.m_usuarios = m_usuarios;
     this.m_actasTecnicas = m_actasTecnicas;
+    this.m_e008 = m_e008;
 };
 
 
@@ -1182,7 +1183,7 @@ OrdenesCompra.prototype.subirArchivoOrdenes = function(req, res){
     }).then(function(resultado){
         res.send(G.utils.r(req.url, 'Archivo cargado correctamente', 200, {pdf:resultado}));
     }).fail(function(err){
-        console.log("se ha generado un error ", err);
+        console.log("se ha generado un error subirArchivoOrdenes ", err);
         res.send(G.utils.r(req.url, err, 500, {ordenes_compras: []}));
     });
     
@@ -1299,7 +1300,7 @@ OrdenesCompra.prototype.obtenerArchivosNovedades = function(req, res) {
     then(function(listaArchivos){
         res.send(G.utils.r(req.url, 'Lista Archivos Novedad', 200, {lista_archivos: listaArchivos}));
     }).fail(function(err){
-        console.log("error generado ", err);
+        console.log("error generado subirArchivoOrdenes", err);
         res.send(G.utils.r(req.url, 'Error consultando los archivos de novedad', 500, {lista_archivos: []}));
     }).done();
     
@@ -2239,9 +2240,9 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
  * 
  */
 OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
-    
+
     var that = this;
- 
+    
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', status: 404, data: {}});
@@ -2266,7 +2267,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         return;
     }
  
-     
+    var productosActas;
     var parametros = {
         encabezado:{
             unidad_negocio: args.ordenes_compras.unidad_negocio,
@@ -2287,7 +2288,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         contexto : that.m_ordenes_compra,
         filtro: {auditoria: true}
     };
-        
+
     G.Q.ninvoke(that, "__insertarOrdenCompra",parametros.encabezado ).then(function (resultado) {
          
         parametros.encabezado.ordenId = resultado.data.numero_orden;
@@ -2305,15 +2306,31 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
          ordenPedido: parametros.encabezado.ordenId
          };
         return G.Q.ninvoke(that.m_actasTecnicas, "listarProductosParaActas",param);
-//        
+        
+    }).then(function(resultado){
+        productosActas=resultado;
+         if (args.ordenes_compras.empresa_id === '03' && (args.ordenes_compras.bodega_pedido === '03' || args.ordenes_compras.bodega_pedido === '06')) {
+
+            return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespachoAutomatico", {empresa: args.ordenes_compras.empresa_id, prefijoDocumento: args.ordenes_compras.prefijo_documento, numeroDocumento: args.ordenes_compras.numero_documento});
+
+        }else{
+      
+            return false;
+        }
     }).then(function(resultado){
 
         var respuesta= {
                 msj: "La orden de compra # " + parametros.encabezado.ordenId + " se ha generado satisfactoriamente",
                 status: 200,
-                data: {numero_orden: parametros.encabezado.ordenId,parametros:parametros,productos:resultado}
+                data: {
+                    numero_orden: parametros.encabezado.ordenId,
+                    parametros:parametros,
+                    productosActas:productosActas,
+                    productos2:args.ordenes_compras.productos,
+                    productos:resultado
+                }
             };
-            
+  
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta",respuesta);
 
         that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);
@@ -2384,6 +2401,6 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
 
 
 
-OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios","m_actasTecnicas"];
+OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios","m_actasTecnicas","m_e008"];
 
 module.exports = OrdenesCompra;

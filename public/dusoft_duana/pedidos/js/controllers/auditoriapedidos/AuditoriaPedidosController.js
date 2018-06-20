@@ -737,41 +737,34 @@ define(["angular", "js/controllers",
 
             };
             
-            console.log(">>>>>>>>>>",$scope.productosAuditados);
-            
-            socket.on("onNotificarGenerarI002", function(datos){
-                
-//                console.log("onNotificarGenerarI002",datos);
-//                console.log("onNotificarGenerarI002",datos.parametros.data);
-                if(datos.parametros.status){
-                     console.log("QQQQQQQQ1111",datos.parametros.data.numero_orden);//numero_orden
-//                     console.log("QQQQQQQQ2222",datos.parametros.data.parametros);
-                     that.generarIngresoI002(datos.parametros.data,function(asd){
-                         console.log("asd",asd);
-                     });
-                }
-                 
+            $scope.ejecutar = true;
+            socket.on("onNotificarGenerarI002", function (datos) {
+                var timer = setTimeout(function () {
+                    if (datos.parametros.status && $scope.ejecutar) {
+                        $scope.ejecutar = false;
+                        that.generarIngresoI002(datos.parametros.data, function (asd) {                           
+                            that.ejecutarDocumento(datos.parametros.data.numero_orden);
+                        });
+                    }
+                    clearTimeout(timer);
+                }, 0);
             });
             
             that.generarIngresoI002=function(data,callback){
-                console.log("generarIngresoI0020000 ",data);
                 var obj = {
                     session: $scope.session,
                     data: {
                         orden_pedido_id: data.numero_orden,
-                        bodegas_doc_id : '81',
+                        bodegas_doc_id : '80',
                         observacion:  data.parametros.encabezado.observacion
                     }
                 };
 
                 Request.realizarRequest(API.I002.CREAR_NEW_DOCUMENTO_TEMPORAL, "POST", obj, function(datas) {
                     if (datas.status === 200) {
-                       // AlertService.mostrarMensaje("warning", data.msj);
-                        console.log("data.obj.movimiento_temporal_id ",datas.obj.movimiento_temporal_id);
                         $scope.doc_tmp_id=datas.obj.movimiento_temporal_id;
                         generarIngresoDetalleI002(data,0,function(){
-                            console.log("Andres");
-                          //  that.ejecutarDocumento(data.numero_orden);
+                           
                             callback(true);
                         });
                     }
@@ -785,32 +778,30 @@ define(["angular", "js/controllers",
             };
             
               function generarIngresoDetalleI002(data,index,callback){
-//                console.log("______________________index: ",index);
                if(data.productos[index] === undefined){
                    callback(false);
                    return;
                }
                 var productos = data.productos[index];
-//                console.log(index+"generarIngresoDetalleI002111 ",data);
-//                console.log(index+"generarIngresoDetalleI002222 ",data.productos);
-//                console.log(index+"generarIngresoDetalleI002333 ",data.productos[index]); 
-//              
+                var productosActas = data.productosActas[index];
+             
                      var movimientos_bodegas = {
                         doc_tmp_id: $scope.doc_tmp_id,
-                        bodegas_doc_id: '81',
+                        bodegas_doc_id: '80',
                         codigo_producto: productos.codigo_producto,
-                        cantidad: productos.numero_unidades,
-                        porcentaje_gravamen: productos.porc_iva,
-                        total_costo: productos.valor*productos.numero_unidades,
-                        fecha_vencimiento: productos.fecha_vencimiento_temp,
-                        lote: productos.lote_temp,
+                        cantidad: productos.cantidad,
+                        porcentaje_gravamen: productos.porcentaje_gravamen,
+                        total_costo: productos.valor_unitario*productos.cantidad,
+                        fecha_vencimiento: productos.fecha_vencimiento,
+                        lote: productos.lote,
                         localizacion: 'NA',
                         total_costo_ped: '0',
                         valor_unitario: '0',
                         usuario_id: $scope.session.usuario_id,
-                        item_id_compras: productos.item_id
+                        item_id_compras: productosActas.item_id
                      }; 
-//                console.log("movimientos_bodegas",movimientos_bodegas);
+                     
+                    
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -818,7 +809,7 @@ define(["angular", "js/controllers",
                     }
                 };
                 
-                Request.realizarRequest(API.I002.ADD_ITEM_DOC_TEMPORAL, "POST", obj, function(datos) {
+                Request.realizarRequest(API.I002.ADD_ITEM_DOC_TEMPORAL, "POST", obj, function(datos) {                   
                     index++;
                     generarIngresoDetalleI002(data,index,callback);
                  });               
@@ -836,7 +827,7 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-                
+         
                 Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
                    if (data.status === 200) {
 		

@@ -503,7 +503,7 @@ E008Controller.prototype.consultarDocumentosTemporalesClientes = function (req, 
 
     that.m_e008.consultar_documentos_temporales_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, function (err, documentos_temporales, total_records) {
         if (err) {
-            console.log("error generado listado ", err);
+            console.log("error consultarDocumentosTemporalesClientes listado ", err);
             res.send(G.utils.r(req.url, 'Error consultado los documentos temporales de clientes', 500, {documentos_temporales: {}}));
             return;
         } else {
@@ -970,7 +970,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function (req
 
     that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function (err, responsables) {
 
-        console.log("err ", err);
+        console.log("err actualizarTipoDocumentoTemporalClientes ", err);
         var existe_estado_auditoria = false;
         var _responsables = [];
 
@@ -1775,7 +1775,7 @@ function _generarDocumentoRotulo(obj, callback) {
             var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {
-                    console.log(err);
+                    console.log("Error _generarDocumentoRotulo",err);
                 } else {
                     callback(nombreTmp);
                 }
@@ -1946,7 +1946,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
     }).then(function (rows) {
         
         var obj ={numero_pedido:numero_pedido};
-        console.log();
+       
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultarPedidoMultipleCliente",obj);
         
     }).then(function (rows) {
@@ -1960,14 +1960,13 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
             
             pedido.centro_utilidad=pedido.centro_destino;
             pedido.bodega_id=pedido.bodega_destino;
-            return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespacho", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento, numeroDocumento: numero_documento});
+            return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespachoAutomatico", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento, numeroDocumento: numero_documento});
 
         }
 
     }).then(function (detalleDocumento) {
-
-        if (detalleDocumento && detalleDocumento.length > 0) {
-
+       
+        if (detalleDocumento && detalleDocumento.length > 0) {          
             var parametros = {
                 ordenes_compras: {
                     usuario_id: req.session.user.usuario_id,
@@ -1975,13 +1974,15 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
                     codigo_proveedor: 55,
                     empresa_id: pedido.empresa_id,
                     observacion: "Orden Generada por documento: " + prefijo_documento + " - " + numero_documento,
+                    prefijo_documento: prefijo_documento,
+                    numero_documento: numero_documento,
                     empresa_pedido: pedido.empresa_id,
                     centro_utilidad_pedido: pedido.centro_utilidad,
                     bodega_pedido: pedido.bodega_id,
                     productos: detalleDocumento
                 }
             };
-         
+       
             G.eventEmitter.emit("onGenerarOrdenDeCompra", parametros);
         };
     
@@ -2138,7 +2139,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function (req, res)
 
 
         if (pedido.empresa_id === '03' && (pedido.bodega_id === '03' || pedido.bodega_id === '06')) {
-
+                                             
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespacho", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento, numeroDocumento: numero_documento});
 
         }
@@ -2166,7 +2167,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function (req, res)
 
 
     }).fail(function (err) {
-        console.log("se ha generado un error en el documento ", err);
+        console.log("se ha generado un error en el documento generarDocumentoDespachoClientes ", err);
         if (err.status) {
             res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
 
@@ -2560,7 +2561,7 @@ function __sincronizarRemisionProductos(obj, callback) {
         return G.Q.ninvoke(client, "almacenarRemisionMedicamentosInsumos", obj.parametros);
 
     }).spread(function (result, raw, soapHeader) {
-        console.log("result ", result);
+    
         if (result.success["$value"] !== '1') {
 //	if (result.message["$value"]!==undefined) {
 
@@ -2937,7 +2938,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
 
 
     that.m_e008.consultar_documento_despacho(numero, prefijo, empresa, req.session.user.usuario_id, function (err, rows) {
-console.log("rows::",rows);
+
         if (err || rows.length === 0) {
 
             res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
@@ -3502,7 +3503,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
                                     productos_pendientes.push(producto_pedido);
                                 } else if (producto_pedido.item_id > 0) {
                                     productos_no_auditados.push(producto_pedido);
-                                    console.log("AAAAAAAA");
+                                
 
                                 }
                             } else {
@@ -3513,7 +3514,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 
                                 } else if (producto_pedido.auditado === '0') {
                                     productos_no_auditados.push(producto_pedido);
-                                    console.log("BBBBBB");
+                                
 
                                 }
 

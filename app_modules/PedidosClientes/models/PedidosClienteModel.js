@@ -2329,11 +2329,11 @@ PedidosClienteModel.prototype.generadoEnCosmitet = function(numero_cotizacion, c
             .from('ventas_ordenes_pedido_multiple_clientes')
             .where('id_orden_cotizacion_origen', numero_cotizacion);
 
-    //G.logError(G.sqlformatter.format(query.toString()));
+//   console.log(G.sqlformatter.format(query.toString()));
     query.then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
-        console.log("err [solicitarAutorizacion]: ", error);
+        console.log("err [generadoEnCosmitet]: ", error);
         callback(error);
     });
 

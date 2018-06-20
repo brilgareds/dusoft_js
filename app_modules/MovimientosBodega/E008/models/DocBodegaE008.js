@@ -233,7 +233,7 @@ DocumentoBodegaE008.prototype.ingresar_despacho_clientes_temporal = function(bod
         then(function(movimiento_temporal_id){
             callback(false, movimiento_temporal_id);
         }).catch(function(err){
-            console.log("error generado >>>>>>>>>>>>", err);
+            console.log("error ingresar_despacho_clientes_temporal >>>>>>>>>>>>", err);
             callback(err);
         }).
         done();        
@@ -307,7 +307,7 @@ DocumentoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
         then(function(movimiento_temporal_id){
             callback(false, movimiento_temporal_id);
         }).catch(function(err){
-            console.log("error generado >>>>>>>>>>>>", err);
+            console.log("error ingresar_despacho_farmacias_temporal >>>>>>>>>>>>", err);
             callback(err);
         }).
         done();        
@@ -394,7 +394,7 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
     then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("errror ", err);
+        console.log("error consultar_documentos_temporales_clientes", err);
         callback(err);
     });
    
@@ -482,7 +482,7 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
     then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("errror ", err);
+        console.log("error consultar_documentos_temporales_farmacias ", err);
         callback(err);
     });
     
@@ -594,7 +594,7 @@ DocumentoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
     then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
-        console.log("consultar_documento_temporal_farmacias ",err);
+        console.log("Error consultar_documento_temporal_farmacias ",err);
         callback(err);
     });
     
@@ -631,7 +631,7 @@ DocumentoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
     }).then(function(re){
         callback(false);
     }).catch(function(err){
-        console.log("error generado >>>>>>>>>>>>", err);
+        console.log("error eliminar_documento_temporal_clientes >>>>>>>>>>>>", err);
         callback(err);
     }).
     done();
@@ -700,7 +700,7 @@ DocumentoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
     }).then(function(re){
         callback(false);
     }).catch(function(err){
-        console.log("error generado >>>>>>>>>>>>", err);
+        console.log("error eliminar_documento_temporal_farmacias >>>>>>>>>>>>", err);
         callback(err);
     }).
     done();
@@ -869,7 +869,7 @@ DocumentoBodegaE008.prototype.consultarNumeroMayorRotulo = function(documento_id
    then(function(resultado){
        callback(false, resultado.rows, resultado);
    }).catch(function(err){
-       console.log("err ",err);
+       console.log("err consultarNumeroMayorRotulo ",err);
        callback(err);
    });
 };
@@ -901,7 +901,7 @@ DocumentoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numer
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
-        console.log("error generado ",err);
+        console.log("error generar_rotulo_caja ",err);
        callback(err);
     });
     
@@ -1010,7 +1010,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
        callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
         
     }).catch(function(err){
-        console.log("error generado >>>>>>>>>>>>", err);
+        console.log("error generar_documento_despacho_farmacias >>>>>>>>>>>>", err);
         callback(err);
     }).
     done();   
@@ -1052,7 +1052,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
             transaccion.commit();
         }).
         fail(function(err){
-            console.log("error generado >>>>>>>>>>>>", err);
+            console.log("error generar_documento_despacho_clientes >>>>>>>>>>>>", err);
             transaccion.rollback(err);
         }).
         done();
@@ -1062,7 +1062,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
        callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
         
     }).catch(function(err){
-        console.log("error generado >>>>>>>>>>>>", err);
+        console.log("error generar_documento_despacho_clientes >>>>>>>>>>>>", err);
         callback(err);
     }).
     done();        
@@ -1143,7 +1143,7 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
     query.then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
-        console.log("err ", err)
+        console.log("err consultar_documento_despacho ", err)
        callback(err);
     });
     
@@ -1433,7 +1433,6 @@ DocumentoBodegaE008.prototype.obtenerBodegaMovimiento = function(obj, callback){
         callback(false, resultado);
 	
     }). catch (function(err) {
-        console.log("err [obtenerBodegaMovimiento]:",query.toSQL());
         console.log("err [obtenerBodegaMovimiento]:", err);
         callback(err);
     });
@@ -1462,6 +1461,50 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
                     to_char((a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))),'LFM9,999,999.00') as valor_unitario_iva_2,\
                     to_char((a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))),'LFM9,999,999.00') as valor_unitario_iva_2,\
                     to_char(a.valor_unitario,'LFM9,999,999.00') as valor_unitario_2,(a.total_costo/a.cantidad) as costo\
+                FROM\
+                    inv_bodegas_movimiento_d as a,\
+                    inventarios_productos as b,\
+                    unidades as c\
+                WHERE\
+                    a.empresa_id = :1\
+                    AND a.prefijo = :2\
+                    AND a.numero = :3\
+                    AND b.codigo_producto = a.codigo_producto\
+                    AND c.unidad_id = b.unidad_id\
+                    ORDER BY a.codigo_producto";
+   
+    var parametros = {
+        1: obj.empresa,
+        2: obj.prefijoDocumento , 
+        3: obj.numeroDocumento 
+    };
+       
+     G.knex.raw(sql, parametros). then(function(resultado){       
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+     
+        callback(err);
+    });        
+};
+
+DocumentoBodegaE008.prototype.obtenerTotalDetalleDespachoAutomatico = function(obj, callback){
+     
+     var sql = "SELECT\
+                    a.*,\
+                    to_char(a.fecha_vencimiento, 'YYYY-MM-DD 11:59:00') AS fecha_vencimiento_producto,\
+                    b.descripcion,\
+                    b.unidad_id,\
+		    b.contenido_unidad_venta,\
+		    b.codigo_cum,\
+		    b.codigo_invima,\
+                    c.descripcion as descripcion_unidad,\
+                    fc_descripcion_producto(b.codigo_producto) as nombre,\
+                    (a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
+                    (a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
+                    ((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
+                    (((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit_1,\
+                    ((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)) as iva_1,\
+                    ((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total_1\
                 FROM\
                     inv_bodegas_movimiento_d as a,\
                     inventarios_productos as b,\

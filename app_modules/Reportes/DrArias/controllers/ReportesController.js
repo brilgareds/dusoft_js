@@ -220,19 +220,22 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(that.m_drArias, 'rotacionZonas','1').then(function (rotacionZonas) {
-            var cabecera = {
-            nombreBodega: 'DUANA S.A',
-            empresa: '03',
-            centroUtilidad: ' 1',
-            fechaRegistro: '',
-            diferenciaDias: '',
-            swRemitente: '0',
-            swEstadoCorreo: '1',
-            logError: '',
+        var cabecera = {
+            zona: 'DUANA S.A',
+            nombre_bodega: 'DUANA S.A',
+            empresa_id: '03',
+            centro_utilidad: '1 ',
+            bodega: '03',
+            fecha_registro: '',
+            diferencia: 0,
+            sw_remitente: '0',
             remitentes: '',
-            meses: '2',
-            bodega: '03'
+            sw_estado_correo: '',
+            log_error: '',
+            meses: 2 
         };
+        
+   
         var bodegas=[];
         bodegas.push(cabecera);
         var json = {zona: 'DUANA S.A', bodegas: bodegas};

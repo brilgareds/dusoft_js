@@ -199,7 +199,21 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function (rotacionZonas) {
-
+        
+    var cabecera = {
+        nombreBodega: _data.nombre_bodega,
+        empresa: _data.empresa_id,
+        centroUtilidad: _data.centro_utilidad,
+        fechaRegistro: _data.fecha_registro,
+        diferenciaDias: _data.diferencia,
+        swRemitente: _data.sw_remitente,
+        swEstadoCorreo: _data.sw_estado_correo,
+        logError: _data.log_error,
+        remitentes: _data.remitentes,
+        meses: _data.meses,
+        bodega: _data.bodega
+    };
+        
         return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
 
     }).then(function (respuesta) {
@@ -293,6 +307,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     var fechaToday = G.moment(today).format(formato);
     var controlRotacionId;
     var listarPlanes;
+    var farmacias;
 
     G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion', bodega).then(function (respuesta) {
 
@@ -303,7 +318,8 @@ function __rotacionesBodegas(that, bodega, callback) {
         //that.io.sockets.emit('onNotificarRotacion', notificacion);  
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
 
-        return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);
+//        return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);//normal
+        return G.Q.ninvoke(that.m_drArias, 'rotacionFarmaciasDuana', bodega);
 
     }).then(function (respuesta) {
 
@@ -320,17 +336,24 @@ function __rotacionesBodegas(that, bodega, callback) {
         }
 
     }).then(function (respuesta) {
-
+        
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas');
+        
+    }).then(function (respuesta) {
+        
+        farmacias=respuesta;
         name = "Bodega: " + listarPlanes[0].nom_bode;
         archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";
-        return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);
+//        return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);//rotacion normal
+        return G.Q.nfcall(__organizaRotacionFarmacia, 0, listarPlanes, []);//rotacion todo Duana
 
     }).then(function (resultados) {
 
         resultados.nameHoja = "Rotacion";
         resultados.nameArchivo = archivoName;
         resultados.name = name;
-        return G.Q.nfcall(__creaExcel, resultados);
+      //  return G.Q.nfcall(__creaExcel, resultados);//rotaciones normales
+        return G.Q.nfcall(__creaExcelFarmacias, resultados,farmacias);
 
     }).then(function (resultados) {
 
@@ -471,8 +494,7 @@ function __creaExcel(data, callback) {
         console.log("saved");
         callback(false, data.nameArchivo);
     });
-}
-;
+};
 
 function __organizaRotacion(index, data, resultado, callback) {
 
@@ -497,65 +519,261 @@ function __organizaRotacion(index, data, resultado, callback) {
     resultColumna.stockBodega = _resultado.existencia_bd;
     resultColumna.nivel = _resultado.nivel;
     resultColumna.tipo_producto = _resultado.tipo_producto;
-   // resultColumna.color = (_resultado.existencia / ((Math.ceil((_resultado.sum)) / resultado.meses) > 0 ? Math.ceil(((_resultado.sum)) / data.meses) : 1) >= 5)  ? "ROJO" : "N/A"; //&& resultColumna.pedido60Dias === 0 || 
+    // resultColumna.color = (_resultado.existencia / ((Math.ceil((_resultado.sum)) / resultado.meses) > 0 ? Math.ceil(((_resultado.sum)) / data.meses) : 1) >= 5)  ? "ROJO" : "N/A"; //&& resultColumna.pedido60Dias === 0 || 
 
-var promedio_dia= (((resultColumna.promedioMes/30)*60)-resultColumna.totalStock);
-console.log("promedio_dia ",promedio_dia);
-var mxm = resultColumna.totalStock/resultColumna.promedioMes;
-console.log("mxm ",mxm);
-var mayor5 = resultColumna.totalStock>5;
-console.log("mayor5 ",mayor5);
+    var promedio_dia = (((resultColumna.promedioMes / 30) * 60) - resultColumna.totalStock);
 
-resultColumna.color = (promedio_dia < 0 &&  mayor5 === true && (mxm >= 5 || mxm === Infinity))?"ROJO" : "N/A";
+    var mxm = resultColumna.totalStock / resultColumna.promedioMes;
+
+    var mayor5 = resultColumna.totalStock > 5;
+
+
+    resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
 
     resultado.push(resultColumna);
 
     return __organizaRotacion(index, data, resultado, callback);
 }
 
-function __organizaRotacion0(index, data, resultado, callback) {
-
+function __organizaRotacionFarmacia(index, data, resultado, callback) {
     var _resultado = data[index];
-    index++;
 
-    if (_resultado) {
+    if (!_resultado) {
         callback(false, sortJSON(resultado, 'molecula', 'asc'));
+        return;
     }
 
     var resultColumna = {
         codigo_poducto: _resultado.codigo_producto,
-        poducto: _resultado.producto,
+        producto: _resultado.producto,
         molecula: _resultado.molecula,
         laboratorio: _resultado.laboratorio,
         tipo_producto: _resultado.tipo_producto,
+        stockBodega: _resultado.existencia_bd,
+        cantidad: _resultado.cantidad
     };
-    if (data[index] !== undefined) {
-        if (_resultado.codigo_producto === data[index].codigo_producto) {
-            resultColumna.sum1 = _resultado.mes === 'salida 1' ? _resultado.sum : (data[index].mes === 'salida 1' ? data[index].sum : 0);
-            resultColumna.sum2 = _resultado.mes === 'salida 2' ? _resultado.sum : (data[index].mes === 'salida 2' ? data[index].sum : 0);
-            index++;
-        } else {
-            resultColumna.sum1 = _resultado.mes === 'salida 1' ? _resultado.sum : 0;
-            resultColumna.sum2 = _resultado.mes === 'salida 2' ? _resultado.sum : 0;
-        }
-    } else {
-        resultColumna.sum1 = _resultado.mes === 'salida 1' ? _resultado.sum : 0;
-        resultColumna.sum2 = _resultado.mes === 'salida 2' ? _resultado.sum : 0;
-    }
-    resultColumna.promedioMes = Math.ceil((resultColumna.sum2 + resultColumna.sum1) / 2);
-    resultColumna.totalStock = _resultado.existencia;
-    resultColumna.pedido60Dias = ((resultColumna.sum2 + resultColumna.sum1)) - (_resultado.existencia) > 0 ? (resultColumna.sum2 + resultColumna.sum1) - (_resultado.existencia) : '';
-    resultColumna.stockBodega = _resultado.existencia_bd;
-    resultColumna.nivel = _resultado.nivel;
-    resultColumna.tipo_producto = _resultado.tipo_producto;
-   // resultColumna.color = _resultado.existencia / ((Math.ceil((resultColumna.sum2 + resultColumna.sum1)) / 2) > 0 ? Math.ceil(((resultColumna.sum2 + resultColumna.sum1)) / 2) : 1) >= 5 ? "ROJO" : "N/A";
-    var promedio = resultColumna.promedioMes===0?1:resultColumna.promedioMes;    
-    resultColumna.color = _resultado.existencia / promedio >=5 ? "ROJO" : "N/A"; 
-    
-    resultado.push(resultColumna);
+    var operaciones={totalSalidas:0,total:0};
+    G.Q.nfcall(__calcularPromedio, resultColumna, data, index, [], operaciones).then(function (respuesta) {
 
-    return __organizaRotacion(index, data, resultado, callback);
+        resultColumna.bodegas = respuesta[0];
+        index = respuesta[1];
+        resultColumna.totalStockFarmacias = respuesta[2].total;
+        resultColumna.totalSalidas = respuesta[2].totalSalidas;
+        resultColumna.pedido90dias = (((_resultado.cantidad/2)/30)*90) - (respuesta[2].total + _resultado.existencia_bd);
+        
+//        var promedio_dia = ((((resultColumna.totalSalidas/2) / 30) * 60) - (respuesta[2].total + _resultado.existencia_bd));
+//        var mxm = (respuesta[2].total + _resultado.existencia_bd) / (resultColumna.totalSalidas/2);
+//        var mayor5 = (respuesta[2].total + _resultado.existencia_bd) > 5;
+        
+        var color=(((resultColumna.totalSalidas/2)+(_resultado.cantidad/2))*5)-(resultColumna.totalStockFarmacias+resultColumna.stockBodega);
+//        var negro=(resultColumna.totalStockFarmacias+resultColumna.stockBodega) >((resultColumna.totalSalidas/2)+(_resultado.cantidad/2));
+        
+        resultColumna.color = (color <= 0)? "ROJO" : "N/A";
+        
+//        resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
+
+        resultado.push(resultColumna);
+//        console.log("resultado", resultColumna);
+        __organizaRotacionFarmacia(index, data, resultado, callback);
+
+    }).fail(function (err) {
+        console.log("Error", err);
+    }).done();
 }
+
+function __calcularPromedio(parametros, data, index, bodegas, operaciones, callback) {
+
+    var _resultado = data[index];
+    if (!_resultado) {
+        callback(false, bodegas, index, operaciones);
+        return;
+    }
+    if (_resultado.codigo_producto === parametros.codigo_poducto) {
+
+        var resultColumna = {
+            bodega: _resultado.nom_bode
+        };
+        console.log("_resultado ",_resultado);
+        resultColumna.totalStock = _resultado.existencia;
+        resultColumna.salidas = _resultado.sum;
+       
+        operaciones.totalSalidas += _resultado.sum;
+        operaciones.total += _resultado.existencia;  
+      
+        bodegas.push(resultColumna);
+        index++;
+        __calcularPromedio(parametros, data, index, bodegas, operaciones, callback);
+    } else {
+        callback(false, bodegas, index, operaciones);
+        return;
+    }
+}
+
+function __creaExcelFarmacias(data,farmacias, callback) {
+    
+//    console.log("farmacias ",farmacias);
+    var workbook = new G.Excel.Workbook();
+    var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
+
+    var alignment = {vertical: 'middle', horizontal: 'center'};
+    var border = {
+        top: {style: 'thin'},
+        left: {style: 'thin'},
+        bottom: {style: 'thin'},
+        right: {style: 'thin'}};
+
+    var font = {name: 'Calibri', size: 9};
+
+    var style = {font: font, border: border};
+   
+   var agregar;
+    //worksheet.addRow(["element.codigo_poducto"]);
+   agregar= [
+        {header: 'CODIGO', key: '1', style: style},
+        {header: 'PRODUCTO', key: '2', width: 50, style: style},
+        {header: 'MOLECULA', key: '3', width: 25, style: style},
+        {header: 'LABORATORIO', key: '4', style: style},
+        {header: 'TIPO PRODUCTO', key: '5', style: style} 
+    ];
+    
+   var agregar1= [
+        '',
+        '',
+        '',
+        '',
+        ''
+    ];
+    
+    var j=6;
+    
+    farmacias.forEach(function (element) {
+       var columna= {header: element.nombre_bodega, key: "'"+j+"'", width: 9, style: style};
+       agregar.push(columna);
+       agregar1.push('Salida');
+        j++;
+        ;
+       var columna1=  {header: '', key: "'"+j+"'", width: 9, style: style};
+        agregar1.push('Stock');
+        j++;
+        agregar.push(columna1);
+    });
+     j++;
+    var cabecera=[];
+    cabecera=agregar;
+    
+    cabecera.push({header: 'Total Salidas', key: "'"+j+"'", width: 9, style: style});
+    cabecera.push({header: 'Promedio Mes Fcias', key: "'"+j+"'", width: 15, style: style});
+    cabecera.push({header: 'Promedio Mes Bodega Duana', key: "'"+j+"'", width: 15, style: style});
+    cabecera.push({header: 'Total Stock Farmacias', key: "'"+j+"'", width: 15, style: style});
+    cabecera.push({header: 'Pedido 90 dias', key: "'"+j+"'", width: 9, style: style});
+    cabecera.push({header: '', key: "'"+j+"'", width: 15, style: style});
+    cabecera.push({header: 'Stock Bodega Duana', key: "'"+j+"'", width: 15, style: style});
+    
+    
+    worksheet.columns = cabecera;
+    worksheet.addRow(agregar1);
+
+
+    setTimeout(function(){ 
+
+    worksheet.views = [
+        {zoomScale: 160, state: 'frozen', xSplit: 1, ySplit: 1, activeCell: 'A1'}
+    ];
+    
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     
+        var i = 1;
+        data.forEach(function (element) {
+            var columnas = [element.codigo_poducto, element.producto, element.molecula, element.laboratorio, element.tipo_producto];
+            var t = 0;
+            var entra=true;
+            agregar.forEach(function (ele) {
+            
+                if (t > 4) {
+                    var resultado = element.bodegas.find(bod => bod.bodega === ele.header);
+                   
+                    if (resultado) {                         
+                        columnas.push(resultado.salidas);
+                        columnas.push(resultado.totalStock);
+                        entra=false;
+                    } else {
+                        if(entra){
+                        columnas.push('');
+                       }
+                       entra=true;
+                    }
+                }
+                t++;
+            });
+            columnas.push(element.totalSalidas);
+            columnas.push(element.totalSalidas/2);
+            columnas.push(element.cantidad/2);
+            columnas.push(element.totalStockFarmacias);
+            columnas.push(element.pedido90dias);
+            columnas.push('');
+            columnas.push(element.stockBodega);
+            
+            if (element.color === 'ROJO') {
+             worksheet.addRow(columnas).font = {color: {argb: 'C42807'}, name: 'Calibri', size: 9};
+            }else{
+             worksheet.addRow(columnas);   
+            }            
+            i++;
+        });
+        
+//        worksheet.getColumn('A').hidden = true;
+//        worksheet.getColumn('D').hidden = true;
+//        worksheet.getColumn('E').hidden = true;
+//        worksheet.getColumn('F').hidden = true;
+        
+    var font = {
+        name: 'SansSerif',
+        size: 9,
+        bold: true
+    };
+
+    var alignment = {vertical: 'center', horizontal: 'distributed'};
+
+    var border = {
+        top: {style: 'double'},
+        left: {style: 'double'},
+        bottom: {style: 'double'},
+        right: {style: 'double'}
+    };
+
+    var style = {font: font, border: border, alignment: alignment};
+
+//    worksheet.getCell('A1').style = style;
+//    worksheet.getCell('B1').style = style;
+//    worksheet.getCell('C1').style = style;
+//    worksheet.getCell('D1').style = style;
+//    worksheet.getCell('E1').style = style;
+//    worksheet.getCell('F1').style = style;
+//    worksheet.getCell('G1').style = style;
+//    worksheet.getCell('H1').style = style;
+//    worksheet.getCell('I1').style = style;
+//    worksheet.getCell('J1').style = style;
+//    worksheet.getCell('K1').style = style;
+console.log("element");
+console.log("element");
+console.log("element");
+console.log("element");
+//console.log("element",agregar);
+    workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
+        console.log("saved");
+        callback(false, data.nameArchivo);
+        return;
+    });
+   }, 100);
+};
+
+
 
 function sortJSON(data, key, orden) {
     return data.sort(function (a, b) {

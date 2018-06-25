@@ -337,6 +337,129 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
 	callback(err);
     });
 }
+/**
+ * @author Andres M Gonzalez
+ * +Descripcion: listado de planes
+ * @fecha 2016-06-17
+ */
+DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
+    var sql=" \
+                    select \
+                r.codigo_producto, \
+                fc_descripcion_producto(r.codigo_producto) as producto,\
+                farmacia as nom_bode,\
+                stock_farmacia as existencia, \
+                t.stock_bodega as existencia_bd,\
+                ff.descripcion as laboratorio,\
+                ee.descripcion as molecula,\
+                cantidad_total_despachada as sum,\
+                gg.descripcion as tipo_producto,\
+                q.cantidad\
+                from\
+                inventarios_productos as r\
+                inner join inv_subclases_inventarios ee on r.grupo_id = ee.grupo_id and r.clase_id=ee.clase_id and r.subclase_id= ee.subclase_id  and 	 \
+                ee.grupo_id in ('1','04','08','09','2')\
+                inner join inv_clases_inventarios ff on ee.clase_id = ff.clase_id and ee.grupo_id = ff.grupo_id\
+                inner join inv_tipo_producto gg on r.tipo_producto_id = gg.tipo_producto_id\
+                left join\
+                (select \
+                        b.codigo_producto, \
+                        sum(b.cantidad) as cantidad\
+                        from \
+                        inv_bodegas_movimiento as a\
+                        inner join inv_bodegas_movimiento_d as b on (b.empresa_id=a.empresa_id and b.prefijo=a.prefijo and b.numero=a.numero) \
+                        where \
+                        a.empresa_id='03' and a.centro_utilidad='1' and a.bodega='03'\
+                        and  a.prefijo in ('EFC','EFM')\
+                        and a.fecha_registro between (current_date - interval '"+obj.meses+" month') and now() \
+                        group by 1\
+                ) as q on (q.codigo_producto=r.codigo_producto)\
+                left join (\
+                                select aaa.codigo_producto,sum(aaa.existencia)::integer as stock_bodega\
+                                from existencias_bodegas aaa \
+                                where aaa.empresa_id = '03' and aaa.bodega = '03' \
+                                GROUP BY 1 \
+                          ) as t on (t.codigo_producto=r.codigo_producto)\
+                left join\
+                (\
+                \
+                 select \
+                            cc.descripcion as farmacia,\
+                            aa.codigo_producto,\
+                            aa.existencia::integer as stock_farmacia,\
+                            COALESCE(bb.cantidad_total_despachada, 0) as cantidad_total_despachada  \
+                            from existencias_bodegas aa\
+                            inner join bodegas cc on aa.empresa_id = cc.empresa_id and aa.bodega = cc.bodega and aa.centro_utilidad = cc.centro_utilidad \
+                            inner join inventarios_productos dd on aa.codigo_producto = dd.codigo_producto\
+                            left join (\
+                                        select \
+                                        aa.codigo_producto,aa.bodega,\
+                                        (sum(aa.cantidad_total_despachada))::integer as cantidad_total_despachada\
+                                        from \
+                                        (\
+                                          select\
+                                          d.codigo_producto,f.bodega,\
+                                          (sum(d.cantidad))::integer as cantidad_total_despachada,1\
+                                          from esm_formula_externa a \
+                                          inner join (  \
+                                            SELECT formula_id,bodegas_doc_id,numeracion,1 \
+                                            FROM esm_formulacion_despachos_medicamentos  \
+                                            GROUP BY formula_id,bodegas_doc_id,numeracion \
+                                            UNION \
+                                            SELECT formula_id,bodegas_doc_id,numeracion,2  \
+                                            FROM esm_formulacion_despachos_medicamentos_pendientes  \
+                                            GROUP BY formula_id,bodegas_doc_id,numeracion \
+                                          ) as c on a.formula_id = c.formula_id \
+                                          inner join bodegas_documentos_d d ON c.bodegas_doc_id = d.bodegas_doc_id and c.numeracion = d.numeracion \
+                                          inner join bodegas_documentos j on d.bodegas_doc_id = j.bodegas_doc_id and d.numeracion = j.numeracion\
+                                          inner JOIN bodegas_doc_numeraciones e ON d.bodegas_doc_id= e.bodegas_doc_id \
+                                          inner join bodegas f ON e.empresa_id= f.empresa_id AND e.centro_utilidad= f.centro_utilidad AND e.bodega= f.bodega \
+                                          where cast (j.fecha_registro as date) between (current_date - interval '"+obj.meses+" month') and now() \
+                                          and a.sw_estado <>'2' \
+                                          group by 1 ,2\
+                \
+                                  UNION\
+                \
+                                          select \
+                                          d.codigo_producto,f.bodega,\
+                                          (sum(d.cantidad))::integer as cantidad_total_despachada,2\
+                                          from hc_evoluciones a\
+                                          inner join (\
+                                              select evolucion_id, bodegas_doc_id, numeracion,1\
+                                              from hc_formulacion_despachos_medicamentos\
+                                              group by evolucion_id, bodegas_doc_id, numeracion\
+                                              UNION\
+                                              select evolucion_id, bodegas_doc_id, numeracion,1\
+                                              from hc_formulacion_despachos_medicamentos_pendientes\
+                                              group by evolucion_id, bodegas_doc_id, numeracion,2\
+                                          ) as c on a.evolucion_id = c.evolucion_id\
+                                          inner join bodegas_documentos_d d ON c.bodegas_doc_id = d.bodegas_doc_id and c.numeracion = d.numeracion \
+                                          inner join bodegas_documentos j on d.bodegas_doc_id = j.bodegas_doc_id and d.numeracion = j.numeracion\
+                                          inner JOIN bodegas_doc_numeraciones e ON d.bodegas_doc_id= e.bodegas_doc_id \
+                                          inner join bodegas f ON e.empresa_id= f.empresa_id AND e.centro_utilidad= f.centro_utilidad AND e.bodega= f.bodega \
+                                          where cast (j.fecha_registro as date) between (current_date - interval '"+obj.meses+" month') and now() \
+                                          group by 1,2\
+                \
+                                ) AS aa group by 1,2                        \
+                            ) as bb on aa.codigo_producto = bb.codigo_producto and bb.bodega=aa.bodega\
+                            where aa.empresa_id = 'FD'\
+                            and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0) \
+                \
+                  ) as w on (r.codigo_producto=w.codigo_producto)\
+                \
+                where \
+                (stock_farmacia > 0 or cantidad_total_despachada >0 or t.stock_bodega>0 or q.cantidad >0) \
+                order by 1,3 ;";
+    
+     var query = G.knex.raw(sql);
+    query.then(function(resultado) {
+        G.logError(G.sqlformatter.format(query.toString()));
+	callback(false, resultado.rows);
+    }). catch (function(err) {
+	console.log("Error [listarPlanes] Parametros: ", err);
+	callback(err);
+    });
+}
 
 DrAriasModel.prototype.guardarControlRotacion = function(datos, callback) {
 

@@ -236,10 +236,7 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
         };
         
    
-        var bodegas=[];
-        bodegas.push(cabecera);
-        var json = {zona: 'DUANA S.A', bodegas: bodegas};
-        rotacionZonas.push(json);
+        rotacionZonas.push(cabecera);
         console.log("rotacionZonas",rotacionZonas);
         res.send(rotacionZonas);
     }).fail(function (err) {

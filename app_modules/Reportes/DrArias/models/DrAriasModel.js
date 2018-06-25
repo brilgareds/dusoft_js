@@ -19,57 +19,57 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
     var diferenciaInicialMes = dateHoy.diff(dateInicial, 'months');
     var obj={};
     if (diferenciaInicialMes > mesDiferenciaSql) {
-	callback(false, -1);
-	return;
+  callback(false, -1);
+  return;
     }
 
     if (diferenciaInicial >= diasDiferenciaSql && diferenciaFinal >= diasDiferenciaSql) {
 
-	//se consulta en la tabla reporte_dr_arias 
-	filtro.consulta = 0;
+  //se consulta en la tabla reporte_dr_arias 
+  filtro.consulta = 0;
     } else if (diferenciaInicial < diasDiferenciaSql && diferenciaFinal < diasDiferenciaSql) {
 
-	//se realiza la consulta de dr_arias
-	filtro.consulta = 1;
+  //se realiza la consulta de dr_arias
+  filtro.consulta = 1;
     } else if (diferenciaInicial >= diasDiferenciaSql && diferenciaFinal < diasDiferenciaSql) {
-	//se realiza el union entre reporte_dr_arias y la consulta dr_Arias
-	dateFinalTable = G.moment(dateHoy).subtract(diasDiferenciaSql, "days").format("YYYY-MM-DD");
-	dateInicialSelect = G.moment(dateInicialSelect).subtract(diasDiferenciaSql - 1, "days").format("YYYY-MM-DD");
-	filtro.inicioFechaConsultaReporte = dateInicialSelect;
-	filtro.finFechaTablaReporte = dateFinalTable;
-	filtro.consulta = 2;
+  //se realiza el union entre reporte_dr_arias y la consulta dr_Arias
+  dateFinalTable = G.moment(dateHoy).subtract(diasDiferenciaSql, "days").format("YYYY-MM-DD");
+  dateInicialSelect = G.moment(dateInicialSelect).subtract(diasDiferenciaSql - 1, "days").format("YYYY-MM-DD");
+  filtro.inicioFechaConsultaReporte = dateInicialSelect;
+  filtro.finFechaTablaReporte = dateFinalTable;
+  filtro.consulta = 2;
     } else {
-	callback(false, -1);
-	return;
+  callback(false, -1);
+  return;
     }
 
     G.redis.del("dr_arias");
     G.Q.ninvoke(G.redis, "get", "dr_arias").then(function(resultado) {
 
-	cache = (!resultado) ? false : true;
-	if (!resultado) {
-	    return G.Q.ninvoke(that, "realizarReportePorRango", {filtro: filtro});
-	} else {
-	    obj.registros = JSON.parse(resultado);
-	    return G.Q.nfcall(__filtrarDrAriasCache, obj);
-	}
+  cache = (!resultado) ? false : true;
+  if (!resultado) {
+      return G.Q.ninvoke(that, "realizarReportePorRango", {filtro: filtro});
+  } else {
+      obj.registros = JSON.parse(resultado);
+      return G.Q.nfcall(__filtrarDrAriasCache, obj);
+  }
 
     }).then(function(resultado) {
 
-	if (!cache) {
+  if (!cache) {
 
-	    G.redis.setex("dr_arias", 21600, JSON.stringify(resultado));
-	    callback(false, resultado.rows);
+      G.redis.setex("dr_arias", 21600, JSON.stringify(resultado));
+      callback(false, resultado.rows);
 
-	} else {
+  } else {
 
-	    callback(false, resultado.rows);
-	    return;
-	}
+      callback(false, resultado.rows);
+      return;
+  }
 
     }).fail(function(err) {
-	console.log("Error [listarDrArias] Parametros: ", filtro, err);
-	callback(err);
+  console.log("Error [listarDrArias] Parametros: ", filtro, err);
+  callback(err);
     }).done();
 
 
@@ -87,11 +87,11 @@ DrAriasModel.prototype.borrarTemporalesReporteDrArias = function(callback) {
 
     var query = G.knex('temporal_reporte_dr_arias');
     query.whereBetween('fecha', [G.knex.raw("date_trunc('month',current_date - interval '12 month' )"), G.knex.raw("date_trunc('month',current_date - interval '11 month') - interval '1 sec'")])
-	    .del().then(function(rows) {
-	callback(false);
+      .del().then(function(rows) {
+  callback(false);
     }). catch (function(error) {
-	console.log("Error [borrarTemporalesReporteDrArias] Parametros: ", error);
-	callback(error);
+  console.log("Error [borrarTemporalesReporteDrArias] Parametros: ", error);
+  callback(error);
     });
 };
 
@@ -109,10 +109,10 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
 
     var query = G.knex.raw(sql);
     query.then(function(resultado) {
-	callback(false, resultado.rows);
+  callback(false, resultado.rows);
     }). catch (function(err) {
-	console.log("Error [listarPlanes] Parametros: ", err);
-	callback(err);
+  console.log("Error [listarPlanes] Parametros: ", err);
+  callback(err);
     });
 };
 
@@ -123,7 +123,16 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
  * @param {type} callback
  * @returns {undefined}
  */
-DrAriasModel.prototype.rotacionZonas = function (callback) {
+DrAriasModel.prototype.rotacionZonas = function (sw,callback) {
+    var filtro;
+    var orden;
+    if(sw==='0'){
+    filtro='b.descripcion';
+    orden='asc';
+    }else{
+      filtro = 'diferencia' ;
+      orden ='desc';
+    }
     var columna = [ 
         "b.descripcion as zona",
         "a.descripcion as nombre_bodega",
@@ -147,15 +156,15 @@ DrAriasModel.prototype.rotacionZonas = function (callback) {
                     })
             .leftJoin(G.knex.raw('(\
                         SELECT \
-			t1.control_rotacion_id ,t1.fecha_registro,empresa_id,centro_utilidad,t1.bodega,t1.sw_remitente,t1.remitentes,t1.sw_estado_correo,\
-			t1.log_error,t1.meses\
-			FROM control_rotaciones as t1 \
-			INNER JOIN ( \
-			SELECT \
-			bodega,MAX(fecha_registro)as fecha_registro \
-			FROM control_rotaciones GROUP BY bodega\
-			)as t2 ON t1.fecha_registro = t2.fecha_registro AND t1.bodega = t2.bodega\
-			ORDER BY t1.control_rotacion_id\
+      t1.control_rotacion_id ,t1.fecha_registro,empresa_id,centro_utilidad,t1.bodega,t1.sw_remitente,t1.remitentes,t1.sw_estado_correo,\
+      t1.log_error,t1.meses\
+      FROM control_rotaciones as t1 \
+      INNER JOIN ( \
+      SELECT \
+      bodega,MAX(fecha_registro)as fecha_registro \
+      FROM control_rotaciones GROUP BY bodega\
+      )as t2 ON t1.fecha_registro = t2.fecha_registro AND t1.bodega = t2.bodega\
+      ORDER BY t1.control_rotacion_id\
                         ) as c'),
                     function () {
                         this.on("a.empresa_id", "c.empresa_id")
@@ -167,7 +176,8 @@ DrAriasModel.prototype.rotacionZonas = function (callback) {
                     .andWhere("a.estado","1")
                     .andWhere(G.knex.raw("a.bodega not in (42,77,50,65,63,81)"))
                
-            }).orderBy('b.descripcion', 'asc');
+            }).orderBy(filtro, orden);
+
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -326,11 +336,11 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
             ) as a   \
              \
 ";
-     var query = G.knex.raw(sql);
+    var query = G.knex.raw(sql);
     query.then(function(resultado) {
-        G.logError(G.sqlformatter.format(query.toString()));
-	callback(false, resultado.rows);
+      callback(false, resultado.rows);
     }). catch (function(err) {
+
 	console.log("Error [listarPlanes] Parametros: ", err);
 	callback(err);
     });
@@ -451,34 +461,105 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
     
      var query = G.knex.raw(sql);
     query.then(function(resultado) {
-        G.logError(G.sqlformatter.format(query.toString()));
+    //    G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);
     }). catch (function(err) {
 	console.log("Error [listarPlanes] Parametros: ", err);
 	callback(err);
+
     });
 }
 
 DrAriasModel.prototype.guardarControlRotacion = function(datos, callback) {
 
     var query = G.knex("control_rotaciones").insert({
-	empresa_id: datos.empresa,
-	centro_utilidad: datos.centroUtilidad,
-	bodega: datos.bodega,
-	usuario_id: datos.usuarioId,
-	fecha_registro: 'now()',
-	sw_remitente: datos.remitente,
-	remitentes: datos.remitentes,
-	sw_estado_correo: datos.swEstadoCorreo,
+  empresa_id: datos.empresa,
+  centro_utilidad: datos.centroUtilidad,
+  bodega: datos.bodega,
+  usuario_id: datos.usuarioId,
+  fecha_registro: 'now()',
+  sw_remitente: datos.remitente,
+  remitentes: datos.remitentes,
+  sw_estado_correo: datos.swEstadoCorreo,
         meses: datos.meses
     }).returning('control_rotacion_id') ;
 
     query.then(function(resultado) {
-	callback(false, resultado);
+  callback(false, resultado);
 
     }). catch (function(err) {
-	console.log("ERROR:::guardarControlRotacion ", err);
-	callback(err);
+  console.log("ERROR:::guardarControlRotacion ", err);
+  callback(err);
+    }).done();
+};
+
+DrAriasModel.prototype.obtenerUsuarios = function(term, id_usuario, callback) {
+  var query = G.knex.select([G.knex.raw("usuario_id AS id_usuario"), "nombre"])
+                    .from("system_usuarios")
+                    .where("nombre", "ilike", "%" + term + "%").whereNotIn("usuario_id", G.knex.select(["id_usuario_asociado"])
+                                                        .from("usuarios_asociados_rotaciones")
+                                                        .where("id_usuario", id_usuario)).orderBy("nombre").limit(20);
+  //G.logError(G.sqlformatter.format(query.toString()));
+  query.then(function(resultado) {
+    callback(false, resultado);
+  }).catch (function(err) {
+    console.log("Error [obtenerUsuarios] err: ", err);
+    callback(err);
+  });  
+};
+
+DrAriasModel.prototype.obtenerUsuariosAsociados = function(id_usuario, callback) {
+  var query = G.knex.select([G.knex.raw("su.usuario_id AS id_usuario"), "su.nombre"])
+                    .from("usuarios_asociados_rotaciones as uas")
+                    .innerJoin("system_usuarios AS su",function(){
+                      this.on("su.usuario_id", "uas.id_usuario_asociado")
+                    })
+                    .where("uas.id_usuario", id_usuario);
+  //G.logError(G.sqlformatter.format(query.toString()));
+  query.then(function(resultado) {
+    callback(false, resultado);
+  }).catch (function(err) {
+    console.log("Error [obtenerUsuarios] err: ", err);
+    callback(err);
+  });  
+};
+
+DrAriasModel.prototype.eliminarUsuarioAsociado = function(id_usuario, id_usuario_asociado,callback) {
+  var query = G.knex('usuarios_asociados_rotaciones')
+    .where('id_usuario', id_usuario)
+    .andWhere('id_usuario_asociado', id_usuario_asociado).del();
+
+  //G.logError(G.sqlformatter.format(query.toString()));
+  query.then(function(resultado) {
+    callback(false, resultado);
+  }).catch (function(err) {
+    console.log("Error [eliminarUsuarioAsociado] err: ", err);
+    callback(err);
+  });  
+};
+
+DrAriasModel.prototype.consultarCorreoUsuario = function(ids_remitentes ,callback) {
+  var query = G.knex.select(["email"])
+    .from('system_usuarios')
+    .whereIn('usuario_id', ids_remitentes).whereNotNull('email');
+
+  //G.logError(G.sqlformatter.format(query.toString()));
+  query.then(function(resultado) {
+    callback(false, resultado);
+  }).catch (function(err) {
+    console.log("Error [consultarCorreoUsuario] err: ", err);
+    callback(err);
+  });  
+};
+
+DrAriasModel.prototype.guardarUsuario = function(id_usuario, id_usuario_asociado, callback) {
+    G.knex.insert({id_usuario: id_usuario,
+        id_usuario_asociado: id_usuario_asociado,
+    }).into("usuarios_asociados_rotaciones").then(function(rows) {
+      callback(false, rows);
+    }). catch (function(err) {
+      console.log("Error [guardarUsuario] Parametros: ", err);
+      callback(err);
     }).done();
 };
 
@@ -490,36 +571,36 @@ DrAriasModel.prototype.editarControlRotacion = function(datos, callback) {
     };
  
     var query=G.knex("control_rotaciones").
-	    where("control_rotacion_id", datos.controlRotacionId).
-	    update(select);
+      where("control_rotacion_id", datos.controlRotacionId).
+      update(select);
     
     query.then(function(resultado) {
-	callback(false, resultado);
+  callback(false, resultado);
         
     }). catch (function(err) {
-	console.log("Error [editarControlRotacion] Parametros: ", datos, err);
-	callback(err);
+  console.log("Error [editarControlRotacion] Parametros: ", datos, err);
+  callback(err);
     });
 };
 
 DrAriasModel.prototype.guardarEstadoReporte = function(datos, callback) {
 
     var query = G.knex("estado_reportes").insert({
-	nombre_reporte: datos.nombre_reporte,
-	nombre_archivo: datos.nombre_archivo,
-	fecha_inicio: datos.fecha_inicio,
-	estado: datos.estado,
-	parametros_de_busqueda: datos.busqueda,
-	usuario_id: datos.usuario
+  nombre_reporte: datos.nombre_reporte,
+  nombre_archivo: datos.nombre_archivo,
+  fecha_inicio: datos.fecha_inicio,
+  estado: datos.estado,
+  parametros_de_busqueda: datos.busqueda,
+  usuario_id: datos.usuario
     });
 
     query.then(function(resultado) {
 
-	callback(false, resultado);
+  callback(false, resultado);
 
     }). catch (function(err) {
-	console.log("ERROR:::guardarEstadoReporte ", err);
-	callback(err);
+  console.log("ERROR:::guardarEstadoReporte ", err);
+  callback(err);
     }).done();
 };
 
@@ -533,17 +614,15 @@ DrAriasModel.prototype.guardarControlCopias = function(datos, callback) {
     var fecha = G.moment().subtract(1, 'days').format('DD-MM-YYYY');
 
     G.knex.insert({numero_registros: datos.numero,
-		    fecha_copia: fecha,
-		    sw_copia: datos.swCopia,
-		    fecha_registro: 'now()'}).
-	    into("control_copias_dr_arias").then(function(rows) {
-	callback(false, rows);
+        fecha_copia: fecha,
+        sw_copia: datos.swCopia,
+        fecha_registro: 'now()'}).
+      into("control_copias_dr_arias").then(function(rows) {
+  callback(false, rows);
     }). catch (function(err) {
-	console.log("Error [guardarControlCopias] Parametros: ", datos, err);
-	callback(err);
+  console.log("Error [guardarControlCopias] Parametros: ", datos, err);
+  callback(err);
     }).done();
-
-
 };
 
 /**
@@ -560,10 +639,10 @@ DrAriasModel.prototype.conteoTemporalesReporteDrArias = function(callback) {
 
     var query = G.knex.raw(sql);
     query.then(function(resultado) {
-	callback(false, resultado.rows);
+  callback(false, resultado.rows);
     }). catch (function(err) {
-	console.log("Error [conteoTemporalesReporteDrArias] Parametros: ", err);
-	callback(err);
+  console.log("Error [conteoTemporalesReporteDrArias] Parametros: ", err);
+  callback(err);
     });
 };
 /**
@@ -574,14 +653,14 @@ DrAriasModel.prototype.conteoTemporalesReporteDrArias = function(callback) {
 DrAriasModel.prototype.editarConsolidadoReporte = function(datos, callback) {
     var that = this;
     G.knex("estado_reportes").
-	    where("nombre_reporte", datos.nombre_reporte).
-	    andWhere("nombre_archivo", datos.nombre_archivo).
-	    andWhere("usuario_id", datos.usuario).
-	    update({consolidado: datos.detalle, bodegas: datos.bodegasdetalle}).then(function(resultado) {
-	callback(false, resultado);
+      where("nombre_reporte", datos.nombre_reporte).
+      andWhere("nombre_archivo", datos.nombre_archivo).
+      andWhere("usuario_id", datos.usuario).
+      update({consolidado: datos.detalle, bodegas: datos.bodegasdetalle}).then(function(resultado) {
+  callback(false, resultado);
     }). catch (function(err) {
-	console.log("Error [editarConsolidadoReporte] Parametros: ", datos, err);
-	callback(err);
+  console.log("Error [editarConsolidadoReporte] Parametros: ", datos, err);
+  callback(err);
     });
 };
 /**
@@ -592,15 +671,15 @@ DrAriasModel.prototype.editarConsolidadoReporte = function(datos, callback) {
 DrAriasModel.prototype.editarEstadoReporte = function(datos, callback) {
     var that = this;
     var query = G.knex("estado_reportes").
-	    where("nombre_reporte", datos.nombre_reporte).
-	    andWhere("nombre_archivo", datos.nombre_archivo).
-	    andWhere("usuario_id", datos.usuario).
-	    update({fecha_fin: datos.fecha_fin, estado: datos.estado});
+      where("nombre_reporte", datos.nombre_reporte).
+      andWhere("nombre_archivo", datos.nombre_archivo).
+      andWhere("usuario_id", datos.usuario).
+      update({fecha_fin: datos.fecha_fin, estado: datos.estado});
     query.then(function(resultado) {
-	callback(false, resultado);
+  callback(false, resultado);
     }). catch (function(err) {
-	console.log("Error [editarEstadoReporte] Parametros: ", err);
-	callback(err);
+  console.log("Error [editarEstadoReporte] Parametros: ", err);
+  callback(err);
     });
 };
 
@@ -612,30 +691,30 @@ DrAriasModel.prototype.editarEstadoReporte = function(datos, callback) {
 DrAriasModel.prototype.reportesGenerados = function(datos, callback) {
 
     var column = [
-	"estado_reportes_id",
-	"nombre_reporte",
-	"nombre_archivo",
-	"fecha_inicio",
-	"fecha_fin",
-	"estado",
-	"usuario_id",
-	"parametros_de_busqueda",
-	"consolidado",
-	"bodegas"
+  "estado_reportes_id",
+  "nombre_reporte",
+  "nombre_archivo",
+  "fecha_inicio",
+  "fecha_fin",
+  "estado",
+  "usuario_id",
+  "parametros_de_busqueda",
+  "consolidado",
+  "bodegas"
     ];
 
     var query = G.knex.column(column)
-	    .select()
-	    .from('estado_reportes')
-	    .where("usuario_id", datos.usuario)
-	    //             callback(false, query.toSQL());
-	    .orderByRaw("4 DESC")
-	    .then(function(rows) {
-	callback(false, rows);
+      .select()
+      .from('estado_reportes')
+      .where("usuario_id", datos.usuario)
+      //             callback(false, query.toSQL());
+      .orderByRaw("4 DESC")
+      .then(function(rows) {
+  callback(false, rows);
     })
-	    . catch (function(error) {
-	console.log("Error [reportesGenerados] Parametros: ", datos, error);
-	callback(error);
+      . catch (function(error) {
+  console.log("Error [reportesGenerados] Parametros: ", datos, error);
+  callback(error);
     }).done();
 };
 
@@ -851,10 +930,10 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
 
     var query = G.knex.raw(sql);
     query.then(function(resultado) {
-	callback(false);
+  callback(false);
     }). catch (function(err) {
-	console.log("Error [addTemporalesReporteDrArias] Parametros: ");
-	callback(err);
+  console.log("Error [addTemporalesReporteDrArias] Parametros: ");
+  callback(err);
     });
 };
 
@@ -877,34 +956,34 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
 
 
     if (!obj.resultado) {
-	obj.resultado = [];
+  obj.resultado = [];
     }
 
     //Determina si se pueden sumar los dias a la fecha, de lo contrario se suma la diferencia
     if (suma <= diasDelMes) {
-	fechaFinal.add(obj.filtro.dias, 'days');
+  fechaFinal.add(obj.filtro.dias, 'days');
     } else {//diferencia
-	var dias = obj.filtro.dias - (suma - diasDelMes);
-	fechaFinal.add(dias, 'days');
+  var dias = obj.filtro.dias - (suma - diasDelMes);
+  fechaFinal.add(dias, 'days');
     }
 
     var empresa_seleccion = null;
     var centro_seleccion = null;
     var bodega_seleccion = null;
     if (obj.filtro.empresa_seleccion !== null || obj.filtro.empresa_seleccion !== 'undefined') {
-	empresa_seleccion = obj.filtro.empresa_seleccion.codigo === undefined ? null : obj.filtro.empresa_seleccion.codigo;
+  empresa_seleccion = obj.filtro.empresa_seleccion.codigo === undefined ? null : obj.filtro.empresa_seleccion.codigo;
     } else {
-	empresa_seleccion = null;
+  empresa_seleccion = null;
     }
     if (obj.filtro.centro_seleccion !== null || obj.filtro.centro_seleccion !== undefined) {
-	centro_seleccion = obj.filtro.centro_seleccion.codigo === undefined ? null : obj.filtro.centro_seleccion.codigo;
+  centro_seleccion = obj.filtro.centro_seleccion.codigo === undefined ? null : obj.filtro.centro_seleccion.codigo;
     } else {
-	centro_seleccion = null;
+  centro_seleccion = null;
     }
     if (obj.filtro.bodega_seleccion !== null || obj.filtro.bodega_seleccion !== 'undefined') {
-	bodega_seleccion = obj.filtro.bodega_seleccion.codigo === undefined ? null : obj.filtro.bodega_seleccion.codigo;
+  bodega_seleccion = obj.filtro.bodega_seleccion.codigo === undefined ? null : obj.filtro.bodega_seleccion.codigo;
     } else {
-	bodega_seleccion = null;
+  bodega_seleccion = null;
     }
 
     var sqlTablaNueva = " (select \
@@ -1147,27 +1226,27 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
 
     if (obj.filtro.consulta === 0) {
 
-	sql = sqlTablaNueva;
-	filtro = {3: obj.filtro.fecha_inicial + ' 00:00:00 ', 4: obj.filtro.fecha_final + ' 23:59:59 '};
+  sql = sqlTablaNueva;
+  filtro = {3: obj.filtro.fecha_inicial + ' 00:00:00 ', 4: obj.filtro.fecha_final + ' 23:59:59 '};
 
     } else if (obj.filtro.consulta === 1) {
 
-	sql = sqlConsulta;
-	filtro = {1: obj.filtro.fecha_inicial + ' 00:00:00 ', 2: obj.filtro.fecha_final + ' 23:59:59 '};
+  sql = sqlConsulta;
+  filtro = {1: obj.filtro.fecha_inicial + ' 00:00:00 ', 2: obj.filtro.fecha_final + ' 23:59:59 '};
 
     } else if (obj.filtro.consulta === 2) {
 
-	sql = " " + sqlConsulta + " union  " + sqlTablaNueva + " order by nom_bode,plan_descripcion,descripcion_tipo_formula,producto;";
-	filtro = {1: obj.filtro.fecha_inicial + ' 00:00:00 ', 4: obj.filtro.fecha_final + ' 23:59:59 ', 3: obj.filtro.inicioFechaConsultaReporte + ' 00:00:00 ', 2: obj.filtro.finFechaTablaReporte + ' 23:59:59 '};
+  sql = " " + sqlConsulta + " union  " + sqlTablaNueva + " order by nom_bode,plan_descripcion,descripcion_tipo_formula,producto;";
+  filtro = {1: obj.filtro.fecha_inicial + ' 00:00:00 ', 4: obj.filtro.fecha_final + ' 23:59:59 ', 3: obj.filtro.inicioFechaConsultaReporte + ' 00:00:00 ', 2: obj.filtro.finFechaTablaReporte + ' 23:59:59 '};
 
     }
    
     var query = G.knex.raw(sql, filtro);
     query.then(function(resultado) {
-	callback(false, resultado);
+  callback(false, resultado);
     }). catch (function(err) {
-	console.log("Error [realizarReportePorRango] Parametros: ", obj, err);
-	callback(err);
+  console.log("Error [realizarReportePorRango] Parametros: ", obj, err);
+  callback(err);
     });
 
 };
@@ -1175,9 +1254,9 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
 
 function __filtrarDrAriasCache(obj, callback) {
     var resultado = new G.jsonQuery().
-	    from(obj.registros)
-	    .where("fecha_formula = " + new Date())
-	    .select();
+      from(obj.registros)
+      .where("fecha_formula = " + new Date())
+      .select();
     callback(false, resultado);
 }
 

@@ -43,6 +43,66 @@ FormulacionExternaModel.prototype.obtenerAfiliado = function(tipoIdentificacion,
     });
 };
 
+FormulacionExternaModel.prototype.obtenerAfiliadosExternos = function(estructurasPlanes, tipoIdentificacion, identificacion, callback) {
+    var queryText = "";
+    var tamano = estructurasPlanes.length - 1;
+    estructurasPlanes.forEach(function(plan, index){
+        if(index != tamano){
+            queryText += "select \
+                        afiliado_id as paciente_id, \
+                        afiliado_tipo_id as tipo_id_paciente,\
+                        primer_nombre || ' ' || segundo_nombre as nombres,\
+                        primer_apellido || ' ' || segundo_apellido as apellidos,\
+                        'AC' as estado_afiliado_id,\
+                        '"+ plan.plan_id + "' as plan_atencion,\
+                        rango as rango_afiliado_atencion,\
+                        '" + plan.descripcion + "' as plan_descripcion,\
+                        tipo_afiliado_id,\
+                        rango\
+            from interfaces_planes." + plan.nombre_tbl + " \
+            where afiliado_id = '" + identificacion + "' and afiliado_tipo_id = '" + tipoIdentificacion + "'\
+            union ";
+        } else {
+            queryText += "select \
+                        afiliado_id as paciente_id, \
+                        afiliado_tipo_id as tipo_id_paciente,\
+                        primer_nombre || ' ' || segundo_nombre as nombres,\
+                        primer_apellido || ' ' || segundo_apellido as apellidos,\
+                        'AC' as estado_afiliado_id,\
+                        '296' as plan_atencion,\
+                        rango as rango_afiliado_atencion,\
+                        '" + plan.descripcion + "' as plan_descripcion,\
+                        tipo_afiliado_id,\
+                        rango\
+            from interfaces_planes." + plan.nombre_tbl + " \
+            where afiliado_id = '" + identificacion + "' and afiliado_tipo_id = '" + tipoIdentificacion + "' ";
+        }
+    });
+
+    var query = G.knex.raw(queryText);
+    //G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado){
+        console.log(resultado.rows[0]);
+        callback(false,  resultado.rows);
+    }).catch(function(err){
+        G.logError("err FormulacionExternaModel [obtenerAfiliado]: " + err);
+        callback(err);
+    });
+};
+
+FormulacionExternaModel.prototype.obtenerEstructurasPlanes = function(callback) {
+    var query = G.knex.select(["plan_id", "nombre_tbl", "descripcion", "estado"])
+                    .from("estructura_planes as e")
+                    .where("e.estado", 1);
+
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        G.logError("err FormulacionExternaModel [obtenerEstructurasPlanes]: " + err);
+        callback(err);
+    });                   
+};
+
 FormulacionExternaModel.prototype.existeFormulaTmp = function(tipoIdentificacion, identificacion, callback) {
     var query = G.knex.select(["fe.usuario_id", "fe.tmp_formula_papel", "su.nombre"])
                     .from("esm_formula_externa_tmp as fe")
@@ -1655,19 +1715,19 @@ FormulacionExternaModel.prototype.obtenerCabeceraFormula = function(formula_id, 
 
     var query = G.knex.select(columnas)
                         .from('esm_formula_externa AS FR')
-                        .innerJoin('eps_afiliados AS EPS', function(){
+                        .leftJoin('eps_afiliados AS EPS', function(){
                             this.on("EPS.afiliado_id", "FR.paciente_id").andOn("EPS.afiliado_tipo_id", "FR.tipo_id_paciente").andOn("EPS.plan_atencion", "FR.plan_id");
                         })
-                        .innerJoin("eps_tipos_afiliados AS AFI", function(){
+                        .leftJoin("eps_tipos_afiliados AS AFI", function(){
                             this.on("EPS.eps_tipo_afiliado_id", "AFI.eps_tipo_afiliado_id");
                         })
-                        .innerJoin("planes_rangos AS PLAR", function(){
+                        .leftJoin("planes_rangos AS PLAR", function(){
                             this.on("EPS.plan_atencion", "PLAR.plan_id").andOn("EPS.tipo_afiliado_atencion", "PLAR.tipo_afiliado_id").andOn("EPS.rango_afiliado_atencion", "PLAR.rango");
                         })
-                        .innerJoin("planes AS PLA", function(){
+                        .leftJoin("planes AS PLA", function(){
                             this.on("PLAR.plan_id", "PLA.plan_id");
                         })
-                        .innerJoin("tipos_planes AS TIPOP", function(){
+                        .leftJoin("tipos_planes AS TIPOP", function(){
                             this.on("PLA.sw_tipo_plan", "TIPOP.sw_tipo_plan");
                         })
                         .leftJoin('profesionales AS PROF', function(){

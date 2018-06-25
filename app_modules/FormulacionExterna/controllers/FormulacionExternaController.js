@@ -8,6 +8,7 @@ FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
     var that = this;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
+    var tmp = {afiliado : null};
 
     G.Q.ninvoke(that.m_formulacionExterna,'existeFormulaTmp', args.tipoIdentificacion, args.identificacion).then(function(resultado){
         if(resultado.length > 0){
@@ -20,8 +21,32 @@ FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
         }
         return G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliado', args.tipoIdentificacion, args.identificacion);
     }).then(function(resultado){
-        res.send(G.utils.r(req.url, 'obtiene afiliado', 200, resultado[0]));
-    });
+        //tabla donde estan todos los planes --> estructura_planes
+        if(resultado.length > 0){
+            tmp.afiliado = resultado[0];
+            return [];
+        }
+
+        return G.Q.ninvoke(that.m_formulacionExterna,'obtenerEstructurasPlanes');
+    }).then(function(estructurasPlanes){
+
+        if(estructurasPlanes.length > 0){
+            console.log('entra a if estructurasPlanes');
+            //tmp.afiliado = resultado[0];
+            return G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliadosExternos',estructurasPlanes, args.tipoIdentificacion, args.identificacion);
+        }
+
+        return [];
+    }).then(function(afiliadoExterno){
+
+        if(afiliadoExterno.length > 0){
+            tmp.afiliado = afiliadoExterno[0];
+        }
+        res.send(G.utils.r(req.url, 'obtiene afiliado', 200, tmp.afiliado));
+    }).fail(function(err){
+        G.logError("FormulacionExternaController [obtenerAfiliado] " + err);
+        res.send(G.utils.r(req.url, 'error al obtenerAfiliado', 500, err));
+    }).done();
 }
 
 FormulacionExterna.prototype.obtenerMunicipios = function(req, res){
@@ -150,7 +175,6 @@ FormulacionExterna.prototype.buscarProductos = function(req, res){
     }).done();
 }
 
-
 FormulacionExterna.prototype.buscarProductosPorPrincipioActivo = function(req, res){
     var that = this;
     var args = req.body.data;
@@ -222,7 +246,6 @@ FormulacionExterna.prototype.consultaExisteFormula = function(req, res){
         res.send(G.utils.r(req.url, 'error consultaExisteFormula', 500, err));
     }).done();
 }
-
 
 FormulacionExterna.prototype.obtenerLotesDeProducto = function(req, res){
     var that = this;
@@ -488,7 +511,6 @@ FormulacionExterna.prototype.generarEntrega  = function(req, res){
     }).done();
 }
 
-
 FormulacionExterna.prototype.generarEntregaPendientes  = function(req, res){
     var that = this;
     var args = req.body.data;
@@ -519,9 +541,8 @@ FormulacionExterna.prototype.generarEntregaPendientes  = function(req, res){
         res.send(G.utils.r(req.url, 'Error generando entrega', 500, err));
     }).done();
 }
-/*
-*/
- FormulacionExterna.prototype.imprimirMedicamentosPendientesPorDispensar = function(req, res){
+
+FormulacionExterna.prototype.imprimirMedicamentosPendientesPorDispensar = function(req, res){
     var that = this;
     var args = req.body.data;
 
@@ -566,7 +587,6 @@ FormulacionExterna.prototype.generarEntregaPendientes  = function(req, res){
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
-
 
 FormulacionExterna.prototype.imprimirMedicamentosDispensados = function(req, res){
     var that = this;
@@ -712,7 +732,6 @@ function __generarPdf(datos, callback) {
         });
     });
 };
-
 
 FormulacionExterna.$inject = ["m_formulacion_externa", "m_dispensacion_hc"];
 module.exports = FormulacionExterna;

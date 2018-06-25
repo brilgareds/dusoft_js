@@ -428,7 +428,7 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
             item.centroUtilidad = item.centro_utilidad;
             item.remitentes = correosRemitentes;
 
-            __rotacionesBodegasMovil(that, item, res, function (data) {
+            __rotacionesBodegas(that, item,function (data) {
                 if (data.estado !== 200) {
                     if (item.remitente === '1') {
                         var subject = "Error al Generar Rotación (ver detalles) " + fechaToday;

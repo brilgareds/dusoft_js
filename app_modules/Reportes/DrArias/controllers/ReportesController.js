@@ -160,7 +160,7 @@ Reportes.prototype.listarPlanes = function (req, res) {
         res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: listarPlanes}));
     }).
             fail(function (err) {
-                console.log("error controller listarPlanes ", err);
+                console.log("Error controller listarPlanes ", err);
                 res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
             }).
             done();
@@ -209,7 +209,7 @@ Reportes.prototype.rotacionZonas = function (req, res) {
     res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
         
     }).fail(function (err) {
-        console.log("error controller listarPlanes ", err);
+        console.log("error controller rotacion Zonas ", err);
         res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
     }).done();
 };
@@ -239,7 +239,7 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
         rotacionZonas.push(json);
         res.send(rotacionZonas);
     }).fail(function (err) {
-        console.log("error controller listarPlanes ", err);
+        console.log("error controller rotacion Zonas Movil ", err);
         res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
     }).done();
 };
@@ -571,7 +571,7 @@ function __rotacionesBodegas(that, bodega, callback) {
             callback(err);
         });
 
-        console.log("error controller listarPlanes ", err);
+        console.log("error controller __rotacionesBodegas ", err);
     }).done();
 }
 
@@ -687,7 +687,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
             callback(err);
         });
 
-        console.log("error controller listarPlanes ", err);
+        console.log("error controller __rotaciones Bodegas Movil", err);
 
     }).done(function(){
 

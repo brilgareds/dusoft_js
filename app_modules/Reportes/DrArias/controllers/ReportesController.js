@@ -237,6 +237,7 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
         bodegas.push(cabecera);
         var json = {zona: 'DUANA S.A', bodegas: bodegas};
         rotacionZonas.push(json);
+        console.log("rotacionZonas",rotacionZonas);
         res.send(rotacionZonas);
     }).fail(function (err) {
         console.log("error controller rotacion Zonas Movil ", err);

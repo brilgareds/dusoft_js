@@ -501,6 +501,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     }).then(function (respuesta) {
         
         farmacias=respuesta;
+        console.log("respuestarespuestarespuesta ", respuesta);
         if(bodega.bodega!=='03'){
             name = "Bodega: " + listarPlanes[0].nom_bode;
             archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            

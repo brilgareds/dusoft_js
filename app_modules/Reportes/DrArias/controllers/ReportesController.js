@@ -466,7 +466,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     var farmacias;
 
     G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion', bodega).then(function (respuesta) {
-console.log("guardarControlRotacion ");
+console.log("guardarControlRotacion bodega ",bodega);
         bodega.controlRotacionId = respuesta[0]; 
         bodega.swEstadoCorreo = 0;
         notificacion = bodega;

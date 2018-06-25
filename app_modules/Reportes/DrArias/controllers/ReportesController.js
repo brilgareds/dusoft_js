@@ -428,7 +428,7 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
             item.centroUtilidad = item.centro_utilidad;
             item.remitentes = correosRemitentes;
 
-            __rotacionesBodegas(that, item, res, function (data) {
+            __rotacionesBodegasMovil(that, item, res, function (data) {
                 if (data.estado !== 200) {
                     if (item.remitente === '1') {
                         var subject = "Error al Generar Rotación (ver detalles) " + fechaToday;
@@ -609,15 +609,38 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
         }
 
     }).then(function (respuesta) {
+        
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0');
+        
+    }).then(function (respuesta) {
+        
         name = "Bodega: " + listarPlanes[0].nom_bode;
         archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";
         return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);
+        
+         farmacias=respuesta;
+        if(bodega.bodega!=='03'){
+            name = "Bodega: " + listarPlanes[0].nom_bode;
+            archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            
+            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);//rotacion normal
+        }else{
+            name = "Bodega: DUANA S.A";
+            archivoName = "DUANA S.A_" + fechaToday + "_" + bodega.meses + ".xlsx";            
+            return G.Q.nfcall(__organizaRotacionFarmacia, 0, listarPlanes, []);//rotacion todo Duana
+        }
+        
 
     }).then(function (resultados) {
+        
         resultados.nameHoja = "Rotacion";
         resultados.nameArchivo = archivoName;
         resultados.name = name;
-        return G.Q.nfcall(__creaExcel, resultados);
+        
+        if(bodega.bodega!=='03'){
+            return G.Q.nfcall(__creaExcel, resultados);//rotaciones normales
+        }else{
+            return G.Q.nfcall(__creaExcelFarmacias, resultados,farmacias);
+        }
 
     }).then(function (resultados) {
         bodega.swEstadoCorreo = 2;

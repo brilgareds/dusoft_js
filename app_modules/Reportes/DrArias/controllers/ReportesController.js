@@ -466,7 +466,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     var farmacias;
 
     G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion', bodega).then(function (respuesta) {
-
+console.log("guardarControlRotacion ");
         bodega.controlRotacionId = respuesta[0]; 
         bodega.swEstadoCorreo = 0;
         notificacion = bodega;
@@ -475,13 +475,15 @@ function __rotacionesBodegas(that, bodega, callback) {
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
         
         if(bodega.bodega!=='03'){
+            console.log("rotacion ",bodega.bodega);
             return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);//normal
         }else{
+            console.log("rotacionFarmaciasDuana ",bodega.bodega);
             return G.Q.ninvoke(that.m_drArias, 'rotacionFarmaciasDuana', bodega);
         }
 
     }).then(function (respuesta) {
-
+console.log("guardarControlRotacion ",respuesta);
         if (respuesta.length > 0) {
 
             listarPlanes = respuesta;

@@ -63,7 +63,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
                         
             $scope.agregar = function (check,dato) {    
-                console.log(dato);
+                
                 if (check) {
                     that.listRotacionBodegas.push(dato);
                 } else {
@@ -81,15 +81,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                  });
             };
             
-            $scope.email=function(dato){
-               
-                if(dato===1){
-                    console.log("11111",dato);
+            $scope.email=function(dato){               
+                if(dato===1){                    
                    $scope.checkedSistemas=false; 
                    $scope.checkedDuarte=true; 
                 }
                 if(dato===0){
-                    console.log("0000",dato);
+                   
                    $scope.checkedDuarte=false; 
                    $scope.checkedSistemas=true;
                 }
@@ -124,7 +122,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         meses:$scope.mes.id
                     };
                     that.buscarRotaciones(parametros);
-                    
+                    $scope.checkedDuarte=false;      
+                    $scope.checkedSistemas=false;
                 } else {
                     if (that.listRotacionBodegas.length <= 0) {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar una Farmacia");
@@ -194,7 +193,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var obj = {
                     session: $scope.session
                 };
-                ParametrosBusquedaService.rotacionZonasMovil(obj, function(data) {
+                ParametrosBusquedaService.rotacionZonas(obj, function(data) {
                     if (data.status === 200) {
 //                        console.log(data.obj.rotacionZonas);
                        that.renderRotacionZonasMovil(data.obj.rotacionZonas); 
@@ -216,7 +215,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                  var listaRotacionZona = [];
                 data.forEach(function(objt) {
                      
-            if(objt.zona!==""){  console.log("1-"+objt.zona); 
+            if(objt.zona!==""){  
                     var listaRotacionZonasDetalle = [];
                     var rotacionZonas = Zona.get();
                     rotacionZonas.setNombreZona(objt.zona);
@@ -246,41 +245,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                     
                   });
-                  $scope.listaRotacionZonas = listaRotacionZona;
-                
-//                var listaRotacionZonas = [];
-//                var rotacionZonas = undefined;
-//                var zonaName = "";
-//                
-//                for (var i in data.obj.rotacionZonas) {
-//                    var objt = data.obj.rotacionZonas[i];
-//                    var bodegas = {
-//                        nombreBodega: objt.nombre_bodega,
-//                        empresa: objt.empresa_id,
-//                        centroUtilidad: objt.centro_utilidad,
-//                        fechaRegistro: objt.fecha_registro,
-//                        diferenciaDias: objt.diferencia,
-//                        swRemitente: objt.sw_remitente,
-//                        swEstadoCorreo: objt.sw_estado_correo,
-//                        logError: objt.log_error,
-//                        remitentes: objt.remitentes,
-//                        meses: objt.meses,
-//                        bodega: objt.bodega                        
-//                    };
-//
-//                    if (objt.zona !== zonaName) {
-//                        if (rotacionZonas !== undefined) {
-//                            rotacionZonas.setNombreBodegas(listaRotacionZonasDetalle);
-//                            listaRotacionZonas.push(rotacionZonas);
-//                        }
-//                        zonaName = objt.zona;
-//                        var listaRotacionZonasDetalle = [];
-//                        var rotacionZonas = Zona.get();
-//                        rotacionZonas.setNombreZona(objt.zona);
-//                    }
-//                    listaRotacionZonasDetalle.push(bodegas);
-//                }
-//                $scope.listaRotacionZonas = listaRotacionZonas;
+                  $scope.listaRotacionZonas = listaRotacionZona;                
+
             };
             /**
              * +Descripcion:renderizar la consulta al modelo
@@ -289,7 +255,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @returns {objeto}
              */
             that.renderRotacionZonas = function (data) {
-                console.log(data);
+          
                 var listaRotacionZonas = [];
                 var rotacionZonas = undefined;
                 var zonaName = "";

@@ -168,7 +168,6 @@ DrAriasModel.prototype.rotacionZonas = function (callback) {
                     .andWhere(G.knex.raw("a.bodega not in (42,77,50,65,63,81)"))
                
             }).orderBy('b.descripcion', 'asc');
-//console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -332,7 +331,6 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
         G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);
     }). catch (function(err) {
-//        console.log("AAAAAAAA ",G.sqlformatter.format(query.toString()));
 	console.log("Error [listarPlanes] Parametros: ", err);
 	callback(err);
     });

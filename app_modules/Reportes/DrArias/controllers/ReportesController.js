@@ -220,6 +220,7 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(that.m_drArias, 'rotacionZonas','1').then(function (rotacionZonas) {
+        
         var cabecera = {
             zona: 'DUANA S.A',
             nombre_bodega: 'DUANA S.A',
@@ -237,7 +238,7 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
         
    
         rotacionZonas.push(cabecera);
-        console.log("rotacionZonas",rotacionZonas);
+       
         res.send(rotacionZonas);
     }).fail(function (err) {
         console.log("error controller rotacion Zonas Movil ", err);
@@ -297,7 +298,7 @@ Reportes.prototype.obtenerUsuariosAsociados = function (req, res) {
     var usuario_id = req.body.session.usuario_id;
 
     G.Q.ninvoke(that.m_drArias, 'obtenerUsuariosAsociados', usuario_id).then(function (usuarios) {
-        console.log(usuarios);
+       
         res.send(usuarios);
     }).fail(function (err) {
         console.log("error controller guardarUsuario ", err);
@@ -395,7 +396,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
 Reportes.prototype.generarRotacionesMovil = function (req, res) {
     var that = this;
     var args = req.body;
-    //console.log('los datos --->', req.body.data.remitentes[0], req.body.data.remitentes[1]);
+ 
     var usuarioId = req.body.session.usuario_id;
     var remitentes = args.data.remitentes;
     var today = new Date();
@@ -467,7 +468,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     var farmacias;
 
     G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion', bodega).then(function (respuesta) {
-console.log("guardarControlRotacion bodega ",bodega);
+
         bodega.controlRotacionId = respuesta[0]; 
         bodega.swEstadoCorreo = 0;
         notificacion = bodega;
@@ -476,7 +477,7 @@ console.log("guardarControlRotacion bodega ",bodega);
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
         
         if(bodega.bodega!=='03'){
-            console.log("rotacion ",bodega.bodega);
+           
             return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);//normal
         }else{
             console.log("rotacionFarmaciasDuana ",bodega.bodega);
@@ -484,7 +485,7 @@ console.log("guardarControlRotacion bodega ",bodega);
         }
 
     }).then(function (respuesta) {
-console.log("guardarControlRotacion ",respuesta);
+
         if (respuesta.length > 0) {
 
             listarPlanes = respuesta;
@@ -504,7 +505,7 @@ console.log("guardarControlRotacion ",respuesta);
     }).then(function (respuesta) {
         
         farmacias=respuesta;
-        console.log("respuestarespuestarespuesta ", respuesta);
+   
         if(bodega.bodega!=='03'){
             name = "Bodega: " + listarPlanes[0].nom_bode;
             archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            

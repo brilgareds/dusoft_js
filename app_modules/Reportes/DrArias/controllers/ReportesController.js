@@ -166,17 +166,6 @@ Reportes.prototype.listarPlanes = function (req, res) {
             done();
 };
 
-//Reportes.prototype.rotacionZonas0 = function (req, res) {
-//    var that = this;
-//    var args = req.body.data;
-//
-//    G.Q.ninvoke(that.m_drArias, 'rotacionZonas').then(function (rotacionZonas) {
-//        res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: rotacionZonas}));
-//    }).fail(function (err) {
-//        console.log("error controller listarPlanes ", err);
-//        res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
-//    }).done();
-//};
 
 Reportes.prototype.rotacionZonas = function (req, res) {
     var that = this;
@@ -184,28 +173,10 @@ Reportes.prototype.rotacionZonas = function (req, res) {
 
     G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0').then(function (rotacionZonas) {
                   
-        return G.Q.nfcall(__ordenarZonas, rotacionZonas, 1, [], '', []);
+        return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
 
     }).then(function (respuesta) {
     
-    var cabecera = {
-        nombreBodega: 'DUANA S.A',
-        empresa: '03',
-        centroUtilidad: ' 1',
-        fechaRegistro: '',
-        diferenciaDias: '',
-        swRemitente: '0',
-        swEstadoCorreo: '1',
-        logError: '',
-        remitentes: '',
-        meses: '2',
-        bodega: '03'
-    };
-    var bodegas=[];
-    bodegas.push(cabecera);
-    var json = {zona: 'DUANA S.A', bodegas: bodegas};
-    respuesta.push(json);
-
     res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
         
     }).fail(function (err) {
@@ -220,25 +191,7 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(that.m_drArias, 'rotacionZonas','1').then(function (rotacionZonas) {
-        
-        var cabecera = {
-            zona: 'DUANA S.A',
-            nombre_bodega: 'DUANA S.A',
-            empresa_id: '03',
-            centro_utilidad: '1 ',
-            bodega: '03',
-            fecha_registro: '',
-            diferencia: 0,
-            sw_remitente: '0',
-            remitentes: '',
-            sw_estado_correo: '',
-            log_error: '',
-            meses: 2 
-        };
-        
-   
-        rotacionZonas.push(cabecera);
-       
+         
         res.send(rotacionZonas);
     }).fail(function (err) {
         console.log("error controller rotacion Zonas Movil ", err);

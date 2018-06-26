@@ -613,7 +613,7 @@ FormulacionExternaModel.prototype.obtenerLotesDeProducto = function(empresa_id, 
                 .on("invci.clase_id", "invp.clase_id")
         });
 
-        G.logError(G.sqlformatter.format(query.toString()));
+        //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){

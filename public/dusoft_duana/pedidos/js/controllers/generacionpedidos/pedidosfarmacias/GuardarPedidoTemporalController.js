@@ -254,7 +254,7 @@ define(["angular", "js/controllers",
             if(pedido.length===productos.length){
              self.generarPedidoFarmacia=false;
             }
-             
+  
             if (productos.length > 0) {
                 var cotizacions = {
                     empresa_id: '03',
@@ -275,7 +275,8 @@ define(["angular", "js/controllers",
                     },
                     fecha_registro: fecha,
                     usuario_id: $scope.root.session.usuario_id,
-                    pedido_multiple_farmacia:1
+                    pedido_multiple_farmacia:1,
+                    estadoMultiplePedido: $scope.root.bodegaMultiple.bools === true ? 1 : 0
                 };
 
 

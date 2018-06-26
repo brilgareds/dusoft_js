@@ -267,14 +267,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          *              se agregaran productos al detalle del temporal de facturacion
          *              y posteriormente facturar
          */
-        $scope.detalleFacturaTemporal = function(entity){   
+        $scope.detalleFacturaTemporal = function(entity){  
             if(entity.getEstadoFacturacion() !=="0"){
                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El temporal ya ha sido facturado");
                 return;
             };
             
-            localStorageService.add("facturaTemporalCabecera",
-            {
+            var parametros={
                 nombre_tercero: entity.mostrarTerceros()[0].getNombre(),
                 tipo_id_tercero: entity.mostrarTerceros()[0].getTipoId(),
                 tercero_id: entity.mostrarTerceros()[0].getId(),
@@ -284,7 +283,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 fecha_registro: entity.getFechaRegistro(),
                 id_factura_xconsumo: entity.getId(),
                 estado:0
-            }); 
+            };
+            console.log("parametros ",parametros);
+
+            localStorageService.add("facturaTemporalCabecera",parametros); 
             $state.go("GuardarFacturaConsumo");
         };
         

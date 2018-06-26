@@ -1,0 +1,61 @@
+<div>
+
+
+    <div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix">
+                        <div class="pull-left col-md-11">
+                            <h4 class="text-center"><strong>{{ datos_form.titulo}}</strong></h4>
+                        </div>
+                        <div class="pull-right">
+                            <div>
+                                <button ng-click="onCerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div>
+                            <div class="row">
+
+                                <div class=" col-sm-4 col-md-4 col-lg-4  pull-right">                                
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                {{filtroNombre.nombre}} 
+                                                <span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <li ng-repeat="filtro in filtros">
+                                                    <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <input type="text" class="form-control" ng-keyup="buscador_productos($event);"  ng-model="root.termino_busqueda" placeholder="Buscar" name="" id="" />
+                                        <div class="input-group-btn" >
+                                            <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which: 13})"><i class="glyphicon glyphicon-search"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <br>
+                            <div class="" style="height: 700px;" ng-grid="lista_productos"> </div>
+
+                            </br>
+
+                            <div class="row text-center">
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()" >
+                                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                                </button>
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="root.cantidad_consulta < 25" ng-click="paginaSiguiente()">
+                                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                                </button>
+                            </div>    
+                        </div>
+                    </div>
+                </div>       
+            </div>
+        </div>        
+    </div>
+</div>

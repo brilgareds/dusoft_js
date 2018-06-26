@@ -1,15 +1,15 @@
 
 define(["angular", "js/controllers"], function (angular, controllers) {
 
-    controllers.controller('I012GestionarClientesController', [
+    controllers.controller('I007GestionarTercerosController', [
         '$scope', '$rootScope', 'Request',
         '$modal', '$modalInstance', 'API', "socket", "$timeout", "$filter", "Usuario",
-        "AlertService", "$state", 'I012Service',
+        "AlertService", "$state", 'I007Service',
         'Usuario',
-        "Clientes",
+        "TercerosI007",
         'tipoTerceros',
         function ($scope, $rootScope, Request, $modal, $modalInstance, API, socket, $timeout, $filter, Sesion,
-                AlertService, $state, I012Service, Usuario, Clientes, tipTer) {
+                AlertService, $state, I007Service, Usuario, Terceros, tipTer) {
 
             var that = this;
             $scope.parametros = '';
@@ -22,7 +22,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $scope.datos_form = {
-                listado_clientes: []
+                listado_terceros: []
             };
 
             $scope.onCerrar = function () {
@@ -30,7 +30,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $scope.root.filtros = [
-                {tipo: 'Nombre', descripcion: "Nombre"}
+                {id: 'Nombre', descripcion: "Nombre"}
             ];
 
             $scope.root.filtro = $scope.root.filtros[0];
@@ -51,14 +51,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             /**
              * @author German Galvis
-             * @fecha 24/03/2018
+             * @fecha 01/06/2018
              * +Descripcion Metodo encargado de invocar el servicio que
              *              listara los clientes para facturar
              *  @parametros ($event = eventos del teclado)
              */
-            $scope.buscarClientesFactura = function (event) {
+            $scope.buscarTercero = function (event) {
                 if (event.which === 13 || event.which === 1) {
-                    that.listarClientes();
+                    that.listarTerceros();
                 }
 
             };
@@ -66,13 +66,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             /*
              * Descripcion: lista todos los clientes existentes
              * @author German Andres Galvis
-             * @fecha  24/03/2018
+             * @fecha  01/06/2018
              */
-            that.listarClientes = function () {
+            that.listarTerceros = function () {
                 var usuario = Usuario.getUsuarioActual();
                 var obj = {
                     session: $scope.session,
-                    listar_clientes: {
+                    data: {
                         filtro: $scope.root.filtro,
                         terminoBusqueda: $scope.root.termino_busqueda,
                         empresaId: usuario.getEmpresa().getCodigo(),
@@ -80,32 +80,32 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 };
 
-                I012Service.listarClientes(obj, function (data) {
+                I007Service.listarTerceros(obj, function (data) {
                     if (data.status === 200) {
-                        $scope.root.cantidad_consulta = data.obj.listarClientes.length;
+                        $scope.root.cantidad_consulta = data.obj.listarTerceros.length;
 
                         if ($scope.root.cantidad_consulta === 0) {
                             AlertService.mostrarMensaje("warning", "no se encontraron registros");
                         }
 
-                        that.renderClientes(data.obj.listarClientes);
+                        that.renderTerceros(data.obj.listarTerceros);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
                 });
             };
 
-            that.renderClientes = function (clientes) {
-                $scope.datos_form.listado_clientes = [];
+            that.renderTerceros = function (clientes) {
+                $scope.datos_form.listado_terceros = [];
                 clientes.forEach(function (data) {
-                    var cliente = Clientes.get(data.nombre_tercero, data.tipo_id_tercero, data.tercero_id,
+                    var tercero = Terceros.get(data.nombre_tercero, data.tipo_id_tercero, data.tercero_id,
                             data.direccion, data.telefono, data.pais, data.dv);
-                    $scope.datos_form.listado_clientes.push(cliente);
+                    $scope.datos_form.listado_terceros.push(tercero);
                 });
             };
 
-            $scope.lista_clientes = {
-                data: 'datos_form.listado_clientes',
+            $scope.lista_terceros = {
+                data: 'datos_form.listado_terceros',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
@@ -116,7 +116,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     {field: 'nombre_tercero', displayName: 'Nombre', width: "65%", enableCellEdit: false},
                     {width: "10%", displayName: "Opción", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="seleccionarCliente(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="seleccionarTercero(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                 ]
             };
@@ -129,7 +129,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 if ($scope.paginaactual === 1)
                     return;
                 $scope.paginaactual--;
-                that.listarClientes();
+                that.listarTerceros();
             };
 
 
@@ -139,16 +139,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
              */
             $scope.paginaSiguiente = function () {
                 $scope.paginaactual++;
-                that.listarClientes();
+                that.listarTerceros();
             };
 
             /*
              * Descripcion: guarda la informacion del cliente seleccionado
              * @author German Andres Galvis
-             * @fecha  26/03/2018
+             * @fecha  18/05/2018
              */
-            $scope.seleccionarCliente = function (cliente) {
-                $modalInstance.close(cliente);
+            $scope.seleccionarTercero = function (tercero) {
+                $modalInstance.close(tercero);
             };
 
 

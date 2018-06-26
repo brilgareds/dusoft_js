@@ -225,7 +225,11 @@ define([
             };
 
             $scope.btn_adicionar_producto = function (fila) {
-                that.guardarProductoTmp(fila);
+                if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
+                    that.guardarNewDocTmp(fila);
+                } else {
+                    that.guardarProductoTmp(fila);
+                }
             };
 
             /**
@@ -400,16 +404,12 @@ define([
             that.init(function () {
             });
 
-            $scope.grabar_documento_tmp = function () {
-                that.guardarNewDocTmp();
-            };
-
             /**
              * @author German Galvis
              * +Descripcion Metodo encargado de guardar NewDocTmp
              * @fecha 08/05/2018 DD/MM/YYYY
              */
-            that.guardarNewDocTmp = function () {
+            that.guardarNewDocTmp = function (fila) {
                 var usuario = Usuario.getUsuarioActual();
                 var obj = {
                     session: $scope.session,
@@ -427,6 +427,7 @@ define([
                         $scope.doc_tmp_id = data.obj.movimiento_temporal_id;
                         $scope.validarDesdeLink = true;
                         $scope.isTmp();
+                        that.guardarProductoTmp(fila);
                     }
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -627,9 +628,6 @@ define([
              */
             $scope.habilitarAdicion = function (producto) {
                 var disabled = false;
-                if ($scope.doc_tmp_id === "00000") {
-                    disabled = true;
-                }
 
                 if (producto.cantidad_ingresada === undefined || producto.cantidad_ingresada === "" || parseInt(producto.cantidad_ingresada) <= 0) {
                     disabled = true;

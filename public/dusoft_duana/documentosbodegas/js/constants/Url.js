@@ -1,4 +1,4 @@
-define(["angular"], function(angular) {
+define(["angular"], function (angular) {
     var Url = angular.module('Url', []);
 
     var BASE_URL = "/api";
@@ -35,9 +35,25 @@ define(["angular"], function(angular) {
                 'EXEC_CREAR_DOCUMENTOS': BASE_URL + '/movBodegas/I002/execCrearDocumento',
                 'CREAR_HTML_DOCUMENTO': BASE_URL + '/movBodegas/I002/crearHtmlDocumento',
                 'CREAR_HTML_AUTORIZACION': BASE_URL + '/movBodegas/I002/crearHtmlAutorizacion'
-                                
+
             },
             'I003': {
+            },
+            'I007': {
+                'LISTAR_TIPOS_TERCEROS': BASE_URL + "/movBodegas/I007/listarTiposTerceros",
+                'LISTAR_TERCEROS': BASE_URL + "/movBodegas/I007/listarTerceros",
+                'LISTAR_PRESTAMOS': BASE_URL + "/movBodegas/I007/listarPrestamos",
+                'LISTAR_PRODUCTOS': BASE_URL + '/movBodegas/I007/listarProductos',
+                'CONSULTAR_PRODUCTOS_TRASLADO': BASE_URL + "/movBodegas/I007/listarProductosTraslado",
+                'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/I007/newDocTemporal',
+                'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I007/eliminarGetDocTemporal',
+                'AGREGAR_ITEM': BASE_URL + '/movBodegas/I007/agregarItem',
+                'ELIMINAR_PRODUCTO_TRASLADO': BASE_URL + '/movBodegas/I007/eliminarItem',
+                'LISTAR_TERCERO_ID': BASE_URL + "/movBodegas/I007/listarTerceroId",
+                'LISTAR_PRESTAMO_ID': BASE_URL + "/movBodegas/I007/listarPrestamoId",
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/I007/crearDocumento',
+                'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I007/crearHtmlDocumento'
+
             },
             'I011': {
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/I011/listarBodegas',
@@ -102,7 +118,7 @@ define(["angular"], function(angular) {
                 'LISTAR_EGRESO_ID': BASE_URL + "/movBodegas/E007/listarEgresoId",
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/E007/crearDocumento',
                 'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/E007/crearHtmlDocumento'
-                
+
             },
             'E009': {
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/E009/crearDocumento',
@@ -134,13 +150,13 @@ define(["angular"], function(angular) {
             'ORDENES_COMPRA': {
                 'LISTAR_PRODUCTOS': BASE_URL + '/OrdenesCompra/listarProductos',
             },
-            'FACTURACIONPROVEEDOR':{
+            'FACTURACIONPROVEEDOR': {
                 'INSERTAR_FACTURA': BASE_URL + "/FacturacionProveedores/ingresarFactura"
             }
         }
     };
 
-    angular.forEach(data, function(key, value) {
+    angular.forEach(data, function (key, value) {
         Url.constant(value, key);
     });
 

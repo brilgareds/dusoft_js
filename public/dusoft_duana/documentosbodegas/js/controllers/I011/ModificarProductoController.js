@@ -87,7 +87,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             </p>\
                                         </div>'},
                     {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'}
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero  class="form-control grid-inline-input" name="" id="" /> </div>'}
 
                 ]
 

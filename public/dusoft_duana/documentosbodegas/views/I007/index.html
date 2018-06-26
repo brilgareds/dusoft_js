@@ -30,31 +30,16 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <fieldset>
-                                <legend>Tipo Egreso</legend> 
-                                <div class="row">
-                                    <div class="col-md-7">                                          
-                                        <ui-select ng-model="documento_ingreso.egreso" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
-                                            <ui-select-match  placeholder="Seleccionar">{{ $select.selected.descripcion}}</ui-select-match>
-                                            <ui-select-choices repeat="egreso in egresos | filter:$select.search">
-                                                {{ egreso.descripcion}}
-                                            </ui-select-choices>
-                                        </ui-select>
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
-                        <div class="col-md-4">
 
                             <fieldset>
-                                <legend>Cliente</legend>      
+                                <legend>Tercero</legend>      
 
                                 <div class="row">  
                                     <div class="">
                                         <div class="col-md-3">
                                             <p class="input-group">
-                                                <button  type="button" class="btn btn-info btn-medium pull-right ng-scope" ng-disabled="validarDesdeLink" ng-click="btn_seleccionar_cliente()">
-                                                    <span class="glyphicon glyphicon-plus"></span> Buscar Cliente
+                                                <button  type="button" class="btn btn-info btn-medium pull-right ng-scope" ng-disabled="validarDesdeLink" ng-click="btn_seleccionar_tercero()">
+                                                    <span class="glyphicon glyphicon-plus"></span> Buscar Tercero
                                                 </button>
                                             </p>
                                         </div>
@@ -63,17 +48,13 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <fieldset>
-                                    <legend>Cliente Seleccionado</legend>
-                                    <h4 class=""><strong>{{cliente_seleccionado.nombre_tercero}}</strong></h4>
-                                </fieldset>
-                            </div>
+                        <div class="col-md-4">
+                            <fieldset>
+                                <legend>Tercero Seleccionado</legend>
+                                <h4 class=""><strong>{{tercero_seleccionado.nombre_tercero}}</strong></h4>
+                            </fieldset>
                         </div>
-                    </div>
 
-                    <div class="row">
                         <div class="col-md-4">
 
                             <fieldset>
@@ -86,6 +67,24 @@
                             </fieldset>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <fieldset>
+                                <legend>Tipo Prestamo</legend> 
+                                <div class="row">
+                                    <div class="col-md-7">                                          
+                                        <ui-select ng-model="documento_ingreso.prestamo" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
+                                            <ui-select-match  placeholder="Seleccionar">{{ $select.selected.descripcion}}</ui-select-match>
+                                            <ui-select-choices repeat="prestamo in prestamos | filter:$select.search">
+                                                {{ prestamo.descripcion}}
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+
 
                     <br>
                     <br>
@@ -97,7 +96,7 @@
                                 <div class="">
                                     <div class="col-md-3">
                                         <p class="input-group">
-                                            <button  type="button" class="btn btn-info btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()"  ng-click="btn_seleccionar_productos()">
+                                            <button  type="button" class="btn btn-info btn-medium pull-right ng-scope"  ng-disabled="habilitar_btn_productos()" ng-click="btn_seleccionar_productos()">
                                                 <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                             </button>
                                         </p>
@@ -133,6 +132,9 @@
                                     <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
                                         <span class="glyphicon glyphicon-trash" ></span> Eliminar
                                     </button>
+<!--                                    <button   class="btn btn-success" ng-click="generar_documento()" >
+                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento
+                                    </button> -->
                                 </div>  
                             </div>  
                         </div>

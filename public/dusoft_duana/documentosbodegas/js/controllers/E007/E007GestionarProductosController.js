@@ -18,7 +18,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $scope.datos_form = {
-                listado_clientes: []
+                listado_productos: []
             };
 
             $scope.onCerrar = function () {
@@ -122,31 +122,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     {field: 'descripcion', displayName: 'Descripcion', width: "50%", enableCellEdit: false},
                     {field: 'existencia', displayName: 'Existencias', width: "12%", enableCellEdit: false},
                     {field: 'disponible', displayName: 'Disponibilidad', width: "12%", enableCellEdit: false},
-//                    {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "12%", enableCellEdit: false,
-//                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "10%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="btn_adicionar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                 ]
-//                        <button class="btn btn-default btn-xs" ng-click="btn_adicionar_producto(row.entity)" ng-disabled="habilitarCheck(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
             };
-
-
-//            $scope.habilitarCheck = function (producto) {
-//                var disabled = false;
-//
-//                if (producto.cantidad === undefined || producto.cantidad === "" || parseInt(producto.cantidad) <= 0) {
-//                    disabled = true;
-//                }
-//                if (parseInt(producto.cantidad) > parseInt(producto.existencia)) {
-//                    AlertService.mostrarMensaje("warning", "la cantidad ingresada no puede superar las existencias");
-//                    disabled = true;
-//                }
-//
-//                return disabled;
-//            };
-
 
             function sumarDias(fecha, dias) {
                 fecha.setDate(fecha.getDate() + dias);
@@ -225,8 +206,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 $scope.producto.lote = lote.lote;
                                 $scope.producto.cantidad = lote.cantidad;
                                 $scope.producto.fecha_vencimiento = $filter('date')(lote.fecha_vencimiento, "dd/MM/yyyy");
-//                                $modalInstance.close($scope.producto);
-                                that.guardarProductoTmp($scope.producto);
+                                if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
+                                    $scope.grabar_documento_tmp(function callback(resul) {
+                                        if (resul) {
+                                            that.guardarProductoTmp($scope.producto);
+                                        }
+                                    });
+                                } else {
+                                    that.guardarProductoTmp($scope.producto);
+                                }
+
                             };
 
                             /*
@@ -247,7 +236,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         lote: producto.lote,
                                         fechaVencimiento: producto.fecha_vencimiento,
                                         disponible: producto.disponible,
-                                        docTmpId: DocTmp
+                                        docTmpId: $scope.doc_tmp_id
                                     }
                                 };
 
@@ -270,42 +259,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }]
                 };
                 var modalInstance = $modal.open($scope.opts);
-                modalInstance.result.then(function (resul) {
-//                    that.guardarProductoTmp(resul);
-                });
-
             };
-
-//            /*
-//             * Descripcion: agrega los productos al tmp 
-//             * @author German Andres Galvis
-//             * @fecha  23/05/2018
-//             */
-//            that.guardarProductoTmp = function (producto) {
-//
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        empresa_id: Empresa.getCodigo(),
-//                        centro_utilidad: Empresa.centroUtilidad.codigo,
-//                        bodega: Empresa.centroUtilidad.bodega.codigo,
-//                        codigoProducto: producto.codigo_producto,
-//                        cantidad: producto.cantidad,
-//                        lote: producto.lote,
-//                        fechaVencimiento: producto.fecha_vencimiento,
-//                        disponible: producto.disponible,
-//                        docTmpId: DocTmp
-//                    }
-//                };
-//
-//                E007Service.agregarProductoTmp(obj, function (data) {
-//                    if (data.status === 200) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    } else {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    }
-//                });
-//            };
 
             /**
              * +Descripcion Metodo encargado de invocar el servicio que listara 

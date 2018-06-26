@@ -809,9 +809,9 @@ function __organizaRotacionFarmacia(index, data, resultado, callback) {
 
         resultColumna.bodegas = respuesta[0];
         index = respuesta[1];
-        resultColumna.totalStockFarmacias = respuesta[2].total;
-        resultColumna.totalSalidas = respuesta[2].totalSalidas;
-        resultColumna.pedido90dias = (((_resultado.cantidad/2)/30)*90) - (respuesta[2].total + _resultado.existencia_bd);
+        resultColumna.totalStockFarmacias = Math.ceil(respuesta[2].total);
+        resultColumna.totalSalidas = Math.ceil(respuesta[2].totalSalidas);
+        resultColumna.pedido90dias = Math.ceil((((_resultado.cantidad/2)/30)*90) - (respuesta[2].total + _resultado.existencia_bd));
         
 //        var promedio_dia = ((((resultColumna.totalSalidas/2) / 30) * 60) - (respuesta[2].total + _resultado.existencia_bd));
 //        var mxm = (respuesta[2].total + _resultado.existencia_bd) / (resultColumna.totalSalidas/2);
@@ -961,8 +961,8 @@ function __creaExcelFarmacias(data,farmacias, callback) {
                 t++;
             });
             columnas.push(element.totalSalidas);
-            columnas.push(element.totalSalidas/2);
-            columnas.push(element.cantidad/2);
+            columnas.push(Math.ceil(element.totalSalidas/2));
+            columnas.push(Math.ceil(element.cantidad/2));
             columnas.push(element.totalStockFarmacias);
             columnas.push(element.pedido90dias);
             columnas.push('');

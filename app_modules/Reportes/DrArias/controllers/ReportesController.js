@@ -811,18 +811,12 @@ function __organizaRotacionFarmacia(index, data, resultado, callback) {
         index = respuesta[1];
         resultColumna.totalStockFarmacias = Math.ceil(respuesta[2].total);
         resultColumna.totalSalidas = Math.ceil(respuesta[2].totalSalidas);
-        resultColumna.pedido90dias = Math.ceil((((_resultado.cantidad/2)/30)*90) - (respuesta[2].total + _resultado.existencia_bd));
-        
-//        var promedio_dia = ((((resultColumna.totalSalidas/2) / 30) * 60) - (respuesta[2].total + _resultado.existencia_bd));
-//        var mxm = (respuesta[2].total + _resultado.existencia_bd) / (resultColumna.totalSalidas/2);
-//        var mayor5 = (respuesta[2].total + _resultado.existencia_bd) > 5;
-        
+        var pedido90dias = Math.ceil((((_resultado.cantidad/2)/30)*90) - (respuesta[2].total + _resultado.existencia_bd));
+        resultColumna.pedido90dias = pedido90dias<0?0:pedido90dias;
+           
         var color=(((resultColumna.totalSalidas/2)+(_resultado.cantidad/2))*5)-(resultColumna.totalStockFarmacias+resultColumna.stockBodega);
-//        var negro=(resultColumna.totalStockFarmacias+resultColumna.stockBodega) >((resultColumna.totalSalidas/2)+(_resultado.cantidad/2));
-        
+ 
         resultColumna.color = (color <= 0)? "ROJO" : "N/A";
-        
-//        resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
 
         resultado.push(resultColumna);
         __organizaRotacionFarmacia(index, data, resultado, callback);

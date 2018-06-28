@@ -6,7 +6,7 @@ var PedidosModel = function(productos, pedidos_cliente, pedidos_farmacia) {
 };
 
 // Función para calcular la disponibilidad de un producto, teniendo en cuenta las "reservas"
-PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador, empresa_id, numero_pedido, codigo_producto, estadoAprobacion, callback) {
+PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador, empresa_id, bodega_id, numero_pedido, codigo_producto, estadoAprobacion, callback) {
 
     var that = this;
 
@@ -31,18 +31,18 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                 var fecha_registro_pedido = datos.fecha_registro_pedido;
 
 
-                consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {
+                consultar_cantidad_total_pendiente_producto(empresa_id, bodega_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {
 
                     cantidad_total_pendiente = (cantidad_total.length === 1) ? cantidad_total[0].cantidad_total_pendiente : 0;
 
 
                     //cantidad reservada para cotizaciones
-                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias_por_fecha(codigo_producto, fecha_registro_pedido, function(err, total_reservado_temporales) {
+                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias_por_fecha(empresa_id, bodega_id, codigo_producto, fecha_registro_pedido, function(err, total_reservado_temporales) {
 
                         var cantidad_temporal_farmacia = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
 
 
-                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha(codigo_producto, fecha_registro_pedido, function(err, total_reservado_cotizaciones) {
+                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha(empresa_id, bodega_id, codigo_producto, fecha_registro_pedido, function(err, total_reservado_cotizaciones) {
 
                             var cantidad_temporal_clientes = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
 
@@ -70,7 +70,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 cantidad_despachada = cantidad_despachada + cantidad_despachos;
 
                                 // se consulta el total de existencias del producto seleccionado
-                                that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, {}, function(err, stock_producto) {
+                                that.m_productos.consultar_stock_producto(empresa_id, bodega_id, codigo_producto, {}, function(err, stock_producto) {
                                     stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
                                     
                                     //Producto bloqueado por compras, stock se deja en 0 para la formula de disponible
@@ -133,21 +133,24 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                 var fecha_registro_pedido = datos.fecha_registro;
 
 
-                consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {
-
+                consultar_cantidad_total_pendiente_producto(empresa_id, bodega_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {
+                    console.log('cantidad_total --> ', cantidad_total);
                     cantidad_total_pendiente = (cantidad_total.length === 1) ? cantidad_total[0].cantidad_total_pendiente : 0;
+                    console.log('cantidad_total_pendiente', cantidad_total_pendiente);
 
 
 
-                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias_por_fecha(codigo_producto, fecha_registro_pedido, function(err, total_reservado_temporales) {
+                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias_por_fecha(empresa_id, bodega_id, codigo_producto, fecha_registro_pedido, function(err, total_reservado_temporales) {
 
                         var cantidad_temporal_farmacia = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
+                        console.log('cantidad_temporal_farmacia', cantidad_temporal_farmacia);
 
-                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha(codigo_producto, fecha_registro_pedido, function(err, total_reservado_cotizaciones) {
+                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha(empresa_id, bodega_id, codigo_producto, fecha_registro_pedido, function(err, total_reservado_cotizaciones) {
 
                             var cantidad_temporal_clientes = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
 
                             cantidad_reservada_temporales = cantidad_temporal_farmacia + cantidad_temporal_clientes;
+                            console.log('cantidad_temporal_clientes', cantidad_temporal_clientes);
 
                             // Se consulta el detalle del pedido
                             that.m_pedidos_clientes.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
@@ -167,9 +170,10 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 }
 
                                 // se consulta el total de existencias del producto seleccionado
-                                that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, {}, function(err, stock_producto) {
+                                that.m_productos.consultar_stock_producto(empresa_id, bodega_id, codigo_producto, {}, function(err, stock_producto) {
 
                                     stock = (stock_producto && stock_producto.length === 1) ? stock_producto[0].existencia : 0;
+
 
                                     //Producto bloqueado por compras, stock se deja en 0 para la formula de disponible
                                     if (stock_producto  && stock_producto[0].estado === '0' && estadoAprobacion !== '1') {
@@ -181,13 +185,16 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     if (parseInt(cantidad_despachada) === parseInt(stock)) {
                                         cantidad_despachada = 0;
                                     }
+                                    console.log('stock', stock);
                                     
                                     //Correccion de bug de stock en calculo de disponible
                                     if(parseInt(stock) < parseInt(cantidad_despachada)){
                                         disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                        console.log('disponible bodega 1', disponible_bodega);
                                     } else if(parseInt(cantidad_total_pendiente) === 0 && parseInt(cantidad_reservada_temporales) === 0) {
                                         
                                         disponible_bodega = parseInt(stock);
+                                        console.log('disponible bodega 2', disponible_bodega);
                                        
                                     } else {
                                          /*
@@ -304,14 +311,14 @@ function consultar_cantidad_total_productos_despachados(empresa_id, codigo_produ
 };
 
 // Consultar la cantidad total pendiente de un producto
-function consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto, fecha_registro_pedido, callback) {
+function consultar_cantidad_total_pendiente_producto(empresa_id, bodega_id, codigo_producto, fecha_registro_pedido, callback) {
 
     var sql = " select coalesce(sum(cantidad_total_pendiente), 0) as cantidad_total_pendiente \
                 from (\
                   select b.codigo_producto, coalesce(SUM( b.cantidad_pendiente),0) AS cantidad_total_pendiente\
                   from solicitud_productos_a_bodega_principal a \
                   inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
-                  where a.empresa_destino = :1 and b.codigo_producto = :2 and b.cantidad_pendiente > 0 \
+                  where a.empresa_destino = :1 and b.codigo_producto = :2 and a.bodega_destino = :4 and b.cantidad_pendiente > 0 \
                   and a.fecha_registro < :3 GROUP BY 1\
                   union\
                   SELECT\
@@ -319,12 +326,13 @@ function consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto
                   coalesce(SUM((b.numero_unidades - b.cantidad_despachada)),0) as cantidad_total_pendiente\
                   FROM ventas_ordenes_pedidos a\
                   inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                  where a.empresa_id = :1 and b.codigo_producto = :2 and (b.numero_unidades - b.cantidad_despachada) > 0  \
+                  where a.empresa_id = :1 and b.codigo_producto = :2 and a.bodega_destino = :4 and (b.numero_unidades - b.cantidad_despachada) > 0  \
                   and a.fecha_registro < :3 and a.estado = '1' GROUP BY 1\
                 ) as a";
 
-    G.knex.raw(sql, {1: empresa_id, 2: codigo_producto, 3: fecha_registro_pedido}).
-            then(function(resultado) {
+    var query = G.knex.raw(sql, {1: empresa_id, 2: codigo_producto, 3: fecha_registro_pedido, 4 : bodega_id});
+    //G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
         callback(err);

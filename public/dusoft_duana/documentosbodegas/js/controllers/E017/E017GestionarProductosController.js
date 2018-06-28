@@ -127,7 +127,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Descripcion', width: "35%", enableCellEdit: false},
-                    //{field: 'subClase', displayName: 'Molecula', width: "15%", enableCellEdit: false},
                     {field: 'existencia', displayName: 'Existencias', width: "10%", enableCellEdit: false},
                     {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
@@ -176,8 +175,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     AlertService.mostrarMensaje("warning", "No se permite trasladar productos vencidos");
                     return;
                 }
-
-                that.guardarProductoTmp(fila);
+                if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
+                    $scope.grabar_documento_tmp(function callback(resul) {
+                        if (resul) {
+                            that.guardarProductoTmp(fila);
+                        }
+                    });
+                } else {
+                    that.guardarProductoTmp(fila);
+                }
             };
 
             /*
@@ -197,7 +203,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         cantidad: producto.cantidad,
                         lote: producto.lote,
                         fechaVencimiento: producto.fecha_vencimiento,
-                        docTmpId: DocTmp
+                        docTmpId: $scope.doc_tmp_id
                     }
                 };
 

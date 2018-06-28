@@ -23,7 +23,7 @@ define(["angular", "js/controllers",
 
             var that = this;
             
-            //that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
+            that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
                 /**

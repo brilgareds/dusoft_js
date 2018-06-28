@@ -665,7 +665,7 @@ FormulacionExternaModel.prototype.obtenerLotesDeProducto = function(empresa_id, 
                 .on("invsinv.clase_id", "invp.clase_id")
                 .on("invsinv.subclase_id", "invp.subclase_id")
         })
-        .innerJoin('inv_med_cod_forma_farmacologica as invmcf', function(){
+        .leftJoin('inv_med_cod_forma_farmacologica as invmcf', function(){
             this.on("invmcf.cod_forma_farmacologica", "invp.cod_forma_farmacologica")
         })
         .innerJoin('inv_clases_inventarios as invci', function(){
@@ -715,6 +715,7 @@ FormulacionExternaModel.prototype.verificarLoteEstaInsertado = function(formula_
     .from('esm_dispensacion_medicamentos_tmp')
     .where('formula_id_tmp', formula_id_tmp).andWhere('codigo_producto', codigo_producto).andWhere('fecha_vencimiento', fecha_vencimiento).andWhere('lote', lote);
 
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
@@ -980,7 +981,7 @@ function __cantidadProductoTemporal(formula_id_tmp, formula_id, codigo_producto,
     ];
 
     var query = G.knex.select(columnas).from("esm_dispensacion_medicamentos_tmp").where(function(){
-        if(formula_id_tmp == '' || formula_id_tmp == 'undefined'){
+        if(formula_id_tmp == '' || formula_id_tmp == 'undefined' || formula_id_tmp == null){
            this.where("codigo_formulado", codigo_producto).andWhere("formula_id", formula_id);
         }else{
            this.where("codigo_formulado", codigo_producto).andWhere("formula_id_tmp", formula_id_tmp);

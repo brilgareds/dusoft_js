@@ -97,7 +97,7 @@ define(["angular", "js/controllers",
                 ],
                 opcion_pedido: [
                     {descripcion: "Crear",tipo_pedido: 0},
-                    //{descripcion: "Crear multiple",tipo_pedido: 1}              
+                    {descripcion: "Crear multiple",tipo_pedido: 1}              
                 ],
                 opcion_inicial: {descripcion: "Seleccione",tipo_pedido: -1},
                     
@@ -1286,7 +1286,7 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-                //localStorageService.remove("multiple_pedido");
+                localStorageService.remove("multiple_pedido");
                 socket.remove(['onListarEstadoCotizacion','onListarPedidosClientes','onListarEstadoPedido']);  
                                      
             });

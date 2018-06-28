@@ -124,15 +124,20 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             filterOptions: $scope.filtroGrid,
             columnDefs: [
 
+                
+                {field: 'prefijofacturaFiscal',  cellClass: "ngCellText", width: "6%", displayName: '# Factura'},
                 {field: 'producto',  cellClass: "ngCellText", width: "8%", displayName: 'Producto'},
-                {field: 'descripcionProducto',  cellClass: "ngCellText", width: "35%", displayName: 'Producto'},
+                {field: 'descripcionProducto',  cellClass: "ngCellText", width: "40%", displayName: 'Producto'},
                 {field: 'cantidadDespachada',  cellClass: "ngCellText", width: "8%", displayName: 'Cant a despachar'},
                 {field: 'lote',  cellClass: "ngCellText", width: "8%", displayName: 'Lote'},
-                {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "15%", displayName: 'Fecha vto'},
+                {field: 'fechaVencimiento',  cellClass: "ngCellText", width: "5%", displayName: 'Fecha vto'},//10
                 {field: 'valorUnitario',  cellClass: "ngCellText", width: "10%", displayName: 'Valor unitario'},
-                {field: 'porcIvaTotal',  cellClass: "ngCellText", width: "10%", displayName: 'Iva'},
-                
-                { displayName: "Opc", cellClass: "txt-center",
+                {field: 'porcIvaTotal',  cellClass: "ngCellText", width: "5%", displayName: 'Iva'},//5
+                {displayName: "Subtotal", cellClass: "txt-right ngCellText", width: "6%",
+                cellTemplate: '<div>\
+                              $ {{row.entity.valorUnitario*row.entity.cantidadDespachada}}\
+                              </div>'},
+                { displayName: "Opc", cellClass: "txt-center", width: "5%",
                 cellTemplate: '<button\
                     class="btn btn-default btn-xs" \n\
                     ng-validate-events="{{ habilitar_seleccion_producto() }}" \n\
@@ -262,7 +267,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                 
                 if(data.status === 200){
                     AlertService.mostrarMensaje("success", data.msj);
-                    that.listarDetalleTmpFacturaConsumo();
+                    //that.listarDetalleTmpFacturaConsumo();
                     $scope.onDocumentoSeleccionado();
                 }else{
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -584,7 +589,6 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                             $scope.root.observacion = lsTemp.observaciones;
                             $scope.root.idFacturaXconsumo =lsTemp.id_factura_xconsumo;
                             $scope.root.estadoConsulta =lsTemp.estado;
-                            console.log("AAAAAAAAAAAAAA",$scope.root.estadoConsulta);
                             that.listarCliente(lsTemp.nombre_tercero, function(estado){
                                 if(estado){
                                     $scope.root.cliente = TerceroDespacho.get(lsTemp.nombre_tercero, 

@@ -357,3 +357,45 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.56', 'DOCUMENTOS BODEGA', 'Se ajusta la busqueda de productos para el documento ETF');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.57  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.57', 'FORMULACION EXTERNA', 'Se adiciona la identificacion a las impresiones.');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.58  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.58', 'Facturacion Despachos', 'Se modifica la consulta y la vista para que muestre los efc de los productos seleccionados y se corrige la empresa_id de la consulta');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.59  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.59', 'Facturacion Despachos', 'Se modifica la consulta y la vista para que muestre los efc de los productos seleccionados y se corrige la empresa_id de la consulta');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.60  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.60', 'Kardex', 'Se modifica la empresa por defecto para que la tome de la seccion');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.61  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.61', 'Facturacion Despachos', 'Se modifica el controlador para que genere el id del temporal');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.62  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.62', 'Formulacion Externa', 'Se ajusta en dispensacion de pendientes, el formula_id no se enviaba para calcular la cantidad dispensada dle pendiente.');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.63  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.63', 'Formulacion Externa', 'Se ajusta en dispensacion de pendientes, validacion en formula_id y formula_id_tmp al momento de buscar los medicamentos en temporal');
+COMMIT TRANSACTION;

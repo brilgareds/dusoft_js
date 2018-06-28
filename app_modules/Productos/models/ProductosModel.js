@@ -174,7 +174,7 @@ ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, ter
 // Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
 //               PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 
-ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_producto, filtro, callback) {
+ProductosModel.prototype.consultar_stock_producto = function(empresa_id, bodega_id,  codigo_producto, filtro, callback) {
     
     var sqlAux = "";
     
@@ -189,10 +189,11 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_
     var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia, c.estado from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
-                where a.empresa_id = :1  and a.codigo_producto = :2 and a.estado = '1'" +sqlAux +" group by 2";
+                where a.empresa_id = :1  and a.codigo_producto = :2 and a.bodega = :3 and a.estado = '1'" +sqlAux +" group by 2";
     
-   G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto}).
-   then(function(resultado){
+   var query =  G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto, 3 : bodega_id});
+    //G.logError(G.sqlformatter.format(query.toString()));
+   query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
        callback(err);
@@ -273,8 +274,10 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
                 "order by a.existencia_actual desc, a.fecha_registro desc ;";
 
     
-   G.knex.raw(sql, obj).
-   then(function(resultado){
+   var query = G.knex.raw(sql, obj);
+
+    //G.logError(G.sqlformatter.format(query.toString()));
+   query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
        callback(err);

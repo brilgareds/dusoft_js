@@ -492,12 +492,17 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                     ORDER BY a.fecha_verificacion DESC \
                     ";
     }
+
   
    var parametros =  {1: obj.pedidoId, 2: obj.tipoPedido, 3: obj.codigoProducto}; 
    var query = G.knex.select(G.knex.raw(sql, parametros)).
         limit(limite).
-        offset(offsett).
-        then(function(resultado){  
+        offset(offsett);
+
+
+    G.logError(G.sqlformatter.format(query.toString()));
+
+        query.then(function(resultado){  
          callback(false, resultado);
         }).catch(function(err){
           console.log("error sql",err);

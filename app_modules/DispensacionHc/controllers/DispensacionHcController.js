@@ -26,6 +26,92 @@ DispensacionHc.prototype.eliminarFormulasSinMovimiento = function(){
     }).done();
 }
 
+DispensacionHc.prototype.sincronizacionFormulasDispensadas = function(){
+    
+    var that = this;
+    
+    G.Q.ninvoke(that.m_dispensacion_hc,'formulasDispensadas',{}).then(function(resultado){
+        
+        return G.Q.nfcall(__codificarFormulasDispensadas,resultado,0,[]);
+     
+    }).then(function(resultado){  
+     //   console.log("Resultado:::",JSON.stringify(resultado));
+        if(resultado.length >0){
+            return G.Q.nfcall(__wsSincronizarFormulasDispensadas,resultado); 
+        }else{
+            throw {msj:'[formulasDispensadas]: Consulta Sin datos', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+      
+     throw {msj:'[sincronizacionFormulasDispensadas]: sincronizacion Formulas Dispensadas', status: 201};
+     // console.log("ok ",resultado);
+    
+    }).fail(function(err){      
+     //   console.log(" err ", err);  
+    }).done();
+}
+
+function __codificarFormulasDispensadas(productos, index, resultado, callback){
+  var producto = productos[index];
+  
+  if(!producto){
+   callback(false,resultado);
+   return;
+  }
+                  
+  var detalle ={
+                "numero_formula":  String(producto.numero_formula),
+                "tipo_formula":  String(producto.tipo_formula),
+                "codigo_producto":  String(producto.codigo_producto_formulado),
+                "codigo_producto_despachado":  String(producto.codigo_producto_despachado),
+                "cantidad_despachada":  String(parseInt(producto.cantidad)),
+                "numero_entrega":  String(producto.numero_entega),
+                "fecha_dispensacion":  String(producto.fecha_dispensacion)
+               };
+               
+     resultado.push(detalle);
+     index++;
+    __codificarFormulasDispensadas(productos, index, resultado, callback);           
+  
+}
+
+function __wsSincronizarFormulasDispensadas(parametros,callback){
+    var obj={};
+    var url =  G.constants.WS().DISPENSACION_HC.FORMULAS_DISPENSADAS;
+     
+    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
+        
+    var datos = {data:parametros};
+    
+    return G.Q.ninvoke(client, "getDispensation", datos);
+                
+    }).spread(function(result,raw,soapHeader){
+console.log("result.return.msj[$value]",result.return);
+console.log("result.return.msj[$value]",result.return.message["$value"]);
+           return true;
+        if(!result.return){
+            throw {msj:"Se ha generado un error", status:403, obj:{}}; 
+        } else {            
+            obj.mensaje = result.return.message["$value"];
+        }
+
+    }).then(function(){
+
+     callback(false, obj);    
+
+    }).fail(function(err) {    
+
+                obj.error = true;
+                obj.tipo = '0';
+              console.log("Error ");
+              console.log("Werr ", err);
+                G.logError(JSON.stringify(err));
+     callback(err);
+
+    }).done();   
+}
+
 /*
  * @author Cristian Ardila
  * @fecha 20/05/2016

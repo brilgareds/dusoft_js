@@ -78,6 +78,114 @@ DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
     });
 
 };
+/**
+ * @fecha 27/06/2018 (DD-MM-YYYY)
+ * +Descripcion consulta que trae todas las formulas dispensadas el dia anterior
+ */
+DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callback)
+{
+    var sql = "select formula_id as numero_formula,\
+                    tipo_formula,\
+                    codigo_medicamento as codigo_producto_formulado,\
+                    codigo_producto as codigo_producto_despachado,\
+                    cantidad,\
+                    numero_entrega_actual as numero_entega,\
+                    to_char(fecha,'YYYY-MM-DD')  as fecha_dispensacion \
+                    from (\
+                  select \
+                        distinct fdm.formula_id, \
+                        bdd.lote, \
+                        efe.formula_papel, \
+			'1' as tipo_formula,\
+                        i.descripcion_tipo_formula,\
+                        bd.fecha_registro  as fecha,\
+                        bdd.codigo_producto, \
+                        '' as codigo_medicamento,\
+			bdd.fecha_vencimiento,\
+                        bdd.cantidad,\
+                        1 as numero_entrega_actual\
+                        from bodegas_doc_numeraciones dn  \
+                        INNER JOIN bodegas_documentos bd on dn.bodegas_doc_id=bd.bodegas_doc_id \
+                        INNER JOIN bodegas_documentos_d bdd on bd.bodegas_doc_id = bdd.bodegas_doc_id and bd.numeracion =bdd.numeracion\
+                        INNER JOIN esm_formulacion_despachos_medicamentos fdm ON bd.bodegas_doc_id =fdm.bodegas_doc_id and bd.numeracion =fdm.numeracion \
+                        INNER JOIN esm_formula_externa efe on efe.formula_id  =fdm.formula_id \
+			inner join esm_tipos_formulas i on i.tipo_formula_id = efe.tipo_formula\
+                        where\
+                        dn.empresa_id= 'FD' and efe.sw_estado not in('2')\
+			and cast(bd.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
+			and bdd.total_costo >0\
+			UNION\
+                            select  \
+                            distinct d.evolucion_id as formula_id,\
+                            c.lote, \
+                            CAST(hfc.numero_formula as text)  as formula_papel, \
+                            dit.tipo_formula,\
+                            i.descripcion_tipo_formula,                       \
+                            b.fecha_registro as fecha, \
+                            c.codigo_producto, \
+                            hfc.codigo_medicamento,\
+                            c.fecha_vencimiento,\
+                            c.cantidad,\
+                            dit.numero_entrega_actual\
+                            from bodegas_doc_numeraciones as a  \
+                            inner JOIN bodegas_documentos b on a.bodegas_doc_id=b.bodegas_doc_id \
+                            inner JOIN bodegas_documentos_d c on b.bodegas_doc_id = c.bodegas_doc_id and b.numeracion =c.numeracion  \
+                            inner JOIN hc_formulacion_despachos_medicamentos d on b.bodegas_doc_id =d.bodegas_doc_id and b.numeracion =d.numeracion  \
+                            inner join hc_evoluciones he on d.evolucion_id=he.evolucion_id \
+                            inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula \
+                            inner JOIN inventarios_productos w on w.codigo_producto = c.codigo_producto \
+                            inner JOIN hc_formulacion_antecedentes_optima hfc on d.evolucion_id = hfc.evolucion_id  \
+                            inner join dispensacion_estados as dit on (d.evolucion_id = dit.evolucion_id)\
+                            where \
+                            a.empresa_id= 'FD'\
+                            and c.total_costo >0\
+                            and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
+		) as a where tipo_formula='1'\
+		order by a.formula_id  asc limit 1;";
+    var sql = "select formula_id as numero_formula,\
+                    tipo_formula,\
+                    codigo_medicamento as codigo_producto_formulado,\
+                    codigo_producto as codigo_producto_despachado,\
+                    cantidad,\
+                    numero_entrega_actual as numero_entega,\
+                    to_char(fecha,'YYYY-MM-DD')  as fecha_dispensacion \
+                    from (\
+                            select  \
+                            distinct d.evolucion_id as formula_id,\
+                            c.lote, \
+                            CAST(hfc.numero_formula as text)  as formula_papel, \
+                            dit.tipo_formula,\
+                            i.descripcion_tipo_formula,                       \
+                            b.fecha_registro as fecha, \
+                            c.codigo_producto, \
+                            hfc.codigo_medicamento,\
+                            c.fecha_vencimiento,\
+                            c.cantidad,\
+                            dit.numero_entrega_actual\
+                            from bodegas_doc_numeraciones as a  \
+                            inner JOIN bodegas_documentos b on a.bodegas_doc_id=b.bodegas_doc_id \
+                            inner JOIN bodegas_documentos_d c on b.bodegas_doc_id = c.bodegas_doc_id and b.numeracion =c.numeracion  \
+                            inner JOIN hc_formulacion_despachos_medicamentos d on b.bodegas_doc_id =d.bodegas_doc_id and b.numeracion =d.numeracion  \
+                            inner join hc_evoluciones he on d.evolucion_id=he.evolucion_id \
+                            inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula \
+                            inner JOIN inventarios_productos w on w.codigo_producto = c.codigo_producto \
+                            inner JOIN hc_formulacion_antecedentes_optima hfc on d.evolucion_id = hfc.evolucion_id  \
+                            inner join dispensacion_estados as dit on (d.evolucion_id = dit.evolucion_id)\
+                            where \
+                            a.empresa_id= 'FD'\
+                            and c.total_costo >0\
+                            and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
+		) as a where tipo_formula='1'\
+		order by a.formula_id  asc limit 20;";
+ 
+    G.knex.raw(sql).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        console.log("error intervalo_Fecha_formula ",err);
+        callback(err);
+    });
+
+};
  
 /**
  * @author Cristian Ardila

@@ -399,3 +399,15 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.63', 'Formulacion Externa', 'Se ajusta en dispensacion de pendientes, validacion en formula_id y formula_id_tmp al momento de buscar los medicamentos en temporal');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.64  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.64', 'DOCUMENTOS BODEGA', 'se agrega el boton flotante a todos los documentos y se elimina el paso de crear el temporal');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.65  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.65', 'PEDIDOS', 'SE COMENTA PEDIDO MULTIPLE');
+COMMIT TRANSACTION;

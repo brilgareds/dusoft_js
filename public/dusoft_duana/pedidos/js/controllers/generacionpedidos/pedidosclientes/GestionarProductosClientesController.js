@@ -312,13 +312,13 @@ define(["angular", "js/controllers",
 
             that.buscar_productos_clientes = function() {
                 
-                that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
+//                that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
                  
-                 if($scope.Pedido.estadoMultiplePedido){
-                    if($scope.Pedido.estadoMultiplePedido !== that.estadoMultipleCotizacion.multiple_pedido){
-                        that.estadoMultipleCotizacion.multiple_pedido = parseInt($scope.Pedido.estadoMultiplePedido);
-                    }
-                }
+//                 if($scope.Pedido.estadoMultiplePedido){
+//                    if($scope.Pedido.estadoMultiplePedido !== that.estadoMultipleCotizacion.multiple_pedido){
+//                        that.estadoMultipleCotizacion.multiple_pedido = parseInt($scope.Pedido.estadoMultiplePedido);
+//                    }
+//                }
                 var obj = {};
                 $scope.rootSeleccionProducto.filtro.numero = [$scope.Pedido.get_numero_pedido()];
                 $scope.rootSeleccionProducto.filtro.tipo = 2;
@@ -355,7 +355,7 @@ define(["angular", "js/controllers",
                                 descripcionProducto: $scope.datos_form.nombreProductoAvanzado,
                                 concentracion: $scope.datos_form.concentracionProductoAvanzado,
                                 tipoBusqueda: $scope.datos_form.tipoBusqueda,
-                                estadoMultiplePedido: that.estadoMultipleCotizacion.multiple_pedido
+                              //  estadoMultiplePedido: that.estadoMultipleCotizacion.multiple_pedido
                             }
                         }
                     };

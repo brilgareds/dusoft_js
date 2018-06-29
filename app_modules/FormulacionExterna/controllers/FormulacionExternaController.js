@@ -481,7 +481,7 @@ FormulacionExterna.prototype.cambiarCodigoPendiente  = function(req, res){
     }).done();
 }
 
-FormulacionExterna.prototype.generarEntrega  = function(req, res){
+/*FormulacionExterna.prototype.generarEntrega  = function(req, res){
     var that = this;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
@@ -518,6 +518,22 @@ FormulacionExterna.prototype.generarEntrega  = function(req, res){
         G.logError("FormulacionExterna [generarEntrega] " + err);
         res.send(G.utils.r(req.url, 'Error generando entrega', 500, err));
     }).done();
+}*/
+
+FormulacionExterna.prototype.generarEntrega  = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    var usuario_id = req.session.user.usuario_id;
+
+    var tmp = {};
+    //Pasa la formula de temporal a las tablas finales
+    G.Q.ninvoke(that.m_formulacionExterna,'generarEntrega', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id, args.plan, args.observacion, args.todo_pendiente,).then(function(resultado){
+        res.send(G.utils.r(req.url, 'Entrega generada', 200, resultado));
+    }).fail(function(err){
+        console.log('el error', err);
+        G.logError("FormulacionExterna [generarEntrega] " + err);
+        res.send(G.utils.r(req.url, 'Error generando entrega', 500, err));
+    }).done();   
 }
 
 FormulacionExterna.prototype.generarEntregaPendientes  = function(req, res){

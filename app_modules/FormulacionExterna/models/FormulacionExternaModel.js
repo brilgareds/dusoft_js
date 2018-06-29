@@ -1,5 +1,4 @@
-var FormulacionExternaModel = function(m_dispensacion_hc) {
-    this.m_dispensacion_hc = m_dispensacion_hc;
+var FormulacionExternaModel = function() {
 };
 
 FormulacionExternaModel.prototype.obtenerAfiliado = function(tipoIdentificacion, identificacion, callback) {
@@ -784,31 +783,61 @@ FormulacionExternaModel.prototype.obtenerDispensacionMedicamentosTmp = function(
     }).done();
 };
 
-FormulacionExternaModel.prototype.generarEntrega = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, callback){
+FormulacionExternaModel.prototype.generarEntrega = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, plan, observacion, todo_pendiente, callback){
     var that = this;
     var tmp = {};
 
     G.knex.transaction(function(transaccion) {
         //se inserta la cabecera de la formula
-        G.Q.nfcall(__insertarFormulaExterna, formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, transaccion)
-        .then(function(formula_id){
+        G.Q.nfcall(__insertarFormulaExterna, formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, transaccion).then(function(formula_id){
             tmp.formula_id = formula_id;
             return G.Q.nfcall(__insertaFormulaExternaDiagnosticos, formula_id_tmp, tmp.formula_id, transaccion);
         }).then(function(resultado){
             return G.Q.nfcall(__insertaFormulaExternaMedicamentos, formula_id_tmp, tmp.formula_id, transaccion);
         }).then(function(resultado){
             var parametroBodegaDocId = {variable:"documento_dispensacion_"+ empresa_id+"_"+ bodega, tipoVariable:1, modulo:'Formulacion_Externa'};
-            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
+            return G.Q.nfcall(estadoParametrizacionReformular, parametroBodegaDocId, transaccion);
         }).then(function(resultado){
             //console.log('estadoParametrizacionReformular', resultado);
             if(resultado.length > 0){
-                tmp.bodegasDocId = resultado[0].valor;          
-                return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId: tmp.bodegasDocId}); 
+                tmp.bodegasDocId = resultado[0].valor;
+                return G.Q.nfcall(asignacionNumeroDocumentoDespacho, {bodegasDocId: tmp.bodegasDocId}, transaccion);
             }else{
-                throw 'El id del documento de bodega no se encuentra parametrizado'
+                throw {err: 501, msj: 'El documento de bodega no se encuentra parametrizado'}
             }
         }).then(function(resultado){
-            
+            //console.log('asignacionNumeroDocumentoDespacho', resultado);
+            tmp.numeracion = resultado[0];
+            G.Q.nfcall(__insertarBodegasDocumentos, tmp.bodegasDocId, tmp.numeracion, observacion, usuario_id, todo_pendiente, transaccion);
+        }).then(function(resultado){
+            return G.Q.nfcall(__insertarFormulacionDespachosMedicamentos, tmp.formula_id, tmp.bodegasDocId, tmp.numeracion, '', '', '', transaccion);
+        }).then(function(resultado){
+            return G.Q.nfcall(__obtenerDispensacionMedicamentosTmp, formula_id_tmp, null,transaccion);
+        }).then(function(resultado){
+            tmp.productos = resultado;
+            return G.Q.nfcall(__guardarBodegasDocumentosDetalle, that, empresa_id, centro_utilidad, bodega, plan, tmp.bodegasDocId, tmp.numeracion, tmp.productos, transaccion);
+        }).then(function(resultado){
+            return G.Q.nfcall(__listarMedicamentosPendientesSinDispensar, formula_id_tmp, tmp.formula_id, transaccion);
+        }).then(function(resultado){
+            //verifica si se generaron pendientes
+            if(resultado.length > 0){
+                tmp.generoPendientes = true;
+            }
+            return G.Q.nfcall(__insertarMedicamentosPendientes, that, resultado, tmp.formula_id, usuario_id, transaccion);
+        }).then(function(resultado){
+            return G.Q.ninvoke(that, 'eliminarDispensacionMedicamentosTmp', formula_id_tmp, null,transaccion);
+        }).then(function(resultado){
+            return G.Q.ninvoke(that, 'eliminarFormulaExternaMedicamentosTmp', formula_id_tmp, transaccion);
+        }).then(function(resultado){
+            return G.Q.ninvoke(that, 'eliminarFormulaExternaDiagnosticosTmp', formula_id_tmp, transaccion);
+        }).then(function(resultado){
+            return G.Q.ninvoke(that, 'eliminarFormulaExterna', formula_id_tmp, transaccion);
+        }).then(function(resultado){
+            tmp.resultado = {
+                formula_id : tmp.formula_id,
+                generoPendientes : tmp.generoPendientes
+            } 
+            return;
         }).then(function(resultado){
             transaccion.commit();
         }).fail(function(err){
@@ -816,7 +845,7 @@ FormulacionExternaModel.prototype.generarEntrega = function(formula_id_tmp, empr
             transaccion.rollback(err);
         }).done();
     }).then(function(){
-        callback(false, tmp.formula_id);
+        callback(false, tmp.resultado);
     }).catch(function(err){
         G.logError("err FormulacionExternaModel [registrarFormulaReal]: " + err);
         callback(err);
@@ -824,7 +853,7 @@ FormulacionExternaModel.prototype.generarEntrega = function(formula_id_tmp, empr
 };
 
 
-FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, formula_id_tmp, formula_id,observacion, usuario_id, todo_pendiente, callback){
+/*FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, formula_id_tmp, formula_id,observacion, usuario_id, todo_pendiente, callback){
     var tmp = {
         generoPendientes : false
     };
@@ -866,7 +895,7 @@ FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_
         G.logError("err FormulacionExternaModel [generarDispensacionFormula]: " + err);
         callback(err);
     }).done();
-};
+};*/
 
 FormulacionExternaModel.prototype.registrarFormulaReal = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, callback){
     var tmp = {};
@@ -1281,13 +1310,14 @@ function __guardarBodegasDocumentosDetalle(that, empresa_id, centro_utilidad, bo
         if(resultado >= 1){
             return  G.Q.nfcall(__actualizarExistenciasBodegas, empresa_id, centro_utilidad, bodega, producto.codigo_producto, producto.cantidad_despachada, transaccion);
         }else{
-            throw 'Error al actualizar las existencias de los lotes por que no pueden ser menores a 0';
+            throw 'No hay suficientes existencias del producto ' + producto.codigo_producto + ', verifique la existencia e intente de nuevo.';
         }
     }).then(function(resultado){
        if(resultado >= 1){
             return G.Q.nfcall(__insertarBodegasDocumentosDetalle, empresa_id, plan, bodegasDocId, numeracion, producto.codigo_producto, producto.cantidad_despachada, producto.fecha_vencimiento, producto.lote, transaccion);
         }else{
-            throw 'Error al actualizar las existencias de bodega por que no pueden ser menores a 0';
+            throw 'No hay suficientes existencias del producto ' + producto.codigo_producto + ', verifique la existencia e intente de nuevo.';
+            //throw 'Error al actualizar las existencias de bodega por que no pueden ser menores a 0';
         }
     }).then(function(resultado){
         __guardarBodegasDocumentosDetalle(that, empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, productos, transaccion, callback);
@@ -1315,7 +1345,7 @@ function __actualizarExistenciasBodegasLotesFv(empresa_id, centro_utilidad, bode
             callback(false, resultado);
     }).catch(function(err){
         G.logError("err (/catch) [__actualizarExistenciasBodegasLotesFv]: " +  err);
-        callback({err:err, msj: "Error al actualizar las existencias de los lotes por que no pueden ser menores a 0"});   
+        callback({err:err, msj: 'No hay suficientes existencias del producto ' + codigo_producto + ', verifique la existencia e intente de nuevo.'});   
     });  
 };
 
@@ -1333,7 +1363,7 @@ function __actualizarExistenciasBodegas(empresa_id, centro_utilidad, bodega, cod
         callback(false, resultado);
     }).catch(function(err){
         G.logError("err (/catch) [__actualizarExistenciasBodegas]: " +  err);
-        callback({err:err, msj: "Error al actualizar las existencias de bodega por que no pueden ser menores a 0"});   
+        callback({err:err, msj: 'No hay suficientes existencias del producto ' + codigo_producto + ', verifique la existencia e intente de nuevo.'});   
     });  
 };
 
@@ -1573,6 +1603,39 @@ FormulacionExternaModel.prototype.eliminarFormulaExterna= function(formula_id_tm
     });  
 };
 
+function estadoParametrizacionReformular(obj, transaccion, callback) {
+    var sql = "a.valor FROM system_modulos_variables as a ";
+    var query = G.knex.select(G.knex.raw(sql));
+        query.where('a.variable',G.constants.db().LIKE,"%" + obj.variable + "%");
+        if(obj.tipoVariable ===1){            
+            query.andWhere('a.modulo',G.constants.db().LIKE,"%" + obj.modulo + "%")
+        }
+              
+   if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){  
+            callback(false, resultado)
+    }).catch(function(err){          
+        callback(err)
+    });           
+};
+
+
+function asignacionNumeroDocumentoDespacho(obj, transaccion,callback) {
+    var query = G.knex('bodegas_doc_numeraciones')
+        .where('bodegas_doc_id', obj.bodegasDocId)
+        .returning("numeracion")
+        .increment('numeracion', 1);
+              
+   if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){  
+            callback(false, resultado);
+    }).catch(function(err){  
+        console.log("err (/catch) [asignacionNumeroDocumentoDespacho]: ", err);
+       callback(err);
+    });
+
+};
+
 FormulacionExternaModel.prototype.updateAutorizacionPorMedicamento = function(fe_medicamento_id, observacion_autorizacion, usuario_autoriza_id, callback) {
     console.log('fe_medicamento_id', fe_medicamento_id, 'observacion_autorizacion', observacion_autorizacion, 'usuario_autoriza_id', usuario_autoriza_id);
     var query = G.knex('esm_formula_externa_medicamentos_tmp')
@@ -1601,7 +1664,7 @@ FormulacionExternaModel.prototype.guardarNuevaCantidadPendiente = function(esm_p
         });
 
     
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){ 
        callback(false, resultado);
     }).catch(function(err){ 
@@ -1989,5 +2052,5 @@ FormulacionExternaModel.prototype.medicamentoEstaInsertado = function(tmp_formul
     });
 };
 
-FormulacionExternaModel.$inject = ['m_dispensacion_hc'];
+FormulacionExternaModel.$inject = [];
 module.exports = FormulacionExternaModel;

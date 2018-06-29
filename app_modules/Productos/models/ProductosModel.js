@@ -482,18 +482,16 @@ ProductosModel.prototype.consultar_stock_producto_kardex = function(empresa_id, 
 ProductosModel.prototype.buscarProductosCodificacion = function(parametros, callback) {
 
     var campos = [              
-        G.knex.raw("grp.grupo_id || ' ' ||grp.descripcion as Grupo"),
-        G.knex.raw("lab.laboratorio_id || ' ' || lab.descripcion as Clase"),
-        G.knex.raw("mol.molecula_id || ' ' || mol.descripcion || ' ' || mol.concentracion || ' ' || mol.unidad_medida_medicamento_id as Subclase"),
-        //
-        G.knex.raw("a descripcion as descripcion_cod_anatofarmacologico"),
-        "b.descripcion as descripcion_unidad",
-        "b.abreviatura as abreviatura_unidad",
+        G.knex.raw("a.descripcion||'-'||prod.cod_anatofarmacologico as descripcion_cod_anatofarmacologico"),
+        G.knex.raw("b.descripcion||'-'||b.unidad_id as descripcion_unidad"),
+        "b.unidad_id as abreviatura_unidad",
+        "c.descripcion as descripcion_med_cod",
+        "prod.cod_adm_presenta as sw_dosificacion",
         "grp.grupo_id",
         "grp.descripcion as descripcion_grupo",
         "mol.sw_medicamento",
         "cla.clase_id",
-        "cla.clase_id as descripcion_clase",
+        "cla.descripcion as descripcion_clase",
         "cla.sw_tipo_empresa",
         "sub.descripcion as descripcion_subclase",
         "mol.molecula_id",      
@@ -517,29 +515,22 @@ ProductosModel.prototype.buscarProductosCodificacion = function(parametros, call
         "prod.sw_generico",
         "prod.sw_venta_directa",
         "prod.tipo_pais_id",
-        "prod.cantidad as cantidad_p",        
+        "prod.tipo_producto_id",
+        "prod.presentacioncomercial_id",
+        "prod.cantidad as cantidad_p",
         "prod.tratamiento_id",//-- NO SE USA EN TRATAMIENTOS ESPECIALES --
-        "prod.presentacioncomercial_id",  
-        "lab.laboratorio_id as fabricante_id",        
-        "prod.producto_id",
-        "prod.codigo_producto",   
         G.knex.raw("'2' as usuario_id"),
-        "prod.cod_adm_presenta as cod_presenta",        
+        "prod.cod_adm_presenta as cod_presenta",
+        "prod.dci_id",
+        "prod.estado_unico",
+        "prod.sw_solicita_autorizacion",
+        "prod.codigo_producto", 
         "prod.rips_no_pos",
         "prod.tipo_riesgo_id",
-        "prod.estado_invima",
-        "prod.dci",
-        "prod.estado_unico",
-        "prod.sw_solicita_autorizacion", 
-        "prod.cod_forma_farmacologica",        
-        "prod.mensaje_id",        
-        "prod.titular_reginvima_id",        
-        
-        
-        "prod.tipo_producto_id",
-        "prod.tipo_pais_id as tipo_pais_titular_reginvima_id",
-        "fab.descripcion as fabricante",
-        "tri.descripcion as descripcion_titular_reginvima"
+        "tri.tipo_pais_id as tipo_pais_titular_reginvima_id",
+        "tri.descripcion as descripcion_titular_reginvima",
+        "prod.titular_reginvima_id",
+        "prod.estado_invima"    
      ];
     
                           
@@ -558,17 +549,18 @@ ProductosModel.prototype.buscarProductosCodificacion = function(parametros, call
          on("cla.grupo_id", "prod.grupo_id");
     }).
     innerJoin("inv_laboratorios as lab", "lab.laboratorio_id","cla.laboratorio_id").          
-    innerJoin("inv_med_cod_anatofarmacologico as a", "a.cod_anatomofarmacologico","prod.cod_anatomofarmacologico").          
+    innerJoin("inv_med_cod_anatofarmacologico as a", "a.cod_anatomofarmacologico","prod.cod_anatofarmacologico").          
     innerJoin("unidades as b", "b.unidad_id","prod.unidad_id").          
-    innerJoin("inv_presentacioncomercial as c", "c.presentacioncomercial_id","prod.presentacioncomercial_id").          
+    innerJoin("inv_presentacioncomercial as c", "c.presentacioncomercial_id","prod.presentacioncomercial_id").         
     innerJoin("inv_moleculas as mol",function(){
         this.on( "mol.molecula_id","sub.molecula_id")
             .on( G.knex.raw("mol.estado='1'"));
     }). //inv_med_cod_anatofarmacologico
     where(function(){
-        this.where("prod.codigo_producto",parametros.codigoProducto);
+//        this.where("prod.codigo_producto",parametros.codigoProducto);
+        this.where("prod.codigo_producto",'198D0500001');
     });
-            
+        console.log(G.sqlformatter.format(query.toString()));    
     query.then(function(rows){
         callback(false, rows);
     }).catch(function(err){

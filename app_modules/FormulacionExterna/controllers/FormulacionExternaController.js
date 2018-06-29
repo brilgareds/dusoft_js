@@ -489,13 +489,13 @@ FormulacionExterna.prototype.generarEntrega  = function(req, res){
     var tmp = {};
     //Pasa la formula de temporal a las tablas finales
     G.Q.ninvoke(that.m_formulacionExterna,'registrarFormulaReal', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id).then(function(formula_id){
-        console.log('registrarFormulaReal', formula_id);
+        //console.log('registrarFormulaReal', formula_id);
         tmp.formula_id = formula_id;
         //consultar el id del documento de bodega
         var parametroBodegaDocId = {variable:"documento_dispensacion_"+args.empresa_id+"_"+args.bodega, tipoVariable:1, modulo:'Formulacion_Externa'};
         return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId); 
     }).then(function(resultado){
-        console.log('estadoParametrizacionReformular', resultado);
+        //console.log('estadoParametrizacionReformular', resultado);
         if(resultado.length > 0){
             tmp.bodegasDocId = resultado[0].valor;          
             return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId: tmp.bodegasDocId}); 
@@ -503,7 +503,7 @@ FormulacionExterna.prototype.generarEntrega  = function(req, res){
             throw 'El id del documento de bodega no se encuentra parametrizado'
         }
     }).then(function(resultado){
-        console.log('asignacionNumeroDocumentoDespacho', resultado);
+        //console.log('asignacionNumeroDocumentoDespacho', resultado);
         tmp.numeracion = resultado[0];
         return G.Q.ninvoke(that.m_formulacionExterna,'generarDispensacionFormula', args.empresa_id, args.centro_utilidad, args.bodega, args.plan, tmp.bodegasDocId, tmp.numeracion, args.formula_id_tmp, tmp.formula_id, args.observacion, usuario_id, args.todo_pendiente); 
     }).then(function(resultado){

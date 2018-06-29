@@ -1,4 +1,5 @@
-var FormulacionExternaModel = function() {
+var FormulacionExternaModel = function(m_dispensacion_hc) {
+    this.m_dispensacion_hc = m_dispensacion_hc;
 };
 
 FormulacionExternaModel.prototype.obtenerAfiliado = function(tipoIdentificacion, identificacion, callback) {
@@ -783,7 +784,8 @@ FormulacionExternaModel.prototype.obtenerDispensacionMedicamentosTmp = function(
     }).done();
 };
 
-FormulacionExternaModel.prototype.registrarFormulaReal = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, callback){
+FormulacionExternaModel.prototype.generarEntrega = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, callback){
+    var that = this;
     var tmp = {};
 
     G.knex.transaction(function(transaccion) {
@@ -794,6 +796,19 @@ FormulacionExternaModel.prototype.registrarFormulaReal = function(formula_id_tmp
             return G.Q.nfcall(__insertaFormulaExternaDiagnosticos, formula_id_tmp, tmp.formula_id, transaccion);
         }).then(function(resultado){
             return G.Q.nfcall(__insertaFormulaExternaMedicamentos, formula_id_tmp, tmp.formula_id, transaccion);
+        }).then(function(resultado){
+            var parametroBodegaDocId = {variable:"documento_dispensacion_"+ empresa_id+"_"+ bodega, tipoVariable:1, modulo:'Formulacion_Externa'};
+            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
+        }).then(function(resultado){
+            //console.log('estadoParametrizacionReformular', resultado);
+            if(resultado.length > 0){
+                tmp.bodegasDocId = resultado[0].valor;          
+                return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId: tmp.bodegasDocId}); 
+            }else{
+                throw 'El id del documento de bodega no se encuentra parametrizado'
+            }
+        }).then(function(resultado){
+            
         }).then(function(resultado){
             transaccion.commit();
         }).fail(function(err){
@@ -807,6 +822,7 @@ FormulacionExternaModel.prototype.registrarFormulaReal = function(formula_id_tmp
         callback(err);
     }).done();
 };
+
 
 FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, formula_id_tmp, formula_id,observacion, usuario_id, todo_pendiente, callback){
     var tmp = {
@@ -851,60 +867,31 @@ FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_
         callback(err);
     }).done();
 };
-/*
-      $bodegas = $this->Consultar_Bodegas_despacho($formula_id);
-                $totalcosto = 0;
-                foreach ($bodegas as $k1 => $bodegad) {
-                    $bodegas_doc_id = ModuloGetVar('app', 'Formulacion_Externa', 'documento_dispensacion_' . trim($bodegad['empresa_id']) . '_' . trim($bodegad['bodega']));
-                    $datos2 = $this->AsignarNumeroDocumentoDespacho_d($bodegas_doc_id);
-                    $numeracion = $datos2['numeracion'];
-                    $sql .= $this->IngresarInv_Bodegas_documentos($bodegas_doc_id, $observacion, $numeracion,0);
-                    //esm_dispensacion_medicamentos_tmp
-                    $temporales = $this->Buscar_producto_tmp_conc($formula_id, $bodegad['bodega']);
-                    $totalcosto = 0;
-                    $pactado = " ";
-                    $ind = 0;
-                    //Actualiza existencias e inserta bodegas_documentos_d
-                    $sql .=$this->Guardar_Inv_bodegas_documento_d($temporales, $bodegas_doc_id, $numeracion, $datos_empresa['empresa_id'], $pactado = null, $plan_id);
-                    //actualiza la bodega y la numeracion en esm_pendientes_por_dispensar
-                    $sql .= $this->UpdatePOR_producto_bodega($formula_id, $bodegas_doc_id, $numeracion);
-                    //despacho esm_formulacion_despachos_medicamentos_pendientes
-                    $sql .= $this->Guardar_Pendientes_Adicional($formula_id, $bodegas_doc_id, $numeracion);
-                }
-                $pendientes = $this->Medicamentos_Pendientes_SinDespachar($formula_id);
 
-****************************************************************************************************************************************************************************
-                foreach ($pendientes as $k2 => $detalle) {
-                    $total_pendiente = $detalle['total'];
-                    $sql .= " update  esm_pendientes_por_dispensar
-                        set     sw_estado='1'
-                        WHERE   formula_id = '" . trim($formula_id) . "'
-                        AND     codigo_medicamento = '" . trim($detalle['codigo_producto']) . "';  ";
+FormulacionExternaModel.prototype.registrarFormulaReal = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, callback){
+    var tmp = {};
 
-                    if ($total_pendiente != 0) {
-                        $sql .= "INSERT INTO esm_pendientes_por_dispensar
-                            (
-                            esm_pendiente_dispensacion_id,
-                            formula_id,
-                            codigo_medicamento,
-                            cantidad,
-                            usuario_id,
-                            fecha_registro
-                            )
-                            VALUES
-                            (
-                            DEFAULT,
-                            " . trim($formula_id) . ",
-                            '" . trim($detalle['codigo_producto']) . "',
-                            " . $total_pendiente . ",
-                            " . UserGetUID() . ",
-                            now()
-                            ); ";
-                    }
-                }
-
-                $dat = $this->EliminarTodoTemporal_ESM($formula_id, $sql);
-*/
+    G.knex.transaction(function(transaccion) {
+        //se inserta la cabecera de la formula
+        G.Q.nfcall(__insertarFormulaExterna, formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, transaccion)
+        .then(function(formula_id){
+            tmp.formula_id = formula_id;
+            return G.Q.nfcall(__insertaFormulaExternaDiagnosticos, formula_id_tmp, tmp.formula_id, transaccion);
+        }).then(function(resultado){
+            return G.Q.nfcall(__insertaFormulaExternaMedicamentos, formula_id_tmp, tmp.formula_id, transaccion);
+        }).then(function(resultado){
+            transaccion.commit();
+        }).fail(function(err){
+            G.logError("err FormulacionExternaModel [registrarFormulaReal]: " + err);
+            transaccion.rollback(err);
+        }).done();
+    }).then(function(){
+        callback(false, tmp.formula_id);
+    }).catch(function(err){
+        G.logError("err FormulacionExternaModel [registrarFormulaReal]: " + err);
+        callback(err);
+    }).done();
+};
 
 FormulacionExternaModel.prototype.generarDispensacionFormulaPendientes = function(empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, formula_id, observacion, usuario_id, todo_pendiente, callback){
     var that = this;
@@ -2002,5 +1989,5 @@ FormulacionExternaModel.prototype.medicamentoEstaInsertado = function(tmp_formul
     });
 };
 
-FormulacionExternaModel.$inject = [];
+FormulacionExternaModel.$inject = ['m_dispensacion_hc'];
 module.exports = FormulacionExternaModel;

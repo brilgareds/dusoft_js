@@ -88,6 +88,7 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
                 
     }).spread(function(result,raw,soapHeader){
 console.log("result.return.msj[$value]",result.return);
+console.log("result.return.msj[$value]",result.return.productsWithoutExistence.item);
 console.log("result.return.msj[$value]",result.return.message["$value"]);
            return true;
         if(!result.return){

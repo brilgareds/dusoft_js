@@ -169,10 +169,11 @@ DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callbac
                             inner join hc_evoluciones he on d.evolucion_id=he.evolucion_id \
                             inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula \
                             inner JOIN inventarios_productos w on w.codigo_producto = c.codigo_producto \
+                            inner JOIN inv_grupos_inventarios e ON w.grupo_id = e.grupo_id \
                             inner JOIN hc_formulacion_antecedentes_optima hfc on d.evolucion_id = hfc.evolucion_id  \
                             inner join dispensacion_estados as dit on (d.evolucion_id = dit.evolucion_id)\
                             where \
-                            a.empresa_id= 'FD'\
+                            a.empresa_id= 'FD' and e.sw_medicamento = '1' \
                             and c.total_costo >0\
                             and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
 		) as a where tipo_formula='1'\

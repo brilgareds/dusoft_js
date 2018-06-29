@@ -476,6 +476,114 @@ ProductosModel.prototype.consultar_stock_producto_kardex = function(empresa_id, 
 };
 
 
+// Autor:      : Andres Mauricio Gonzalez
+// Descripcion : Buscar producto para codificacion
+//               
+
+ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, tipo_producto, callback) {
+
+    var campos = [                
+        "a.empresa_id", 
+        "a.centro_utilidad",
+        "a.bodega",
+        "f.descripcion as descripcion_laboratorio",    
+        "e.descripcion as descripcion_molecula",
+        "b.codigo_producto", 
+        G.knex.raw("fc_descripcion_producto(b.codigo_producto) as nombre_producto"),
+        "b.unidad_id",
+        "b.estado", 
+        "b.codigo_invima",
+        "b.contenido_unidad_venta",
+        "b.sw_control_fecha_vencimiento",
+        "b.codigo_cum",
+        "a.existencia_minima",
+        "a.existencia_maxima",
+        G.knex.raw("a.existencia :: integer  as existencia"),
+        "c.existencia as existencia_total",
+        "c.costo_anterior",
+        "c.costo",
+        G.knex.raw("CASE WHEN c.costo > 0 THEN ROUND(((c.precio_venta/c.costo)-1) * 100) ELSE NULL END as porcentaje_utilidad"),
+        "c.costo_penultima_compra",
+        "c.costo_ultima_compra",
+        "c.precio_venta_anterior",
+        "c.precio_venta",
+        "c.precio_minimo",
+        "c.precio_maximo",
+        "c.sw_vende",
+        "c.grupo_contratacion_id",
+        "c.nivel_autorizacion_id",
+        "b.grupo_id",
+        "b.clase_id",
+        "b.subclase_id",
+        "b.porc_iva",
+        "b.tipo_producto_id",
+        "g.valor_pactado",
+        "c.precio_regulado"
+     ];
+    
+   
+    G.knex.column(campos).
+    from("existencias_bodegas as a").
+    innerJoin("inventarios_productos as b", "a.codigo_producto","b.codigo_producto").
+    innerJoin("inventarios as c", function(){
+         this.on("b.codigo_producto", "c.codigo_producto" ).
+         on("a.empresa_id", "c.empresa_id");
+    }).
+    innerJoin("inv_tipo_producto as d", "b.tipo_producto_id","d.tipo_producto_id").
+    innerJoin("inv_subclases_inventarios as e", function(){
+         this.on("b.grupo_id", "e.grupo_id" ).
+         on("b.clase_id", "e.clase_id").
+         on("b.subclase_id", "e.subclase_id");
+    }).
+    innerJoin("inv_clases_inventarios as f", function(){
+         this.on("e.grupo_id", "f.grupo_id" ).
+         on("e.clase_id", "f.clase_id");
+    }).
+    leftJoin("contratacion_produc_prov_detalle as g", function(){
+         this.on("b.codigo_producto", "g.codigo_producto" )
+        .on("a.empresa_id", "g.empresa_id");
+    }).
+    where(function(){
+        this.where("a.empresa_id", empresa_id).
+        andWhere("a.centro_utilidad", centro_utilidad_id).
+        andWhere("a.bodega",bodega_id);
+        
+        if (tipo_producto !== '0') {
+            this.where("b.tipo_producto_id ", tipo_producto);
+        }
+    }).
+    andWhere(function() {
+
+       var termino = termino_busqueda;
+       if(typeof termino_busqueda ===  'object'){
+           termino = termino_busqueda.termino;
+           
+            if(termino_busqueda.tipo_busqueda === 0){
+               this.where(G.knex.raw("fc_descripcion_producto(b.codigo_producto)"), G.constants.db().LIKE,   "%"+termino +"%");
+            } else if(termino_busqueda.tipo_busqueda === 1){
+                this.where("e.descripcion", G.constants.db().LIKE, "%" + termino + "%");
+            } else {
+                this.where("a.codigo_producto", G.constants.db().LIKE, "%" + termino + "%");
+            }
+           
+       } else {
+           
+            this.where("b.codigo_producto", G.constants.db().LIKE, "%" + termino + "%").
+            orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino + "%");
+       }
+        
+    }).        
+    limit(G.settings.limit).offset((pagina - 1) * G.settings.limit).then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+     
+       callback(err);
+    });
+
+
+};
+
+
 
 /*
 * @Author: Eduar

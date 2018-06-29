@@ -18,6 +18,11 @@
                     "module": "Usuarios",
                     "model": "UsuariosModel",
                     "alias": "m_usuarios"
+                },
+                "m_productos": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
                 }
             }],
         "events": [{

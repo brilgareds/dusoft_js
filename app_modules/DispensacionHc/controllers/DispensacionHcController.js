@@ -1,10 +1,11 @@
 
-var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuarios, e_dispensacion_hc) {
+var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuarios, e_dispensacion_hc, m_productos) {
     
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.e_dispensacion_hc = eventos_dispensacion;
     this.m_usuarios = m_usuarios;
     this.e_dispensacion_hc = e_dispensacion_hc;
+    this.m_productos = m_productos;
     
    
 };
@@ -30,12 +31,25 @@ DispensacionHc.prototype.sincronizacionFormulasDispensadas = function(){
     
     var that = this;
     
+    G.Q.ninvoke(that.m_productos,'buscarProductosCodificacion',{codigoProducto: '198A0010042'}).then(function(resultado){
+    
+        console.log("AAAAA ",resultado);
+        
+    }).fail(function(err){      
+        console.log("Error ", err);  
+    }).done();
+}
+
+DispensacionHc.prototype.sincronizacionFormulasDispensadas0 = function(){
+    
+    var that = this;
+    
     G.Q.ninvoke(that.m_dispensacion_hc,'formulasDispensadas',{}).then(function(resultado){
         
         return G.Q.nfcall(__codificarFormulasDispensadas,resultado,0,[]);
      
     }).then(function(resultado){  
-     //   console.log("Resultado:::",JSON.stringify(resultado));
+
         if(resultado.length >0){
             return G.Q.nfcall(__wsSincronizarFormulasDispensadas,resultado); 
         }else{
@@ -2685,6 +2699,6 @@ DispensacionHc.prototype.consultarMovimientoFormulasPaciente = function(req, res
 };
 
 
-DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc", "m_usuarios", "e_dispensacion_hc"];
+DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc", "m_usuarios", "e_dispensacion_hc","m_productos"];
 
 module.exports = DispensacionHc;

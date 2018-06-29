@@ -355,6 +355,7 @@ define(["angular", "js/controllers",
                                 descripcionProducto: $scope.datos_form.nombreProductoAvanzado,
                                 concentracion: $scope.datos_form.concentracionProductoAvanzado,
                                 tipoBusqueda: $scope.datos_form.tipoBusqueda,
+                                estadoMultiplePedido: 0
                               //  estadoMultiplePedido: that.estadoMultipleCotizacion.multiple_pedido
                             }
                         }

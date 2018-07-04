@@ -966,6 +966,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                 });
             }else{
                 //entrega de pendientes
+var observacion = observacion + " No. Formula: " + $scope.root.formula.formula_papel + " Paciente " + $scope.root.formula.tipo_id_paciente + $scope.root.formula.paciente_id + " " + $scope.root.formula.nombre_paciente;
                 formulaExternaService.generarEntregaPendientes(formula_id, observacion, todo_pendiente, empresa_id, centro_utilidad, bodega, plan, function(error, data){
                     if(error){
                         AlertService.mostrarMensaje("warning", "Error al momento de generar la entrega de pendientes");

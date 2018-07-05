@@ -1353,6 +1353,7 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
 //               
 
 PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias = function(codigo_producto, callback) {
+    //filtrar por bodega_origen_producto
     
     var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = :1\
                 group by codigo_producto"; 
@@ -1370,13 +1371,13 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
 // Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
 //               
 
-PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias_por_fecha = function(codigo_producto, fecha_registro_pedido, callback) {
+PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias_por_fecha = function(empresa_id, bodega_id, codigo_producto, fecha_registro_pedido, callback) {
     
     var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = :1\
-                and fecha_registro < :2\
+                and fecha_registro < :2 and bodega_origen_producto = :3 and bodega = :4 \
                 group by codigo_producto "; 
     
-   G.knex.raw(sql, {1 : codigo_producto, 2 : fecha_registro_pedido}).
+   G.knex.raw(sql, {1 : codigo_producto, 2 : fecha_registro_pedido, 3 : empresa_id, 4 : bodega_id}).
    then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){

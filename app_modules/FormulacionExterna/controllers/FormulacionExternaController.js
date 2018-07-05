@@ -527,7 +527,7 @@ FormulacionExterna.prototype.generarEntrega  = function(req, res){
 
     var tmp = {};
     //Pasa la formula de temporal a las tablas finales
-    G.Q.ninvoke(that.m_formulacionExterna,'generarEntrega', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id, args.plan, args.observacion, args.todo_pendiente,).then(function(resultado){
+    G.Q.ninvoke(that.m_formulacionExterna,'generarEntrega', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id, args.plan, args.observacion, args.todo_pendiente).then(function(resultado){
         res.send(G.utils.r(req.url, 'Entrega generada', 200, resultado));
     }).fail(function(err){
         console.log('el error', err);

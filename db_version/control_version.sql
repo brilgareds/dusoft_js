@@ -411,3 +411,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.65', 'PEDIDOS', 'SE COMENTA PEDIDO MULTIPLE');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.66 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.66', 'FACTURACION', 'se corrige un error a la hora de facturar y se agrega la funcion de eliminar la factura temporal');
+COMMIT TRANSACTION;

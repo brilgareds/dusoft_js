@@ -600,6 +600,19 @@ define(["angular", "js/services"], function (angular, services) {
                         return cabeceraFacturaTmp;
                     };
                     
+                                        /**
+                     * @author German Galvis
+                     * @fecha  05/07/2018 DD/MM/YYYYY
+                     * +Descripcion Servicio que elimina una factura temporal
+                     */
+                    self.eliminarGetDocTemporal = function (obj, callback) {
+                        console.log("hola",obj);
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.ELIMINAR_CABECERA_TEMPORAL_FACTURA_CONSUMO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    
                    
                     return this;
                 }]);

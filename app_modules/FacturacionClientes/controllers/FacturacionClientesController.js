@@ -1182,7 +1182,6 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function 
  */
 FacturacionClientes.prototype.eliminarCabeceraTemporalFacturaConsumo = function (req, res) {
 
-console.log("LLEGUE");
     var that = this;
     var args = req.body.data;
 

@@ -309,7 +309,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 id_factura_xconsumo: entity.getId()
                             }
                         };
-                        console.log("HOLA", obj);
 
                         facturacionClientesService.eliminarGetDocTemporal(obj, function (data) {
                             if (data.status === 200) {

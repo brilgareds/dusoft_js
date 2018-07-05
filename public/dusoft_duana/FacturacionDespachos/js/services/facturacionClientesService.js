@@ -606,7 +606,6 @@ define(["angular", "js/services"], function (angular, services) {
                      * +Descripcion Servicio que elimina una factura temporal
                      */
                     self.eliminarGetDocTemporal = function (obj, callback) {
-                        console.log("hola",obj);
                         Request.realizarRequest(API.FACTURACIONCLIENTES.ELIMINAR_CABECERA_TEMPORAL_FACTURA_CONSUMO, "POST", obj, function (data) {
                             callback(data);
                         });

@@ -1236,14 +1236,14 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes 
  * @returns {void}
  * Funciones que hacen uso del modelo : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
  */
-PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha = function(codigo_producto, fecha_registro_pedido, callback) {
-
+PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha = function(empresa_id, bodega_id, codigo_producto, fecha_registro_pedido, callback) {
+    //fistrar por empresa
     var sql = " SELECT b.codigo_producto, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
                 INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
-                WHERE b.codigo_producto = :1 and a.estado = '1' AND a.fecha_registro < :2\
+                WHERE  b.codigo_producto = :1 and a.estado = '1' AND a.fecha_registro < :2 AND a.empresa_id = :3 AND a.bodega_destino = :4\
                 GROUP BY b.codigo_producto";
 
-    G.knex.raw(sql, {1: codigo_producto, 2: fecha_registro_pedido}).then(function(resultado) {
+    G.knex.raw(sql, {1: codigo_producto, 2: fecha_registro_pedido, 3: empresa_id, 4 : bodega_id}).then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
         console.log("err [calcular_cantidad_reservada_cotizaciones_clientes_por_fecha]: ", err);

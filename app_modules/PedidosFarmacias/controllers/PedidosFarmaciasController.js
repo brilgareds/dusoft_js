@@ -802,7 +802,7 @@ PedidosFarmacias.prototype.buscarProductos = function(req, res) {
         }
         
         productosOrderBy.forEach(function(producto) {
-            __consultarStockProducto(that, empresa_destino_id, producto, function(err, _producto) {
+            __consultarStockProducto(that, empresa_destino_id, bodega_destino_id, producto, function(err, _producto) {
 
                 producto = _producto;
 
@@ -2185,7 +2185,7 @@ PedidosFarmacias.prototype.actualizarPedido = function(req, res) {
 
                         //Antes de realizar la modificacion especial se debe validar que cada producto este en la empresa destino
                         detalle.forEach(function(detalle) {
-                            __consultarStockProducto(that, farmacia_id, detalle, function(err, producto) {
+                            __consultarStockProducto(that, farmacia_id, bodega,detalle, function(err, producto) {
                                 if (!producto.en_farmacia_seleccionada) {
                                     productosNoEncontrados.push(detalle);
                                 }
@@ -2742,7 +2742,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                                 }   
 
 
-                                __consultarStockProducto(that, datos.empresa_destino_id, productoAgrupado, function(err, _productoStock) {
+                                __consultarStockProducto(that, datos.empresa_destino_id, datos.bodega_destino_id, productoAgrupado, function(err, _productoStock) {
                            
                                     if (err) {
                                         callback(err);
@@ -3047,8 +3047,8 @@ function _generarDocumentoPedido(obj, callback) {
  * @Author: Eduar
  * +Descripcion: Funcion helper que consulta el stock de un producto en la farmacia destino
  */
-function __consultarStockProducto(that, empresa_destino_id, producto, callback) {
-    that.m_productos.consultar_stock_producto(empresa_destino_id, producto.codigo_producto, {activo: false}, function(err, total_existencias_farmacias) {
+function __consultarStockProducto(that, empresa_destino_id, bodega_destino_id,producto, callback) {
+    that.m_productos.consultar_stock_producto(empresa_destino_id, bodega_destino_id, producto.codigo_producto, {activo: false}, function(err, total_existencias_farmacias) {
 
         producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? total_existencias_farmacias[0].existencia : 0;
         producto.en_farmacia_seleccionada = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? true : false;

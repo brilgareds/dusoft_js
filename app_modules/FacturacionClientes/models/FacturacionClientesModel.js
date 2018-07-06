@@ -1209,7 +1209,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
     }; 
     
     var query = G.knex(tabla).insert(parametros);     
-  console.log(">>> ",G.sqlformatter.format(query.toString()));   
+//  console.log(">>> ",G.sqlformatter.format(query.toString()));   
    if(transaccion) query.transacting(transaccion);     
     query.then(function(resultado){
         callback(false, resultado);
@@ -1339,13 +1339,12 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
         }).andWhere("a.empresa_id", obj.empresa_id);     
    
     query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
-     console.log("--------------------------------"); 
-     console.log(">>> ",G.sqlformatter.format(query.toString())); 
+//     console.log("--------------------------------"); 
+//     console.log(">>> ",G.sqlformatter.format(query.toString())); 
     
     query.then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){
-        console.log(">>> ",G.sqlformatter.format(query.toString())); 
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
         callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
     }); 

@@ -16,7 +16,7 @@ FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
             var registro = resultado[0];
             if(registro.usuario_id != usuario_id){
                 res.send(G.utils.r(req.url, 'Ya se esta digitando una formula para el paciente', 404, resultado[0]));
-                return;
+                return [];
             }
         }
         return G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliado', args.tipoIdentificacion, args.identificacion);

@@ -63,8 +63,8 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
         return G.Q.ninvoke(that.m_pedidos, "calcular_disponibilidad_producto", identificador, empresa_id, bodega, numero_pedido, codigo_producto, parametrosExistencias.estadoAprobacion);
         
     }).then(function(disponibilidad){
-        console.log('disponibilidad', disponibilidad);
-    G.logError(disponibilidad);
+        //console.log('disponibilidad', disponibilidad);
+    //G.logError(disponibilidad);
 
         res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {
             existencias_producto: existencias_productos, 

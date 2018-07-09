@@ -95,15 +95,14 @@
                             </div>
                             <div ng-if="!isTmp()">    
                                 <div class="modal-footer col-md-12">
-                                    <button class="btn btn-default" ng-click="cancelar_documento()">
-                                        <span class="glyphicon glyphicon-share-alt" ></span> Volver
-                                    </button>
-                                    <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
-                                        <span class="glyphicon glyphicon-trash" ></span> Eliminar
-                                    </button>
-<!--                                    <button ng-hide="!isGenerarDocumento()"  class="btn btn-success" ng-click="generar_documento()" >
-                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento
-                                    </button>                                -->
+                                    <div class="container text-center">
+                                        <button class="btn btn-default" ng-click="cancelar_documento()">
+                                            <span class="glyphicon glyphicon-share-alt" ></span> Volver
+                                        </button>
+                                        <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
+                                            <span class="glyphicon glyphicon-trash" ></span> Eliminar
+                                        </button>
+                                    </div>  
                                 </div>  
                             </div>
                         </div>

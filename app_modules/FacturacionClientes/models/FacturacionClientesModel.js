@@ -1209,7 +1209,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
     }; 
     
     var query = G.knex(tabla).insert(parametros);     
-  console.log(">>> ",G.sqlformatter.format(query.toString()));   
+//  console.log(">>> ",G.sqlformatter.format(query.toString()));   
    if(transaccion) query.transacting(transaccion);     
     query.then(function(resultado){
         callback(false, resultado);
@@ -1310,6 +1310,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
             this.on("a.tipo_id_tercero", "cntrtos.tipo_id_tercero")
                 .on("a.tercero_id", "cntrtos.tercero_id")
                 .on('a.empresa_id', "cntrtos.empresa_id")
+                .on("cntrtos.estado",1)
                  
         }).where(function(resuldado){
                                              
@@ -1338,13 +1339,12 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
         }).andWhere("a.empresa_id", obj.empresa_id);     
    
     query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
-     console.log("--------------------------------"); 
-     console.log(">>> ",G.sqlformatter.format(query.toString())); 
+//     console.log("--------------------------------"); 
+//     console.log(">>> ",G.sqlformatter.format(query.toString())); 
     
     query.then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){
-        console.log(">>> ",G.sqlformatter.format(query.toString())); 
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
         callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
     }); 
@@ -2285,6 +2285,49 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
     
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion elimina todos los productos asociados al documento parcial
+ * @fecha 05/07/2018
+ */
+FacturacionClientesModel.prototype.eliminarDocumentoTemporal_d = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_facturas_xconsumo_tmp_d").
+            where('empresa_id', parametros.empresa_id).
+            andWhere('id_factura_xconsumo', parametros.id_factura_xconsumo).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarDocumentoTemporal_d", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion elimina la cabecera del documento temporal de facturacion
+ * @fecha 05/07/2018
+ */
+FacturacionClientesModel.prototype.eliminarDocumentoTemporal = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_facturas_xconsumo_tmp").
+            where('empresa_id', parametros.empresa_id).
+            andWhere('id_factura_xconsumo', parametros.id_factura_xconsumo).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarDocumentoTemporal_d", err);
+        callback(err);
+    });
+};
    
 FacturacionClientesModel.$inject = ["m_e008"];
 

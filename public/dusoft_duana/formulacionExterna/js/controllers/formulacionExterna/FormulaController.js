@@ -944,8 +944,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
             if(tmp_formula_id){
                 var observacion = observacion + " No. Formula: " + $scope.root.formula.formula_papel + " Paciente " + $scope.root.afiliado.mostrarPacientes()[0].getTipoIdPaciente() + $scope.root.afiliado.mostrarPacientes()[0].getPacienteId() + " " + $scope.root.afiliado.mostrarPacientes()[0].getNombres() + " " + $scope.root.afiliado.mostrarPacientes()[0].getApellidos();
                 formulaExternaService.generarEntrega(tmp_formula_id, observacion, todo_pendiente, empresa_id, centro_utilidad, bodega, plan,function(error, data){
+                    console.log('respuesta servicio', error, data);
                     if(error){
-                        AlertService.mostrarMensaje("warning", data);
+                        AlertService.mostrarMensaje("danger", data.obj.msj);
+                        $modalInstance.close();
                         return;
                     }
                     //Genera la impresion de medicamentos dispensados
@@ -969,7 +971,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
 var observacion = observacion + " No. Formula: " + $scope.root.formula.formula_papel + " Paciente " + $scope.root.formula.tipo_id_paciente + $scope.root.formula.paciente_id + " " + $scope.root.formula.nombre_paciente;
                 formulaExternaService.generarEntregaPendientes(formula_id, observacion, todo_pendiente, empresa_id, centro_utilidad, bodega, plan, function(error, data){
                     if(error){
-                        AlertService.mostrarMensaje("warning", "Error al momento de generar la entrega de pendientes");
+                        AlertService.mostrarMensaje("danger", "Error al momento de generar la entrega de pendientes");
                         return;
                     }
 

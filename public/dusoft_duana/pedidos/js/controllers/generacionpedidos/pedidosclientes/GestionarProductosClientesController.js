@@ -355,8 +355,8 @@ define(["angular", "js/controllers",
                                 descripcionProducto: $scope.datos_form.nombreProductoAvanzado,
                                 concentracion: $scope.datos_form.concentracionProductoAvanzado,
                                 tipoBusqueda: $scope.datos_form.tipoBusqueda,
+                                //estadoMultiplePedido: that.estadoMultipleCotizacion.multiple_pedido -> Este parametro debe ser habilitado y verificar su funcionamiento en busqueda avanzada de productos cuando se pase a produccion el tema de pedidos multiples
                                 estadoMultiplePedido: 0
-                              //  estadoMultiplePedido: that.estadoMultipleCotizacion.multiple_pedido
                             }
                         }
                     };

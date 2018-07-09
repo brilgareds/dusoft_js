@@ -417,3 +417,9 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.66', 'FORMULACION EXTERNA', 'SE AJUSTA LA OBSERVACION DE LOS DOCUMENTOS EN LA ENTREGA DE PENDIENTES DE DISPENSACION');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.67 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.67', 'FACTURACION', 'se corrige un error a la hora de facturar y se agrega la funcion de eliminar la factura temporal');
+COMMIT TRANSACTION;

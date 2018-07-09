@@ -423,3 +423,10 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.67', 'FACTURACION', 'se corrige un error a la hora de facturar y se agrega la funcion de eliminar la factura temporal');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.68 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.68', 'PEDIDOS', 'Se ajusta el calculo de la disponibilidad para que tenga en cuenta la empresa, centro de utilidad y bodega.');
+COMMIT TRANSACTION;
+

@@ -500,7 +500,7 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
         offset(offsett);
 
 
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
 
         query.then(function(resultado){  
          callback(false, resultado);

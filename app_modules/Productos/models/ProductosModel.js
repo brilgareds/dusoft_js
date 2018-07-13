@@ -64,7 +64,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         "g.valor_pactado",
         "c.precio_regulado"
      ];
-    
+
    
     G.knex.column(campos).
     from("existencias_bodegas as a").
@@ -481,12 +481,14 @@ ProductosModel.prototype.consultar_stock_producto_kardex = function(empresa_id, 
 //  
 ProductosModel.prototype.buscarProductosCodificacion = function(parametros, callback) {
 
-    var campos = [              
+    var campos = [ 
+        G.knex.raw("case when f.descripcion is null then '-- NO SE USA EN TRATAMIENTOS ESPECIALES --' else f.descripcion end as descripcion_tratamiento"), 
         G.knex.raw("a.descripcion||'-'||prod.cod_anatofarmacologico as descripcion_cod_anatofarmacologico"),
         G.knex.raw("b.descripcion||'-'||b.unidad_id as descripcion_unidad"),
         "b.unidad_id as abreviatura_unidad",
         "c.descripcion as descripcion_med_cod",
-        "prod.cod_adm_presenta as sw_dosificacion",
+        G.knex.raw("'' as unidad_dosificacion"),
+        G.knex.raw("'2' as sw_dosificacion"), //"prod.cod_adm_presenta as sw_dosificacion",
         "grp.grupo_id",
         "grp.descripcion as descripcion_grupo",
         "mol.sw_medicamento",
@@ -496,7 +498,7 @@ ProductosModel.prototype.buscarProductosCodificacion = function(parametros, call
         "sub.descripcion as descripcion_subclase",
         "mol.molecula_id",      
         "sub.subclase_id",
-        "sub.descripcion",
+        "prod.descripcion",
         "prod.descripcion_abreviada",
         "prod.codigo_cum",
         "prod.codigo_alterno",
@@ -510,7 +512,7 @@ ProductosModel.prototype.buscarProductosCodificacion = function(parametros, call
         "prod.mensaje_id",
         "prod.codigo_mindefensa",
         "prod.codigo_invima",
-        "prod.vencimiento_codigo_invima",
+        G.knex.raw("to_char(prod.vencimiento_codigo_invima, 'YYYY-MM-DD') AS vencimiento_codigo_invima"),
         "prod.porc_iva",
         "prod.sw_generico",
         "prod.sw_venta_directa",
@@ -522,19 +524,35 @@ ProductosModel.prototype.buscarProductosCodificacion = function(parametros, call
         G.knex.raw("'2' as usuario_id"),
         "prod.cod_adm_presenta as cod_presenta",
         "prod.dci_id",
-        "prod.estado_unico",
+        G.knex.raw("case when prod.estado_unico=1 then '1' else '0' end as estado_unico"),
         "prod.sw_solicita_autorizacion",
         "prod.codigo_producto", 
         "prod.rips_no_pos",
         "prod.tipo_riesgo_id",
-        "tri.tipo_pais_id as tipo_pais_titular_reginvima_id",
+        "prod.tipo_pais_id as tipo_pais_titular_reginvima_id",
         "tri.descripcion as descripcion_titular_reginvima",
         "prod.titular_reginvima_id",
-        "prod.estado_invima"    
+        "prod.estado_invima" ,   
+        "prod.cod_forma_farmacologica as descripcion_medida_medicamento",  
+        G.knex.raw("'' as descripcion_principio_activo"),  
+        "med.sw_fotosensible",  
+        "prod.cantidad as concentracion",
+        "mol.molecula_id as cod_principio_activo",
+        "prod.cod_adm_presenta AS cod_concentracion",
+        "med.sw_liquidos_electrolitos",
+        "med.sw_manejo_luz",
+        "med.sw_uso_controlado",
+        "med.sw_antibiotico",
+        "med.sw_refrigerado",
+        "med.sw_alimento_parenteral",
+        "med.sw_alimento_enteral",
+        "med.dias_previos_vencimiento",
+        "med.sw_farmacovigilancia",
+        "med.descripcion_alerta",
      ];
     
                           
-    var query = G.knex.column(campos).
+    var query = G.knex.column(campos).distinct().
     from("inv_grupos_inventarios as grp").
     innerJoin("inventarios_productos as prod", "prod.grupo_id","grp.grupo_id").
     innerJoin("inv_subclases_inventarios as sub", function(){
@@ -552,15 +570,17 @@ ProductosModel.prototype.buscarProductosCodificacion = function(parametros, call
     innerJoin("inv_med_cod_anatofarmacologico as a", "a.cod_anatomofarmacologico","prod.cod_anatofarmacologico").          
     innerJoin("unidades as b", "b.unidad_id","prod.unidad_id").          
     innerJoin("inv_presentacioncomercial as c", "c.presentacioncomercial_id","prod.presentacioncomercial_id").         
+    innerJoin("medicamentos as med", "med.codigo_medicamento","prod.codigo_producto").         
+    leftJoin("hc_formulacion_factor_conversion as d", "d.codigo_producto","prod.codigo_producto").      
+    leftJoin("inv_tratamientos_productos as f", "f.tratamiento_id","prod.tratamiento_id").      
     innerJoin("inv_moleculas as mol",function(){
         this.on( "mol.molecula_id","sub.molecula_id")
             .on( G.knex.raw("mol.estado='1'"));
-    }). //inv_med_cod_anatofarmacologico
+    }). 
     where(function(){
-//        this.where("prod.codigo_producto",parametros.codigoProducto);
-        this.where("prod.codigo_producto",'198D0500001');
+        this.where("prod.codigo_producto",parametros.codigoProducto);
     });
-        console.log(G.sqlformatter.format(query.toString()));    
+  
     query.then(function(rows){
         callback(false, rows);
     }).catch(function(err){

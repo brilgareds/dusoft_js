@@ -26,24 +26,169 @@ DispensacionHc.prototype.eliminarFormulasSinMovimiento = function(){
         console.log(" err ", err);  
     }).done();
 }
+                                         
+function __sincronizacionProductos (that,producto,callback) {
+    var parametros;
+ 
+    G.Q.ninvoke(that.m_productos, 'buscarProductosCodificacion',producto).then(function (resultado) {
+        parametros = resultado[0];
+        var funcion = "modificar_productoinsumo";
+        var datos = {
+            descripcion_titular_reginvima: parametros.descripcion_titular_reginvima,
+            tipo_pais_titular_reginvima_id: parametros.tipo_pais_titular_reginvima_id,
+            descripcion_tratamiento: parametros.descripcion_tratamiento,
+            descripcion_cod_anatofarmacologico: parametros.descripcion_cod_anatofarmacologico,
+            descripcion_unidad: parametros.descripcion_unidad,
+            abreviatura_unidad: parametros.abreviatura_unidad,
+            descripcion_med_cod: parametros.descripcion_med_cod,
+            unidad_dosificacion: parametros.unidad_dosificacion,
+            sw_dosificacion: parametros.sw_dosificacion,
+            grupo_id: parametros.grupo_id,
+            descripcion_grupo: parametros.grupo_id,
+            sw_medicamento: parametros.sw_medicamento,
+            clase_id: parametros.clase_id,
+            descripcion_clase: parametros.descripcion_clase,
+            sw_tipo_empresa: parametros.sw_tipo_empresa,
+            descripcion_subclase: parametros.descripcion_subclase,
+            molecula_id: parametros.molecula_id,
+            subclase_id: parametros.subclase_id,
+            descripcion: parametros.descripcion,
+            descripcion_abreviada: parametros.descripcion_abreviada,
+            codigo_cum: parametros.codigo_cum,
+            codigo_alterno: parametros.codigo_alterno,
+            codigo_barras: parametros.codigo_barras,
+            fabricante_id: parametros.fabricante_id,
+            sw_pos: parametros.sw_pos,
+            cod_acuerdo228_id: parametros.cod_acuerdo228_id,
+            unidad_id: parametros.unidad_id,
+            cantidad: parametros.cantidad,
+            cod_anatofarmacologico: parametros.cod_anatofarmacologico,
+            mensaje_id: parametros.mensaje_id,
+            codigo_mindefensa: parametros.codigo_mindefensa,
+            codigo_invima: parametros.codigo_invima,
+            vencimiento_codigo_invima: parametros.vencimiento_codigo_invima,
+            titular_reginvima_id: parametros.titular_reginvima_id,
+            porc_iva: parametros.porc_iva,
+            sw_generico: parametros.sw_generico,
+            sw_venta_directa: parametros.sw_venta_directa,
+            tipo_pais_id: parametros.tipo_pais_id,
+            tipo_producto_id: parametros.tipo_producto_id,
+            presentacioncomercial_id: parametros.presentacioncomercial_id,
+            cantidad_p: parametros.cantidad_p,
+            tratamiento_id: parametros.tratamiento_id,
+            usuario_id: parametros.usuario_id,
+            cod_presenta: parametros.cod_presenta,
+            dci: parametros.dci_id,
+            estado_unico: parametros.estado_unico,
+            sw_solicita_autorizacion: parametros.sw_solicita_autorizacion,
+            codigo_producto: parametros.codigo_producto,
+            rips_no_pos: parametros.rips_no_pos
+        };
+        
+        return G.Q.nfcall(__swSincronizarProductos, funcion, datos);
+
+    }).then(function (resultado) {
+        var datos = {
+            descripcion_cod_anatofarmacologico: parametros.descripcion_cod_anatofarmacologico,
+            descripcion_med_cod: parametros.descripcion_med_cod,
+            unidad_dosificacion: parametros.unidad_dosificacion,
+            sw_dosificacion: parametros.sw_dosificacion,
+            descripcion_medida_medicamento: parametros.descripcion_medida_medicamento,
+            descripcion_principio_activo: parametros.descripcion_principio_activo,
+            sw_manejo_luz: parametros.sw_manejo_luz,
+            cod_forma_farmacologica: parametros.descripcion_medida_medicamento,
+            concentracion: parametros.concentracion,
+            cod_principio_activo: parametros.cod_principio_activo,
+            cod_concentracion: parametros.cod_concentracion,
+            sw_liquidos_electrolitos: parametros.sw_liquidos_electrolitos,
+            sw_uso_controlado: parametros.sw_uso_controlado,
+            sw_antibiotico: parametros.sw_antibiotico,
+            sw_refrigerado: parametros.sw_refrigerado,
+            sw_alimento_parenteral: parametros.sw_alimento_parenteral,
+            sw_alimento_enteral: parametros.sw_alimento_enteral,
+            dias_previos_vencimiento: parametros.dias_previos_vencimiento,
+            cod_anatofarmacologico: parametros.cod_anatofarmacologico,
+            sw_pos: parametros.sw_pos,
+            codigo_cum: parametros.codigo_cum,
+            unidad_id: parametros.unidad_id,
+            sw_farmacovigilancia: parametros.sw_farmacovigilancia,
+            descripcion_alerta: parametros.descripcion_alerta,
+            usuario_id: parametros.usuario_id,
+            codigo_producto: parametros.codigo_producto,
+            tipo_pais_titular_reginvima_id: parametros.tipo_pais_titular_reginvima_id,
+            descripcion_titular_reginvima: parametros.descripcion_titular_reginvima,
+            titular_reginvima_id: parametros.titular_reginvima_id,
+            estado_invima: parametros.estado_invima
+        };
+
+        if (resultado.mensaje === '1') {
+            var funcion = "modificar_productomedicamento";
+            return G.Q.nfcall(__swSincronizarProductos, funcion, datos);
+        } else {
+            throw {msj: "Se ha generado un error al sincronizar la funcion modificar_productoinsumo <<sincronizacionProductos>>", status: 403, obj: {}};
+        }
+
+    }).then(function (resultado) {
+
+        if (resultado.mensaje === '1') {
+            callback(false,true);
+        } else {
+            callback(false,false);
+        }
+
+    }).fail(function (err) {
+        console.log("Error ", err);
+        callback(err);
+    }).done();
+};
+
+function __swSincronizarProductos(funcion, parametros, callback) {
+    var obj = {};
+    
+    var url = G.constants.WS().DISPENSACION_HC.CODIFICACION_PRODUCTOS;
+
+    G.Q.nfcall(G.soap.createClient, url).then(function (client) {
+
+        return G.Q.ninvoke(client, funcion, parametros);
+
+    }).spread(function (result, raw, soapHeader) {
+
+        G.logError(JSON.stringify(result.return));
+
+        if (!result.return["$value"]) {
+            throw {msj: "Se ha generado un error", status: 403, obj: {}};
+        } else {
+            obj.mensaje = result.return["$value"];
+        }
+
+    }).then(function () {
+
+        callback(false, obj);
+
+    }).fail(function (err) {
+
+        obj.error = true;
+        obj.tipo = '0';       
+        G.logError(JSON.stringify(err));
+        callback(err);
+
+    }).done();
+}
 
 DispensacionHc.prototype.sincronizacionFormulasDispensadas = function(){
     
     var that = this;
     
-    G.Q.ninvoke(that.m_productos,'buscarProductosCodificacion',{codigoProducto: '198A0010042'}).then(function(resultado){
-    
-        console.log("AAAAA ",resultado);
+    G.Q.nfcall(__sincronizacionFormulasDispensadas,that).then(function(resultado){
         
+        console.log("Termina ------------",resultado);
+    
     }).fail(function(err){      
-        console.log("Error ", err);  
+        console.log(" err ", err);  
     }).done();
-}
+};
 
-DispensacionHc.prototype.sincronizacionFormulasDispensadas0 = function(){
-    
-    var that = this;
-    
+function __sincronizacionFormulasDispensadas(that,callback){
     G.Q.ninvoke(that.m_dispensacion_hc,'formulasDispensadas',{}).then(function(resultado){
         
         return G.Q.nfcall(__codificarFormulasDispensadas,resultado,0,[]);
@@ -57,12 +202,29 @@ DispensacionHc.prototype.sincronizacionFormulasDispensadas0 = function(){
         }
         
     }).then(function(resultado){
-      
-     throw {msj:'[sincronizacionFormulasDispensadas]: sincronizacion Formulas Dispensadas', status: 201};
-     // console.log("ok ",resultado);
-    
+ 
+     if(resultado.isProducto){
+     
+       return G.Q.nfcall(__sincronizacionProductos,that,resultado);
+     }else{
+       
+       callback(false,true);
+       return;
+     }
+     
+    }).then(function(resultado){
+        
+         if(resultado){
+           
+             __sincronizacionFormulasDispensadas(that,callback);
+         }else{
+              
+           callback(false, true);  
+         }
+        
     }).fail(function(err){      
-     //   console.log(" err ", err);  
+        console.log(" err ", err); 
+        callback(err);
     }).done();
 }
 
@@ -92,37 +254,69 @@ function __codificarFormulasDispensadas(productos, index, resultado, callback){
 
 function __wsSincronizarFormulasDispensadas(parametros,callback){
     var obj={};
+    var datos2;
+    var client;
     var url =  G.constants.WS().DISPENSACION_HC.FORMULAS_DISPENSADAS;
+   
+   var credentials = [];           
+    var ws_dispensation1 = {
+        login :'duana_dispensacion'
+    }  
+    var ws_dispensation2 = {
+        password :'duana_dispensacion'
+    }  
+    var ws_dispensation3 = {
+       trace : 1
+    }  
+    var ws_dispensation = {
+        login : 'duana_dispensacion',
+        password : 'duana_dispensacion',
+        trace : 1
+    }  
+     credentials.push(ws_dispensation1);         
+     credentials.push(ws_dispensation2); 
+     credentials.push(ws_dispensation3); 
      
+     var options = {
+    hasNonce: true,
+    actor: 'actor'
+  };
+  
     G.Q.nfcall(G.soap.createClient, url).then(function(client) {
-        
-    var datos = {data:parametros};
-    
+ 
+      client.addSoapHeader(ws_dispensation);
+
+        var datos = {
+                 data:parametros
+               };
     return G.Q.ninvoke(client, "getDispensation", datos);
                 
     }).spread(function(result,raw,soapHeader){
-console.log("result.return.msj[$value]",result.return);
-console.log("result.return.msj[$value]",result.return.productsWithoutExistence.item);
-console.log("result.return.msj[$value]",result.return.message["$value"]);
-           return true;
+
+       console.log("result.return.msj[$value]",result.return.message["$value"]);
+
+     G.logError(result.return.message["$value"]);          
+     
         if(!result.return){
             throw {msj:"Se ha generado un error", status:403, obj:{}}; 
         } else {            
             obj.mensaje = result.return.message["$value"];
+            obj.isProducto = false;
+            if(result.return.productsWithoutExistence !== undefined){
+            obj.codigoProducto = result.return.productsWithoutExistence.item["$value"];
+            obj.isProducto = true;
+            }
         }
-
-    }).then(function(){
-
+    }).then(function(resultado){
+        
      callback(false, obj);    
 
-    }).fail(function(err) {    
-
-                obj.error = true;
-                obj.tipo = '0';
-              console.log("Error ");
-              console.log("Werr ", err);
-                G.logError(JSON.stringify(err));
-     callback(err);
+    }).fail(function(err) {
+        
+        obj.error = true;
+        obj.tipo = '0';
+        G.logError(JSON.stringify(err));
+        callback(err);
 
     }).done();   
 }
@@ -1228,6 +1422,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
   
         if(resultado.length > 0){
            temporales = resultado;
+           console.log("temporal",temporales);
            return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');            
         }else{
             throw 'No hay temporales separados'
@@ -1661,7 +1856,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         
     }).then(function(resultado){
         temporales = resultado;
-        
+        console.log("temporales22 ",temporales);
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:0});   
        
     }).then(function(resultado){
@@ -1708,7 +1903,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
                     planId: planId
                 }
             };
-            
+            console.log("AAAA",parametrosGenerarDispensacion);
             /**
              * Inserta bodegas_documentos
              * Inserta hc_formulacion_despachos_medicamentos

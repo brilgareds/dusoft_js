@@ -2935,7 +2935,7 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
             centro_utilidad:obj.centro_utilidad,
             bodega:obj.bodega,
             codigo_producto:obj.codigo_producto, 
-            fecha_vencimiento: G.moment(obj.fecha_vencimiento).add(1, 'day').format(formato),
+            fecha_vencimiento: obj.fecha_vencimiento,//G.moment(obj.fecha_vencimiento).add(1, 'day').format(formato),
             lote:obj.lote
         }).decrement('existencia_actual', obj.cantidad_despachada);
         

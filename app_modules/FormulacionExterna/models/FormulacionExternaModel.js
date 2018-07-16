@@ -936,7 +936,7 @@ FormulacionExternaModel.prototype.generarDispensacionFormulaPendientes = functio
             tmp.productos = resultado;
             return G.Q.nfcall(__guardarBodegasDocumentosDetalle, that, empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, tmp.productos, transaccion);
         }).then(function(resultado){
-            console.log('---->', bodegasDocId, 'numeracion',numeracion);
+           
             return G.Q.nfcall(__asignarDocumentoBodegaYNumeracionAPendientes, formula_id, bodegasDocId, numeracion, transaccion);
         }).then(function(resultado){
             return G.Q.nfcall(__insertaFormulacionDespachoMedicamentosPendientes, formula_id, bodegasDocId, numeracion, transaccion);

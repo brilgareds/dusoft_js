@@ -209,7 +209,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                            
                            $scope.root.items = data.obj.listar_formulas.length;                              
                            $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                           console.log("listarFormulas :: ",$scope.root.afiliados);
+                       
                            /**
                             * +Descripcion: Se elimina el criterio de consulta de la formula que se
                             *               envia por memoria cuando se dispensa la entrega
@@ -316,7 +316,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  *              se seleccione la opcion dispensacion
                  */
                 $scope.dispensacionFormula = function(dispensar, pendientes) {
-                      console.log("ADD dispensarFormulaDetalle :: ",dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId());
+                    
                         localStorageService.add("dispensarFormulaDetalle",{
                             evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
                             filtro:$scope.root.filtro,

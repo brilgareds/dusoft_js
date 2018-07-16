@@ -1266,7 +1266,7 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function 
     if (args.facturas_consumo.estado === 0) {
         estado = 6;
     }
-    console.log("args.facturas_consumo ", args.facturas_consumo);
+  
     var parametros = {
         empresaId: args.facturas_consumo.empresa_id,
         tipoIdTercero: args.facturas_consumo.tipoTerceroId,
@@ -1492,7 +1492,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
             if (resultado.length > 0) {
 
                 parametros.direccion_ip = ip;
-                console.log("consultarTemporalFacturaConsumo_________________________________________________________");
+              
                 return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumo',
                         {tipo_id_tercero: parametros.tipoIdTercero,
                             tercero_id: parametros.terceroId,
@@ -1560,9 +1560,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
     }).then(function (resultado) {
 
         if (resultado.rowCount > 0) {
-            console.log("_________________________________________________________");
-            console.log("resultado::: ", resultado);
-            console.log("_________________________________________________________");
+            
             return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo',
                     {estado: 5, id_factura_xconsumo: parametros.id_factura_xconsumo, prefijo: parametros.pedidos.prefijo, factura_fiscal: parametros.pedidos.numero});
         } else {
@@ -1571,7 +1569,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
         }
 
     }).then(function (resultado) {
-        console.log("resultado5 ", resultado);//return
+     
         if (resultado.length > 0) {
 
             resultado.forEach(function (row) {

@@ -3464,7 +3464,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
                                     productos_pendientes.push(producto_pedido);
                                 } else if (producto_pedido.item_id > 0) {
                                     productos_no_auditados.push(producto_pedido);
-                                    console.log("AAAAAAAA");
+                                   
 
                                 }
                             } else {
@@ -3475,7 +3475,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 
                                 } else if (producto_pedido.auditado === '0') {
                                     productos_no_auditados.push(producto_pedido);
-                                    console.log("BBBBBB");
+                                
 
                                 }
 

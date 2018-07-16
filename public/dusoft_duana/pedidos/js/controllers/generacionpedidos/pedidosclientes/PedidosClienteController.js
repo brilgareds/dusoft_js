@@ -1416,7 +1416,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             function __productosBodegaDuana(index, productos, productosBodegaDuana, bodega, callback) {
-console.log("__productosBodegaDuana");
+
                 var producto = productos[index];
 
                 if (producto === undefined) {
@@ -1442,11 +1442,10 @@ console.log("__productosBodegaDuana");
              * 
              **/
             that.validarDisponibleProductosCotizacion = function (estadoBoton, producto, callback) {
-console.log("validarDisponibleProductosCotizacion");
+
                 __productosBodegaDuana(0, $scope.Pedido.productos, [], $scope.Pedido.get_bodega_id(), function (resultado, productosBodega) {
 
-console.log("111111111111",resultado);
-console.log("222222222222",productosBodega);
+
 
                     var numeroPedidoCot;
                     var tipoPedidoCot;
@@ -1498,7 +1497,7 @@ console.log("222222222222",productosBodega);
                                 observacion += $scope.Pedido.get_observacion_cartera();
                                 $scope.Pedido.set_observacion_cartera(observacion);
                             }
-console.log(data.obj.pedidos_clientes.producto.length);
+
                             if (data.obj.pedidos_clientes.producto.length > 0) {
                                 that.ventanaProductosSinDisponibilidad(estadoBoton, data.obj.pedidos_clientes.producto);
                             } else {

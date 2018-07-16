@@ -1284,10 +1284,7 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
  * @fecha 2017-15-05 YYYY-DD-MM        
  */          
 FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(obj, callback){
-                                  
-       console.log("consultarTemporalFacturaConsumo");         
-       console.log("--------------------------------");         
-       console.log("--------------------------------",obj);         
+                   
     var query = G.knex.select(["a.empresa_id as empresa","a.*","b.*",
        G.knex.raw("case when a.tipo_pago_id=1 then 'Efectivo' \
         when a.tipo_pago_id=2 then 'Cheque'\
@@ -1404,8 +1401,7 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
  * @fecha 2017-15-05 YYYY-DD-MM
  */
 FacturacionClientesModel.prototype.consultarDetalleTemporalFacturaConsumo = function(obj, callback){
-   console.log("/////////////////////////////////");
-   console.log("consultarDetalleTemporalFacturaConsumo ",obj);
+
     var campos = [
         G.knex.raw("sum(b.cantidad_despachada) as cantidad_despachada"),
         "b.tipo_id_vendedor",

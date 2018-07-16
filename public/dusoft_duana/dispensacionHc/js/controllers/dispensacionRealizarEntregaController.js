@@ -115,7 +115,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          */
         that.realizarEntregaFormula = function(){
             
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");          
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");    
+            console.log("realizarEntregaFormula ",resultadoStorage);
             var parametroCabecera = { 
                 session: $scope.session,
                 data: {
@@ -164,7 +165,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             }    
                         };  
                          if(estadoEntregaFormula === 0){
-
+ console.log("onNotificarCabeceraFormula :: ",obj);
                             if(estadoTodoPendiente === 1){
                                 that.dispensacionNormal(obj);
                             }else{
@@ -433,7 +434,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionNormal = function(obj){
-                   
+                   console.log("dispensacionNormal :: ",obj);
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
                
                 AlertService.mostrarMensaje("warning", data.msj);

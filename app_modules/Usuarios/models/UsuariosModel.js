@@ -132,11 +132,12 @@ UsuariosModel.prototype.guardarUsuario = function(usuario, callback) {
 UsuariosModel.prototype.insertarUsuario = function(usuario, callback) {
 
     var sql = "INSERT INTO system_usuarios (usuario, nombre, passwd, activo,\
-               fecha_caducidad_contrasena, descripcion, email) VALUES ( :1, :2, md5( :3 ), :4, :5, :6, :7 ) RETURNING usuario_id";
+               fecha_caducidad_contrasena, descripcion, email, tercero_id, tipo_id_tercero) VALUES ( :1, :2, md5( :3 ), :4, :5, :6, :7, :8, :9 ) RETURNING usuario_id";
 
 
     var params = {
-        1:usuario.usuario, 2:usuario.nombre, 3:usuario.clave, 4:Number(usuario.estado), 5:usuario.fechaCaducidad, 6:usuario.descripcion, 7:usuario.email
+        1:usuario.usuario, 2:usuario.nombre, 3:usuario.clave, 4:Number(usuario.estado), 5:usuario.fechaCaducidad, 6:usuario.descripcion, 7:usuario.email,
+        8:usuario.identificacion, 9: usuario.tipo_id
     };
     
     G.knex.raw(sql, params).then(function(resultado){
@@ -151,11 +152,11 @@ UsuariosModel.prototype.insertarUsuario = function(usuario, callback) {
 UsuariosModel.prototype.modificarUsuario = function(usuario, callback) {
 
     var sql = "UPDATE system_usuarios SET  usuario = :1, nombre = :2, activo= :3, fecha_caducidad_contrasena = :4,\
-               email = :5, descripcion = :6  WHERE usuario_id = :7 RETURNING usuario_id";
+               email = :5, descripcion = :6, tipo_id_tercero = :8, tercero_id = :9 WHERE usuario_id = :7 RETURNING usuario_id";
 
     var params = {
         1:usuario.usuario, 2:usuario.nombre, 3:Number(usuario.estado), 4:usuario.fechaCaducidad,
-        5:usuario.email, 6:usuario.descripcion, 7:usuario.id
+        5:usuario.email, 6:usuario.descripcion, 7:usuario.id, 8:usuario.tipo_id, 9:usuario.identificacion
     };
     
     G.knex.raw(sql, params).then(function(resultado){
@@ -172,6 +173,17 @@ UsuariosModel.prototype.obtenerUsuarioPorNombreOEmail = function(usuario, email,
     var sql = "SELECT  nombre, usuario_id, email, usuario  FROM system_usuarios WHERE usuario "+G.constants.db().LIKE+" :1 OR email = :2";
     
     G.knex.raw(sql, {1:usuario + "%", 2:email}).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
+UsuariosModel.prototype.obtenerUsuarioPorIdentificacion = function(tipo_id, tercero_id,id, callback) {
+    var sql = "SELECT  *  FROM system_usuarios WHERE NOT usuario_id = :3 AND tercero_id =  :1 AND tipo_id_tercero = :2";
+    
+    G.knex.raw(sql, {1:tercero_id, 2:tipo_id, 3:id}).then(function(resultado){
         callback(false, resultado.rows);
 
     }).catch(function(err){
@@ -685,6 +697,25 @@ UsuariosModel.prototype.borrarCacheUsuario = function(usuario_id){
     G.redis.del(llave);
 };
 
+/**
+ * @author German Galvis
+ * @fecha 13/07/2018
+ * +Descripcion Modelo encargado de listar los tipos de terceros
+ */
+UsuariosModel.prototype.listarTiposTerceros = function (callback) {
+
+    G.knex.column('tipo_id_tercero as id', 'descripcion')
+            .select()
+            .from('tipo_id_terceros')
+            .whereIn('tipo_id_tercero', ['CC', 'CE','PA'])
+            .orderBy('tipo_id_tercero', 'asc')
+            .then(function (resultado) {
+                callback(false, resultado)
+            }).catch(function (err) {
+        console.log("err [listarTipoDocumento]:", err);
+        callback({err: err, msj: "Error al consultar la lista de los tipos de terceros"});
+    });
+};
 
 function __borrarParametrizacionPorUsuario(tablas, usuario_id, callback) {
     var tabla = tablas[0];
@@ -1067,6 +1098,20 @@ function __validarCreacionUsuario(that, usuario, callback) {
         return;
     }
 
+    if (usuario.tipo_id === undefined || usuario.tipo_id === null) {
+        validacion.valido = false;
+        validacion.msj = "El usuario debe tener un tipo de identificacion";
+        callback(validacion);
+        return;
+    }
+    
+    if (usuario.identificacion === undefined || usuario.identificacion === null) {
+        validacion.valido = false;
+        validacion.msj = "El usuario debe tener un numero de identificacion";
+        callback(validacion);
+        return;
+    }
+
     if (usuario.clave && usuario.clave.length > 0) {
         
         if(usuario.clave.length < 6){
@@ -1126,6 +1171,24 @@ function __validarCreacionUsuario(that, usuario, callback) {
     }
 
 
+
+    //trae los usuarios que hagan match con el numero de identificacion
+    that.obtenerUsuarioPorIdentificacion(usuario.tipo_id, usuario.identificacion,usuario.id, function(err, rows) {
+        if (err) {
+            validacion.valido = false;
+            validacion.msj = "Ha ocurrido un error validando el usuario";
+            callback(validacion);
+            return;
+        }
+            if (rows.length>0) {               
+                    validacion.valido = false;
+                    validacion.msj = "El numero de identificacion pertenece a otro usuario";
+                    callback(validacion);
+                    return;
+            
+        }
+        callback(validacion);
+    });
 
     //trae los usuarios que hagan match con las primeras letras del nombre 
     that.obtenerUsuarioPorNombreOEmail(usuario.usuario.substring(0, 4), usuario.email, function(err, rows) {

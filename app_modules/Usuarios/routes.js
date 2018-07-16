@@ -80,5 +80,8 @@ module.exports = function(app, di_container) {
     app.post('/api/Usuarios/obtenerBodegasUsuario', function(req, res) {
          c_usuarios.obtenerBodegasUsuario(req, res);
     }); 
+    app.post('/api/Usuarios/listarTiposTerceros', function(req, res) {
+         c_usuarios.listarTiposTerceros(req, res);
+    }); 
     
 };

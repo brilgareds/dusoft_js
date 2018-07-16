@@ -26,11 +26,13 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             };
 
             $scope.rootUsuario.empresas = [];
+            $scope.rootUsuario.tiposDoc = [];
 
             $scope.rootUsuario.termino_busqueda = "";
             $scope.rootUsuario.termino_busqueda_centro = "";
             $scope.rootUsuario.paginaactual = 1;
             $scope.rootUsuario.paginaActualCentros = 1;
+            $scope.rootUsuario.tipoDocumento ='';
 
             $scope.rootUsuario.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
@@ -179,6 +181,18 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     validacion.msj = "Debe tener un nombre de usuario";
                     return validacion;
                 }
+                
+                if (usuario.getIdentificacion() === undefined || usuario.getIdentificacion() === null || usuario.getIdentificacion().length === 0) {
+                    validacion.valido = false;
+                    validacion.msj = "Debe tener un numero de identificacion";
+                    return validacion;
+                }
+                
+                if (usuario.getTipo_id() === undefined || usuario.getTipo_id() === null) {
+                    validacion.valido = false;
+                    validacion.msj = "Debe tener un tipo de identificacion";
+                    return validacion;
+                }
 
                 if (usuario.getClave() && usuario.getClave().length > 0 || usuario.getId() === "") {
 
@@ -241,6 +255,8 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                             $scope.rootUsuario.confirmacionEmail = _usuario.email;
                             $scope.rootUsuario.usuarioAGuardar.setDescripcion(_usuario.descripcion);
                             $scope.rootUsuario.usuarioAGuardar.setRutaAvatar(_usuario.ruta_avatar);
+                            $scope.rootUsuario.usuarioAGuardar.setIdentificacion(_usuario.tercero_id);
+                            $scope.rootUsuario.usuarioAGuardar.setTipo_id(_usuario.tipo_id_tercero);
 
                             if (_usuario.ruta_avatar) {
 
@@ -326,6 +342,28 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 });
             };
 
+            self.traerTipoDocumento = function() {
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.LISTAR_TIPOS_TERCEROS, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        $scope.rootUsuario.tiposDoc = data.obj.listar_tipo_terceros;
+                    }else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+
+                });
+            };
+
+            $scope.onSeleccionTipoTercero = function (filtro) {
+                $scope.rootUsuario.tipoDocumento = filtro;
+                $scope.rootUsuario.usuarioAGuardar.setTipo_id(filtro.id);
+            };
+            
             self.traerCentrosUtilidadUsuario = function(callback) {
                 
                 var obj = {
@@ -1044,9 +1082,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     return;
                 }
 
-                // $scope.rootRoles.rolAGuardar.setEmpresaId($scope.rootRoles.empresaSeleccionada.getCodigo());
                 var usuario_guardar = angular.copy($scope.rootUsuario.usuarioAGuardar);
-
 
                 var obj = {
                     session: $scope.rootUsuario.session,
@@ -1206,6 +1242,11 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
             });
 
+            self.init = function () {
+            self.traerTipoDocumento();
+            };
+
+            self.init();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.rootUsuarios = {};

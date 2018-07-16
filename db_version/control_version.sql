@@ -429,4 +429,10 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.68', 'PEDIDOS', 'Se ajusta el calculo de la disponibilidad para que tenga en cuenta la empresa, centro de utilidad y bodega.');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.69 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.69', 'USUARIOS', 'Se agrega el campo identificacion a la creacion de usuarios.');
+COMMIT TRANSACTION;
 

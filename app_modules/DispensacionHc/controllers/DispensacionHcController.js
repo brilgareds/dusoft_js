@@ -1115,7 +1115,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         }
             
     }).then(function(resultado){
-        
+          console.log("Resultado ",resultado);
+          G.logError(resultado);
         if(resultado.length > 0){           
            bodegasDocId = resultado[0].valor;          
            return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);          
@@ -1124,7 +1125,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         }
             
     }).then(function(resultado){
-  
+  console.log("Resultado 2 ",resultado);
+  G.logError(resultado);
         if(resultado.length > 0){
            temporales = resultado;
            return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');            

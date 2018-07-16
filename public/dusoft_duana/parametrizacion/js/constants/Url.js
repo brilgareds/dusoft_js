@@ -41,7 +41,8 @@
                 'GUARDAR_CENTRO_UTILIDAD_BODEGA':BASE_URL+"/Usuarios/guardarCentroUtilidadBodegaUsuario",
                 'DESHABILITAR_BODEGAS':BASE_URL+"/Usuarios/deshabilitarBodegasUsuario",
                 'OBTENER_CENTROS_UTILIDAD_USUARIO':BASE_URL+"/Usuarios/obtenerCentrosUtilidadUsuario",
-                'OBTENER_BODEGAS_USUARIO':BASE_URL+"/Usuarios/obtenerBodegasUsuario"
+                'OBTENER_BODEGAS_USUARIO':BASE_URL+"/Usuarios/obtenerBodegasUsuario",
+                'LISTAR_TIPOS_TERCEROS' : BASE_URL+"/Usuarios/listarTiposTerceros"
                 
 	    },
             'MODULOS':{

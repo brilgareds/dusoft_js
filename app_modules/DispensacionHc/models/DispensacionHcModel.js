@@ -1523,6 +1523,11 @@ DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,ca
     }
      
     var query = G.knex.select(columnas).where(parametros).from("hc_dispensacion_medicamentos_tmp");
+    console.log(G.sqlformatter.format(query.toString()));
+    console.log("obj ",obj);
+    G.logError(G.sqlformatter.format(query.toString()));
+    G.logError(obj);
+    
         query.then(function(resultado){   
             callback(false, resultado)
         }).catch(function(err){    

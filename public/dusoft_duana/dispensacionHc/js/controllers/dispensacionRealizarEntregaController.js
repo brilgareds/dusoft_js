@@ -115,13 +115,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          */
         that.realizarEntregaFormula = function(){
             
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");    
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
+            var evolucion_id = resultadoStorage.evolucionId;
             console.log("realizarEntregaFormula ",resultadoStorage);
             var parametroCabecera = { 
                 session: $scope.session,
                 data: {
                    cabecera_formula: {
-                        evolucion: resultadoStorage.evolucionId
+                        evolucion: evolucion_id
                    }
                } 
             }
@@ -148,11 +149,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             data: {
                                realizar_entrega_formula: {
                                     variable: 'ParametrizacionReformular',
-                                    evolucionId: resultadoStorage.evolucionId,                    
+                                    evolucionId: evolucion_id,                    
                                     empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(), 
                                     bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                                     observacion: $scope.root.observacion + " No. Formula: " + datos.obj.cabecera_formula[0].numero_formula
-                                                 +" No. Evolucion: "+ resultadoStorage.evolucionId 
+                                                 +" No. Evolucion: "+ evolucion_id 
                                                  + " Paciente " + datos.obj.cabecera_formula[0].tipo_id_paciente + " " + datos.obj.cabecera_formula[0].paciente_id
                                                  + " "+ datos.obj.cabecera_formula[0].nombres
                                                  + " "+ datos.obj.cabecera_formula[0].apellidos,

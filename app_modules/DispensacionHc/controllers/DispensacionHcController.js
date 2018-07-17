@@ -1413,12 +1413,13 @@ DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
             throw {msj:'No se descarto el pendiente',status:403}
         }else{
             
-            return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente', {evolucionId:parametros.evolucion, estado:0} );
+            return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesSinDispensar',{evolucionId:parametros.evolucion});                                   
+            //se cambio porque al descartar  un pendiente cambiaba el estado de la formula y no permitia dispensar los demas pendientes.
+            //return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente', {evolucionId:parametros.evolucion, estado:0} );
               
         }            
         
    }).then(function(resultado){
-         
         if(resultado.length === 0){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarEstadoFormulaSinPendientes', {evolucion:parametros.evolucion, estado:0} );            
         }else{  
@@ -1642,7 +1643,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         }else{
             conPendientesEstado = 1;
         }  
-                
+
         G.knex.transaction(function(transaccion) {  
 
            // if(resultado.rows.length === 0){

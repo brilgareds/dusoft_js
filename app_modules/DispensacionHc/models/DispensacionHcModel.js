@@ -2367,7 +2367,8 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesSinDispensar = functio
                 .andWhere('sw_estado','0')
                 .andWhereNot('codigo_medicamento','not in', queryTmp);
         });
-              
+    
+    //G.logError(G.sqlformatter.format(query.toString()));
    query.then(function(resultado){ 
         callback(false, resultado)
     }).catch(function(err){         
@@ -2773,7 +2774,7 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
     }                                      
                      
     var query = G.knex.raw(sql,parametros);    
-    
+    //G.logError(G.sqlformatter.format(query.toString()));
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){ 
                    

@@ -72,7 +72,7 @@ Productos.prototype.listarHomologacionProductos = function(req, res){
     G.Q.ninvoke(that.m_productos,"listarHomologacionProductos", args.productos).then(function(existencias){
         res.send(G.utils.r(req.url, 'Lista Productos', 200, {lista_productos: existencias}));
     }).fail(function(err){
-        console.log("A>>>>>>>>>>>>>>>>> ", err);
+        console.log("listarHomologacionProductos ", err);
        res.send(G.utils.r(req.url, 'Error consultando los productos', 500, {lista_productos: {}}));
     });
 };

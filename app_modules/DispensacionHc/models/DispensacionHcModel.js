@@ -347,7 +347,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
                         })
                         .where('evolucion_id',obj.evolucionId).andWhere("d.todo_pendiente","!=", 1);                 
                       
-     console.log(G.sqlformatter.format(query.toString()));       
+           
     query.then(function(resultado){ 
 
       callback(false, resultado);
@@ -1523,6 +1523,7 @@ DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,ca
     }
      
     var query = G.knex.select(columnas).where(parametros).from("hc_dispensacion_medicamentos_tmp");
+      
         query.then(function(resultado){   
             callback(false, resultado)
         }).catch(function(err){    
@@ -2161,7 +2162,7 @@ var sumaTotalDispensados = 0;
  *  @fecha 08/08/2016
  **/
 function __insertarMedicamentosPendientesPorDispensar(that, index, productos, parametros,transaccion, callback) {
-    console.log("parametros:: ",parametros);
+  
     var producto = productos[index];
     
     if (!producto) {   

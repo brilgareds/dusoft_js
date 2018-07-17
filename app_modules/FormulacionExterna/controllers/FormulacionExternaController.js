@@ -468,7 +468,7 @@ FormulacionExterna.prototype.cambiarCodigoPendiente  = function(req, res){
     var that = this;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
-    console.log('los argmumentos', args);
+ 
 
     G.Q.ninvoke(that.m_formulacionExterna,'cambiarCodigoPendientePorDispensar',  args.esm_pendiente_dispensacion_id, args.codigo_medicamento).then(function(resultado){
         return G.Q.ninvoke(that.m_formulacionExterna,'cambiarCodigoFormulaExternaMedicamentos',args.formula_id, args.codigo_cambiar, args.codigo_medicamento ); 

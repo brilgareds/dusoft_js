@@ -127,10 +127,7 @@ Radicacion.prototype.guardarFactura = function (req, res) {
 
     var that = this;
     var args = req.body.data;
-    console.log("-------------------------------------------------");
-    console.log("guardarFactura args", args);
-    console.log("--------------------------------------------------");
-
+   
     if (args.numeroFactura === undefined || args.numeroFactura === "") {
         res.send(G.utils.r(req.url, 'Debe digitar el numero de la factura', 404, {}));
         return;
@@ -185,7 +182,7 @@ Radicacion.prototype.guardarFactura = function (req, res) {
         concepto: args.descripcion,
         ruta : args.ruta
     };
-    console.log("argssssssss", args);
+   
 
     G.Q.ninvoke(that.m_radicacion, "factura", obj).then(function (resultado) {
         res.send(G.utils.r(req.url, 'factura ok!!!!', 200, {factura: resultado}));
@@ -200,7 +197,7 @@ Radicacion.prototype.modificarFactura = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-console.log("args..............",args);
+
     if (args.factura_id === undefined || args.factura_id === "") {
         res.send(G.utils.r(req.url, 'Debe seleccionar la factura id', 404, {}));
         return;
@@ -234,9 +231,9 @@ console.log("args..............",args);
         return;
     }
 
-console.log("argsaaa",args)
+
     G.Q.ninvoke(that.m_radicacion, "modificarFactura", args).then(function (resultado) {
-        console.log("modificarFactura", resultado)
+       
         res.send(G.utils.r(req.url, 'modificacion factura ok!!!!', 200, {factura: resultado}));
     }).fail(function (err) {
         console.log("error", err);

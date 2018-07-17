@@ -91,7 +91,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     } else if(parseInt(cantidad_total_pendiente) === 0 && parseInt(cantidad_reservada_temporales) === 0) {
                                         
                                         disponible_bodega = parseInt(stock);
-                                       console.log("2 disponible_bodega ",disponible_bodega);
+                                      
                                     }else {
                                         /*
                                          * se comenta siguiente linea, porque cuando hay mas de un despacho se esta restando la reserva del pedido X a la disponibilidad del mismo pedido y por el contrario se debe obviar

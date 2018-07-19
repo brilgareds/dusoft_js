@@ -14,7 +14,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 var that = this;
                 $scope.paginaactual = 1;
-                var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
+                var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
                 var fecha_actual = new Date();
                 
                 $scope.root = {
@@ -163,9 +163,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     var obj = {};                               
                                       
                     if(parametro.estado === 1){
-                        
                         $scope.root.termino_busqueda = parametro.evolucion;
-                         obj = {                   
+                         obj = {
                             session: $scope.session,
                             data: {
                                listar_formulas: {
@@ -176,28 +175,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     fechaFinal:$filter('date')($filter('date')(fecha_actual, "yyyy-MM-dd"), "yyyy-MM-dd") + " 23:59:00",
                                     paginaActual:1,
                                     estadoFormula : parametro.estadoFormula
-                               }
-                           }    
-                        };    
-                                       
+                                }
+                            }
+                        };
                     }
  
                     if(parametro.estado === 0){
-                    
                         obj = {                   
-                                session: $scope.session,
-                                data: {
-                                   listar_formulas: {
-                                        filtro:$scope.root.filtro,
-                                        terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
-                                        empresaId:$scope.root.empresaSeleccionada,
-                                        fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                                        fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                                        paginaActual:$scope.paginaactual,
-                                        estadoFormula : $scope.root.estadoFormula
-                                   }
-                               }    
-                            };    
+                            session: $scope.session,
+                            data: {
+                                listar_formulas: {
+                                    filtro:$scope.root.filtro,
+                                    terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
+                                    empresaId:$scope.root.empresaSeleccionada,
+                                    fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                                    fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                                    paginaActual:$scope.paginaactual,
+                                    estadoFormula : $scope.root.estadoFormula
+                                }
+                            }    
+                        };    
                         
                     }
                      
@@ -315,22 +312,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  * +Descripcion Funcion encargada de cambiar de VIEW cuando 
                  *              se seleccione la opcion dispensacion
                  */
-                $scope.dispensacionFormula = function(dispensar, pendientes) {
-                        dispensacionHcService.shared = {
-                            evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
-                            filtro:$scope.root.filtro,
-                            terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
-                            empresaId:$scope.root.empresaSeleccionada,
-                            fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                            fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                            paginaActual:$scope.paginaactual,
-                            estadoFormula : $scope.root.estadoFormula,
-                            pacienteId: dispensar.getAfiliadoId(),
-                            tipoIdPaciente: dispensar.getAfiliadoTipoId(),
-                            pendientes: pendientes,
-                            tipoEstadoFormula: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()
-                        };
-                        
+                $scope.dispensacionFormula = function(dispensar, pendientes) {                        
                         localStorageService.add("dispensarFormulaDetalle",{
                             evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
                             filtro:$scope.root.filtro,

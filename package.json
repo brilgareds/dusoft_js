@@ -36,7 +36,7 @@
     "promise": "~7.1.1",
     "q": "*",
     "rtc": "~3.4.0",
-    "soap": "^0.13.0",
+    "soap": "^0.24.0",
     "socket.io": "1.4.5",
     "socket.io-client": "1.4.5",
     "socket.io-redis": "2.0.0",

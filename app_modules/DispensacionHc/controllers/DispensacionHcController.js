@@ -1080,12 +1080,13 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
                                 observacion: observacion,tipoVariable : 0,usuarioId : usuario};
+    var tmp  = {};
                               
    
     that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201,usuario);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
     
-    
+    console.log("========================> Inicia dipensacion evolucion ", evolucionId, "*************************************");
     G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
          
         numeroFormula = resultado[0].formula_id;
@@ -1213,9 +1214,11 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         var conPendientesEstado;
         if(resultado.length === 0){
             conPendientesEstado = 0;
+            tmp.generoPendientes = 0;
         }else{
             farmacia ={ empresa:req.session.user.empresa, centro_utilidad:req.session.user.centro_utilidad, bodega:req.session.user.bodega};
             conPendientesEstado = 1;
+            tmp.generoPendientes = 1;
         }
         G.knex.transaction(function(transaccion) { 
             
@@ -1243,19 +1246,23 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
          that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: numeroFormula, 
                                                           evolucionId:evolucionId,
                                                           tipoIdPaciente: tipoIdPaciente,
-                                                          pacienteId: pacienteId},'Se realiza la dispensacion correctamente',
+                                                          pacienteId: pacienteId,
+                                                      generoPendientes:  tmp.generoPendientes},'Se realiza la dispensacion correctamente',
                                                           200,
                                                           usuario);   
         
     }).fail(function(err){  
-        console.log("err [Controller.realizarEntregaFormula]: ", err);
+        console.log("==============================> ERROR EN DISPENSACIONHC NORMAL <=======================================", evolucionId);
+        //console.log("err [Controller.realizarEntregaFormula]: ", err);
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: err, 
                                                           evolucionId:numeroFormula,
                                                           tipoIdPaciente: tipoIdPaciente,
                                                           pacienteId: pacienteId},err + " Formula # "+ numeroFormula,
                                                           500,
                                                           usuario);
-    }).done();    
+    }).done(function(){
+        console.log("==============================> Finaliza dispensacion ", evolucionId, "********************************************************");
+    });    
 };
 
 
@@ -1444,7 +1451,7 @@ DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
 
 
 DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
-   
+         
    
     var that = this;
     var args = req.body.data;   
@@ -1499,7 +1506,10 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201,usuario);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'}));  
     var tipoFormulaEvolucion;
+    var tmp = {
+    };
    
+    console.log("==============================> Inicia dispensacion pendiente", evolucionId, "*******************************");
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
         
         numeroFormula = resultado[0].formula_id;
@@ -1640,8 +1650,10 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         var conPendientesEstado;
         if(resultado.length === 0){
             conPendientesEstado = 0;
+            tmp.generoPendientes = 0;
         }else{
             conPendientesEstado = 1;
+            tmp.generoPendientes = 1;
         }  
 
         G.knex.transaction(function(transaccion) {  
@@ -1671,12 +1683,16 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: numeroFormula, 
                                                           evolucionId:evolucionId,
                                                           tipoIdPaciente: tipoIdPaciente,
-                                                          pacienteId: pacienteId},'Se realiza la dispensacion correctamente',
+                                                          pacienteId: pacienteId,
+                                                          generoPendientes:  tmp.generoPendientes
+                                                      },'Se realiza la dispensacion correctamente',
+
                                                           200,
                                                           usuario);   
          
     }).fail(function(err){ 
-     console.log("err [realizarEntregaFormulaPendientes]: ", err);
+
+        console.log("==============================> ERROR EN DISPENSACIONHC PENDIENTE <=======================================", evolucionId);
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: err, 
             evolucionId:numeroFormula,
             tipoIdPaciente: tipoIdPaciente,
@@ -1685,7 +1701,9 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
             500,
             usuario
         );
-    }).done(); 
+    }).done(function(){
+        console.log("==============================> Finaliza dispensacion pendientes ", evolucionId, "*****************************************");
+    }); 
 };
 
 /*

@@ -162,7 +162,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.guardarTodoPendiente = function(obj){
-            
+             
             dispensacionHcService.guardarTodoPendiente(obj,function(data){
                 
                 AlertService.mostrarMensaje("warning", data.msj);
@@ -174,7 +174,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         that.notificarSolicitud("Formula con pendientes lista", "Formula # " + datos.obj.dispensacion, 
                         {evolucionId:datos.obj.evolucionId,
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
-                            pacienteId:datos.obj.pacienteId});
+                            pacienteId:datos.obj.pacienteId, generoPendientes: 1});
                     }
                       
                     if(datos.status === 500){                       
@@ -250,7 +250,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          * @fecha 2017-02-28
          */        
         that.notificarSolicitud = function(title, body, parametros) {
-            that.consultaMedicamentosPendientes(parametros); 
+            if(parametros.generoPendientes){
+                    that.consultaMedicamentosPendientes(parametros); 
+            }
             that.consultaMedicamentosDispensados(parametros,0);
         }
         
@@ -275,7 +277,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, 
                         {evolucionId:datos.obj.evolucionId,
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
-                            pacienteId:datos.obj.pacienteId});
+                            pacienteId:datos.obj.pacienteId, generoPendientes:  datos.obj.generoPendientes});
                     } 
                      
                     if(datos.status === 500){                       
@@ -307,7 +309,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, 
                         {evolucionId:datos.obj.evolucionId,
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
-                            pacienteId:datos.obj.pacienteId});
+                            pacienteId:datos.obj.pacienteId, generoPendientes:  datos.obj.generoPendientes});
                         
                     }
                     

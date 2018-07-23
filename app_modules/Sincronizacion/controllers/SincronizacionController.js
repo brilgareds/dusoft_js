@@ -67,7 +67,7 @@ function __jsonFacturacionRequirientes(obj,callback){
         },
         usuario: {
           contrasena: 'cosmitet202',
-          generarContrasena: false,
+          generarContrasena: true,
           nombreUsuario: 'admin_cosmitet'
         }
       };
@@ -99,13 +99,11 @@ function __requirienteFacturacion(obj, callback){
           hasTimeStamp:true,
           hasTokenCreated:false
       }
-      client.setSecurity(new G.soap.WSSecurity(username, password,options));
+     // client.setSecurity(new G.soap.WSSecurity(username, password,options));
 
      client.setSecurity(wsSecurity);
-        var datos ={
-            adquirente: obj.parametros
-        };
-        return G.Q.ninvoke(client,obj.funcion, datos);
+
+        return G.Q.ninvoke(client,obj.funcion, obj.parametros);
         
     }).spread(function(result,raw,soapHeader){
 //console.log("result.return.msj[$value] ",result);

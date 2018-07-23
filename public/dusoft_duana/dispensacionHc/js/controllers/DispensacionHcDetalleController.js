@@ -628,7 +628,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          *              de un medicamento confrontado
          */
         that.ventanaAutorizaDispensacion = function(ultimoRegistroDispensacion, entity){
-   
+            dispensacionHcService.shared = $scope.root.datos;
             $scope.opts = {
                 backdrop: true,
                 backdropClick: true,

@@ -1252,7 +1252,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                                                           usuario);   
         
     }).fail(function(err){  
-        console.log("==============================> ERROR EN DISPENSACIONHC NORMAL <=======================================", evolucionId);
+        console.log("==============================> ERROR EN DISPENSACIONHC NORMAL <=======================================", evolucionId, err);
         //console.log("err [Controller.realizarEntregaFormula]: ", err);
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: err, 
                                                           evolucionId:numeroFormula,

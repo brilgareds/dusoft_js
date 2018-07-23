@@ -312,7 +312,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  * +Descripcion Funcion encargada de cambiar de VIEW cuando 
                  *              se seleccione la opcion dispensacion
                  */
-                $scope.dispensacionFormula = function(dispensar, pendientes) {                        
+                $scope.dispensacionFormula = function(dispensar, pendientes) {
+
                         localStorageService.add("dispensarFormulaDetalle",{
                             evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
                             filtro:$scope.root.filtro,

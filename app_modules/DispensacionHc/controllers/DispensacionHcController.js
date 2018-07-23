@@ -1086,8 +1086,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201,usuario);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
     
-    console.log("========================> Inicia dipensacion evolucion ", evolucionId, "*************************************");
-    G.logError("========================> Inicia dipensacion evolucion "  + evolucionId  + "*************************************");
+    G.logError("========================> Inicia normal"  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
     G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
          
         numeroFormula = resultado[0].formula_id;
@@ -1252,9 +1251,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                                                           200,
                                                           usuario);   
         
-    }).fail(function(err){  
-        console.log("==============================> ERROR EN DISPENSACIONHC NORMAL <=======================================", evolucionId, err);
-        G.logError("==============================> ERROR " + evolucionId + "********************************************************");
+    }).fail(function(err){
+        G.logError("========================> ERROR normal"  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
         //console.log("err [Controller.realizarEntregaFormula]: ", err);
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: err, 
                                                           evolucionId:numeroFormula,
@@ -1263,8 +1261,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                                                           500,
                                                           usuario);
     }).done(function(){
-        console.log("==============================> Finaliza dispensacion ", evolucionId, "********************************************************");
-        G.logError("========================> Finaliza dipensacion evolucion "  + evolucionId  + "*************************************");
+        G.logError("========================> Finaliza normal"  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
     });    
 };
 
@@ -1512,8 +1509,8 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var tmp = {
     };
    
-    console.log("==============================> Inicia dispensacion pendiente", evolucionId, "*******************************");
-    G.logError("========================> Finaliza dipensacion PENDIENTES evolucion "  + evolucionId  + "*************************************");
+
+G.logError("========================> Inicia pendiente"  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
         
         numeroFormula = resultado[0].formula_id;
@@ -1695,8 +1692,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
                                                           usuario);   
          
     }).fail(function(err){ 
-        console.log("==============================> ERROR en DISPENSACIONHC PENDIENTES <=======================================", evolucionId);
-        G.logError("==============================> ERROR PENDIENTES " + evolucionId + "********************************************************");
+    G.logError("========================> ERROR pendiente"  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: err, 
             evolucionId:numeroFormula,
             tipoIdPaciente: tipoIdPaciente,
@@ -1706,8 +1702,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
             usuario
         );
     }).done(function(){
-        console.log("==============================> Finaliza dispensacion pendientes ", evolucionId, "*****************************************");
-        G.logError("========================> Finaliza dipensacion PENDIENTES evolucion "  + evolucionId  + "*************************************");  
+        G.logError("========================> Finaliza pendiente"  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
     }); 
 };
 

@@ -915,7 +915,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 
                 that.init(empresa, function() {
+                    localStorageService.add("consultarFormula", null);
+                    localStorageService.add("consultarFormulaPendientes", null);
                     localStorageService.add("dispensarFormulaDetalle", null);
+                    
                     if(!Usuario.getUsuarioActual().getEmpresa()) {
                         $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");

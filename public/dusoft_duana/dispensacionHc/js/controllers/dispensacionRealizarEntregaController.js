@@ -4,11 +4,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',    
             "$timeout", 
             "$filter",
-            "localStorageService",
             "$state",
             "dispensacionHcService","$modalInstance","socket","estadoEntregaFormula","estadoTodoPendiente","tipoEstadoFormula","webNotification",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,
+                $timeout, $filter,$state,dispensacionHcService,
                 $modalInstance,socket,estadoEntregaFormula, estadoTodoPendiente,tipoEstadoFormula,webNotification) {
 
         var that = this;

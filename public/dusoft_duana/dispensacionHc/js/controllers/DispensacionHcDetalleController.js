@@ -615,7 +615,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             var modalInstance = $modal.open($scope.opts);   
             
                 modalInstance.result.then(function(){
-                  dispensacionHcService.shared = {};
+                  dispensacionHcService.shared = null;
                     //that.consultarMedicamentosTemporales();
                 },function(){});                          
                 
@@ -839,20 +839,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
         //funcion inicializadora del modulo
         function init(){
-          var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+          //var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
 
           $scope.root.datos = {
-            estadoFormula : resultadoStorage.estadoFormula,
-            evolucionId : resultadoStorage.evolucionId,
-            fechaFinal : resultadoStorage.fechaFinal,
-            fechaInicial : resultadoStorage.fechaInicial,
-            filtro : resultadoStorage.filtro,
-            pacienteId : resultadoStorage.pacienteId,
-            paginaActual : resultadoStorage.paginaActual,
-            pendientes : resultadoStorage.pendientes,
-            terminoBusqueda : resultadoStorage.terminoBusqueda,
-            tipoEstadoFormula : resultadoStorage.tipoEstadoFormula,
-            tipoIdPaciente : resultadoStorage.tipoIdPaciente
+            estadoFormula : dispensacionHcService.shared1.estadoFormula,
+            evolucionId : dispensacionHcService.shared1.evolucionId,
+            fechaFinal : dispensacionHcService.shared1.fechaFinal,
+            fechaInicial : dispensacionHcService.shared1.fechaInicial,
+            filtro : dispensacionHcService.shared1.filtro,
+            pacienteId : dispensacionHcService.shared1.pacienteId,
+            paginaActual : dispensacionHcService.shared1.paginaActual,
+            pendientes : dispensacionHcService.shared1.pendientes,
+            terminoBusqueda : dispensacionHcService.shared1.terminoBusqueda,
+            tipoEstadoFormula : dispensacionHcService.shared1.tipoEstadoFormula,
+            tipoIdPaciente : dispensacionHcService.shared1.tipoIdPaciente
           }
 
           obj = {

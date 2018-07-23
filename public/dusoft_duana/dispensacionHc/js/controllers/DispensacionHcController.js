@@ -313,8 +313,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  *              se seleccione la opcion dispensacion
                  */
                 $scope.dispensacionFormula = function(dispensar, pendientes) {
-
-                        localStorageService.add("dispensarFormulaDetalle",{
+                        dispensacionHcService.shared1 = {
+                             evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
+                            filtro:$scope.root.filtro,
+                            terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
+                            empresaId:$scope.root.empresaSeleccionada,
+                            fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                            fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                            paginaActual:$scope.paginaactual,
+                            estadoFormula : $scope.root.estadoFormula,
+                            pacienteId: dispensar.getAfiliadoId(),
+                            tipoIdPaciente: dispensar.getAfiliadoTipoId(),
+                            pendientes: pendientes,
+                            tipoEstadoFormula: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()
+                        };
+                        /*localStorageService.add("dispensarFormulaDetalle",{
                             evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
                             filtro:$scope.root.filtro,
                             terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
@@ -328,7 +341,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             pendientes: pendientes,
                             tipoEstadoFormula: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()
 
-                        });
+                        });*/
 
                         $state.go('DispensarFormulaDetalle');
                  };
@@ -915,10 +928,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 
                 that.init(empresa, function() {
+                    dispensacionHcService.shared1 = {};
+                    dispensacionHcService.shared = {};
                     localStorageService.add("consultarFormula", null);
                     localStorageService.add("consultarFormulaPendientes", null);
                     localStorageService.add("dispensarFormulaDetalle", null);
-                    
+
                     if(!Usuario.getUsuarioActual().getEmpresa()) {
                         $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");

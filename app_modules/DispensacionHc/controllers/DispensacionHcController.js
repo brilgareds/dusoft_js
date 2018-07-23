@@ -1083,12 +1083,12 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     var tmp  = {};
                               
    
-    that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201,usuario);          
-    res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
-    
-    G.logError("========================> Inicia normal"  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
+    that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201,usuario);
+    res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'}));
+
+    G.logError("===================> Inicia normal "  + evolucionId  + " " + tipoIdPaciente + " " + pacienteId + " *** usuario " + usuario + " empresa " + empresa + " bodega " + bodega);
     G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
-         
+
         numeroFormula = resultado[0].formula_id;
         tipoFormulaEvolucion = resultado[0].tipo_formula;
         return G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular);
@@ -1510,7 +1510,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     };
    
 
-G.logError("========================> Inicia pendiente"  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
+G.logError("========================> Inicia pendiente "  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
         
         numeroFormula = resultado[0].formula_id;
@@ -1692,7 +1692,7 @@ G.logError("========================> Inicia pendiente"  + evolucionId  + " " +t
                                                           usuario);   
          
     }).fail(function(err){ 
-    G.logError("========================> ERROR pendiente"  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
+    G.logError("========================> ERROR pendiente "  + evolucionId  + " " +tipoIdPaciente+" "+ pacienteId +"*************************************");
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: err, 
             evolucionId:numeroFormula,
             tipoIdPaciente: tipoIdPaciente,

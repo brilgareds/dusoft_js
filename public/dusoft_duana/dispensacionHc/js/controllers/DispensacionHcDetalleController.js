@@ -613,8 +613,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                    
             };
             var modalInstance = $modal.open($scope.opts);   
-           
+            
                 modalInstance.result.then(function(){
+                  console.log("se cerro la ventana");
+                  dispensacionHcService.shared = {};
                     //that.consultarMedicamentosTemporales();
                 },function(){});                          
                 

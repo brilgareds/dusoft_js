@@ -243,7 +243,8 @@ function __codificarFormulasDispensadas(productos, index, resultado, callback){
                 "codigo_producto_despachado":  String(producto.codigo_producto_despachado),
                 "cantidad_despachada":  String(parseInt(producto.cantidad)),
                 "numero_entrega":  String(producto.numero_entega),
-                "fecha_dispensacion":  String(producto.fecha_dispensacion)
+                "fecha_dispensacion":  String(producto.fecha_dispensacion),
+                "fecha_vencimiento":  String(producto.fecha_vencimiento)
                };
                
      resultado.push(detalle);
@@ -294,6 +295,7 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
     }).spread(function(result,raw,soapHeader){
 
        console.log("result.return.msj[$value]",result.return.message["$value"]);
+//       
 
      G.logError(result.return.message["$value"]);          
      
@@ -303,6 +305,7 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
             obj.mensaje = result.return.message["$value"];
             obj.isProducto = false;
             if(result.return.productsWithoutExistence !== undefined){
+                console.log("result.return.productsWithoutExistence.item[$value]",result.return.productsWithoutExistence.item["$value"]);
             obj.codigoProducto = result.return.productsWithoutExistence.item["$value"];
             obj.isProducto = true;
             }

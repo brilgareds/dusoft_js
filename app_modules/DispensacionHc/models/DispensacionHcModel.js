@@ -85,12 +85,13 @@ DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
 DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callback)
 {
     var sql = "select formula_id as numero_formula,\
-                    tipo_formula,\
+                    '1' as tipo_formula,\
                     codigo_medicamento as codigo_producto_formulado,\
                     codigo_producto as codigo_producto_despachado,\
                     cantidad,\
                     numero_entrega_actual as numero_entega,\
-                    to_char(fecha,'YYYY-MM-DD')  as fecha_dispensacion \
+                    to_char(fecha,'YYYY-MM-DD')  as fecha_dispensacion, \
+                    to_char(fecha_vencimiento,'YYYY-MM-DD')  as fecha_vencimiento \
                     from (\
                             select  \
                             distinct d.evolucion_id as formula_id,\
@@ -117,8 +118,9 @@ DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callbac
                             a.empresa_id= 'FD' and e.sw_medicamento = '1' and c.codigo_formulado != '' \
                             and c.total_costo >0\
                             and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
-		) as a where tipo_formula='1'\
+		) as a \
 		order by a.formula_id  asc;";
+//    where tipo_formula='1'
   //(current_date - interval '1 day') and (current_date - interval '1 sec')   
 //                            and cast(b.fecha_registro as date) between '2018-07-13' and '2018-07-13'\
     var query=G.knex.raw(sql);

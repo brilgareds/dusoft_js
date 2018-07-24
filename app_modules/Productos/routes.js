@@ -42,6 +42,5 @@ module.exports = function(app, di_container) {
         c_productos.listarHomologacionProductos(req, res);
     });
     
-    
-    
+   
 };

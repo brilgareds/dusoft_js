@@ -114,12 +114,13 @@ DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callbac
                             inner JOIN inv_grupos_inventarios e ON w.grupo_id = e.grupo_id \
                             inner join dispensacion_estados as dit on (d.evolucion_id = dit.evolucion_id)\
                             where \
-                            a.empresa_id= 'FD' and e.sw_medicamento = '1' \
+                            a.empresa_id= 'FD' and e.sw_medicamento = '1' and c.codigo_formulado != '' \
                             and c.total_costo >0\
-                            and cast(b.fecha_registro as date) between '2018-07-13' and '2018-07-13'\
+                            and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
 		) as a where tipo_formula='1'\
 		order by a.formula_id  asc;";
-  //(current_date - interval '1 day') and (current_date - interval '1 sec')
+  //(current_date - interval '1 day') and (current_date - interval '1 sec')   
+//                            and cast(b.fecha_registro as date) between '2018-07-13' and '2018-07-13'\
     var query=G.knex.raw(sql);
     console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){

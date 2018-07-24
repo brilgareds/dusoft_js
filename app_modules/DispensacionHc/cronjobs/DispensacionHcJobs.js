@@ -33,7 +33,8 @@ DispensacionHcJobs.prototype.ejecutarJobSincronizarFormulasDispensadas = functio
     var that = this;
     var ip = require('ip');
     if (ip.address() === '10.0.2.158') {
-        var job = new G.cronJob('10 * * * * *', function () {
+        var job = new G.cronJob('00 30 00 * * *', function () {
+//        var job = new G.cronJob('10 * * * * *', function () {
             that.c_dispensacion_hc.sincronizacionFormulasDispensadas();
         });
             

@@ -78,6 +78,61 @@ DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
     });
 
 };
+/**
+ * @fecha 27/06/2018 (DD-MM-YYYY)
+ * +Descripcion consulta que trae todas las formulas dispensadas el dia anterior
+ */
+DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callback)
+{
+    var sql = "select formula_id as numero_formula,\
+                    '1' as tipo_formula,\
+                    codigo_medicamento as codigo_producto_formulado,\
+                    codigo_producto as codigo_producto_despachado,\
+                    cantidad,\
+                    numero_entrega_actual as numero_entega,\
+                    to_char(fecha,'YYYY-MM-DD')  as fecha_dispensacion, \
+                    to_char(fecha_vencimiento,'YYYY-MM-DD')  as fecha_vencimiento \
+                    from (\
+                            select  \
+                            distinct d.evolucion_id as formula_id,\
+                            c.lote, \
+                            dit.formula_id as formula_papel, \
+                            dit.tipo_formula,\
+                            i.descripcion_tipo_formula,                       \
+                            b.fecha_registro as fecha, \
+                            c.codigo_producto, \
+                            c.codigo_formulado as codigo_medicamento,\
+                            c.fecha_vencimiento,\
+                            c.cantidad,\
+                            dit.numero_entrega_actual\
+                            from bodegas_doc_numeraciones as a  \
+                            inner JOIN bodegas_documentos b on a.bodegas_doc_id=b.bodegas_doc_id \
+                            inner JOIN bodegas_documentos_d c on b.bodegas_doc_id = c.bodegas_doc_id and b.numeracion =c.numeracion  \
+                            inner JOIN hc_formulacion_despachos_medicamentos d on b.bodegas_doc_id =d.bodegas_doc_id and b.numeracion =d.numeracion  \
+                            inner join hc_evoluciones he on d.evolucion_id=he.evolucion_id \
+                            inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula \
+                            inner JOIN inventarios_productos w on w.codigo_producto = c.codigo_producto \
+                            inner JOIN inv_grupos_inventarios e ON w.grupo_id = e.grupo_id \
+                            inner join dispensacion_estados as dit on (d.evolucion_id = dit.evolucion_id)\
+                            where \
+                            a.empresa_id= 'FD' and e.sw_medicamento = '1' and c.codigo_formulado != '' \
+                            and c.total_costo >0\
+                            and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
+		) as a \
+		order by a.formula_id  asc;";
+//    where tipo_formula='1'
+  //(current_date - interval '1 day') and (current_date - interval '1 sec')   
+//                            and cast(b.fecha_registro as date) between '2018-07-13' and '2018-07-13'\
+    var query=G.knex.raw(sql);
+    console.log(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        console.log("error intervalo_Fecha_formula ",err);
+        callback(err);
+    });
+
+};
  
 /**
  * @author Cristian Ardila
@@ -268,7 +323,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         function(){
                             this.on("h.plan_id","i.plan_id")
                 }).where(function(){
-                this.where("g.estado_afiliado_id",'AC')                              
+             //   this.where("g.estado_afiliado_id",'AC')                              
                 }).as("a");
                         
     var query =  G.knex(subQuery)
@@ -304,7 +359,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
         });
                 
     query.limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){   
+    offset((obj.paginaActual - 1) * G.settings.limit);
+   // console.log(G.sqlformatter.format(query.toString()));
+        query.then(function(resultado){   
         callback(false, resultado);
     }).catch(function(err){    
         console.log("err [listarFormulas]: ", err);
@@ -1515,6 +1572,7 @@ DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,ca
             "codigo_producto",
             "cantidad_despachada",
             G.knex.raw("to_char(fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento"),
+
             "lote",
             "codigo_formulado",
             "usuario_id",
@@ -1523,7 +1581,7 @@ DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,ca
     }
      
     var query = G.knex.select(columnas).where(parametros).from("hc_dispensacion_medicamentos_tmp");
-      
+
         query.then(function(resultado){   
             callback(false, resultado)
         }).catch(function(err){    
@@ -2068,7 +2126,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                 var formato = 'YYYY-MM-DD hh:mm:ss a';
                 var fechaToday = G.moment(resultado[0]).format(formato);
                 obj.parametro1.fecha_ultima_entrega = fechaToday;
-
+console.log("obj.parametro2 ",obj.parametro2);
             return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion); //obj.parametro2 producto a entregar
                                   
         }).then(function(){
@@ -2940,8 +2998,7 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
             fecha_vencimiento: obj.fecha_vencimiento,//G.moment(obj.fecha_vencimiento).add(1, 'day').format(formato),
             lote:obj.lote
         }).decrement('existencia_actual', obj.cantidad_despachada);
-        
-     
+   
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){         
             callback(false, resultado);
@@ -2986,7 +3043,7 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
  * @fecha 11/06/2016
  */
 function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,transaccion, callback){
-    
+
     var query = G.knex('bodegas_documentos_d')
         .insert({consecutivo: G.knex.raw('DEFAULT'),
             codigo_producto: obj.codigo_producto,
@@ -2997,7 +3054,8 @@ function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,tra
             numeracion: numeracion,
             fecha_vencimiento: obj.fecha_vencimiento,
             lote: obj.lote,
-            sw_pactado: '1' 
+            sw_pactado: '1',
+            codigo_formulado: obj.codigo_formulado
     });
     
     if(transaccion) query.transacting(transaccion);     

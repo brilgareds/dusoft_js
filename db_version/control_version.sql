@@ -435,4 +435,10 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.69', 'USUARIOS', 'Se agrega el campo identificacion a la creacion de usuarios.');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.70 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.70', 'FORMULACION HC', 'Se cambia el paso de valores entre controladores de LocalStorage a usar el servicio con una variable compartida');
+COMMIT TRANSACTION;
 

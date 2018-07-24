@@ -441,4 +441,10 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.70', 'FORMULACION HC', 'Se cambia el paso de valores entre controladores de LocalStorage a usar el servicio con una variable compartida');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.71 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.71', 'FORMULACION HC', 'Cronjob para sincronizar formulas en cosmitet');
+COMMIT TRANSACTION;
 

@@ -1,7 +1,12 @@
 var Sincronizacion = function(m_sincronizacion) {
     this.m_sincronizacion = m_sincronizacion;
 };
+
+
+
 __envio();
+
+
 function __envio(){
     var obj = {};
     obj.x="prueba";
@@ -62,7 +67,7 @@ function __jsonFacturacionRequirientes(obj,callback){
         },
         usuario: {
           contrasena: 'cosmitet202',
-          generarContrasena: false,
+          generarContrasena: true,
           nombreUsuario: 'admin_cosmitet'
         }
       };
@@ -84,19 +89,21 @@ function __requirienteFacturacion(obj, callback){
 //  var password = ''; // optional password
   var password = 'cosmitet202'; // optional password
   var username = 'admin_cosmitet'; // optional password  
-  var wsdlOptions = {
-  valueKey: 'theVal'
-};
+
     //Se invoca el ws
-    G.Q.nfcall(G.soap.createClient, url,wsdlOptions).then(function(client) {
+    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
 //        
       var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, password);
-//      
+      var options ={
+          passwordType:'PasswordDigest',
+          hasTimeStamp:true,
+          hasTokenCreated:false
+      }
+     // client.setSecurity(new G.soap.WSSecurity(username, password,options));
+
      client.setSecurity(wsSecurity);
-var datos ={
-    adquirente: obj.parametros,
-};
-        return G.Q.ninvoke(client,obj.funcion, datos);
+
+        return G.Q.ninvoke(client,obj.funcion, obj.parametros);
         
     }).spread(function(result,raw,soapHeader){
 //console.log("result.return.msj[$value] ",result);

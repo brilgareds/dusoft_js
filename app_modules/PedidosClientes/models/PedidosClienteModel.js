@@ -118,7 +118,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                   /*,
                       3: termino_busqueda.empresa_origen_id,
                       4: termino_busqueda.centro_utilidad_origen_id,*/
-        andSql = "  a.bodega_origen_producto = :3 AND pedido_farmacia != '1' AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
+        andSql = " pedido_farmacia != '1' AND "; //  a.bodega_origen_producto = :3 AND --   a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
          campos = "a.codigo_producto,a.numero_unidades as cantidad_solicitada,"
     }
     

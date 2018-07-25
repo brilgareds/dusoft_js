@@ -447,4 +447,10 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.71', 'FORMULACION HC', 'Cronjob para sincronizar formulas en cosmitet');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.71 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.71', 'FORMULACION HC', 'Cronjob para sincronizar formulas en cosmitet se modifica sw productos');
+COMMIT TRANSACTION;
 

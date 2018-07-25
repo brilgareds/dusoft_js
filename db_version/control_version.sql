@@ -448,9 +448,15 @@ BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.71', 'FORMULACION HC', 'Cronjob para sincronizar formulas en cosmitet');
 COMMIT TRANSACTION;
 -----------------------------------------------------------------------------
-------------------------------  Version 2.00.71 ------------------------------
+------------------------------  Version 2.00.72 ------------------------------
 -----------------------------------------------------------------------------
 BEGIN TRANSACTION;
-INSERT INTO version (version, modulo, comentario) VALUES ('02.00.71', 'FORMULACION HC', 'Cronjob para sincronizar formulas en cosmitet se modifica sw productos');
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.72', 'FORMULACION HC', 'Cronjob para sincronizar formulas en cosmitet se modifica sw productos');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.73 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.73', 'FACTURACION', 'Se corrige error por multiples temporales');
 COMMIT TRANSACTION;
 

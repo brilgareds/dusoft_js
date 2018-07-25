@@ -43,7 +43,8 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
                     porcentajeRtf: 0,
                     porcentajeIca: 0,
                     porcentajeReteIva: 0
-                }
+                },
+                idFacturaXconsumo : ""
             };
             $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
             $scope.session = {
@@ -266,6 +267,7 @@ define(["angular", "js/controllers", "js/models/FacturaConsumo",
             facturacionClientesService.generarTemporalFacturaConsumo(obj,function(data){
                 
                 if(data.status === 200){
+                    $scope.root.idFacturaXconsumo = data.obj.facturas_consumo.id_factura_xconsumo;
                     AlertService.mostrarMensaje("success", data.msj);
                     //that.listarDetalleTmpFacturaConsumo();
                     $scope.onDocumentoSeleccionado();

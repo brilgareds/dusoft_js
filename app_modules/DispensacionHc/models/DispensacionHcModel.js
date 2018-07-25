@@ -124,7 +124,7 @@ DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callbac
   //(current_date - interval '1 day') and (current_date - interval '1 sec')   
 //                            and cast(b.fecha_registro as date) between '2018-07-13' and '2018-07-13'\
     var query=G.knex.raw(sql);
-    console.log(G.sqlformatter.format(query.toString()));
+//    console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){

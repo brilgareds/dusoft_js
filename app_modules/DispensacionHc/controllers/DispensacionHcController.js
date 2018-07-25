@@ -27,9 +27,17 @@ DispensacionHc.prototype.eliminarFormulasSinMovimiento = function(){
     }).done();
 }
                                          
-function __sincronizacionProductos (that,producto,callback) {
+function __sincronizacionProductos(that,productos,index,callback) {
     var parametros;
- 
+    producto=productos.codigoProducto[index];
+    
+    if(!producto){
+        callback(false,true);
+        return;
+    }
+    
+    var producto ={codigoProducto : producto["$value"]};
+    
     G.Q.ninvoke(that.m_productos, 'buscarProductosCodificacion',producto).then(function (resultado) {
         parametros = resultado[0];
         var funcion = "modificar_productoinsumo";
@@ -130,10 +138,12 @@ function __sincronizacionProductos (that,producto,callback) {
 
     }).then(function (resultado) {
 
-        if (resultado.mensaje === '1') {
-            callback(false,true);
-        } else {
-            callback(false,false);
+        if (resultado.mensaje === '1') {         
+            index++;
+            __sincronizacionProductos(that,productos,index,callback);
+        } else {           
+            index++;
+            __sincronizacionProductos(that, productos, index, callback);
         }
 
     }).fail(function (err) {
@@ -205,7 +215,8 @@ function __sincronizacionFormulasDispensadas(that,callback){
  
      if(resultado.isProducto){
      
-       return G.Q.nfcall(__sincronizacionProductos,that,resultado);
+       return G.Q.nfcall(__sincronizacionProductos,that,resultado,0);
+       
      }else{
        
        callback(false,true);
@@ -305,8 +316,8 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
             obj.mensaje = result.return.message["$value"];
             obj.isProducto = false;
             if(result.return.productsWithoutExistence !== undefined){
-                console.log("result.return.productsWithoutExistence.item[$value]",result.return.productsWithoutExistence.item["$value"]);
-            obj.codigoProducto = result.return.productsWithoutExistence.item["$value"];
+                console.log("result.return.productsWithoutExistence.item[$value]",result.return.productsWithoutExistence.item[0]["$value"]);
+            obj.codigoProducto = result.return.productsWithoutExistence.item;
             obj.isProducto = true;
             }
         }

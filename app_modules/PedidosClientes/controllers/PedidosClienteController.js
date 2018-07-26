@@ -172,6 +172,8 @@ PedidosCliente.prototype.listarPedidosClientes = function (req, res) {
 
 
     var empresa_id = args.pedidos_clientes.empresa_id;
+    var bodega = args.pedidos_clientes.bodega;
+
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
 
@@ -193,7 +195,7 @@ PedidosCliente.prototype.listarPedidosClientes = function (req, res) {
     
     var filtro = args.pedidos_clientes.filtros;
 
-    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id,
+    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, bodega, 
             termino_busqueda,
             filtro,
             pagina_actual,

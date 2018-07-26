@@ -829,6 +829,7 @@ define(["angular", "js/controllers",
                     data: {
                         pedidos_clientes: {
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                            bodega : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo,
                             fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_pedidos, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final_pedidos, "yyyy-MM-dd") + " 23:59:00",
                             //filtroEstadoFacturado: $scope.Pedido.getFiltroEstadoFacturado(),

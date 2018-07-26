@@ -245,7 +245,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
 // 8 - Auditado con Pdtes
 // 9 - En Zona con Pdtes
 /*=========================================================================*/
-PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, 
+PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, bodega,
                                                                 termino_busqueda, 
                                                                 filtro, 
                                                                 pagina, 
@@ -373,7 +373,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     }).innerJoin("vnts_vendedores as c", function() {
         this.on("a.tipo_id_vendedor", "c.tipo_id_vendedor").on("a.vendedor_id", "c.vendedor_id");
     }).leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as d", "a.pedido_cliente_id", "d.pedido_cliente_id").where(function() {
-        this.where("a.empresa_id", empresa_id)
+        this.where("a.empresa_id", empresa_id).andWhere("a.bodega_destino", bodega)
         
         if (fecha_inicial !== undefined) {
             
@@ -433,7 +433,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");
     
     queryPrincipal.then(function(rows) {
-//console.log(G.sqlformatter.format(queryPrincipal.toString()));
+console.log(G.sqlformatter.format(queryPrincipal.toString()));
         callback(false, rows);
     }). catch (function(err) {
         console.log("err [listar_pedidos_clientes]: ", err);

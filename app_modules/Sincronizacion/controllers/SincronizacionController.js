@@ -85,22 +85,22 @@ function __requirienteFacturacion(obj, callback){
     obj.error = false;
   var privateKey = G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"preproduccionv4_certifactura_co.key"); 
   var publicKey = G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"preproduccionv4_certifactura_co.cer");
-  var publicKey2 = G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"Intermedia_Rapid.cer");
+  var IntermediaCert = G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"Intermedia_Rapid.cer");
+  var raizCert = G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"Raiz_Rapid.cer");
 //  var password = ''; // optional password
   var password = 'cosmitet202'; // optional password
   var username = 'admin_cosmitet'; // optional password  
+  var passwordCert = 'Password1'; // optional password  
 
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).then(function(client) {
 //        
-      var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, password);
+      var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, passwordCert);
       var options ={
-          passwordType:'PasswordDigest',
-          hasTimeStamp:true,
-          hasTokenCreated:false
+          passwordType:'PasswordText'
       }
-     // client.setSecurity(new G.soap.WSSecurity(username, password,options));
-
+      client.setSecurity(new G.soap.WSSecurity(username, password,options));
+//client.setSecurity(new G.soap.BasicAuthSecurity(username, password));
      client.setSecurity(wsSecurity);
 
         return G.Q.ninvoke(client,obj.funcion, obj.parametros);

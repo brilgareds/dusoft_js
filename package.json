@@ -43,6 +43,7 @@
     "socket.io-client": "1.4.5",
     "socket.io-redis": "2.0.0",
     "sqlformatter": "^0.1.0",
-    "xls-to-json": "*"
+    "xls-to-json": "*",
+    "xml-formatter": "^1.0.1"
   }
 }

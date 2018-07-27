@@ -15,6 +15,7 @@ function __envio(){
         obj.parametros=respuesta;
 //        console.log("__jsonFacturacionRequiientes",obj);
         __requirienteFacturacion(obj,function(respuesta){
+
 //            console.log("__requirienteFacturacion",respuesta);
         });
     });
@@ -24,7 +25,13 @@ function __envio(){
 function __jsonFacturacionRequirientes(obj,callback){
 
     var crearAdquirienteConUsuarioACliente ={
+        attributes: {
+            xmlns: 'http://contrato.adquiriente.cliente.webservices.servicios.certifactura.certicamara.com/'
+        },
         adquiriente: {
+            attributes: {
+                xmlns: ''
+            },
             acuerdoFisicoFacturacionElectronica: obj.x,
             adjuntarPdfNotificaciones: obj.x,
             adjuntarXmlNotificaciones: obj.x,
@@ -66,8 +73,11 @@ function __jsonFacturacionRequirientes(obj,callback){
             tiposRepresentacion: obj.x
         },
         usuario: {
+            attributes: {
+                xmlns: ''
+            },
             contrasena: 'cosmitet202',
-          generarContrasena: true,
+            generarContrasena: true,
             nombreUsuario: 'admin_cosmitet'
         }
     };
@@ -83,42 +93,41 @@ function __requirienteFacturacion(obj, callback){
     var resultado;
  
     obj.error = false;
-  var privateKey = G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"preproduccionv4_certifactura_co.key"); 
-  var publicKey = G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"preproduccionv4_certifactura_co.cer");
-  var IntermediaCert = G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"Intermedia_Rapid.cer");
-  var raizCert = G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"Raiz_Rapid.cer");
-//  var password = ''; // optional password
 
-  var password = 'cosmitet202'; // optional password
-  var username = 'admin_cosmitet'; // optional password  
-  var passwordCert = 'Password1'; // optional password  
 
+    var password = 'cosmitet202'; // optional password
+    var username = 'admin_cosmitet'; // optional password  
+    var tmp = {};
 
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).then(function(client) {
 //        
-      var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, passwordCert);
+
+     // var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, password);
+     tmp = client;
       var options ={
-          passwordType:'PasswordText'
+            passwordType: 'PasswordText',
+            hasTimeStamp: false,
+            hasTokenCreated: true,
+            hasNonce: true,
+            mustUnderstand: 1,
+            actor: ''
       }
-
       client.setSecurity(new G.soap.WSSecurity(username, password,options));
-//client.setSecurity(new G.soap.BasicAuthSecurity(username, password));
-     client.setSecurity(wsSecurity);
-
 
         return G.Q.ninvoke(client,obj.funcion, obj.parametros);
+
         
     }).spread(function(result,raw,soapHeader){
-//console.log("result.return.msj[$value] ",result);
-//console.log("result.return.msj[$value] ",raw);
-console.log("result.return.msj[$value] ",soapHeader);
-        if(!result.return.msj["$value"]){
+        G.logError(G.xmlformatter(tmp.lastRequest));
+
+        console.log('El resultado ------------->', result, 'raw', raw, 'soapHeader', soapHeader);
+        /*if(!result.return.msj["$value"]){
             throw {msj:"Se ha generado un error", status:403, obj:{}}; 
-        } else {
+        } else {*/
 //            obj.fechaMaxima = result.return.msj["$value"];
-                  console.log("result.return.msj[$value] ",result.return.msj["$value"]);
-        }
+                  //console.log("result.return.msj[$value] ",result.return.msj["$value"]);
+        //}
 
     }).then(function(){
 

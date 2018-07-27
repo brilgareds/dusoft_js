@@ -88,7 +88,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          *               el detalle de una formula para dispensar
          */
         if ($state.is("DispensarFormulaDetalle") === true) {
-  
+             //dispensacionHcService.shared
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   
             
             if(resultadoStorage){
@@ -109,6 +109,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }    
                 };      
                                       
+                obj = {                   
+                    session: $scope.session,
+                    data: {
+                        listar_formulas: {
+                            filtro: dispensacionHcService.shared.filtro,
+                            terminoBusqueda: dispensacionHcService.shared.terminoBusqueda,//$scope.root.numero,
+                            empresaId:'',
+                            fechaInicial: dispensacionHcService.shared.fechaInicial,
+                            fechaFinal: dispensacionHcService.shared.fechaFinal,
+                            paginaActual: dispensacionHcService.shared.paginaActual,
+                            estadoFormula : dispensacionHcService.shared.estadoFormula,
+
+                        }
+                    }    
+                };      
+
                 dispensacionHcService.listarFormulas(obj, function(data){
                     estadoEntregaFormula = resultadoStorage.pendientes;  
                     $scope.showBotonTodoPendiente = resultadoStorage.pendientes;
@@ -273,6 +289,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                }    
             };
                                                 
+            obj = {                   
+                session: $scope.session,
+                data: {
+                    existenciasBodegas: {
+                        codigoProducto: entity.codigo_producto,
+                        principioActivo: entity.principioActivo,
+                        empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                        autorizado: entity.autorizado,
+                        codigoFormaFarmacologica: entity.codigoFormaFarmacologica,
+                        pacienteId: dispensacionHcService.shared.pacienteId,
+                        tipoPacienteId: dispensacionHcService.shared.tipoIdPaciente
+                   }
+               }    
+            };
+
             dispensacionHcService.existenciasBodegas(obj, function(data){
 
                 entity.vaciarProductosHc();
@@ -350,6 +383,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         codigoFormaFarmacologica: parametros.entity.codigoFormaFarmacologica,
                         pacienteId: resultadoStorage.pacienteId,
                         tipoPacienteId: resultadoStorage.tipoIdPaciente
+                    }
+                }    
+            };
+
+            obj = {                   
+                session: $scope.session,
+                data: {
+                    existenciasBodegas: {
+                        codigoProducto: parametros.entity.codigo_producto,
+                        principioActivo: parametros.entity.principioActivo,
+                        empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                        autorizado: "1",
+                        codigoFormaFarmacologica: parametros.entity.codigoFormaFarmacologica,
+                        pacienteId: dispensacionHcService.shared.pacienteId,
+                        tipoPacienteId: dispensacionHcService.shared.tipoIdPaciente
                     }
                 }    
             };
@@ -488,7 +538,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                            }
                        }    
                     };    
-                    
+
+             obj = {                   
+                        session: $scope.session,
+                        data: {
+                           eliminar_medicamentos_temporales: {
+                                evolucion: dispensacionHcService.shared.evolucionId,
+                                serialId : entity.serialId,
+                                codigoProducto : entity.codigo_producto
+                           }
+                       }    
+                    };                       
          
             dispensacionHcService.eliminarMedicamentosTemporales(obj,function(data){
                 
@@ -539,6 +599,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    }
                }    
             };
+
+            obj = {                   
+                session: $scope.session,
+                data: {
+                    temporalLotes: {
+                        evolucion: dispensacionHcService.shared.evolucionId,
+                        detalle: entity,
+                        codigoProducto: $scope.producto,
+                        cantidadSolicitada: $scope.cantidadEntrega,
+                        empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                   }
+               }    
+            };
                
            if(!entity.loteSeleccionado){
             
@@ -578,6 +653,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                        listar_medicamentos_temporales: {
                             evolucion: resultadoStorage.evolucionId                           
+                       }
+                    }    
+                };      
+
+                obj = {                   
+                    session: $scope.session,
+                    data: {
+                       listar_medicamentos_temporales: {
+                            evolucion: dispensacionHcService.shared.evolucionId                           
                        }
                     }    
                 };      
@@ -834,6 +918,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                            }
                        }    
                     };    
+
+            obj = {                   
+                        session: $scope.session,
+                        data: {
+                           listar_medicamentos_pendientes: {
+                                evolucion: dispensacionHcService.shared.evolucionId,
+                                tipoIdPaciente:dispensacionHcService.shared.tipoIdPaciente,
+                                pacienteId: dispensacionHcService.shared.pacienteId
+                           }
+                       }    
+                    };    
+
             dispensacionHcService.listarMedicamentosPendientesPorDispensar(obj,function(data){
 
                 if (data.status === 200) {
@@ -865,6 +961,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                            }
                        }    
                     };    
+
+            obj = {                   
+                        session: $scope.session,
+                        data: {
+                           listar_medicamentos_dispensados: {
+                                evolucion: dispensacionHcService.shared.evolucionId,
+                                tipoIdPaciente:dispensacionHcService.shared.tipoIdPaciente,
+                                pacienteId: dispensacionHcService.shared.pacienteId
+                           }
+                       }    
+                    };    
+
             dispensacionHcService.listarMedicamentosDispensados(obj,function(data){
 
                 if (data.status === 200) {

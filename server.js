@@ -14,7 +14,7 @@ var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
 var multipart = require('connect-multiparty');
 
-//var jsreport = require("jsreport");
+var jsreport = require("jsreport");
 
 var accounting = require("accounting");
 var cacheKey = "dusoft";

@@ -116,7 +116,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         that.realizarEntregaFormula = function(){
             
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
-            var evolucion_id = resultadoStorage.evolucionId;
+            //var evolucion_id = resultadoStorage.evolucionId;
+            var evolucion_id = dispensacionHcService.shared.evolucionId;
 
             var parametroCabecera = { 
                 session: $scope.session,
@@ -477,11 +478,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         that.consultarMedicamentosTemporales = function(){                
             $scope.Temporales = [];
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+            
             var obj = {                   
                 session: $scope.session,
                 data: {
                    listar_medicamentos_temporales: {
-                        evolucion: resultadoStorage.evolucionId                           
+                        evolucion: dispensacionHcService.shared.evolucionId                           
                    }
                 }    
             };      

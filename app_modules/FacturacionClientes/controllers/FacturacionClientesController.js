@@ -745,7 +745,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function () {
                 "documentosSeleccionados": documentosSeleccionados,
                 "resultado: ": err});
             logger.error("-----------------------------------");
-            console.log("Error Inesperado, consulte con el admin [generarFacturasAgrupadasEnProceso]: ", err);
+            console.log("Error Inesperado, consulte con el admin [generarPedidoBodegaFarmacia]: ", err);
         });
         logger.error("-----------------------------------");
         logger.error({"metodo": "FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso",
@@ -756,7 +756,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function () {
             "documentosSeleccionados": documentosSeleccionados,
             "resultado: ": err});
         logger.error("-----------------------------------");
-        console.log("err [generarFacturasAgrupadasEnProceso]: ", err);
+        console.log("err [generarPedidoBodegaFarmacia]: ", err);
     });
 
 };

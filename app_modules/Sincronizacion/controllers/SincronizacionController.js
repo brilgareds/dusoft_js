@@ -1,10 +1,13 @@
-var Sincronizacion = function (m_sincronizacion) {
+var Sincronizacion = function(m_sincronizacion,m_terceros) {
+
     this.m_sincronizacion = m_sincronizacion;
+    this.m_terceros = m_terceros; 
 };
 
 
 
-__envio();
+//__envio();
+__adquirinetesMasivo();
 
 
 function __envio() {
@@ -22,7 +25,17 @@ function __envio() {
 }
 
 
-function __jsonFacturacionRequirientes(obj, callback) {
+function __adquirinetesMasivo(){
+    var that = this;
+    console.log("AAAAAAAA",that.m_sincronizacion);
+    G.Q.ninvoke(that.m_terceros, 'listar_adquirientes').then(function (resultado) {
+       console.log("AAAAAAAA",resultado);
+    }).fail(function (err) {
+       console.log("Error ",err);
+    }).done();
+};
+
+function __jsonFacturacionRequirientes(obj,callback){
 
     var crearAdquirienteConUsuarioACliente = {
         attributes: {
@@ -32,53 +45,53 @@ function __jsonFacturacionRequirientes(obj, callback) {
             attributes: {
                 xmlns: ''
             },
-            acuerdoFisicoFacturacionElectronica: obj.x,
-            adjuntarPdfNotificaciones: obj.x,
-            adjuntarXmlNotificaciones: obj.x,
-            apellidos: obj.x,
-            camposDinamicosAdquirientes: {
-                nombreCampo: obj.x,
-                valor: obj.x
-            },
-            cantidadDiasAceptacionAutomatica: obj.x,
-            ciudadExtranjera: obj.x,
-            codigoCiudad: obj.x,
-            codigoDepartamento: obj.x,
-            codigoPais: obj.x,
-            direccion: obj.x,
-            emailPrincipal: obj.x,
-            emailSecundarios: obj.x,
-            enviarCorreoCertificado: obj.x,
-            enviarCorreoDeBienvenida: obj.x,
-            enviarFisico: obj.x,
-            enviarNotificaciones: obj.x,
-            enviarPlataformaFacturacion: obj.x,
-            fax: obj.x,
-            formatoFactura: obj.x,
-            idClienteCreador: obj.x,
+            acuerdoFisicoFacturacionElectronica:false, //boolean
+            adjuntarPdfNotificaciones: true, //boolean
+            adjuntarXmlNotificaciones: true, //boolean
+            apellidos: 'GONZALEZ', //String - obligatorio si campo naturaleza = 'NATURAL'
+//            camposDinamicosAdquirientes: {
+//                nombreCampo: obj.x,
+//                valor: obj.x
+//            },
+            cantidadDiasAceptacionAutomatica: 3, // int
+//            ciudadExtranjera: obj.x, // opcional
+            codigoCiudad: '11001', // string Dane
+            codigoDepartamento: '11',// string Dane
+//            codigoPais: obj.x, //string Dane Opcional,
+            direccion: 'cra7 NO 9 - 9', // string obligatorio
+            emailPrincipal: 'desarrollo2@duanaltda.com',// string
+//            emailSecundarios: '', // string maximo 10 correos separados por coma Opcional
+            enviarCorreoCertificado: true, //boolean
+            enviarCorreoDeBienvenida: true, //boolean
+            enviarFisico: true, //boolean Opcional
+            enviarNotificaciones: true,//boolean
+            enviarPlataformaFacturacion: true,//boolean
+            fax: '',//string Opcional
+            formatoFactura: 'ORIGINAL XML',
+//            idClienteCreador: '',
             identificacionAdquirienteWS: {
-                codigoDian: obj.x,
-                digitoDeVerificacion: obj.x,
-                numeroIdentificacion: obj.x
+                codigoDian: 13,
+//                digitoDeVerificacion: ,
+                numeroIdentificacion: 94151793
             },
-            naturaleza: obj.x,
-            nombre: obj.x,
-            observaciones: obj.x,
-            razonSocial: obj.x,
-            registradoEnCatalogo: obj.x,
-            telefono: obj.x,
-            tipoEstablecimiento: obj.x,
-            tipoObligacion: obj.x,
-            tipoUsuarioAduanero: obj.x,
-            tiposRepresentacion: obj.x
+            naturaleza: 'NATURAL', //[JURIDICA o NATURAL]
+            nombre: 'consentimiento2128', //String - obligatorio si campo naturaleza = 'NATURAL'
+            observaciones: '', // string opcinal
+//            razonSocial: '',
+            registradoEnCatalogo: true,//boolean
+            telefono: 4321871,
+            tipoEstablecimiento: 'E-99;E-11',
+            tipoObligacion: 'O-99;O-11',
+            tipoUsuarioAduanero: 'A-1;A-2',
+            tiposRepresentacion: 'R-99-PN;R-12-PN'
         },
         usuario: {
             attributes: {
                 xmlns: ''
             },
-            contrasena: 'cosmitet202',
-            generarContrasena: true,
-            nombreUsuario: 'admin_cosmitet'
+            contrasena: '',
+            generarContrasena: true,//boolean
+            nombreUsuario: 'consentimiento2128'
         }
     };
     callback(crearAdquirienteConUsuarioACliente);
@@ -94,6 +107,7 @@ function __requirienteFacturacion(obj, callback) {
 
     obj.error = false;
 
+
     var password = 'cosmitet202'; // optional password
     var username = 'admin_cosmitet'; // optional password  
     var tmp = {};
@@ -101,9 +115,11 @@ function __requirienteFacturacion(obj, callback) {
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).then(function (client) {
 //        
-        // var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, password);
-        tmp = client;
-        var options = {
+
+
+     // var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, password);
+     tmp = client;
+      var options ={
             passwordType: 'PasswordText',
             hasTimeStamp: false,
             hasTokenCreated: true,
@@ -119,8 +135,10 @@ function __requirienteFacturacion(obj, callback) {
         return G.Q.ninvoke(client, obj.funcion, obj.parametros);
 
 
+
     }).spread(function (result, raw, soapHeader) {
         G.logError(G.xmlformatter(tmp.lastRequest));
+
         console.log('El resultado ------------->', result, 'raw', raw, 'soapHeader', soapHeader);
   
     }).then(function () {
@@ -415,5 +433,5 @@ function __notaCreditoWs(obj, callback) {
     }).done();
 }
 
-Sincronizacion.$inject = ["m_sincronizacion"];
+Sincronizacion.$inject = ["m_sincronizacion","m_terceros"];
 module.exports = Sincronizacion;

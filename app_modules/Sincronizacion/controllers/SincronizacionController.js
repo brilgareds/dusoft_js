@@ -1,4 +1,4 @@
-var Sincronizacion = function(m_sincronizacion) {
+var Sincronizacion = function (m_sincronizacion) {
     this.m_sincronizacion = m_sincronizacion;
 };
 
@@ -7,14 +7,14 @@ var Sincronizacion = function(m_sincronizacion) {
 __envio();
 
 
-function __envio(){
+function __envio() {
     var obj = {};
-    obj.x="prueba";
-    obj.funcion="crearAdquirienteConUsuarioACliente";
-    __jsonFacturacionRequirientes(obj,function(respuesta){
-        obj.parametros=respuesta;
+    obj.x = "prueba";
+    obj.funcion = "crearAdquirienteConUsuarioACliente";
+    __jsonFacturacionRequirientes(obj, function (respuesta) {
+        obj.parametros = respuesta;
 //        console.log("__jsonFacturacionRequiientes",obj);
-        __requirienteFacturacion(obj,function(respuesta){
+        __requirienteFacturacion(obj, function (respuesta) {
 
 //            console.log("__requirienteFacturacion",respuesta);
         });
@@ -22,9 +22,9 @@ function __envio(){
 }
 
 
-function __jsonFacturacionRequirientes(obj,callback){
+function __jsonFacturacionRequirientes(obj, callback) {
 
-    var crearAdquirienteConUsuarioACliente ={
+    var crearAdquirienteConUsuarioACliente = {
         attributes: {
             xmlns: 'http://contrato.adquiriente.cliente.webservices.servicios.certifactura.certicamara.com/'
         },
@@ -77,7 +77,7 @@ function __jsonFacturacionRequirientes(obj,callback){
                 xmlns: ''
             },
             contrasena: 'cosmitet202',
-          generarContrasena: true,
+            generarContrasena: true,
             nombreUsuario: 'admin_cosmitet'
         }
     };
@@ -88,10 +88,10 @@ function __jsonFacturacionRequirientes(obj,callback){
  * Andres Mauricio Gonzalez
  * obj  { parametros : (informacion que se envian al ws),funcion: (nombre de la funcion que ejecuta el ws)}
  */
-function __requirienteFacturacion(obj, callback){
-    var url =  G.constants.WS().FACTURACION_ELECTRONICA.CERTICAMARA;
+function __requirienteFacturacion(obj, callback) {
+    var url = G.constants.WS().FACTURACION_ELECTRONICA.CERTICAMARA;
     var resultado;
- 
+
     obj.error = false;
 
     var password = 'cosmitet202'; // optional password
@@ -99,48 +99,39 @@ function __requirienteFacturacion(obj, callback){
     var tmp = {};
 
     //Se invoca el ws
-    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
+    G.Q.nfcall(G.soap.createClient, url).then(function (client) {
 //        
-     // var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, password);
-     tmp = client;
-      var options ={
+        // var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, password);
+        tmp = client;
+        var options = {
             passwordType: 'PasswordText',
             hasTimeStamp: false,
             hasTokenCreated: true,
             hasNonce: true,
             mustUnderstand: 1,
             actor: ''
-      }
-      client.setSecurity(new G.soap.WSSecurity(username, password,options));
+        }
+        client.setSecurity(new G.soap.WSSecurity(username, password, options));
 
 
         //client.setSecurity(wsSecurity);
         //console.log('el xml --> ', client.wsdl);
-        return G.Q.ninvoke(client,obj.funcion, obj.parametros);
+        return G.Q.ninvoke(client, obj.funcion, obj.parametros);
 
-        
-    }).spread(function(result,raw,soapHeader){
+
+    }).spread(function (result, raw, soapHeader) {
         G.logError(G.xmlformatter(tmp.lastRequest));
-//console.log("result.return.msj[$value] ",result);
-//console.log("result.return.msj[$value] ",raw);
-//console.log("result.return.msj[$value] ",soapHeader);
         console.log('El resultado ------------->', result, 'raw', raw, 'soapHeader', soapHeader);
-        /*if(!result.return.msj["$value"]){
-            throw {msj:"Se ha generado un error", status:403, obj:{}}; 
-        } else {*/
-//            obj.fechaMaxima = result.return.msj["$value"];
-                  //console.log("result.return.msj[$value] ",result.return.msj["$value"]);
-        //}
-
-    }).then(function(){
+  
+    }).then(function () {
 
         callback(false, obj);
 
-    }).fail(function(err) {    
+    }).fail(function (err) {
 
         obj.error = true;
         obj.tipo = '0';
-        console.log("err ", err);
+        //console.log("err ", err);
         G.logError(err);
 
         callback(err);
@@ -166,7 +157,7 @@ function __jsonNotaCredito(obj, callback) {
             observaciones: obj.x, //String OPCIONAL
             perfilEmision: obj.x, //String
             perfilUsuario: obj.x, //String
-            productos: { //OPCIONAL
+            productos: {//OPCIONAL
                 atributosAdicionalesProd: {
                     nombreAtributo: obj.x, //String
                     valor: obj.x //String
@@ -190,7 +181,7 @@ function __jsonNotaCredito(obj, callback) {
                     porcentual: obj.x, //decimal
                     valor: obj.x //decimal
                 },
-                listaImpuestosDeducciones: { // OPCIONAL
+                listaImpuestosDeducciones: {// OPCIONAL
                     nombre: obj.x, //String
                     porcentual: obj.x, //decimal
                     valor: obj.x //decimal
@@ -199,7 +190,7 @@ function __jsonNotaCredito(obj, callback) {
                 valorUnitario: obj.x //decimal
             },
             subtotalNotaCreditoElectronica: obj.x, //decimal OPCIONAL
-            subtotalesImpuestosDeduccion: { // OPCIONAL
+            subtotalesImpuestosDeduccion: {// OPCIONAL
                 nombre: obj.x, //String
                 valor: obj.x, //decimal
                 baseGravable: obj.x //decimal
@@ -236,7 +227,7 @@ function __jsonNotaDebito(obj, callback) {
             observaciones: obj.x, //String OPCIONAL
             perfilEmision: obj.x, //String
             perfilUsuario: obj.x, //String
-            productos: { //OPCIONAL
+            productos: {//OPCIONAL
                 atributosAdicionalesProd: {
                     nombreAtributo: obj.x, //String
                     valor: obj.x //String
@@ -260,7 +251,7 @@ function __jsonNotaDebito(obj, callback) {
                     porcentual: obj.x, //decimal
                     valor: obj.x //decimal
                 },
-                listaImpuestosDeducciones: { // OPCIONAL
+                listaImpuestosDeducciones: {// OPCIONAL
                     nombre: obj.x, //String
                     porcentual: obj.x, //decimal
                     valor: obj.x //decimal
@@ -294,9 +285,11 @@ function __jsonFactura(obj, callback) {
         facturaElectronicaCanonica: {
             codigoMoneda: obj.x, //String
             descripción: obj.x, //String OPCIONAL
-            descuentos: { //OPCIONAL
-                fecha: obj.x, //string
-                valorPagar: obj.x //decimal
+            descuentos: {//OPCIONAL
+                prontoPago: {
+                    fecha: obj.x, //string
+                    valorPagar: obj.x //decimal
+                }
             },
             fechaExpedicion: obj.x, //String OPCIONAL
             fechaVencimiento: obj.x, //String OPCIONAL
@@ -316,7 +309,7 @@ function __jsonFactura(obj, callback) {
             },
             perfilEmision: obj.x, //String
             perfilUsuario: obj.x, //String
-            productos: { //OPCIONAL
+            productos: {//OPCIONAL
                 atributosAdicionalesProd: {
                     nombreAtributo: obj.x, //String
                     valor: obj.x //String
@@ -340,7 +333,7 @@ function __jsonFactura(obj, callback) {
                     porcentual: obj.x, //decimal
                     valor: obj.x //decimal
                 },
-                listaImpuestosDeducciones: { // OPCIONAL
+                listaImpuestosDeducciones: {// OPCIONAL
                     nombre: obj.x, //String
                     porcentual: obj.x, //decimal
                     valor: obj.x //decimal
@@ -349,7 +342,7 @@ function __jsonFactura(obj, callback) {
                 valorUnitario: obj.x //decimal
             },
             subtotalFactura: obj.x, //decimal OPCIONAL
-            subtotalesImpuestosDeduccion: { // OPCIONAL
+            subtotalesImpuestosDeduccion: {// OPCIONAL
                 nombre: obj.x, //String
                 valor: obj.x, //decimal
                 baseGravable: obj.x //decimal
@@ -358,7 +351,7 @@ function __jsonFactura(obj, callback) {
             totalFactura: obj.x //decimal OPCIONAL
         },
         facturaEspecializada: {
-            AtributosAdicionales: { // OPCIONAL
+            AtributosAdicionales: {// OPCIONAL
                 nombreAtributo: obj.x, //String
                 valor: obj.x, //String
                 tipo: obj.x //String
@@ -381,18 +374,18 @@ function __notaCreditoWs(obj, callback) {
     var publicKey = G.fs.readFileSync(G.dirname + G.settings.certificados_cervicamara + "preproduccionv4_certifactura_co.cer");
     var publicKey2 = G.fs.readFileSync(G.dirname + G.settings.certificados_cervicamara + "Intermedia_Rapid.cer");
     var publicKey3 = G.fs.readFileSync(G.dirname + G.settings.certificados_cervicamara + "Raiz_Rapid.cer");
-    
+
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).then(function (client) {
-       
-        var wsSecurity = new G.soap.WSSecurityCert({privateKey: G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"preproduccionv4_certifactura_co.key", 'utf8'),
-                                             publicKey: G.fs.readFileSync(G.dirname+G.settings.certificados_cervicamara+"preproduccionv4_certifactura_co.cer", 'utf8'),
-                                             keyPassword : '', // optional password
-                                             password : 'cosmitet202', // optional password
-                                             username :'admin_cosmitet'});
-      
+
+        var wsSecurity = new G.soap.WSSecurityCert({privateKey: G.fs.readFileSync(G.dirname + G.settings.certificados_cervicamara + "preproduccionv4_certifactura_co.key", 'utf8'),
+            publicKey: G.fs.readFileSync(G.dirname + G.settings.certificados_cervicamara + "preproduccionv4_certifactura_co.cer", 'utf8'),
+            keyPassword: '', // optional password
+            password: 'cosmitet202', // optional password
+            username: 'admin_cosmitet'});
+
         client.setSecurity(wsSecurity);
-        
+
         var datos = {
             notaCreditoElectronicaCanonica: obj.parametros.notaCreditoElectronicaCanonica,
             notaEspecializada: obj.parametros.notaEspecializada
@@ -403,7 +396,7 @@ function __notaCreditoWs(obj, callback) {
         if (!result.return.msj["$value"]) {
             throw {msj: "Se ha generado un error", status: 403, obj: {}};
         } else {
-            console.log("result.return.msj[$value] ", result.return.msj["$value"]);
+           // console.log("result.return.msj[$value] ", result.return.msj["$value"]);
         }
 
     }).then(function () {
@@ -414,7 +407,7 @@ function __notaCreditoWs(obj, callback) {
 
         obj.error = true;
         obj.tipo = '0';
-        console.log("err ", err);
+       // console.log("err ", err);
         G.logError(err);
 
         callback(err);

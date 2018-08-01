@@ -459,4 +459,10 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.73', 'FACTURACION', 'Se corrige error por multiples temporales');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.74 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.74', 'FACTURACION GENERADAS', 'Se modifica el calculo de los impuestos');
+COMMIT TRANSACTION;
 

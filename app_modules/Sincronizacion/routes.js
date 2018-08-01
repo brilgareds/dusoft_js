@@ -1,5 +1,7 @@
 module.exports = function(app, di_container) {
- 
+    
+var c_sincronizacion = di_container.get("c_sincronizacion");
+ /*
   var c_facturacion_proveedores = di_container.get("c_facturacion_proveedores");
   //var io = di_container.get("socket");
 
@@ -33,6 +35,11 @@ module.exports = function(app, di_container) {
     app.post('/api/FacturacionProveedores/sincronizarFi', function(req, res) {
        
         c_facturacion_proveedores.sincronizarFi(req, res);
+    });
+    */
+    app.post('/api/Sincronizacion/adquirientesMasivo', function(req, res) {
+       
+        c_sincronizacion.adquirientesMasivo(req, res);
     });
     
     

@@ -1,13 +1,13 @@
-var Sincronizacion = function(m_sincronizacion,m_terceros) {
+var Sincronizacion = function(m_sincronizacion,m_clientes) {
 
     this.m_sincronizacion = m_sincronizacion;
-    this.m_terceros = m_terceros; 
+    this.m_clientes = m_clientes; 
 };
 
 
 
 //__envio();
-__adquirinetesMasivo();
+//Sincronizacion.prototype.adquirientesMasivo();
 
 
 function __envio() {
@@ -25,13 +25,13 @@ function __envio() {
 }
 
 
-function __adquirinetesMasivo(){
-    var that = this;
-    console.log("AAAAAAAA",that.m_sincronizacion);
-    G.Q.ninvoke(that.m_terceros, 'listar_adquirientes').then(function (resultado) {
+//function __adquirientesMasivo(){
+Sincronizacion.prototype.adquirientesMasivo=function(req, res){
+    var that = this; 
+    G.Q.ninvoke(that.m_clientes,'listar_adquirientes').then(function (resultado) {
        console.log("AAAAAAAA",resultado);
     }).fail(function (err) {
-       console.log("Error ",err);
+       console.log("Error adquirientesMasivo ",err);
     }).done();
 };
 
@@ -433,5 +433,5 @@ function __notaCreditoWs(obj, callback) {
     }).done();
 }
 
-Sincronizacion.$inject = ["m_sincronizacion","m_terceros"];
+Sincronizacion.$inject = ["m_sincronizacion","m_clientes"];
 module.exports = Sincronizacion;

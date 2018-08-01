@@ -107,10 +107,11 @@ ClientesModel.prototype.listar_adquirientes = function(callback) {
         WHERE\
         a.tipo_id_tercero IS NOT NULL\
         and  a.tercero_id = '1150938714' ";
-    
+   
     var query = G.knex.raw(sql);
     query.then(function(resultado){
-       callback(false, resultado.rows, resultado);
+        
+       callback(false, resultado.rows);
     }).catch(function(err){
         callback(err);
     });    

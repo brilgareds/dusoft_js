@@ -85,56 +85,57 @@
             </TR>
         </TABLE>
         <br>
-            <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
+            <table width="100%" align="center">
                 <tr>
-                    <td width='60%'  align='center' >
-                        <table border='0' width='100%' style="font-size: 12px; line-height: 0; height:10px;">
+                    <td align='center' style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
                             <tr>
-                                <td>Cliente: </td>
+                                <td>CLIENTE: </td>
                                 <td>{{:cliente.nombre_tercero}} </td>
                                 <td>{{:cliente.tipo_id_tercero}} {{:cliente.tercero_id}} </td>
-                                <td>Dirección: </td>
+                                <td>DIRECCIÓN: </td>
                                 <td>{{:cliente.direccion}} </td>
-                                <td>Telefono:  </td>
+                                <td>TELEFONO:  </td>
                                 <td>{{:cliente.telefono}} </td>
                             </tr>
                         </table>
                     </td>
-                    <td width='40%'  align='center' >
-                        <table border='0' width='100%' style="font-size: 12px; line-height: 0; height:10px;">
+                    <td  align='center' rowspan='2' style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
                             <tr >
-                                <td colspan='1' align='center' height='10px'>
+                                <td align='center' height='10px'>
                                     <b>NOTA {{:parametros.nombreNota}}</b>
                                 </td>
-                            </tr>
-                            <tr >
-                                <td colspan='1' align='center' height='10px'>
-                                    <b></b>
+                                <td  align='left' height='10px' >
+                                    <b>No: {{:parametros.prefijoNota}} - {{:parametros.numeroNota}}</b>			
                                 </td>
                             </tr>
                             <tr>
-                                <td align='right' width='30%' height='10px' >				
-                                </td>
-                                <td  align='left' width='30%' height='10px' >
-                                    <b>NOTA No.</b>				
-                                </td>
-                                <td align='left' width='40%' >
-                                    <b>{{:parametros.prefijoNota}} - {{:parametros.numeroNota}}	</b>			
-                                </td>
-                            </tr>
-                            <tr>
-                                <td  align='right'  >			
+                                <td  align='left' height='10px' >
+                                    <b>FACTURA No: {{:parametros.prefijo}} - {{:parametros.facturaFiscal}}</b>
                                 </td>
                                 <td  align='left' height='10px' >
-                                    <b>FACTURA No.	</b>			
-                                </td>
-                                <td  align='left' height='10px' >
-                                    <b>{{:parametros.prefijo}} - {{:parametros.facturaFiscal}}</b>
+                                    <b>FECHA FACTURA {{:parametros.prefijo}} - {{:parametros.facturaFiscal}}</b>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
+                <tr>
+                    <td align='center' style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
+                            <tr>
+                                <td>FECHA NOTA: </td>
+                                <td>falta enviar </td>
+                                <td>CONCEPTO NOTA: </td>
+                                <td>falta enviar</td>
+                                <td>TIPO NOTA:  </td>
+                                <td>falta enviar</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
             </table>
             <br>	
                 <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" rules="all">

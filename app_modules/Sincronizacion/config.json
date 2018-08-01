@@ -14,7 +14,7 @@
                     "model": "SincronizacionModel",
                     "alias": "m_sincronizacion"
                 },
-                "clientes_model": {
+               "clientes_model": {
                     "module": "Terceros/Clientes",
                     "model": "ClientesModel",
                     "alias": "m_clientes"

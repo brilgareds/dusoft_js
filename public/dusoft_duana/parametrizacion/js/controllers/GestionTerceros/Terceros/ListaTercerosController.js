@@ -57,6 +57,23 @@ define(["angular",
                 $scope.onIrVistaGuardarTercero();
             };
             
+            $scope.onCrearTerceroServi=function(){
+               var obj = {
+                    session: $scope.root.session,
+                    data: {
+                    }
+                };
+
+                Request.realizarRequest(API.TERCEROS.ADQUIRIENTE, "POST", obj, function (data) {
+                    console.log("SSSS",data);
+                    if (data.status === 200) {
+                        
+                    }
+
+                }); 
+            };
+            
+            
             /**
             * @author Eduar Garcia
             * +Descripcion Hnadler del boton de editar tercero

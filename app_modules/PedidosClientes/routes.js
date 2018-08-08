@@ -261,6 +261,10 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/actualizarBodegaCotizacionClientesMultiples', function(req, res) {
         c_pedidos_clientes.actualizarBodegaCotizacionClientesMultiples(req, res);
     });
+
+    app.post('/api/PedidosClientes/pedidoClienteAPedidoFarmacia', function(req, res) {
+        c_pedidos_clientes.pedidoClienteAPedidoFarmacia(req, res);
+    });
     
      
 };

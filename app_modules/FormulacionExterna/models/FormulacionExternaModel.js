@@ -859,7 +859,6 @@ FormulacionExternaModel.prototype.generarDispensacionFormulaPendientes = functio
             tmp.productos = resultado;
             return G.Q.nfcall(__guardarBodegasDocumentosDetalle, that, empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, tmp.productos, transaccion);
         }).then(function(resultado){
-            console.log('---->', bodegasDocId, 'numeracion',numeracion);
             return G.Q.nfcall(__asignarDocumentoBodegaYNumeracionAPendientes, formula_id, bodegasDocId, numeracion, transaccion);
         }).then(function(resultado){
             return G.Q.nfcall(__insertaFormulacionDespachoMedicamentosPendientes, formula_id, bodegasDocId, numeracion, transaccion);
@@ -1526,7 +1525,6 @@ FormulacionExternaModel.prototype.eliminarFormulaExterna= function(formula_id_tm
 };
 
 FormulacionExternaModel.prototype.updateAutorizacionPorMedicamento = function(fe_medicamento_id, observacion_autorizacion, usuario_autoriza_id, callback) {
-    console.log('fe_medicamento_id', fe_medicamento_id, 'observacion_autorizacion', observacion_autorizacion, 'usuario_autoriza_id', usuario_autoriza_id);
     var query = G.knex('esm_formula_externa_medicamentos_tmp')
         .where('fe_medicamento_id', fe_medicamento_id)
         .update({

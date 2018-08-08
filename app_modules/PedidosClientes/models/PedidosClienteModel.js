@@ -433,7 +433,6 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, bod
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");
     
     queryPrincipal.then(function(rows) {
-console.log(G.sqlformatter.format(queryPrincipal.toString()));
         callback(false, rows);
     }). catch (function(err) {
         console.log("err [listar_pedidos_clientes]: ", err);
@@ -491,6 +490,64 @@ PedidosClienteModel.prototype.eliminarTemporalesClientes = function(callback) {
     var sql = "UPDATE ventas_ordenes_pedidos_tmp  set estado = '0'";
 
     G.knex.raw(sql).then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err [eliminarTemporalesClientes]: ", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author 
+ * +Descripcion: obtiene el pedido farmacia dado el numero de pedido cliente asociado (numero_pedido)
+ * @param {type} numero_pedido
+ * @param {type} callback
+ * @returns {void}
+ */
+
+PedidosClienteModel.prototype.insertarEncabezadoFarmaciaRelacionadoNumeroPedido = function(numero_pedido ,callback) {
+        var sql = " INSERT INTO solicitud_productos_a_bodega_principal(\
+                farmacia_id,\
+                centro_utilidad,\
+                bodega,\
+                observacion,\
+                usuario_id,\
+                fecha_registro,\
+                empresa_destino,\
+                sw_despachado,\
+                sw_despacho,\
+                estado,\
+                tipo_pedido,\
+                centro_destino,\
+                bodega_destino,\
+                descripcion_tipo_pedido,\
+                pedido_cliente,\
+                numero_pedido\
+                    ) (\
+                  select\
+                    farmacia_id,\
+                    centro_utilidad,\
+                    bodega,\
+                    observacion || ' - Generado automatico pedido multiple, ingreso desde DUANA' as observacion,\
+                    usuario_id,\
+                    fecha_registro,\
+                    empresa_destino,\
+                    sw_despachado,\
+                    sw_despacho,\
+                    estado,\
+                    tipo_pedido,\
+                    centro_destino,\
+                    bodega_destino,\
+                    descripcion_tipo_pedido,\
+                    pedido_cliente,\
+                    numero_pedido\
+                  from solicitud_productos_a_bodega_principal\
+                  where pedido_cliente = :1\
+                ) returning solicitud_prod_a_bod_ppal_id as solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega";
+
+    var query = G.knex.raw(sql, {1 : numero_pedido});
+
+    query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [eliminarTemporalesClientes]: ", err);
@@ -817,7 +874,6 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
 
 PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {
 
-console.log("QUERY");
     var columnas = [
         "a.empresa_id as empresa_destino",
         "a.centro_destino",
@@ -1832,6 +1888,27 @@ PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_clientes =
         });  
 };
 
+PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_farmacias = function(obj,callback){
+ 
+    var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
+        .insert(
+        {
+            id_orden_pedido_origen: obj.numeroPedido,
+            id_orden_pedido_destino: obj.numeroPedidoorigen,
+            id_orden_cotizacion_origen: obj.numeroPedido,
+            id_orden_cotizacion_destino: obj.numeroPedidoorigen ,
+            sw_origen_destino : 1
+        }
+            );
+           
+        query.then(function(resultado){    
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [insertar_ventas_ordenes_pedido_multiple_farmacias]: ", err);
+            callback({err:err, msj: "Error al insertar ventas ordenes pedido multiple clientes"});   
+        });  
+};
+
 PedidosClienteModel.prototype.actualizarPedidoMultipleCliente = function(obj,callback){
  
     
@@ -1860,8 +1937,8 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function(obj,call
                       }
                         
                     })
-                  .select(['id_orden_pedido_origen','id_orden_pedido_destino','id_orden_cotizacion_origen','id_orden_cotizacion_destino']);
-      
+                  .select(['id_orden_pedido_origen','id_orden_pedido_destino','id_orden_cotizacion_origen','id_orden_cotizacion_destino', 'sw_origen_destino']);
+        G.logError(G.sqlformatter.format(query.toString()));
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
@@ -2792,11 +2869,9 @@ PedidosClienteModel.prototype.eliminar_producto_pedido = function(pedido, produc
  *  --PedidosCliente.prototype.eliminarProductoPedido
  */
 PedidosClienteModel.prototype.consultarTotalProductosPedido = function(pedido, callback) {
-
     var obj = {
         pedido_cliente_id: pedido,
     };
-
     G.knex('ventas_ordenes_pedidos_d')
             .where(obj)
             .count('pedido_cliente_id as total')
@@ -2808,6 +2883,50 @@ PedidosClienteModel.prototype.consultarTotalProductosPedido = function(pedido, c
 };
 
 
+PedidosClienteModel.prototype.insertarProductosPedidoClienteFarmacia = function(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos, callback) {
+    G.Q.nfcall(__insertarProductosPedidoClienteFarmacia, solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos).then(function(resultado) {
+        callback(false, resultado);
+    }).fail(function(err) {
+        callback(err);
+    }).done();
+};
+
+
+function __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos, callback) {
+    if (productos.length == 0) {       
+        callback(false);
+        return;
+    }  
+
+    var producto = productos.splice(0, 1)[0];
+
+    var query = G.knex("solicitud_productos_a_bodega_principal_detalle").
+    returning("solicitud_prod_a_bod_ppal_det_id").
+    insert({
+        solicitud_prod_a_bod_ppal_id : solicitud_prod_a_bod_ppal_id,
+        farmacia_id : farmacia,
+        centro_utilidad : centro_utilidad,
+        bodega : bodega,
+        codigo_producto : producto.codigo_producto,
+        cantidad_solic : producto.cantidad,
+        tipo_producto : G.knex.raw("(select tipo_producto_id from inventarios_productos where codigo_producto = '" + producto.codigo_producto + "')"),
+        usuario_id : usuario_id,
+        fecha_registro: 'now()',
+        fecha_vencimiento : producto.fecha_vencimiento,
+        lote : producto.lote,
+        sw_pendiente : 0,
+        cantidad_pendiente : 0
+    });
+
+    console.log(G.sqlformatter.format(query.toString()));
+
+    query.then(function(resultado) {
+        return __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos, callback);
+    }). catch (function(err) {
+        console.log("err [insertar_responsables_pedidos]: ", err);
+        callback(err);
+    }).done();
+};
 
 /*
  * @author : Cristian Ardila

@@ -1820,6 +1820,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
     var usuario_id = args.documento_temporal.usuario_id;
     var auditor_id = args.documento_temporal.auditor_id;
     var empresa_id, prefijo_documento, numero_documento, estado, pedido;
+    var tmp = {};
 
     G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function (resultado) {
         pedido = resultado[0];
@@ -1946,18 +1947,16 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
     }).then(function (rows) {
         
         var obj ={numero_pedido:numero_pedido};
-       
+       tmp.numero_pedido = numero_pedido;
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultarPedidoMultipleCliente",obj);
         
     }).then(function (rows) {
-     
                 that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
                 res.send(G.utils.r(req.url, 'Se ha generado el documento', 200,
                         {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
 
-
         if (rows.length > 0) {
-            
+            tmp.sw_origen_destino  = rows[0].sw_origen_destino;
             pedido.centro_utilidad=pedido.centro_destino;
             pedido.bodega_id=pedido.bodega_destino;
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespachoAutomatico", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento, numeroDocumento: numero_documento});
@@ -1965,21 +1964,22 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
         }
 
     }).then(function (detalleDocumento) {
-       
         if (detalleDocumento && detalleDocumento.length > 0) {          
             var parametros = {
                 ordenes_compras: {
                     usuario_id: req.session.user.usuario_id,
                     unidad_negocio: (pedido.bodega_id === '03') ? '4' : '0',
-                    codigo_proveedor: 55,
+                    codigo_proveedor: tmp.sw_origen_destino == 0 ? 55 : 1685, //si es 0  55 => Cosmitet, si es 1  => Duana
                     empresa_id: pedido.empresa_id,
                     observacion: "Orden Generada por documento: " + prefijo_documento + " - " + numero_documento,
                     prefijo_documento: prefijo_documento,
                     numero_documento: numero_documento,
                     empresa_pedido: pedido.empresa_id,
                     centro_utilidad_pedido: pedido.centro_utilidad,
-                    bodega_pedido: pedido.bodega_id,
-                    productos: detalleDocumento
+                    bodega_pedido: tmp.sw_origen_destino == 0 ? pedido.bodega_id : '06',
+                    productos: detalleDocumento,
+                    sw_origen_destino : tmp.sw_origen_destino,
+                    numero_pedido : tmp.numero_pedido
                 }
             };
        
@@ -2081,7 +2081,6 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function (req, res)
                 obj: {movimientos_bodegas: {productos_no_auditados: [], productos_pendientes: [], productos_pendientes_invalidos: productosPendientesInvalidos}}};
 
         } else if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {
-            console.log("productos_no_auditados ", productos_no_auditados);
             throw {msj: "Algunos productos no ha sido auditados o tienen pendientes la justificacion.", status: 404,
                 obj: {movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
         } else if (productosSinExistencias.length > 0) {

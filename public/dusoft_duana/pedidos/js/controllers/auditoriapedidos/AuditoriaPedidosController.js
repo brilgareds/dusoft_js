@@ -734,8 +734,9 @@ define(["angular", "js/controllers",
                         $rootScope.$emit("productoAuditado",{},documento);
                     }
                 });
-
             };
+
+            
             
             $scope.ejecutar = true;
             socket.on("onNotificarGenerarI002", function (datos) {
@@ -743,7 +744,7 @@ define(["angular", "js/controllers",
                     if (datos.parametros.status && $scope.ejecutar) {
                         $scope.ejecutar = false;
                         that.generarIngresoI002(datos.parametros.data, function (asd) {                           
-                            that.ejecutarDocumento(datos.parametros.data.numero_orden);
+                            that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos);
                         });
                     }
                     clearTimeout(timer);
@@ -755,7 +756,7 @@ define(["angular", "js/controllers",
                     session: $scope.session,
                     data: {
                         orden_pedido_id: data.numero_orden,
-                        bodegas_doc_id : '80',
+                        bodegas_doc_id : data.sw_origen_destino == 1? '1542' : '80',
                         observacion:  data.parametros.encabezado.observacion
                     }
                 };
@@ -767,6 +768,8 @@ define(["angular", "js/controllers",
                            
                             callback(true);
                         });
+
+
                     }
                     if (datas.status === 500) {
                         AlertService.mostrarMensaje("warning", datas.msj);
@@ -787,7 +790,7 @@ define(["angular", "js/controllers",
              
                      var movimientos_bodegas = {
                         doc_tmp_id: $scope.doc_tmp_id,
-                        bodegas_doc_id: '80',
+                        bodegas_doc_id: data.sw_origen_destino == 1? '1542' : '80',
                         codigo_producto: productos.codigo_producto,
                         cantidad: productos.cantidad,
                         porcentaje_gravamen: productos.porcentaje_gravamen,
@@ -815,7 +818,7 @@ define(["angular", "js/controllers",
                  });               
             };
             
-            that.ejecutarDocumento = function(orden){
+            that.ejecutarDocumento = function(orden, pedido, sw_origen_destino, productos){
                 
                 var obj = {
                     session: $scope.session,
@@ -830,15 +833,29 @@ define(["angular", "js/controllers",
          
                 Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
                    if (data.status === 200) {
-		
-			var nombre = data.obj.nomb_pdf;
-			setTimeout(function() {
-			    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-			}, 4000);
+                			var nombre = data.obj.nomb_pdf;
+                			setTimeout(function() {
+                			    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                			}, 4000);
+
+                        //pasa el pedido cliente Duana a pedido farmacia Cosmitet
+                        if(sw_origen_destino == 1){
+
+                            var obj = {
+                                session: $scope.session,
+                                data: {
+                                    numero_pedido : pedido,
+                                    productos : productos
+                                }
+                            };
+
+                            Request.realizarRequest(API.PEDIDOS.CLIENTES.PEDIDO_CLIENTE_A_PEDIDO_FARMACIA, "POST", obj, function(data) {
+                            });
+                        }
                     }
 		    
                     if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);2
+                        AlertService.mostrarMensaje("warning", data.msj);
                     }
                  }); 
             };            

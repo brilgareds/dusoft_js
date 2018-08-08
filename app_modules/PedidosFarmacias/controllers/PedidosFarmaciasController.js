@@ -1262,13 +1262,17 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
     var numero_pedido;
     var notificacion;
     var autorizacion = {};
-
+//insertar_ventas_ordenes_pedido_multiple_farmacias
+    var tmp = {
+        pedidoCliente : pedido_cliente
+    };
     G.Q.ninvoke(that.m_pedidos_farmacias, "insertarPedidoFarmacia", empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, pedido_cliente).then(function(id_pedidos) {
 
         var id_pedido=id_pedidos[0];
         if (id_pedido) {
 
             numero_pedido = id_pedido[0].solicitud_prod_a_bod_ppal_id;
+            tmp.pedidoFarmacia = numero_pedido;
 
             var responsable = null;//operario_array[0].operario_id;
 
@@ -1355,10 +1359,23 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);
         }
-        res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
+     
 
+    }).then(function(resultado) {
+        //inserta en la tabla ventas_ordenes_pedidos_multiples_cliente si tiene pedido cliente asociado
+        if(tmp.pedidoCliente){
+            var obj = {
+                numeroPedidoorigen : tmp.pedidoFarmacia,
+                numeroPedido : tmp.pedidoCliente
+            };
+            return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_ventas_ordenes_pedido_multiple_farmacias", obj);
+        }
+        return;
+
+    }).then(function(resultado) {
+        res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
     }).fail(function(err) {
-       
+       console.log('generarPedidoFarmacia', err);
         res.send(G.utils.r(req.url, 'Se ha Generado un Error en el almacenamiento del Encabezado', 500, {error: err}));
         return;
     }).done();

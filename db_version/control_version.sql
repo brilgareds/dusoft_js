@@ -387,3 +387,15 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.61', 'Facturacion Despachos', 'Se modifica el controlador para que genere el id del temporal');
 COMMIT TRANSACTION;
+
+CREATE TABLE "public"."ventas_ordenes_pedido_multiple_clientes" (
+  "id_orden_cotizacion_origen" int4 NOT NULL,
+  "id_orden_cotizacion_destino" int4 NOT NULL,
+  "id_orden_pedido_origen" int4,
+  "id_orden_pedido_destino" int4
+);
+
+-- ----------------------------
+-- Primary Key structure for table ventas_ordenes_pedido_multiple_clientes
+-- ----------------------------
+ALTER TABLE "public"."ventas_ordenes_pedido_multiple_clientes" ADD CONSTRAINT "ventas_ordenes_pedido_multiple_clientes_pkey" PRIMARY KEY ("id_orden_cotizacion_origen", "id_orden_cotizacion_destino");

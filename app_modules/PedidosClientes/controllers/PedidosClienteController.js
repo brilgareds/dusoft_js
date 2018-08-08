@@ -603,7 +603,6 @@ PedidosCliente.prototype.__listarProductosClientes = function (args, callback) {
     var tmp = {};
 
     G.Q.ninvoke(that.m_pedidos_clientes, "generadoEnCosmitet", filtro.numero_cotizacion).then(function(response){
-        console.log('response**********************', response);
         if(response.length > 0){
             tmp.generadoEnOtraBodega = true;
         } else {
@@ -5170,7 +5169,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function (req, res) {
     var generarPedidoCliente;
 
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function (tercero) {
-
+console.log('el tercero', tercero);
         if (tercero.length > 0) {
             if (tercero[0].tipo_bloqueo_id !== '1') {
                 cotizacion.cliente.tipoBloqueoId = tercero[0].tipo_bloqueo_id;
@@ -5376,34 +5375,28 @@ PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function (
 
 };
 
-function __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback) {
+PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuario_id = req.session.user.usuario_id;
 
-    var producto = productos[index];
+    G.Q.ninvoke(that.m_pedidos_clientes, 'insertarEncabezadoFarmaciaRelacionadoNumeroPedido', args.numero_pedido).then(function (resultado) {
 
-    if (!producto) {
-
-        callback(false);
-        return;
-    }
-    index++;
-
-    G.Q.ninvoke(that.m_pedidos_clientes, "actualizarProductoCotizacionBodegaCosmitet", producto).then(function (rows) {
-
-        setTimeout(function () {
-            __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback);
-        }, 0);
-
+        //if (resultado.rows.length > 0) {
+            var solicitud_prod_a_bod_ppal_id = resultado.rows[0].solicitud_prod_a_bod_ppal_id;
+            var farmacia = resultado.rows[0].farmacia_id;
+            var centro_utilidad = resultado.rows[0].centro_utilidad;
+            var bodega = resultado.rows[0].bodega;
+            console.log('solicitud_prod_a_bod_ppal_id', solicitud_prod_a_bod_ppal_id, 'farmacia', farmacia, 'centro_utilidad', centro_utilidad, 'bodega', bodega); 
+            return G.Q.ninvoke(that.m_pedidos_clientes, "insertarProductosPedidoClienteFarmacia", solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, args.productos);
+        //}
+    }).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Producto actualizado satisfactoriamente', 200, {}));
     }).fail(function (err) {
-
-        setTimeout(function () {
-            __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback);
-        }, 0);
-    }).done();
-
-
-
-}
-;
+        console.log("err [pedidoClienteAPedidoFarmacia]: ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+    });
+};
 /**
  * @author Cristian Manuel Ardila Troches
  * +Descripcion Metodo encargado de asignar el responsable del pedido, actualizar

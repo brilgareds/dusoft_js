@@ -243,7 +243,7 @@ define(["angular", "js/controllers",
             var fecha = f.getDate() + "/" + (f.getMonth() + 1) + "/" + f.getFullYear();
             var farmacia = $scope.root.pedido.getFarmaciaDestino();    
             var clienteFarmacia  = empresa+''+ farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
-            var url = API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA;
+
             for (var i in pedido) {
                 if (empresa !== pedido[i].empresaOrigenProducto || centro_utilidad !== pedido[i].centroUtilidadOrigenProducto || bodega !== pedido[i].bodegaOrigenProducto) {
                     var producto = {codigo_producto: pedido[i].codigo_producto, cantidad_solicitada: pedido[i].cantidadSolicitada, empresaIdProducto: pedido[i].empresaOrigenProducto, centroUtilidadProducto: pedido[i].centroUtilidadOrigenProducto,bodegaProducto:pedido[i].bodegaOrigenProducto};
@@ -252,7 +252,7 @@ define(["angular", "js/controllers",
             }
 
             if(pedido.length===productos.length){
-             self.generarPedidoFarmacia=false;
+                self.generarPedidoFarmacia=false;
             }
   
             if (productos.length > 0) {
@@ -269,16 +269,19 @@ define(["angular", "js/controllers",
                     estado_cotizacion: '',
                     estado: '0',
                     vendedor: {tipo_id_tercero: 'CC ', id: '67039648'}, //pedir a Mauricio
-                    cliente: {
-                        tipo_id_tercero: 'AS', ///se determina que todos los clientes farmacia quedan creados con AS 
-                        id: clienteFarmacia,
+                    cliente: { //ESTE CLIENTE DEBE SER COSMITET SIEMPRE
+                        tipo_id_tercero: 'NIT',
+                        id: 83002320,
                     },
+                    /*farmacia : { //LA FARMACIA SE USARA PARA CUANDO LOS PRODUCTOS PEDIDOS A DUANA INGRESEN A COSMITET SE HAGA EL PEDIDO AL NOMBRE DE LA FARMACIA
+                        tipo_id : 'AS',
+                        id: clienteFarmacia
+                    },*/
                     fecha_registro: fecha,
                     usuario_id: $scope.root.session.usuario_id,
                     pedido_multiple_farmacia:1,
                     estadoMultiplePedido: $scope.root.bodegaMultiple.bools === true ? 1 : 0
                 };
-
 
                 var obj = {
                     session: $scope.root.session,
@@ -289,7 +292,7 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA, "POST", obj, function(data) {
                     callback(data);
                 });
             } else {
@@ -458,11 +461,10 @@ define(["angular", "js/controllers",
                     if (datos.status === 200) {
                         mensaje = datos.msj;
                         if(self.generarPedidoFarmacia){
-                        self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
-
-                           mensaje+=" Pedido Farmacia No. "+ numero_pedido_farmacia+'\n';
-                           AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
-                        });
+                            self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
+                               mensaje+=" Pedido Farmacia No. "+ numero_pedido_farmacia+'\n';
+                               AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                            });
                         }else{
                           mensaje+="\n No se genera Pedido en Farmacia. ";
                           AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
@@ -487,7 +489,7 @@ define(["angular", "js/controllers",
                             mensaje += producto.mensajeError + msjProducto + producto.codigo_producto + msjPrecioVenta;
                             AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         });                       
-                    }      
+                    }
 
                 });
             } else {

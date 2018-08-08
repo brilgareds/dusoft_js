@@ -77,7 +77,7 @@ ClientesModel.prototype.obtenterClientePorId = function(parametros, callback) {
     
     
     var query = G.knex.raw(sql, {1:parametros.tercero_id, 2:parametros.tipo_id_tercero});
-    
+    G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
        callback(false, resultado.rows);
     }).catch(function(err){

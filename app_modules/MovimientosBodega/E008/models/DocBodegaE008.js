@@ -1523,7 +1523,10 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespachoAutomatico = function(o
         3: obj.numeroDocumento 
     };
        
-     G.knex.raw(sql, parametros). then(function(resultado){       
+     var query = G.knex.raw(sql, parametros);
+    
+    //G.logError(G.sqlformatter.format(query.toString()));
+     query.then(function(resultado){       
         callback(false, resultado.rows);   
     }).catch(function(err) { 
      

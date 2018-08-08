@@ -2242,7 +2242,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
 
     var that = this;
-    
+    console.log('comenzo  a generar la orden de compra');
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', status: 404, data: {}});
@@ -2276,7 +2276,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
             observacion:     args.ordenes_compras.observacion,
             bodegaDestino:   args.ordenes_compras.bodegaDestino,
             usuario_id:      args.ordenes_compras.usuario_id,
-            detalle: args.ordenes_compras.productos,
+            detalle:  args.ordenes_compras.productos,
             ordenId: 0,
             codigo_proveedor: args.ordenes_compras.codigo_proveedor,
             empresa_pedido : args.ordenes_compras.empresa_pedido,
@@ -2327,7 +2327,10 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
                     parametros:parametros,
                     productosActas:productosActas,
                     productos2:args.ordenes_compras.productos,
-                    productos:resultado
+                    productos:resultado,
+                    sw_origen_destino: args.ordenes_compras.sw_origen_destino,
+                    numero_pedido: args.ordenes_compras.numero_pedido
+
                 }
             };
   
@@ -2336,6 +2339,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);
           
     }).fail(function (err) {
+        console.log('error al generar la orden de compra ', err);
         console.log("err [generarOrdenDeCompraAuditado]: ", err);
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:err.msj, status: err.status, data: err});
         //res.send(G.utils.r(req.url, err.msj, err.status, {ordenes_compras: err}));

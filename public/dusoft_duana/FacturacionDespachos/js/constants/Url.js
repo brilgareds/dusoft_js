@@ -61,6 +61,11 @@ define(["angular"], function(angular) {
                 "LISTAR_IMPUESTOS_TERCERO": BASE_URL + "/CajaGeneral/consultarImpuestosTercero",
                 "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas"
             },
+            'NOTAS': {
+                "CONSULTAR_NOTAS": BASE_URL + "/Notas/ConsultarNotas",
+                "LISTAR_FACTURAS": BASE_URL + "/Notas/listarFacturas",
+                "DETALLE_FACTURA": BASE_URL + "/Notas/detalleFactura"
+            },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",
             },

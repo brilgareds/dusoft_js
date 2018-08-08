@@ -45,6 +45,7 @@ define([
     "models/PedidoDespacho",
     "models/CajaGeneral",
     "models/Grupos",
+    "models/Notas",
     "controllers/facturacionCliente/FacturacionClientesController",
     "controllers/facturacionCliente/PedidosClientesController",
     "controllers/facturacionCliente/VentanaMensajeSincronizacionController",
@@ -53,9 +54,11 @@ define([
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
     "controllers/cajaGeneral/CajaGeneralController",
+    "controllers/notas/NotasController",
     "services/facturacionClientesService",
     "services/facturacionProveedoresService",   
     "services/cajaGeneralService",
+    "services/notasService",
     "webNotification"
 ], function(angular) {
 
@@ -130,6 +133,12 @@ define([
                     parent_name: "Despacho",
                     templateUrl: "views/cajaGeneral/index.html",
                     controller: "CajaGeneralController"
+                }).state('Notas', {
+                    url: "/Notas",
+                    text: "Notas",
+                    parent_name: "Despacho",
+                    templateUrl: "views/notas/index.html",
+                    controller: "NotasController"
                 });
 
                 if ($location.path() === "")

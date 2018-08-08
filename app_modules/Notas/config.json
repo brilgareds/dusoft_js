@@ -1,0 +1,21 @@
+{
+    "module": "Notas",
+    "dependency": {
+        "controllers": [{
+                "notas_controller": {
+                    "module": "Notas",
+                    "controller": "NotasController",
+                    "alias": "c_notas"
+                }
+            }],
+        "models": [{
+                "notas_model": {
+                    "module": "Notas",
+                    "model": "NotasModel",
+                    "alias": "m_notas"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

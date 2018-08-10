@@ -1331,9 +1331,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    }
                });
                 
-                 console.log("crearCotizacionDoble",crearCotizacionDoble);
-  
-
                 var obj = {};
                 var url = '';
                 // Observacion cartera para cotizacion

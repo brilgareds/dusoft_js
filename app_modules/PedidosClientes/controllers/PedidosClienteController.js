@@ -56,6 +56,36 @@ PedidosCliente.prototype.listarFacturasPedido = function (req, res) {
 
 };
 
+function __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback) {
+
+    var producto = productos[index];
+
+    if (!producto) {
+
+        callback(false);
+        return;
+    }
+    index++;
+
+    G.Q.ninvoke(that.m_pedidos_clientes, "actualizarProductoCotizacionBodegaCosmitet", producto).then(function (rows) {
+
+        setTimeout(function () {
+            __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback);
+        }, 0);
+
+    }).fail(function (err) {
+
+        setTimeout(function () {
+            __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback);
+        }, 0);
+    }).done();
+
+
+
+}
+;
+
+
 /**
  * +Descripcion Actualizar estado del pedido
  *  @author Andres Gonzalez
@@ -1224,14 +1254,14 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         that :that,
         clienteMultiple : args.pedidos_clientes.clienteMultiple
     };
-    
+ 
 
     G.Q.nfcall(that.m_pedidos_clientes.actualizarCabeceraCotizacion, cotizacion).then(function (rows) {
          
       return parametros.clienteMultiple===1?true:false;
         
     }).then(function (resultado) {   
-        
+
         if(resultado){
             
          return G.Q.nfcall(__insertarCabeceraDetalleBodegasMultiple,parametros);
@@ -1261,16 +1291,29 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
         return G.Q.nfcall(__agruparProductosPorBodega,rows[0]);
      
     }).then(function (resultado) { 
-         
+       console.log("resultado  ",resultado);
           return G.Q.nfcall(__insertarCabeceraClientesCotizacion,resultado,parametros,0);
  
         
-    }).then(function (resultado) {    
-        
+    }).then(function (resultado) {
+        console.log("__insertarCabeceraDetalleBodegasMultiple ", resultado);
+//        var productos=datos[Object.keys(datos)[index]];
+//        
+//         var cotizacion = {
+//             numero_cotizacion,
+//             total,
+//             empresa_id,
+//             centro_utilidad_id,
+//             bodega_id
+//         };
+//         return G.Q.ninvoke(parametros.that.m_pedidos_clientes.generar_pedido_cliente,cotizacion);
+//    
+//    }).then(function (resultado) {    
+
         callback(false);
         
     }).fail(function (err) {
-
+console.log("err ",err);
    callback(err);     
 
     }).done();
@@ -1294,51 +1337,58 @@ function __agruparProductosPorBodega(data,callback){
 }
 
 function __insertarCabeceraClientesCotizacion(datos,parametros,index,callback){
- 
-  
- if(!Object.keys(datos)[index]){
-   callback(false);   
+ console.log("11111111111__insertarCabeceraClientesCotizacion datos.length ",datos);
+ console.log("11111111111__insertarCabeceraClientesCotizacion datos.length ",datos.length);
+ console.log("11111111111__insertarCabeceraClientesCotizacion index ",index);
+ if(datos.length <= index){
+   callback(false,true);   
+   return;
  }
 
-   var cabecera={ bodega : Object.keys(datos)[index], numero_cotizacion : datos[Object.keys(datos)[index]][0].numero_cotizacion};
+   var cabecera={ bodega : Object.keys(datos)[index], numero_cotizacion : datos[Object.keys(datos)[index]][0].numero_cotizacion,control: parametros.bodegaActual !== cabecera.bodega};
    var empresa=datos[Object.keys(datos)[index]][0].empresa_origen_producto;
    var centro_utilidad=datos[Object.keys(datos)[index]][0].centro_utilidad_origen_producto;
    var bodega=datos[Object.keys(datos)[index]][0].bodega_origen_producto;
    var productos=datos[Object.keys(datos)[index]];
    index++;
-   
- if(parametros.bodegaActual !== cabecera.bodega){
+   console.log("222222__insertarCabeceraClientesCotizacion");
+// if(parametros.bodegaActual !== cabecera.bodega){
 
     G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_encabezado_pedido_cliente", cabecera).then(function (rows) {
-   
+console.log("insertar_encabezado_pedido_cliente ");
+     if(parametros.bodegaActual !== cabecera.bodega){ console.log("parametros.bodegaActual 1111",cabecera.bodega);
          parametros.bodega=cabecera.bodega;
          parametros.numeroPedido=rows.rows[0].numero_pedido;
          parametros.numeroPedidoorigen=cabecera.numero_cotizacion;
-
-         return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_detalle_pedido_cliente",parametros);
-        
+         return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_detalle_pedido_cliente",parametros);//detalle de la cotizacion
+      }else{console.log("parametros.bodegaActual 22222",parametros.bodegaActual);
+         parametros.bodega=cabecera.bodega;
+         parametros.numeroPedido=cabecera.numero_cotizacion;
+         parametros.numeroPedidoorigen=cabecera.numero_cotizacion;
+         return true;
+      }
     }).then(function (resultado) {  
-        
+
         return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",parametros);
         
     }).then(function (resultado) {  
-      
+
         return G.Q.nfcall(__totalizarPedido,productos,0,0);
         
     }).then(function (resultado) { 
-       
+
        var  cotizacion=  {numero_cotizacion:parametros.numeroPedido, total:resultado,empresa_id:empresa,centro_utilidad_id:centro_utilidad,bodega_id:bodega};
     
        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"generar_pedido_cliente",cotizacion);
         
     }).then(function (resultado) {
-        
+
         var obj = {cotizacion: cabecera.numero_cotizacion, numero_pedido : resultado.numero_pedido};
-        
+     
         return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"actualizarPedidoMultipleCliente",obj);
         
     }).then(function (resultado) {
-      
+
         __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
        
     }).fail(function (err) {
@@ -1347,11 +1397,11 @@ function __insertarCabeceraClientesCotizacion(datos,parametros,index,callback){
 
     }).done();
     
-    }else{ 
-        
-     __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
-    
-    }
+//    }else{ 
+//        
+//     __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
+//    
+//    }
 }
 
 

@@ -40,6 +40,7 @@ define([
     "models/EmpresaDespacho",
     "models/FacturaProveedores",
     "models/ProductoRecepcion",
+    "models/ProductoFacturas",
     "models/DocumentoDespacho",
     "models/VendedorDespacho",
     "models/PedidoDespacho",

@@ -5,51 +5,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 "$timeout",
                 "$filter",
                 "localStorageService",
-                "$state", "$modal", "socket", "facturacionClientesService", "facturacionProveedoresService",
-                "EmpresaDespacho", "Usuario", "notasService", "CajaGeneral", "Tercero",
+                "$state", "$modal", "socket", "EmpresaDespacho", "Usuario", "notasService", "ProductoFacturas", "Tercero",
                 function ($scope, $rootScope, Request, API, AlertService, Usuario,
                         $timeout, $filter, localStorageService, $state, $modal, socket,
-                        facturacionClientesService, facturacionProveedoresService, EmpresaDespacho,
-                        Sesion, notasService, CajaGeneral, Tercero) {
+                        EmpresaDespacho, Sesion, notasService, ProductoFacturas, Tercero) {
 
                     var that = this;
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
                     $scope.root = {
-//                        caja: [],
-//                        grupo: [],
-//                        cheque: 'default',
-//                        efectivo: 'default',
-//                        credito: 'default'
                     };
-//		    $scope.root.pagoEfectivo = 'default';
-//                    $scope.root.pagoCredito = 'default';
-//                    $scope.root.grupo.gruposConcepto = '';
-//		    $scope.root.gravamenesNotaCredito=0;
-//		    $scope.root.gravamenesNotaDebito=0;
-//		    $scope.root.totalesNotaCredito=0;
-//		    $scope.root.totalesNotaDebito=0;
-//		    
-//		    $scope.root.termino_busqueda_tercero={};
-//		    
-//                    $scope.root.filtros = [
-//                        {tipo: '', descripcion: "Nombre"}
-//                    ];
-//		    
+		    
                     $scope.root.prefijoBusquedaNota = 'seleccionar';
                     $scope.root.prefijosNotas = [
-                        {prefijo: 'F', descripcion: "Factura"},
+//                        {prefijo: 'F', descripcion: "Factura"},
                         {prefijo: 'NC', descripcion: "Nota Credito"},
                         {prefijo: 'ND', descripcion: "Nota Debito"}
                     ];
-
-                    $scope.root.tab = 1;
-//		    
-//		    $scope.root.prefijo= 
-//                        {prefijo: "seleccionar"}
-//                    ;
-//                    $scope.root.filtro = $scope.root.filtros[0];
-//                    $scope.root.tipoTercero = $scope.root.filtros[0];
-//		    $scope.terceroSeleccionado=null;
 
                     /*
                      * Inicializacion de variables
@@ -246,7 +217,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 //			    return;
 //		    };
 //		    
-		    
+
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
                      *              las Notas
@@ -254,26 +225,26 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @fecha 06/08/2018 DD/MM/YYYY
                      * @returns {undefined}
                      */
-		     that.listarNotas = function(parametros) {
-			 var obj = {
+                    that.listarNotas = function (parametros) {
+                        var obj = {
                             session: $scope.session,
                             data: {
-				tipoConsulta: parametros.tipoConsulta,
-				numero: parametros.numero,
-				empresaId :parametros.empresaId
+                                tipoConsulta: parametros.tipoConsulta,
+                                numero: parametros.numero,
+                                empresaId: parametros.empresaId
                             }
                         };
-			
-			notasService.consultarNotas(obj, function(data) {
-			     if (data.status === 200) {
-				$scope.root.listadoNota=notasService.renderNotas(data.obj.ConsultarNotas);
-			     }else{
-				 $scope.root.listadoNota= {};
-                                 AlertService.mostrarMensaje("warning", data.msj);
-			     }
-			    
-			 });
-		     };
+
+                        notasService.consultarNotas(obj, function (data) {
+                            if (data.status === 200) {
+                                $scope.root.listadoNota = notasService.renderNotas(data.obj.ConsultarNotas);
+                            } else {
+                                $scope.root.listadoNota = {};
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                        });
+                    };
 //		    
 //                    /**
 //                     * +Descripcion Metodo encargado de invocar el servicio que listara
@@ -712,33 +683,33 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 //			}
 //			return respuesta;
 //		    };
-		    
-		    /**
+
+                    /**
                      * +Descripcion metodo para imprimir las facturas
                      * @author German Galvis
                      * @fecha 18/05/2017
                      * @returns {undefined}
                      */
-		    $scope.onImprimirFacturaNotas=function(datos){
-			 var parametros = {
+                    $scope.onImprimirFacturaNotas = function (datos) {
+                        var parametros = {
                             session: $scope.session,
                             data: {
-			        prefijo:datos.getPrefijo(),
-			        facturaFiscal:datos.getNumeroFactura(),
-				empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                                prefijo: datos.getPrefijo(),
+                                facturaFiscal: datos.getNumeroFactura(),
+                                empresaId: $scope.root.empresaSeleccionada.getCodigo()
                             }
                         };
-                        notasService.imprimirNotas(parametros, function(data) {
-				    
+                        notasService.imprimirNotas(parametros, function (data) {
+
                             if (data.status === 200) {
-				var nombre = data.obj.imprimirFacturaNotas;
-				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-				
+                                var nombre = data.obj.imprimirFacturaNotas;
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+
                             } else {
-				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         });
-		    };
+                    };
 //		    
 //		    /**
 //                     * +Descripcion metodo para imprimir las facturas
@@ -863,13 +834,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 //                    };
 
                     /**
-                     * +Descripcion scope del grid para mostrar el detalle de las recepciones
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha 01/06/2017
+                     * +Descripcion scope del grid para mostrar el detalle de las facturas
+                     * @author German Galvis
+                     * @fecha 06/08/2018
                      * @returns {undefined}
                      */
 
-                    $scope.onNotaCredito = function (datos) {
+                    $scope.onNotaCreditoValor = function (datos) {
                         $scope.root.precioNota = 0;
                         $scope.root.gravamenNota = 0;
                         $scope.root.descripcionNota = "";
@@ -878,9 +849,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
                     /**
-                     * +Descripcion scope del grid para mostrar el detalle de las recepciones
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha 01/06/2017
+                     * +Descripcion scope del grid para mostrar el detalle de las facturas
+                     * @author German Galvis
+                     * @fecha 06/08/2018
+                     * @returns {undefined}
+                     */
+
+                    $scope.onNotaCreditoDevolucion = function (datos) {
+                        $scope.root.precioNota = 0;
+                        $scope.root.gravamenNota = 0;
+                        $scope.root.descripcionNota = "";
+                        $scope.root.tituloNota = "Nota Credito";
+                        that.verNota(2, datos);
+                    };
+
+                    /**
+                     * +Descripcion scope del grid para mostrar el detalle de las facturas
+                     * @author German Galvis
+                     * @fecha 06/08/2018
                      * @returns {undefined}
                      */
                     $scope.onNotaDebito = function (datos) {
@@ -964,15 +950,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 //		    $scope.root.descripcionNota="";
 
                     /**
-                     * +Descripcion scope del grid para mostrar el detalle de las recepciones
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha 01/06/2017
+                     * +Descripcion scope del grid para mostrar el detalle de las notas
+                     * @author German Galvis
+                     * @fecha 06/08/2018
                      * @returns {undefined}
-                     * nota : 0-debito 1-credito
+                     * nota : 0-debito 1-credito valor 2-credito devolucion
                      */
                     that.verNota = function (nota, datos) {
 
-                        $scope.root.impuestos = "";
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -983,10 +968,101 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             cellClass: "ngCellText",
                             templateUrl: 'views/notas/vistaNotaCredito.html',
                             scope: $scope,
-                            controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+                            controller: ['$scope', '$modalInstance', 'notasService', function ($scope, $modalInstance, notasService) {
+
+                                    $scope.root.impuestosnota = {
+                                        valorSubtotal: 0,
+                                        iva: 0,
+                                        retencionFuente: 0,
+                                        retencionIca: 0,
+                                        totalGeneral: 0
+                                    };
+
+
+                                    /**
+                                     * +Descripcion Metodo encargado de invocar el servicio que consulta
+                                     *              el detalle de la factura
+                                     * @author German Galvis
+                                     * @fecha 08/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    that.listarDetalleFactura = function () {
+
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresa_id: datos.empresa,
+                                                facturaFiscal: datos.numeroFactura,
+                                                tipoFactura: nota
+                                            }
+                                        };
+
+                                        notasService.detalleFactura(obj, function (data) {
+                                            if (data.status === 200) {
+
+                                                $scope.root.listadoNota = notasService.renderProductoFacturas(data.obj.ConsultarDetalleFactura);
+
+                                            } else {
+                                                $scope.root.listadoNota = null;
+                                            }
+
+                                        });
+                                    };
+
+                                    that.listarDetalleFactura();
 
                                     $scope.cerrar = function () {
                                         $modalInstance.close();
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de validar la activacion del check
+                                     * @author German Galvis
+                                     * @fecha 09/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.habilitarCheck = function (producto) {
+                                        var disabled = false;
+
+                                        if (producto.cantidad_ingresada === undefined || producto.cantidad_ingresada === "" || parseInt(producto.cantidad_ingresada) <= 0) {
+                                            disabled = true;
+                                        }
+
+                                        return disabled;
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de calcular el valor de la nota del producto
+                                     * @author German Galvis
+                                     * @fecha 09/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.calcularValor = function (producto) {
+                                        var suma;
+                                        suma = (parseInt(producto.cantidad) * parseInt(producto.cantidad_ingresada));
+
+                                        producto.setTotalNota(suma);
+
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de calcular los valores de la nota 
+                                     * @author German Galvis
+                                     * @fecha 09/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.onSeleccionarOpcion = function () {
+
+                                        var subtotal = 0;
+
+                                        $scope.root.listadoNota.forEach(function (data) {
+                                            if (data.seleccionado)
+                                                subtotal += data.total_nota;
+                                        });
+                                        $scope.root.impuestosnota.valorSubtotal = subtotal;
+
+                                        $scope.root.impuestosnota.totalGeneral = $scope.root.impuestosnota.valorSubtotal + $scope.root.impuestosnota.iva - $scope.root.impuestosnota.retencionFuente - $scope.root.impuestosnota.retencionIca;
+
                                     };
 
                                     $scope.listaNotas2 = {
@@ -996,77 +1072,67 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         enableCellSelection: true,
                                         enableHighlighting: true,
                                         columnDefs: [
-                                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
-                                            {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
-                                            {field: 'Tercero', width: "30%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
-                                            {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                                            {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
-                                            {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
+                                            {field: 'Codigo', width: "10%", displayName: 'Codigo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getCodigo()}}</p></div>'}, //
+                                            {field: 'Producto', width: "22%", displayName: 'Producto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
+                                            {field: 'Cantidad', width: "6%", displayName: 'Cantidad', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getCantidad()}}</p></div>'},
+                                            {field: 'Lote', width: "6%", displayName: 'Lote', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getLote()}}</p></div>'},
+                                            {field: 'Valor Unitario', width: "10%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()}}</p></div>'},
+                                            {field: 'Valor Nota', width: "10%", displayName: 'Valor Nota', cellClass: "ngCellText",
+                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
+                                            {field: 'Total Nota', width: "10%", displayName: 'Total Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()}}</p></div>'},
+                                            {field: 'Observacion', width: "20%", displayName: 'Observacion', cellClass: "ngCellText",
+                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-model="row.entity.observacion" class="form-control grid-inline-input" name="observacion" id="observacion" /> </div>'},
+                                            {field: 'Opcion', width: "6%", displayName: 'Opcion', cellClass: "ngCellText",
+                                                cellTemplate: '<div class="col-xs-16 align-items-center">\
+                                                                    <input-check  ng-disabled="habilitarCheck(row.entity)" class="btn btn-default btn-xs center-block" ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion()">\
+                                                               </div>'}
                                         ]
                                     };
 
 
-                                    $scope.guardarFacFacturasConceptosNotas = function () {
-                                        var saldo = 0;
-                                        var valorIngresado = 0;
 
-                                        if ($scope.root.descripcionNota === '') {
-                                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Descripcion");
-                                            return;
-                                        }
 
-                                        if ($scope.root.precioNota === '') {
-                                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el Precio");
-                                            return;
-                                        }
-                                        if ($scope.root.gravamenNota === '') {
-                                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Descripcion");
-                                            return;
-                                        }
-
-                                        if ($scope.root.precioNota === 0) {
-                                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El valor de la Nota debe ser Mayor a cero");
-                                            return;
-                                        }
-
-                                        if (nota === 1) {
-                                            saldo = (parseInt($scope.root.listarFacturasGeneradasNotas[0].saldo) - parseInt($scope.root.precioNota));
-                                            valorIngresado = valorIngresado - parseInt($scope.root.precioNota);
-                                        } else {
-                                            valorIngresado += parseInt($scope.root.precioNota);
-                                            $scope.root.totalesNotaCredito = parseInt($scope.root.totalesNotaCredito) - parseInt(datos.gravamen);
+                                    $scope.guardarNotas = function () {
+                                        var listado = [];
+                                        var i;
+                                        for (i = 0; i < $scope.root.listadoNota.length; i++) {
+                                            if ($scope.root.listadoNota[i].seleccionado) {
+                                                listado.push($scope.root.listadoNota[i]);
+                                            }
                                         }
 
 
-                                        if (saldo < 0 && nota === 1) {
-                                            AlertService.mostrarVentanaAlerta(" Mensaje del sistema", "El valor de la Nota credito no debe ser Mayor al saldo de la Factura ");
-                                            return;
-                                        }
 
-                                        var parametros = {
-                                            prefijo: datos.getPrefijo(),
-                                            facturaFiscal: datos.getNumeroFactura(),
-                                            swContable: nota,
-                                            valorNotaTotal: $scope.root.precioNota,
-                                            porcentajeGravamen: $scope.root.gravamenNota,
-                                            descripcion: $scope.root.descripcionNota,
-                                            empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresaId: datos.empresa,
+                                                factura_fiscal: datos.numeroFactura,
+                                                prefijo: datos.prefijo,
+                                                valor: $scope.root.impuestosnota.valorSubtotal,
+                                                tipo_factura: datos.tipoFactura,
+                                                listado: listado
+                                            }
                                         };
 
-                                        that.guardarFacFacturasConceptosNotas(parametros, function (respuesta) {
-                                            $modalInstance.close();
-//					that.listarImpuestosTercero();
-                                            that.listarFacturasGeneradas(1, function () {});
-                                            that.listarFacConceptosNotasDetalle(parametros);
+
+                                        console.log("obj", obj);
+
+                                        notasService.guardarNota(obj, function (data) {
+                                            console.log("data", data);
+                                            if (data.status === 200) {
+//                                                AlertService.mostrarMensaje("warning", data.msj);
+                                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj + " Numero Nota: " + data.obj.crearNota );
+                                                //$scope.root.listadoNota = notasService.renderProductoFacturas(data.obj.ConsultarDetalleFactura);
+
+                                            } else {
+                                                AlertService.mostrarMensaje("warning", data.msj);
+                                                //  $scope.root.listadoNota = null;
+                                            }
 
                                         });
-                                    };
-                                    $scope.onImpuesto = function () {
 
 
-                                        that.traerPorcentajeImpuestosNotas(function (datas) {
-                                            $scope.root.impuestos = datas;
-                                        });
                                     };
                                 }]
                         };
@@ -1337,7 +1403,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.buscarNota = function (event) {
-                        
+
                         if (event.which === 13) {
 
                             if ($scope.root.prefijoBusquedaNota !== 'seleccionar' && $scope.root.numeroBusquedaNota !== '') {
@@ -1345,7 +1411,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     tipoConsulta: $scope.root.tipoBusquedaNota,
                                     numero: $scope.root.numeroBusquedaNota,
                                     empresaId: $scope.root.empresaSeleccionada.getCodigo()
-                                }; 
+                                };
                                 that.listarNotas(parametros);
                             } else {
 
@@ -1360,16 +1426,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @param {type} $event
                      */
                     $scope.buscarTercero = function (event) {
-                                if (event.which === 13) {
-                                    that.listarFacturasGeneradas(function (data) {
+                        if (event.which === 13) {
+                            that.listarFacturasGeneradas(function (data) {
 //					       if(data!==false){
 //						that.listarFacConceptosNotasDetalle(data[0]);
 //						that.listarImpuestosTercero();
 //					       }else{
 //						$scope.root.listarFacConceptosNotasDetalle = null;  
 //					       }
-                                    });
-                                }
+                            });
+                        }
                     };
 
 //		     /**
@@ -1404,28 +1470,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 //                    };
 
                     /**
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha 28/06/2017
-                     * +Descripcion init
-                     * @param {type} $event
-                     */
-                    that.init(empresa, function () {
-//                        that.listarTiposTerceros();
-//			that.listarPrefijos();
-                    });
-
-
-                    /*==================================================================================================================================================================
-                     * 
-                     *                                                          NUEVAS NOTAS(GERMAN GALVIS)
-                     * 
-                     * ==================================================================================================================================================================*/
-
-                    /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
                      *              las facturas
                      * @author German Galvis
-                     * @fecha 08/02/2018 DD/MM/YYYY
+                     * @fecha 02/08/2018 DD/MM/YYYY
                      * @returns {undefined}
                      */
                     that.listarFacturasGeneradas = function (callback) {
@@ -1472,13 +1520,52 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'NC', width: "3%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'NC', width: "3%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'ND', width: "3%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'Imprimir', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'}
                         ]
                     };
 
+                    $scope.btn_seleccionar_nota = function (datos) {
 
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Seleccione tipo de nota credito</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
+                                    <button class="btn btn-primary" ng-click="valor()">Valor</button>\
+                                    <button class="btn btn-primary" ng-click="devolucion()">Devolucion</button>\
+                                </div>',
+                            scope: $scope,
+                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+
+                                    $scope.valor = function () {
+                                        $scope.onNotaCreditoValor(datos);
+                                        $modalInstance.close();
+                                    };
+                                    $scope.devolucion = function () {
+                                        $scope.onNotaCreditoDevolucion(datos);
+                                        $modalInstance.close();
+                                    };
+                                    $scope.close = function () {
+                                        $modalInstance.close();
+                                    };
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    };
+
+                    that.init(empresa, function () {
+                    });
 
                 }]);
 });

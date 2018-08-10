@@ -2,8 +2,8 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('notasService',
-            ['Request', 'API', 'Notas', 'Grupos', 'ConceptoCaja', 'Totales', 'FacturaProveedores',
-                function (Request, API, Notas, Grupos, ConceptoCaja, Totales, FacturaProveedores) {
+            ['Request', 'API', 'Notas', 'ProductoFacturas', 'ConceptoCaja', 'Totales', 'FacturaProveedores',
+                function (Request, API, Notas, ProductoFacturas, ConceptoCaja, Totales, FacturaProveedores) {
 
                     var self = this;
 
@@ -36,9 +36,10 @@ define(["angular", "js/services"], function (angular, services) {
                             factura.setSaldo(data.saldo);
                             factura.setIdentificacion(data.tipo_id_tercero + " - " + data.tercero_id);
                             factura.setPrefijo(data.prefijo);
+                            factura.setTipoFactura(data.tipo_factura);
                             facturas.push(factura);
                         });
-                        
+
                         return facturas;
                     };
 
@@ -89,6 +90,37 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.detalleFactura = function (obj, callback) {
                         Request.realizarRequest(API.NOTAS.DETALLE_FACTURA, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * +Descripcion Funcion encargada de serializar el resultado de la
+                     *              consulta que obtiene los productos de las facturas
+                     * @fecha 06/08/2018 DD/MM/YYYYY
+                     */
+                    self.renderProductoFacturas = function (productosFactura) {
+
+                        var productos = [];
+                        productosFactura.forEach(function (data) {
+                            var producto = ProductoFacturas.get(data.codigo_producto, data.producto, data.lote, data.cantidad, data.item_id, data.valor_unitario);
+                            producto.setCantidadIngresada(data.valor_digitado_nota || 0);
+                            producto.setObservacion(data.observacion);
+                            producto.setTotalNota((data.cantidad * data.valor_digitado_nota) || 0);
+                            productos.push(producto);
+                        });
+
+                        return productos;
+                    };
+                                        
+                    /**
+                     * @author German Galvis
+                     * @fecha  09/08/2018 DD/MM/YYYYY
+                     * +Descripcion crear la nota
+                     */
+                    self.guardarNota = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.CREAR_NOTA, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

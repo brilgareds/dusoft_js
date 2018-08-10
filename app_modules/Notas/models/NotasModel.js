@@ -407,7 +407,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
  * @fecha 2018-08-06 YYYY-MM-DD
  * @returns callback
  */
-NotasModel.prototype.ConsultarDetalleFactura = function (obj, callback) {
+NotasModel.prototype.ConsultarDetalleFacturaCredito = function (obj, callback) {
 
     var columnas = [
         "ifd.factura_fiscal",
@@ -420,7 +420,7 @@ NotasModel.prototype.ConsultarDetalleFactura = function (obj, callback) {
         G.knex.raw("( ifdd.cantidad - ifdd.cantidad_devuelta ) AS cantidad_existente"),
         "ifdd.lote",
         "ifdd.valor_unitario",
-        "tdncdc.tmp_detalle_nota_credito_despacho_cliente_id",
+        "tdncdc.tmp_detalle_nota_credito_despacho_cliente_id AS id_nota",
         G.knex.raw("COALESCE ( tdncdc.valor, 0 ) AS valor"),
         "tdncdc.observacion",
         G.knex.raw("(round(( tdncdc.valor / ifdd.cantidad ), 4 )) AS valor_digitado_nota"),
@@ -430,7 +430,7 @@ NotasModel.prototype.ConsultarDetalleFactura = function (obj, callback) {
         "tncdc.descripcion"
     ];
 
-    var query = G.knex.select(G.knex.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas)))
+    var query = G.knex.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas))
             .from("inv_facturas_despacho as ifd")
             .innerJoin('inv_facturas_despacho_d as ifdd', function () {
 
@@ -444,7 +444,7 @@ NotasModel.prototype.ConsultarDetalleFactura = function (obj, callback) {
                 this.on("tncdc.empresa_id", "ifd.empresa_id")
                         .on("tncdc.factura_fiscal", "ifd.factura_fiscal")
                         .on("tncdc.prefijo", "ifd.prefijo")
-                        .on("tncdc.tipo", obj.tipoFactura);
+                        .on("tncdc.tipo", G.knex.raw("'" + obj.tipoNota + "'"));
 
             })
             .leftOuterJoin('tmp_detalles_notas_credito_despachos_clientes as tdncdc', function () {
@@ -459,7 +459,7 @@ NotasModel.prototype.ConsultarDetalleFactura = function (obj, callback) {
 
     query.unionAll(function () {
 
-        this.select(G.knex.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas)))
+        this.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas))
                 .from("inv_facturas_agrupadas_despacho as ifd")
                 .innerJoin('inv_facturas_agrupadas_despacho_d as ifdd', function () {
 
@@ -473,7 +473,7 @@ NotasModel.prototype.ConsultarDetalleFactura = function (obj, callback) {
                     this.on("tncdc.empresa_id", "ifd.empresa_id")
                             .on("tncdc.factura_fiscal", "ifd.factura_fiscal")
                             .on("tncdc.prefijo", "ifd.prefijo")
-                            .on("tncdc.tipo", obj.tipoFactura);
+                            .on("tncdc.tipo", G.knex.raw("'" + obj.tipoNota + "'"));
 
                 })
                 .leftOuterJoin('tmp_detalles_notas_credito_despachos_clientes as tdncdc', function () {
@@ -486,205 +486,252 @@ NotasModel.prototype.ConsultarDetalleFactura = function (obj, callback) {
                 .andWhere('ifd.factura_fiscal', obj.facturaFiscal);
     });
 
-    console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));
 
     query.then(function (resultado) {
 
         callback(false, resultado)
     }).catch(function (err) {
-        console.log("err [ConsultarNotasCredito]:", err);
+        console.log("err [ConsultarDetalleFacturaCredito]:", err);
         callback(err);
     });
 };
 
 
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion Metodo encargado de listar las notas facturas
-// * @fecha 2017-06-02 YYYY-MM-DD
-// * @returns {callback}
-// */
-//NotasModel.prototype.listarFacturasNotas = function(obj, callback) {
-//
-//    var columna = [
-//	    "a.fac_factura_concepto_id",
-//	    "a.empresa_id",
-//	    "a.prefijo",
-//	    "a.factura_fiscal",
-//	    "a.sw_tipo",
-//	    "a.cantidad",
-//	    "a.precio",
-//	    "a.valor_total",
-//	    "a.valor_total as valorTotal",
-//	    "a.porcentaje_gravamen",
-//	    "a.valor_gravamen as totalGravamen",
-//	    "a.valor_gravamen",
-//	    "a.concepto",
-//	    "a.caja_id",
-//	    "a.concepto as descripcion",
-//	    "d.tipo_id_tercero",
-//	    "d.tercero_id",
-//	    "c.descripcion as desconcepto",
-//	    "c.concepto_id",
-//	    "c.grupo_concepto"
-//    ];
-//
-//    var query = G.knex.select(columna)
-//            .from('fac_facturas_conceptos as a')
-//            .innerJoin('fac_facturas_conceptos_dc as b',
-//            function() {
-//               this.on("a.fac_factura_concepto_id", "b.fac_factura_concepto_id")
-//            })
-//            .innerJoin('conceptos_caja_conceptos as c',
-//            function() {
-//                this.on("b.concepto_id", "c.concepto_id")
-//		.on("b.grupo_concepto", "c.grupo_concepto")
-//		.on("b.empresa_id", "c.empresa_id")
-//            })
-//            .innerJoin('fac_facturas as d',
-//            function() {
-//                this.on("a.prefijo", "d.prefijo")
-//		.on("a.factura_fiscal", "d.factura_fiscal")
-//		.on("a.empresa_id", "d.empresa_id")
-//            })
-//	    .where(function() {
-//		if (obj.conceptoId !== '') {
-//		 this.andWhere('a.prefijo', obj.prefijo)
-//		}
-//		if (obj.grupoConcepto !== '') {
-//		 this.andWhere('a.factura_fiscal', obj.facturaFiscal)
-//		}
-//	    }).andWhere('a.empresa_id', obj.empresaId);
-//
-//	query.then(function(resultado) {
-//        callback(false, resultado);
-//    }). catch (function(err) {
-//        console.log("err [listarFacturasNotas]:", err);
-//        callback(err);
-//    });
-//};
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion Metodo encargado de listar los Conceptos
-// * @fecha 2017-06-02 YYYY-MM-DD
-// * @returns {callback}
-// */
-//NotasModel.prototype.listarConceptos = function(obj, callback) {
-//
-//    var columna = [
-//        "b.grupo_concepto",
-//        "b.descripcion",
-//        "b.precio",
-//        "b.porcentaje_gravamen",
-//        "b.sw_precio_manual",
-//        "b.sw_cantidad",
-//        "b.concepto_id"
-//    ];
-//
-//    var query = G.knex.select(columna)
-//        .from('grupos_conceptos as a')
-//        .innerJoin('conceptos_caja_conceptos as b',
-//         function() {
-//         this.on("a.grupo_concepto", "b.grupo_concepto")
-//        }).where(function() {
-//        if (obj.contado) {
-//         this.andWhere(G.knex.raw("b.sw_contado='1'"))
-//        }
-//        if (obj.credito) {
-//         this.andWhere(G.knex.raw("b.sw_credito='1'"))
-//        }
-//    }).andWhere('a.empresa_id', obj.empresa_id)
-//
-//    query.limit(G.settings.limit).
-//    offset((obj.paginaActual - 1) * G.settings.limit)
-//    query.then(function(resultado) {
-//
-//        callback(false, resultado);
-//	
-//    }). catch (function(err) {
-//        console.log("err [listarGrupos]:", err);
-//        callback(err);
-//    });
-//};
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion Metodo encargado de listar los tmp_detalle_conceptos
-// * @fecha 2017-06-02 YYYY-MM-DD
-// * @returns {callback}
-// */
-//NotasModel.prototype.listarConceptosDetalle = function(obj, callback) {
-//
-//    var columna = [
-//        "a.concepto_id",
-//        "a.cantidad",
-//        "a.precio",
-//        "a.descripcion",
-//        "a.porcentaje_gravamen",
-//        "a.grupo_concepto",
-//        "c.descripcion as desconcepto",
-//        "b.descripcion as desgrupo",
-//        "a.tipo_id_tercero",
-//        "a.tercero_id",
-//        "a.rc_concepto_id",
-//        "a.empresa_id",
-//        "a.centro_utilidad",
-//        "a.sw_tipo",
-//        "a.cantidad",
-//        "a.valor_total",
-//        "a.valor_gravamen",
-//        "a.tipo_pago_id"
-//    ];
-//
-//    var query = G.knex.select(columna)
-//		.from('tmp_detalle_conceptos as a')
-//		.innerJoin('grupos_conceptos as  b ',
-//		function() {
-//		 this.on("a.grupo_concepto", "b.grupo_concepto")
-//		})
-//		.innerJoin('conceptos_caja_conceptos as  c',
-//		function() {
-//		this.on("c.grupo_concepto", "b.grupo_concepto")
-//		.on("a.concepto_id", "c.concepto_id")
-//		}).where(function() {
-//		this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
-//		.andWhere("a.tercero_id", obj.terceroId)
-//		.andWhere("b.empresa_id", obj.empresaId)
-//		.andWhere("a.concepto_id", obj.conceptoId);
-//    });
-// 
-//	query.limit(G.settings.limit).
-//	offset((obj.paginaActual - 1) * G.settings.limit);
-//
-//	query.then(function(resultado) {
-//	callback(false, resultado);
-//    
-//    }). catch (function(err) {
-//        console.log("err [listarConceptosDetalle]:", err);
-//        callback(err);
-//    });
-//};
-//
-///**
-// * +Descripcion Metodo encargado de registrar en la tabla tmp_detalle_conceptos
-//
-// * @param {type} transaccion
-// * @param {type} callback
-// * @returns {undefined}
-// */
-//NotasModel.prototype.insertarTmpDetalleConceptos = function(parametros, callback) {
-//
-//    var query = G.knex('tmp_detalle_conceptos').insert(parametros);
-//
-//	query.then(function(resultado) {
-//       
-//        callback(false, resultado);
-//	
-//    }). catch (function(err) {
-//        console.log("err (/catch) [insertarTmpDetalleConceptos tmp_detalle_conceptos]: ", err);
-//        callback(err);
-//    });
-//};
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de consultar los detalles de las facturas
+ * @fecha 2018-08-08 YYYY-MM-DD
+ * @returns callback
+ */
+NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, callback) {
+
+    var columnas = [
+        "ifd.factura_fiscal",
+        "ifd.fecha_registro",
+        "ifd.valor_total",
+        G.knex.raw("fc_descripcion_producto ( ifdd.codigo_producto ) AS producto"),
+        "ifdd.item_id",
+        "ifdd.codigo_producto",
+        "ifdd.cantidad",
+        G.knex.raw("( ifdd.cantidad - ifdd.cantidad_devuelta ) AS cantidad_existente"),
+        "ifdd.lote",
+        "ifdd.valor_unitario",
+        "tdncdc.tmp_detalle_nota_credito_despacho_cliente_id AS id_nota",
+        G.knex.raw("COALESCE ( tdncdc.valor, 0 ) AS valor"),
+        "tdncdc.observacion",
+        G.knex.raw("(round(( tdncdc.valor / ifdd.cantidad ), 4 )) AS valor_digitado_nota"),
+        G.knex.raw("((ifdd.cantidad * ifdd.valor_unitario) - (COALESCE ( tdncdc.valor, 0 ))) AS diferencia"),
+        "tdncdc.valor_iva",
+        "tncdc.valor_nota",
+        "tncdc.descripcion"
+    ];
+
+    var query = G.knex.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas))
+            .from("inv_facturas_despacho as ifd")
+            .innerJoin('inv_facturas_despacho_d as ifdd', function () {
+
+                this.on("ifdd.empresa_id", "ifd.empresa_id")
+                        .on("ifdd.factura_fiscal", "ifd.factura_fiscal")
+                        .on("ifdd.prefijo", "ifd.prefijo");
+
+            })
+            .leftOuterJoin('tmp_notas_credito_despachos_clientes as tncdc', function () {
+
+                this.on("tncdc.empresa_id", "ifd.empresa_id")
+                        .on("tncdc.factura_fiscal", "ifd.factura_fiscal")
+                        .on("tncdc.prefijo", "ifd.prefijo")
+                        .on("tncdc.tipo", G.knex.raw("'" + obj.tipoNota + "'"));
+
+            })
+            .leftOuterJoin('tmp_detalles_notas_credito_despachos_clientes as tdncdc', function () {
+
+                this.on("tdncdc.tmp_nota_credito_despacho_cliente_id", "tncdc.tmp_nota_credito_despacho_cliente_id")
+                        .on("tdncdc.item_id", "ifdd.item_id");
+
+            })
+            .where('ifd.empresa_id', obj.empresa_id)
+            .andWhere('ifd.factura_fiscal', obj.facturaFiscal);
+
+
+    query.unionAll(function () {
+
+        this.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas))
+                .from("inv_facturas_agrupadas_despacho as ifd")
+                .innerJoin('inv_facturas_agrupadas_despacho_d as ifdd', function () {
+
+                    this.on("ifdd.empresa_id", "ifd.empresa_id")
+                            .on("ifdd.factura_fiscal", "ifd.factura_fiscal")
+                            .on("ifdd.prefijo", "ifd.prefijo");
+
+                })
+                .leftOuterJoin('tmp_notas_credito_despachos_clientes as tncdc', function () {
+
+                    this.on("tncdc.empresa_id", "ifd.empresa_id")
+                            .on("tncdc.factura_fiscal", "ifd.factura_fiscal")
+                            .on("tncdc.prefijo", "ifd.prefijo")
+                            .on("tncdc.tipo", G.knex.raw("'" + obj.tipoNota + "'"));
+
+                })
+                .leftOuterJoin('tmp_detalles_notas_credito_despachos_clientes as tdncdc', function () {
+
+                    this.on("tdncdc.tmp_nota_credito_despacho_cliente_id", "tncdc.tmp_nota_credito_despacho_cliente_id")
+                            .on("tdncdc.item_id", "ifdd.item_id");
+
+                })
+                .where('ifd.empresa_id', obj.empresa_id)
+                .andWhere('ifd.factura_fiscal', obj.facturaFiscal);
+    });
+
+
+    query.then(function (resultado) {
+
+        callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [ConsultarDetalleFacturaCredito]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de consultar los detalles de las facturas 
+ * @fecha 2018-08-06 YYYY-MM-DD
+ * @returns callback
+ */
+NotasModel.prototype.ConsultarDetalleFacturaDebito = function (obj, callback) {
+
+
+
+    var columnas = [
+        "ifd.factura_fiscal",
+        "ifd.fecha_registro",
+        "ifd.valor_total",
+        G.knex.raw("fc_descripcion_producto ( ifdd.codigo_producto ) AS producto"),
+        "ifdd.item_id",
+        "ifdd.codigo_producto",
+        "ifdd.cantidad",
+        "ifdd.lote",
+        "ifdd.valor_unitario",
+        "tdnddc.tmp_detalle_nota_debito_despacho_cliente_id AS id_nota",
+        G.knex.raw("COALESCE ( tdnddc.valor, 0 ) AS valor"),
+        "tdnddc.observacion",
+        G.knex.raw("(round(( tdnddc.valor / ifdd.cantidad ), 4 )) AS valor_digitado_nota"),
+        "tdnddc.valor_iva"
+    ];
+
+    var query = G.knex.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas))
+            .from("inv_facturas_despacho as ifd")
+            .innerJoin('inv_facturas_despacho_d as ifdd', function () {
+
+                this.on("ifdd.empresa_id", "ifd.empresa_id")
+                        .on("ifdd.factura_fiscal", "ifd.factura_fiscal")
+                        .on("ifdd.prefijo", "ifd.prefijo");
+
+            })
+            .leftOuterJoin('tmp_notas_debito_despachos_clientes as tnddc', function () {
+
+                this.on("tnddc.empresa_id", "ifd.empresa_id")
+                        .on("tnddc.factura_fiscal", "ifd.factura_fiscal")
+                        .on("tnddc.prefijo", "ifd.prefijo");
+
+            })
+            .leftOuterJoin('tmp_detalles_notas_debito_despachos_clientes as tdnddc', function () {
+
+                this.on("tdnddc.tmp_nota_debito_despacho_cliente_id", "tnddc.tmp_nota_debito_despacho_cliente_id")
+                        .on("tdnddc.item_id", "ifdd.item_id");
+
+            })
+            .where('ifd.empresa_id', obj.empresa_id)
+            .andWhere('ifd.factura_fiscal', obj.facturaFiscal);
+
+
+    query.unionAll(function () {
+
+        this.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas))
+                .from("inv_facturas_agrupadas_despacho as ifd")
+                .innerJoin('inv_facturas_agrupadas_despacho_d as ifdd', function () {
+
+                    this.on("ifdd.empresa_id", "ifd.empresa_id")
+                            .on("ifdd.factura_fiscal", "ifd.factura_fiscal")
+                            .on("ifdd.prefijo", "ifd.prefijo");
+
+                })
+                .leftOuterJoin('tmp_notas_debito_despachos_clientes as tnddc', function () {
+
+                    this.on("tnddc.empresa_id", "ifd.empresa_id")
+                            .on("tnddc.factura_fiscal", "ifd.factura_fiscal")
+                            .on("tnddc.prefijo", "ifd.prefijo");
+
+                })
+                .leftOuterJoin('tmp_detalles_notas_debito_despachos_clientes as tdnddc', function () {
+
+                    this.on("tdnddc.tmp_nota_debito_despacho_cliente_id", "tnddc.tmp_nota_debito_despacho_cliente_id")
+                            .on("tdnddc.item_id", "ifdd.item_id");
+
+                })
+                .where('ifd.empresa_id', obj.empresa_id)
+                .andWhere('ifd.factura_fiscal', obj.facturaFiscal);
+    });
+
+    query.then(function (resultado) {
+
+        callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [ConsultarDetalleFacturaDebito]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion agrega nota
+ * @fecha 2018-08-06 YYYY-MM-DD
+ */
+NotasModel.prototype.agregarCabeceraNotaDebito = function (parametros, transaccion, callback) {
+
+    var query = G.knex(parametros.tabla_1).
+            returning('nota_debito_despacho_cliente_id').
+            insert({empresa_id: parametros.empresaId, prefijo: parametros.prefijo, factura_fiscal: parametros.factura_fiscal,
+                valor: parametros.valor, usuario_id: parametros.usuario_id
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarCabeceraNotaDebito", err);
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion agrega nota
+ * @fecha 2018-08-06 YYYY-MM-DD
+ */
+NotasModel.prototype.agregarDetalleNotaDebito = function (parametros, transaccion, callback) {
+
+
+    var query = G.knex(parametros.tabla_2).
+            insert({nota_debito_despacho_cliente_id: parametros.nota_debito_despacho_cliente_id, item_id: parametros.item_id, valor: parametros.valor,
+                observacion: parametros.observacion, valor_iva: parametros.valor_iva, valor_rtf: parametros.valor_rtf,
+                valor_ica: parametros.valor_ica
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarDetalleNotaDebito", err);
+        callback(err);
+    }).done();
+
+
+};
 //
 ///*
 // * Autor : Andres Mauricio Gonzalez

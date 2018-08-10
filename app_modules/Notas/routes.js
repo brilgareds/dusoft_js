@@ -13,13 +13,13 @@ module.exports = function(app, di_container) {
     app.post('/api/Notas/ConsultarDetalleFactura', function(req, res) {
         c_notas.ConsultarDetalleFactura(req, res);
     });
+
+    app.post('/api/Notas/crearNota', function(req, res) {
+        c_notas.crearNota(req, res);
+    });
 //
 //    app.post('/api/Notas/insertarTmpDetalleConceptos', function(req, res) {
 //        c_notas.insertarTmpDetalleConceptos(req, res);
-//    });
-//
-//    app.post('/api/Notas/listarConceptosDetalle', function(req, res) {
-//        c_notas.listarConceptosDetalle(req, res);
 //    });
 //
 //    app.post('/api/Notas/eliminarTmpDetalleConceptos', function(req, res) {

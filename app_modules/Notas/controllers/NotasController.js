@@ -49,7 +49,7 @@ Notas.prototype.ConsultarNotas = function (req, res) {
         numero: args.numero,
         tipoConsulta: args.tipoConsulta
     };
-    console.log("parametros",parametros);
+
     if (parametros.tipoConsulta === 'NC') {
         G.Q.ninvoke(that.m_notas, 'ConsultarNotasCredito', parametros).then(function (resultado) {
             if (resultado.length > 0) {
@@ -91,341 +91,139 @@ Notas.prototype.ConsultarDetalleFactura = function (req, res) {
     var args = req.body.data;
 
     var parametros = {
-        tipoFactura:args.tipoFactura,
+        tipoFactura: args.tipoFactura,
         empresa_id: args.empresa_id,
         facturaFiscal: args.facturaFiscal
     };
 
-    G.Q.ninvoke(that.m_notas, 'ConsultarDetalleFactura', parametros).then(function (resultado) {
+    if (parametros.tipoFactura === 0) {
 
-        if (resultado.length > 0) {
-            res.send(G.utils.r(req.url, 'detalleFactura', 200, {detalleFactura: resultado}));
-        } else {
-            throw 'Consulta sin resultados';
-        }
+        G.Q.ninvoke(that.m_notas, 'ConsultarDetalleFacturaDebito', parametros).then(function (resultado) {
+            if (resultado.length > 0) {
+                res.send(G.utils.r(req.url, 'ConsultarDetalleFactura', 200, {ConsultarDetalleFactura: resultado}));
+            } else {
+                throw 'Consulta sin resultados';
+            }
+        }).fail(function (err) {
+            console.log("Error ConsultarDetalleFactura ", err);
+            res.send(G.utils.r(req.url, "Consulta sin resultados", 500, {}));
+        }).done();
 
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, err, 500, {}));
+    } else if (parametros.tipoFactura === 1) {
+
+        parametros.tipoNota = 'VALOR';
+
+        G.Q.ninvoke(that.m_notas, 'ConsultarDetalleFacturaCredito', parametros).then(function (resultado) {
+
+
+            if (resultado.length > 0) {
+                res.send(G.utils.r(req.url, 'ConsultarDetalleFactura', 200, {ConsultarDetalleFactura: resultado}));
+            } else {
+                throw 'Consulta sin resultados';
+            }
+
+        }).fail(function (err) {
+            console.log("Error ConsultarDetalleFactura ", err);
+            res.send(G.utils.r(req.url, "Consulta sin resultados", 500, {}));
+        }).done();
+
+    } else if (parametros.tipoFactura === 2) {
+
+        parametros.tipoNota = 'DEVOLUCION';
+
+        G.Q.ninvoke(that.m_notas, 'ConsultarDetalleFacturaCreditoDevolucion', parametros).then(function (resultado) {
+
+
+            if (resultado.length > 0) {
+                res.send(G.utils.r(req.url, 'ConsultarDetalleFactura', 200, {ConsultarDetalleFactura: resultado}));
+            } else {
+                throw 'Consulta sin resultados';
+            }
+
+        }).fail(function (err) {
+            console.log("Error ConsultarDetalleFactura ", err);
+            res.send(G.utils.r(req.url, "Consulta sin resultados", 500, {}));
+        }).done();
+
+    }
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion crea la nota 
+ * @fecha 2018-08-09 (YYYY-MM-DD)
+ */
+Notas.prototype.crearNota = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+    var tabla, tabla2;
+    var numeroNota;
+
+    if (args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'La empresaId NO estan definida', 404, {}));
+        return;
+    }
+    if (args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo NO esta definido', 404, {}));
+        return;
+    }
+    if (args.factura_fiscal === undefined) {
+        res.send(G.utils.r(req.url, 'La factura_fiscal NO esta definida', 404, {}));
+        return;
+    }
+    if (args.valor === undefined) {
+        res.send(G.utils.r(req.url, 'El valor NO esta definido', 404, {}));
+        return;
+    }
+
+
+
+    if (args.tipo_factura === 0) {
+        tabla = "notas_debito_despachos_clientes";
+        tabla2 = "detalles_notas_debito_despachos_clientes";
+    }
+    if (args.tipo_factura === 1) {
+        tabla = "notas_debito_despachos_clientes_agrupados";
+        tabla2 = "detalles_notas_debito_despachos_clientes_agrupados";
+    }
+
+
+    var parametros = {
+        empresaId: args.empresaId,
+        prefijo: args.prefijo,
+        factura_fiscal: args.factura_fiscal,
+        usuario_id: usuarioId,
+        valor: args.valor,
+        tipo_factura: args.tipo_factura,
+        tabla_1: tabla,
+        tabla_2: tabla2
+
+    };
+
+    G.knex.transaction(function (transaccion) {
+
+
+        G.Q.nfcall(that.m_notas.agregarCabeceraNotaDebito, parametros, transaccion).then(function (result) {
+
+            numeroNota = result[0];
+            parametros.nota_debito_despacho_cliente_id = result[0];
+
+            return G.Q.nfcall(__recorreListado, that, args.listado, parametros, 0, transaccion);
+
+        }).then(function () {
+            transaccion.commit(numeroNota);
+        }).fail(function (err) {
+            transaccion.rollback(err);
+        }).done();
+    }).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Nota creada Correctamente', 200, {crearNota: numeroNota}));
+    }).catch(function (err) {
+        console.log("crearNota  ", err);
+        res.send(G.utils.r(req.url, 'Error al crear la nota', 500, {}));
     }).done();
 };
 
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de insertar en la tabla insertarTmpDetalleConceptos
-// * @fecha 2017-05-08 (YYYY-MM-DD)
-// */
-//Notas.prototype.insertarTmpDetalleConceptos = function(req, res) {
-//
-//    var that = this;
-//    var args = req.body.data.datos;
-//
-//    if (args.empresa_id === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definido empresa_id', 404, {}));
-//        return;
-//    }
-//    if (args.centro_utilidad === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos centro_utilidad', 404, {}));
-//        return;
-//    }
-//    if (args.concepto_id === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos centro_utilidad', 404, {}));
-//        return;
-//    }
-//    if (args.grupo_concepto === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos concepto_id', 404, {}));
-//        return;
-//    }
-//    if (args.tipo_id_tercero === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos tipo_id_tercero', 404, {}));
-//        return;
-//    }
-//    if (args.sw_tipo === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos sw_tipo', 404, {}));
-//        return;
-//    }
-//    if (args.cantidad === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos cantidad', 404, {}));
-//        return;
-//    }
-//    if (args.precio === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos precio', 404, {}));
-//        return;
-//    }
-//    if (args.valor_total === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos valor_total', 404, {}));
-//        return;
-//    }
-//    if (args.porcentaje_gravamen === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos porcentaje_gravamen', 404, {}));
-//        return;
-//    }
-//    if (args.valor_gravamen === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos valor_gravamen', 404, {}));
-//        return;
-//    }
-//    if (args.descripcion === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos descripcion', 404, {}));
-//        return;
-//    }
-//    if (args.tipo_pago_id === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos tipo_pago_id', 404, {}));
-//        return;
-//    }
-//
-//    var parametros = args;
-//    
-//    var parametroscosulta = {
-//	empresaId : args.empresa_id,
-//	tipoIdTercero : args.tipo_id_tercero,
-//	terceroId : args.tercero_id
-//    };
-//    
-//
-//    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', parametroscosulta).then(function(resultado) {
-//	
-//     if (resultado.length > 0) {
-//	 
-//        return G.Q.ninvoke(that.m_notas, 'insertarTmpDetalleConceptos', parametros);
-//       
-//       } else {
-//	   
-//        throw 'El cliente no tiene configurado el contrato';
-//	
-//       }
-//       
-//     }).then(function(resultado) {
-//	 
-//        if (resultado.rowCount > 0) {
-//	    
-//            res.send(G.utils.r(req.url, 'insertarTmpDetalleConceptos', 200, {insertarTmpDetalleConceptos: 'Se Inserto el Concepto Correctamente'}));
-//	    
-//        } else {
-//	    
-//            throw 'Error al insertar temporal';
-//        }
-//
-//    }).fail(function(err) {
-//        console.log("Error insertarTmpDetalleConceptos ", err);
-//        res.send(G.utils.r(req.url, err, 500, {}));
-//    }).done();
-//};
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de insertar las insertarFacFacturasConceptosNotas
-// * @fecha 2017-05-08 (YYYY-MM-DD)
-// */
-//Notas.prototype.insertarFacFacturasConceptosNotas = function(req, res) {
-//
-//    var that = this;
-//    var args = req.body.data;
-//
-//    if (args.descripcion === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definido descrpicion', 404, {}));
-//        return;
-//    }
-//    if (args.empresaId === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definida la empresaId', 404, {}));
-//        return;
-//    }
-//    if (args.bodega === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definida la bodega', 404, {}));
-//        return;
-//    }
-//    if (args.facturaFiscal === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos facturaFiscal', 404, {}));
-//        return;
-//    }
-//    if (args.porcentajeGravamen === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos porcentajeGravamen', 404, {}));
-//        return;
-//    }
-//    if (args.swContable === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos swContable', 404, {}));
-//        return;
-//    }
-//    if (args.prefijo === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos prefijo', 404, {}));
-//        return;
-//    }
-//    if (args.valorNotaTotal === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos valorNotaTotal', 404, {}));
-//        return;
-//    } 
-//    
-//    var credito='506';
-//    var debito='504';
-//    
-//    if(G.program.prod){
-//      credito='502';
-//      debito='504';
-//     }
-//       
-//     var parametros = {
-//	descripcion:args.descripcion,
-//	empresaId:args.empresaId,
-//	bodega:args.bodega.codigo,
-//	facturaFiscal:args.facturaFiscal,
-//	porcentajeGravamen:args.porcentajeGravamen,
-//	prefijo:args.prefijo,
-//	swContable:args.swContable,
-//	valorNotaImpuestos:args.valorNotaImpuestos ,
-//	usuarioId:req.body.session.usuario_id,
-//	documentoId:args.swContable===1?credito:debito,
-//	saldo : args.valorNotaTotal,
-//	valorNotaTotal:args.valorNotaTotal
-//    };
-//		
-//    parametros.valorNotaTotal = parseInt(parametros.valorNotaTotal)+parseInt(parametros.porcentajeGravamen);   
-//    
-//    G.knex.transaction(function(transaccion) {
-//	
-//	G.Q.nfcall(__crearPrefijoNumero,that, parametros,transaccion).then(function(resultado) {
-//	    
-//	    parametros.documentoId = args.swContable===1?credito:debito;
-//	    parametros.prefijoNota = resultado[0].prefijo;
-//	    parametros.numeroNota = resultado[0].numeracion;
-//	
-//	G.Q.ninvoke(that.m_notas, 'insertarFacFacturasConceptosNotas', parametros,transaccion);
-//
-//	}).then(function(resultado) {
-//	    
-//	   return G.Q.ninvoke(that.m_notas, 'actualizarSaldoFacturas', parametros,transaccion);
-//
-//	}).then(function(result) {
-//
-//	   transaccion.commit();
-//
-//	}).fail(function(err) {
-//	    console.log("Error ",err);
-//	    transaccion.rollback(err);
-//	}).done();
-//			
-//			
-//     }).then(function(result) {
-//        
-//	 res.send(G.utils.r(req.url, 'insertarFacFacturasConceptosNotas', 200, {insertarFacFacturasConceptosNotas: 'Se Inserto el Concepto Correctamente',resultado:result}));
-//	
-//    }). catch (function(err) {
-//	 console.log("error transaccion ",err);
-//         res.send(G.utils.r(req.url, err, 500, {}));
-//    }).done();
-//};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de obtener la lista de las conceptos de las notas
-// * @fecha 2017-05-08 (YYYY-MM-DD)
-// */
-//Notas.prototype.listarFacConceptosNotas = function(req, res) {
-//
-//    var that = this;
-//    var args = req.body.data;
-//  
-//    if (args.facturaFiscal === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos facturaFiscal', 404, {}));
-//        return;
-//    }
-//   
-//    if (args.prefijo === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos prefijo', 404, {}));
-//        return;
-//    }
-//   
-//     var parametros = {			
-//	facturaFiscal:args.facturaFiscal,			
-//	prefijo:args.prefijo		
-//     };
-//
-//    G.Q.ninvoke(that.m_notas, 'listarFacConceptosNotas', parametros).then(function(resultado) {
-//	
-//    if (resultado.length > 0) {
-//	 res.send(G.utils.r(req.url, 'listarFacConceptosNotas', 200, {listarFacConceptosNotas:resultado}));
-//
-//    } else {
-//	throw 'Consulta sin resultados';
-//    }
-//
-//    }).fail(function(err) {
-//        console.log("Error listarFacConceptosNotas ", err);
-//        res.send(G.utils.r(req.url, err, 500, {}));
-//    }).done();
-//};
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de obtener la lista de los conceptos
-// * @fecha 2017-05-08 (YYYY-MM-DD)
-// */
-//Notas.prototype.listarConceptosDetalle = function(req, res) {
-//
-//    var that = this;
-//    var args = req.body.data.datos;
-//    var conceptos={};
-//    var mensaje="";
-//    
-//    if (args.empresa_id === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definido empresa_id', 404, {}));
-//        return;
-//    }
-//    if (args.tipo_id_tercero === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos tipo_id_tercero', 404, {}));
-//        return;
-//    }
-//    if (args.tercero_id === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos tercero_id', 404, {}));
-//        return;
-//    }
-//    if (args.concepto_id === undefined) {
-//        res.send(G.utils.r(req.url, 'No Estan Definidos concepto_id', 404, {}));
-//        return;
-//    }
-//    
-//    var parametros={
-//	terceroId : args.tercero_id,
-//	empresa_id : args.empresa_id,
-//	empresaId : args.empresa_id,
-//	conceptoId : args.concepto_id,
-//	tipoIdTercero : args.tipo_id_tercero
-//    };
-//    
-//
-//    G.Q.ninvoke(that.m_notas, 'listarConceptosDetalle', parametros).then(function(resultado) {
-//       
-//       if(resultado.length > 0){
-//	   
-//	conceptos.detalle=resultado;
-//	var total={totalFactura:0,totalGravamen:0};
-//	
-//       return G.Q.nfcall(__valorTotalGravamen,0,resultado,total);
-//	
-//       }else{
-//	   throw {msj:'[listarConceptosDetalle]: Consulta sin resultados', status: 404};
-//       }
-//       
-//      }).then(function(result) {
-//	  
-//	parametros.totalFactura=result.totalFactura;
-//	parametros.totalGravamen=result.totalGravamen;
-//	
-//	return G.Q.nfcall(__traerPorcentajeImpuestos,that,parametros);
-//      
-//     }).then(function(result) {
-//	 	 
-//        conceptos.impuestos=result;
-//	
-//        if (conceptos.detalle.length > 0) {
-//	    
-//            res.send(G.utils.r(req.url, 'listarConceptosDetalle', 200, {listarConceptosDetalle: conceptos}));
-//	    
-//        } else {
-//	    mensaje="0";
-//            throw 'Error al __traerPorcentajeImpuestos';
-//        }
-//
-//    }).fail(function(err) {
-//        console.log("Error listarConceptosDetalle ", err);
-//        res.send(G.utils.r(req.url, err, 500, {listarConceptosDetalle: err}));
-//    }).done();
-//};
 //
 ///**
 // * @author Andres Mauricio Gonzalez
@@ -854,32 +652,7 @@ Notas.prototype.ConsultarDetalleFactura = function (req, res) {
 //	res.send(G.utils.r(req.url, err, 500, {}));
 //    }).done();
 //};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de crear las consultas para generar el contenido de las notas
-// * @fecha 2017-06-13 (YYYY-MM-DD)
-// */
-//Notas.prototype.listarNotas = function(req, res) {
-//    var that = this;
-//    var args = req.body.data;
-//    
-//    var parametros = {
-//	empresaId: args.empresaId,
-//	prefijoNota: args.prefijoNota,
-//	numeroNota: args.numeroNota
-//    };
-//    
-//    G.Q.ninvoke(that.m_notas, 'listarNotasGeneradas', parametros).then(function(result) {
-//	
-//      res.send(G.utils.r(req.url, 'listado Correctamente', 200, {listadoNota: result}));
-//
-//    }). catch (function(err) {
-//	console.log("error listarNotas ", err);
-//	res.send(G.utils.r(req.url, err, 500, {error:err}));
-//    }).done();
-//    
-//};
+
 ///**
 // * @author Andres Mauricio Gonzalez
 // * +Descripcion  Metodo encargado de crear las consultas para generar el contenido de las notas
@@ -1314,27 +1087,38 @@ Notas.prototype.ConsultarDetalleFactura = function (req, res) {
 //    }).done();
 //
 //};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de crear el consecutivo de la numeracion del documento
-// * @fecha 2017-07-13 (YYYY-MM-DD)
-// */
-//function __crearPrefijoNumero(that,parametros,transaccion,callback) {
-//
-//    G.Q.ninvoke(that.m_notas, 'bloquearTablaDocumentos',transaccion).then(function(resultado) {
-//	
-//       return  G.Q.ninvoke(that.m_notas, 'numeracionDocumento',parametros,transaccion);
-//
-//    }).then(function(resultado) {
-//	callback(false,resultado);
-//        return;
-//    }).fail(function(err) {
-//	console.log("Error __crearPrefijoNumero ", err);
-//	callback(err);
-//    }).done();
-//    
-//};
+
+
+function __recorreListado(that, listado, parametros, index, transaccion, callback) {
+
+    var item = listado[index];
+    if (!item) {
+        callback(false, 0);
+        return;
+    }
+
+    parametros.observacion = item.observacion;
+    parametros.valor = item.total_nota;
+    parametros.item_id = item.item_id;
+    parametros.valor_iva = 0;
+    parametros.valor_rtf = 0;
+    parametros.valor_ica = 0;
+
+    return G.Q.nfcall(that.m_notas.agregarDetalleNotaDebito, parametros, transaccion).then(function (resultado) {
+        var timer = setTimeout(function () {
+            clearTimeout(timer);
+            index++;
+            __recorreListado(that, listado, parametros, index, transaccion, callback);
+        }, 0);
+
+    }).fail(function (err) {
+        console.log("error", err);
+        callback(err);
+
+    }).done();
+
+}
+;
 
 
 

@@ -970,7 +970,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function (req
 
     that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function (err, responsables) {
 
-        console.log("err actualizarTipoDocumentoTemporalClientes ", err);
+        
         var existe_estado_auditoria = false;
         var _responsables = [];
 

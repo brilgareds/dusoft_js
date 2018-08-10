@@ -1769,6 +1769,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 PedidosClienteModel.prototype.insertar_encabezado_pedido_cliente = function(cotizacion,callback) {
                               
 if(cotizacion.control===true){
+    
     var sql = " INSERT INTO ventas_ordenes_pedidos_tmp(\
                 empresa_id,\
                 tipo_id_tercero,\
@@ -1791,8 +1792,8 @@ if(cotizacion.control===true){
                     ) (\
                   select\
                     empresa_id,\
-                    tipo_id_tercero,\
-                    tercero_id,\
+                    'NIT' as tipo_id_tercero,\
+                    '830080649' as tercero_id,\
                     fecha_registro,\
                     usuario_id,\
                     fecha_envio,\
@@ -1875,12 +1876,14 @@ console.log("ERROR",err);
 };
 
 PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_clientes = function(obj,callback){
- 
+
     var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
         .insert(
         {
-        id_orden_cotizacion_origen: obj.numeroPedidoorigen,
-        id_orden_cotizacion_destino: obj.numeroPedido,
+        id_orden_cotizacion_origen: obj.numeroCotizacionOrigen,
+        id_orden_cotizacion_destino: obj.numeroCotizacionDestino,
+        id_orden_pedido_origen: obj.numeroPedidoOrigen,
+        id_orden_pedido_destino: obj.numeroPedidoDestino,
         sw_origen_destino : 0
         }
             );

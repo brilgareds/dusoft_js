@@ -1291,12 +1291,14 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
         return G.Q.nfcall(__agruparProductosPorBodega,rows[0]);
      
     }).then(function (resultado) { 
-       console.log("resultado  ",resultado);
-          return G.Q.nfcall(__insertarCabeceraClientesCotizacion,resultado,parametros,0);
+     //  console.log("resultado  ",resultado);
+          return G.Q.nfcall(__insertarCabeceraClientesCotizacion,resultado,parametros,0,{});
  
         
     }).then(function (resultado) {
         console.log("__insertarCabeceraDetalleBodegasMultiple ", resultado);
+        
+        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",resultado);
 //        var productos=datos[Object.keys(datos)[index]];
 //        
 //         var cotizacion = {
@@ -1308,7 +1310,7 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
 //         };
 //         return G.Q.ninvoke(parametros.that.m_pedidos_clientes.generar_pedido_cliente,cotizacion);
 //    
-//    }).then(function (resultado) {    
+    }).then(function (resultado) {    
 
         callback(false);
         
@@ -1336,42 +1338,43 @@ function __agruparProductosPorBodega(data,callback){
     callback(false,agrupacion);    
 }
 
-function __insertarCabeceraClientesCotizacion(datos,parametros,index,callback){
- console.log("11111111111__insertarCabeceraClientesCotizacion datos.length ",datos);
- console.log("11111111111__insertarCabeceraClientesCotizacion datos.length ",datos.length);
- console.log("11111111111__insertarCabeceraClientesCotizacion index ",index);
- if(datos.length <= index){
-   callback(false,true);   
+function __insertarCabeceraClientesCotizacion(datos,parametros,index,idsPedidos,callback){
+
+ if(Object.keys(datos).length <= index){
+   callback(false,idsPedidos);   
    return;
  }
 
-   var cabecera={ bodega : Object.keys(datos)[index], numero_cotizacion : datos[Object.keys(datos)[index]][0].numero_cotizacion,control: parametros.bodegaActual !== cabecera.bodega};
+   var cabecera={ bodega : Object.keys(datos)[index], numero_cotizacion : datos[Object.keys(datos)[index]][0].numero_cotizacion,control: parametros.bodegaActual !== Object.keys(datos)[index]};
    var empresa=datos[Object.keys(datos)[index]][0].empresa_origen_producto;
    var centro_utilidad=datos[Object.keys(datos)[index]][0].centro_utilidad_origen_producto;
    var bodega=datos[Object.keys(datos)[index]][0].bodega_origen_producto;
    var productos=datos[Object.keys(datos)[index]];
    index++;
-   console.log("222222__insertarCabeceraClientesCotizacion");
+
 // if(parametros.bodegaActual !== cabecera.bodega){
 
     G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_encabezado_pedido_cliente", cabecera).then(function (rows) {
-console.log("insertar_encabezado_pedido_cliente ");
-     if(parametros.bodegaActual !== cabecera.bodega){ console.log("parametros.bodegaActual 1111",cabecera.bodega);
+
+     if(parametros.bodegaActual !== cabecera.bodega){ 
          parametros.bodega=cabecera.bodega;
          parametros.numeroPedido=rows.rows[0].numero_pedido;
-         parametros.numeroPedidoorigen=cabecera.numero_cotizacion;
+         parametros.numeroPedidoorigen=cabecera.numero_cotizacion;         
          return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_detalle_pedido_cliente",parametros);//detalle de la cotizacion
-      }else{console.log("parametros.bodegaActual 22222",parametros.bodegaActual);
+      }else{
          parametros.bodega=cabecera.bodega;
          parametros.numeroPedido=cabecera.numero_cotizacion;
          parametros.numeroPedidoorigen=cabecera.numero_cotizacion;
          return true;
       }
+      
+     
+      
     }).then(function (resultado) {  
-
-        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",parametros);
+          
+      //  return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",parametros);
         
-    }).then(function (resultado) {  
+  //  }).then(function (resultado) {  
 
         return G.Q.nfcall(__totalizarPedido,productos,0,0);
         
@@ -1382,14 +1385,20 @@ console.log("insertar_encabezado_pedido_cliente ");
        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"generar_pedido_cliente",cotizacion);
         
     }).then(function (resultado) {
-
-        var obj = {cotizacion: cabecera.numero_cotizacion, numero_pedido : resultado.numero_pedido};
+        if(parametros.bodegaActual !== cabecera.bodega){
+         idsPedidos.numeroCotizacionDestino=parametros.numeroPedido;
+         idsPedidos.numeroPedidoDestino=resultado.numero_pedido;
+        }else{
+         idsPedidos.numeroCotizacionOrigen=cabecera.numero_cotizacion;
+         idsPedidos.numeroPedidoOrigen=resultado.numero_pedido;            
+        }
+       // var obj = {cotizacion: cabecera.numero_cotizacion, numero_pedido : resultado.numero_pedido};
      
-        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"actualizarPedidoMultipleCliente",obj);
+     //   return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"actualizarPedidoMultipleCliente",obj);
         
-    }).then(function (resultado) {
+  //  }).then(function (resultado) {
 
-        __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
+        __insertarCabeceraClientesCotizacion(datos,parametros,index,idsPedidos,callback);
        
     }).fail(function (err) {
 

@@ -1670,7 +1670,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
     G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumo', parametros).then(function (resultado) {
 
         if (resultado.length > 0) {
-            console.log(resultado.length);
+         
             return res.send(G.utils.r(req.url, 'Lista de facturas temporales', 200, {listar_facturas_temporal: resultado}));
         } else {
             throw {msj: '[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404};
@@ -2639,7 +2639,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
             if (subTotal >= resultado[0].base_ica) {
                 retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
             }
-
+                
             if (subTotal >= resultado[0].base_reteiva) {
                 retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
             }

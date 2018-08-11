@@ -235,14 +235,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'usuario', cellClass: "ngCellText", width: "10%", displayName: 'Usuario'},
                             {field: 'valorSubTotal', cellClass: "ngCellText", width: "5%", displayName: 'Sub Total'},
                             {field: 'valorTotal', cellClass: "ngCellText", width: "5%", displayName: 'Total'},
-                            {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
+                            {displayName: "Opc", width: "6%",heigth: "6%", cellClass: "txt-center dropdown-button",
                                 cellTemplate: '<div class="btn-group">\
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
-                                <li ng-if="row.entity.getEstadoFacturacion() == 0">\n\
+                                <li ng-if="row.entity.getEstadoFacturacion() == 0">\
                                    <a href="javascript:void(0);" ng-click="detalleFacturaTemporal(row.entity)" class= "glyphicon glyphicon-edit"> Modificar </a>\
                                 </li>\
-                                <li ng-if="row.entity.getEstadoFacturacion() == 0">\n\
+                                <li ng-if="row.entity.getEstadoFacturacion() == 0">\
                                    <a href="javascript:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
                                 </li>\
                                 <li ng-if="row.entity.getEstadoFacturacion() == 1 ">\
@@ -252,9 +252,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                       </div>'
                             },
                             {field: 'Estado facturacion', cellClass: "ngCellText", displayName: 'Estado facturacion',
-                                cellTemplate: '<div class="col-xs-16 ">\n\
-                    <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\n\
-                <span ng-class="agregar_clase_facturacion(row.entity.getEstadoFacturacion())"></span></p></div>'},
+                                cellTemplate: '<div class="col-xs-16 ">\
+                                <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\
+                                   <span ng-class="agregar_clase_facturacion(row.entity.getEstadoFacturacion())"></span>\
+                                </p>\
+                              </div>'}
                         ]
                     };
 

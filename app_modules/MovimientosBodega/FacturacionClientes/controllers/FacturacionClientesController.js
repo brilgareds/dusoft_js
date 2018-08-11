@@ -1203,7 +1203,7 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function(
     if(args.facturas_consumo.estado === 0){
       estado=6;  
     }
-    console.log("args.facturas_consumo ",args.facturas_consumo);
+
     var parametros = {
         empresaId: args.facturas_consumo.empresa_id,
         tipoIdTercero: args.facturas_consumo.tipoTerceroId,
@@ -1503,7 +1503,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         }
         
     }).then(function(resultado){
-      console.log("resultado5 ",resultado);//return
+ 
         if(resultado.length > 0){    
             
             resultado.forEach(function(row){
@@ -2750,7 +2750,7 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
         prefijo: args.imprimir_reporte_despacho.documento.prefijo,
         numero: args.imprimir_reporte_despacho.documento.numero
     };
-    
+
     var parametrosReporte =  {
         cabecera: '', 
         datos_adicionales :'',

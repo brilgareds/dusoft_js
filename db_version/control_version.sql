@@ -465,4 +465,10 @@ COMMIT TRANSACTION;
 BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.74', 'FACTURACION GENERADAS', 'Se modifica el calculo de los impuestos');
 COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.75 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.75', 'FACTURACION GENERADAS', 'se modifica validacion de impuestos');
+COMMIT TRANSACTION;
 

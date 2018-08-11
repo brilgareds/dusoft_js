@@ -211,13 +211,13 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
 
                 this.andWhere('ifd.empresa_id', obj.empresa_id);
 
-                if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'F') {
-                    this.andWhere('ifd.factura_fiscal', obj.numero);
-                }
-
-                if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'ND') {
+//                if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'F') {
+//                    this.andWhere('ifd.factura_fiscal', obj.numero);
+//                }
+//
+//                if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'ND') {
                     this.andWhere('nddc.nota_debito_despacho_cliente_id', obj.numero);
-                }
+//                }
             });
 
 
@@ -242,13 +242,13 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
 
                     this.andWhere('ifd.empresa_id', obj.empresa_id);
 
-                    if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'F') {
-                        this.andWhere('ifd.factura_fiscal', obj.numero);
-                    }
-
-                    if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'ND') {
-                        this.andWhere('nddc.nota_debito_despacho_cliente_id', obj.numero);
-                    }
+//                    if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'F') {
+//                        this.andWhere('ifd.factura_fiscal', obj.numero);
+//                    }
+//
+//                    if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'ND') {
+                    this.andWhere('nddc.nota_debito_despacho_cliente_id', obj.numero);
+//                    }
 
                 });
     });
@@ -420,6 +420,7 @@ NotasModel.prototype.ConsultarDetalleFacturaCredito = function (obj, callback) {
         G.knex.raw("( ifdd.cantidad - ifdd.cantidad_devuelta ) AS cantidad_existente"),
         "ifdd.lote",
         "ifdd.valor_unitario",
+        "ifdd.porc_iva",
         "tdncdc.tmp_detalle_nota_credito_despacho_cliente_id AS id_nota",
         G.knex.raw("COALESCE ( tdncdc.valor, 0 ) AS valor"),
         "tdncdc.observacion",
@@ -516,6 +517,7 @@ NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, c
         G.knex.raw("( ifdd.cantidad - ifdd.cantidad_devuelta ) AS cantidad_existente"),
         "ifdd.lote",
         "ifdd.valor_unitario",
+        "ifdd.porc_iva",
         "tdncdc.tmp_detalle_nota_credito_despacho_cliente_id AS id_nota",
         G.knex.raw("COALESCE ( tdncdc.valor, 0 ) AS valor"),
         "tdncdc.observacion",
@@ -616,7 +618,8 @@ NotasModel.prototype.ConsultarDetalleFacturaDebito = function (obj, callback) {
         G.knex.raw("COALESCE ( tdnddc.valor, 0 ) AS valor"),
         "tdnddc.observacion",
         G.knex.raw("(round(( tdnddc.valor / ifdd.cantidad ), 4 )) AS valor_digitado_nota"),
-        "tdnddc.valor_iva"
+        "tdnddc.valor_iva",
+        "ifdd.porc_iva"
     ];
 
     var query = G.knex.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas))
@@ -1109,49 +1112,147 @@ NotasModel.prototype.agregarDetalleNotaDebito = function (parametros, transaccio
 //        callback({err: err, msj: "Error al eliminar los temporales por terceros"});
 //    });
 //};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion Metodo encargado de listar los Conceptos
-// * @fecha 2017-06-02 YYYY-MM-DD
-// * @returns {callback}
-// */
-//NotasModel.prototype.listarEmpresa = function(obj, callback) {
-//
-//    var columna = [
-//        "a.id",
-//        "a.razon_social",
-//        "a.direccion",
-//        "a.telefonos",
-//        "a.tipo_id_tercero",
-//        "b.departamento	",
-//        "c.municipio"
-//    ];
-//
-//    var query = G.knex.select(columna)
-//            .from('empresas as a')
-//            .innerJoin('tipo_dptos as b',
-//            function() {
-//                this.on("b.tipo_pais_id", "a.tipo_pais_id")
-//                    .on("b.tipo_dpto_id", "a.tipo_dpto_id")
-//            })
-//            .innerJoin('tipo_mpios as c',
-//            function() {
-//                this.on("c.tipo_pais_id", "a.tipo_pais_id")
-//                    .on("c.tipo_dpto_id", "a.tipo_dpto_id")
-//                    .on("c.tipo_mpio_id", "a.tipo_mpio_id")
-//            }).where("empresa_id", obj.empresaId);
-//
-//	query.limit(G.settings.limit).
-//            offset((obj.paginaActual - 1) * G.settings.limit);
-//	query.then(function(resultado) {
-//        callback(false, resultado);
-//	
-//    }). catch (function(err) {
-//        console.log("err [listarGrupos]:", err);
-//        callback(err);
-//    });
-//};
+
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar la empresa
+ * @fecha 2018-08-10 YYYY-MM-DD
+ * @returns {callback}
+ */
+NotasModel.prototype.listarEmpresa = function (obj, callback) {
+
+    var columna = [
+        "a.id",
+        "a.razon_social",
+        "a.direccion",
+        "a.telefonos",
+        "a.tipo_id_tercero",
+        "b.departamento	",
+        "c.municipio"
+    ];
+
+    var query = G.knex.select(columna)
+            .from('empresas as a')
+            .innerJoin('tipo_dptos as b',
+                    function () {
+                        this.on("b.tipo_pais_id", "a.tipo_pais_id")
+                                .on("b.tipo_dpto_id", "a.tipo_dpto_id")
+                    })
+            .innerJoin('tipo_mpios as c',
+                    function () {
+                        this.on("c.tipo_pais_id", "a.tipo_pais_id")
+                                .on("c.tipo_dpto_id", "a.tipo_dpto_id")
+                                .on("c.tipo_mpio_id", "a.tipo_mpio_id")
+                    }).where("empresa_id", obj.empresaId);
+
+    query.limit(G.settings.limit).
+            offset((obj.paginaActual - 1) * G.settings.limit);
+    
+    
+    query.then(function (resultado) {
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("err [listarEmpresa]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos de la nota debito
+ * @fecha 2018-08-10 YYYY-MM-DD
+ * @returns {callback}
+ */
+NotasModel.prototype.consultarProductosNotasDebito = function (parametros, callback) {
+
+    var columna = [
+        "dnddc.detalle_nota_debito_despacho_cliente_id",
+        "ifdd.codigo_producto",
+        G.knex.raw("fc_descripcion_producto ( ifdd.codigo_producto ) AS descripcion"),
+        "ifdd.item_id",
+        "dnddc.valor as subtotal",
+        "b.sw_medicamento",
+        "b.sw_insumos",
+        "dnddc.valor_iva",
+        "dnddc.valor_rtf",
+        "dnddc.valor_ica",
+        "dnddc.observacion"
+    ];
+
+    var query = G.knex.select(columna)
+            .from(G.knex.raw(parametros.tabla_3 + " as dnddc"))
+            .innerJoin(G.knex.raw(parametros.tabla_4 + " as ifdd"), function () {
+
+                this.on("ifdd.item_id", "dnddc.item_id");
+
+            })
+            .innerJoin("inventarios_productos as a", "a.codigo_producto", "ifdd.codigo_producto")
+            .innerJoin("inv_grupos_inventarios as b", "b.grupo_id", "a.grupo_id ")
+            .where("dnddc.nota_debito_despacho_cliente_id", parametros.numeroNota);
+        
+    query.then(function (resultado) {
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("err [consultarProductosNotasDebito]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de traer la informacion del tercero
+ * @fecha 2018-08-10 YYYY-MM-DD
+ * @returns {callback}
+ */
+NotasModel.prototype.clienteNota = function (parametros, callback) {
+
+    var columna = [
+        G.knex.raw("CAST(ifd.fecha_registro AS date) AS fecha_registro"),
+        G.knex.raw("CAST(nddc.fecha_registro AS date) AS fecha_registro_nota"),
+        "T.tipo_id_tercero",
+        "T.tercero_id",
+        "T.direccion",
+        "T.telefono",
+        "T.nombre_tercero",
+        "ifd.factura_fiscal",
+        "ifd.prefijo",
+        G.knex.raw("to_char(ifd.fecha_registro, 'yyyy') as anio_factura"),
+        "ifd.porcentaje_rtf",
+        "ifd.porcentaje_reteiva",
+        "ifd.empresa_id",
+        "ifd.porcentaje_ica"
+    ];
+
+    var query = G.knex.select(columna)
+            .from(G.knex.raw(parametros.tabla_1 + " as nddc"))
+            .innerJoin(G.knex.raw(parametros.tabla_2 + " as ifd"), function () {
+
+                this.on("ifd.empresa_id", "nddc.empresa_id")
+                        .on("ifd.factura_fiscal", "nddc.factura_fiscal")
+                        .on("ifd.prefijo", "nddc.prefijo");
+
+
+            })
+            .innerJoin("terceros as T", function () {
+
+                this.on("T.tipo_id_tercero", "ifd.tipo_id_tercero")
+                        .on("T.tercero_id", "ifd.tercero_id");
+
+
+            })
+            .where("nddc.nota_debito_despacho_cliente_id", parametros.numeroNota);
+        
+    query.then(function (resultado) {
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("err [clienteNota]:", err);
+        callback(err);
+    });
+};
 
 NotasModel.$inject = [];
 

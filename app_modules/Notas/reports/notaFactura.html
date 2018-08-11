@@ -107,15 +107,15 @@
                                     <b>NOTA {{:parametros.nombreNota}}</b>
                                 </td>
                                 <td  align='left' height='10px' >
-                                    <b>No: {{:parametros.prefijoNota}} - {{:parametros.numeroNota}}</b>			
+                                    <b>No:{{:parametros.numeroNota}}</b>			
                                 </td>
                             </tr>
                             <tr>
                                 <td  align='left' height='10px' >
-                                    <b>FACTURA No: {{:parametros.prefijo}} - {{:parametros.facturaFiscal}}</b>
+                                    <b>FACTURA No: {{:nota.prefijo}} - {{:nota.factura_fiscal}}</b>
                                 </td>
                                 <td  align='left' height='10px' >
-                                    <b>FECHA FACTURA {{:parametros.prefijo}} - {{:parametros.facturaFiscal}}</b>
+                                    <b>FECHA FACTURA {{:nota.fecha_registro}}</b>
                                 </td>
                             </tr>
                         </table>
@@ -126,11 +126,11 @@
                         <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
                             <tr>
                                 <td>FECHA NOTA: </td>
-                                <td>falta enviar </td>
+                                <td>{{:nota.fecha_registro_nota}} </td>
                                 <td>CONCEPTO NOTA: </td>
-                                <td>falta enviar</td>
+                                <td>{{:nota.descripcion_concepto}}</td>
                                 <td>TIPO NOTA:  </td>
-                                <td>falta enviar</td>
+                                <td>{{:nota.tipo_nota}}</td>
                             </tr>
                         </table>
                     </td>
@@ -177,16 +177,16 @@
                                         <td><B>VALOR TOTAL</B></td>
                                     </tr>
                                     <tr align="center">
-                                        <td><B>{{:~formatMoney(impuesto.valorSubtotal)}}</B></td>
-                                        <td><B>{{:~formatMoney(impuesto.iva)}}</B></td>
-                                        <td><B>{{:~formatMoney(impuesto.retencionFuente)}}</B></td>
-                                        <td><B>{{:~formatMoney(impuesto.retencionIca)}}</B></td>
-                                        <td><B>falta</B></td>
-                                        <td><B>{{:~formatMoney(impuesto.totalGeneral)}}</B></td>
+                                        <td><B>${{:valores.subTotal}}</B></td>
+                                        <td><B>${{:valores.ivaTotal}}</B></td>
+                                        <td><B>${{:valores.retencionFuente}}</B></td>
+                                        <td><B>${{:valores.retencionIca}}</B></td>
+                                        <td><B>${{:valores.retencionIva}}</B></td>
+                                        <td><B>${{:valores.totalFactura}}</B></td>
 
                                     </tr>
                                     <tr align="left">
-                                        <td colspan="6"><B>SON: XXXXXXXXX pesos</B></td></tr> <!--valor en letras -->
+                                        <td colspan="6"><B>SON: {{:valores.totalFacturaLetra}} pesos</B></td></tr> <!--valor en letras -->
                                 </table>			
                             </td>
                         </tr>

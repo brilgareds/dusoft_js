@@ -78,6 +78,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 return this.seleccionado;
             };
 
+            ProductoFacturas.prototype.setPorcentajeIva = function (porc_iva) {
+                this.porc_iva = porc_iva;
+            };
+
+            ProductoFacturas.prototype.getPorcentajeIva = function () {
+                return this.porc_iva;
+            };
+
             ProductoFacturas.prototype.getLote = function () {
                 return this.lote;
             };

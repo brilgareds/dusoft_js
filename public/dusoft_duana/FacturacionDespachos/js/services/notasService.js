@@ -71,7 +71,7 @@ define(["angular", "js/services"], function (angular, services) {
                             nota.setPrefijo(data.prefijo);
                             nota.setSaldo(data.saldo);
                             nota.setTerceroId(data.tercero_id);
-                            nota.setTipoNota(data.tipo_nota);
+                            nota.setTipoNota(data.tipo_nota || "VALOR");
                             nota.setConcepto(data.descripcion_concepto);
                             nota.setTipoTercero(data.tipo_id_tercero);
                             nota.setValorNota(data.valor_nota);
@@ -108,12 +108,13 @@ define(["angular", "js/services"], function (angular, services) {
                             producto.setCantidadIngresada(data.valor_digitado_nota || 0);
                             producto.setObservacion(data.observacion);
                             producto.setTotalNota((data.cantidad * data.valor_digitado_nota) || 0);
+                            producto.setPorcentajeIva(data.porc_iva || 0);
                             productos.push(producto);
                         });
 
                         return productos;
                     };
-                                        
+
                     /**
                      * @author German Galvis
                      * @fecha  09/08/2018 DD/MM/YYYYY
@@ -121,6 +122,17 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.guardarNota = function (obj, callback) {
                         Request.realizarRequest(API.NOTAS.CREAR_NOTA, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  10/08/2018 DD/MM/YYYYY
+                     * +Descripcion impresion de la nota
+                     */
+                    self.imprimirNota = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.IMPRIMIR_NOTA, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -181,16 +193,6 @@ define(["angular", "js/services"], function (angular, services) {
 //                     */
 //                    self.imprimirFacturaNotasDetalle = function (obj, callback) {
 //                        Request.realizarRequest(API.NOTAS.IMPRIMIR_FACTURA_NOTAS_DETALLE, "POST", obj, function (data) {
-//                            callback(data);
-//                        });
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha  31/05/2017 DD/MM/YYYYY
-//                     * +Descripcion
-//                     */
-//                    self.imprimirNota = function (obj, callback) {
-//                        Request.realizarRequest(API.NOTAS.IMPRIMIR_NOTA, "POST", obj, function (data) {
 //                            callback(data);
 //                        });
 //                    };

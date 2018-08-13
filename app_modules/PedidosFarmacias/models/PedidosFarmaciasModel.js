@@ -367,7 +367,7 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function(empresa_id, ce
                 RETURNING solicitud_prod_a_bod_ppal_id";
 
     var query =  G.knex.raw(sql, {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: usuario_id, 5: observacion || "", 6: tipo_pedido, 7: pedido_cliente});
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado) {
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {

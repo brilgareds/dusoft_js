@@ -122,7 +122,6 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
 
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
 
@@ -132,6 +131,7 @@ define(["angular", "js/controllers",
                         localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
                         callback(true);
                     } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ocurrio un error mientras se guardaba la cotización.");
                         callback(false);
                     }
                 });

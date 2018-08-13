@@ -1782,7 +1782,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         if ($scope.Pedido.observacion_cartera.length > 0) {
                             if (estado && resultado[0].estado_multiple_pedido === "1" && $scope.validarCotizacionClienteMultiple.length <=0 ) {
                                
-                                that.generarPedidoModuloCliente(2,resultado,aprobado, denegar);
+                              //  that.generarPedidoModuloCliente(2,resultado,aprobado, denegar);
                                
                             }else{
                                 that.autorizarCotizacionCartera(aprobado, denegar);
@@ -1857,30 +1857,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.gestion_cartera = function (aprobado, denegar) {
                 that.verificarPedidoCliente(function(){
-                    var aprobarEstadoPedidoGenerarPedido = localStorageService.get("aprobarEstadoPedidoGenerarPedido");
-
+                    /*var aprobarEstadoPedidoGenerarPedido = localStorageService.get("aprobarEstadoPedidoGenerarPedido");
                     var cotizacion = localStorageService.get("cotizacion");
 
-                    if (cotizacion) {
 
-                        var parametros = {busqueda: cotizacion.numero_cotizacion,
-                            pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
+                    if (cotizacion) {
+                        var parametros = {
+                            busqueda: cotizacion.numero_cotizacion,
+                            pedido_creado: 1, 
+                            filtro_actual_cotizacion: {
+                                nombre: "Numero",
+                                tipo_busqueda: 0
+                            }
                         };
+
                         localStorageService.add("terminoBusqueda", parametros);
                         that.generarPedidoBodegaMultiple(aprobado, denegar);
-
                     } ;
 
-                    var pedido = localStorageService.get("pedido");
-
-                    if (pedido) {
+                    var pedido = localStorageService.get("pedido");*/
+                    /*if (pedido) {
                         localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.numero_pedido, activar: true, filtro_actual_pedido: {nombre: "Numero", tipo_busqueda: 0}});
-
-                        if (aprobarEstadoPedidoGenerarPedido.estado === 1) {
+                        if (aprobarEstadoPedidoGenerarPedido.estado === 1) {*/
                             that.autorizarCotizacionCartera(aprobado, denegar);
-                        }
-                    }
-                    $scope.ocultarOpciones = 0;
+                        /*}
+                    }*/
+                    //$scope.ocultarOpciones = 0;
                });
             };
             /*
@@ -1926,7 +1928,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 that.validarDisponibleProductosCotizacion(1, productos, function (estado) {
                     if (estado) { 
                         if($scope.Pedido.estadoMultiplePedido == "1"){
-                            console.log('$scope.Pedido', $scope.Pedido);
                             
                             var obj = {};
                             var url = '';
@@ -1948,6 +1949,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 Request.realizarRequest(url, "POST", obj, function (data) {
                                     if (data.status === 200) {
                                         AlertService.mostrarMensaje("success", data.msj);
+                                        $state.go('ListarPedidosClientes');
                                     }
                                 });
                                 
@@ -2206,9 +2208,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var bodegaCotizacion = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
                 
                 that.consultarDetalleProductosCotizacion('3',bodegaCotizacion,function (estado, resultado) {
-                  
                    if(estado){
-                       
                     //if (productos.length > 0) {
 
                         var cotizacions = {
@@ -2288,7 +2288,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         };
                         Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_ESTADO_COTIZACION, "POST", paramActEstadoCotizacion, function (datos) {
-                            
                             if (datos.status === 200) {
                                 $state.go('ListarPedidosClientes');
                             }

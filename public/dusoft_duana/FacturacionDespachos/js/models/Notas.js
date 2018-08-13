@@ -122,15 +122,15 @@ define(["angular", "js/models"], function (angular, models) {
 //            Notas.prototype.get_porcentaje_reteiva = function() {
 //                return this.porcentaje_reteiva;
 //            };
-//            
-//            Notas.prototype.setSubTotal = function(subTotal) {
-//                this.subTotal = subTotal;
-//                return this;
-//            };
-//
-//            Notas.prototype.getSubTotal = function() {
-//                return this.subTotal;
-//            };
+            
+            Notas.prototype.setTipoImpresion = function(tipoImpresion) {
+                this.tipoImpresion = tipoImpresion;
+                return this;
+            };
+
+            Notas.prototype.getTipoImpresion = function() {
+                return this.tipoImpresion;
+            };
 
 
             Notas.prototype.setSaldo = function (saldo) {

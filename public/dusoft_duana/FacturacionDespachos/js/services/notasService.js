@@ -74,6 +74,7 @@ define(["angular", "js/services"], function (angular, services) {
                             nota.setTipoNota(data.tipo_nota || "VALOR");
                             nota.setConcepto(data.descripcion_concepto);
                             nota.setTipoTercero(data.tipo_id_tercero);
+                            nota.setTipoImpresion(data.tipo_nota_impresion);
                             nota.setValorNota(data.valor_nota);
                             nota.setValorFactura(data.valor_total);
                             nota.setIdentificacion(data.tipo_id_tercero + " - " + data.tercero_id);
@@ -155,6 +156,17 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.imprimirNota = function (obj, callback) {
                         Request.realizarRequest(API.NOTAS.IMPRIMIR_NOTA, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  13/08/2018 DD/MM/YYYYY
+                     * +Descripcion impresion de la nota
+                     */
+                    self.imprimirNotaCredito = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.IMPRIMIR_NOTA_CREDITO, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

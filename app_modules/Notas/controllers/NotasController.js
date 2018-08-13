@@ -476,6 +476,142 @@ Notas.prototype.imprimirNota = function (req, res) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+
+/**
+ * @author German Galvis
+ * +Descripcion  Metodo encargado de crear las consultas para generar la impresion de las notas
+ * @fecha 2018-08-13 (YYYY-MM-DD)
+ */
+Notas.prototype.imprimirNotaCredito = function (req, res) {
+    console.log("*************ESTA IMPRIMIO OK imprimirNotaCredito*****************");
+    var that = this;
+    var args = req.body.data;
+    var valores = {};
+    var tabla_1;
+    var tabla_2;
+    var tabla_3;
+    var tabla_4;
+    var cliente = [];
+    var empresa = [];
+    var nota = [];
+    var productos = [];
+    var retencionFuente = 0;
+    var retencionIca = 0;
+    var retencionIva = 0;
+    var totalFactura = 0;
+    var subTotal = 0;
+    var totalIva = 0;
+
+    var parametros = {
+        empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        numero: args.numeroNota,
+        numeroNota: args.numeroNota
+    };
+
+
+
+    G.Q.ninvoke(that.m_notas, 'ConsultarNotasCredito', parametros).then(function (result) {
+
+        nota = result;
+        
+        
+        parametros.nombreNota = "CREDITO";
+
+        if (nota[0].tipo_factura === 0) {
+            tabla_1 = "notas_credito_despachos_clientes";
+            tabla_2 = "inv_facturas_despacho";
+            tabla_3 = "detalles_notas_credito_despachos_clientes";
+            tabla_4 = "inv_facturas_despacho_d";
+        }
+
+        if (nota[0].tipo_factura === 1) {
+            tabla_1 = "notas_credito_despachos_clientes_agrupados";
+            tabla_2 = "inv_facturas_agrupadas_despacho";
+            tabla_3 = "detalles_notas_credito_despachos_clientes_agrupados";
+            tabla_4 = "inv_facturas_agrupadas_despacho_d";
+        }
+        parametros.tabla_1 = tabla_1;
+        parametros.tabla_2 = tabla_2;
+        parametros.tabla_3 = tabla_3;
+        parametros.tabla_4 = tabla_4;
+
+
+        return G.Q.nfcall(that.m_notas.clienteNotaCredito, parametros);
+    }).then(function (result) {
+
+        cliente = result;
+
+        return G.Q.nfcall(that.m_notas.consultarProductosNotasCredito, parametros);
+
+    }).then(function (result) {
+
+        productos = result;
+
+        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id});
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            productos.forEach(function (row) {
+
+                subTotal += parseFloat(row.subtotal);
+                totalIva += parseFloat(row.valor_iva);
+            });
+
+            if (subTotal >= resultado[0].base_rtf) {
+                retencionFuente = (subTotal * ((resultado[0].porcentaje_rtf) / 100));
+            }
+
+            if (subTotal >= resultado[0].base_ica) {
+                retencionIca = (subTotal) * (parseFloat(resultado[0].porcentaje_ica) / 1000);
+            }
+
+            if (subTotal >= resultado[0].base_reteiva) {
+                retencionIva = (totalIva) * (parseFloat(resultado[0].porcentaje_reteiva) / 100);
+            }
+
+            totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
+
+        }
+
+        valores.retencionIca = G.utils.numberFormat(retencionIca, 2);
+        valores.retencionFuente = G.utils.numberFormat(retencionFuente, 2);
+        valores.retencionIva = G.utils.numberFormat(retencionIva, 2);
+        valores.ivaTotal = G.utils.numberFormat(parseFloat(totalIva), 2);
+        valores.subTotal = G.utils.numberFormat(parseFloat(subTotal), 2);
+        valores.totalFactura = G.utils.numberFormat(parseFloat(totalFactura), 2);
+        valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
+
+
+        return G.Q.ninvoke(that.m_notas, 'listarEmpresa', parametros);
+
+    }).then(function (result) {
+
+        empresa = result;
+        var informacion = {
+            serverUrl: req.protocol + '://' + req.get('host') + "/",
+            empresa: empresa[0],
+            cliente: cliente[0],
+            nota: nota[0],
+            parametros: parametros,
+            productos: productos,
+            usuario: req.session.user.nombre_usuario,
+            archivoHtml: 'notaFactura.html',
+            valores: valores
+        };
+
+        return G.Q.nfcall(__generarPdf, informacion);
+
+    }).then(function (result) {
+
+        res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirNota: result}));
+
+    }).catch(function (err) {
+        console.log("error transaccion ", err);
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 //
 ///**
 // * @author Andres Mauricio Gonzalez
@@ -515,393 +651,6 @@ Notas.prototype.imprimirNota = function (req, res) {
 //	    console.log("ERROR",err);
 //	   res.send(G.utils.r(req.url, err, 500, {err: err}));
 //	}).done(); 
-//};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de generar las consultas para imprimir las facturas notas
-// * @fecha 2017-06-13 (YYYY-MM-DD)
-// */
-//Notas.prototype.imprimirFacturaNotas = function(req, res) {
-//
-//    var that = this;
-//    var args = req.body.data;
-//    var total = {totalFactura: 0, totalGravamen: 0};
-//    var empresa = [];
-//    var cliente = [];
-//    var conceptosDetalle = [];
-//    var impuesto;
-//    var nombre_pdf = "";
-//
-//
-//    var parametros = {
-//	empresaId: args.empresaId,
-//	empresa_id: args.empresaId,
-//	facturaFiscal: args.facturaFiscal,
-//	factura: args.facturaFiscal,
-//	prefijo: args.prefijo
-//    };
-//
-//    G.Q.ninvoke(that.m_notas, 'listarFacturasNotas', parametros).then(function(result) {
-//	
-//	conceptosDetalle = result;
-//	parametros.terceroId= conceptosDetalle[0].tercero_id;
-//        parametros.tipoIdTercero= conceptosDetalle[0].tipo_id_tercero;
-//	var totales = {totalFactura:0,totalGravamen:0};
-//	return G.Q.nfcall(__valorTotalGravamen, 0, result,totales);
-//	
-//    }).then(function(result) {
-//	
-//    	parametros.totalFactura = result.totalFactura;
-//	parametros.totalGravamen = result.totalGravamen;
-//	return G.Q.nfcall(__traerPorcentajeImpuestos, that, parametros);
-//
-//    }).then(function(result) {
-//
-//	impuesto = result;
-//	impuesto.empresaId = parametros.empresaId;
-//	impuesto.prefijo = parametros.prefijo;
-//	impuesto.factura = parametros.facturaFiscal;
-//	parametros.totalAbono = impuesto.totalGeneral;
-//	parametros.totalEfectivo = impuesto.totalGeneral;
-//	parametros.totalCheque = 0;
-//	parametros.totalTarjeta = 0;
-//	parametros.totalAbonos = 0;
-//
-//	var parametrosEmpresa = {
-//	    tercero: {
-//		id: parametros.terceroId,
-//		tipoDocumento: {id: parametros.tipoIdTercero},
-//		empresa_id: parametros.empresaId
-//	    }
-//	};
-//
-//	return G.Q.ninvoke(that.m_gestion_terceros, 'obtenerTercero', parametrosEmpresa);
-//
-//    }).then(function(result) {
-//
-//	cliente = result;
-//	return G.Q.ninvoke(that.m_notas, 'listarEmpresa', parametros);
-//
-//    }).then(function(result) {
-//	empresa = result;
-//	var informacion = {
-//	    serverUrl: req.protocol + '://' + req.get('host') + "/",
-//	    empresa: empresa[0],
-//	    cliente: cliente[0],
-//	    parametros: parametros,
-//	    conceptosDetalle: conceptosDetalle,
-//	    informacion: __infoFooter(parametros.prefijo),
-//	    usuario: req.session.user.nombre_usuario,
-//	    archivoHtml: 'facturaConceptos.html',
-//	    impuesto: impuesto
-//	};
-//	return G.Q.nfcall(__generarPdf, informacion);
-//	
-//    }).then(function(result) {
-//	
-//	res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirFacturaNotas: result}));
-//
-//    }). catch (function(err) {
-//	console.log("error transaccion ", err);
-//	res.send(G.utils.r(req.url, err, 500, {}));
-//    }).done();
-//};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de crear el texto del footer segun prefijo
-// * @fecha 2017-07-13 (YYYY-MM-DD)
-// */
-//function __infoFooter(prefijo) {
-//    var informacion = {};
-//    
-//    informacion.consignacion = "SIRVASE CONSIGNAR A FAVOR DE DUANA Y CIA LTDA LA SUMA CORRESPONDIENTE EN LAS CUENTAS CORRIENTES:";
-//    informacion.bancos = "BBVA No. 50200364-3, COLPATRIA No 050104834-8, BANCO OCCIDENTE No 025041252.";
-//    
-//    switch (prefijo) {
-//	case "FB":
-//	    informacion.linea1 = "AUTORIZADOS POR LA DIAN PARA FACTURAR  SEGUN RESOLUCION No 310000061722 DE CALI FECHA 24 DE MAYO DE 2012 ";
-//	    informacion.linea2 = "DEL 4331 AL 6000. SOMOS GRANDES CONTRIBUYENTES, NO EFECTUAR RETENCIONDE IVA RES. No 15633 DEL 18/12/2007-ACT. ";
-//	    informacion.linea3 = "ECONOMICA 201-04 ICA  EN CALI 3.3 X 1.000.";
-//	    break;
-//	case "FE":
-//	    informacion.linea1 = "AUTORIZADOS POR LA DIAN PARA FACTURAR SEGUN RESOLUCION No 310000070278 DE CALI FECHA 04 DE ABRIL DE 2013";
-//	    informacion.linea2 = "DEL 4331 AL 6000. SOMOS GRANDES CONTRIBUYENTES, NO EFECTUAR RETENCIONDE IVA RES. No 15633 DEL 18/12/2007-ACT.";
-//	    informacion.linea3 = "ECONOMICA 201-04 ICA EN CALI 3.3 X 1.000.";
-//	    break;
-//	case "BM":
-//	    informacion.linea1 = "AUTORIZADOS POR LA DIAN PARA FACTURAR SEGUN RESOLUCION No 310000071348 DE CALI FECHA 25 DE JUNIO DE 2013 ";
-//	    informacion.linea2 = "DEL 1118 AL 3000. SOMOS GRANDES CONTRIBUYENTES, NO EFECTUAR RETENCIONDE IVA RES. No 15633 DEL 18/12/2007-ACT. ";
-//	    informacion.linea3 = "ECONOMICA 201-04 ICA EN CALI 3.3 X 1.000.";
-//	    break;
-//	default:
-//	    informacion.linea1 = "";
-//	    informacion.linea2 = "";
-//	    informacion.linea3 = "";
-//	    break;
-//    }
-//    return informacion;
-//}
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de consultar los impuestos por tercero
-// * @fecha 2017-07-13 (YYYY-MM-DD)
-// */
-//Notas.prototype.consultarImpuestosTercero = function(req, res) {
-//    var retencionTercero;
-//    var args = req.body.data;
-//    var that = this;
-//    
-//    var obj={
-//	empresaId : args.empresaId,
-//	empresa_id : args.empresaId,
-//	tipoIdTercero : args.tipoIdTercero,
-//	terceroId : args.terceroId,
-//	anio: args.anio
-//    };
-//    
-//    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj).then(function(resultado) {
-//       
-//	retencionTercero = resultado[0];
-//	return  G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
-//
-//    }).then(function(result) {
-//	var retencion = result[0];
-//	res.send(G.utils.r(req.url, 'Listar Impuestos', 200, {retencion: retencion,retencionTercero:retencionTercero}));
-//
-//    }). catch (function(err) {
-//	console.log("error transaccion ", err);
-//	res.send(G.utils.r(req.url, err, 500, {}));
-//    }).done();
-//};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de calcular el total del valor gravamen
-// * @fecha 2017-05-08 (YYYY-MM-DD)
-// */
-//function __valorTotalGravamen(index, conceptosDetalle,total,callback){
-//
-//   var totales = conceptosDetalle[index];
-//   
-//   if (!totales) {
-//	callback(false, total);
-//	return;
-//    }
-//    
-//    total.totalFactura+=parseInt(totales.valor_total);
-//    total.totalGravamen+=parseInt(totales.valor_gravamen);
-//    
-//    index++;
-//   var timer = setTimeout(function(){
-//       
-//    __valorTotalGravamen(index, conceptosDetalle,total,callback);
-//    
-//    clearTimeout(timer);
-//    
-//   }, 0);
-//  
-//};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de calcular los impuestos de la notas
-// * @fecha 2017-07-13 (YYYY-MM-DD)
-// */
-//function __traerPorcentajeImpuestosNotas(that, obj, callback) {
-//    var retencion;
-//    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj).then(function(resultado) {
-//       
-//	retencion = resultado[0];
-//	return  G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
-//
-//    }).then(function(result) {
-//	var parametros = result[0];
-//	
-//	var impuestos = {
-//	    porcentajeRtf: '0',
-//	    porcentajeIca: '0',
-//	    porcentajeReteiva: '0',
-//	    porcentajeCree: '0',
-//	    swRtf: parametros.sw_rtf,
-//	    swIca: parametros.sw_ica,
-//	    swReteiva: parametros.sw_reteiva,
-//            totalGeneral:0,
-//	    retencionFuente:0,
-//	    retencionIca:0,
-//	    valorSubtotal:0,
-//	    valorSubtotalFactura:0
-//	};
-//	impuestos.valorSubtotalFactura = obj.totalFactura - obj.totalGravamen;
-//	
-//	if (parametros.sw_rtf === '2' || parametros.sw_rtf === '3'){
-//	   
-//	    if (impuestos.valorSubtotalFactura >= parametros.base_rtf) {
-//
-//	       impuestos.retencionFuente = obj.totalNota * (retencion.porcentaje_rtf / 100);
-//
-//	    }
-//	}
-//	
-//	if (parametros.sw_ica === '2' || parametros.sw_ica === '3'){
-//	    
-//	    if (impuestos.valorSubtotalFactura >= parametros.base_ica) {
-//	       impuestos.retencionIca = obj.totalNota * (retencion.porcentaje_ica / 1000);
-//	    }
-//	}
-//	
-//	impuestos.valorSubtotal =obj.totalNota;
-//	impuestos.iva = obj.totalGravamenNota;
-//	impuestos.totalGeneral = impuestos.valorSubtotal + obj.totalGravamenNota - (impuestos.retencionFuente + impuestos.retencionIca);
-//	
-//	var timer = setTimeout(function() {
-//	    callback(false, impuestos);
-//	    clearTimeout(timer);
-//
-//	}, 0);
-//	
-//    }).fail(function(err) {
-//	console.log("Error __traerPorcentajeImpuestosNotas", err);
-//	callback(err);
-//    }).done();
-//}
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de calcular los impuestos de la factura
-// * @fecha 2017-07-13 (YYYY-MM-DD)
-// */
-//function __traerPorcentajeImpuestos(that, obj, callback) {
-//
-//    var parametros;
-//    var retencion;
-//
-//    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj).then(function(resultado) {
-//  
-//	
-//	if (resultado.length > 0){
-//	    
-//	    retencion = resultado[0];
-//	    return  G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
-//	
-//	}else{
-//	    
-//	    throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados 2', status: 404};  
-//	}
-//	
-//    }).then(function(result) {
-//
-//	var parametros = result[0];
-//	var impuestos = {
-//	    porcentajeRtf: '0',
-//	    porcentajeIca: '0',
-//	    porcentajeReteiva: '0',
-//	    porcentajeCree: '0',
-//	    swRtf: parametros.sw_rtf,
-//	    swIca: parametros.sw_ica,
-//	    swReteiva: parametros.sw_reteiva,
-//            totalGeneral:0,
-//	    retencionFuente:0,
-//	    retencionIca:0,
-//	    valorSubtotal:0
-//	};
-//
-//	if (parametros.sw_rtf === '1' || parametros.sw_rtf === '3')
-//	    impuestos.porcentajeRtf = retencion.porcentaje_rtf;
-//	if (parametros.sw_ica === '1' || parametros.sw_ica === '3')
-//	    impuestos.porcentajeIca = retencion.porcentaje_ica;
-//	if (parametros.sw_reteiva === '1' || parametros.sw_reteiva === '3')
-//	    impuestos.porcentajeReteiva = retencion.porcentaje_reteiva;
-//
-//	if (retencion.porcentaje_cree !== undefined) {
-//	    impuestos.porcentajeCree = retencion.porcentaje_cree;
-//	}
-//
-//	impuestos.valorSubtotal = obj.totalFactura - obj.totalGravamen;
-//	impuestos.iva = obj.totalGravamen;
-//
-//	if (impuestos.porcentajeRtf > 0) { 
-//
-//	    if (impuestos.valorSubtotal >= parametros.base_rtf) {
-//		impuestos.retencionFuente = impuestos.valorSubtotal * (impuestos.porcentajeRtf / 100);
-//		if (impuestos.retencionFuente > 0) {
-//		    impuestos.retencionFuente = parseInt(impuestos.retencionFuente);
-//		}
-//	    }
-//	}
-//	if (impuestos.porcentajeIca > 0) {
-//	    if (impuestos.valorSubtotal >= parametros.base_ica) {
-//		
-//		impuestos.retencionIca = impuestos.valorSubtotal * (impuestos.porcentajeIca / 1000);
-//		
-//		if (impuestos.retencionIca > 0) {
-//		    impuestos.retencionIca = parseInt(impuestos.retencionIca);
-//		}
-//	    }
-//	}
-//	
-//	impuestos.totalGeneral = impuestos.valorSubtotal + obj.totalGravamen - (impuestos.retencionFuente + impuestos.retencionIca);
-//
-//	callback(false, impuestos);
-//
-//    }).fail(function(err) {
-//	console.log("Error __traerPorcentajeImpuestos ", err);
-//	callback(err);
-//    }).done();
-//};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de insertar factfacturas conceptos uno a uno
-// * @fecha 2017-07-13 (YYYY-MM-DD)
-// */
-//function __insertarFacFacturasConceptos(that, index, conceptosDetalle, parametros, total, transaccion, callback) {
-//
-//    var conceptos = conceptosDetalle[index];
-//
-//    if (!conceptos) {
-//	callback(false, total);
-//	return;
-//    }
-//
-//    conceptos.empresaId = parametros.empresaId;
-//    conceptos.prefijo = parametros.prefijo;
-//    conceptos.cajaId = parametros.cajaId;
-//    conceptos.concepto = parametros.conceptoId;
-//    conceptos.facturaFiscal = parametros.factura;
-//    conceptos.porcentajeGravamen = conceptos.porcentaje_gravamen;
-//    conceptos.valorTotal = conceptos.valor_total;
-//    conceptos.swTipo = conceptos.sw_tipo;
-//    conceptos.valorGravamen = conceptos.valor_gravamen;
-//    conceptos.grupoConceptoId = conceptos.grupo_concepto;
-//
-//    total.totalFactura += parseInt(conceptos.valorTotal);
-//    total.totalGravamen += parseInt(conceptos.valorGravamen);
-//
-//    G.Q.ninvoke(that.m_notas, 'insertarFacFacturasConceptos', conceptos, transaccion).then(function(resultado) {
-//
-//	conceptos.id = resultado[0].fac_factura_concepto_id;
-//	return G.Q.ninvoke(that.m_notas, 'insertarFacFacturasConceptosDc', conceptos, transaccion);
-//
-//    }).then(function(result) {
-//    if (result.rowCount >= 1) {
-//	index++;
-//	var timer = setTimeout(function() {
-//	    __insertarFacFacturasConceptos(that, index, conceptosDetalle, parametros, total, transaccion, callback);
-//	    clearTimeout(timer);
-//
-//	}, 0);
-//
-//    } else {
-//	throw 'Error en __insertarFacFacturasConceptos ';
-//    }
-//    }).fail(function(err) {
-//	console.log("Error __insertarFacFacturasConceptos ", err);
-//	callback(err);
-//    }).done();
-//
 //};
 
 

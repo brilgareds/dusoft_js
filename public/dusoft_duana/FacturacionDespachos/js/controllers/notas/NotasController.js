@@ -451,20 +451,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 //                       };
 //                       var modalInstance = $modal.open($scope.opts);
 //                   };
-		    
-		    /**
+
+                    /**
                      * +Descripcion metodo para validar sincronizacion
                      * @author German Galvis
                      * @fecha 13/08/2018
                      * @returns {undefined}
                      */
-		    $scope.validarSincronizacion=function(estado){
-			var respuesta=false;
-			if(estado === '1' || estado === null){
-			    respuesta=true;
-			}
-			return respuesta;
-		    };
+                    $scope.validarSincronizacion = function (estado) {
+                        var respuesta = false;
+                        if (estado === '1' || estado === null) {
+                            respuesta = true;
+                        }
+                        return respuesta;
+                    };
 
                     /**
                      * +Descripcion metodo para imprimir las facturas
@@ -500,7 +500,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @returns {undefined}
                      */
                     $scope.onImprimirNota = function (datos) {
-                        console.log("datos", datos);
                         var parametros = {
                             session: $scope.session,
                             data: {
@@ -509,18 +508,30 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                         };
 
-                        console.log("parametros", parametros);
+                        if (datos.tipoImpresion === "D") {
+                            notasService.imprimirNota(parametros, function (data) {
 
-                        notasService.imprimirNota(parametros, function (data) {
+                                if (data.status === 200) {
+                                    var nombre = data.obj.imprimirNota;
+                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
 
-                            if (data.status === 200) {
-                                var nombre = data.obj.imprimirNota;
-                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                                } else {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                }
+                            });
 
-                            } else {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                            }
-                        });
+                        } else if (datos.tipoImpresion === "C") {
+                            notasService.imprimirNotaCredito(parametros, function (data) {
+
+                                if (data.status === 200) {
+                                    var nombre = data.obj.imprimirNota;
+                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+
+                                } else {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                }
+                            });
+                        }
                     };
 //		    /**
 //                     * +Descripcion metodo para imprimir las facturas

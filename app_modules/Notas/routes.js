@@ -26,6 +26,10 @@ module.exports = function(app, di_container) {
         c_notas.imprimirNota(req, res);
     });
     
+    app.post('/api/Notas/imprimirNotaCredito', function(req, res) {
+        c_notas.imprimirNotaCredito(req, res);
+    });
+    
     app.post('/api/Notas/listarConceptos', function(req, res) {
         c_notas.listarConceptos(req, res);
     });

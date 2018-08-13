@@ -265,6 +265,10 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/pedidoClienteAPedidoFarmacia', function(req, res) {
         c_pedidos_clientes.pedidoClienteAPedidoFarmacia(req, res);
     });
+
+    app.post('/api/PedidosClientes/duplicarPedido', function(req, res) {
+        c_pedidos_clientes.duplicarPedido(req, res);
+    });
     
      
 };

@@ -605,6 +605,7 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
+                console.log('url', url);
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
@@ -780,11 +781,12 @@ define(["angular", "js/controllers",
                 });                
             };
             
-              function generarIngresoDetalleI002(data,index,callback){
-               if(data.productos[index] === undefined){
+            function generarIngresoDetalleI002(data,index,callback){
+                if(data.productos[index] === undefined){
                    callback(false);
                    return;
-               }
+                }
+
                 var productos = data.productos[index];
                 var productosActas = data.productosActas[index];
              
@@ -819,7 +821,7 @@ define(["angular", "js/controllers",
             };
             
             that.ejecutarDocumento = function(orden, pedido, sw_origen_destino, productos){
-                
+                console.log('orden', orden, 'pedido', pedido, 'sw_origen_destino', sw_origen_destino, 'productos', productos);
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -832,6 +834,7 @@ define(["angular", "js/controllers",
                 };
          
                 Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
+
                    if (data.status === 200) {
                 			var nombre = data.obj.nomb_pdf;
                 			setTimeout(function() {
@@ -850,6 +853,21 @@ define(["angular", "js/controllers",
                             };
 
                             Request.realizarRequest(API.PEDIDOS.CLIENTES.PEDIDO_CLIENTE_A_PEDIDO_FARMACIA, "POST", obj, function(data) {
+                            });
+                        }
+
+                        if(sw_origen_destino == 0){
+
+                            var obj = {
+                                session: $scope.session,
+                                data: {
+                                    numero_pedido : pedido
+                                }
+                            };
+
+                            //Ingresan productos provenientes de Cosmitet entonces se crear un pedido cliente en Duana basado en el pedido cliente cosmitet que generó este ingreso.
+                            Request.realizarRequest(API.PEDIDOS.CLIENTES.DUPLICAR_PEDIDO, "POST", obj, function(data) {
+
                             });
                         }
                     }

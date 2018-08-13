@@ -1945,24 +1945,18 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
      
      }).*/
     }).then(function (rows) {
-        
         var obj ={numero_pedido:numero_pedido};
-       tmp.numero_pedido = numero_pedido;
+        tmp.numero_pedido = numero_pedido;
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultarPedidoMultipleCliente",obj);
-        
     }).then(function (rows) {
-                that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-                res.send(G.utils.r(req.url, 'Se ha generado el documento', 200,
-                        {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
-
+        that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+        res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
         if (rows.length > 0) {
             tmp.sw_origen_destino  = rows[0].sw_origen_destino;
             pedido.centro_utilidad=pedido.centro_destino;
             pedido.bodega_id=pedido.bodega_destino;
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespachoAutomatico", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento, numeroDocumento: numero_documento});
-
         }
-
     }).then(function (detalleDocumento) {
         if (detalleDocumento && detalleDocumento.length > 0) {          
             var parametros = {

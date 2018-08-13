@@ -1755,8 +1755,9 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
                 RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";
 
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
-    G.knex.raw(sql, parametros).
-    then(function(resultado) { 
+    var query = G.knex.raw(sql, parametros);
+    G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado) { 
      
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
@@ -1856,7 +1857,7 @@ PedidosClienteModel.prototype.insertar_detalle_pedido_cliente = function(cotizac
                     empresa_origen_producto, \
                     centro_utilidad_origen_producto, \
                     '"+cotizacion.bodega+"' as bodega_origen_producto, \
-                    pedido_farmacia, \
+                    0 AS pedido_farmacia, \
                     nombre_bodega\
                     FROM ventas_ordenes_pedidos_d_tmp \
                     WHERE pedido_cliente_id_tmp = :1 \
@@ -1937,7 +1938,8 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function(obj,call
     var query =  G.knex('ventas_ordenes_pedido_multiple_clientes')
                   .where(function() {
                       if(obj.numero_pedido!==undefined){
-                         this.andWhere("id_orden_pedido_origen", obj.numero_pedido) 
+                         this.andWhere("id_orden_pedido_origen", obj.numero_pedido); 
+                         this.orWhere(G.knex.raw(("id_orden_pedido_destino = '" + obj.numero_pedido + "' AND sw_origen_destino = 0")));
                       }
                         
                       if(obj.cotizacion!==undefined){
@@ -1946,7 +1948,7 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function(obj,call
                         
                     })
                   .select(['id_orden_pedido_origen','id_orden_pedido_destino','id_orden_cotizacion_origen','id_orden_cotizacion_destino', 'sw_origen_destino']);
-        G.logError(G.sqlformatter.format(query.toString()));
+        //G.logError(G.sqlformatter.format(query.toString()));
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
@@ -2959,12 +2961,27 @@ PedidosClienteModel.prototype.consultarTotalProductosCotizacion = function(pedid
     });
 };
 
+PedidosClienteModel.prototype.duplicarPedido = function(numero_pedido, callback) {
+    //consultarTerceroPedidoOrigen
+    G.Q.nfcall(__consultarTerceroPedidoOrigen, numero_pedido).then(function(resultado) {
+        console.log('resultado tercero', resultado);
+        return G.Q.nfcall(__insertar_encabezado_pedido_cliente_duplicado, numero_pedido, resultado[0].tipo_id_tercero, resultado[0].tercero_id);
+    }).then(function(resultado) {
+        pedido = {numero_pedido: (resultado.rows.length > 0) ? resultado.rows[0].numero_pedido : 0, estado: 0};
+        return G.Q.nfcall(__generar_detalle_pedido_cliente_duplicado, numero_pedido, pedido.numero_pedido);
+    }).then(function(resultado) {
+        callback(false, true);
+    }).fail(function(err) {
+        callback(err);
+    }).done();
+};
+
+
 /*************************************************
  *
  *  FUNCIONES PRIVADAS
  *
  *************************************************/
-
 /*
  * Autor : Camilo Orozco
  * Descripcion : SQL para ingresar encabezado pedido cliente
@@ -3032,8 +3049,127 @@ console.log(G.sqlformatter.format(query.toString()));
     });
 
 
-}
-;
+};
+
+function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_tercero, tercero_id, callback) {
+
+    var sql = " INSERT INTO ventas_ordenes_pedidos(\
+                    empresa_id,\
+                    centro_destino,\
+                    bodega_destino,\
+                    tipo_id_tercero,\
+                    tercero_id,\
+                    tipo_id_vendedor,\
+                    vendedor_id,\
+                    observacion,    \
+                    observacion_cartera,\
+                    sw_aprobado_cartera,\
+                    estado,\
+                    estado_pedido,\
+                    tipo_producto,\
+                    usuario_id,\
+                    fecha_registro,\
+                    valor_total_cotizacion,\
+                    pedido_multiple_farmacia\
+                    ) (\
+                  select\
+                    empresa_id,\
+                    centro_destino,\
+                    '03' AS bodega_destino,\
+                    '" + tipo_id_tercero + "' as tipo_id_tercero,\
+                    '" + tercero_id + "' as tercero_id,\
+                    tipo_id_vendedor,\
+                    vendedor_id,\
+                    observacion,    \
+                    observacion_cartera,\
+                    sw_aprobado_cartera,\
+                    '1' as estado,\
+                    '0' as estado_pedido,\
+                    tipo_producto,\
+                    usuario_id,\
+                    now(),\
+                    valor_total_cotizacion,\
+                    pedido_multiple_farmacia\
+                    FROM ventas_ordenes_pedidos\
+                  where pedido_cliente_id = :1\
+                ) returning pedido_cliente_id as numero_pedido ";
+
+    var query = G.knex.raw(sql, {1: numero_pedido});
+    //console.log(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        callback(err);
+    });
+};
+
+function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callback) {
+    var parametros = {1: pedido, 2: numero_pedido};
+    var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
+                    pedido_cliente_id, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    usuario_id,    \
+                    fecha_registro,\
+                    empresa_origen_producto,\
+                    centro_utilidad_origen_producto,\
+                    bodega_origen_producto\
+                )(\
+                    SELECT \
+                    :1 as numero_pedido, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    usuario_id,    \
+                    fecha_registro,\
+                    empresa_origen_producto,\
+                    centro_utilidad_origen_producto,\
+                    bodega_origen_producto\
+                    FROM ventas_ordenes_pedidos_d \
+                    WHERE pedido_cliente_id = :2 \
+                ) ;";                            
+   
+    var query = G.knex.raw(sql, parametros);
+    G.logError(G.sqlformatter.format(query.toString()));
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log('error insertando detalle ', err);
+        callback(err);
+    });
+
+};
+
+function __consultarTerceroPedidoOrigen(numero_pedido, callback) {
+
+    var query = G.knex.select(['vop.tipo_id_tercero','vop.tercero_id'])
+            .from('ventas_ordenes_pedidos as vop')
+            .innerJoin('ventas_ordenes_pedido_multiple_clientes as vopmc', function(){
+                this.on('vopmc.id_orden_pedido_origen', 'vop.pedido_cliente_id');
+            })
+            .where('vopmc.id_orden_pedido_destino', numero_pedido);
+
+    query.then(function(rows) {
+        callback(false, rows);
+    }). catch (function(error) {
+        console.log("err [__consultarTerceroPedidoOrigen]: ", error);
+        callback(error);
+    });
+};
+
+
+   /*             select vop.tipo_id_tercero, vop.tercero_id 
+                from ventas_ordenes_pedidos vop 
+                join ventas_ordenes_pedido_multiple_clientes vopmc on (vopmc.id_orden_pedido_origen = vop.pedido_cliente_id)    
+                where vopmc.id_orden_pedido_destino = 94353
+
+*/
+
+
 
 /*
  * Autor : Camilo Orozco
@@ -3080,10 +3216,10 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
                 ) ;";                            
    
     var query = G.knex.raw(sql, parametros);
+    //G.logError(G.sqlformatter.format(query.toString()));
 
     if (transaccion)
         query.transacting(transaccion);
-console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado) {
 
         callback(false, resultado);

@@ -1224,7 +1224,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function (req, res) {
  * +Descripcion: Controlador encargado de invocar el model que actualizara
  *               la cabecera de la cotizacion
  * @fecha  09/11/2015
- * @param {type} req
+ * @param {type} reqvalidarDisponibilidad
  * @param {type} res
  * @returns {unresolved}
  */
@@ -1291,12 +1291,9 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
         return G.Q.nfcall(__agruparProductosPorBodega,rows[0]);
      
     }).then(function (resultado) { 
-     //  console.log("resultado  ",resultado);
-          return G.Q.nfcall(__insertarCabeceraClientesCotizacion,resultado,parametros,0,{});
- 
-        
+        console.log("Productos agrupados por bodega ",resultado);
+        return G.Q.nfcall(__insertarCabeceraClientesCotizacion,resultado,parametros,0,{});
     }).then(function (resultado) {
-        console.log("__insertarCabeceraDetalleBodegasMultiple ", resultado);
         
         return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",resultado);
 //        var productos=datos[Object.keys(datos)[index]];
@@ -5451,6 +5448,21 @@ PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
         //}
     }).then(function (resultado) {
         res.send(G.utils.r(req.url, 'Producto actualizado satisfactoriamente', 200, {}));
+    }).fail(function (err) {
+        console.log("err [pedidoClienteAPedidoFarmacia]: ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+    });
+};
+//Duplica un pedido en la bodega Duana
+PedidosCliente.prototype.duplicarPedido = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuario_id = req.session.user.usuario_id;
+
+    G.Q.ninvoke(that.m_pedidos_clientes, 'duplicarPedido', args.numero_pedido).then(function (resultado) {
+
+    }).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {}));
     }).fail(function (err) {
         console.log("err [pedidoClienteAPedidoFarmacia]: ", err);
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));

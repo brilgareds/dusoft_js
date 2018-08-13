@@ -1322,14 +1322,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @returns {undefined}
              */
             that.actualizarCabeceraPedidoCliente = function () {
-               var crearCotizacionDoble=0;                
-               var arreglo=Sesion.getUsuarioActual().getModuloActual().variables.Clientesfarmaciacosmitet.split(",");
-               
-               arreglo.forEach(function(data){                   
-                   if(data === $scope.Pedido.cliente.tipo_id_tercero+'-'+$scope.Pedido.cliente.id){
-                      crearCotizacionDoble=1;
-                   }
-               });
+                var arreglo=Sesion.getUsuarioActual().getModuloActual().variables.Clientesfarmaciacosmitet.split(",");
+                var crearCotizacionDoble=0;                
+                //se comenta para que no genere pedidos en las bodegas sin antes pasar por
+                /*arreglo.forEach(function(data){                   
+                    if(data === $scope.Pedido.cliente.tipo_id_tercero+'-'+$scope.Pedido.cliente.id){
+                        crearCotizacionDoble=1;
+                    }
+                });*/
                 
                 var obj = {};
                 var url = '';
@@ -1428,7 +1428,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             function __productosBodegaDuana(index, productos, productosBodegaDuana, bodega, callback) {
-console.log("__productosBodegaDuana");
                 var producto = productos[index];
 
                 if (producto === undefined) {
@@ -1454,11 +1453,8 @@ console.log("__productosBodegaDuana");
              * 
              **/
             that.validarDisponibleProductosCotizacion = function (estadoBoton, producto, callback) {
-console.log("validarDisponibleProductosCotizacion");
                 __productosBodegaDuana(0, $scope.Pedido.productos, [], $scope.Pedido.get_bodega_id(), function (resultado, productosBodega) {
 
-console.log("111111111111",resultado);
-console.log("222222222222",productosBodega);
 
                     var numeroPedidoCot;
                     var tipoPedidoCot;
@@ -1510,7 +1506,7 @@ console.log("222222222222",productosBodega);
                                 observacion += $scope.Pedido.get_observacion_cartera();
                                 $scope.Pedido.set_observacion_cartera(observacion);
                             }
-console.log(data.obj.pedidos_clientes.producto.length);
+
                             if (data.obj.pedidos_clientes.producto.length > 0) {
                                 that.ventanaProductosSinDisponibilidad(estadoBoton, data.obj.pedidos_clientes.producto);
                             } else {
@@ -1925,17 +1921,42 @@ console.log(data.obj.pedidos_clientes.producto.length);
              * @fecha 17/11/2016
              */
             that.generarPedidoCartera = function (aprobado, denegar) {
-console.log("generarPedidoCartera");
                 var productos = [];
 
                 that.validarDisponibleProductosCotizacion(1, productos, function (estado) {
-console.log("estado>>>>>>>",estado);
                     if (estado) { 
-          console.log("validarCotizacionClienteMultiple>>>>>>>",$scope.validarCotizacionClienteMultiple.length);              
-                        if($scope.validarCotizacionClienteMultiple.length >= 1){
-                          that.actualizarBodegaCotizacionClientesMultiple();
+                        if($scope.Pedido.estadoMultiplePedido == "1"){
+                            console.log('$scope.Pedido', $scope.Pedido);
+                            
+                            var obj = {};
+                            var url = '';
+                            // Observacion cartera para cotizacion
+                            if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                                //crear el pedido cliente en duana y en cosmitet cuando se tienen un pedido multiple
+                                url = API.PEDIDOS.CLIENTES.ACTUALIZAR_CABECERA_COTIZACION;
+                                obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        pedidos_clientes: {
+                                            cotizacion: $scope.Pedido,
+                                            bodega : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                                            clienteMultiple:1
+                                        }
+                                    }
+                                };
+
+                                Request.realizarRequest(url, "POST", obj, function (data) {
+                                    if (data.status === 200) {
+                                        AlertService.mostrarMensaje("success", data.msj);
+                                    }
+                                });
+                                
+                            }
+                           
+                          //that.actualizarBodegaCotizacionClientesMultiple();
+                        }else{
+                            that.generarObservacionCartera(aprobado);
                         }
-                        that.generarObservacionCartera(aprobado);
                     }
                 });
 

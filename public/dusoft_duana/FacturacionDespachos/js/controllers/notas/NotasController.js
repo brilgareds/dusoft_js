@@ -904,6 +904,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 factura_fiscal: datos.numeroFactura,
                                                 prefijo: datos.prefijo,
                                                 valor: $scope.root.impuestosnota.valorSubtotal,
+                                                total: $scope.root.impuestosnota.totalGeneral,
                                                 tipo_factura: datos.tipoFactura,
                                                 listado: listado
                                             }
@@ -1091,6 +1092,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 factura_fiscal: datos.numeroFactura,
                                                 prefijo: datos.prefijo,
                                                 valor: $scope.root.impuestosnota.valorSubtotal,
+                                                total: $scope.root.impuestosnota.totalGeneral,
                                                 tipo_factura: datos.tipoFactura,
                                                 listado: listado,
                                                 tipo_nota: nota
@@ -1100,8 +1102,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         if (nota === 1) {
                                             obj.data.concepto = $scope.root.concepto.id;
                                         }
-
-                                        console.log("obj", obj);
 
                                         notasService.guardarNotaCredito(obj, function (data) {
 

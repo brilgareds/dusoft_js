@@ -173,7 +173,7 @@ Notas.prototype.crearNota = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
-    var tabla, tabla2;
+    var tabla, tabla2, tabla3;
     var numeroNota;
 
     if (args.empresaId === undefined) {
@@ -198,10 +198,12 @@ Notas.prototype.crearNota = function (req, res) {
     if (args.tipo_factura === 0) {
         tabla = "notas_debito_despachos_clientes";
         tabla2 = "detalles_notas_debito_despachos_clientes";
+        tabla3 = "inv_facturas_despacho";
     }
     if (args.tipo_factura === 1) {
         tabla = "notas_debito_despachos_clientes_agrupados";
         tabla2 = "detalles_notas_debito_despachos_clientes_agrupados";
+        tabla3 = "inv_facturas_agrupadas_despacho";
     }
 
 
@@ -211,10 +213,11 @@ Notas.prototype.crearNota = function (req, res) {
         factura_fiscal: args.factura_fiscal,
         usuario_id: usuarioId,
         valor: args.valor,
+        total: args.total,
         tipo_factura: args.tipo_factura,
         tabla_1: tabla,
-        tabla_2: tabla2
-
+        tabla_2: tabla2,
+        tabla_3: tabla3
     };
 
     G.knex.transaction(function (transaccion) {
@@ -226,6 +229,10 @@ Notas.prototype.crearNota = function (req, res) {
             parametros.nota_debito_despacho_cliente_id = result[0];
 
             return G.Q.nfcall(__recorreListado, that, args.listado, parametros, 0, transaccion);
+
+        }).then(function () {
+
+            return G.Q.nfcall(that.m_notas.actualizarFacturaNotaDebito, parametros, transaccion);
 
         }).then(function () {
             transaccion.commit(numeroNota);
@@ -249,7 +256,7 @@ Notas.prototype.crearNotaCredito = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
-    var tabla, tabla2;
+    var tabla, tabla2, tabla3;
     var numeroNota;
 
     if (args.empresaId === undefined) {
@@ -274,10 +281,12 @@ Notas.prototype.crearNotaCredito = function (req, res) {
     if (args.tipo_factura === 0) {
         tabla = "notas_credito_despachos_clientes";
         tabla2 = "detalles_notas_credito_despachos_clientes";
+        tabla3 = "inv_facturas_despacho";
     }
     if (args.tipo_factura === 1) {
         tabla = "notas_credito_despachos_clientes_agrupados";
         tabla2 = "detalles_notas_credito_despachos_clientes_agrupados";
+        tabla3 = "inv_facturas_agrupadas_despacho";
     }
 
 
@@ -287,9 +296,11 @@ Notas.prototype.crearNotaCredito = function (req, res) {
         factura_fiscal: args.factura_fiscal,
         usuario_id: usuarioId,
         valor: args.valor,
+        total: args.total,
         tipo_factura: args.tipo_factura,
         tabla_1: tabla,
-        tabla_2: tabla2
+        tabla_2: tabla2,
+        tabla_3: tabla3
 
     };
     if (args.tipo_nota === 1) {
@@ -303,7 +314,11 @@ Notas.prototype.crearNotaCredito = function (req, res) {
                 parametros.nota_credito_despacho_cliente_id = result[0];
 
                 return G.Q.nfcall(__recorreListadoCredito, that, args.listado, parametros, 0, transaccion);
+                
+            }).then(function () {
 
+                return G.Q.nfcall(that.m_notas.actualizarFacturaNotaCredito, parametros, transaccion);
+                
             }).then(function () {
                 transaccion.commit(numeroNota);
             }).fail(function (err) {
@@ -514,8 +529,8 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
     G.Q.ninvoke(that.m_notas, 'ConsultarNotasCredito', parametros).then(function (result) {
 
         nota = result;
-        
-        
+
+
         parametros.nombreNota = "CREDITO";
 
         if (nota[0].tipo_factura === 0) {

@@ -350,7 +350,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
 //                }
 //
 //                if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'NC') {
-                    this.andWhere('ncdc.nota_credito_despacho_cliente_id', obj.numero);
+                this.andWhere('ncdc.nota_credito_despacho_cliente_id', obj.numero);
 //                }
             });
 
@@ -389,7 +389,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
 //                    }
 //
 //                    if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'NC') {
-                        this.andWhere('ncdc.nota_credito_despacho_cliente_id', obj.numero);
+                    this.andWhere('ncdc.nota_credito_despacho_cliente_id', obj.numero);
 //                    }
                 });
     });
@@ -1086,6 +1086,64 @@ NotasModel.prototype.listarConceptos = function (callback) {
         console.log("err [listarConceptos]:", err);
         callback(err);
     });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de actualizar la factura deacuerdo a la nota debito
+ * @fecha 2018-08-13 YYYY-MM-DD
+ * @returns {callback}
+ */
+NotasModel.prototype.actualizarFacturaNotaDebito = function (parametros, transaccion, callback) {
+
+    var query = G.knex(G.knex.raw(parametros.tabla_3))
+            .where('empresa_id', parametros.empresaId)
+            .andWhere('factura_fiscal', parametros.factura_fiscal)
+            .andWhere('prefijo', parametros.prefijo)
+            .update({
+                valor_notadebito: G.knex.raw('valor_notadebito +' + parametros.total),
+                saldo: G.knex.raw('saldo +' + parametros.total)
+            });
+
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de actualizar la factura deacuerdo a la nota credito
+ * @fecha 2018-08-13 YYYY-MM-DD
+ * @returns {callback}
+ */
+NotasModel.prototype.actualizarFacturaNotaCredito = function (parametros, transaccion, callback) {
+
+    var query = G.knex(G.knex.raw(parametros.tabla_3))
+            .where('empresa_id', parametros.empresaId)
+            .andWhere('factura_fiscal', parametros.factura_fiscal)
+            .andWhere('prefijo', parametros.prefijo)
+            .update({
+                valor_notacredito: G.knex.raw('valor_notacredito +' + parametros.total),
+                saldo: G.knex.raw('saldo -' + parametros.total)
+            });
+
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
 };
 
 NotasModel.$inject = [];

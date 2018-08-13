@@ -117,11 +117,33 @@ define(["angular", "js/services"], function (angular, services) {
 
                     /**
                      * @author German Galvis
+                     * @fecha  11/08/2018 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.consultarConceptos = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.LISTAR_CONCEPTOS, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
                      * @fecha  09/08/2018 DD/MM/YYYYY
-                     * +Descripcion crear la nota
+                     * +Descripcion crear la nota debito
                      */
                     self.guardarNota = function (obj, callback) {
                         Request.realizarRequest(API.NOTAS.CREAR_NOTA, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  13/08/2018 DD/MM/YYYYY
+                     * +Descripcion crear la nota credito
+                     */
+                    self.guardarNotaCredito = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.CREAR_NOTA_CREDITO, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

@@ -14,8 +14,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
                     $scope.root = {
                     };
-		    
+
                     $scope.root.prefijoBusquedaNota = 'seleccionar';
+                    $scope.root.concepto = [];
                     $scope.root.prefijosNotas = [
 //                        {prefijo: 'F', descripcion: "Factura"},
                         {prefijo: 'NC', descripcion: "Nota Credito"},
@@ -43,64 +44,29 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.visibleBotonBuscador = true;
                         callback();
                     };
-//		    
-//                    /**
-//                     * +Descripcion Metodo encargado de calcular los impuestos de una nota
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 27/07/2017 DD/MM/YYYY
-//                     * @returns {undefined}
-//                     */
-//		     that.traerPorcentajeImpuestosNotas = function(callback) {
-//		        var objs=$scope.root.listarImpuestos; 
-//			var parametros=objs.retencion;
-//			var terceroImpuesto=objs.retencionTercero;
-//			var obj=objs.factura;
-//			
-//			$scope.root.totalNota=$scope.root.precioNota;
-//			$scope.root.totalGravamenNota=$scope.root.gravamenNota;
-//
-//			    var impuestos = {
-//				porcentajeRtf: '0',
-//				porcentajeIca: '0',
-//				porcentajeReteiva: '0',
-//				porcentajeCree: '0',
-//				swRtf: parametros.sw_rtf,
-//				swIca: parametros.sw_ica,
-//				swReteiva: parametros.sw_reteiva,
-//				totalGeneral:0,
-//				retencionFuente:0,
-//				retencionIca:0,
-//				valorSubtotal:0,
-//				valorSubtotalFactura:0
-//			    };
-//			 
-//			    impuestos.valorSubtotalFactura = obj.getSaldo();
-//			//    impuestos.valorSubtotalFactura = obj.totalFactura - obj.totalGravamen;
-//
-//			    if (parametros.sw_rtf === '2' || parametros.sw_rtf === '3'){
-//				
-//				 if (parseInt(impuestos.valorSubtotalFactura) >= parseInt(parametros.base_rtf)) {
-//				                                         
-//				     impuestos.retencionFuente = $scope.root.totalNota * (terceroImpuesto.porcentaje_rtf / 100);				   
-//
-//				 }
-//			    }
-//
-//			    if (parametros.sw_ica === '2' || parametros.sw_ica === '3'){
-//				
-//				 if (parseInt(impuestos.valorSubtotalFactura) >= parseInt(parametros.base_ica)) {
-//				     
-//				    impuestos.retencionIca = $scope.root.totalNota * (terceroImpuesto.porcentaje_ica / 1000);
-//				 }
-//			    }
-//
-//			    impuestos.valorSubtotal =$scope.root.totalNota;
-//			    impuestos.iva = parseInt($scope.root.totalGravamenNota)+0;	    
-//			    impuestos.totalGeneral = parseInt(impuestos.valorSubtotal) + parseInt(impuestos.iva) - (parseInt(impuestos.retencionFuente) + parseInt(impuestos.retencionIca));
-//			    callback(impuestos);
-//			    return;
-//		    };
-//		    
+
+
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara
+                     *              los conceptos de las notas credito
+                     * @author German Galvis
+                     * @fecha 11/08/2018 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+                    that.listarConceptos = function () {
+                        var obj = {
+                            session: $scope.session,
+                            data: {}
+                        };
+
+                        notasService.consultarConceptos(obj, function (data) {
+                            if (data.status === 200) {
+                                $scope.conceptos = data.obj.listarConceptos;
+                            } else {
+                                AlertService.mostrarMensaje("Mensaje del sistema", data.msj);
+                            }
+                        });
+                    };
 
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
@@ -485,20 +451,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 //                       };
 //                       var modalInstance = $modal.open($scope.opts);
 //                   };
-//		    
-//		    /**
-//                     * +Descripcion metodo para validar sincronizacion
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 18/05/2017
-//                     * @returns {undefined}
-//                     */
-//		    $scope.validarSincronizacion=function(estado){
-//			var respuesta=false;
-//			if(estado === '1' || estado === null){
-//			    respuesta=true;
-//			}
-//			return respuesta;
-//		    };
+		    
+		    /**
+                     * +Descripcion metodo para validar sincronizacion
+                     * @author German Galvis
+                     * @fecha 13/08/2018
+                     * @returns {undefined}
+                     */
+		    $scope.validarSincronizacion=function(estado){
+			var respuesta=false;
+			if(estado === '1' || estado === null){
+			    respuesta=true;
+			}
+			return respuesta;
+		    };
 
                     /**
                      * +Descripcion metodo para imprimir las facturas
@@ -526,36 +492,36 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                         });
                     };
-		    
-		    /**
+
+                    /**
                      * +Descripcion metodo para imprimir las notas
                      * @author German Galvis
                      * @fecha 10/08/2018
                      * @returns {undefined}
                      */
-		    $scope.onImprimirNota=function(datos){
-                        console.log("datos",datos);
-			 var parametros = {
+                    $scope.onImprimirNota = function (datos) {
+                        console.log("datos", datos);
+                        var parametros = {
                             session: $scope.session,
                             data: {
-			        numeroNota:datos.numeroNota,
-				empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo()
+                                numeroNota: datos.numeroNota,
+                                empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo()
                             }
                         };
-                        
-                        console.log("parametros",parametros);
-                        
-                        notasService.imprimirNota(parametros, function(data) {
-				    
+
+                        console.log("parametros", parametros);
+
+                        notasService.imprimirNota(parametros, function (data) {
+
                             if (data.status === 200) {
-				var nombre = data.obj.imprimirNota;
-				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-				
+                                var nombre = data.obj.imprimirNota;
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+
                             } else {
-				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         });
-		    };
+                    };
 //		    /**
 //                     * +Descripcion metodo para imprimir las facturas
 //                     * @author Andres Mauricio Gonzalez
@@ -657,11 +623,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
 
                     $scope.onNotaCreditoValor = function (datos) {
-                        $scope.root.precioNota = 0;
+                        $scope.root.mostrarConcepto = true;
                         $scope.root.gravamenNota = 0;
                         $scope.root.descripcionNota = "";
                         $scope.root.tituloNota = "Nota Credito";
-                        that.verNota(1, datos);
+                        that.listarConceptos();
+                        that.verNotaCredito(1, datos);
                     };
 
                     /**
@@ -672,11 +639,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
 
                     $scope.onNotaCreditoDevolucion = function (datos) {
-                        $scope.root.precioNota = 0;
-                        $scope.root.gravamenNota = 0;
+                        $scope.root.mostrarConcepto = false;
                         $scope.root.descripcionNota = "";
                         $scope.root.tituloNota = "Nota Credito";
-                        that.verNota(2, datos);
+                        that.verNotaCredito(2, datos);
                     };
 
                     /**
@@ -686,11 +652,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @returns {undefined}
                      */
                     $scope.onNotaDebito = function (datos) {
-                        $scope.root.precioNota = 0;
-                        $scope.root.gravamenNota = 0;
                         $scope.root.descripcionNota = "";
                         $scope.root.tituloNota = "Nota Debito";
-                        that.verNota(0, datos);
+                        that.verNotaDebito(0, datos);
                     };
 //
 //                    /**
@@ -772,7 +736,197 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @returns {undefined}
                      * nota : 0-debito 1-credito valor 2-credito devolucion
                      */
-                    that.verNota = function (nota, datos) {
+                    that.verNotaDebito = function (nota, datos) {
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            windowClass: 'app-modal-window-xlg-ls',
+                            keyboard: true,
+                            showFilter: true,
+                            cellClass: "ngCellText",
+                            templateUrl: 'views/notas/vistaNotaDebito.html',
+                            scope: $scope,
+                            controller: ['$scope', '$modalInstance', 'notasService', function ($scope, $modalInstance, notasService) {
+
+                                    $scope.root.impuestosnota = {
+                                        valorSubtotal: 0,
+                                        iva: 0,
+                                        retencionFuente: 0,
+                                        retencionIca: 0,
+                                        totalGeneral: 0
+                                    };
+
+
+                                    /**
+                                     * +Descripcion Metodo encargado de invocar el servicio que consulta
+                                     *              el detalle de la factura
+                                     * @author German Galvis
+                                     * @fecha 08/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    that.listarDetalleFactura = function () {
+
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresa_id: datos.empresa,
+                                                facturaFiscal: datos.numeroFactura,
+                                                tipoFactura: nota
+                                            }
+                                        };
+
+                                        notasService.detalleFactura(obj, function (data) {
+                                            if (data.status === 200) {
+
+                                                $scope.root.listadoNota = notasService.renderProductoFacturas(data.obj.ConsultarDetalleFactura);
+
+                                            } else {
+                                                $scope.root.listadoNota = null;
+                                            }
+
+                                        });
+                                    };
+
+                                    that.listarDetalleFactura();
+
+                                    $scope.cerrar = function () {
+                                        $modalInstance.close();
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de validar la activacion del check
+                                     * @author German Galvis
+                                     * @fecha 09/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.habilitarCheck = function (producto) {
+                                        var disabled = false;
+
+                                        if (producto.cantidad_ingresada === undefined || producto.cantidad_ingresada === "" || parseInt(producto.cantidad_ingresada) <= 0) {
+                                            disabled = true;
+                                        }
+
+                                        return disabled;
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de calcular el valor de la nota del producto
+                                     * @author German Galvis
+                                     * @fecha 09/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.calcularValor = function (producto) {
+                                        var suma;
+                                        suma = (parseInt(producto.cantidad) * parseInt(producto.cantidad_ingresada));
+
+                                        producto.setTotalNota(suma);
+
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de calcular los valores de la nota 
+                                     * @author German Galvis
+                                     * @fecha 09/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.onSeleccionarOpcion = function () {
+
+                                        var subtotal = 0, iva = 0;
+
+                                        $scope.root.listadoNota.forEach(function (data) {
+                                            if (data.seleccionado)
+                                                subtotal += data.total_nota;
+                                            iva += ((data.cantidad_ingresada * (data.porc_iva / 100)) * data.cantidad);
+                                        });
+                                        $scope.root.impuestosnota.valorSubtotal = subtotal;
+                                        $scope.root.impuestosnota.iva = iva;
+
+                                        $scope.root.impuestosnota.totalGeneral = $scope.root.impuestosnota.valorSubtotal + $scope.root.impuestosnota.iva - $scope.root.impuestosnota.retencionFuente - $scope.root.impuestosnota.retencionIca;
+
+                                    };
+
+                                    $scope.listaNotas2 = {
+                                        data: 'root.listadoNota',
+                                        enableColumnResize: true,
+                                        enableRowSelection: false,
+                                        enableCellSelection: true,
+                                        enableHighlighting: true,
+                                        columnDefs: [
+                                            {field: 'Codigo', width: "10%", displayName: 'Codigo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getCodigo()}}</p></div>'}, //
+                                            {field: 'Producto', width: "22%", displayName: 'Producto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
+                                            {field: 'Cantidad', width: "6%", displayName: 'Cantidad', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getCantidad()}}</p></div>'},
+                                            {field: 'Lote', width: "6%", displayName: 'Lote', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getLote()}}</p></div>'},
+                                            {field: 'Valor Unitario', width: "10%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()}}</p></div>'},
+                                            {field: 'Valor Nota', width: "10%", displayName: 'Valor Nota', cellClass: "ngCellText",
+                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
+                                            {field: 'Total Nota', width: "10%", displayName: 'Total Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()}}</p></div>'},
+                                            {field: 'Observacion', width: "20%", displayName: 'Observacion', cellClass: "ngCellText",
+                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-model="row.entity.observacion" class="form-control grid-inline-input" name="observacion" id="observacion" /> </div>'},
+                                            {field: 'Opcion', width: "6%", displayName: 'Opcion', cellClass: "ngCellText",
+                                                cellTemplate: '<div class="col-xs-16 align-items-center">\
+                                                                    <input-check  ng-disabled="habilitarCheck(row.entity)" class="btn btn-default btn-xs center-block" ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion()">\
+                                                               </div>'}
+                                        ]
+                                    };
+
+
+
+
+                                    $scope.guardarNotas = function () {
+
+                                        var listado = [];
+                                        var i;
+                                        for (i = 0; i < $scope.root.listadoNota.length; i++) {
+                                            if ($scope.root.listadoNota[i].seleccionado) {
+                                                listado.push($scope.root.listadoNota[i]);
+                                            }
+                                        }
+
+
+
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresaId: datos.empresa,
+                                                factura_fiscal: datos.numeroFactura,
+                                                prefijo: datos.prefijo,
+                                                valor: $scope.root.impuestosnota.valorSubtotal,
+                                                tipo_factura: datos.tipoFactura,
+                                                listado: listado
+                                            }
+                                        };
+
+                                        notasService.guardarNota(obj, function (data) {
+
+                                            if (data.status === 200) {
+
+                                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj + " Numero Nota Debito: " + data.obj.crearNota);
+
+                                            } else {
+                                                AlertService.mostrarMensaje("warning", data.msj);
+                                            }
+
+                                        });
+
+
+                                    };
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+
+
+                    };
+
+                    /**
+                     * +Descripcion scope del grid para mostrar el detalle de las notas
+                     * @author German Galvis
+                     * @fecha 06/08/2018
+                     * @returns {undefined}
+                     * nota : 0-debito 1-credito valor 2-credito devolucion
+                     */
+                    that.verNotaCredito = function (nota, datos) {
 
                         $scope.opts = {
                             backdrop: true,
@@ -869,12 +1023,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                      */
                                     $scope.onSeleccionarOpcion = function () {
 
-                                        var subtotal = 0,iva = 0;
+                                        var subtotal = 0, iva = 0;
 
                                         $scope.root.listadoNota.forEach(function (data) {
                                             if (data.seleccionado)
                                                 subtotal += data.total_nota;
-                                                iva += ((data.cantidad_ingresada * (data.porc_iva/100))* data.cantidad);
+                                            iva += ((data.cantidad_ingresada * (data.porc_iva / 100)) * data.cantidad);
                                         });
                                         $scope.root.impuestosnota.valorSubtotal = subtotal;
                                         $scope.root.impuestosnota.iva = iva;
@@ -919,8 +1073,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             }
                                         }
 
-
-
                                         var obj = {
                                             session: $scope.session,
                                             data: {
@@ -929,18 +1081,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                                 prefijo: datos.prefijo,
                                                 valor: $scope.root.impuestosnota.valorSubtotal,
                                                 tipo_factura: datos.tipoFactura,
-                                                listado: listado
+                                                listado: listado,
+                                                tipo_nota: nota
                                             }
                                         };
 
+                                        if (nota === 1) {
+                                            obj.data.concepto = $scope.root.concepto.id;
+                                        }
 
                                         console.log("obj", obj);
 
-                                        notasService.guardarNota(obj, function (data) {
-                                            
+                                        notasService.guardarNotaCredito(obj, function (data) {
+
                                             if (data.status === 200) {
-                                                
-                                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj + " Numero Nota: " + data.obj.crearNota );
+
+                                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj + " Numero Nota Credito: " + data.obj.crearNota);
 
                                             } else {
                                                 AlertService.mostrarMensaje("warning", data.msj);

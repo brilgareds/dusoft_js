@@ -160,12 +160,12 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "T.tipo_id_tercero",
         "T.tercero_id",
         "T.nombre_tercero",
-        "ifd.fecha_registro",
+        G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         "ifd.valor_total",
         "ifd.saldo",
         "nddc.nota_debito_despacho_cliente_id AS numero",
         "nddc.valor AS valor_nota",
-        "nddc.fecha_registro AS fecha_registro_nota",
+        G.knex.raw("TO_CHAR(nddc.fecha_registro,'YYYY-MM-DD') as fecha_registro_nota"),
         G.knex.raw("0 AS tipo_factura"),
         "a.estado",
         G.knex.raw("CASE WHEN a.estado = 0 THEN\
@@ -179,12 +179,12 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "T.tipo_id_tercero",
         "T.tercero_id",
         "T.nombre_tercero",
-        "ifd.fecha_registro",
+        G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         "ifd.valor_total",
         "ifd.saldo",
         "nddc.nota_debito_despacho_cliente_id AS numero",
         "nddc.valor AS valor_nota",
-        "nddc.fecha_registro AS fecha_registro_nota",
+        G.knex.raw("TO_CHAR(nddc.fecha_registro,'YYYY-MM-DD') as fecha_registro_nota"),
         G.knex.raw("1 AS tipo_factura"),
         "a.estado",
         G.knex.raw("CASE WHEN a.estado = 0 THEN\
@@ -216,7 +216,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
 //                }
 //
 //                if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'ND') {
-                    this.andWhere('nddc.nota_debito_despacho_cliente_id', obj.numero);
+                this.andWhere('nddc.nota_debito_despacho_cliente_id', obj.numero);
 //                }
             });
 
@@ -712,6 +712,54 @@ NotasModel.prototype.agregarCabeceraNotaDebito = function (parametros, transacci
 /**
  * @author German Galvis
  * +Descripcion agrega nota
+ * @fecha 2018-08-13 YYYY-MM-DD
+ */
+NotasModel.prototype.agregarCabeceraNotaCredito = function (parametros, transaccion, callback) {
+
+    var query = G.knex(parametros.tabla_1).
+            returning('nota_credito_despacho_cliente_id').
+            insert({empresa_id: parametros.empresaId, prefijo: parametros.prefijo, factura_fiscal: parametros.factura_fiscal,
+                valor: parametros.valor, usuario_id: parametros.usuario_id, tipo: parametros.tipoNota
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarCabeceraNotaCredito", err);
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion agrega nota
+ * @fecha 2018-08-13 YYYY-MM-DD
+ */
+NotasModel.prototype.agregarCabeceraNotaCreditoDevolucion = function (parametros, transaccion, callback) {
+
+    var query = G.knex(parametros.tabla_1).
+            returning('nota_credito_despacho_cliente_id').
+            insert({empresa_id: parametros.empresaId, prefijo: parametros.prefijo, factura_fiscal: parametros.factura_fiscal,
+                valor: parametros.valor, usuario_id: parametros.usuario_id, tipo: parametros.tipoNota
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarCabeceraNotaCreditoDevolucion", err);
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion agrega nota
  * @fecha 2018-08-06 YYYY-MM-DD
  */
 NotasModel.prototype.agregarDetalleNotaDebito = function (parametros, transaccion, callback) {
@@ -735,383 +783,33 @@ NotasModel.prototype.agregarDetalleNotaDebito = function (parametros, transaccio
 
 
 };
-//
-///*
-// * Autor : Andres Mauricio Gonzalez
-// * Descripcion : SQL encargado de eliminar los conceptos tmp_detalle_conceptos
-// * @fecha: 08/06/2015 2:43 pm
-// */
-//NotasModel.prototype.eliminarTmpDetalleConceptos = function(obj, callback) {
-//
-//    var query = G.knex('tmp_detalle_conceptos')
-//	.where('rc_concepto_id', obj.rc_concepto_id)
-//	.del();
-//
-//	query.then(function(resultado) {
-//
-//	callback(false, resultado);
-//	
-//    }). catch (function(err) {
-//        console.log("err (/catch) [eliminarTmpDetalleConceptos]: ", err);
-//        callback({err: err, msj: "Error al eliminar los temporales"});
-//    });
-//};
-//
-///**
-// * +Descripcion Metodo encargado de bloquear la tabla documentos
-// * @returns {callback}
-// */
-//NotasModel.prototype.bloquearTablaDocumentos = function(transaccion, callback) {
-//
-//    var sql = "LOCK TABLE documentos IN ROW EXCLUSIVE MODE ;";
-//
-//    var query = G.knex.raw(sql);
-//
-//    if (transaccion)
-//	query.transacting(transaccion);
-//   
-//	query.then(function(resultado) {
-//        callback(false, resultado);
-//    }). catch (function(err) {
-//        console.log("err (/catch) [bloquearTabla documentos]: ", err);
-//        callback(err);
-//    });
-//
-//};
-//
-///**
-// * +Descripcion Metodo encargado de consultar documentos e incrementar en uno
-// * @returns {undefined}
-// */
-//NotasModel.prototype.numeracionDocumento= function(obj,transaccion, callback) {
-//
-//    var query = G.knex('documentos')
-//	.where('documento_id', obj.documentoId)
-//	.returning(['numeracion','prefijo'])
-//	.increment('numeracion', 1);
-//    
-//   if (transaccion)
-//	query.transacting(transaccion);   
-//    
-//	query.then(function(resultado) {
-//	    callback(false, resultado);
-//	}). catch (function(err) {
-//	    console.log("err (/catch) [numeracionDocumento]: ", err);
-//	    callback("Error al actualizar el tipo de formula");
-//	});
-//};
-//
-//
-///**
-// * +Descripcion Metodo encargado de registrar en la tabla fac_facturas
-//
-// * @param {type} transaccion
-// * @param {type} callback
-// * @returns {undefined}
-// */
-//NotasModel.prototype.insertarFacFacturas = function(parametros,transaccion, callback) {
-//    
-//    var parametro={
-//	empresa_id : parametros.empresaId, 
-//	prefijo :  parametros.prefijo, 
-//	factura_fiscal : parametros.factura, 
-//	estado : parametros.estado, 
-//	usuario_id : parametros.usuarioId, 
-//	fecha_registro : 'now()', 
-//	tipo_id_tercero : parametros.tipoIdTercero, 
-//	tercero_id : parametros.terceroId, 
-//	sw_clase_factura : parametros.swClaseFactura,
-//	documento_id : parametros.documentoId, 
-//	tipo_factura : parametros.tipoFactura, 
-//	centro_utilidad : parametros.centroUtilidad
-//    };
-//        
-//    var query = G.knex('fac_facturas').insert(parametro);
-//
-//   if (transaccion)
-//	query.transacting(transaccion); 
-//	query.then(function(resultado) {
-//        
-//	callback(false, resultado);
-//	
-//    }). catch (function(err) {
-//        console.log("err (/catch) [insertarFacFacturas]: ", err);
-//        callback({err: err, msj: "Error al guardar en insertarFacFacturas]"});
-//    });
-//};
-//
-///**
-// * +Descripcion Metodo encargado de registrar en la tabla tmp_detalle_conceptos
-//
-// * @param {type} transaccion
-// * @param {type} callback
-// * @returns {undefined}
-// */
-//NotasModel.prototype.insertarFacFacturasConceptos = function(parametro,transaccion,callback) {
-//
-//    var parametros = {
-//		    empresa_id : parametro.empresaId,
-//		    prefijo : parametro.prefijo,
-//		    factura_fiscal : parametro.facturaFiscal,
-//		    sw_tipo : parametro.swTipo,
-//		    cantidad : parametro.cantidad,
-//		    precio : parametro.precio,
-//		    valor_total : parametro.valorTotal,
-//		    porcentaje_gravamen : parametro.porcentajeGravamen,
-//		    valor_gravamen : parametro.valorGravamen,
-//		    concepto : parametro.descripcion,
-//		    caja_id :  parametro.cajaId
-//    };
-//
-//    var query = G.knex('fac_facturas_conceptos')
-//	.insert(parametros)
-//	.returning(['fac_factura_concepto_id']);
-//
-//     if (transaccion)
-//        query.transacting(transaccion); 
-//    
-//	query.then(function(resultado) {
-//       
-//        callback(false, resultado);
-//    }). catch (function(err) {
-//        console.log("err (/catch) [insertarFacFacturasConceptos]: ", err);
-//        callback({err: err, msj: "Error al guardar la factura conceptos]"});
-//    });
-//};
-//
-///**
-// * +Descripcion Metodo encargado de registrar en la tabla fac_facturas_conceptos_notas
-//
-// * @param {type} transaccion
-// * @param {type} callback
-// * @returns {undefined}
-// */
-//NotasModel.prototype.insertarFacFacturasConceptosNotas = function(parametro,transaccion,callback) {
-//
-//    var parametros = {
-//		    documento_id : parametro.documentoId,
-//		    prefijo : parametro.prefijo,
-//		    factura_fiscal : parametro.facturaFiscal,
-//		    sw_contable : parametro.swContable,
-//		    valor_nota_total : parametro.valorNotaTotal,
-//		    valor_gravamen : parametro.porcentajeGravamen,
-//		    descripcion : parametro.descripcion,
-//		    usuario_id : parametro.usuarioId,
-//		    fecha_registro : 'now()',
-//		    empresa_id : parametro.empresaId,
-//		    prefijo_nota : parametro.prefijoNota,
-//		    numero_nota : parametro.numeroNota,
-//	            bodega: parametro.bodega
-//    };
-//    var query = G.knex('fac_facturas_conceptos_notas') 
-//	//.returning(['fac_facturas_conceptos_notas_id'])
-//	.insert(parametros);
-//
-//     if(transaccion)
-//        query.transacting(transaccion);  
-//    
-//	query.then(function(resultado) {
-//        callback(false, resultado);
-//    }). catch (function(err) {
-//        console.log("err (/catch) [insertarFacFacturasConceptosNotas]: ", err);
-//        callback({err: err, msj: "Error al guardar la factura conceptos Notas]"});
-//    });
-//};
-//
-///**
-// * +Descripcion Metodo encargado de registrar la direccion ip en el 
-//
-// * @param {type} transaccion
-// * @param {type} callback
-// * @returns {undefined}
-// */
-//NotasModel.prototype.insertarPcFactura = function(parametro,transaccion, callback){
-//   
-//    var parametros = {ip: parametro.direccionIp,
-//            prefijo: parametro.prefijo,
-//            factura_fiscal: parametro.factura,
-//            sw_tipo_factura : parametro.swTipoFactura,
-//            fecha_registro: G.knex.raw('now()'),
-//            empresa_id: parametro.empresaId
-//            };
-//        
-//    var query = G.knex('pc_factura_clientes').insert(parametros);
-//    
-//    if(transaccion)
-//        query.transacting(transaccion);   
-//    
-//        query.then(function(resultado){   
-//        callback(false, resultado);
-//        }).catch(function(err){    
-//        callback({err:err, msj: "Error al guardar la insertarPcFactura"});   
-//        });
-//};
-//
-///**
-// * +Descripcion Metodo encargado de registrar en la tabla tmp_detalle_conceptos
-// * @returns {callback}
-// */
-//NotasModel.prototype.insertarFacFacturasConceptosDc = function(parametro,transaccion,callback) {
-//
-//    var parametros = {
-//		    empresa_id : parametro.empresaId,
-//		    fac_factura_concepto_id: parametro.id,	    
-//		    concepto_id : parametro.concepto,
-//		    grupo_concepto :  parametro.grupoConceptoId
-//    };
-//
-//    var query = G.knex('fac_facturas_conceptos_dc')
-//	        .insert(parametros);
-//     if (transaccion)
-//        query.transacting(transaccion); 
-//    
-//	query.then(function(resultado) {
-//       
-//        callback(false, resultado);
-//    }). catch (function(err) {
-//        console.log("err (/catch) [insertarFacFacturasConceptosDc]: ", err);
-//        callback({err: err, msj: "Error al guardar la factura conceptos dc]"});
-//    });
-//};
-///**
-// * +Descripcion Metodo encargado de registrar en la tabla tmp_detalle_conceptos
-// * @returns {undefined}
-// */
-//NotasModel.prototype.insertarFacturasContado = function(parametro,transaccion,callback) {
-//
-//    var parametros = {
-//		    empresa_id : parametro.empresaId,
-//		    factura_fiscal: parametro.factura,	    
-//		    centro_utilidad : parametro.centroUtilidad,
-//		    prefijo : parametro.prefijo,
-//		    total_abono : parametro.totalAbono,
-//		    total_efectivo : parametro.totalEfectivo,
-//		    total_cheques : parametro.totalCheque,
-//		    total_tarjetas : parametro.totalTarjeta,
-//		    total_bonos : parametro.totalAbonos,
-//		    estado : '0',
-//		    tipo_id_tercero : parametro.tipoIdTercero,
-//		    tercero_id : parametro.terceroId,
-//		    fecha_registro : G.knex.raw('now()'),
-//		    usuario_id : parametro.usuarioId,
-//		    caja_id : parametro.cajaId
-//    };
-//   
-//    var query = G.knex('fac_facturas_contado')
-//	        .insert(parametros);
-//     if (transaccion)
-//        query.transacting(transaccion); 
-//    
-//	query.then(function(resultado) {
-//       
-//        callback(false, resultado);
-//    }). catch (function(err) {
-//        console.log("err (/catch) [insertarFacturasContado]: ", err);
-//        callback({err: err, msj: "Error al guardar Facturas Contado]"});
-//    });
-//};
-//
-///**
-// * +Descripcion Metodo encargado de actualizar fac_facturas total_factura
-// * @returns {callback}
-// */
-//NotasModel.prototype.actualizarTotalesFacturas= function(obj,transaccion, callback) {
-//
-//    var query = G.knex('fac_facturas')
-//		.where('empresa_id', obj.empresaId)
-//		.andWhere('prefijo', obj.prefijo)
-//		.andWhere('factura_fiscal', obj.factura)
-//		.update({
-//		    total_factura:obj.totalFactura,
-//		    gravamen:obj.totalGravamen
-//		});		
-//     if (transaccion)
-//        query.transacting(transaccion); 
-//    
-//	query.then(function(resultado){ 
-//	callback(false, resultado);
-//	
-//    }).catch(function(err){    
-//       console.log("err (/catch) [actualizarTotalesFacturas]: ", err);
-//       callback("Error al actualizar fac_facturas");  
-//    });
-//};
-//
-///**
-// * +Descripcion Metodo encargado de actualizar fac_facturas impuestos
-// * @returns {callback}
-// */
-//NotasModel.prototype.actualizarImpuestoFacturas= function(obj,transaccion, callback) {
-//
-//    var query = G.knex('fac_facturas')
-//		.where('empresa_id', obj.empresaId)
-//		.andWhere('prefijo', obj.prefijo)
-//		.andWhere('factura_fiscal', obj.factura)
-//		.update({
-//		    porcentaje_rtf:obj.porcentajeRtf,
-//		    porcentaje_ica:obj.porcentajeIca,
-//		    porcentaje_reteiva:obj.porcentajeReteiva,
-//		    porcentaje_cree:obj.porcentajeCree
-//		});
-//		
-//    if (transaccion)
-//        query.transacting(transaccion); 
-//    
-//	query.then(function(resultado){ 
-//       callback(false, resultado);
-//    }).catch(function(err){    
-//       console.log("err (/catch) [actualizarImpuestoFacturas]: ", err);
-//       callback("Error al actualizar fac_facturas");  
-//    });
-//};
-///**
-// * +Descripcion Metodo encargado de actualizar saldos de la factura este solo se invoca 
-// * porque realmente el que actualiza el saldo es el triger
-// * @returns {callback}
-// */
-//NotasModel.prototype.actualizarSaldoFacturas= function(obj,transaccion, callback) {
-//
-//    var query = G.knex('fac_facturas')
-//		.where('empresa_id', obj.empresaId)
-//		.andWhere('prefijo', obj.prefijo)
-//		.andWhere('factura_fiscal', obj.facturaFiscal)
-//		.increment('saldo',obj.saldo);
-//		
-//    if (transaccion)
-//        query.transacting(transaccion); 
-//    
-//	query.then(function(resultado){ 	    
-//        callback(false, resultado);
-//    }).catch(function(err){    
-//        console.log("err (/catch) [actualizarImpuestoFacturas]: ", err);
-//        callback("Error al actualizar fac_facturas");  
-//    });
-//};
-//
-//
-///*
-// * Autor : Andres Mauricio Gonzalez
-// * Descripcion : SQL encargado de eliminar los conceptos tmp_detalle_conceptos
-// * @fecha: 08/06/2015 2:43 pm
-// */
-//NotasModel.prototype.eliminarTmpDetalleConceptosTerceros = function(obj,transaccion, callback) {
-//
-//    var query = G.knex('tmp_detalle_conceptos')
-//		.where('tipo_id_tercero', obj.tipoIdTercero)
-//		.where('tercero_id', obj.terceroId)
-//		.where('empresa_id', obj.empresaId)
-//		.del();
-//    
-//     if (transaccion)
-//        query.transacting(transaccion); 
-//    
-//	query.then(function(resultado) {	    
-//        callback(false, resultado);
-//    }). catch (function(err) {
-//        console.log("err (/catch) [eliminarTmpDetalleConceptosTerceros]: ", err);
-//        callback({err: err, msj: "Error al eliminar los temporales por terceros"});
-//    });
-//};
+
+/**
+ * @author German Galvis
+ * +Descripcion agrega detalle nota
+ * @fecha 2018-08-13 YYYY-MM-DD
+ */
+NotasModel.prototype.agregarDetalleNotaCredito = function (parametros, transaccion, callback) {
+
+
+    var query = G.knex(parametros.tabla_2).
+            insert({nota_credito_despacho_cliente_id: parametros.nota_credito_despacho_cliente_id, item_id: parametros.item_id, valor: parametros.valor,
+                observacion: parametros.observacion, valor_iva: parametros.valor_iva, valor_rtf: parametros.valor_rtf,
+                valor_ica: parametros.valor_ica, movimiento_id: parametros.movimiento_id
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error agregarDetalleNotaCredito", err);
+        callback(err);
+    }).done();
+
+
+};
 
 
 /**
@@ -1148,8 +846,8 @@ NotasModel.prototype.listarEmpresa = function (obj, callback) {
 
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit);
-    
-    
+
+
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -1191,7 +889,7 @@ NotasModel.prototype.consultarProductosNotasDebito = function (parametros, callb
             .innerJoin("inventarios_productos as a", "a.codigo_producto", "ifdd.codigo_producto")
             .innerJoin("inv_grupos_inventarios as b", "b.grupo_id", "a.grupo_id ")
             .where("dnddc.nota_debito_despacho_cliente_id", parametros.numeroNota);
-        
+
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -1244,12 +942,33 @@ NotasModel.prototype.clienteNota = function (parametros, callback) {
 
             })
             .where("nddc.nota_debito_despacho_cliente_id", parametros.numeroNota);
-        
+
     query.then(function (resultado) {
         callback(false, resultado);
 
     }).catch(function (err) {
         console.log("err [clienteNota]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de traer los conceptos
+ * @fecha 2018-08-11 YYYY-MM-DD
+ * @returns {callback}
+ */
+NotasModel.prototype.listarConceptos = function (callback) {
+
+    var query = G.knex.select()
+            .from('concepto_nota')
+            .where('sw_mostrar', '1')
+            .orderBy('id');
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarConceptos]:", err);
         callback(err);
     });
 };

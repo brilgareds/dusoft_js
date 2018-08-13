@@ -148,6 +148,22 @@ Notas.prototype.ConsultarDetalleFactura = function (req, res) {
     }
 };
 
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta los tipos de concepto
+ * @fecha 2018-08-11 (YYYY-MM-DD)
+ */
+Notas.prototype.listarConceptos = function (req, res) {
+    var that = this;
+    G.Q.nfcall(that.m_notas.listarConceptos).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listar conceptos ok!!!!', 200, {listarConceptos: resultado}));
+            }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar tipos de conceptos', 500, {listarConceptos: {}}));
+    }).done();
+};
+
 /**
  * @author German Galvis
  * +Descripcion crea la nota 
@@ -226,6 +242,108 @@ Notas.prototype.crearNota = function (req, res) {
 
 /**
  * @author German Galvis
+ * +Descripcion crea la nota 
+ * @fecha 2018-08-13 (YYYY-MM-DD)
+ */
+Notas.prototype.crearNotaCredito = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+    var tabla, tabla2;
+    var numeroNota;
+
+    if (args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'La empresaId NO estan definida', 404, {}));
+        return;
+    }
+    if (args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo NO esta definido', 404, {}));
+        return;
+    }
+    if (args.factura_fiscal === undefined) {
+        res.send(G.utils.r(req.url, 'La factura_fiscal NO esta definida', 404, {}));
+        return;
+    }
+    if (args.valor === undefined) {
+        res.send(G.utils.r(req.url, 'El valor NO esta definido', 404, {}));
+        return;
+    }
+
+
+
+    if (args.tipo_factura === 0) {
+        tabla = "notas_credito_despachos_clientes";
+        tabla2 = "detalles_notas_credito_despachos_clientes";
+    }
+    if (args.tipo_factura === 1) {
+        tabla = "notas_credito_despachos_clientes_agrupados";
+        tabla2 = "detalles_notas_credito_despachos_clientes_agrupados";
+    }
+
+
+    var parametros = {
+        empresaId: args.empresaId,
+        prefijo: args.prefijo,
+        factura_fiscal: args.factura_fiscal,
+        usuario_id: usuarioId,
+        valor: args.valor,
+        tipo_factura: args.tipo_factura,
+        tabla_1: tabla,
+        tabla_2: tabla2
+
+    };
+    if (args.tipo_nota === 1) {
+
+        G.knex.transaction(function (transaccion) {
+            parametros.tipoNota = 'VALOR';
+
+            G.Q.nfcall(that.m_notas.agregarCabeceraNotaCredito, parametros, transaccion).then(function (result) {
+
+                numeroNota = result[0];
+                parametros.nota_credito_despacho_cliente_id = result[0];
+
+                return G.Q.nfcall(__recorreListadoCredito, that, args.listado, parametros, 0, transaccion);
+
+            }).then(function () {
+                transaccion.commit(numeroNota);
+            }).fail(function (err) {
+                transaccion.rollback(err);
+            }).done();
+        }).then(function (resultado) {
+            res.send(G.utils.r(req.url, 'Nota creada Correctamente', 200, {crearNota: numeroNota}));
+        }).catch(function (err) {
+            console.log("crearNota  ", err);
+            res.send(G.utils.r(req.url, 'Error al crear la nota', 500, {}));
+        }).done();
+
+    } else if (args.tipo_nota === 2) {
+
+        G.knex.transaction(function (transaccion) {
+
+            parametros.tipoNota = 'DEVOLUCION';
+            G.Q.nfcall(that.m_notas.agregarCabeceraNotaCreditoDevolucion, parametros, transaccion).then(function (result) {
+
+                numeroNota = result[0];
+                parametros.nota_credito_despacho_cliente_id = result[0];
+
+                return G.Q.nfcall(__recorreListado, that, args.listado, parametros, 0, transaccion);
+
+            }).then(function () {
+                transaccion.commit(numeroNota);
+            }).fail(function (err) {
+                transaccion.rollback(err);
+            }).done();
+        }).then(function (resultado) {
+            res.send(G.utils.r(req.url, 'Nota creada Correctamente', 200, {crearNota: numeroNota}));
+        }).catch(function (err) {
+            console.log("crearNota  ", err);
+            res.send(G.utils.r(req.url, 'Error al crear la nota', 500, {}));
+        }).done();
+    }
+};
+
+/**
+ * @author German Galvis
  * +Descripcion  Metodo encargado de crear las consultas para generar la impresion de las notas
  * @fecha 2018-08-10 (YYYY-MM-DD)
  */
@@ -293,11 +411,11 @@ Notas.prototype.imprimirNota = function (req, res) {
     }).then(function (result) {
 
         productos = result;
-        
+
         return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id});
 
     }).then(function (resultado) {
-        
+
         if (resultado.length > 0) {
             productos.forEach(function (row) {
 
@@ -320,7 +438,7 @@ Notas.prototype.imprimirNota = function (req, res) {
             totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
 
         }
-        
+
         valores.retencionIca = G.utils.numberFormat(retencionIca, 2);
         valores.retencionFuente = G.utils.numberFormat(retencionFuente, 2);
         valores.retencionIva = G.utils.numberFormat(retencionIva, 2);
@@ -406,97 +524,6 @@ Notas.prototype.imprimirNota = function (req, res) {
 // */
 //Notas.prototype.imprimirFacturaNotas = function(req, res) {
 //
-//    var that = this;
-//    var args = req.body.data;
-//    var total = {totalFactura: 0, totalGravamen: 0};
-//    var empresa = [];
-//    var cliente = [];
-//    var conceptosDetalle = [];
-//    var impuesto;
-//    var nombre_pdf = "";
-//
-//
-//    var parametros = {
-//	empresaId: args.empresaId,
-//	empresa_id: args.empresaId,
-//	facturaFiscal: args.facturaFiscal,
-//	factura: args.facturaFiscal,
-//	prefijo: args.prefijo
-//    };
-//
-//    G.Q.ninvoke(that.m_notas, 'listarFacturasNotas', parametros).then(function(result) {
-//	
-//	conceptosDetalle = result;
-//	parametros.terceroId= conceptosDetalle[0].tercero_id;
-//        parametros.tipoIdTercero= conceptosDetalle[0].tipo_id_tercero;
-//	var totales = {totalFactura:0,totalGravamen:0};
-//	return G.Q.nfcall(__valorTotalGravamen, 0, result,totales);
-//	
-//    }).then(function(result) {
-//	
-//    	parametros.totalFactura = result.totalFactura;
-//	parametros.totalGravamen = result.totalGravamen;
-//	return G.Q.nfcall(__traerPorcentajeImpuestos, that, parametros);
-//
-//    }).then(function(result) {
-//
-//	impuesto = result;
-//	impuesto.empresaId = parametros.empresaId;
-//	impuesto.prefijo = parametros.prefijo;
-//	impuesto.factura = parametros.facturaFiscal;
-//	parametros.totalAbono = impuesto.totalGeneral;
-//	parametros.totalEfectivo = impuesto.totalGeneral;
-//	parametros.totalCheque = 0;
-//	parametros.totalTarjeta = 0;
-//	parametros.totalAbonos = 0;
-//
-//	var parametrosEmpresa = {
-//	    tercero: {
-//		id: parametros.terceroId,
-//		tipoDocumento: {id: parametros.tipoIdTercero},
-//		empresa_id: parametros.empresaId
-//	    }
-//	};
-//
-//	return G.Q.ninvoke(that.m_gestion_terceros, 'obtenerTercero', parametrosEmpresa);
-//
-//    }).then(function(result) {
-//
-//	cliente = result;
-//	return G.Q.ninvoke(that.m_notas, 'listarEmpresa', parametros);
-//
-//    }).then(function(result) {
-//	empresa = result;
-//	var informacion = {
-//	    serverUrl: req.protocol + '://' + req.get('host') + "/",
-//	    empresa: empresa[0],
-//	    cliente: cliente[0],
-//	    parametros: parametros,
-//	    conceptosDetalle: conceptosDetalle,
-//	    informacion: __infoFooter(parametros.prefijo),
-//	    usuario: req.session.user.nombre_usuario,
-//	    archivoHtml: 'facturaConceptos.html',
-//	    impuesto: impuesto
-//	};
-//	return G.Q.nfcall(__generarPdf, informacion);
-//	
-//    }).then(function(result) {
-//	
-//	res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirFacturaNotas: result}));
-//
-//    }). catch (function(err) {
-//	console.log("error transaccion ", err);
-//	res.send(G.utils.r(req.url, err, 500, {}));
-//    }).done();
-//};
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado de generar las consultas de los detalles de las notas para su impresion
-// * @fecha 2017-06-13 (YYYY-MM-DD)
-// */
-//Notas.prototype.imprimirFacturaNotasDetalle = function(req, res) {
-// 
 //    var that = this;
 //    var args = req.body.data;
 //    var total = {totalFactura: 0, totalGravamen: 0};
@@ -909,6 +936,37 @@ function __recorreListado(that, listado, parametros, index, transaccion, callbac
 }
 ;
 
+function __recorreListadoCredito(that, listado, parametros, index, transaccion, callback) {
+
+    var item = listado[index];
+    if (!item) {
+        callback(false, 0);
+        return;
+    }
+
+    parametros.observacion = item.observacion;
+    parametros.valor = item.total_nota;
+    parametros.item_id = item.item_id;
+    parametros.valor_iva = ((item.cantidad_ingresada * (item.porc_iva / 100)) * item.cantidad);
+    parametros.valor_rtf = 0;
+    parametros.valor_ica = 0;
+
+    return G.Q.nfcall(that.m_notas.agregarDetalleNotaCredito, parametros, transaccion).then(function (resultado) {
+        var timer = setTimeout(function () {
+            clearTimeout(timer);
+            index++;
+            __recorreListado(that, listado, parametros, index, transaccion, callback);
+        }, 0);
+
+    }).fail(function (err) {
+        console.log("error", err);
+        callback(err);
+
+    }).done();
+
+}
+;
+
 
 function __generarPdf(datos, callback) {
 
@@ -930,7 +988,7 @@ function __generarPdf(datos, callback) {
         response.body(function (body) {
             var fecha = new Date();
 
-            var nombreTmp = "nota" + datos.parametros.numeroNota + "" + datos.parametros.prefijo + "" + datos.parametros.factura + "-" + fecha.getTime() + ".html";
+            var nombreTmp = "nota" + datos.parametros.numeroNota + "-" + fecha.getTime() + ".html";
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {

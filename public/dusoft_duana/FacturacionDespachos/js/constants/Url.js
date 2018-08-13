@@ -66,6 +66,8 @@ define(["angular"], function(angular) {
                 "LISTAR_FACTURAS": BASE_URL + "/Notas/listarFacturas",
                 "DETALLE_FACTURA": BASE_URL + "/Notas/ConsultarDetalleFactura",
                 "CREAR_NOTA": BASE_URL + "/Notas/crearNota",
+                "CREAR_NOTA_CREDITO": BASE_URL + "/Notas/crearNotaCredito",
+                "LISTAR_CONCEPTOS": BASE_URL + "/Notas/listarConceptos",
                 "IMPRIMIR_NOTA": BASE_URL + "/Notas/imprimirNota"
             },
             'TERCEROS': {

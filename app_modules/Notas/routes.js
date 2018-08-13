@@ -17,14 +17,18 @@ module.exports = function(app, di_container) {
     app.post('/api/Notas/crearNota', function(req, res) {
         c_notas.crearNota(req, res);
     });
+
+    app.post('/api/Notas/crearNotaCredito', function(req, res) {
+        c_notas.crearNotaCredito(req, res);
+    });
     
     app.post('/api/Notas/imprimirNota', function(req, res) {
         c_notas.imprimirNota(req, res);
     });
-//    
-//    app.post('/api/Notas/insertarTmpDetalleConceptos', function(req, res) {
-//        c_notas.insertarTmpDetalleConceptos(req, res);
-//    });
+    
+    app.post('/api/Notas/listarConceptos', function(req, res) {
+        c_notas.listarConceptos(req, res);
+    });
 //
 //    app.post('/api/Notas/eliminarTmpDetalleConceptos', function(req, res) {
 //        c_notas.eliminarTmpDetalleConceptos(req, res);

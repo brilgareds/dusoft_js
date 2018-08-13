@@ -5,21 +5,6 @@
                 <h4 class="h4MarginTopBottom"><span >{{root.tituloNota}}</span></h4>
             </div>
             <br />
-            <div class="col-md-4" ng-if="root.mostrarConcepto">
-                    <div class="row">
-                        <div class="col-md-7">                                          
-                        <h4 class="text-center">Concepto Nota</h4>
-                            <ui-select ng-model="root.concepto" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
-                                <ui-select-match  placeholder="Seleccionar">{{ $select.selected.descripcion}}</ui-select-match>
-                                <ui-select-choices repeat="concepto in conceptos | filter:$select.search">
-                                    {{ concepto.descripcion}}
-                                </ui-select-choices>
-                            </ui-select>
-                        </div>
-                    </div>
-            </div>
-            <br />
-            <br />
 
             <div class="table-responsive" style="clear:both; height: 5%">
                 <div class="defaultGrid grid-responsive" ng-grid="listaNotas2" ></div>

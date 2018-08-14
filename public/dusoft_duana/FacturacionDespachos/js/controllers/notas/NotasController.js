@@ -95,207 +95,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                         });
                     };
-//		    
-//                    /**
-//                     * +Descripcion Metodo encargado de invocar el servicio que listara
-//                     *              las notas de una factura
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 02/05/2017 DD/MM/YYYY
-//                     * @returns {undefined}
-//                     */
-//                    that.listarFacConceptosNotasDetalle = function(parametros) {
-//			
-//			$scope.root.totalesNotaCredito=0;
-//			$scope.root.totalesNotaDebito=0;
-//			
-//			if(parametros===undefined){
-//			    return;
-//			}
-//			var facturaFiscal =parametros.factura_fiscal!==undefined?parametros.factura_fiscal:parametros.facturaFiscal;
-//                        var obj = {
-//                            session: $scope.session,
-//                            data: {
-//				prefijo: parametros.prefijo,
-//				facturaFiscal: facturaFiscal
-//                            }
-//                        };
-//                        cajaGeneralService.listarFacConceptosNotas(obj, function(data) {
-//                            if (data.status === 200) {
-//				
-//                            $scope.root.listarFacConceptosNotasDetalle=data.obj.listarFacConceptosNotas;
-//			    data.obj.listarFacConceptosNotas.forEach(function(value) {
-//
-//				if(value.nota_contable==='credito'){
-//				    
-//				 $scope.root.totalesNotaCredito+=parseInt(value.valor_nota_total);
-//				 $scope.root.gravamenesNotaCredito+=parseInt(value.valor_gravamen);
-//				 
-//				}else{
-//				    
-//				 $scope.root.totalesNotaDebito+=parseInt(value.valor_nota_total);
-//				 $scope.root.gravamenesNotaDebito+=parseInt(value.valor_gravamen);  
-//				}
-//
-//			    });
-//                            } else {
-//				$scope.root.listarFacConceptosNotasDetalle={};
-//                            }
-//
-//                        });
-//                    };
-//		    
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * +Descripcion Permite realiar peticion al API para traer los terceros
-//                     * @params callback: {function}
-//                     * @fecha 2017-06-01
-//                     */		    
-//                    that.listarPrefijos = function() {
-//
-//                        var parametros = {
-//                            session: $scope.session,
-//                            data: {
-//                              
-//                                    empresaId: $scope.root.empresaSeleccionada.getCodigo()
-//                            }
-//                        };
-//
-//                        cajaGeneralService.listarPrefijos(parametros, function(respuesta) {
-//                            if (respuesta.status === 200) {
-//                                $scope.root.prefijos = respuesta.obj.listarPrefijos;
-//                            } else {
-//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.msj);
-//                            }
-//                        });
-//                    };
-//		    
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * +Descripcion Permite realiar peticion al API para traer los terceros
-//                     * @params callback: {function}
-//                     * @fecha 2017-06-01
-//                     */
-//                    that.listarConceptosDetalle = function() {
-//                        $scope.root.conceptoTmp = "";
-//                        if ($scope.root.terceros === undefined || $scope.root.terceros[0] === undefined) {
-//                            return;
-//                        }
-//                        if ($scope.root.cajas === undefined) {
-////			     AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe seleccionar la Caja");
-//                            return;
-//                        }
-//
-//                        var parametros = {
-//                            session: $scope.session,
-//                            data: {
-//                                datos: {
-//                                    empresa_id: $scope.root.empresaSeleccionada.getCodigo(),
-//                                    tipo_id_tercero: $scope.root.terceros[0].getTipoId(),
-//                                    tercero_id: $scope.root.terceros[0].getId(),
-//                                    concepto_id: $scope.root.cajas.conceptoCaja
-//                                }
-//                            }
-//                        };
-//
-//                        cajaGeneralService.listarConceptosDetalle(parametros, function(data) {
-//
-//                            if (data.status === 200) {
-//                                $scope.root.conceptoTmp = cajaGeneralService.renderConcepto(data.obj.listarConceptosDetalle);
-//                            }else if(data.msj.status===404){
-//				
-//			    }else {
-//				if(data.obj.listarConceptosDetalle !== '0'){
-//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-//				}
-//                            }
-//                        });
-//                    };
-//		    
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * +Descripcion Permite realiar peticion al API para guardar la factura de caja general
-//                     * @params callback: {function}
-//                     * @fecha 2017-06-10
-//                     */
-//                    $scope.guardarFacturaCajaGeneral = function() {
-//			//sw_clase_factura 0=>contado 1=>credito
-//                        //tipo_factura 5 porque es conceptos
-//			var tipoPago=($scope.root.pagoCreditoModel === true)?1:0; 
-//			var prefijo=($scope.root.pagoCreditoModel === true)?$scope.root.cajas.prefijoFacCredito:$scope.root.cajas.prefijoFacContado;
-//			var claseFactura=($scope.root.cajas.prefijoFacCredito === undefined ? 0: 1);
-//			var tipoFactura='5';
-//			var estado='0';
-//                        var parametros = {
-//                            session: $scope.session,
-//                            data: {
-//			        prefijoFac:prefijo,
-//				empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-//				centroUtilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
-//				tipoIdTercero: $scope.root.terceros[0].getTipoId(),
-//				terceroId: $scope.root.terceros[0].getId(),
-//				conceptoId: $scope.root.cajas.conceptoCaja,
-//			        swClaseFactura: claseFactura,
-//			        tipoFactura : tipoFactura,
-//			        estado : estado,
-//				cajaId :$scope.root.cajas.cajaId,
-//				tipoPago: tipoPago
-//                            }
-//                        };
-//                        cajaGeneralService.guardarFacturaCajaGeneral(parametros, function(data) {
-//
-//                            if (data.status === 200) {
-//				var nombre = data.obj.guardarFacturaCajaGeneral;
-//				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-//				
-//				that.listarTerceros(function(respuesta) {
-//                                if (respuesta) {
-//                                    that.listarConceptosDetalle();
-//                                }
-//				});
-//				
-//			    }else if(data.msj.status===409){ 
-//				AlertService.mostrarVentanaAlerta("Mensaje del sistema",data.msj.msj);
-//			    }else{
-//				var mensaje = data.obj.guardarFacturaCajaGeneral;
-//				if(mensaje===""){
-//                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-//				}
-//                            }
-//                        });
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * +Descripcion Permite realiar peticion al API para guardar la factura de caja general
-//                     * @params callback: {function}
-//                     * @fecha 2017-06-10
-//                     */
-//                    that.guardarFacFacturasConceptosNotas = function(parametros,callback) {
-//			
-//                        var parametros = {
-//                            session: $scope.session,
-//                            data: {
-//			        descripcion:parametros.descripcion,
-//				empresaId:parametros.empresaId,
-//				bodega:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada(),
-//				facturaFiscal:parametros.facturaFiscal,
-//				porcentajeGravamen:parametros.porcentajeGravamen,
-//				prefijo:parametros.prefijo,
-//				swContable:parametros.swContable,
-//				valorNotaTotal:parametros.valorNotaTotal,
-//			     valorNotaImpuestos:$scope.root.impuestos.totalGeneral
-//			    }
-//                        };
-//                        cajaGeneralService.insertarFacFacturasConceptosNotas (parametros, function(data) {
-//                          if (data.status === 200) {
-//                               callback(true);
-//                            } else {
-//				callback(false);
-//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-//                            }
-//			  
-//                        });
-//                    };
-//
+
+
                     /**
                      * +Descripcion 
                      * @author Andres Mauricio Gonzalez
@@ -337,17 +138,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                         ]
                     };
-//		    
-//		    $scope.root.gravamenes=0;
-//		    $scope.sumarGravamen=function(gravamen){//root.gravamenes
-//			$scope.root.gravamenes2=gravamen;
-//		    };
-//		    
-//		    $scope.root.totales=0;
-//		    $scope.sumarTotal=function(total){
-//			$scope.root.totales=total;
-//		    };
-//		    
 //		   /*
 //		    * 1-nota credito 0 - nota debito
 //		    * @param {type} tipoNota
@@ -533,98 +323,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             });
                         }
                     };
-//		    /**
-//                     * +Descripcion metodo para imprimir las facturas
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 18/05/2017
-//                     * @returns {undefined}
-//                     */
-//		    $scope.onImprimirFacturaNotasDetalle=function(datos){
-//			 var parametros = {
-//                            session: $scope.session,
-//                            data: {
-//			        prefijo:datos.prefijo,
-//			        facturaFiscal:datos.factura_fiscal,
-//				empresaId: $scope.root.empresaSeleccionada.getCodigo()
-//                            }
-//                        };
-//                        cajaGeneralService.imprimirFacturaNotasDetalle(parametros, function(data) {
-//				    
-//                            if (data.status === 200) {
-//				var nombre = data.obj.imprimirFacturaNotas;
-//				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-//				
-//                            } else {
-//				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-//                            }
-//                        });
-//		    };
-//		    
-//                    /**
-//                     * +Descripcion scope del grid para mostrar los proveedores
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 18/05/2017
-//                     * @returns {undefined}
-//                     */
-//                    $scope.listaConceptosTmp = {
-//                        data: 'root.conceptoTmp',
-//                        enableColumnResize: true,
-//                        enableRowSelection: false,
-//                        enableCellSelection: true,
-//                        enableHighlighting: true,
-//                        showFilter: true,
-//			footerTemplate: '   <div class="row col-md-12">\
-//                                        <div class="">\
-//                                            <table class="table table-clear text-center">\
-//                                                <thead>\
-//                                                    <tr>\
-//                                                        <th class="text-center">SUBTOTAL</th>\
-//                                                        <th class="text-center">IVA</th>\
-//                                                        <th class="text-center">RET-FTE</th>\
-//							<th class="text-center">RETE-ICA</th>\
-//                                                        <th class="text-center">VALOR TOTAL</th>\
-//                                                    </tr>\
-//                                                </thead>\
-//                                                <tbody>\
-//                                                    <tr>\
-//                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getSubTotal()| currency:"$ "}}</td> \
-//                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getIva()| currency:"$ "}}</td> \
-//                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getValorRetFte() | currency:"$ "}}</td> \
-//                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getValorRetIca() | currency:"$ "}}</td> \
-//                                                        <td class="right">{{root.conceptoTmp[0].totales[0].getTotal()| currency:"$ "}}</td> \
-//                                                    </tr>\
-//                                                </tbody>\
-//                                            </table>\
-//                                        </div>\
-//                                    </div>',
-//                        columnDefs: [
-//                            {field: 'Grupo', width: "15%", displayName: 'Grupo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionGrupo()}}</p></div>'}, //
-//                            {field: 'Concepto', width: "15%", displayName: 'Concepto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcionConcepto()}}</p></div>'},
-//                            {field: 'Tipo Pago', width: "5%", displayName: 'Tipo Pago', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoPagoDescripcion()}}</p></div>'},
-//                            {field: 'Descripcion', width: "44%", displayName: 'Descripcion', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcion()}}</p></div>'},
-//                            {field: 'Valor Unitario', width: "8%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()| currency:"$ "}}</p></div>'},
-//                            {field: 'Valor Gravamen',  displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getValorGravamen() | currency:"$ "}}</p></div>'},
-//                            {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
-//                                cellTemplate: ' <div class="row">\
-//                                                 <button class="btn btn-default btn-xs" ng-click="eliminarTmp(row.entity)">\
-//                                                     <span class="glyphicon glyphicon-remove"></span>\
-//                                                 </button>\
-//                                               </div>'
-//                            }
-//                        ]
-//                    };
-//
-//
-//                    /**
-//                     * +Descripcion scope del grid para mostrar el detalle de las recepciones
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 01/06/2017
-//                     * @returns {undefined}
-//                     */
-//                    $scope.onConcepto = function() {
-//			that.limpiarVariablesConceptos();
-//                        that.ver_recepcion();
-//                    };
 
                     /**
                      * +Descripcion scope del grid para mostrar el detalle de las facturas
@@ -667,78 +365,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.tituloNota = "Nota Debito";
                         that.verNotaDebito(0, datos);
                     };
-//
-//                    /**
-//                     * +Descripcion funcion para eliminar temporal
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 01/06/2017
-//                     * @returns {undefined}
-//                     */
-//                    $scope.eliminarTmp = function(row) {
-//
-//                        var parametros = {
-//                            session: $scope.session,
-//                            data: {
-//                                datos: {
-//                                    rc_concepto_id: row.getRcConceptoId()
-//                                }
-//                            }
-//                        };
-//
-//                        cajaGeneralService.eliminarTmpDetalleConceptos(parametros, function(data) {
-//
-//                            if (data.status === 200) {
-//                                that.listarConceptosDetalle();
-//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-//                            } else {
-//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-//                            }
-//                        });
-//                    };
-//
-//                    /**
-//                     * +Descripcion scope del grid para mostrar el detalle de las recepciones
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 01/06/2017
-//                     * @returns {undefined}
-//                     */
-//                    that.ver_recepcion = function() {
-//                        $scope.opts = {
-//                            backdrop: true,
-//                            backdropClick: true,
-//                            dialogFade: false,
-//                            windowClass: 'app-modal-window-smlg',
-//                            keyboard: true,
-//                            showFilter: true,
-//                            cellClass: "ngCellText",
-//                            templateUrl: 'views/cajaGeneral/vistaConceptos.html',
-//                            scope: $scope,
-//                            controller: ['$scope','$modalInstance',function($scope, $modalInstance) {
-//
-//                                that.listarGrupos(true, function() {
-//
-//                                });
-//                                $scope.cerrar = function() {
-//                                    $modalInstance.close();
-//                                };
-//                                $scope.guardarConcepto = function() {
-//                                    that.guardarConcepto(function(respuesta, parametros) {
-//                                        if (respuesta === true) {
-//                                            that.insertarTmpDetalleConceptos(parametros, function(respuesta) {
-//                                                that.listarConceptosDetalle();
-//                                                $modalInstance.close();
-//                                            });
-//                                        }
-//                                    });
-//                                };
-//                            }]
-//                        };
-//                        var modalInstance = $modal.open($scope.opts);
-//                    };
-//		    
-//		    $scope.root.precioNota=0;
-//		    $scope.root.gravamenNota=0;
-//		    $scope.root.descripcionNota="";
 
                     /**
                      * +Descripcion scope del grid para mostrar el detalle de las notas
@@ -791,10 +417,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         notasService.detalleFactura(obj, function (data) {
                                             if (data.status === 200) {
 
-                                                $scope.root.listadoNota = notasService.renderProductoFacturas(data.obj.ConsultarDetalleFactura);
+                                                $scope.root.listadoProductos = notasService.renderProductoFacturas(data.obj.ConsultarDetalleFactura);
 
                                             } else {
-                                                $scope.root.listadoNota = null;
+                                                $scope.root.listadoProductos = null;
                                             }
 
                                         });
@@ -846,7 +472,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                         var subtotal = 0, iva = 0;
 
-                                        $scope.root.listadoNota.forEach(function (data) {
+                                        $scope.root.listadoProductos.forEach(function (data) {
                                             if (data.seleccionado)
                                                 subtotal += data.total_nota;
                                             iva += ((data.cantidad_ingresada * (data.porc_iva / 100)) * data.cantidad);
@@ -859,7 +485,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     };
 
                                     $scope.listaNotas2 = {
-                                        data: 'root.listadoNota',
+                                        data: 'root.listadoProductos',
                                         enableColumnResize: true,
                                         enableRowSelection: false,
                                         enableCellSelection: true,
@@ -889,9 +515,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                         var listado = [];
                                         var i;
-                                        for (i = 0; i < $scope.root.listadoNota.length; i++) {
-                                            if ($scope.root.listadoNota[i].seleccionado) {
-                                                listado.push($scope.root.listadoNota[i]);
+                                        for (i = 0; i < $scope.root.listadoProductos.length; i++) {
+                                            if ($scope.root.listadoProductos[i].seleccionado) {
+                                                listado.push($scope.root.listadoProductos[i]);
                                             }
                                         }
 
@@ -915,7 +541,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             if (data.status === 200) {
 
                                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj + " Numero Nota Debito: " + data.obj.crearNota);
-
+                                                that.listarFacturasGeneradas();
+                                                $modalInstance.close();
                                             } else {
                                                 AlertService.mostrarMensaje("warning", data.msj);
                                             }
@@ -975,17 +602,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             data: {
                                                 empresa_id: datos.empresa,
                                                 facturaFiscal: datos.numeroFactura,
+                                                factura_agrupada: datos.tipoFactura,
                                                 tipoFactura: nota
                                             }
                                         };
 
                                         notasService.detalleFactura(obj, function (data) {
                                             if (data.status === 200) {
-
-                                                $scope.root.listadoNota = notasService.renderProductoFacturas(data.obj.ConsultarDetalleFactura);
-
+                                                $scope.root.listadoProductos = notasService.renderProductoFacturas(data.obj.ConsultarDetalleFactura);
                                             } else {
-                                                $scope.root.listadoNota = null;
+                                                $scope.root.listadoProductos = null;
                                             }
 
                                         });
@@ -1037,7 +663,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                         var subtotal = 0, iva = 0;
 
-                                        $scope.root.listadoNota.forEach(function (data) {
+                                        $scope.root.listadoProductos.forEach(function (data) {
                                             if (data.seleccionado)
                                                 subtotal += data.total_nota;
                                             iva += ((data.cantidad_ingresada * (data.porc_iva / 100)) * data.cantidad);
@@ -1050,7 +676,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     };
 
                                     $scope.listaNotas2 = {
-                                        data: 'root.listadoNota',
+                                        data: 'root.listadoProductos',
                                         enableColumnResize: true,
                                         enableRowSelection: false,
                                         enableCellSelection: true,
@@ -1079,9 +705,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     $scope.guardarNotas = function () {
                                         var listado = [];
                                         var i;
-                                        for (i = 0; i < $scope.root.listadoNota.length; i++) {
-                                            if ($scope.root.listadoNota[i].seleccionado) {
-                                                listado.push($scope.root.listadoNota[i]);
+                                        for (i = 0; i < $scope.root.listadoProductos.length; i++) {
+                                            if ($scope.root.listadoProductos[i].seleccionado) {
+                                                listado.push($scope.root.listadoProductos[i]);
                                             }
                                         }
 
@@ -1102,12 +728,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         if (nota === 1) {
                                             obj.data.concepto = $scope.root.concepto.id;
                                         }
+                                        if (nota === 2) {
+                                            obj.data.empresa_id_devolucion = listado[0].empresa_devolucion;
+                                            obj.data.prefijo_devolucion = listado[0].prefijo_devolucion;
+                                            obj.data.numero_devolucion = listado[0].numero_devolucion;
+                                        }
 
                                         notasService.guardarNotaCredito(obj, function (data) {
 
                                             if (data.status === 200) {
 
                                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj + " Numero Nota Credito: " + data.obj.crearNota);
+                                                that.listarFacturasGeneradas();
+                                                $modalInstance.close();
 
                                             } else {
                                                 AlertService.mostrarMensaje("warning", data.msj);
@@ -1410,14 +1043,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
                     $scope.buscarTercero = function (event) {
                         if (event.which === 13) {
-                            that.listarFacturasGeneradas(function (data) {
-//					       if(data!==false){
-//						that.listarFacConceptosNotasDetalle(data[0]);
-//						that.listarImpuestosTercero();
-//					       }else{
-//						$scope.root.listarFacConceptosNotasDetalle = null;  
-//					       }
-                            });
+                            that.listarFacturasGeneradas();
                         }
                     };
 
@@ -1459,7 +1085,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @fecha 02/08/2018 DD/MM/YYYY
                      * @returns {undefined}
                      */
-                    that.listarFacturasGeneradas = function (callback) {
+                    that.listarFacturasGeneradas = function () {
 
                         var obj = {
                             session: $scope.session,
@@ -1474,10 +1100,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                 $scope.root.listarFacturas = notasService.renderFacturas(data.obj.listarFacturas);
 
-                                callback(data.obj.listarFacturas);
+//                                callback(data.obj.listarFacturas);
                             } else {
                                 $scope.root.listarFacturas = null;
-                                callback(false);
+//                                callback(false);
                             }
 
                         });

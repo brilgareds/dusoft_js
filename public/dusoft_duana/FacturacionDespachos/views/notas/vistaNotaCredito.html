@@ -9,7 +9,7 @@
                     <div class="row">
                         <div class="col-md-7">                                          
                         <h4 class="text-center">Concepto Nota</h4>
-                            <ui-select ng-model="root.concepto" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
+                            <ui-select ng-model="root.concepto" theme="select2" class="form-control selectgeneral pull-left">
                                 <ui-select-match  placeholder="Seleccionar">{{ $select.selected.descripcion}}</ui-select-match>
                                 <ui-select-choices repeat="concepto in conceptos | filter:$select.search">
                                     {{ concepto.descripcion}}

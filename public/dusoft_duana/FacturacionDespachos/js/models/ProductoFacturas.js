@@ -86,6 +86,38 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 return this.porc_iva;
             };
 
+            ProductoFacturas.prototype.setEmpresaDevolucion = function (empresa_devolucion) {
+                this.empresa_devolucion = empresa_devolucion;
+            };
+
+            ProductoFacturas.prototype.getEmpresaDevolucion = function () {
+                return this.empresa_devolucion;
+            };
+
+            ProductoFacturas.prototype.setPrefijoDevolucion = function (prefijo_devolucion) {
+                this.prefijo_devolucion = prefijo_devolucion;
+            };
+
+            ProductoFacturas.prototype.getPrefijoDevolucion = function () {
+                return this.prefijo_devolucion;
+            };
+
+            ProductoFacturas.prototype.setNumeroDevolucion = function (numero_devolucion) {
+                this.numero_devolucion = numero_devolucion;
+            };
+
+            ProductoFacturas.prototype.getNumeroDevolucion = function () {
+                return this.numero_devolucion;
+            };
+
+            ProductoFacturas.prototype.setMovimientoId = function (movimiento_id) {
+                this.movimiento_id = movimiento_id;
+            };
+
+            ProductoFacturas.prototype.getMovimientoId = function () {
+                return this.movimiento_id;
+            };
+            
             ProductoFacturas.prototype.getLote = function () {
                 return this.lote;
             };

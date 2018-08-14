@@ -2,8 +2,8 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('notasService',
-            ['Request', 'API', 'Notas', 'ProductoFacturas', 'ConceptoCaja', 'Totales', 'FacturaProveedores',
-                function (Request, API, Notas, ProductoFacturas, ConceptoCaja, Totales, FacturaProveedores) {
+            ['Request', 'API', 'Notas', 'ProductoFacturas', 'Totales', 'FacturaProveedores',
+                function (Request, API, Notas, ProductoFacturas, Totales, FacturaProveedores) {
 
                     var self = this;
 
@@ -110,6 +110,10 @@ define(["angular", "js/services"], function (angular, services) {
                             producto.setObservacion(data.observacion);
                             producto.setTotalNota((data.cantidad * data.valor_digitado_nota) || 0);
                             producto.setPorcentajeIva(data.porc_iva || 0);
+                            producto.setEmpresaDevolucion(data.empresa_devolucion);
+                            producto.setPrefijoDevolucion(data.prefijo_devolucion);
+                            producto.setNumeroDevolucion(data.numero_devolucion);
+                            producto.setMovimientoId(data.movimiento_id);
                             productos.push(producto);
                         });
 

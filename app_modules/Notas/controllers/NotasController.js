@@ -1,9 +1,8 @@
-var Notas = function (m_notas, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes, m_gestion_terceros) {
+var Notas = function (m_notas, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes) {
     this.m_notas = m_notas;
     this.m_sincronizacion = m_sincronizacion;
     this.m_facturacion_proveedores = m_facturacion_proveedores;
     this.m_facturacion_clientes = m_facturacion_clientes;
-    this.m_gestion_terceros = m_gestion_terceros;
 };
 
 
@@ -89,10 +88,12 @@ Notas.prototype.ConsultarDetalleFactura = function (req, res) {
 
     var that = this;
     var args = req.body.data;
+    var tabla, tabla2, tabla3, tabla4;
 
     var parametros = {
         tipoFactura: args.tipoFactura,
         empresa_id: args.empresa_id,
+        factura_agrupada: args.factura_agrupada,
         facturaFiscal: args.facturaFiscal
     };
 
@@ -130,6 +131,25 @@ Notas.prototype.ConsultarDetalleFactura = function (req, res) {
     } else if (parametros.tipoFactura === 2) {
 
         parametros.tipoNota = 'DEVOLUCION';
+
+        if (parametros.factura_agrupada === 0) {
+            tabla = "inv_facturas_despacho";
+            tabla2 = "inv_facturas_despacho_d";
+            tabla3 = "notas_credito_despachos_clientes";
+            tabla4 = "detalles_notas_credito_despachos_clientes";
+        }
+
+        if (parametros.factura_agrupada === 1) {
+            tabla = "inv_facturas_agrupadas_despacho";
+            tabla2 = "inv_facturas_agrupadas_despacho_d";
+            tabla3 = "notas_credito_despachos_clientes_agrupados";
+            tabla4 = "detalles_notas_credito_despachos_clientes_agrupados";
+        }
+
+        parametros.tabla_1 = tabla;
+        parametros.tabla_2 = tabla2;
+        parametros.tabla_3 = tabla3;
+        parametros.tabla_4 = tabla4;
 
         G.Q.ninvoke(that.m_notas, 'ConsultarDetalleFacturaCreditoDevolucion', parametros).then(function (resultado) {
 
@@ -307,6 +327,7 @@ Notas.prototype.crearNotaCredito = function (req, res) {
 
         G.knex.transaction(function (transaccion) {
             parametros.tipoNota = 'VALOR';
+            parametros.conceptoId = args.concepto;
 
             G.Q.nfcall(that.m_notas.agregarCabeceraNotaCredito, parametros, transaccion).then(function (result) {
 
@@ -314,11 +335,11 @@ Notas.prototype.crearNotaCredito = function (req, res) {
                 parametros.nota_credito_despacho_cliente_id = result[0];
 
                 return G.Q.nfcall(__recorreListadoCredito, that, args.listado, parametros, 0, transaccion);
-                
+
             }).then(function () {
 
                 return G.Q.nfcall(that.m_notas.actualizarFacturaNotaCredito, parametros, transaccion);
-                
+
             }).then(function () {
                 transaccion.commit(numeroNota);
             }).fail(function (err) {
@@ -336,12 +357,16 @@ Notas.prototype.crearNotaCredito = function (req, res) {
         G.knex.transaction(function (transaccion) {
 
             parametros.tipoNota = 'DEVOLUCION';
+            parametros.empresa_id_devolucion = args.empresa_id_devolucion;
+            parametros.prefijo_devolucion = args.prefijo_devolucion;
+            parametros.numero_devolucion = args.numero_devolucion;
+            
             G.Q.nfcall(that.m_notas.agregarCabeceraNotaCreditoDevolucion, parametros, transaccion).then(function (result) {
 
                 numeroNota = result[0];
                 parametros.nota_credito_despacho_cliente_id = result[0];
 
-                return G.Q.nfcall(__recorreListado, that, args.listado, parametros, 0, transaccion);
+                return G.Q.nfcall(__recorreListadoCredito, that, args.listado, parametros, 0, transaccion);
 
             }).then(function () {
                 transaccion.commit(numeroNota);
@@ -562,7 +587,7 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
     }).then(function (result) {
 
         productos = result;
-
+        console.log("productos", productos);
         return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id});
 
     }).then(function (resultado) {
@@ -714,12 +739,13 @@ function __recorreListadoCredito(that, listado, parametros, index, transaccion, 
     parametros.valor_iva = ((item.cantidad_ingresada * (item.porc_iva / 100)) * item.cantidad);
     parametros.valor_rtf = 0;
     parametros.valor_ica = 0;
+    parametros.movimiento_id = item.movimiento_id;
 
     return G.Q.nfcall(that.m_notas.agregarDetalleNotaCredito, parametros, transaccion).then(function (resultado) {
         var timer = setTimeout(function () {
             clearTimeout(timer);
             index++;
-            __recorreListado(that, listado, parametros, index, transaccion, callback);
+            __recorreListadoCredito(that, listado, parametros, index, transaccion, callback);
         }, 0);
 
     }).fail(function (err) {
@@ -767,5 +793,5 @@ function __generarPdf(datos, callback) {
     });
 }
 
-Notas.$inject = ["m_notas", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes", "m_gestion_terceros"];
+Notas.$inject = ["m_notas", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes"];
 module.exports = Notas;

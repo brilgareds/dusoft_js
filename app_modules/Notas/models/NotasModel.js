@@ -365,7 +365,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
                             .on("T.tercero_id", "ifd.tercero_id");
 
                 })
-                .innerJoin('notas_credito_despachos_clientes as ncdc', function () {
+                .innerJoin('notas_credito_despachos_clientes_agrupados as ncdc', function () {
 
                     this.on("ncdc.empresa_id", "ifd.empresa_id")
                             .on("ncdc.factura_fiscal", "ifd.factura_fiscal")
@@ -511,89 +511,76 @@ NotasModel.prototype.ConsultarDetalleFacturaCredito = function (obj, callback) {
 NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, callback) {
 
     var columnas = [
-        "ifd.factura_fiscal",
-        "ifd.fecha_registro",
-        "ifd.valor_total",
-        G.knex.raw("fc_descripcion_producto ( ifdd.codigo_producto ) AS producto"),
-        "ifdd.item_id",
-        "ifdd.codigo_producto",
-        "ifdd.cantidad",
-        G.knex.raw("( ifdd.cantidad - ifdd.cantidad_devuelta ) AS cantidad_existente"),
-        "ifdd.lote",
-        "ifdd.valor_unitario",
-        "ifdd.porc_iva",
-        "tdncdc.tmp_detalle_nota_credito_despacho_cliente_id AS id_nota",
-        G.knex.raw("COALESCE ( tdncdc.valor, 0 ) AS valor"),
-        "tdncdc.observacion",
-        G.knex.raw("(round(( tdncdc.valor / ifdd.cantidad ), 4 )) AS valor_digitado_nota"),
-        G.knex.raw("((ifdd.cantidad * ifdd.valor_unitario) - (COALESCE ( tdncdc.valor, 0 ))) AS diferencia"),
-        "tdncdc.valor_iva",
-        "tncdc.valor_nota",
-        "tncdc.descripcion"
+        "f.numero",
+        "a.factura_fiscal",
+        "a.fecha_registro",
+        "a.valor_total",
+        G.knex.raw("fc_descripcion_producto ( b.codigo_producto ) AS producto"),
+        "b.item_id",
+        "b.codigo_producto",
+        "b.cantidad",
+        "b.lote",
+        "b.valor_unitario",
+        "b.cantidad_devuelta",
+        "e.prefijo as prefijo_devolucion",
+        "e.empresa_id as empresa_devolucion",
+        "e.numero as numero_devolucion",
+        "f.documento_id",
+        "g.movimiento_id",
+        G.knex.raw("( CASE WHEN g.cantidad IS NULL THEN 0 ELSE CAST ( g.cantidad AS INTEGER ) END ) AS cantidad_producto_devuelto"),
+        G.knex.raw("( CASE WHEN g.cantidad IS NOT NULL THEN ( g.cantidad * b.valor_unitario ) ELSE NULL END ) AS valor_total_producto_devuelto")
     ];
 
-    var query = G.knex.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas))
-            .from("inv_facturas_despacho as ifd")
-            .innerJoin('inv_facturas_despacho_d as ifdd', function () {
+    var query = G.knex.select(G.knex.raw("distinct ON (g.movimiento_id)" + columnas))
+            .from(G.knex.raw(obj.tabla_1 + " as a"))
+            .innerJoin(G.knex.raw(obj.tabla_2 + " as b"), function () {
 
-                this.on("ifdd.empresa_id", "ifd.empresa_id")
-                        .on("ifdd.factura_fiscal", "ifd.factura_fiscal")
-                        .on("ifdd.prefijo", "ifd.prefijo");
-
-            })
-            .leftOuterJoin('tmp_notas_credito_despachos_clientes as tncdc', function () {
-
-                this.on("tncdc.empresa_id", "ifd.empresa_id")
-                        .on("tncdc.factura_fiscal", "ifd.factura_fiscal")
-                        .on("tncdc.prefijo", "ifd.prefijo")
-                        .on("tncdc.tipo", G.knex.raw("'" + obj.tipoNota + "'"));
+                this.on("b.empresa_id", "a.empresa_id")
+                        .on("b.factura_fiscal", "a.factura_fiscal")
+                        .on("b.prefijo", "a.prefijo");
 
             })
-            .leftOuterJoin('tmp_detalles_notas_credito_despachos_clientes as tdncdc', function () {
+            .innerJoin('inv_bodegas_movimiento_devolucion_cliente as e', function () {
 
-                this.on("tdncdc.tmp_nota_credito_despacho_cliente_id", "tncdc.tmp_nota_credito_despacho_cliente_id")
-                        .on("tdncdc.item_id", "ifdd.item_id");
+                this.on("e.empresa_id", "a.empresa_id")
+                        .on("e.numero_doc_cliente", "a.factura_fiscal")
+                        .on("e.prefijo_doc_cliente", "a .prefijo");
 
             })
-            .where('ifd.empresa_id', obj.empresa_id)
-            .andWhere('ifd.factura_fiscal', obj.facturaFiscal);
+            .leftJoin('inv_bodegas_movimiento as f', function () {
 
+                this.on("f.empresa_id", "e.empresa_id")
+                        .on("f.numero", "e.numero")
+                        .on("f.prefijo", "e.prefijo");
 
-    query.unionAll(function () {
+            })
+            .rightJoin('inv_bodegas_movimiento_d as g', function () {
 
-        this.select(G.knex.raw("distinct ON (ifdd.item_id)" + columnas))
-                .from("inv_facturas_agrupadas_despacho as ifd")
-                .innerJoin('inv_facturas_agrupadas_despacho_d as ifdd', function () {
-
-                    this.on("ifdd.empresa_id", "ifd.empresa_id")
-                            .on("ifdd.factura_fiscal", "ifd.factura_fiscal")
-                            .on("ifdd.prefijo", "ifd.prefijo");
-
-                })
-                .leftOuterJoin('tmp_notas_credito_despachos_clientes as tncdc', function () {
-
-                    this.on("tncdc.empresa_id", "ifd.empresa_id")
-                            .on("tncdc.factura_fiscal", "ifd.factura_fiscal")
-                            .on("tncdc.prefijo", "ifd.prefijo")
-                            .on("tncdc.tipo", G.knex.raw("'" + obj.tipoNota + "'"));
-
-                })
-                .leftOuterJoin('tmp_detalles_notas_credito_despachos_clientes as tdncdc', function () {
-
-                    this.on("tdncdc.tmp_nota_credito_despacho_cliente_id", "tncdc.tmp_nota_credito_despacho_cliente_id")
-                            .on("tdncdc.item_id", "ifdd.item_id");
-
-                })
-                .where('ifd.empresa_id', obj.empresa_id)
-                .andWhere('ifd.factura_fiscal', obj.facturaFiscal);
-    });
-
+                this.on("g.empresa_id", "f.empresa_id")
+                        .on("g.numero", "f.numero")
+                        .on("g.prefijo", "f.prefijo")
+                        .on("g.codigo_producto", "b.codigo_producto")
+                        .on("g.lote", "b.lote")
+                        .on("g.fecha_vencimiento", "b.fecha_vencimiento")
+                        .on(G.knex.raw("g.movimiento_id NOT IN (SELECT DISTINCT ON ( b.movimiento_id ) aa.movimiento_id\
+                            FROM inv_bodegas_movimiento_d aa \
+                            INNER JOIN " + obj.tabla_4 + " b ON aa.movimiento_id = b.movimiento_id\
+                            INNER JOIN " + obj.tabla_3 + " c ON c.nota_credito_despacho_cliente_id = b.nota_credito_despacho_cliente_id \
+                            WHERE c.factura_fiscal = a.factura_fiscal)"))
+                        .on(G.knex.raw("g.movimiento_id NOT IN (SELECT DISTINCT ON ( b.movimiento_id ) aa.movimiento_id\
+                            FROM inv_bodegas_movimiento_d aa \
+                            INNER JOIN tmp_detalles_notas_credito_despachos_clientes b ON aa.movimiento_id = b.movimiento_id\
+                            INNER JOIN tmp_notas_credito_despachos_clientes c ON c.tmp_nota_credito_despacho_cliente_id = b.tmp_nota_credito_despacho_cliente_id\
+                            WHERE c.factura_fiscal = a.factura_fiscal)"));
+            })
+            .where('a.empresa_id', obj.empresa_id)
+            .andWhere('a.factura_fiscal', obj.facturaFiscal);
 
     query.then(function (resultado) {
 
         callback(false, resultado)
     }).catch(function (err) {
-        console.log("err [ConsultarDetalleFacturaCredito]:", err);
+        console.log("err [ConsultarDetalleFacturaCreditoDevolucion]:", err);
         callback(err);
     });
 };
@@ -723,7 +710,7 @@ NotasModel.prototype.agregarCabeceraNotaCredito = function (parametros, transacc
     var query = G.knex(parametros.tabla_1).
             returning('nota_credito_despacho_cliente_id').
             insert({empresa_id: parametros.empresaId, prefijo: parametros.prefijo, factura_fiscal: parametros.factura_fiscal,
-                valor: parametros.valor, usuario_id: parametros.usuario_id, tipo: parametros.tipoNota
+                valor: parametros.valor, usuario_id: parametros.usuario_id, tipo: parametros.tipoNota, concepto_id: parametros.conceptoId
             });
 
     if (transaccion)
@@ -747,7 +734,8 @@ NotasModel.prototype.agregarCabeceraNotaCreditoDevolucion = function (parametros
     var query = G.knex(parametros.tabla_1).
             returning('nota_credito_despacho_cliente_id').
             insert({empresa_id: parametros.empresaId, prefijo: parametros.prefijo, factura_fiscal: parametros.factura_fiscal,
-                valor: parametros.valor, usuario_id: parametros.usuario_id, tipo: parametros.tipoNota
+                valor: parametros.valor, usuario_id: parametros.usuario_id, tipo: parametros.tipoNota,
+                empresa_id_devolucion: parametros.empresa_id_devolucion, prefijo_devolucion: parametros.prefijo_devolucion, numero_devolucion: parametros.numero_devolucion
             });
 
     if (transaccion)

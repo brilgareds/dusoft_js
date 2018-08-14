@@ -747,7 +747,7 @@ define(["angular", "js/controllers",
                 var bodega=empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo;
                 var timer = setTimeout(function () {
                     //se valida la bodega para que no se genere ICD desde DUANA a Cosmitet
-                    if (datos.parametros.status && $scope.ejecutar && bodega !== '03') {
+                    if (datos.parametros.status && $scope.ejecutar && ((bodega === '03' && datos.parametros.data.sw_origen_destino === 0) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 1)) ) {
                         $scope.ejecutar = false;
                         that.generarIngresoI002(datos.parametros.data, function (asd) {                           
                             that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos);

@@ -233,7 +233,7 @@ define(["angular", "js/controllers",
              */
             
             $scope.onEmpresaOrigenSeleccionada = function(){
-                //aseguramos que el tipo de empresa sea EmpresaPedidoFarmacia
+                 //aseguramos que el tipo de empresa sea EmpresaPedidoFarmacia
                 var empresa = EmpresaPedidoFarmacia.get(
                         $scope.root.pedido.getFarmaciaOrigen().getNombre(),
                         $scope.root.pedido.getFarmaciaOrigen().getCodigo()
@@ -242,7 +242,23 @@ define(["angular", "js/controllers",
                 empresa.setCentrosUtilidad($scope.root.pedido.getFarmaciaOrigen().getCentrosUtilidad());
            
                 $scope.root.pedido.setFarmaciaOrigen(empresa);
-                
+            };
+            
+            
+            self.inicio = function () {
+                var empresa = EmpresaPedidoFarmacia.get(
+                        Usuario.getUsuarioActual().getEmpresa().nombre,
+                        Usuario.getUsuarioActual().getEmpresa().codigo
+                        );
+                var centroUtilidad = CentroUtilidadPedidoFarmacia.get(Usuario.getUsuarioActual().getEmpresa().centroUtilidad.getNombre(),
+                        Usuario.getUsuarioActual().getEmpresa().centroUtilidad.getCodigo());
+                var bodega = BodegaPedidoFarmacia.get(Usuario.getUsuarioActual().getEmpresa().centroUtilidad.bodega.getNombre(),
+                        Usuario.getUsuarioActual().getEmpresa().centroUtilidad.bodega.getCodigo());
+                centroUtilidad.bodega = bodega;
+                empresa.centroUtilidad = centroUtilidad;
+                centroUtilidad.agregarBodega(bodega);
+                empresa.agregarCentroUtilidad(centroUtilidad);
+                $scope.root.pedido.setFarmaciaOrigen(empresa);
             };
             
             
@@ -697,7 +713,7 @@ define(["angular", "js/controllers",
 
             });
 
-            
+            self.inicio();
             
         }]);
 });

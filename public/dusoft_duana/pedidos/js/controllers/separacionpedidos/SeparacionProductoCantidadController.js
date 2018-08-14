@@ -308,10 +308,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     if(continuar){
                         self.onGuardarCantidad(function(continuar, msj){
                             if(continuar){
-                                console.log('conntinuar on onGuardarCantidad', continuar);
+                               
                                 self.asignarCaja(function(continuar, msj){
 
-                                    console.log('conntinuar on asignarCaja', continuar);
+                                  
                                     AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
 
                                      if(continuar){

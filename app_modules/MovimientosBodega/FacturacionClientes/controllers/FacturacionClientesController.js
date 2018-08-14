@@ -1429,7 +1429,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             if(resultado.length > 0){
                 
             parametros.direccion_ip = ip;    
-             console.log("consultarTemporalFacturaConsumo_________________________________________________________"); 
+             
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',
             {tipo_id_tercero:parametros.tipoIdTercero, 
             tercero_id: parametros.terceroId, 
@@ -1495,9 +1495,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
          
         if(resultado.rowCount > 0){
-console.log("_________________________________________________________");    
-console.log("resultado::: ",resultado);
-console.log("_________________________________________________________");   
+   
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',
             {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo,prefijo: parametros.pedidos.prefijo,factura_fiscal: parametros.pedidos.numero});
         }else{
@@ -1506,7 +1504,7 @@ console.log("_________________________________________________________");
         }
         
     }).then(function(resultado){
-      console.log("resultado5 ",resultado);//return
+  
         if(resultado.length > 0){    
             
             resultado.forEach(function(row){
@@ -1808,7 +1806,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         }
         
     }).then(function(resultado){
-        console.log("BBBBBB",resultado);
+    
          //CAMBIAR LA CONSULTA PARA QUE VAYA A LA TEMPORAL
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           

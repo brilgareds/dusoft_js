@@ -1429,7 +1429,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             if(resultado.length > 0){
                 
             parametros.direccion_ip = ip;    
-             console.log("consultarTemporalFacturaConsumo_________________________________________________________"); 
+     
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',
             {tipo_id_tercero:parametros.tipoIdTercero, 
             tercero_id: parametros.terceroId, 
@@ -1497,9 +1497,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
          
         if(resultado.rowCount > 0){
-console.log("_________________________________________________________");    
-console.log("resultado::: ",resultado);
-console.log("_________________________________________________________");   
+ 
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',
             {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo,prefijo: parametros.pedidos.prefijo,factura_fiscal: parametros.pedidos.numero});
         }else{
@@ -1609,7 +1607,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function(req, res){
     G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
         
         if(resultado.length >0){
-            console.log(resultado.length);
+
             return res.send(G.utils.r(req.url, 'Lista de facturas temporales', 200,{listar_facturas_temporal:resultado}));
         }else{
             throw {msj:'[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404}; 

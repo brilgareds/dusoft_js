@@ -711,7 +711,11 @@ define(["angular", "js/controllers",
                         var _producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
                         _producto.set_cantidad_inicial(data.cantidad_solicitada);
                         _producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                        _producto.setEmpresaIdProducto(data.empresa_origen_producto);
+                        _producto.setCentroUtilidadProducto(data.centro_utilidad_origen_producto);
+                        _producto.setBodegaProducto(data.bodega_origen_producto);
                         _producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
+                       
                         $scope.Pedido.set_productos(_producto);
 
                     });

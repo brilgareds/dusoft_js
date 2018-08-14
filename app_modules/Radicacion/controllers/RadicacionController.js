@@ -30,7 +30,7 @@ Radicacion.prototype.subirArchivo = function (req, res) {
 
 if (args.data.ruta.name !== ""){
     req.files.file.customPath = G.settings.carpetaFactura + "Sistemas/";
-    console.log("ruta",G.settings.carpetaFactura + "Sistemas/");
+   
 
     G.Q.ninvoke(G.utils, "subirArchivo", req.files, true).then(function (resultado) {
 
@@ -185,7 +185,7 @@ Radicacion.prototype.guardarFactura = function (req, res) {
         concepto: args.descripcion,
         ruta : args.ruta
     };
-    console.log("argssssssss", args);
+
 
     G.Q.ninvoke(that.m_radicacion, "factura", obj).then(function (resultado) {
         res.send(G.utils.r(req.url, 'factura ok!!!!', 200, {factura: resultado}));
@@ -200,7 +200,7 @@ Radicacion.prototype.modificarFactura = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-console.log("args..............",args);
+
     if (args.factura_id === undefined || args.factura_id === "") {
         res.send(G.utils.r(req.url, 'Debe seleccionar la factura id', 404, {}));
         return;
@@ -425,7 +425,7 @@ Radicacion.prototype.planillaRadicacion = function (req, res) {
 
         }
 
-        console.log("relacion_id", parametros.relacion_id);
+     
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         parametros.nombre = 'ximena';
         parametros.apellido = "vivas";

@@ -1291,7 +1291,7 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
         return G.Q.nfcall(__agruparProductosPorBodega,rows[0]);
      
     }).then(function (resultado) { 
-        console.log("Productos agrupados por bodega ",resultado);
+   
         return G.Q.nfcall(__insertarCabeceraClientesCotizacion,resultado,parametros,0,{});
     }).then(function (resultado) {
         
@@ -4460,12 +4460,12 @@ PedidosCliente.prototype.validarDisponibilidad = function (req, res) {
     }
 
     if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacÃ­os', 404, {}));
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacio', 404, {}));
         return;
     }
 
     if (args.pedidos_clientes.contrato_cliente_id === '') {
-        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacÃ­o', 404, {}));
+        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacio', 404, {}));
         return;
     }
 
@@ -4549,7 +4549,13 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
     }
 
     parametros.filtro.termino_busqueda = producto.codigo_producto;
-
+    
+    //se asigna la bodega del producto para que valide la existencia en la bodega de origen
+    //y no en la bodega donde se genera el pedido
+    if(producto.bodegaProducto !== undefined){
+     parametros.bodega=producto.bodegaProducto;
+    }
+    
     G.Q.ninvoke(that.m_pedidos_clientes, 'listar_productos',
             parametros.empresa_id,
             parametros.centro_utilidad,
@@ -5225,7 +5231,6 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function (req, res) {
     var generarPedidoCliente;
 
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function (tercero) {
-console.log('el tercero', tercero);
         if (tercero.length > 0) {
             if (tercero[0].tipo_bloqueo_id !== '1') {
                 cotizacion.cliente.tipoBloqueoId = tercero[0].tipo_bloqueo_id;
@@ -5443,7 +5448,7 @@ PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
             var farmacia = resultado.rows[0].farmacia_id;
             var centro_utilidad = resultado.rows[0].centro_utilidad;
             var bodega = resultado.rows[0].bodega;
-            console.log('solicitud_prod_a_bod_ppal_id', solicitud_prod_a_bod_ppal_id, 'farmacia', farmacia, 'centro_utilidad', centro_utilidad, 'bodega', bodega); 
+           // console.log('solicitud_prod_a_bod_ppal_id', solicitud_prod_a_bod_ppal_id, 'farmacia', farmacia, 'centro_utilidad', centro_utilidad, 'bodega', bodega); 
             return G.Q.ninvoke(that.m_pedidos_clientes, "insertarProductosPedidoClienteFarmacia", solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, args.productos);
         //}
     }).then(function (resultado) {

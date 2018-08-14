@@ -258,7 +258,7 @@ ActasTecnicasModel.prototype.listarProductosParaActas = function (obj, callback)
             .where(function () {
                 this.andWhere("b.orden_pedido_id", obj.ordenPedido);
             });
-console.log("***********",G.sqlformatter.format(query.toString()));
+
     query.then(function (resultado) {
 
         callback(false, resultado);

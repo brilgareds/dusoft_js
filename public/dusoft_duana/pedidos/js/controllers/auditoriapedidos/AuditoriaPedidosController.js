@@ -25,7 +25,8 @@ define(["angular", "js/controllers",
                 ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario, localStorageService, AuditoriaDespachoService) {
 
             $scope.Empresa = Empresa;
-
+            var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
+            
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -741,8 +742,12 @@ define(["angular", "js/controllers",
             
             $scope.ejecutar = true;
             socket.on("onNotificarGenerarI002", function (datos) {
+                console.log("datos ",datos);
+                console.log("empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada() ",empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo);
+                var bodega=empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo;
                 var timer = setTimeout(function () {
-                    if (datos.parametros.status && $scope.ejecutar) {
+                    //se valida la bodega para que no se genere ICD desde DUANA a Cosmitet
+                    if (datos.parametros.status && $scope.ejecutar && bodega !== '03') {
                         $scope.ejecutar = false;
                         that.generarIngresoI002(datos.parametros.data, function (asd) {                           
                             that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos);
@@ -821,7 +826,7 @@ define(["angular", "js/controllers",
             };
             
             that.ejecutarDocumento = function(orden, pedido, sw_origen_destino, productos){
-                console.log('orden', orden, 'pedido', pedido, 'sw_origen_destino', sw_origen_destino, 'productos', productos);
+//                console.log('orden', orden, 'pedido', pedido, 'sw_origen_destino', sw_origen_destino, 'productos', productos);
                 var obj = {
                     session: $scope.session,
                     data: {

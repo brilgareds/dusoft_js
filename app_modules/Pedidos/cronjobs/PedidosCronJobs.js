@@ -45,8 +45,7 @@ PedidosCronJobs.prototype.borrarTemporalesPedidos = function(callback) {
 
     G.Q.ninvoke(that.m_pedidos_farmacias, "eliminarTemporalesFarmacias").then(function(){
         return G.Q.ninvoke(that.m_pedidos_clientes, "eliminarTemporalesClientes");
-    }).then(function(){
-         console.log("finaliza borrando temporales  ---------------");
+    }).then(function(){        
         callback(false);
     }).fail(function(err){
 
@@ -68,7 +67,6 @@ PedidosCronJobs.prototype.borrarReservasPedido = function(callback) {
     G.Q.ninvoke(that.m_pedidos_farmacias, "borrarReservas").then(function(){
         return G.Q.ninvoke(that.m_pedidos_clientes, "borrarReservas");
     }).then(function(){
-         console.log("finaliza reservas pedidos  ---------------");
         callback(false);
     }).fail(function(err){
 

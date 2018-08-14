@@ -414,7 +414,7 @@ E007Controller.prototype.crearDocumento = function (req, res) {
         }).then(function () {
             return G.Q.nfcall(that.m_e007.agregardocumento_d, parametros, transaccion);
         }).then(function () {
-            console.log("agregardocumento_d");
+        
             return G.Q.nfcall(that.m_e007.eliminarMovimientoConceptoEgreso, parametros, transaccion);
         }).then(function (result) {
             if (result >= 1) {

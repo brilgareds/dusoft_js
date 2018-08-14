@@ -773,13 +773,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * 
              */
             $scope.confirmar_modificar_producto = function (producto) {
-                console.log("confirmar_modificar_producto:::: ",producto);
+           
                 var productos = [];
                 productos.push(producto);
                 $scope.ocultarOpciones = 1;
                 //OJO VOLVER A DEJAR
                 that.validarDisponibleProductosCotizacion(0, productos, function (estado) {
-                    console.log("Estado:::: ",estado);
+
                     if (estado) {
 
                         $scope.datos_view.producto_seleccionado = producto;
@@ -1883,7 +1883,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         /*}
                     }*/
                     //$scope.ocultarOpciones = 0;
-               });
+               });   
             };
             /*
              * verifica si se creo un pedido cliente apartir de una cotizacion de otra bodega 
@@ -1901,7 +1901,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     Request.realizarRequest(url, "POST", obj, function (data) {
 
                     if (data.status === 200) {
-                        console.log("okkkk",data.obj.consultarPedidoMultipleCliente);
+                     
                         $scope.validarCotizacionClienteMultiple=data.obj.consultarPedidoMultipleCliente;
                          
                     } else {
@@ -1975,7 +1975,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
                 Request.realizarRequest(url, "POST", obj, function (data) {
                   if (data.status === 200) {
-                       console.log("data >>>> ",data);
+                       console.log("actualizarBodegaCotizacionClientesMultiple ",data);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }

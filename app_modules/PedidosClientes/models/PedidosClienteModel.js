@@ -162,7 +162,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 ) ;";
     
     var query=G.knex.raw(sql, parametros );
-    console.log(G.sqlformatter.format(query.toString()));
+
             query.then(function(resultado) {
        
         callback(false, resultado.rows, resultado);
@@ -1690,9 +1690,9 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
      
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
-            offset((pagina - 1) * G.settings.limit).then(function(resultado) {
-          
-
+            offset((pagina - 1) * G.settings.limit);
+//   console.log(G.sqlformatter.format(query.toString()));     
+    query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
             console.log("err [listar_productos]: ", err);
@@ -2411,12 +2411,12 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
 
 PedidosClienteModel.prototype.generadoEnCosmitet = function(numero_cotizacion, callback)
 {
-    console.log('el numero de cotizacion', numero_cotizacion);
+
     var query = G.knex.select('id_orden_cotizacion_origen')
             .from('ventas_ordenes_pedido_multiple_clientes')
             .where('id_orden_cotizacion_origen', numero_cotizacion);
 
-//   console.log(G.sqlformatter.format(query.toString()));
+
     query.then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
@@ -2928,7 +2928,7 @@ function __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, 
         cantidad_pendiente : 0
     });
 
-    console.log(G.sqlformatter.format(query.toString()));
+   // console.log(G.sqlformatter.format(query.toString()));
 
     query.then(function(resultado) {
         return __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos, callback);
@@ -2964,7 +2964,7 @@ PedidosClienteModel.prototype.consultarTotalProductosCotizacion = function(pedid
 PedidosClienteModel.prototype.duplicarPedido = function(numero_pedido, callback) {
     //consultarTerceroPedidoOrigen
     G.Q.nfcall(__consultarTerceroPedidoOrigen, numero_pedido).then(function(resultado) {
-        console.log('resultado tercero', resultado);
+       // console.log('resultado tercero', resultado);
         return G.Q.nfcall(__insertar_encabezado_pedido_cliente_duplicado, numero_pedido, resultado[0].tipo_id_tercero, resultado[0].tercero_id);
     }).then(function(resultado) {
         pedido = {numero_pedido: (resultado.rows.length > 0) ? resultado.rows[0].numero_pedido : 0, estado: 0};
@@ -3038,7 +3038,7 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
 
 
     var query = G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 2: cotizacion.total});
-console.log(G.sqlformatter.format(query.toString()));
+//console.log(G.sqlformatter.format(query.toString()));
     if (transaccion)
         query.transacting(transaccion);
 

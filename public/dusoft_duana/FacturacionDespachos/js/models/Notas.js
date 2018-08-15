@@ -72,14 +72,6 @@ define(["angular", "js/models"], function (angular, models) {
                 return this.descripcionEstado;
             };
 
-//            Notas.prototype.setValorDescuento = function(valorDescuento) {
-//                this.valorDescuento = valorDescuento;
-//            };
-//
-//            Notas.prototype.getValorDescuento= function() {
-//                return this.valorDescuento;
-//            };
-
             Notas.prototype.setValorNota = function (valorNota) {
                 this.valorNota = valorNota;
             };
@@ -95,33 +87,6 @@ define(["angular", "js/models"], function (angular, models) {
             Notas.prototype.getValorFactura = function () {
                 return this.valorFactura;
             };
-//            
-//             Notas.prototype.set_porcentaje_rtf = function(porcentaje_rtf) {
-//                this.porcentaje_rtf = porcentaje_rtf;
-//                return this;
-//            };
-//
-//            Notas.prototype.get_porcentaje_rtf = function() {
-//                return this.porcentaje_rtf;
-//            };
-//            
-//            Notas.prototype.set_porcentaje_ica = function(porcentaje_ica) {
-//                this.porcentaje_ica = porcentaje_ica;
-//                return this;
-//            };
-//
-//            Notas.prototype.get_porcentaje_ica = function() {
-//                return this.porcentaje_ica;
-//            };
-//            
-//            Notas.prototype.set_porcentaje_reteiva = function(porcentaje_reteiva) {
-//                this.porcentaje_reteiva = porcentaje_reteiva;
-//                return this;
-//            };
-//
-//            Notas.prototype.get_porcentaje_reteiva = function() {
-//                return this.porcentaje_reteiva;
-//            };
             
             Notas.prototype.setTipoImpresion = function(tipoImpresion) {
                 this.tipoImpresion = tipoImpresion;
@@ -147,7 +112,7 @@ define(["angular", "js/models"], function (angular, models) {
                 return this;
             };
 
-            Notas.prototype.getsetConcepto = function() {
+            Notas.prototype.getConcepto = function() {
                 return this.concepto;
             };
 

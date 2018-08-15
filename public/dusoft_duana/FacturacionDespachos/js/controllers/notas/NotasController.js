@@ -138,70 +138,57 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                         ]
                     };
-//		   /*
-//		    * 1-nota credito 0 - nota debito
-//		    * @param {type} tipoNota
-//		    * @returns {disabled}
-//		    */
-//		  $scope.comparaValorNota=function(tipoNota){
-//		      var disabled=false;
-//                   
-//		      if(tipoNota===1){
-//			if(parseInt($scope.root.listarFacturasGeneradasNotas[0].saldo) <= 0){
-//			   disabled=true;
-//			}
-//		       
-//		      }
-//			return disabled;
-//		  };
-//    
-//		    
-//		    /**
-//			* +Descripcion sincronizar FI
-//			* @author Andres Mauricio Gonzalez
-//			* @fecha 18/05/2017
-//			* @returns {undefined}
-//			*/
-//		    $scope.sincronizarFI = function(data) {
-//			that.sincronizarFI(data,function(resultado){
-//			});
-//		    };
-//		    
-//			/**
-//			* +Descripcion Metodo encargado de sincronizar en WS FI
-//			* @author Andres Mauricio Gonzalez
-//			* @fecha 18/05/2017
-//			* @returns {undefined}
-//			*/
-//		       that.sincronizarFI = function(data,callback) {
-//                           
-//			   var obj = {
-//			       session: $scope.session,
-//			       data: {
-//				   sincronizarFI: {
-//				       empresaId: data.getEmpresa(),
-//				       prefijo: data.getPrefijo(),
-//				       factura: data.getNumeroFactura()
-//				   }
-//			       }
-//			   };
+
+
+                    /**
+                     * +Descripcion sincronizar FI
+                     * @author German Galvis
+                     * @fecha 14/08/2018
+                     * @returns {undefined}
+                     */
+                    $scope.sincronizarFI = function (data) {
+
+                        that.sincronizarFI(data, function (resultado) {
+                        });
+                    };
+
+                    /**
+                     * +Descripcion Metodo encargado de sincronizar en WS FI
+                     * @author German Galvis
+                     * @fecha 14/08/2018
+                     * @returns {undefined}
+                     */
+                    that.sincronizarFI = function (data, callback) {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                sincronizarFI: {
+                                    nota: data.numeroNota,
+                                    concepto: data.concepto,
+                                    tipoNota: data.tipoImpresion
+                                }
+                            }
+                        };
+
+
+
+                        notasService.sincronizarFi(obj, function (data) {
+
+                            if (data.status === 200) {
+//                                that.listarFacturasGeneradas('', function (data) {
 //
-//			   cajaGeneralService.sincronizarFi(obj, function(data) {
-//
-//			       if (data.status === 200) {
-//				   that.listarFacturasGeneradas('',function(data){
-//				       
-//				   });
-//				   that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd,data.obj.respuestaFI.resultado.mensaje_ws);
-//				   callback(true);
-//			       } else {
-//				   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-//				   callback(false);
-//			       }
-//
-//			   });
-//
-//		       };
+//                                });
+//                                that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd, data.obj.respuestaFI.resultado.mensaje_ws);
+                                callback(true);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                callback(false);
+                            }
+
+                        });
+
+                    };
 //		       
 //		  /**
 //			* +Descripcion mensaje de respuesta de WS
@@ -620,6 +607,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     that.listarDetalleFactura();
 
                                     $scope.cerrar = function () {
+                                        $scope.root.concepto = [];
                                         $modalInstance.close();
                                     };
 
@@ -673,6 +661,26 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                         $scope.root.impuestosnota.totalGeneral = $scope.root.impuestosnota.valorSubtotal + $scope.root.impuestosnota.iva - $scope.root.impuestosnota.retencionFuente - $scope.root.impuestosnota.retencionIca;
 
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de validar la activacion del boton crear
+                                     * @author German Galvis
+                                     * @fecha 09/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.habilitarCrear = function () {
+                                        var disabled = false;
+                                        if (nota === 1 && ($scope.root.concepto.id === undefined || $scope.root.concepto.id === "")) {
+                                            disabled = true;
+                                        }
+                                        if (parseInt($scope.root.impuestosnota.totalGeneral) > parseInt(datos.saldo)) {
+                                            AlertService.mostrarMensaje("warning", "el total de la nota no puede superar el saldo " + datos.saldo);
+                                            disabled = true;
+                                        }
+
+
+                                        return disabled;
                                     };
 
                                     $scope.listaNotas2 = {
@@ -756,249 +764,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
                     };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope selector del filtro
-//                     * @param {type} $event
-//                     */
-//                    $scope.onSeleccionFiltro = function() {
-//			
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope selector del filtro
-//                     * @param {type} $event
-//                     */
-//                    $scope.onSeleccionFiltroGrupo = function() {
-//                        that.listarGrupos(false, function() {
-//
-//                        });
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope selector del filtro
-//                     * @param {type} $event
-//                     */
-//                    $scope.validarCaja = function() {
-//                        var validar = false;
-//                        if ($scope.root.cajas === undefined || $scope.root.terceros === undefined) {//|| (!($scope.root.pagoEfectivoModel) && !($scope.root.pagoEfectivoModel)
-//                            validar = true;
-//                        }
-//                        return validar;
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope selector del filtro
-//                     * @param {type} $event
-//                     */
-//                    $scope.validarConcepto = function() { 
-//                        var validar = false;
-//                        if ($scope.root.cajas === undefined || $scope.root.terceros === undefined || 
-//			    $scope.root.conceptoTmp.length === 0 || ($scope.root.pagoEfectivoModel === $scope.root.pagoCreditoModel && 
-//			    ($scope.root.pagoCreditoModel === undefined) && ($scope.root.pagoEfectivoModel === undefined))) {
-//			
-//                            validar = true;
-//                        }
-//                        return validar;
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope selector del filtro
-//                     * @param {type} $event
-//                     */
-//                    $scope.onSeleccionFiltroConcepto = function() {
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope guarda los conceptos
-//                     * @param {type} $event
-//                     */
-//                    that.guardarConcepto = function(callback) {
-//                        var mensaje = '';
-//                        if ($scope.root.grupo.gruposConcepto === "") {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Grupo');
-//                            return;
-//                        }
-//                        if ($scope.root.concepto === undefined) {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Concepto');
-//                            return;
-//                        }
-//                        if ($scope.root.concepto.conceptoId === "") {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Concepto');
-//                            return;
-//                        }
-//			
-//                        if ($scope.root.pago === undefined) {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Tipo de Pago');
-//                            return;
-//                        }
-//                        if ($scope.root.pago === '') {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Tipo de Pago');
-//                            return;
-//                        }
-//                        if ($scope.root.precio === undefined) {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Digitar un Precio');
-//                            return;
-//                        }
-//                        if (parseInt($scope.root.precio) < 0) {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'El Precio debe Ser Mayor o Igual a Cero');
-//                            return;
-//                        }
-//                        if (parseInt($scope.root.gravamen) < 0) {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'El Gravamen debe Eer Mayor o Igual a Cero');
-//                            return;
-//                        }
-//                        if ($scope.root.descripcion === undefined) {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Digitar Una Descripcion');
-//                            return;
-//                        }
-//                        if ($scope.root.descripcion.length <= 6) {
-//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'La Descripcion debe Tener como Minimo 6 Caracteres');
-//                            return;
-//                        }
-//			
-//			if($scope.root.gravamen === undefined || $scope.root.gravamen === "") {
-//			   $scope.root.gravamen=0; 
-//			}
-//
-//                        var parametros = {//$scope.root.caja
-//                            empresa_id: $scope.root.empresaSeleccionada.getCodigo(),
-//                            centro_utilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
-//                            concepto_id: $scope.root.concepto.getConceptoId(),
-//                            grupo_concepto: $scope.root.grupo.getGruposConcepto(),
-//                            tipo_id_tercero: $scope.root.terceros[0].getTipoId(),
-//                            tercero_id: $scope.root.terceros[0].getId(),
-//                            sw_tipo: '0',
-//                            cantidad: '1',
-//                            precio: parseInt($scope.root.precio)+parseInt($scope.root.gravamen),
-//                            valor_total: parseInt($scope.root.precio)+parseInt($scope.root.gravamen),
-//                            porcentaje_gravamen: $scope.root.gravamen,
-//                            valor_gravamen: $scope.root.gravamen,
-//                            descripcion: $scope.root.descripcion,
-//                            tipo_pago_id: $scope.root.pago
-//                        };
-//			
-//			that.limpiarVariablesConceptos();
-//                        callback(true, parametros);
-//                    };
 //		    
 //		    that.limpiarVariablesConceptos=function(){
-//			$scope.root.precio="";
-//			$scope.root.pago="";
-//			$scope.root.gravamen="";
-//			$scope.root.descripcion="";
+//			$scope.root.prefijoBusquedaNota = 'seleccionar';
+//                       $scope.root.concepto = [];
 //			$scope.checkearEstadoPago();
 //		    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * +Descripcion Permite realiar peticion al API para traer los terceros
-//                     * @params callback: {function}
-//                     * @fecha 2017-06-01
-//                     */
-//                    that.insertarTmpDetalleConceptos = function(parametros, callback) {
-//
-//                        var parametro = {
-//                            session: $scope.session,
-//                            data: {
-//                                datos: parametros
-//                            }
-//                        };
-//                        cajaGeneralService.insertarTmpDetalleConceptos(parametro, function(respuesta) {
-//                            if (respuesta.status === 200) {
-//                               // AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.obj.insertarTmpDetalleConceptos);
-//                                callback(true);
-//                            } else {
-//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.msj);
-//                                callback(false);
-//                            }
-//                        });
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope selector estado de pago
-//                     * @param {type} $event
-//                     */
-//                    $scope.checkearEstadoPago = function(check) {
-//			
-//                        $scope.root.pago = check;
-//                        switch (check) {
-//                            case 1:
-//                                $scope.root.cheque = 'default';
-//                                $scope.root.efectivo = 'primary';
-//                                $scope.root.credito = 'default';
-//                                break;
-//                            case 2:
-//                                $scope.root.cheque = 'default';
-//                                $scope.root.efectivo = 'default';
-//                                $scope.root.credito = 'success';
-//                                break;
-//                            case 3:
-//                                $scope.root.cheque = 'danger';
-//                                $scope.root.efectivo = 'default';
-//                                $scope.root.credito = 'default';
-//                                break;
-//                            default:
-//                                $scope.root.cheque = 'default';
-//                                $scope.root.efectivo = 'default';
-//                                $scope.root.credito = 'default';
-//                        }
-//                    };
-//                    
-//		      
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope selector tipo factura
-//                     * @param {type} $event
-//                     */
-//                    $scope.tipoFactura = function(tipo) {
-//		
-//                        $scope.root.pagoCreditoModel = false;
-//                        $scope.root.pagoEfectivoModel = false;
-//			
-//			$scope.root.pago = tipo;
-//                        switch (tipo) {
-//                            case 0:
-//                                $scope.root.pagoEfectivo = 'primary';
-//                                $scope.root.pagoCredito = 'default';
-//				$scope.root.pagoEfectivoModel = true;
-//                                break;
-//                            case 1:
-//                                $scope.root.pagoEfectivo = 'default';
-//                                $scope.root.pagoCredito = 'success';
-//				 $scope.root.pagoCreditoModel = true;
-//                                break;
-//                            default:
-//                                $scope.root.pagoEfectivo = 'default';
-//                                $scope.root.pagoCredito = 'default';
-//                        }
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope selector del filtro
-//                     * @param {type} $event
-//                     */
-//                    $scope.onSeleccionTipoTercero = function(filtro) {
-//                        $scope.root.filtro = filtro;
-//                        $scope.root.tipoTercero = filtro;
-//                    };
-//                    /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 04/02/2016
-//                     * +Descripcion scope selector del filtro
-//                     * @param {type} $event
-//                     */
-//                    $scope.onSeleccionPrefijo = function(filtro) {
-//			$scope.root.prefijo.prefijo=filtro.prefijo;
-//                    };
 
 
                     /**
@@ -1129,11 +900,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'NC', width: "3%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
-                            {field: 'ND', width: "3%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
-                            {field: 'Imprimir', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'}
+                            {field: 'NC', width: "5%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)"  ng-disabled="habilitarCredito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'ND', width: "5%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
                         ]
+//                                {field: 'Imprimir', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'}
                     };
+
+                    /**
+                     * +Descripcion Metodo encargado de validar la activacion del check
+                     * @author German Galvis
+                     * @fecha 15/08/2018 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+                    $scope.habilitarCredito = function (factura) {
+                        var disabled = false;
+                        if (factura.saldo === undefined || factura.saldo === "" || parseInt(factura.saldo) <= 0) {
+                            disabled = true;
+                        }
+
+                        return disabled;
+                    };
+
 
                     $scope.btn_seleccionar_nota = function (datos) {
 

@@ -1078,6 +1078,39 @@ NotasModel.prototype.listarConceptos = function (callback) {
 
 /**
  * @author German Galvis
+ * +Descripcion Metodo encargado de traer el concepto de la nota
+ * @fecha 2018-08-14 YYYY-MM-DD
+ * @returns {callback}
+ */
+NotasModel.prototype.obtenerConceptoPorNota = function (nota, callback) {
+
+    var columna = [
+        "a.concepto_id AS id",
+        "b.descripcion",
+        "b.naturaleza",
+        "b.cuenta"
+    ];
+    var query = G.knex.select(columna)
+            .from("notas_credito_despachos_clientes as a")
+            .innerJoin("concepto_nota as b", "b.id", "a.concepto_id ")
+            .where('a.nota_credito_despacho_cliente_id', nota);
+
+    query.unionAll(function () {
+        this.select(columna)
+                .from("notas_credito_despachos_clientes_agrupados as a")
+                .innerJoin("concepto_nota as b", "b.id", "a.concepto_id ")
+                .where('a.nota_credito_despacho_cliente_id', nota);
+    });
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [obtenerConceptoPorNota]:", err);
+        callback(err);
+    });
+};
+/**
+ * @author German Galvis
  * +Descripcion Metodo encargado de actualizar la factura deacuerdo a la nota debito
  * @fecha 2018-08-13 YYYY-MM-DD
  * @returns {callback}
@@ -1092,19 +1125,14 @@ NotasModel.prototype.actualizarFacturaNotaDebito = function (parametros, transac
                 valor_notadebito: G.knex.raw('valor_notadebito +' + parametros.total),
                 saldo: G.knex.raw('saldo +' + parametros.total)
             });
-
-
     if (transaccion)
         query.transacting(transaccion);
-
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
         callback(err);
     }).done();
-
 };
-
 /**
  * @author German Galvis
  * +Descripcion Metodo encargado de actualizar la factura deacuerdo a la nota credito
@@ -1121,19 +1149,13 @@ NotasModel.prototype.actualizarFacturaNotaCredito = function (parametros, transa
                 valor_notacredito: G.knex.raw('valor_notacredito +' + parametros.total),
                 saldo: G.knex.raw('saldo -' + parametros.total)
             });
-
-
     if (transaccion)
         query.transacting(transaccion);
-
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
         callback(err);
     }).done();
-
 };
-
 NotasModel.$inject = [];
-
 module.exports = NotasModel;

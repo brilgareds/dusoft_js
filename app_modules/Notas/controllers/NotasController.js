@@ -360,7 +360,7 @@ Notas.prototype.crearNotaCredito = function (req, res) {
             parametros.empresa_id_devolucion = args.empresa_id_devolucion;
             parametros.prefijo_devolucion = args.prefijo_devolucion;
             parametros.numero_devolucion = args.numero_devolucion;
-            
+
             G.Q.nfcall(that.m_notas.agregarCabeceraNotaCreditoDevolucion, parametros, transaccion).then(function (result) {
 
                 numeroNota = result[0];
@@ -587,7 +587,7 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
     }).then(function (result) {
 
         productos = result;
-        console.log("productos", productos);
+
         return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id});
 
     }).then(function (resultado) {
@@ -652,47 +652,70 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
-//
-///**
-// * @author Andres Mauricio Gonzalez
-// * +Descripcion  Metodo encargado para sincronizar las facturas generadas en caja general 
-// * @fecha 2017-06-13 (YYYY-MM-DD)
-// */
-//Notas.prototype.sincronizarFacturaNotas = function(req, res) {
-//        var that = this;
-//        var args = req.body.data.sincronizarFI;
-//	
-//	if (args.empresaId === undefined) {
-//        res.send(G.utils.r(req.url, 'No Esta Definido empresaId', 404, {}));
-//        return;
-//	}
-//	
-//	if (args.prefijo === undefined) {
-//        res.send(G.utils.r(req.url, 'No Esta Definido el prefijo', 404, {}));
-//        return;
-//	}
-//	
-//	if (args.factura === undefined) {
-//        res.send(G.utils.r(req.url, 'No Esta Definido la factura', 404, {}));
-//        return;
-//	}
-//	
-//        var paramt = [];
-//        paramt[0] = args.empresaId;
-//        paramt[1] = args.prefijo;
-//        paramt[2] = args.factura;
-//        var param = {param: paramt,funcion:'facturas_talonario_fi'};
-//    
-//       G.Q.ninvoke(that.m_sincronizacion,'sincronizarCuentasXpagarFi', param).then(function(resultado){       	    
-//
-//        res.send(G.utils.r(req.url, 'Factura sincronizada', 200, {respuestaFI: resultado})); 
-//        
-//	}).catch(function(err){
-//	    console.log("ERROR",err);
-//	   res.send(G.utils.r(req.url, err, 500, {err: err}));
-//	}).done(); 
-//};
 
+/**
+ * @author German Galvis
+ * +Descripcion  Metodo encargado para sincronizar las facturas generadas en caja general 
+ * @fecha 2018-08-14 (YYYY-MM-DD)
+ */
+Notas.prototype.sincronizarNotas = function (req, res) {
+    var that = this;
+    var args = req.body.data.sincronizarFI;
+
+    if (args.nota === undefined) {
+        res.send(G.utils.r(req.url, 'No Esta Definido nota', 404, {}));
+        return;
+    }
+
+    if (args.tipoNota === undefined) {
+        res.send(G.utils.r(req.url, 'No Esta Definido el tipoNota', 404, {}));
+        return;
+    }
+
+    var paramt = [];
+    var param = {};
+    var concepto = [];
+
+    if (args.tipoNota === 'C') {
+
+        G.Q.ninvoke(that.m_notas, 'obtenerConceptoPorNota', args.nota).then(function (resultado) {
+
+            concepto = resultado[0];
+            paramt[0] = args.nota;
+            paramt[1] = concepto;
+            param = {param: paramt, funcion: 'notas_credito_clientes_fi'};
+
+            return G.Q.nfcall(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param);
+
+        }).then(function (result) {
+            res.send(G.utils.r(req.url, 'Factura sincronizada', 200, {respuestaFI: result}));
+
+        }).catch(function (err) {
+            console.log("ERROR", err);
+            res.send(G.utils.r(req.url, err, 500, {err: err}));
+        }).done();
+
+
+
+    }
+
+    if (args.tipoNota === 'D') {
+
+        paramt[0] = args.nota;
+        param = {param: paramt, funcion: 'notas_debito_cliente_fi'};
+
+
+        G.Q.ninvoke(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param).then(function (resultado) {
+
+            res.send(G.utils.r(req.url, 'Factura sincronizada', 200, {respuestaFI: resultado}));
+
+        }).catch(function (err) {
+            console.log("ERROR", err);
+            res.send(G.utils.r(req.url, err, 500, {err: err}));
+        }).done();
+
+    }
+};
 
 function __recorreListado(that, listado, parametros, index, transaccion, callback) {
 

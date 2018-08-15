@@ -242,33 +242,33 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
                         return respuesta;
                     };
-
-                    /**
-                     * +Descripcion metodo para imprimir las facturas
-                     * @author German Galvis
-                     * @fecha 18/05/2017
-                     * @returns {undefined}
-                     */
-                    $scope.onImprimirFacturaNotas = function (datos) {
-                        var parametros = {
-                            session: $scope.session,
-                            data: {
-                                prefijo: datos.getPrefijo(),
-                                facturaFiscal: datos.getNumeroFactura(),
-                                empresaId: $scope.root.empresaSeleccionada.getCodigo()
-                            }
-                        };
-                        notasService.imprimirNotas(parametros, function (data) {
-
-                            if (data.status === 200) {
-                                var nombre = data.obj.imprimirFacturaNotas;
-                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-
-                            } else {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                            }
-                        });
-                    };
+//
+//                    /**
+//                     * +Descripcion metodo para imprimir las facturas
+//                     * @author German Galvis
+//                     * @fecha 18/05/2017
+//                     * @returns {undefined}
+//                     */
+//                    $scope.onImprimirFacturaNotas = function (datos) {
+//                        var parametros = {
+//                            session: $scope.session,
+//                            data: {
+//                                prefijo: datos.getPrefijo(),
+//                                facturaFiscal: datos.getNumeroFactura(),
+//                                empresaId: $scope.root.empresaSeleccionada.getCodigo()
+//                            }
+//                        };
+//                        notasService.imprimirNotas(parametros, function (data) {
+//
+//                            if (data.status === 200) {
+//                                var nombre = data.obj.imprimirFacturaNotas;
+//                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+//
+//                            } else {
+//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+//                            }
+//                        });
+//                    };
 
                     /**
                      * +Descripcion metodo para imprimir las notas
@@ -413,7 +413,35 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         });
                                     };
 
+                                    /**
+                                     * +Descripcion Metodo encargado de invocar el servicio que consulta
+                                     *              los porcentajes de iva,ica,rete-fte
+                                     * @author German Galvis
+                                     * @fecha 15/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    that.listarPorcentajes = function () {
+
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresaId: datos.empresa
+                                            }
+                                        };
+
+                                        notasService.listarPorcentajes(obj, function (data) {
+                                            
+                                            if (data.status === 200) {
+                                                $scope.root.porcentajes = data.obj.listarPorcentajes;
+                                            } else {
+                                                $scope.root.porcentajes = null;
+                                            }
+
+                                        });
+                                    };
+
                                     that.listarDetalleFactura();
+                                    that.listarPorcentajes();
 
                                     $scope.cerrar = function () {
                                         $modalInstance.close();
@@ -457,7 +485,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                      */
                                     $scope.onSeleccionarOpcion = function () {
 
-                                        var subtotal = 0, iva = 0;
+                                        var subtotal = 0;
+                                        var iva = 0;
 
                                         $scope.root.listadoProductos.forEach(function (data) {
                                             if (data.seleccionado)
@@ -466,6 +495,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         });
                                         $scope.root.impuestosnota.valorSubtotal = subtotal;
                                         $scope.root.impuestosnota.iva = iva;
+
+                                        if ($scope.root.porcentajes.length > 0) {
+
+                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_rtf) {
+                                                $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
+                                            } else {
+                                                $scope.root.impuestosnota.retencionFuente = 0;
+                                            }
+
+                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_ica) {
+                                                $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
+                                            } else {
+                                                $scope.root.impuestosnota.retencionIca = 0;
+                                            }
+
+                                        }
 
                                         $scope.root.impuestosnota.totalGeneral = $scope.root.impuestosnota.valorSubtotal + $scope.root.impuestosnota.iva - $scope.root.impuestosnota.retencionFuente - $scope.root.impuestosnota.retencionIca;
 
@@ -604,7 +649,35 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         });
                                     };
 
+                                    /**
+                                     * +Descripcion Metodo encargado de invocar el servicio que consulta
+                                     *              los porcentajes de iva,ica,rete-fte
+                                     * @author German Galvis
+                                     * @fecha 15/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    that.listarPorcentajes = function () {
+
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresaId: datos.empresa
+                                            }
+                                        };
+
+                                        notasService.listarPorcentajes(obj, function (data) {
+                                            
+                                            if (data.status === 200) {
+                                                $scope.root.porcentajes = data.obj.listarPorcentajes;
+                                            } else {
+                                                $scope.root.porcentajes = null;
+                                            }
+
+                                        });
+                                    };
+
                                     that.listarDetalleFactura();
+                                    that.listarPorcentajes();
 
                                     $scope.cerrar = function () {
                                         $scope.root.concepto = [];
@@ -658,6 +731,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         });
                                         $scope.root.impuestosnota.valorSubtotal = subtotal;
                                         $scope.root.impuestosnota.iva = iva;
+
+                                        if ($scope.root.porcentajes.length > 0) {
+
+                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_rtf) {
+                                                $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
+                                            } else {
+                                                $scope.root.impuestosnota.retencionFuente = 0;
+                                            }
+
+                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_ica) {
+                                                $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
+                                            } else {
+                                                $scope.root.impuestosnota.retencionIca = 0;
+                                            }
+
+
+                                        }
+
 
                                         $scope.root.impuestosnota.totalGeneral = $scope.root.impuestosnota.valorSubtotal + $scope.root.impuestosnota.iva - $scope.root.impuestosnota.retencionFuente - $scope.root.impuestosnota.retencionIca;
 

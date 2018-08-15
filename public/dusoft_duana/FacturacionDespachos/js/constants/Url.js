@@ -64,6 +64,7 @@ define(["angular"], function(angular) {
             'NOTAS': {
                 "CONSULTAR_NOTAS": BASE_URL + "/Notas/ConsultarNotas",
                 "LISTAR_FACTURAS": BASE_URL + "/Notas/listarFacturas",
+                "LISTAR_PORCENTAJES": BASE_URL + "/Notas/listarPorcentajes",
                 "DETALLE_FACTURA": BASE_URL + "/Notas/ConsultarDetalleFactura",
                 "CREAR_NOTA": BASE_URL + "/Notas/crearNota",
                 "CREAR_NOTA_CREDITO": BASE_URL + "/Notas/crearNotaCredito",

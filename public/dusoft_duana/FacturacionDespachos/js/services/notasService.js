@@ -20,6 +20,17 @@ define(["angular", "js/services"], function (angular, services) {
 
                     /**
                      * @author German Galvis
+                     * @fecha  15/08/2018 DD/MM/YYYYY
+                     * +Descripcion LISTAR PORCENTAJES 
+                     */
+                    self.listarPorcentajes = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.LISTAR_PORCENTAJES, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
                      * +Descripcion Funcion encargada de serializar el resultado de la
                      *              consulta que obtiene las facturas
                      * @fecha 03/08/2018 DD/MM/YYYYY

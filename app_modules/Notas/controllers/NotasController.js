@@ -36,6 +36,33 @@ Notas.prototype.listarFacturas = function (req, res) {
 
 /**
  * @author German Galvis
+ * +Descripcion  Metodo encargado de obtener los porcentajes 
+ * @fecha 2018-08-15 (YYYY-MM-DD)
+ */
+Notas.prototype.listarPorcentajes = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        empresaId: args.empresaId
+    };
+    
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresaId}).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            res.send(G.utils.r(req.url, 'listarPorcentajes', 200, {listarPorcentajes: resultado}));
+        } else {
+            throw 'Consulta sin resultados';
+        }
+
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+/**
+ * @author German Galvis
  * +Descripcion  Metodo encargado de consultar las notas
  * @fecha 2018-08-06 (YYYY-MM-DD)
  */

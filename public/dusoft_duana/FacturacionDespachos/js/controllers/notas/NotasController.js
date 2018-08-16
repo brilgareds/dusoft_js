@@ -425,12 +425,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         var obj = {
                                             session: $scope.session,
                                             data: {
-                                                empresaId: datos.empresa
+                                                empresaId: datos.empresa,
+                                                prefijo: datos.prefijo,
+                                                tipo_factura: datos.tipoFactura,
+                                                factura_fiscal: datos.numeroFactura
                                             }
                                         };
 
                                         notasService.listarPorcentajes(obj, function (data) {
-                                            
+
                                             if (data.status === 200) {
                                                 $scope.root.porcentajes = data.obj.listarPorcentajes;
                                             } else {
@@ -498,17 +501,17 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                         if ($scope.root.porcentajes.length > 0) {
 
-                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_rtf) {
-                                                $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
-                                            } else {
-                                                $scope.root.impuestosnota.retencionFuente = 0;
-                                            }
-
-                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_ica) {
-                                                $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
-                                            } else {
-                                                $scope.root.impuestosnota.retencionIca = 0;
-                                            }
+//                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_rtf) {
+                                            $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
+//                                            } else {
+//                                                $scope.root.impuestosnota.retencionFuente = 0;
+//                                            }
+//
+//                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_ica) {
+                                            $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
+//                                            } else {
+//                                                $scope.root.impuestosnota.retencionIca = 0;
+//                                            }
 
                                         }
 
@@ -656,17 +659,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                      * @fecha 15/08/2018 DD/MM/YYYY
                                      * @returns {undefined}
                                      */
-                                    that.listarPorcentajes = function () {
+                                    that.listarPorcentajes1 = function () {
 
                                         var obj = {
                                             session: $scope.session,
                                             data: {
-                                                empresaId: datos.empresa
+                                                empresaId: datos.empresa,
+                                                prefijo: datos.prefijo,
+                                                tipo_factura: datos.tipoFactura,
+                                                factura_fiscal: datos.numeroFactura
                                             }
                                         };
 
                                         notasService.listarPorcentajes(obj, function (data) {
-                                            
+
                                             if (data.status === 200) {
                                                 $scope.root.porcentajes = data.obj.listarPorcentajes;
                                             } else {
@@ -677,7 +683,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     };
 
                                     that.listarDetalleFactura();
-                                    that.listarPorcentajes();
+                                    that.listarPorcentajes1();
 
                                     $scope.cerrar = function () {
                                         $scope.root.concepto = [];
@@ -698,6 +704,54 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         }
 
                                         return disabled;
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de validar la activacion de el valor nota
+                                     * @author German Galvis
+                                     * @fecha 15/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.habilitarValorNota = function () {
+                                        var disabled = false;
+                                        if ($scope.root.concepto.id === undefined || $scope.root.concepto.id === 1) {
+                                            disabled = true;
+                                        }
+
+                                        return disabled;
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de validar el cambio del concepto
+                                     * @author German Galvis
+                                     * @fecha 15/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.cambioConcepto = function () {
+                                        var i;
+
+                                        $scope.root.impuestosnota.valorSubtotal = 0;
+                                        $scope.root.impuestosnota.iva = 0;
+                                        $scope.root.impuestosnota.retencionFuente = 0;
+                                        $scope.root.impuestosnota.retencionIca = 0;
+                                        $scope.root.impuestosnota.totalGeneral = 0;
+                                        
+                                        for (i = 0; i < $scope.root.listadoProductos.length; i++) {
+                                            if ($scope.root.listadoProductos[i].seleccionado) {
+                                                $scope.root.listadoProductos[i].seleccionado = false;
+                                            }
+                                        }
+                                    };
+
+                                    /**
+                                     * +Descripcion Metodo encargado de setear el valor total de la factura
+                                     * @author German Galvis
+                                     * @fecha 15/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.cambioValorNota = function () {
+
+                                        $scope.root.impuestosnota.totalGeneral = parseInt($scope.root.impuestosnota.valorSubtotal);
                                     };
 
                                     /**
@@ -725,26 +779,26 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         var subtotal = 0, iva = 0;
 
                                         $scope.root.listadoProductos.forEach(function (data) {
-                                            if (data.seleccionado)
+                                            if (data.seleccionado) {
                                                 subtotal += data.total_nota;
-                                            iva += ((data.cantidad_ingresada * (data.porc_iva / 100)) * data.cantidad);
+                                                iva += ((data.cantidad_ingresada * (data.porc_iva / 100)) * data.cantidad);
+                                            }
                                         });
                                         $scope.root.impuestosnota.valorSubtotal = subtotal;
                                         $scope.root.impuestosnota.iva = iva;
-
                                         if ($scope.root.porcentajes.length > 0) {
 
-                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_rtf) {
-                                                $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
-                                            } else {
-                                                $scope.root.impuestosnota.retencionFuente = 0;
-                                            }
-
-                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_ica) {
-                                                $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
-                                            } else {
-                                                $scope.root.impuestosnota.retencionIca = 0;
-                                            }
+//                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_rtf) {
+                                            $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
+//                                            } else {
+//                                                $scope.root.impuestosnota.retencionFuente = 0;
+//                                            }
+//
+//                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_ica) {
+                                            $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
+//                                            } else {
+//                                                $scope.root.impuestosnota.retencionIca = 0;
+//                                            }
 
 
                                         }
@@ -767,6 +821,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         }
                                         if (parseInt($scope.root.impuestosnota.totalGeneral) > parseInt(datos.saldo)) {
                                             AlertService.mostrarMensaje("warning", "el total de la nota no puede superar el saldo " + datos.saldo);
+                                            disabled = true;
+                                        }
+                                        if (parseInt($scope.root.impuestosnota.totalGeneral) <= 0) {
                                             disabled = true;
                                         }
 

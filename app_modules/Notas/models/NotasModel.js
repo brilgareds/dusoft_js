@@ -293,7 +293,8 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         G.knex.raw("CASE WHEN a.estado = 0 THEN\
 	'Sincronizado' ELSE'NO sincronizado'\
 	END AS descripcion_estado"),
-        "b.descripcion AS descripcion_concepto"
+        "b.descripcion AS descripcion_concepto",
+        "ncdc.concepto_id"
     ];
 
     var columna_b = [
@@ -315,7 +316,8 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         G.knex.raw("CASE WHEN a.estado = 0 THEN\
 	'Sincronizado' ELSE'NO sincronizado'\
 	END AS descripcion_estado"),
-        "b.descripcion AS descripcion_concepto"
+        "b.descripcion AS descripcion_concepto",
+        "ncdc.concepto_id"
     ];
 
     var query = G.knex.select(columna_a)
@@ -1109,6 +1111,62 @@ NotasModel.prototype.obtenerConceptoPorNota = function (nota, callback) {
         callback(err);
     });
 };
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de traer el concepto de la nota
+ * @fecha 2018-08-14 YYYY-MM-DD
+ * @returns {callback}
+ */
+NotasModel.prototype.porcentajes = function (obj, callback) {
+
+    var columna = [
+        "porcentaje_rtf",
+        "porcentaje_ica",
+        "porcentaje_reteiva"
+        
+    ];
+    var query = G.knex.select(columna)
+            .from(G.knex.raw(obj.tabla_2))
+            .where('factura_fiscal', obj.factura_fiscal)
+            .andWhere('prefijo', obj.prefijo);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [obtenerConceptoPorNota]:", err);
+        callback(err);
+    });
+};
+
+
+/**
+ * @author German Galvis
+ * @fecha 2018-08-14 YYYY-MM-DD
+ * +Descripcion Modelo encargado de consultar las retenciones segun la empresa
+ * @controller FacturacionClientes.prototype.listarTiposTerceros
+ */
+NotasModel.prototype.consultarParametrosRetencion = function (obj,callback) {
+
+   var query = G.knex.select('*')
+        .from('vnts_bases_retenciones')
+        .where(function(){
+            this.andWhere("estado",'1')
+            .andWhere("anio", obj.fecha)
+            .andWhere("empresa_id", obj.empresaId);
+        });
+        
+        console.log("Query resultado", G.sqlformatter.format(
+                query.toString()));
+        query.then(function (resultado) {
+            callback(false, resultado)
+        }).catch(function (err) {
+        console.log("err [consultarParametrosRetencion]:", err);
+        callback({err:err, msj: "Error al consultar los parametros de retencion"});   
+    });
+
+};
+
 /**
  * @author German Galvis
  * +Descripcion Metodo encargado de actualizar la factura deacuerdo a la nota debito

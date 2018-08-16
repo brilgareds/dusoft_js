@@ -43,12 +43,28 @@ Notas.prototype.listarPorcentajes = function (req, res) {
 
     var that = this;
     var args = req.body.data;
+    var tabla_2;
 
     var parametros = {
-        empresaId: args.empresaId
+        empresaId: args.empresaId,
+        prefijo: args.prefijo,
+        tipo_factura: args.tipo_factura,
+        factura_fiscal: args.factura_fiscal
     };
-    
-    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresaId}).then(function (resultado) {
+
+    if (parametros.tipo_factura === 0) {
+        tabla_2 = "inv_facturas_despacho";
+    }
+
+    if (parametros.tipo_factura === 1) {
+        tabla_2 = "inv_facturas_agrupadas_despacho";
+    }
+
+    parametros.tabla_2 = tabla_2;
+
+
+//    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresaId}).then(function (resultado) {
+    G.Q.ninvoke(that.m_notas, 'porcentajes', parametros).then(function (resultado) {
 
         if (resultado.length > 0) {
             res.send(G.utils.r(req.url, 'listarPorcentajes', 200, {listarPorcentajes: resultado}));
@@ -479,7 +495,11 @@ Notas.prototype.imprimirNota = function (req, res) {
 
         productos = result;
 
-        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id});
+        parametros.prefijo = nota[0].prefijo;
+        parametros.factura_fiscal = nota[0].factura_fiscal;
+
+//        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id});
+        return G.Q.ninvoke(that.m_notas, 'porcentajes', parametros);
 
     }).then(function (resultado) {
 
@@ -490,17 +510,17 @@ Notas.prototype.imprimirNota = function (req, res) {
                 totalIva += parseFloat(row.valor_iva);
             });
 
-            if (subTotal >= resultado[0].base_rtf) {
-                retencionFuente = (subTotal * ((resultado[0].porcentaje_rtf) / 100));
-            }
-
-            if (subTotal >= resultado[0].base_ica) {
-                retencionIca = (subTotal) * (parseFloat(resultado[0].porcentaje_ica) / 1000);
-            }
-
-            if (subTotal >= resultado[0].base_reteiva) {
-                retencionIva = (totalIva) * (parseFloat(resultado[0].porcentaje_reteiva) / 100);
-            }
+//            if (subTotal >= resultado[0].base_rtf) {
+            retencionFuente = (subTotal * ((resultado[0].porcentaje_rtf) / 100));
+//            }
+//
+//            if (subTotal >= resultado[0].base_ica) {
+            retencionIca = (subTotal) * (parseFloat(resultado[0].porcentaje_ica) / 1000);
+//            }
+//
+//            if (subTotal >= resultado[0].base_reteiva) {
+            retencionIva = (totalIva) * (parseFloat(resultado[0].porcentaje_reteiva) / 100);
+//            }
 
             totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
 
@@ -562,6 +582,7 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
     var empresa = [];
     var nota = [];
     var productos = [];
+    var porcentajes_factura = [];
     var retencionFuente = 0;
     var retencionIca = 0;
     var retencionIva = 0;
@@ -615,31 +636,42 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
 
         productos = result;
 
-        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id});
+        parametros.prefijo = nota[0].prefijo;
+        parametros.factura_fiscal = nota[0].factura_fiscal;
+
+        return G.Q.ninvoke(that.m_notas, 'porcentajes', parametros);
 
     }).then(function (resultado) {
 
-        if (resultado.length > 0) {
-            productos.forEach(function (row) {
+        porcentajes_factura = resultado;
 
-                subTotal += parseFloat(row.subtotal);
-                totalIva += parseFloat(row.valor_iva);
-            });
+        return G.Q.ninvoke(that.m_notas, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id, fecha: cliente[0].anio_factura});
 
-            if (subTotal >= resultado[0].base_rtf) {
-                retencionFuente = (subTotal * ((resultado[0].porcentaje_rtf) / 100));
+    }).then(function (resultado) {
+        
+        if (nota[0].concepto_id === 1 || nota[0].concepto_id === null) {
+
+            if (resultado.length > 0) {
+                productos.forEach(function (row) {
+
+                    subTotal += parseFloat(row.subtotal);
+                    totalIva += parseFloat(row.valor_iva);
+                });
+
+                if (subTotal >= resultado[0].base_rtf) {
+                    retencionFuente = (subTotal * ((porcentajes_factura[0].porcentaje_rtf) / 100));
+                }
+
+                if (subTotal >= resultado[0].base_ica) {
+                    retencionIca = (subTotal) * (parseFloat(porcentajes_factura[0].porcentaje_ica) / 1000);
+                }
+
+                totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
+
             }
-
-            if (subTotal >= resultado[0].base_ica) {
-                retencionIca = (subTotal) * (parseFloat(resultado[0].porcentaje_ica) / 1000);
-            }
-
-            if (subTotal >= resultado[0].base_reteiva) {
-                retencionIva = (totalIva) * (parseFloat(resultado[0].porcentaje_reteiva) / 100);
-            }
-
-            totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
-
+        } else {
+            subTotal = nota[0].valor_nota;
+            totalFactura = nota[0].valor_nota;
         }
 
         valores.retencionIca = G.utils.numberFormat(retencionIca, 2);
@@ -702,12 +734,14 @@ Notas.prototype.sincronizarNotas = function (req, res) {
     var paramt = [];
     var param = {};
     var concepto = [];
-
+console.log("args.tipoNota",args.tipoNota);
     if (args.tipoNota === 'C') {
-
+console.log("entro C");
         G.Q.ninvoke(that.m_notas, 'obtenerConceptoPorNota', args.nota).then(function (resultado) {
 
             concepto = resultado[0];
+            console.log("concepto",concepto);
+            
             paramt[0] = args.nota;
             paramt[1] = concepto;
             param = {param: paramt, funcion: 'notas_credito_clientes_fi'};
@@ -715,6 +749,8 @@ Notas.prototype.sincronizarNotas = function (req, res) {
             return G.Q.nfcall(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param);
 
         }).then(function (result) {
+            
+            console.log("result",result);
             res.send(G.utils.r(req.url, 'Factura sincronizada', 200, {respuestaFI: result}));
 
         }).catch(function (err) {
@@ -727,13 +763,13 @@ Notas.prototype.sincronizarNotas = function (req, res) {
     }
 
     if (args.tipoNota === 'D') {
-
+console.log("entro D");
         paramt[0] = args.nota;
         param = {param: paramt, funcion: 'notas_debito_cliente_fi'};
 
 
         G.Q.ninvoke(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param).then(function (resultado) {
-
+console.log("resultado",resultado);
             res.send(G.utils.r(req.url, 'Factura sincronizada', 200, {respuestaFI: resultado}));
 
         }).catch(function (err) {

@@ -2918,14 +2918,14 @@ function __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, 
         centro_utilidad : centro_utilidad,
         bodega : bodega,
         codigo_producto : producto.codigo_producto,
-        cantidad_solic : producto.cantidad,
+        cantidad_solic : parseInt(producto.cantidad),
         tipo_producto : G.knex.raw("(select tipo_producto_id from inventarios_productos where codigo_producto = '" + producto.codigo_producto + "')"),
         usuario_id : usuario_id,
         fecha_registro: 'now()',
         fecha_vencimiento : producto.fecha_vencimiento,
         lote : producto.lote,
         sw_pendiente : 0,
-        cantidad_pendiente : producto.cantidad
+        cantidad_pendiente : parseInt(producto.cantidad)
     });
 
    // console.log(G.sqlformatter.format(query.toString()));

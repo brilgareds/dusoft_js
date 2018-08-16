@@ -5469,7 +5469,7 @@ PedidosCliente.prototype.duplicarPedido = function (req, res) {
     }).then(function (resultado) {
         res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {}));
     }).fail(function (err) {
-        console.log("err [pedidoClienteAPedidoFarmacia]: ", err);
+        console.log("err [duplicarPedido]: ", err);
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
     });
 };

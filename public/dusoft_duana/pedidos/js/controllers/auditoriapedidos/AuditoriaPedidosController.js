@@ -744,10 +744,15 @@ define(["angular", "js/controllers",
             socket.on("onNotificarGenerarI002", function (datos) {
                 console.log("datos ",datos);
                 console.log("empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada() ",empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo);
+                console.log("datos.parametros.data.sw_origen_destino ",datos.parametros.data.sw_origen_destino);
+                console.log("$scope.ejecutar ",$scope.ejecutar);
+                console.log("datos.parametros.status ",datos.parametros.status);
+                
                 var bodega=empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo;
+                console.log("bodega ",bodega);
                 var timer = setTimeout(function () {
                     //se valida la bodega para que no se genere ICD desde DUANA a Cosmitet
-                    if (datos.parametros.status && $scope.ejecutar && ((bodega === '03' && datos.parametros.data.sw_origen_destino === 0) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 1)) ) {
+                    if (datos.parametros.status === 200 && $scope.ejecutar && ((bodega === '03' && datos.parametros.data.sw_origen_destino === 1) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 0)) ) {
                         $scope.ejecutar = false;
                         that.generarIngresoI002(datos.parametros.data, function (asd) {                           
                             that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos);

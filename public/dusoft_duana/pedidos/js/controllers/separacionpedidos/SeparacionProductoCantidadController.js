@@ -11,10 +11,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                  SeparacionService){
          
             var self = this;
-            
+           
             self.init = function(callback){
                 $scope.rootVentanaCantidad = {};
                 $scope.rootVentanaCantidad.pedido = pedido;
+                 console.log("Pedido ",pedido);
                 $scope.rootVentanaCantidad.session = {
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()

@@ -536,7 +536,7 @@ PedidosClienteModel.prototype.insertarEncabezadoFarmaciaRelacionadoNumeroPedido 
                     empresa_destino,\
                     sw_despachado,\
                     sw_despacho,\
-                    estado,\
+                    '0' as estado,\
                     tipo_pedido,\
                     centro_destino,\
                     bodega_destino,\
@@ -2925,7 +2925,7 @@ function __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, 
         fecha_vencimiento : producto.fecha_vencimiento,
         lote : producto.lote,
         sw_pendiente : 0,
-        cantidad_pendiente : 0
+        cantidad_pendiente : producto.cantidad
     });
 
    // console.log(G.sqlformatter.format(query.toString()));

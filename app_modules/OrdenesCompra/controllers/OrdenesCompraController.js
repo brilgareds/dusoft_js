@@ -2329,11 +2329,14 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
                     productos2:args.ordenes_compras.productos,
                     productos:resultado,
                     sw_origen_destino: args.ordenes_compras.sw_origen_destino,
-                    numero_pedido: args.ordenes_compras.numero_pedido
-
+                    numero_pedido: args.ordenes_compras.numero_pedido,
+                    sw_tipo_pedido: args.ordenes_compras.sw_tipo_pedido,
+                    sw_estado: args.ordenes_compras.estado,
+                    id_orden_cotizacion_origen: args.ordenes_compras.id_orden_cotizacion_origen,
+                    id_orden_cotizacion_destino	: args.ordenes_compras.id_orden_cotizacion_destino,
                 }
             };
-  
+
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta",respuesta);
 
         that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);

@@ -270,5 +270,9 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.duplicarPedido(req, res);
     });
     
+    app.post('/api/PedidosClientes/actualizarPedidoMultipleCliente', function(req, res) {
+        c_pedidos_clientes.actualizarPedidoMultipleCliente(req, res);
+    });
+    
      
 };

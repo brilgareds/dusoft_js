@@ -1949,21 +1949,30 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
         tmp.numero_pedido = numero_pedido;
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultarPedidoMultipleCliente",obj);
     }).then(function (rows) {
+        console.log("rows->> ",rows);
+        console.log("rows->> ",rows.length);
         that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
         res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
         if (rows.length > 0) {
             tmp.sw_origen_destino  = rows[0].sw_origen_destino;
+            tmp.sw_tipo_pedido  = rows[0].sw_tipo_pedido;
+            tmp.sw_estado  = rows[0].sw_estado;
+            tmp.id_orden_cotizacion_origen  = rows[0].id_orden_cotizacion_origen;
+            tmp.id_orden_cotizacion_destino  = rows[0].id_orden_cotizacion_destino;
             pedido.centro_utilidad=pedido.centro_destino;
             pedido.bodega_id=pedido.bodega_destino;
+            console.log(" obtenerTotalDetalleDespachoAutomatico ");
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespachoAutomatico", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento, numeroDocumento: numero_documento});
         }
     }).then(function (detalleDocumento) {
+        console.log( "detalleDocumento ",detalleDocumento);
+        console.log( "detalleDocumento ",detalleDocumento && detalleDocumento.length > 0);
         if (detalleDocumento && detalleDocumento.length > 0) {          
             var parametros = {
                 ordenes_compras: {
                     usuario_id: req.session.user.usuario_id,
                     unidad_negocio: (pedido.bodega_id === '03') ? '4' : '0',
-                    codigo_proveedor: tmp.sw_origen_destino == 0 ? 55 : 1685, //si es 0  55 => Cosmitet, si es 1  => Duana
+                    codigo_proveedor: tmp.sw_origen_destino == 0 ? 55 : 1685, //si es 0  55 => Cosmitet, si es 1  1685=> Duana
                     empresa_id: pedido.empresa_id,
                     observacion: "Orden Generada por documento: " + prefijo_documento + " - " + numero_documento,
                     prefijo_documento: prefijo_documento,
@@ -1973,10 +1982,14 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
                     bodega_pedido: tmp.sw_origen_destino == 0 ? pedido.bodega_id : '06',
                     productos: detalleDocumento,
                     sw_origen_destino : tmp.sw_origen_destino,
-                    numero_pedido : tmp.numero_pedido
+                    numero_pedido : tmp.numero_pedido,
+                    sw_tipo_pedido : tmp.sw_tipo_pedido,
+                    estado:tmp.sw_estado,
+                    id_orden_cotizacion_origen: tmp.id_orden_cotizacion_origen,
+                    id_orden_cotizacion_destino: tmp.id_orden_cotizacion_destino
                 }
             };
-       
+         
             G.eventEmitter.emit("onGenerarOrdenDeCompra", parametros);
         };
     

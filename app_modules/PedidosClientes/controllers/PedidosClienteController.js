@@ -1294,6 +1294,10 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
    
         return G.Q.nfcall(__insertarCabeceraClientesCotizacion,resultado,parametros,0,{});
     }).then(function (resultado) {
+       
+    console.log("parametros.bodegaActual ",parametros.bodegaActual);
+     resultado.swOrigenDestino =  parametros.bodegaActual==='03'?'0':'1'; 
+     resultado.swTipoPedido = '1';
         
         return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",resultado);
 //        var productos=datos[Object.keys(datos)[index]];
@@ -1342,7 +1346,15 @@ function __insertarCabeceraClientesCotizacion(datos,parametros,index,idsPedidos,
    return;
  }
 
-   var cabecera={ bodega : Object.keys(datos)[index], numero_cotizacion : datos[Object.keys(datos)[index]][0].numero_cotizacion,control: parametros.bodegaActual !== Object.keys(datos)[index]};
+   var cabecera={ 
+       bodega : Object.keys(datos)[index], 
+       numero_cotizacion : datos[Object.keys(datos)[index]][0].numero_cotizacion,
+       control: parametros.bodegaActual !== Object.keys(datos)[index],
+       nit: Object.keys(datos)[index]==='03'?'83002320':Object.keys(datos)[index]==='06'?'830080649':'' //si la bodega actual es duana se crea el pedido con el nit de cosmitet y viceversa
+       
+   };
+   console.log(index+"Object.keys(datos)[index] ",Object.keys(datos)[index]);
+   console.log(index+"cabecera",cabecera);
    var empresa=datos[Object.keys(datos)[index]][0].empresa_origen_producto;
    var centro_utilidad=datos[Object.keys(datos)[index]][0].centro_utilidad_origen_producto;
    var bodega=datos[Object.keys(datos)[index]][0].bodega_origen_producto;
@@ -1382,10 +1394,14 @@ function __insertarCabeceraClientesCotizacion(datos,parametros,index,idsPedidos,
        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"generar_pedido_cliente",cotizacion);
         
     }).then(function (resultado) {
-        if(parametros.bodegaActual !== cabecera.bodega){
+        console.log("parametros.bodegaActual",parametros.bodegaActual);
+        console.log("cabecera.bodega",cabecera.bodega);
+        if(parametros.bodegaActual !== cabecera.bodega){//validar
+            console.log("111111111");
          idsPedidos.numeroCotizacionDestino=parametros.numeroPedido;
          idsPedidos.numeroPedidoDestino=resultado.numero_pedido;
         }else{
+            console.log("22222222");
          idsPedidos.numeroCotizacionOrigen=cabecera.numero_cotizacion;
          idsPedidos.numeroPedidoOrigen=resultado.numero_pedido;            
         }
@@ -3716,6 +3732,22 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function (req, res) {
     }).done();
 
 };
+
+PedidosCliente.prototype.actualizarPedidoMultipleCliente = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        id_orden_pedido_final:args.id_orden_pedido_final,
+        cotizacion:args.id_orden_cotizacion_origen
+        }
+    G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarPedidoMultipleCliente', parametros).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {}));
+    }).fail(function (err) {
+        console.log("err [actualizarPedidoMultipleCliente]: ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+    });
+};
+
 /*
  * Autor : Camilo Orozco
  * Descripcion : Modificar detalle pedido
@@ -5452,7 +5484,7 @@ PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes, "insertarProductosPedidoClienteFarmacia", solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, args.productos);
         //}
     }).then(function (resultado) {
-        res.send(G.utils.r(req.url, 'Producto actualizado satisfactoriamente', 200, {}));
+        res.send(G.utils.r(req.url, 'Producto actualizado satisfactoriamente', 200, {pedido:resultado}));
     }).fail(function (err) {
         console.log("err [pedidoClienteAPedidoFarmacia]: ", err);
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
@@ -5464,10 +5496,8 @@ PedidosCliente.prototype.duplicarPedido = function (req, res) {
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
 
-    G.Q.ninvoke(that.m_pedidos_clientes, 'duplicarPedido', args.numero_pedido).then(function (resultado) {
-
-    }).then(function (resultado) {
-        res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {}));
+    G.Q.ninvoke(that.m_pedidos_clientes, 'duplicarPedido', args.numero_pedido,args.sw_origen_destino).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {pedido:resultado}));
     }).fail(function (err) {
         console.log("err [duplicarPedido]: ", err);
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));

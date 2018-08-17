@@ -1768,7 +1768,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 };
 
 PedidosClienteModel.prototype.insertar_encabezado_pedido_cliente = function(cotizacion,callback) {
-                              
+              console.log("cotizacion ",cotizacion);                
 if(cotizacion.control===true){
     
     var sql = " INSERT INTO ventas_ordenes_pedidos_tmp(\
@@ -1794,7 +1794,7 @@ if(cotizacion.control===true){
                   select\
                     empresa_id,\
                     'NIT' as tipo_id_tercero,\
-                    '830080649' as tercero_id,\
+                    '"+cotizacion.nit+"' as tercero_id,\
                     fecha_registro,\
                     usuario_id,\
                     fecha_envio,\
@@ -1879,16 +1879,17 @@ console.log("ERROR",err);
 PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_clientes = function(obj,callback){
 
     var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
-        .insert(
-        {
-        id_orden_cotizacion_origen: obj.numeroCotizacionOrigen,
-        id_orden_cotizacion_destino: obj.numeroCotizacionDestino,
-        id_orden_pedido_origen: obj.numeroPedidoOrigen,
-        id_orden_pedido_destino: obj.numeroPedidoDestino,
-        sw_origen_destino : 0
-        }
+                .insert(
+                {
+                id_orden_cotizacion_origen: obj.numeroCotizacionOrigen,
+                id_orden_cotizacion_destino: obj.numeroCotizacionDestino,
+                id_orden_pedido_origen: obj.numeroPedidoOrigen,
+                id_orden_pedido_destino: obj.numeroPedidoDestino,
+                sw_origen_destino : obj.swOrigenDestino,
+                sw_tipo_pedido : obj.swTipoPedido
+                }
             );
-           
+    console.log(G.sqlformatter.format(query.toString()));       
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
@@ -1906,7 +1907,8 @@ PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_farmacias 
             id_orden_pedido_destino: obj.numeroPedidoorigen,
             id_orden_cotizacion_origen: obj.numeroPedido,
             id_orden_cotizacion_destino: obj.numeroPedidoorigen ,
-            sw_origen_destino : 1
+            sw_origen_destino : 1,
+            sw_tipo_pedido : '0'
         }
             );
   
@@ -1919,12 +1921,12 @@ PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_farmacias 
 };
 
 PedidosClienteModel.prototype.actualizarPedidoMultipleCliente = function(obj,callback){
- 
-    
+    var update;
+    update ={sw_estado:1, id_orden_pedido_final:obj.id_orden_pedido_final};
     var query =  G.knex('ventas_ordenes_pedido_multiple_clientes').where({
                     id_orden_cotizacion_origen: obj.cotizacion
-                  }).update({id_orden_pedido_origen:obj.numero_pedido});
-
+                  }).update(update);
+        console.log(G.sqlformatter.format(query.toString()));
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
@@ -1939,7 +1941,7 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function(obj,call
                   .where(function() {
                       if(obj.numero_pedido!==undefined){
                          this.andWhere("id_orden_pedido_origen", obj.numero_pedido); 
-                         this.orWhere(G.knex.raw(("id_orden_pedido_destino = '" + obj.numero_pedido + "' AND sw_origen_destino = 0")));
+                         this.orWhere(G.knex.raw(("id_orden_pedido_destino = '" + obj.numero_pedido + "' AND  (sw_origen_destino = 0 or sw_origen_destino = 1)")));
                       }
                         
                       if(obj.cotizacion!==undefined){
@@ -1947,8 +1949,17 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function(obj,call
                       }
                         
                     })
-                  .select(['id_orden_pedido_origen','id_orden_pedido_destino','id_orden_cotizacion_origen','id_orden_cotizacion_destino', 'sw_origen_destino']);
-        //G.logError(G.sqlformatter.format(query.toString()));
+                  .select(['id_orden_pedido_origen',
+                           'id_orden_pedido_destino',
+                           'id_orden_cotizacion_origen',
+                           'id_orden_cotizacion_destino', 
+                           'sw_origen_destino',
+                           'sw_tipo_pedido',
+                           'sw_estado',
+                           'id_orden_cotizacion_origen',
+                           'id_orden_cotizacion_destino'
+                          ]);
+        console.log(G.sqlformatter.format(query.toString()));
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
@@ -2894,7 +2905,7 @@ PedidosClienteModel.prototype.consultarTotalProductosPedido = function(pedido, c
 
 
 PedidosClienteModel.prototype.insertarProductosPedidoClienteFarmacia = function(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos, callback) {
-    G.Q.nfcall(__insertarProductosPedidoClienteFarmacia, solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos).then(function(resultado) {
+    G.Q.nfcall(__insertarProductosPedidoClienteFarmacia, solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos,[]).then(function(resultado) {
         callback(false, resultado);
     }).fail(function(err) {
         callback(err);
@@ -2902,9 +2913,9 @@ PedidosClienteModel.prototype.insertarProductosPedidoClienteFarmacia = function(
 };
 
 
-function __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos, callback) {
+function __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos,pedido, callback) {
     if (productos.length == 0) {       
-        callback(false);
+        callback(false,pedido);
         return;
     }  
 
@@ -2931,7 +2942,7 @@ function __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, 
    // console.log(G.sqlformatter.format(query.toString()));
 
     query.then(function(resultado) {
-        return __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos, callback);
+        return __insertarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, productos,resultado, callback);
     }). catch (function(err) {
         console.log("err [insertar_responsables_pedidos]: ", err);
         callback(err);
@@ -2961,16 +2972,18 @@ PedidosClienteModel.prototype.consultarTotalProductosCotizacion = function(pedid
     });
 };
 
-PedidosClienteModel.prototype.duplicarPedido = function(numero_pedido, callback) {
+PedidosClienteModel.prototype.duplicarPedido = function(numero_pedido,sw_origen_destino, callback) {
     //consultarTerceroPedidoOrigen
+    var pedido;
     G.Q.nfcall(__consultarTerceroPedidoOrigen, numero_pedido).then(function(resultado) {
        // console.log('resultado tercero', resultado);
-        return G.Q.nfcall(__insertar_encabezado_pedido_cliente_duplicado, numero_pedido, resultado[0].tipo_id_tercero, resultado[0].tercero_id);
+       var bodegaDestino = sw_origen_destino === 0 ? '03':'06';
+        return G.Q.nfcall(__insertar_encabezado_pedido_cliente_duplicado, numero_pedido, resultado[0].tipo_id_tercero, resultado[0].tercero_id,bodegaDestino);
     }).then(function(resultado) {
         pedido = {numero_pedido: (resultado.rows.length > 0) ? resultado.rows[0].numero_pedido : 0, estado: 0};
         return G.Q.nfcall(__generar_detalle_pedido_cliente_duplicado, numero_pedido, pedido.numero_pedido);
     }).then(function(resultado) {
-        callback(false, true);
+        callback(false, pedido);
     }).fail(function(err) {
         callback(err);
     }).done();
@@ -3051,7 +3064,7 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
 
 };
 
-function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_tercero, tercero_id, callback) {
+function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_tercero, tercero_id,bodegaDestino, callback) {
 
     var sql = " INSERT INTO ventas_ordenes_pedidos(\
                     empresa_id,\
@@ -3075,7 +3088,7 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
                   select\
                     empresa_id,\
                     centro_destino,\
-                    '03' AS bodega_destino,\
+                    '"+bodegaDestino+"' AS bodega_destino,\
                     '" + tipo_id_tercero + "' as tipo_id_tercero,\
                     '" + tercero_id + "' as tercero_id,\
                     tipo_id_vendedor,\
@@ -3095,7 +3108,7 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
                 ) returning pedido_cliente_id as numero_pedido ";
 
     var query = G.knex.raw(sql, {1: numero_pedido});
-    //console.log(G.sqlformatter.format(query.toString()));
+    console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
@@ -3146,7 +3159,14 @@ function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callb
 
 function __consultarTerceroPedidoOrigen(numero_pedido, callback) {
 
-    var query = G.knex.select(['vop.tipo_id_tercero','vop.tercero_id'])
+    var query = G.knex.select(
+            ['vop.tipo_id_tercero',
+             'vop.tercero_id',
+             'vopmc.sw_tipo_pedido',
+             'vopmc.sw_estado',
+             'vopmc.id_orden_cotizacion_origen',
+             'vopmc.id_orden_cotizacion_destino'
+         ])
             .from('ventas_ordenes_pedidos as vop')
             .innerJoin('ventas_ordenes_pedido_multiple_clientes as vopmc', function(){
                 this.on('vopmc.id_orden_pedido_origen', 'vop.pedido_cliente_id');

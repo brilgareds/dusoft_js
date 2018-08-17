@@ -592,7 +592,7 @@ define(["angular", "js/controllers",
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
                     url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
                 }
-
+console.log('url', url);
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -742,20 +742,21 @@ define(["angular", "js/controllers",
             
             $scope.ejecutar = true;
             socket.on("onNotificarGenerarI002", function (datos) {
-                console.log("datos ",datos);
-                console.log("empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada() ",empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo);
-                console.log("datos.parametros.data.sw_origen_destino ",datos.parametros.data.sw_origen_destino);
-                console.log("$scope.ejecutar ",$scope.ejecutar);
-                console.log("datos.parametros.status ",datos.parametros.status);
                 
                 var bodega=empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo;
                 console.log("bodega ",bodega);
                 var timer = setTimeout(function () {
-                    //se valida la bodega para que no se genere ICD desde DUANA a Cosmitet
-                    if (datos.parametros.status === 200 && $scope.ejecutar && ((bodega === '03' && datos.parametros.data.sw_origen_destino === 1) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 0)) ) {
+                    //se valida la bodega para que no se genere ICD desde DUANA a Cosmitet  
+                    //sw_origen_destino 1 pedido multiple generado automatic desde cosmitet bodega 06
+                    //sw_origen_destino 0 pedido multiple generado automatic desde Duana bodega 03
+                    if (datos.parametros.status === 200 && $scope.ejecutar && datos.parametros.data.sw_estado === '0' && ((bodega === '03' && datos.parametros.data.sw_origen_destino === 1) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 0) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 1) ) ) {
                         $scope.ejecutar = false;
+                        var cotizacion ={
+                            id_orden_cotizacion_origen : datos.parametros.data.id_orden_cotizacion_origen,
+                            id_orden_cotizacion_destino : datos.parametros.data.id_orden_cotizacion_destino
+                        }
                         that.generarIngresoI002(datos.parametros.data, function (asd) {                           
-                            that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos);
+                            that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos,datos.parametros.data.sw_tipo_pedido,cotizacion);
                         });
                     }
                     clearTimeout(timer);
@@ -767,7 +768,8 @@ define(["angular", "js/controllers",
                     session: $scope.session,
                     data: {
                         orden_pedido_id: data.numero_orden,
-                        bodegas_doc_id : data.sw_origen_destino == 1? '1542' : '80',
+//                        bodegas_doc_id : data.sw_origen_destino == 1? '1542' : '80',
+                        bodegas_doc_id : data.sw_origen_destino == 1? '1541' : '80',
                         observacion:  data.parametros.encabezado.observacion
                     }
                 };
@@ -830,8 +832,7 @@ define(["angular", "js/controllers",
                  });               
             };
             
-            that.ejecutarDocumento = function(orden, pedido, sw_origen_destino, productos){
-//                console.log('orden', orden, 'pedido', pedido, 'sw_origen_destino', sw_origen_destino, 'productos', productos);
+            that.ejecutarDocumento = function(orden, pedido, sw_origen_destino, productos,swTipoPedido,cotizacion){
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -852,7 +853,10 @@ define(["angular", "js/controllers",
                 			}, 4000);
 
                         //pasa el pedido cliente Duana a pedido farmacia Cosmitet
-                        if(sw_origen_destino == 1){
+                        console.log("swTipoPedidoswTipoPedidoswTipoPedido ",swTipoPedido);
+                
+                  
+                        if(swTipoPedido === '0'){
 
                             var obj = {
                                 session: $scope.session,
@@ -863,23 +867,46 @@ define(["angular", "js/controllers",
                             };
 
                             Request.realizarRequest(API.PEDIDOS.CLIENTES.PEDIDO_CLIENTE_A_PEDIDO_FARMACIA, "POST", obj, function(data) {
+                                console.log('PEDIDO_CLIENTE_A_PEDIDO_FARMACIA ',data);
+                                    var obj = {
+                                        session: $scope.session,
+                                        data: {
+                                                id_orden_pedido_final: data.obj.pedido.solicitud_prod_a_bod_ppal_det_id,
+                                                id_orden_cotizacion_origen: cotizacion.id_orden_cotizacion_origen
+                                        }
+                                    };
+                                    Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE, "POST", obj, function(data) {
+                                        
+                                     });
                             });
                         }
 
-                        if(sw_origen_destino == 0){
+                        if(swTipoPedido === '1'){
 
                             var obj = {
                                 session: $scope.session,
                                 data: {
-                                    numero_pedido : pedido
+                                    numero_pedido : pedido,
+                                    sw_origen_destino : sw_origen_destino
                                 }
                             };
 
                             //Ingresan productos provenientes de Cosmitet entonces se crear un pedido cliente en Duana basado en el pedido cliente cosmitet que generó este ingreso.
                             Request.realizarRequest(API.PEDIDOS.CLIENTES.DUPLICAR_PEDIDO, "POST", obj, function(data) {
-
+                                console.log('DUPLICAR_PEDIDO ',data);
+                                var obj = {
+                                        session: $scope.session,
+                                        data: {
+                                                id_orden_pedido_final: data.obj.pedido.numero_pedido,
+                                                id_orden_cotizacion_origen: cotizacion.id_orden_cotizacion_origen
+                                        }
+                                    };
+                                    Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE, "POST", obj, function(data) {
+                                        
+                                     });
                             });
                         }
+                                  
                     }
 		    
                     if (data.status === 500) {

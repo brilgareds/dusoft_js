@@ -238,6 +238,8 @@ Notas.prototype.crearNota = function (req, res) {
     var usuarioId = req.session.user.usuario_id;
     var tabla, tabla2, tabla3;
     var numeroNota;
+    var paramt = [];
+    var param = {};
 
     if (args.empresaId === undefined) {
         res.send(G.utils.r(req.url, 'La empresaId NO estan definida', 404, {}));
@@ -303,7 +305,15 @@ Notas.prototype.crearNota = function (req, res) {
             transaccion.rollback(err);
         }).done();
     }).then(function (resultado) {
-        res.send(G.utils.r(req.url, 'Nota creada Correctamente', 200, {crearNota: numeroNota}));
+        paramt[0] = numeroNota;
+        param = {param: paramt, funcion: 'notas_debito_cliente_fi'};
+
+
+        return G.Q.ninvoke(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param);
+
+    }).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Nota creada Correctamente', 200, {crearNota: numeroNota, respuestaFI: resultado}));
     }).catch(function (err) {
         console.log("crearNota  ", err);
         res.send(G.utils.r(req.url, 'Error al crear la nota', 500, {}));
@@ -321,6 +331,10 @@ Notas.prototype.crearNotaCredito = function (req, res) {
     var usuarioId = req.session.user.usuario_id;
     var tabla, tabla2, tabla3;
     var numeroNota;
+
+    var paramt = [];
+    var param = {};
+    var concepto = [];
 
     if (args.empresaId === undefined) {
         res.send(G.utils.r(req.url, 'La empresaId NO estan definida', 404, {}));
@@ -389,7 +403,21 @@ Notas.prototype.crearNotaCredito = function (req, res) {
                 transaccion.rollback(err);
             }).done();
         }).then(function (resultado) {
-            res.send(G.utils.r(req.url, 'Nota creada Correctamente', 200, {crearNota: numeroNota}));
+            return  G.Q.ninvoke(that.m_notas, 'obtenerConceptoPorNota', numeroNota);
+
+        }).then(function (resultado) {
+
+            concepto = resultado[0];
+
+            paramt[0] = numeroNota;
+            paramt[1] = concepto;
+            param = {param: paramt, funcion: 'notas_credito_clientes_fi'};
+
+            return G.Q.ninvoke(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param);
+
+        }).then(function (result) {
+
+            res.send(G.utils.r(req.url, 'Nota creada Correctamente', 200, {crearNota: numeroNota, respuestaFI: result}));
         }).catch(function (err) {
             console.log("crearNota  ", err);
             res.send(G.utils.r(req.url, 'Error al crear la nota', 500, {}));
@@ -417,7 +445,22 @@ Notas.prototype.crearNotaCredito = function (req, res) {
                 transaccion.rollback(err);
             }).done();
         }).then(function (resultado) {
-            res.send(G.utils.r(req.url, 'Nota creada Correctamente', 200, {crearNota: numeroNota}));
+
+            return  G.Q.ninvoke(that.m_notas, 'obtenerConceptoPorNota', numeroNota);
+
+        }).then(function (resultado) {
+
+            concepto = resultado[0];
+
+            paramt[0] = numeroNota;
+            paramt[1] = concepto;
+            param = {param: paramt, funcion: 'notas_credito_clientes_fi'};
+
+            return G.Q.ninvoke(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param);
+
+        }).then(function (result) {
+
+            res.send(G.utils.r(req.url, 'Nota creada Correctamente', 200, {crearNota: numeroNota, respuestaFI: result}));
         }).catch(function (err) {
             console.log("crearNota  ", err);
             res.send(G.utils.r(req.url, 'Error al crear la nota', 500, {}));
@@ -648,7 +691,7 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
         return G.Q.ninvoke(that.m_notas, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id, fecha: cliente[0].anio_factura});
 
     }).then(function (resultado) {
-        
+
         if (nota[0].concepto_id === 1 || nota[0].concepto_id === null) {
 
             if (resultado.length > 0) {
@@ -734,23 +777,19 @@ Notas.prototype.sincronizarNotas = function (req, res) {
     var paramt = [];
     var param = {};
     var concepto = [];
-console.log("args.tipoNota",args.tipoNota);
     if (args.tipoNota === 'C') {
-console.log("entro C");
         G.Q.ninvoke(that.m_notas, 'obtenerConceptoPorNota', args.nota).then(function (resultado) {
 
             concepto = resultado[0];
-            console.log("concepto",concepto);
-            
+
             paramt[0] = args.nota;
             paramt[1] = concepto;
             param = {param: paramt, funcion: 'notas_credito_clientes_fi'};
 
-            return G.Q.nfcall(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param);
+            return G.Q.ninvoke(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param);
 
         }).then(function (result) {
-            
-            console.log("result",result);
+
             res.send(G.utils.r(req.url, 'Factura sincronizada', 200, {respuestaFI: result}));
 
         }).catch(function (err) {
@@ -763,13 +802,13 @@ console.log("entro C");
     }
 
     if (args.tipoNota === 'D') {
-console.log("entro D");
+
         paramt[0] = args.nota;
         param = {param: paramt, funcion: 'notas_debito_cliente_fi'};
 
 
         G.Q.ninvoke(that.m_sincronizacion, 'sincronizarCuentasXpagarFi', param).then(function (resultado) {
-console.log("resultado",resultado);
+
             res.send(G.utils.r(req.url, 'Factura sincronizada', 200, {respuestaFI: resultado}));
 
         }).catch(function (err) {

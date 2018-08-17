@@ -13,6 +13,11 @@
                     "module": "Notas",
                     "model": "NotasModel",
                     "alias": "m_notas"
+                },
+                "sincronizacion_model": {
+                    "module": "Sincronizacion",
+                    "model": "SincronizacionModel",
+                    "alias": "m_sincronizacion"
                 }
             }],
         "events": [],

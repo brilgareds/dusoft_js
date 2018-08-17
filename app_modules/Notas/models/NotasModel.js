@@ -195,6 +195,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
     ];
 
     var query = G.knex.select(columna_a)
+//    .from(G.knex.raw("inv_facturas_despacho ifd"))
             .from(G.knex.raw("( SELECT estado, factura_fiscal, prefijo, numero_nota FROM logs_facturacion_clientes_ws_fi WHERE estado = '0' LIMIT 1 ) AS a, inv_facturas_despacho ifd"))
             .innerJoin('terceros as T', function () {
 
@@ -209,6 +210,13 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
                         .on("nddc.prefijo", "ifd.prefijo");
 
             })
+//            .leftJoin('logs_facturacion_clientes_ws_fi as a', function () {
+//
+//                this.on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id")
+//                        .on("a.factura_fiscal", "ifd.factura_fiscal")
+//                        .on("a.prefijo", "ifd.prefijo");
+//
+//            })
             .where(function () {
 
                 this.andWhere('ifd.empresa_id', obj.empresa_id);
@@ -226,6 +234,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
     query.unionAll(function () {
 
         this.select(columna_b)
+//        .from(G.knex.raw("inv_facturas_agrupadas_despacho ifd"))
                 .from(G.knex.raw("( SELECT estado, factura_fiscal, prefijo, numero_nota FROM logs_facturacion_clientes_ws_fi WHERE estado = '0' LIMIT 1 ) AS a, inv_facturas_agrupadas_despacho ifd"))
                 .innerJoin('terceros as T', function () {
 
@@ -240,6 +249,13 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
                             .on("nddc.prefijo", "ifd.prefijo");
 
                 })
+//                .leftJoin('logs_facturacion_clientes_ws_fi as a', function () {
+//
+//                    this.on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id")
+//                            .on("a.factura_fiscal", "ifd.factura_fiscal")
+//                            .on("a.prefijo", "ifd.prefijo");
+//
+//                })
                 .where(function () {
 
                     this.andWhere('ifd.empresa_id', obj.empresa_id);
@@ -1124,7 +1140,7 @@ NotasModel.prototype.porcentajes = function (obj, callback) {
         "porcentaje_rtf",
         "porcentaje_ica",
         "porcentaje_reteiva"
-        
+
     ];
     var query = G.knex.select(columna)
             .from(G.knex.raw(obj.tabla_2))
@@ -1146,23 +1162,23 @@ NotasModel.prototype.porcentajes = function (obj, callback) {
  * +Descripcion Modelo encargado de consultar las retenciones segun la empresa
  * @controller FacturacionClientes.prototype.listarTiposTerceros
  */
-NotasModel.prototype.consultarParametrosRetencion = function (obj,callback) {
+NotasModel.prototype.consultarParametrosRetencion = function (obj, callback) {
 
-   var query = G.knex.select('*')
-        .from('vnts_bases_retenciones')
-        .where(function(){
-            this.andWhere("estado",'1')
-            .andWhere("anio", obj.fecha)
-            .andWhere("empresa_id", obj.empresaId);
-        });
-        
-        console.log("Query resultado", G.sqlformatter.format(
-                query.toString()));
-        query.then(function (resultado) {
-            callback(false, resultado)
-        }).catch(function (err) {
+    var query = G.knex.select('*')
+            .from('vnts_bases_retenciones')
+            .where(function () {
+                this.andWhere("estado", '1')
+                        .andWhere("anio", obj.fecha)
+                        .andWhere("empresa_id", obj.empresaId);
+            });
+
+    console.log("Query resultado", G.sqlformatter.format(
+            query.toString()));
+    query.then(function (resultado) {
+        callback(false, resultado)
+    }).catch(function (err) {
         console.log("err [consultarParametrosRetencion]:", err);
-        callback({err:err, msj: "Error al consultar los parametros de retencion"});   
+        callback({err: err, msj: "Error al consultar los parametros de retencion"});
     });
 
 };

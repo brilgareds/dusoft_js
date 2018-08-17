@@ -165,21 +165,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             data: {
                                 sincronizarFI: {
                                     nota: data.numeroNota,
-                                    concepto: data.concepto,
                                     tipoNota: data.tipoImpresion
                                 }
                             }
                         };
 
-
-
                         notasService.sincronizarFi(obj, function (data) {
-
                             if (data.status === 200) {
-//                                that.listarFacturasGeneradas('', function (data) {
-//
-//                                });
-//                                that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd, data.obj.respuestaFI.resultado.mensaje_ws);
+
+                                $scope.buscarNota({which: 13});
+                                that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd, data.obj.respuestaFI.resultado.mensaje_ws);
                                 callback(true);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -189,45 +184,78 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         });
 
                     };
-//		       
-//		  /**
-//			* +Descripcion mensaje de respuesta de WS
-//			* @author Andres Mauricio Gonzalez
-//			* @fecha 18/05/2017
-//			* @returns {undefined}
-//			*/     
-//		  that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
-//
-//                       $scope.mensaje_bd = mensaje_bd;
-//                       $scope.mensaje_ws = mensaje_ws;
-//                       $scope.opts = {
-//                           backdrop: true,
-//                           backdropClick: true,
-//                           dialogFade: false,
-//                           keyboard: true,
-//                           template: ' <div class="modal-header">\
-//                                           <button type="button" class="close" ng-click="close()">&times;</button>\
-//                                           <h4 class="modal-title">Resultado sincronizacion</h4>\
-//                                       </div>\
-//                                       <div class="modal-body">\
-//                                           <h4>Respuesta WS</h4>\
-//                                           <h5> {{ mensaje_ws }}</h5>\
-//                                           <h4>Respuesta BD</h4>\
-//                                           <h5> {{ mensaje_bd }} </h5>\
-//                                       </div>\
-//                                       <div class="modal-footer">\
-//                                           <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-//                                       </div>',
-//                           scope: $scope,
-//                           controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
-//
-//                                   $scope.close = function () {
-//                                       $modalInstance.close();
-//                                   };
-//                               }]
-//                       };
-//                       var modalInstance = $modal.open($scope.opts);
-//                   };
+
+                    /**
+                     * +Descripcion mensaje de respuesta de WS
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+                    that.mensajeSincronizacion = function (mensaje_bd, mensaje_ws) {
+
+                        $scope.mensaje_bd = mensaje_bd;
+                        $scope.mensaje_ws = mensaje_ws;
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                           <button type="button" class="close" ng-click="close()">&times;</button>\
+                                           <h4 class="modal-title">Resultado sincronizacion</h4>\
+                                       </div>\
+                                       <div class="modal-body">\
+                                           <h4>Respuesta WS</h4>\
+                                           <h5> {{ mensaje_ws }}</h5>\
+                                           <h4>Respuesta BD</h4>\
+                                           <h5> {{ mensaje_bd }} </h5>\
+                                       </div>\
+                                       <div class="modal-footer">\
+                                           <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                       </div>',
+                            scope: $scope,
+                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+
+                                    $scope.close = function () {
+                                        $modalInstance.close();
+                                    };
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    };
+
+                    that.mensajeCreacion = function (nota, mensaje_ws) {
+
+                        $scope.nota = nota;
+                        $scope.mensaje_ws = mensaje_ws;
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                           <button type="button" class="close" ng-click="close()">&times;</button>\
+                                           <h4 class="modal-title">Resultado Creacion</h4>\
+                                       </div>\
+                                       <div class="modal-body">\
+                                           <h4>Numero Nota</h4>\
+                                           <h5> {{ nota }} </h5>\
+                                           <h4>Respuesta WS</h4>\
+                                           <h5> {{ mensaje_ws }}</h5>\
+                                       </div>\
+                                       <div class="modal-footer">\
+                                           <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                       </div>',
+                            scope: $scope,
+                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+
+                                    $scope.close = function () {
+                                        $modalInstance.close();
+                                    };
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    };
 
                     /**
                      * +Descripcion metodo para validar sincronizacion
@@ -242,33 +270,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
                         return respuesta;
                     };
-//
-//                    /**
-//                     * +Descripcion metodo para imprimir las facturas
-//                     * @author German Galvis
-//                     * @fecha 18/05/2017
-//                     * @returns {undefined}
-//                     */
-//                    $scope.onImprimirFacturaNotas = function (datos) {
-//                        var parametros = {
-//                            session: $scope.session,
-//                            data: {
-//                                prefijo: datos.getPrefijo(),
-//                                facturaFiscal: datos.getNumeroFactura(),
-//                                empresaId: $scope.root.empresaSeleccionada.getCodigo()
-//                            }
-//                        };
-//                        notasService.imprimirNotas(parametros, function (data) {
-//
-//                            if (data.status === 200) {
-//                                var nombre = data.obj.imprimirFacturaNotas;
-//                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-//
-//                            } else {
-//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-//                            }
-//                        });
-//                    };
 
                     /**
                      * +Descripcion metodo para imprimir las notas
@@ -544,8 +545,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     };
 
 
-
-
                                     $scope.guardarNotas = function () {
 
                                         var listado = [];
@@ -574,8 +573,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         notasService.guardarNota(obj, function (data) {
 
                                             if (data.status === 200) {
-
-                                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj + " Numero Nota Debito: " + data.obj.crearNota);
+                                                that.mensajeCreacion(data.obj.crearNota, data.obj.respuestaFI.resultado.mensaje_ws);
                                                 that.listarFacturasGeneradas();
                                                 $modalInstance.close();
                                             } else {
@@ -735,7 +733,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         $scope.root.impuestosnota.retencionFuente = 0;
                                         $scope.root.impuestosnota.retencionIca = 0;
                                         $scope.root.impuestosnota.totalGeneral = 0;
-                                        
+
                                         for (i = 0; i < $scope.root.listadoProductos.length; i++) {
                                             if ($scope.root.listadoProductos[i].seleccionado) {
                                                 $scope.root.listadoProductos[i].seleccionado = false;
@@ -856,8 +854,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     };
 
 
-
-
                                     $scope.guardarNotas = function () {
                                         var listado = [];
                                         var i;
@@ -893,8 +889,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         notasService.guardarNotaCredito(obj, function (data) {
 
                                             if (data.status === 200) {
-
-                                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj + " Numero Nota Credito: " + data.obj.crearNota);
+                                                that.mensajeCreacion(data.obj.crearNota, data.obj.respuestaFI.resultado.mensaje_ws);
                                                 that.listarFacturasGeneradas();
                                                 $modalInstance.close();
 

@@ -1542,7 +1542,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1: empresa, 2: centro_utilidad_id, 3: bodega_id, 4: contrato_cliente_id};
-
+    var existe=bodega_id==='06'?'03':'06';
     if (filtroAvanzado.tipoBusqueda === 0) {
 
         if (tipo_producto !== undefined && tipo_producto !== '') {
@@ -1641,7 +1641,8 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 a.empresa_id,\
                 a.centro_utilidad,\
                 a.bodega,\
-                (select alias from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega\
+                (select alias from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega,\
+                case when exists(select * from existencias_bodegas where empresa_id=a.empresa_id and centro_utilidad=a.centro_utilidad and bodega='"+existe+"' and codigo_producto=a.codigo_producto) then 1 else 0 end as existe_producto_bodega_actual\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
@@ -1691,7 +1692,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit);
-//   console.log(G.sqlformatter.format(query.toString()));     
+   console.log(G.sqlformatter.format(query.toString()));     
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {

@@ -563,7 +563,7 @@ PedidosCliente.prototype.listarProductosClientes = function (req, res) {
                 {
                     pedidos_clientes:
                             {
-                                lista_productos: resultado.data.productos.sort(dynamicSort("codigo_producto"))
+                                lista_productos: resultado.data.productos.sort(dynamicSort("codigo_producto",false))
                             }
                 }
         )

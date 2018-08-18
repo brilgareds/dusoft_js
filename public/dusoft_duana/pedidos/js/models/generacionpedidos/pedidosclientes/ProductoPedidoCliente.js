@@ -31,6 +31,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.bodegaProducto = "";
                 this.mensajeError = "";
                 this.estadoInvima = "";
+                this.existeProductoBodegaActual = "";
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
@@ -54,6 +55,17 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             
             
             
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.setExisteProductoBodegaActual = function(existeProductoBodegaActual) {
+                this.existeProductoBodegaActual = existeProductoBodegaActual;
+                return this;
+            };
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.getExisteProductoBodegaActual = function() {               
+                return this.existeProductoBodegaActual;
+            };
             
             // cantidad pendiente
             ProductoPedidoCliente.prototype.setCantidadPendiente = function(cantidadPendiente) {

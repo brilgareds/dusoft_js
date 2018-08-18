@@ -446,6 +446,7 @@ define(["angular", "js/controllers",
                     producto.setCentroUtilidadProducto(data.centro_utilidad);
                     producto.setBodegaProducto(data.bodega);
                     producto.setEstadoInvima(data.estado_invima);
+                    producto.setExisteProductoBodegaActual(data.existe_producto_bodega_actual);
                     
                     $scope.Empresa.set_productos(producto);
                     
@@ -575,7 +576,7 @@ define(["angular", "js/controllers",
                     {field: 'descripcion', displayName: 'Nombre',
                         // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
                         cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>", width:450},
-                    {field: 'nombreBodega', displayName: 'Bod', width: "50", 
+                    {field: 'nombreBodega', displayName: 'Bodss', width: "50", 
                         cellTemplate:'<div class="ngCellText">\
                                         <span class="label label-primary"  ng-if="row.entity.getNombreBodega() == \'DUA\' "> {{row.entity.getNombreBodega()}}</span>\
                                         <span class="label label-success"  ng-if="row.entity.getNombreBodega() == \'COS\' "> {{row.entity.getNombreBodega()}}</span>\
@@ -611,14 +612,24 @@ define(["angular", "js/controllers",
                                       <input type="text" \
                                        ng-model="row.entity.cantidad_solicitada" \
                                        validacion-numero-entero \
-                                       class="form-control grid-inline-input" \n\
+                                       ng-disabled="!valida_existencia_codigo(row.entity)"\
+                                       class="form-control grid-inline-input" \
                                        name="" id="" /> </div>'},
                     {width: "60", displayName: "Opcion", cellClass: "txt-center",
-                        cellTemplate: '     <button  ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                        cellTemplate: '     <button  ng-disabled="validar_seleccion_producto() || !valida_existencia_codigo(row.entity)" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
 
 
                 ]
+            };
+            
+            $scope.valida_existencia_codigo=function(data){
+              var disable=true;
+              if( data.bodegaProducto!==Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo && data.existeProductoBodegaActual===0){
+                  data.cantidad_solicitada="NE";//no existe en bodega
+                  return false;
+              }
+              return disable;
             };
 
 

@@ -1103,12 +1103,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.opciones_archivo = $flow;
             };
             $scope.subir_archivo_plano = function () {
-
+//console.log("$scope.Pedido",$scope.Pedido);
                 $scope.datos_view.progresoArchivo = 2;
 
                 $scope.opciones_archivo.opts.query.data = JSON.stringify({
                     pedidos_clientes: {
                         cotizacion: $scope.Pedido,
+                        bodega_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                         estadoMultiplePedido: localStorageService.get("multiple_pedido").multiple_pedido
                     }
                 });

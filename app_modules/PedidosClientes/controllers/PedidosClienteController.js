@@ -673,7 +673,8 @@ PedidosCliente.prototype.__listarProductosClientes = function (args, callback) {
     }).then(function (productos) {
 
         if (productos.length > 0) {
-            callback(false, {status: 200, msj: 'Lista de productos', data: {productos: productos.sort(dynamicSort("bodega"))}});
+            var operador = bodega==='03'?false:true;
+            callback(false, {status: 200, msj: 'Lista de productos', data: {productos: productos.sort(dynamicSort("bodega",operador))}});
         } else {
             throw {msj: 'El producto no existe', status: 401, pedidos_clientes: {}};
         }
@@ -696,7 +697,7 @@ PedidosCliente.prototype.__listarProductosClientes = function (args, callback) {
  *              en orden descendente
  *  @author http://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value-in-javascript
  */
-function dynamicSort(property) {
+function dynamicSort(property,operador) {//03
 
     var sortOrder = 1;
     if (property[0] === "-") {
@@ -704,7 +705,12 @@ function dynamicSort(property) {
         property = property.substr(1);
     }
     return function (a, b) {
-        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        var result;
+        if(operador===true){
+          result = (a[property] > b[property]) ? -1 : (a[property] < b[property]) ? 1 : 0;
+         }else{
+          result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;          
+         }
         return result * sortOrder;
     }
 }
@@ -1295,7 +1301,7 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
         return G.Q.nfcall(__insertarCabeceraClientesCotizacion,resultado,parametros,0,{});
     }).then(function (resultado) {
        
-    console.log("parametros.bodegaActual ",parametros.bodegaActual);
+  //  console.log("parametros.bodegaActual ",parametros.bodegaActual);
      resultado.swOrigenDestino =  parametros.bodegaActual==='03'?'0':'1'; 
      resultado.swTipoPedido = '1';
         
@@ -1353,8 +1359,8 @@ function __insertarCabeceraClientesCotizacion(datos,parametros,index,idsPedidos,
        nit: Object.keys(datos)[index]==='03'?'83002320':Object.keys(datos)[index]==='06'?'830080649':'' //si la bodega actual es duana se crea el pedido con el nit de cosmitet y viceversa
        
    };
-   console.log(index+"Object.keys(datos)[index] ",Object.keys(datos)[index]);
-   console.log(index+"cabecera",cabecera);
+//   console.log(index+"Object.keys(datos)[index] ",Object.keys(datos)[index]);
+//   console.log(index+"cabecera",cabecera);
    var empresa=datos[Object.keys(datos)[index]][0].empresa_origen_producto;
    var centro_utilidad=datos[Object.keys(datos)[index]][0].centro_utilidad_origen_producto;
    var bodega=datos[Object.keys(datos)[index]][0].bodega_origen_producto;
@@ -1394,14 +1400,14 @@ function __insertarCabeceraClientesCotizacion(datos,parametros,index,idsPedidos,
        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"generar_pedido_cliente",cotizacion);
         
     }).then(function (resultado) {
-        console.log("parametros.bodegaActual",parametros.bodegaActual);
-        console.log("cabecera.bodega",cabecera.bodega);
+//        console.log("parametros.bodegaActual",parametros.bodegaActual);
+//        console.log("cabecera.bodega",cabecera.bodega);
         if(parametros.bodegaActual !== cabecera.bodega){//validar
-            console.log("111111111");
+//            console.log("111111111");
          idsPedidos.numeroCotizacionDestino=parametros.numeroPedido;
          idsPedidos.numeroPedidoDestino=resultado.numero_pedido;
         }else{
-            console.log("22222222");
+//            console.log("22222222");
          idsPedidos.numeroCotizacionOrigen=cabecera.numero_cotizacion;
          idsPedidos.numeroPedidoOrigen=resultado.numero_pedido;            
         }
@@ -1948,6 +1954,9 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
     var __productoSinDisponibilidadTotal = "";
     var _detalleCotizacion = "";
     var productosPlano = "";
+    cotizacion.bodega_id=args.pedidos_clientes.bodega_id;
+//    console.log("cotizacion.bodega_id",req.session);
+//    console.log("cotizacionArchivoPlano ",args);
     /**
      * +Descripcion Consulta si la formula esta en estado activa o inactiva, ni no existe
      *              proseguira a crearse en los siguientes metodos
@@ -2252,12 +2261,14 @@ var productosPreparadosCotizacion = [];
 var productosPreparadosCotizacionInvalidos = [];
 
 function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados, obj, callback) {
-
+//console.log("index",index,"productos", productos,"productosSolicitados", productosSolicitados,"obj", obj);
     var producto = productos[index];
     var unidadMedida = 0;
 
     if (!producto) {
-        callback(false, productosPreparadosCotizacion);
+        var productosPreparadosCotizacion_copy=productosPreparadosCotizacion;
+        callback(false, productosPreparadosCotizacion_copy);
+//        productosPreparadosCotizacion = [];
         return;
     }
     index++;
@@ -4726,7 +4737,7 @@ function __validar_datos_productos_archivo_plano(that, obj, productos, productos
         if (lista_productos.length === 0) {
             
 
-            productos_invalidos.push(lista_productos.data.productos.sort(dynamicSort("codigo_producto")));
+            productos_invalidos.push(lista_productos.data.productos.sort(dynamicSort("codigo_producto",false)));
 
             setTimeout(function() {
                 __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback);
@@ -4734,7 +4745,7 @@ function __validar_datos_productos_archivo_plano(that, obj, productos, productos
             return;
         }else{
 
-            var _producto = lista_productos.data.productos.sort(dynamicSort("codigo_producto"));
+            var _producto = lista_productos.data.productos.sort(dynamicSort("codigo_producto",false));
             producto.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id;
 
             productos_validos.push(_producto);

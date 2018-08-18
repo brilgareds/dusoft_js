@@ -31,7 +31,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
                     that.init = function (empresa, callback) {
 
-                        // that.cargar_permisos();
                         $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
                         $scope.session = {
                             usuario_id: Usuario.getUsuarioActual().getId(),
@@ -503,17 +502,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                         if ($scope.root.porcentajes.length > 0) {
 
-//                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_rtf) {
                                             $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
-//                                            } else {
-//                                                $scope.root.impuestosnota.retencionFuente = 0;
-//                                            }
-//
-//                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_ica) {
+
                                             $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
-//                                            } else {
-//                                                $scope.root.impuestosnota.retencionIca = 0;
-//                                            }
+
 
                                         }
 
@@ -787,17 +779,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         $scope.root.impuestosnota.iva = iva;
                                         if ($scope.root.porcentajes.length > 0) {
 
-//                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_rtf) {
                                             $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
-//                                            } else {
-//                                                $scope.root.impuestosnota.retencionFuente = 0;
-//                                            }
-//
-//                                            if ($scope.root.impuestosnota.valorSubtotal >= $scope.root.porcentajes[0].base_ica) {
+
                                             $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
-//                                            } else {
-//                                                $scope.root.impuestosnota.retencionIca = 0;
-//                                            }
+
 
 
                                         }
@@ -908,13 +893,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
                     };
-//		    
-//		    that.limpiarVariablesConceptos=function(){
-//			$scope.root.prefijoBusquedaNota = 'seleccionar';
-//                       $scope.root.concepto = [];
-//			$scope.checkearEstadoPago();
-//		    };
-
 
                     /**
                      * @author German Galvis
@@ -962,37 +940,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
                     };
 
-//		     /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 28/06/2017
-//                     * +Descripcion tamaño columna
-//                     * @param {type} $event
-//                     */
-//                    $scope.onColumnaSize = function(tipo) {
-//
-//                        if (tipo === "AS" || tipo === "MS" || tipo === "CD") {
-//                            $scope.columnaSizeBusqueda = "col-md-4";
-//                        } else {
-//                            $scope.columnaSizeBusqueda = "col-md-4";
-//                        }
-//
-//                    };
-//		     /**
-//                     * @author Andres Mauricio Gonzalez
-//                     * @fecha 28/06/2017
-//                     * +Descripcion tamaño columna
-//                     * @param {type} $event
-//                     */
-//                    $scope.onColumnaSizeNota = function(tipo) {
-//
-//                        if (tipo === "NC" || tipo === "NC") {
-//                            $scope.columnaSizeBusqueda = "col-md-4";
-//                        } else {
-//                            $scope.columnaSizeBusqueda = "col-md-12";
-//                        }
-//
-//                    };
-
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
                      *              las facturas
@@ -1015,10 +962,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                 $scope.root.listarFacturas = notasService.renderFacturas(data.obj.listarFacturas);
 
-//                                callback(data.obj.listarFacturas);
                             } else {
                                 $scope.root.listarFacturas = null;
-//                                callback(false);
+
                             }
 
                         });

@@ -482,7 +482,9 @@ Notas.prototype.imprimirNota = function (req, res) {
     var tabla_2;
     var tabla_3;
     var tabla_4;
+    var subtotal_factura;
     var cliente = [];
+    var porcentajes_factura = [];
     var empresa = [];
     var nota = [];
     var productos = [];
@@ -541,8 +543,19 @@ Notas.prototype.imprimirNota = function (req, res) {
         parametros.prefijo = nota[0].prefijo;
         parametros.factura_fiscal = nota[0].factura_fiscal;
 
-//        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id});
         return G.Q.ninvoke(that.m_notas, 'porcentajes', parametros);
+
+    }).then(function (resultado) {
+
+        porcentajes_factura = resultado;
+
+        return G.Q.nfcall(that.m_notas.ConsultarSubtotalFactura, parametros);
+
+    }).then(function (resultado) {
+
+        subtotal_factura = resultado;
+
+        return G.Q.ninvoke(that.m_notas, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id, fecha: cliente[0].anio_factura});
 
     }).then(function (resultado) {
 
@@ -552,18 +565,19 @@ Notas.prototype.imprimirNota = function (req, res) {
                 subTotal += parseFloat(row.subtotal);
                 totalIva += parseFloat(row.valor_iva);
             });
+                  
+            
+            if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_rtf)) {
+                retencionFuente = (subTotal * ((porcentajes_factura[0].porcentaje_rtf) / 100));
+            }
 
-//            if (subTotal >= resultado[0].base_rtf) {
-            retencionFuente = (subTotal * ((resultado[0].porcentaje_rtf) / 100));
-//            }
-//
-//            if (subTotal >= resultado[0].base_ica) {
-            retencionIca = (subTotal) * (parseFloat(resultado[0].porcentaje_ica) / 1000);
-//            }
-//
-//            if (subTotal >= resultado[0].base_reteiva) {
-            retencionIva = (totalIva) * (parseFloat(resultado[0].porcentaje_reteiva) / 100);
-//            }
+            if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_ica)) {
+                retencionIca = (subTotal) * (parseFloat(porcentajes_factura[0].porcentaje_ica) / 1000);
+            }
+
+            if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_reteiva)) {
+                retencionIva = (totalIva) * (parseFloat(porcentajes_factura[0].porcentaje_reteiva) / 100);
+            }
 
             totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
 
@@ -625,6 +639,7 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
     var empresa = [];
     var nota = [];
     var productos = [];
+    var subtotal_factura;
     var porcentajes_factura = [];
     var retencionFuente = 0;
     var retencionIca = 0;
@@ -688,6 +703,12 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
 
         porcentajes_factura = resultado;
 
+        return G.Q.nfcall(that.m_notas.ConsultarSubtotalFactura, parametros);
+
+    }).then(function (resultado) {
+
+        subtotal_factura = resultado;
+
         return G.Q.ninvoke(that.m_notas, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id, fecha: cliente[0].anio_factura});
 
     }).then(function (resultado) {
@@ -701,12 +722,16 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
                     totalIva += parseFloat(row.valor_iva);
                 });
 
-                if (subTotal >= resultado[0].base_rtf) {
+                if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_rtf)) {
                     retencionFuente = (subTotal * ((porcentajes_factura[0].porcentaje_rtf) / 100));
                 }
 
-                if (subTotal >= resultado[0].base_ica) {
+                if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_ica)) {
                     retencionIca = (subTotal) * (parseFloat(porcentajes_factura[0].porcentaje_ica) / 1000);
+                }
+
+                if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_reteiva)) {
+                    retencionIva = (totalIva) * (parseFloat(porcentajes_factura[0].porcentaje_reteiva) / 100);
                 }
 
                 totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));

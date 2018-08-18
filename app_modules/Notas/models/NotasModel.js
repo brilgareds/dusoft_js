@@ -1150,7 +1150,7 @@ NotasModel.prototype.porcentajes = function (obj, callback) {
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
-        console.log("err [obtenerConceptoPorNota]:", err);
+        console.log("err [porcentajes]:", err);
         callback(err);
     });
 };
@@ -1160,7 +1160,6 @@ NotasModel.prototype.porcentajes = function (obj, callback) {
  * @author German Galvis
  * @fecha 2018-08-14 YYYY-MM-DD
  * +Descripcion Modelo encargado de consultar las retenciones segun la empresa
- * @controller FacturacionClientes.prototype.listarTiposTerceros
  */
 NotasModel.prototype.consultarParametrosRetencion = function (obj, callback) {
 
@@ -1172,8 +1171,6 @@ NotasModel.prototype.consultarParametrosRetencion = function (obj, callback) {
                         .andWhere("empresa_id", obj.empresaId);
             });
 
-    console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));
     query.then(function (resultado) {
         callback(false, resultado)
     }).catch(function (err) {
@@ -1231,5 +1228,43 @@ NotasModel.prototype.actualizarFacturaNotaCredito = function (parametros, transa
         callback(err);
     }).done();
 };
+
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de consultar los productos de las facturas 
+ * @fecha 2018-08-18 YYYY-MM-DD
+ * @returns callback
+ */
+NotasModel.prototype.ConsultarSubtotalFactura = function (obj, callback) {
+
+
+
+    var columnas = [
+        G.knex.raw("SUM ((a.valor_unitario * a.cantidad)) as subtotal")
+    ];
+
+    var query = G.knex.select(columnas)
+            .from(G.knex.raw(obj.tabla_2 + " as b"))
+            .innerJoin(G.knex.raw(obj.tabla_4 + " as a"), function () {
+
+                this.on("a.empresa_id", "b.empresa_id")
+                        .on("a.factura_fiscal", "b.factura_fiscal")
+                        .on("a.prefijo", "b.prefijo");
+
+            })
+            .where('a.empresa_id', obj.empresa_id)
+            .andWhere('a.prefijo', obj.prefijo)
+            .andWhere('a.factura_fiscal', obj.factura_fiscal);
+
+    query.then(function (resultado) {
+
+        callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [ConsultarSubtotalFactura]:", err);
+        callback(err);
+    });
+};
+
 NotasModel.$inject = [];
 module.exports = NotasModel;

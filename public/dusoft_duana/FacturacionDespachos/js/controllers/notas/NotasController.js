@@ -493,9 +493,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         var iva = 0;
 
                                         $scope.root.listadoProductos.forEach(function (data) {
-                                            if (data.seleccionado)
+                                            if (data.seleccionado) {
                                                 subtotal += data.total_nota;
-                                            iva += ((data.cantidad_ingresada * (data.porc_iva / 100)) * data.cantidad);
+                                                iva += ((data.cantidad_ingresada * (data.porc_iva / 100)) * data.cantidad);
+                                            }
                                         });
                                         $scope.root.impuestosnota.valorSubtotal = subtotal;
                                         $scope.root.impuestosnota.iva = iva;

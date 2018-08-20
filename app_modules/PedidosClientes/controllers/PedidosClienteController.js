@@ -2016,7 +2016,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
         return G.Q.nfcall(__agregarCantidadSolicitadaProducto, that, 0, resultado, _productosValidosExistentes, [], []);
 
     }).then(function (resultado) {
-
+console.log("productos ",resultado);
         return G.Q.nfcall(__cantidadSolicitadaProducto, that, 0, args, resultado[0], [], []);
 
     }).then(function (resultado) {
@@ -2532,7 +2532,7 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
                 __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
             }, 0);
 
-        } else if (resultado.length > 0 && resultado[0].valido === '1') {
+        } else if (resultado.length > 0 && resultado[0].valido === '1' && (producto.bodega !== obj.pedidos_clientes.cotizacion.bodega_id && producto.existe_producto_bodega_actual===1) ) {
 
             productosValidos.push(productoUnidadMedida);
 
@@ -2541,8 +2541,13 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
             }, 0);
 
         } else {
-
-            producto.mensajeError = "La cantidad ingresada no es valida para el producto";
+            var msj="";
+             if((producto.bodega !== obj.pedidos_clientes.cotizacion.bodega_id && producto.existe_producto_bodega_actual===0)){
+                msj="El producto no existe en la bodega actual"; 
+             }else{
+                 msj="La cantidad ingresada no es valida para el producto";
+             }
+            producto.mensajeError = msj;
             producto.cantidadValida = false;
             productosInvalidos.push(productoUnidadMedida);
 

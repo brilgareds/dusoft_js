@@ -228,6 +228,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
 
             };
+            
             that.render_cotizacion = function (data) {
                 
                 var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);

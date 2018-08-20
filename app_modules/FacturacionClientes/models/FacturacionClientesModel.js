@@ -588,7 +588,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
         .union(__consultaAgrupada("inv_facturas_agrupadas_despacho as a",
             1,
             colSubQuery2B,
-            subQuery1B,
+            subQuery1B, 
             filtro)
         );
 
@@ -601,7 +601,8 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
         }).orderBy("fecha_registro", "desc");
 
     query.limit(G.settings.limit).
-            offset((filtro.paginaActual - 1) * G.settings.limit)
+            offset((filtro.paginaActual - 1) * G.settings.limit);
+    //console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         
         callback(false, resultado)
@@ -919,14 +920,15 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
  */
 FacturacionClientesModel.prototype.consultarParametrosRetencion = function (obj,callback) {
 
-    G.knex.select('*')
+   var query= G.knex.select('*')
         .from('vnts_bases_retenciones')
         .where(function(){
             this.andWhere("estado",'1')
             .andWhere(G.knex.raw("anio = TO_CHAR(NOW(),'YYYY')"))
             .andWhere("empresa_id", obj.empresaId)
-        })
-        .then(function (resultado) {
+        });
+
+     query.then(function (resultado) {
             callback(false, resultado)
         }).catch(function (err) {
         console.log("err [consultarParametrosRetencion]:", err);
@@ -1002,7 +1004,7 @@ FacturacionClientesModel.prototype.insertarPcFactura = function(obj,transaccion,
     var query = G.knex('pc_factura_clientes').insert(parametros);
     
     if(transaccion)
-    query.transacting(transaccion);     
+    query.transacting(transaccion);  
     query.then(function(resultado){   
         callback(false, resultado);
     }).catch(function(err){
@@ -1043,7 +1045,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(estado,obj
     }
     
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
-//     console.log("qq>>> ",G.sqlformatter.format(query.toString()));  
+ 
     if(transaccion) query.transacting(transaccion);
     query.then(function(resultado){     
         
@@ -1081,7 +1083,7 @@ FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,tran
         tipo_pago_id: obj.tipoPago,
         facturacion_cosmitet: obj.facturacion_cosmitet
     };
-     
+
     var query = G.knex('inv_facturas_despacho').insert(parametros);     
     
     if(transaccion) query.transacting(transaccion);     
@@ -1170,7 +1172,7 @@ function __insertarFacturaIndividualDetalle(obj,transaccion, callback){
         cantidad_devuelta:parseInt(0),
         porc_iva: obj.porcentaje_gravamen
     };
-    
+
     var query = G.knex('inv_facturas_despacho_d').insert(parametros);     
        
     if(transaccion) query.transacting(transaccion);     
@@ -1209,7 +1211,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
     }; 
     
     var query = G.knex(tabla).insert(parametros);     
-  console.log(">>> ",G.sqlformatter.format(query.toString()));   
+//  console.log(">>> ",G.sqlformatter.format(query.toString()));   
    if(transaccion) query.transacting(transaccion);     
     query.then(function(resultado){
         callback(false, resultado);
@@ -1284,7 +1286,7 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
  * @fecha 2017-15-05 YYYY-DD-MM        
  */          
 FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(obj, callback){
-         
+
     var query = G.knex.select(["a.empresa_id as empresa","a.*","b.*",
        G.knex.raw("case when a.tipo_pago_id=1 then 'Efectivo' \
         when a.tipo_pago_id=2 then 'Cheque'\
@@ -1307,6 +1309,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
             this.on("a.tipo_id_tercero", "cntrtos.tipo_id_tercero")
                 .on("a.tercero_id", "cntrtos.tercero_id")
                 .on('a.empresa_id', "cntrtos.empresa_id")
+                .on("cntrtos.estado",1)
                  
         }).where(function(resuldado){
                                              
@@ -1332,15 +1335,14 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
             }
             
             
-        }).andWhere("a.empresa_id", obj.empresa_id);     
+        }).andWhere("a.empresa_id", obj.empresa_id).orderBy("descripcion_estado_facturacion");     
    
     query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
- 
+
     
     query.then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){
-        console.log(">>> ",G.sqlformatter.format(query.toString())); 
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
         callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
     }); 
@@ -2169,15 +2171,28 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
     var porcentajeReteiva = '0';
     var porcentajeCree = obj.consultar_tercero_contrato[0].porcentaje_cree;
     var parametrosInsertarFacturaInvidual;
-    
-    if (obj.consultar_parametros_retencion.sw_rtf === '1' || obj.consultar_parametros_retencion.sw_rtf === '3')
+
+    if (obj.consultar_parametros_retencion[0].sw_rtf === '1' || obj.consultar_parametros_retencion[0].sw_rtf === '3'){
         porcentajeRtf = obj.consultar_tercero_contrato[0].porcentaje_rtf;
-    if (obj.consultar_parametros_retencion.sw_ica === '1' || obj.consultar_parametros_retencion.sw_ica === '3')
+    }
+    if (obj.consultar_parametros_retencion[0].sw_ica === '1' || obj.consultar_parametros_retencion[0].sw_ica === '3'){
         porcentajeIca = obj.consultar_tercero_contrato[0].porcentaje_ica;
-    if (obj.consultar_parametros_retencion.sw_reteiva === '1' || obj.consultar_parametros_retencion.sw_reteiva === '3')
+    }
+    if (obj.consultar_parametros_retencion[0].sw_reteiva === '1' || obj.consultar_parametros_retencion[0].sw_reteiva === '3'){
         porcentajeReteiva = obj.consultar_tercero_contrato[0].porcentaje_reteiva;
+    }
         
-    G.knex.transaction(function(transaccion) {  
+          var s= {parametros:obj,
+         porcentaje_rtf:porcentajeRtf,
+         porcentaje_ica: porcentajeIca,
+         porcentaje_reteiva: porcentajeReteiva,
+         porcentaje_cree: porcentajeCree,
+         usuario: obj.parametros.usuario,
+         tipoPago: obj.parametros.tipoPago,
+         facturacion_cosmitet:obj.parametros.facturacionCosmitet
+        };
+        
+    G.knex.transaction(function(transaccion) {          
         
         G.Q.ninvoke(that,'insertarFacturaIndividual',
         {parametros:obj,
@@ -2205,7 +2220,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
 
                         row.detalle.forEach(function(rowDetalle){
 
-                            if(obj.consultar_tercero_contrato[0].facturar_iva === '0'){
+                            if(obj.consultar_tercero_contrato[0].facturar_iva === '0'){                  
                                 rowDetalle.porcentaje_gravamen = 0;
                             }
                                 parametrosInsertarFacturaInvidual = {empresa_id:documento.empresa_id, 
@@ -2280,6 +2295,49 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
     
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion elimina todos los productos asociados al documento parcial
+ * @fecha 05/07/2018
+ */
+FacturacionClientesModel.prototype.eliminarDocumentoTemporal_d = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_facturas_xconsumo_tmp_d").
+            where('empresa_id', parametros.empresa_id).
+            andWhere('id_factura_xconsumo', parametros.id_factura_xconsumo).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarDocumentoTemporal_d", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion elimina la cabecera del documento temporal de facturacion
+ * @fecha 05/07/2018
+ */
+FacturacionClientesModel.prototype.eliminarDocumentoTemporal = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_facturas_xconsumo_tmp").
+            where('empresa_id', parametros.empresa_id).
+            andWhere('id_factura_xconsumo', parametros.id_factura_xconsumo).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarDocumentoTemporal_d", err);
+        callback(err);
+    });
+};
    
 FacturacionClientesModel.$inject = ["m_e008"];
 

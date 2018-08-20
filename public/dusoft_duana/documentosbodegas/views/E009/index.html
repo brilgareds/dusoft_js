@@ -1,3 +1,20 @@
+<style>
+
+    .float{
+        position:fixed;
+        width:100px;
+        height:48px;
+        right:20px;
+        bottom:30px;
+        background-color:#398439;
+        color:#FFF;
+        border-radius:20px;        
+        box-shadow: 2px 2px 3px #5A99E7;
+        z-index: 2;
+    }
+
+</style>
+<button type="button" class="btn btn-default float col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-click="generar_documento()" ng-if="!isTmp()"><b>Crear</b><br><b>Documento</b></button>
 <div>
     <div class="row">
         <div class="col-md-12">
@@ -93,9 +110,9 @@
                                     <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
                                         <span class="glyphicon glyphicon-trash" ></span> Eliminar
                                     </button>
-                                    <button   class="btn btn-success" ng-click="generar_documento()" >
+<!--                                    <button   class="btn btn-success" ng-click="generar_documento()" >
                                         <span class="glyphicon glyphicon-ok" ></span> Crear Documento
-                                    </button>                                  
+                                    </button>                                  -->
                                 </div>  
                             </div>
                         </div>

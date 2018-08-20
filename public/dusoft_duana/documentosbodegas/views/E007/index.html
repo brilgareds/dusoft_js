@@ -1,3 +1,20 @@
+<style>
+
+    .float{
+        position:fixed;
+        width:100px;
+        height:48px;
+        right:20px;
+        bottom:30px;
+        background-color:#398439;
+        color:#FFF;
+        border-radius:20px;        
+        box-shadow: 2px 2px 3px #5A99E7;
+        z-index: 2;
+    }
+
+</style>
+<button type="button" class="btn btn-default float col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-click="generar_documento()" ng-if="!isTmp()"><b>Crear</b><br><b>Documento</b></button>
 <div>
     <div class="row">
         <div class="col-md-12">
@@ -80,7 +97,7 @@
                                 <div class="">
                                     <div class="col-md-3">
                                         <p class="input-group">
-                                            <button  type="button" class="btn btn-info btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()" ng-click="btn_seleccionar_productos()">
+                                            <button  type="button" class="btn btn-info btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()"  ng-click="btn_seleccionar_productos()">
                                                 <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                             </button>
                                         </p>
@@ -100,9 +117,6 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div ng-if="true" class="modal-footer col-md-12" >
-                                        <button ng-hide="isNoTmp()" class="btn btn-primary" ng-click="grabar_documento_tmp()">
-                                            <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
-                                        </button>
                                         <button  class="btn btn-default" ng-click="cancelar_documento()">
                                             <span class="glyphicon glyphicon-share-alt" ></span> Volver
                                         </button>
@@ -112,15 +126,14 @@
                         </div>
                         <div ng-if="!isTmp()">    
                             <div class="modal-footer col-md-12">
-                                <button class="btn btn-default" ng-click="cancelar_documento()">
-                                    <span class="glyphicon glyphicon-share-alt" ></span> Volver
-                                </button>
-                                <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
-                                    <span class="glyphicon glyphicon-trash" ></span> Eliminar
-                                </button>
-                                <button class="btn btn-success" ng-click="generar_documento()" >
-                                    <span class="glyphicon glyphicon-ok" ></span> Crear Documento
-                                </button>
+                                <div class="container text-center">
+                                    <button class="btn btn-default" ng-click="cancelar_documento()">
+                                        <span class="glyphicon glyphicon-share-alt" ></span> Volver
+                                    </button>
+                                    <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
+                                        <span class="glyphicon glyphicon-trash" ></span> Eliminar
+                                    </button>
+                                </div>  
                             </div>  
                         </div>
                     </div>

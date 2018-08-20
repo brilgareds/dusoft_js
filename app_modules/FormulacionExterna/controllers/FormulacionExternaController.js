@@ -8,6 +8,7 @@ FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
     var that = this;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
+    var tmp = {afiliado : null};
 
     G.Q.ninvoke(that.m_formulacionExterna,'existeFormulaTmp', args.tipoIdentificacion, args.identificacion).then(function(resultado){
         if(resultado.length > 0){
@@ -15,13 +16,37 @@ FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
             var registro = resultado[0];
             if(registro.usuario_id != usuario_id){
                 res.send(G.utils.r(req.url, 'Ya se esta digitando una formula para el paciente', 404, resultado[0]));
-                return;
+                return [];
             }
         }
         return G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliado', args.tipoIdentificacion, args.identificacion);
     }).then(function(resultado){
-        res.send(G.utils.r(req.url, 'obtiene afiliado', 200, resultado[0]));
-    });
+        //tabla donde estan todos los planes --> estructura_planes
+        if(resultado.length > 0){
+            tmp.afiliado = resultado[0];
+            return [];
+        }
+
+        return G.Q.ninvoke(that.m_formulacionExterna,'obtenerEstructurasPlanes');
+    }).then(function(estructurasPlanes){
+
+        if(estructurasPlanes.length > 0){
+            console.log('entra a if estructurasPlanes');
+            //tmp.afiliado = resultado[0];
+            return G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliadosExternos',estructurasPlanes, args.tipoIdentificacion, args.identificacion);
+        }
+
+        return [];
+    }).then(function(afiliadoExterno){
+
+        if(afiliadoExterno.length > 0){
+            tmp.afiliado = afiliadoExterno[0];
+        }
+        res.send(G.utils.r(req.url, 'obtiene afiliado', 200, tmp.afiliado));
+    }).fail(function(err){
+        G.logError("FormulacionExternaController [obtenerAfiliado] " + err);
+        res.send(G.utils.r(req.url, 'error al obtenerAfiliado', 500, err));
+    }).done();
 }
 
 FormulacionExterna.prototype.obtenerMunicipios = function(req, res){
@@ -150,7 +175,6 @@ FormulacionExterna.prototype.buscarProductos = function(req, res){
     }).done();
 }
 
-
 FormulacionExterna.prototype.buscarProductosPorPrincipioActivo = function(req, res){
     var that = this;
     var args = req.body.data;
@@ -223,7 +247,6 @@ FormulacionExterna.prototype.consultaExisteFormula = function(req, res){
     }).done();
 }
 
-
 FormulacionExterna.prototype.obtenerLotesDeProducto = function(req, res){
     var that = this;
     var args = req.body.data;
@@ -286,7 +309,16 @@ FormulacionExterna.prototype.insertarDispensacionMedicamentoTmp = function(req, 
     var args = req.body.data;
 
     var usuario_id = req.session.user.usuario_id;
-    G.Q.ninvoke(that.m_formulacionExterna,'verificarLoteEstaInsertado', args.formula_id_tmp, args.codigo_producto, args.fecha_vencimiento, args.lote).then(function(resultado){
+
+
+    var formula_id;
+    if(args.formula_id_tmp == '' || args.formula_id_tmp == 'undefined' || args.formula_id_tmp == null){
+        formula_id = args.formula_id;
+    }else{
+        formula_id = args.formula_id_tmp;
+    }
+
+    G.Q.ninvoke(that.m_formulacionExterna,'verificarLoteEstaInsertado', formula_id, args.codigo_producto, args.fecha_vencimiento, args.lote).then(function(resultado){
         if(resultado.length > 0){
             throw 'El lote ya se encuentra registrado en temporal';
         }else{
@@ -449,7 +481,7 @@ FormulacionExterna.prototype.cambiarCodigoPendiente  = function(req, res){
     }).done();
 }
 
-FormulacionExterna.prototype.generarEntrega  = function(req, res){
+/*FormulacionExterna.prototype.generarEntrega  = function(req, res){
     var that = this;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
@@ -457,12 +489,20 @@ FormulacionExterna.prototype.generarEntrega  = function(req, res){
     var tmp = {};
     //Pasa la formula de temporal a las tablas finales
     G.Q.ninvoke(that.m_formulacionExterna,'registrarFormulaReal', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id).then(function(formula_id){
+<<<<<<< HEAD
        
+=======
+        //console.log('registrarFormulaReal', formula_id);
+>>>>>>> integracion_I002_facturacion_3
         tmp.formula_id = formula_id;
         //consultar el id del documento de bodega
         var parametroBodegaDocId = {variable:"documento_dispensacion_"+args.empresa_id+"_"+args.bodega, tipoVariable:1, modulo:'Formulacion_Externa'};
         return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId); 
     }).then(function(resultado){
+<<<<<<< HEAD
+=======
+        //console.log('estadoParametrizacionReformular', resultado);
+>>>>>>> integracion_I002_facturacion_3
         if(resultado.length > 0){
             tmp.bodegasDocId = resultado[0].valor;          
             return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId: tmp.bodegasDocId}); 
@@ -470,7 +510,11 @@ FormulacionExterna.prototype.generarEntrega  = function(req, res){
             throw 'El id del documento de bodega no se encuentra parametrizado'
         }
     }).then(function(resultado){
+<<<<<<< HEAD
     
+=======
+        //console.log('asignacionNumeroDocumentoDespacho', resultado);
+>>>>>>> integracion_I002_facturacion_3
         tmp.numeracion = resultado[0];
         return G.Q.ninvoke(that.m_formulacionExterna,'generarDispensacionFormula', args.empresa_id, args.centro_utilidad, args.bodega, args.plan, tmp.bodegasDocId, tmp.numeracion, args.formula_id_tmp, tmp.formula_id, args.observacion, usuario_id, args.todo_pendiente); 
     }).then(function(resultado){
@@ -485,8 +529,23 @@ FormulacionExterna.prototype.generarEntrega  = function(req, res){
         G.logError("FormulacionExterna [generarEntrega] " + err);
         res.send(G.utils.r(req.url, 'Error generando entrega', 500, err));
     }).done();
-}
+}*/
 
+FormulacionExterna.prototype.generarEntrega  = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    var usuario_id = req.session.user.usuario_id;
+
+    var tmp = {};
+    //Pasa la formula de temporal a las tablas finales
+    G.Q.ninvoke(that.m_formulacionExterna,'generarEntrega', args.formula_id_tmp, args.empresa_id, args.centro_utilidad, args.bodega, usuario_id, args.plan, args.observacion, args.todo_pendiente).then(function(resultado){
+        res.send(G.utils.r(req.url, 'Entrega generada', 200, resultado));
+    }).fail(function(err){
+        console.log('el error', err);
+        G.logError("FormulacionExterna [generarEntrega] " + err);
+        res.send(G.utils.r(req.url, 'Error generando entrega', 500, err));
+    }).done();   
+}
 
 FormulacionExterna.prototype.generarEntregaPendientes  = function(req, res){
     var that = this;
@@ -518,9 +577,8 @@ FormulacionExterna.prototype.generarEntregaPendientes  = function(req, res){
         res.send(G.utils.r(req.url, 'Error generando entrega', 500, err));
     }).done();
 }
-/*
-*/
- FormulacionExterna.prototype.imprimirMedicamentosPendientesPorDispensar = function(req, res){
+
+FormulacionExterna.prototype.imprimirMedicamentosPendientesPorDispensar = function(req, res){
     var that = this;
     var args = req.body.data;
 
@@ -565,7 +623,6 @@ FormulacionExterna.prototype.generarEntregaPendientes  = function(req, res){
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
-
 
 FormulacionExterna.prototype.imprimirMedicamentosDispensados = function(req, res){
     var that = this;
@@ -711,7 +768,6 @@ function __generarPdf(datos, callback) {
         });
     });
 };
-
 
 FormulacionExterna.$inject = ["m_formulacion_externa", "m_dispensacion_hc"];
 module.exports = FormulacionExterna;

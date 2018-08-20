@@ -30,7 +30,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $scope.root.filtros = [
-                {id: '', descripcion: "Todos"},
+               // {id: '', descripcion: "Todos"},
                 {id: 'Nombre', descripcion: "Nombre"}
             ];
 

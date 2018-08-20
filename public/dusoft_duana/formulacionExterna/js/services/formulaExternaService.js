@@ -680,11 +680,12 @@ define(["angular", "js/services", "includes/classes/Planes", "includes/classes/P
       };
 
       Request.realizarRequest(API.FORMULACION_EXTERNA.GENERAR_ENTREGA, "POST", body, function(data){
+        console.log('respuesta servidor', data);
         var error = data.status == 200? 0 : 1;
         if(!error){
           callback(error, data.obj);
         } else {
-          callback(error, data.obj);
+          callback(error, data);
         }
       });
     }

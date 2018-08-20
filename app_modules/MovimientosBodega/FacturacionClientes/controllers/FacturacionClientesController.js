@@ -1203,7 +1203,7 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function(
     if(args.facturas_consumo.estado === 0){
       estado=6;  
     }
-    console.log("args.facturas_consumo ",args.facturas_consumo);
+
     var parametros = {
         empresaId: args.facturas_consumo.empresa_id,
         tipoIdTercero: args.facturas_consumo.tipoTerceroId,
@@ -1429,7 +1429,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
             if(resultado.length > 0){
                 
             parametros.direccion_ip = ip;    
-             
+
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',
             {tipo_id_tercero:parametros.tipoIdTercero, 
             tercero_id: parametros.terceroId, 
@@ -1495,7 +1495,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
     }).then(function(resultado){
          
         if(resultado.rowCount > 0){
-   
+
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',
             {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo,prefijo: parametros.pedidos.prefijo,factura_fiscal: parametros.pedidos.numero});
         }else{
@@ -1504,7 +1504,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function(req, res)
         }
         
     }).then(function(resultado){
-  
+
         if(resultado.length > 0){    
             
             resultado.forEach(function(row){
@@ -1806,7 +1806,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function(req, res){
         }
         
     }).then(function(resultado){
-    
+
          //CAMBIAR LA CONSULTA PARA QUE VAYA A LA TEMPORAL
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo,that,0,datosDocumentosXConsumo,[]);  
           
@@ -2751,7 +2751,7 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
         prefijo: args.imprimir_reporte_despacho.documento.prefijo,
         numero: args.imprimir_reporte_despacho.documento.numero
     };
-    
+
     var parametrosReporte =  {
         cabecera: '', 
         datos_adicionales :'',

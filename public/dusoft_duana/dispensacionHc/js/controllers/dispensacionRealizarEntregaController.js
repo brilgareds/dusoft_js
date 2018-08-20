@@ -4,11 +4,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',    
             "$timeout", 
             "$filter",
-            "localStorageService",
             "$state",
             "dispensacionHcService","$modalInstance","socket","estadoEntregaFormula","estadoTodoPendiente","tipoEstadoFormula","webNotification",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,
+                $timeout, $filter,$state,dispensacionHcService,
                 $modalInstance,socket,estadoEntregaFormula, estadoTodoPendiente,tipoEstadoFormula,webNotification) {
 
         var that = this;
@@ -114,117 +113,45 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          * @author Cristian Ardila
          */
         that.realizarEntregaFormula = function(){
-            
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");          
-            var parametroCabecera = { 
+            var evolucion_id = dispensacionHcService.shared.evolucionId;
+            var obj = {
                 session: $scope.session,
                 data: {
-                   cabecera_formula: {
-                        evolucion: resultadoStorage.evolucionId
-                   }
-               } 
-            }
-             
-             dispensacionHcService.obtenerCabeceraFormula(parametroCabecera,function(data){
-                
-                $scope.cerrarVentana();
-                $state.go('DispensacionHc');
-                AlertService.mostrarMensaje("warning", data.msj);
-                if(data.status === 500){                       
-                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                   realizar_entrega_formula: {
+                        variable: 'ParametrizacionReformular',
+                        evolucionId: evolucion_id,
+                        empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                        observacion: $scope.root.observacion + " No. Formula: " + dispensacionHcService.shared.formulaCompleta.pacientes[0].formulasHc[0].numeroFormula
+                                     +" No. Evolucion: "+ evolucion_id
+                                     + " Paciente " + dispensacionHcService.shared.formulaCompleta.pacientes[0].tipoIdPaciente + " " + dispensacionHcService.shared.formulaCompleta.pacientes[0].pacienteId
+                                     + " "+ dispensacionHcService.shared.formulaCompleta.pacientes[0].nombres
+                                     + " "+ dispensacionHcService.shared.formulaCompleta.pacientes[0].apellidos,
+                        todoPendiente:0,
+                        tipoFormula: seleccionTipoFormula,
+                        tipoEstadoFormula: tipoEstadoFormula,
+                        tipoIdPaciente:dispensacionHcService.shared.formulaCompleta.pacientes[0].tipoIdPaciente,
+                        pacienteId: dispensacionHcService.shared.formulaCompleta.pacientes[0].pacienteId
+                    }
                 }
- 
-                socket.on("onNotificarCabeceraFormula", function(datos) {
+            };
 
-                    if(datos.status === 201){
-                        AlertService.mostrarMensaje("success", datos.msj);
-                    }
-                   
-                    if(datos.status === 200){
-                        
-                        var obj = {                   
-                            session: $scope.session,
-                            data: {
-                               realizar_entrega_formula: {
-                                    variable: 'ParametrizacionReformular',
-                                    evolucionId: resultadoStorage.evolucionId,                    
-                                    empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(), 
-                                    bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                                    observacion: $scope.root.observacion + " No. Formula: " + datos.obj.cabecera_formula[0].numero_formula
-                                                 +" No. Evolucion: "+ resultadoStorage.evolucionId 
-                                                 + " Paciente " + datos.obj.cabecera_formula[0].tipo_id_paciente + " " + datos.obj.cabecera_formula[0].paciente_id
-                                                 + " "+ datos.obj.cabecera_formula[0].nombres
-                                                 + " "+ datos.obj.cabecera_formula[0].apellidos,
-                                    todoPendiente:0,
-                                    tipoFormula: seleccionTipoFormula,                   
-                                    tipoEstadoFormula: tipoEstadoFormula,
-                                    tipoIdPaciente:datos.obj.cabecera_formula[0].tipo_id_paciente,
-                                    pacienteId: datos.obj.cabecera_formula[0].paciente_id
-                                }
-                            }    
-                        };  
-                         if(estadoEntregaFormula === 0){
-
-                            if(estadoTodoPendiente === 1){
-                                that.dispensacionNormal(obj);
-                            }else{
-                                that.guardarTodoPendiente(obj);
-                            }
-                        }                   
-
-                        if(estadoEntregaFormula === 1){
-                            that.dispensacionPendientes(obj);
-                        }
-                    }                    
-                }); 
-           /* dispensacionHcService.obtenerCabeceraFormula(parametroCabecera,function(data){
-                
-                
-                if(data.status === 200){                   
-                    
-                    var obj = {                   
-                        session: $scope.session,
-                        data: {
-                           realizar_entrega_formula: {
-                                variable: 'ParametrizacionReformular',
-                                evolucionId: resultadoStorage.evolucionId,                    
-                                empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(), 
-                                bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                                observacion: $scope.root.observacion + " No. Formula: " + data.obj.cabecera_formula[0].numero_formula
-                                             +" No. Evolucion: "+ resultadoStorage.evolucionId 
-                                             + " Paciente " + data.obj.cabecera_formula[0].tipo_id_paciente + " " + data.obj.cabecera_formula[0].paciente_id
-                                             + " "+ data.obj.cabecera_formula[0].nombres
-                                             + " "+ data.obj.cabecera_formula[0].apellidos,
-                                todoPendiente:0,
-                                tipoFormula: seleccionTipoFormula,
-                                tipoEstadoFormula: tipoEstadoFormula
-
-                           }
-                        }    
-                    };  
-           
-                    if(estadoEntregaFormula === 0){
-                
-                        if(estadoTodoPendiente === 1){
-                            that.dispensacionNormal(obj);
-                        }else{
-                            that.guardarTodoPendiente(obj);
-                        }
-                    }                   
-           
-                    if(estadoEntregaFormula === 1){
-                        that.dispensacionPendientes(obj);
-                    }
-                                      
+            $state.go('DispensacionHc');
+            $modalInstance.close();
+            if(estadoEntregaFormula === 0){
+                if(estadoTodoPendiente === 1){
+                    that.dispensacionNormal(obj);
                 }else{
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                }*/
-            });  
-           
+                    that.guardarTodoPendiente(obj);
+                }
+            }
+
+            if(estadoEntregaFormula === 1){
+                that.dispensacionPendientes(obj);
+            }
+
         };
-        
-        
-        
+
         /**
          * @author Cristian Ardila
          * @fecha  2016/08/03
@@ -234,7 +161,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.guardarTodoPendiente = function(obj){
-            
+             
             dispensacionHcService.guardarTodoPendiente(obj,function(data){
                 
                 AlertService.mostrarMensaje("warning", data.msj);
@@ -246,7 +173,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         that.notificarSolicitud("Formula con pendientes lista", "Formula # " + datos.obj.dispensacion, 
                         {evolucionId:datos.obj.evolucionId,
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
-                            pacienteId:datos.obj.pacienteId});
+                            pacienteId:datos.obj.pacienteId, generoPendientes: 1});
                     }
                       
                     if(datos.status === 500){                       
@@ -254,54 +181,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                 });               
             });
-           /* var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
-            dispensacionHcService.guardarTodoPendiente(obj,function(data){
-              
-                if(data.status === 200){                   
-                    AlertService.mostrarMensaje("success", data.msj);                  
-                    $scope.cerrarVentana();
-                    $state.go('DispensacionHc');   
-                    
-                    localStorageService.add("formulaTodoPendiente",{
-                        evolucion: evolucionStorage.evolucionId,
-                        filtro:{tipo:'EV'},
-                        empresa: 'FD',
-                        pacienteId: evolucionStorage.pacienteId,
-                        tipoIdPaciente: evolucionStorage.tipoIdPaciente
-                                  
-                    });
-                                                      
-                }else{
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                }
-            }); */        
         };
-        
-        
-        
-        /*that.dispensacionPendientes = function(obj){
-            
-            var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
-            dispensacionHcService.realizarEntregaFormulaPendientes(obj,function(data){
-                if(data.status === 200){                   
-                    AlertService.mostrarMensaje("success", data.msj);                  
-                    $scope.$emit('emitRealizarEntregaFormula', {response: data});
-                    $scope.cerrarVentana();
-                    $state.go('DispensacionHc');
-                    
-                    localStorageService.add("consultarFormulaPendientes",{
-                        evolucion: evolucionStorage.evolucionId,
-                        filtro:{tipo:'EV'},
-                        empresa: 'FD',
-                        pacienteId: evolucionStorage.pacienteId,
-                        tipoIdPaciente: evolucionStorage.tipoIdPaciente
 
-                    });
-                }else{
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                }
-            });         
-        };*/
         /*
          * @author Cristian Manuel Ardila
          * +Descripcion Metodo encargado generar el reporte
@@ -368,28 +249,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          * @fecha 2017-02-28
          */        
         that.notificarSolicitud = function(title, body, parametros) {
-             
-            that.consultaMedicamentosPendientes(parametros); 
-            that.consultaMedicamentosDispensados(parametros,0);
-            /*webNotification.showNotification(title, {
-                body: body,
-                icon: '/images/logo.png',
-                onClick: function onNotificationClicked() {
+            if(parametros.generoPendientes){
                     that.consultaMedicamentosPendientes(parametros); 
-                    that.consultaMedicamentosDispensados(parametros,0);
-                },
-                autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
-            }, function onShow(error, hide) {
-                if (error) {
-                    window.alert('Error interno: ' + error.message);
-                } else {
-
-                    setTimeout(function hideNotification() {
-
-                        hide(); //manually close the notification (you can skip this if you use the autoClose option)
-                    }, 90000);
-                }
-            });*/
+            }
+            that.consultaMedicamentosDispensados(parametros,0);
         }
         
             /**
@@ -413,7 +276,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, 
                         {evolucionId:datos.obj.evolucionId,
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
-                            pacienteId:datos.obj.pacienteId});
+                            pacienteId:datos.obj.pacienteId, generoPendientes:  datos.obj.generoPendientes});
                     } 
                      
                     if(datos.status === 500){                       
@@ -433,7 +296,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionNormal = function(obj){
-                   
+                
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
                
                 AlertService.mostrarMensaje("warning", data.msj);
@@ -445,7 +308,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, 
                         {evolucionId:datos.obj.evolucionId,
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
-                            pacienteId:datos.obj.pacienteId});
+                            pacienteId:datos.obj.pacienteId, generoPendientes:  datos.obj.generoPendientes});
                         
                     }
                     
@@ -453,23 +316,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         AlertService.mostrarMensaje("danger", datos.msj); 
                     }
                 }); 
-               /* if(data.status === 200){                   
-                    AlertService.mostrarMensaje("success", data.msj);                  
-                    $scope.cerrarVentana();
-                    $state.go('DispensacionHc');   
-                    
-                    localStorageService.add("consultarFormula",{
-                        evolucion: evolucionStorage.evolucionId,
-                        filtro:{tipo:'EV'},
-                        empresa: 'FD',
-                        pacienteId: evolucionStorage.pacienteId,
-                        tipoIdPaciente: evolucionStorage.tipoIdPaciente
-
-                    });
-                                                      
-                }else{
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                }*/
             });         
         };
         
@@ -505,8 +351,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             ); 
         };
         
-        
-        
         /**
          * @author Cristian Ardila
          * +Descripcion Metodo encargado de invocar el servicio que consultara
@@ -516,12 +360,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          */      
         that.consultarMedicamentosTemporales = function(){                
             $scope.Temporales = [];
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+            //var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+            
             var obj = {                   
                 session: $scope.session,
                 data: {
                    listar_medicamentos_temporales: {
-                        evolucion: resultadoStorage.evolucionId                           
+                        evolucion: dispensacionHcService.shared.evolucionId                           
                    }
                 }    
             };      
@@ -587,18 +432,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
             }
         });
-        
-        that.listarTipoFormulas();
-        that.consultarMedicamentosTemporales();
-        $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-            
-            socket.remove(['onNotificarEntregaFormula','onNotificarCabeceraFormula','onNotificarTodoPendienteFormula']);  
-            $scope.$$watchers = null;
-            // set localstorage
+       
+        function init() {
+            that.listarTipoFormulas();
+            that.consultarMedicamentosTemporales();
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                socket.remove(['onNotificarEntregaFormula','onNotificarCabeceraFormula','onNotificarTodoPendienteFormula']);  
+                $scope.$$watchers = null;
+                // set localstorage
+            });
+        }
 
-           
-                   
-        });
-
+        init();
     }]);
 });

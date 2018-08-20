@@ -176,7 +176,7 @@ Reportes.prototype.listarPlanes0 = function(req, res) {
         return G.Q.nfcall(__organizaRotacion,0,listarPlanes,[]);
         
      }).then(function(resultados) {
-        // console.log(">>>>>>",resultados)
+     
          return G.Q.nfcall(__creaExcel,resultados);
          
      }).then(function(resultados) {

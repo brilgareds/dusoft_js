@@ -43,6 +43,66 @@ FormulacionExternaModel.prototype.obtenerAfiliado = function(tipoIdentificacion,
     });
 };
 
+FormulacionExternaModel.prototype.obtenerAfiliadosExternos = function(estructurasPlanes, tipoIdentificacion, identificacion, callback) {
+    var queryText = "";
+    var tamano = estructurasPlanes.length - 1;
+    estructurasPlanes.forEach(function(plan, index){
+        if(index != tamano){
+            queryText += "select \
+                        afiliado_id as paciente_id, \
+                        afiliado_tipo_id as tipo_id_paciente,\
+                        primer_nombre || ' ' || segundo_nombre as nombres,\
+                        primer_apellido || ' ' || segundo_apellido as apellidos,\
+                        'AC' as estado_afiliado_id,\
+                        '"+ plan.plan_id + "' as plan_atencion,\
+                        rango as rango_afiliado_atencion,\
+                        '" + plan.descripcion + "' as plan_descripcion,\
+                        tipo_afiliado_id,\
+                        rango\
+            from interfaces_planes." + plan.nombre_tbl + " \
+            where afiliado_id = '" + identificacion + "' and afiliado_tipo_id = '" + tipoIdentificacion + "'\
+            union ";
+        } else {
+            queryText += "select \
+                        afiliado_id as paciente_id, \
+                        afiliado_tipo_id as tipo_id_paciente,\
+                        primer_nombre || ' ' || segundo_nombre as nombres,\
+                        primer_apellido || ' ' || segundo_apellido as apellidos,\
+                        'AC' as estado_afiliado_id,\
+                        '296' as plan_atencion,\
+                        rango as rango_afiliado_atencion,\
+                        '" + plan.descripcion + "' as plan_descripcion,\
+                        tipo_afiliado_id,\
+                        rango\
+            from interfaces_planes." + plan.nombre_tbl + " \
+            where afiliado_id = '" + identificacion + "' and afiliado_tipo_id = '" + tipoIdentificacion + "' ";
+        }
+    });
+
+    var query = G.knex.raw(queryText);
+    //G.logError(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado){
+        console.log(resultado.rows[0]);
+        callback(false,  resultado.rows);
+    }).catch(function(err){
+        G.logError("err FormulacionExternaModel [obtenerAfiliado]: " + err);
+        callback(err);
+    });
+};
+
+FormulacionExternaModel.prototype.obtenerEstructurasPlanes = function(callback) {
+    var query = G.knex.select(["plan_id", "nombre_tbl", "descripcion", "estado"])
+                    .from("estructura_planes as e")
+                    .where("e.estado", 1);
+
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        G.logError("err FormulacionExternaModel [obtenerEstructurasPlanes]: " + err);
+        callback(err);
+    });                   
+};
+
 FormulacionExternaModel.prototype.existeFormulaTmp = function(tipoIdentificacion, identificacion, callback) {
     var query = G.knex.select(["fe.usuario_id", "fe.tmp_formula_papel", "su.nombre"])
                     .from("esm_formula_externa_tmp as fe")
@@ -605,7 +665,7 @@ FormulacionExternaModel.prototype.obtenerLotesDeProducto = function(empresa_id, 
                 .on("invsinv.clase_id", "invp.clase_id")
                 .on("invsinv.subclase_id", "invp.subclase_id")
         })
-        .innerJoin('inv_med_cod_forma_farmacologica as invmcf', function(){
+        .leftJoin('inv_med_cod_forma_farmacologica as invmcf', function(){
             this.on("invmcf.cod_forma_farmacologica", "invp.cod_forma_farmacologica")
         })
         .innerJoin('inv_clases_inventarios as invci', function(){
@@ -655,6 +715,7 @@ FormulacionExternaModel.prototype.verificarLoteEstaInsertado = function(formula_
     .from('esm_dispensacion_medicamentos_tmp')
     .where('formula_id_tmp', formula_id_tmp).andWhere('codigo_producto', codigo_producto).andWhere('fecha_vencimiento', fecha_vencimiento).andWhere('lote', lote);
 
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
@@ -722,17 +783,61 @@ FormulacionExternaModel.prototype.obtenerDispensacionMedicamentosTmp = function(
     }).done();
 };
 
-FormulacionExternaModel.prototype.registrarFormulaReal = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, callback){
+FormulacionExternaModel.prototype.generarEntrega = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, plan, observacion, todo_pendiente, callback){
+    var that = this;
     var tmp = {};
 
     G.knex.transaction(function(transaccion) {
         //se inserta la cabecera de la formula
-        G.Q.nfcall(__insertarFormulaExterna, formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, transaccion)
-        .then(function(formula_id){
+        G.Q.nfcall(__insertarFormulaExterna, formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, transaccion).then(function(formula_id){
             tmp.formula_id = formula_id;
             return G.Q.nfcall(__insertaFormulaExternaDiagnosticos, formula_id_tmp, tmp.formula_id, transaccion);
         }).then(function(resultado){
             return G.Q.nfcall(__insertaFormulaExternaMedicamentos, formula_id_tmp, tmp.formula_id, transaccion);
+        }).then(function(resultado){
+            var parametroBodegaDocId = {variable:"documento_dispensacion_"+ empresa_id+"_"+ bodega, tipoVariable:1, modulo:'Formulacion_Externa'};
+            return G.Q.nfcall(estadoParametrizacionReformular, parametroBodegaDocId, transaccion);
+        }).then(function(resultado){
+            //console.log('estadoParametrizacionReformular', resultado);
+            if(resultado.length > 0){
+                tmp.bodegasDocId = resultado[0].valor;
+                return G.Q.nfcall(asignacionNumeroDocumentoDespacho, {bodegasDocId: tmp.bodegasDocId}, transaccion);
+            }else{
+                throw {err: 501, msj: 'El documento de bodega no se encuentra parametrizado'}
+            }
+        }).then(function(resultado){
+            //console.log('asignacionNumeroDocumentoDespacho', resultado);
+            tmp.numeracion = resultado[0];
+            G.Q.nfcall(__insertarBodegasDocumentos, tmp.bodegasDocId, tmp.numeracion, observacion, usuario_id, todo_pendiente, transaccion);
+        }).then(function(resultado){
+            return G.Q.nfcall(__insertarFormulacionDespachosMedicamentos, tmp.formula_id, tmp.bodegasDocId, tmp.numeracion, '', '', '', transaccion);
+        }).then(function(resultado){
+            return G.Q.nfcall(__obtenerDispensacionMedicamentosTmp, formula_id_tmp, null,transaccion);
+        }).then(function(resultado){
+            tmp.productos = resultado;
+            return G.Q.nfcall(__guardarBodegasDocumentosDetalle, that, empresa_id, centro_utilidad, bodega, plan, tmp.bodegasDocId, tmp.numeracion, tmp.productos, transaccion);
+        }).then(function(resultado){
+            return G.Q.nfcall(__listarMedicamentosPendientesSinDispensar, formula_id_tmp, tmp.formula_id, transaccion);
+        }).then(function(resultado){
+            //verifica si se generaron pendientes
+            if(resultado.length > 0){
+                tmp.generoPendientes = true;
+            }
+            return G.Q.nfcall(__insertarMedicamentosPendientes, that, resultado, tmp.formula_id, usuario_id, transaccion);
+        }).then(function(resultado){
+            return G.Q.ninvoke(that, 'eliminarDispensacionMedicamentosTmp', formula_id_tmp, null,transaccion);
+        }).then(function(resultado){
+            return G.Q.ninvoke(that, 'eliminarFormulaExternaMedicamentosTmp', formula_id_tmp, transaccion);
+        }).then(function(resultado){
+            return G.Q.ninvoke(that, 'eliminarFormulaExternaDiagnosticosTmp', formula_id_tmp, transaccion);
+        }).then(function(resultado){
+            return G.Q.ninvoke(that, 'eliminarFormulaExterna', formula_id_tmp, transaccion);
+        }).then(function(resultado){
+            tmp.resultado = {
+                formula_id : tmp.formula_id,
+                generoPendientes : tmp.generoPendientes
+            } 
+            return;
         }).then(function(resultado){
             transaccion.commit();
         }).fail(function(err){
@@ -740,14 +845,15 @@ FormulacionExternaModel.prototype.registrarFormulaReal = function(formula_id_tmp
             transaccion.rollback(err);
         }).done();
     }).then(function(){
-        callback(false, tmp.formula_id);
+        callback(false, tmp.resultado);
     }).catch(function(err){
         G.logError("err FormulacionExternaModel [registrarFormulaReal]: " + err);
         callback(err);
     }).done();
 };
 
-FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, formula_id_tmp, formula_id,observacion, usuario_id, todo_pendiente, callback){
+
+/*FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, formula_id_tmp, formula_id,observacion, usuario_id, todo_pendiente, callback){
     var tmp = {
         generoPendientes : false
     };
@@ -789,61 +895,32 @@ FormulacionExternaModel.prototype.generarDispensacionFormula = function(empresa_
         G.logError("err FormulacionExternaModel [generarDispensacionFormula]: " + err);
         callback(err);
     }).done();
+};*/
+
+FormulacionExternaModel.prototype.registrarFormulaReal = function(formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, callback){
+    var tmp = {};
+
+    G.knex.transaction(function(transaccion) {
+        //se inserta la cabecera de la formula
+        G.Q.nfcall(__insertarFormulaExterna, formula_id_tmp, empresa_id, centro_utilidad, bodega, usuario_id, transaccion)
+        .then(function(formula_id){
+            tmp.formula_id = formula_id;
+            return G.Q.nfcall(__insertaFormulaExternaDiagnosticos, formula_id_tmp, tmp.formula_id, transaccion);
+        }).then(function(resultado){
+            return G.Q.nfcall(__insertaFormulaExternaMedicamentos, formula_id_tmp, tmp.formula_id, transaccion);
+        }).then(function(resultado){
+            transaccion.commit();
+        }).fail(function(err){
+            G.logError("err FormulacionExternaModel [registrarFormulaReal]: " + err);
+            transaccion.rollback(err);
+        }).done();
+    }).then(function(){
+        callback(false, tmp.formula_id);
+    }).catch(function(err){
+        G.logError("err FormulacionExternaModel [registrarFormulaReal]: " + err);
+        callback(err);
+    }).done();
 };
-/*
-      $bodegas = $this->Consultar_Bodegas_despacho($formula_id);
-                $totalcosto = 0;
-                foreach ($bodegas as $k1 => $bodegad) {
-                    $bodegas_doc_id = ModuloGetVar('app', 'Formulacion_Externa', 'documento_dispensacion_' . trim($bodegad['empresa_id']) . '_' . trim($bodegad['bodega']));
-                    $datos2 = $this->AsignarNumeroDocumentoDespacho_d($bodegas_doc_id);
-                    $numeracion = $datos2['numeracion'];
-                    $sql .= $this->IngresarInv_Bodegas_documentos($bodegas_doc_id, $observacion, $numeracion,0);
-                    //esm_dispensacion_medicamentos_tmp
-                    $temporales = $this->Buscar_producto_tmp_conc($formula_id, $bodegad['bodega']);
-                    $totalcosto = 0;
-                    $pactado = " ";
-                    $ind = 0;
-                    //Actualiza existencias e inserta bodegas_documentos_d
-                    $sql .=$this->Guardar_Inv_bodegas_documento_d($temporales, $bodegas_doc_id, $numeracion, $datos_empresa['empresa_id'], $pactado = null, $plan_id);
-                    //actualiza la bodega y la numeracion en esm_pendientes_por_dispensar
-                    $sql .= $this->UpdatePOR_producto_bodega($formula_id, $bodegas_doc_id, $numeracion);
-                    //despacho esm_formulacion_despachos_medicamentos_pendientes
-                    $sql .= $this->Guardar_Pendientes_Adicional($formula_id, $bodegas_doc_id, $numeracion);
-                }
-                $pendientes = $this->Medicamentos_Pendientes_SinDespachar($formula_id);
-
-****************************************************************************************************************************************************************************
-                foreach ($pendientes as $k2 => $detalle) {
-                    $total_pendiente = $detalle['total'];
-                    $sql .= " update  esm_pendientes_por_dispensar
-                        set     sw_estado='1'
-                        WHERE   formula_id = '" . trim($formula_id) . "'
-                        AND     codigo_medicamento = '" . trim($detalle['codigo_producto']) . "';  ";
-
-                    if ($total_pendiente != 0) {
-                        $sql .= "INSERT INTO esm_pendientes_por_dispensar
-                            (
-                            esm_pendiente_dispensacion_id,
-                            formula_id,
-                            codigo_medicamento,
-                            cantidad,
-                            usuario_id,
-                            fecha_registro
-                            )
-                            VALUES
-                            (
-                            DEFAULT,
-                            " . trim($formula_id) . ",
-                            '" . trim($detalle['codigo_producto']) . "',
-                            " . $total_pendiente . ",
-                            " . UserGetUID() . ",
-                            now()
-                            ); ";
-                    }
-                }
-
-                $dat = $this->EliminarTodoTemporal_ESM($formula_id, $sql);
-*/
 
 FormulacionExternaModel.prototype.generarDispensacionFormulaPendientes = function(empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, formula_id, observacion, usuario_id, todo_pendiente, callback){
     var that = this;
@@ -919,7 +996,7 @@ function __cantidadProductoTemporal(formula_id_tmp, formula_id, codigo_producto,
     ];
 
     var query = G.knex.select(columnas).from("esm_dispensacion_medicamentos_tmp").where(function(){
-        if(formula_id_tmp == '' || formula_id_tmp == 'undefined'){
+        if(formula_id_tmp == '' || formula_id_tmp == 'undefined' || formula_id_tmp == null){
            this.where("codigo_formulado", codigo_producto).andWhere("formula_id", formula_id);
         }else{
            this.where("codigo_formulado", codigo_producto).andWhere("formula_id_tmp", formula_id_tmp);
@@ -1232,13 +1309,14 @@ function __guardarBodegasDocumentosDetalle(that, empresa_id, centro_utilidad, bo
         if(resultado >= 1){
             return  G.Q.nfcall(__actualizarExistenciasBodegas, empresa_id, centro_utilidad, bodega, producto.codigo_producto, producto.cantidad_despachada, transaccion);
         }else{
-            throw 'Error al actualizar las existencias de los lotes por que no pueden ser menores a 0';
+            throw 'No hay suficientes existencias del producto ' + producto.codigo_producto + ', verifique la existencia e intente de nuevo.';
         }
     }).then(function(resultado){
        if(resultado >= 1){
             return G.Q.nfcall(__insertarBodegasDocumentosDetalle, empresa_id, plan, bodegasDocId, numeracion, producto.codigo_producto, producto.cantidad_despachada, producto.fecha_vencimiento, producto.lote, transaccion);
         }else{
-            throw 'Error al actualizar las existencias de bodega por que no pueden ser menores a 0';
+            throw 'No hay suficientes existencias del producto ' + producto.codigo_producto + ', verifique la existencia e intente de nuevo.';
+            //throw 'Error al actualizar las existencias de bodega por que no pueden ser menores a 0';
         }
     }).then(function(resultado){
         __guardarBodegasDocumentosDetalle(that, empresa_id, centro_utilidad, bodega, plan, bodegasDocId, numeracion, productos, transaccion, callback);
@@ -1266,7 +1344,7 @@ function __actualizarExistenciasBodegasLotesFv(empresa_id, centro_utilidad, bode
             callback(false, resultado);
     }).catch(function(err){
         G.logError("err (/catch) [__actualizarExistenciasBodegasLotesFv]: " +  err);
-        callback({err:err, msj: "Error al actualizar las existencias de los lotes por que no pueden ser menores a 0"});   
+        callback({err:err, msj: 'No hay suficientes existencias del producto ' + codigo_producto + ', verifique la existencia e intente de nuevo.'});   
     });  
 };
 
@@ -1284,7 +1362,7 @@ function __actualizarExistenciasBodegas(empresa_id, centro_utilidad, bodega, cod
         callback(false, resultado);
     }).catch(function(err){
         G.logError("err (/catch) [__actualizarExistenciasBodegas]: " +  err);
-        callback({err:err, msj: "Error al actualizar las existencias de bodega por que no pueden ser menores a 0"});   
+        callback({err:err, msj: 'No hay suficientes existencias del producto ' + codigo_producto + ', verifique la existencia e intente de nuevo.'});   
     });  
 };
 
@@ -1524,6 +1602,39 @@ FormulacionExternaModel.prototype.eliminarFormulaExterna= function(formula_id_tm
     });  
 };
 
+function estadoParametrizacionReformular(obj, transaccion, callback) {
+    var sql = "a.valor FROM system_modulos_variables as a ";
+    var query = G.knex.select(G.knex.raw(sql));
+        query.where('a.variable',G.constants.db().LIKE,"%" + obj.variable + "%");
+        if(obj.tipoVariable ===1){            
+            query.andWhere('a.modulo',G.constants.db().LIKE,"%" + obj.modulo + "%")
+        }
+              
+   if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){  
+            callback(false, resultado)
+    }).catch(function(err){          
+        callback(err)
+    });           
+};
+
+
+function asignacionNumeroDocumentoDespacho(obj, transaccion,callback) {
+    var query = G.knex('bodegas_doc_numeraciones')
+        .where('bodegas_doc_id', obj.bodegasDocId)
+        .returning("numeracion")
+        .increment('numeracion', 1);
+              
+   if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){  
+            callback(false, resultado);
+    }).catch(function(err){  
+        console.log("err (/catch) [asignacionNumeroDocumentoDespacho]: ", err);
+       callback(err);
+    });
+
+};
+
 FormulacionExternaModel.prototype.updateAutorizacionPorMedicamento = function(fe_medicamento_id, observacion_autorizacion, usuario_autoriza_id, callback) {
     var query = G.knex('esm_formula_externa_medicamentos_tmp')
         .where('fe_medicamento_id', fe_medicamento_id)
@@ -1551,7 +1662,7 @@ FormulacionExternaModel.prototype.guardarNuevaCantidadPendiente = function(esm_p
         });
 
     
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){ 
        callback(false, resultado);
     }).catch(function(err){ 
@@ -1653,19 +1764,19 @@ FormulacionExternaModel.prototype.obtenerCabeceraFormula = function(formula_id, 
 
     var query = G.knex.select(columnas)
                         .from('esm_formula_externa AS FR')
-                        .innerJoin('eps_afiliados AS EPS', function(){
+                        .leftJoin('eps_afiliados AS EPS', function(){
                             this.on("EPS.afiliado_id", "FR.paciente_id").andOn("EPS.afiliado_tipo_id", "FR.tipo_id_paciente").andOn("EPS.plan_atencion", "FR.plan_id");
                         })
-                        .innerJoin("eps_tipos_afiliados AS AFI", function(){
+                        .leftJoin("eps_tipos_afiliados AS AFI", function(){
                             this.on("EPS.eps_tipo_afiliado_id", "AFI.eps_tipo_afiliado_id");
                         })
-                        .innerJoin("planes_rangos AS PLAR", function(){
+                        .leftJoin("planes_rangos AS PLAR", function(){
                             this.on("EPS.plan_atencion", "PLAR.plan_id").andOn("EPS.tipo_afiliado_atencion", "PLAR.tipo_afiliado_id").andOn("EPS.rango_afiliado_atencion", "PLAR.rango");
                         })
-                        .innerJoin("planes AS PLA", function(){
+                        .leftJoin("planes AS PLA", function(){
                             this.on("PLAR.plan_id", "PLA.plan_id");
                         })
-                        .innerJoin("tipos_planes AS TIPOP", function(){
+                        .leftJoin("tipos_planes AS TIPOP", function(){
                             this.on("PLA.sw_tipo_plan", "TIPOP.sw_tipo_plan");
                         })
                         .leftJoin('profesionales AS PROF', function(){

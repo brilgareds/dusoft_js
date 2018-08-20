@@ -127,10 +127,7 @@ Radicacion.prototype.guardarFactura = function (req, res) {
 
     var that = this;
     var args = req.body.data;
-    console.log("-------------------------------------------------");
-    console.log("guardarFactura args", args);
-    console.log("--------------------------------------------------");
-
+   
     if (args.numeroFactura === undefined || args.numeroFactura === "") {
         res.send(G.utils.r(req.url, 'Debe digitar el numero de la factura', 404, {}));
         return;
@@ -185,8 +182,7 @@ Radicacion.prototype.guardarFactura = function (req, res) {
         concepto: args.descripcion,
         ruta : args.ruta
     };
-
-
+    
     G.Q.ninvoke(that.m_radicacion, "factura", obj).then(function (resultado) {
         res.send(G.utils.r(req.url, 'factura ok!!!!', 200, {factura: resultado}));
     }).fail(function (err) {
@@ -234,9 +230,9 @@ Radicacion.prototype.modificarFactura = function (req, res) {
         return;
     }
 
-console.log("argsaaa",args)
+
     G.Q.ninvoke(that.m_radicacion, "modificarFactura", args).then(function (resultado) {
-        console.log("modificarFactura", resultado)
+       
         res.send(G.utils.r(req.url, 'modificacion factura ok!!!!', 200, {factura: resultado}));
     }).fail(function (err) {
         console.log("error", err);

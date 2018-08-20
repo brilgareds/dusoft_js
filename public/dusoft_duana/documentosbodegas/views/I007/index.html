@@ -1,0 +1,147 @@
+<style>
+
+    .float{
+        position:fixed;
+        width:100px;
+        height:48px;
+        right:20px;
+        bottom:30px;
+        background-color:#398439;
+        color:#FFF;
+        border-radius:20px;        
+        box-shadow: 2px 2px 3px #5A99E7;
+        z-index: 2;
+    }
+
+</style>
+<button type="button" class="btn btn-default float col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-click="generar_documento()" ng-if="!isTmp()"><b>Crear</b><br><b>Documento</b></button>
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="pull-left">
+                        <h4 class="text-center"><strong>Prefijo {{ documento_ingreso.get_prefijo()}}</strong></h4>
+                    </div>
+                    <div class="pull-right">
+                        <h4 class="text-center"><strong>No. Tmp # {{doc_tmp_id}}</strong></h4>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+
+                            <fieldset>
+                                <legend>Tercero</legend>      
+
+                                <div class="row">  
+                                    <div class="">
+                                        <div class="col-md-3">
+                                            <p class="input-group">
+                                                <button  type="button" class="btn btn-info btn-medium pull-right ng-scope" ng-disabled="validarDesdeLink" ng-click="btn_seleccionar_tercero()">
+                                                    <span class="glyphicon glyphicon-plus"></span> Buscar Tercero
+                                                </button>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-4">
+                            <fieldset>
+                                <legend>Tercero Seleccionado</legend>
+                                <h4 class=""><strong>{{tercero_seleccionado.nombre_tercero}}</strong></h4>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <fieldset>
+                                <legend>Observación</legend>                                 
+                                <div class="row">  
+                                    <div class="col-md-12">
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='documento_ingreso.observacion' name="" placeholder="Ingresar Observación" ng-disabled="validarDesdeLink"></textarea>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <fieldset>
+                                <legend>Tipo Prestamo</legend> 
+                                <div class="row">
+                                    <div class="col-md-7">                                          
+                                        <ui-select ng-model="documento_ingreso.prestamo" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
+                                            <ui-select-match  placeholder="Seleccionar">{{ $select.selected.descripcion}}</ui-select-match>
+                                            <ui-select-choices repeat="prestamo in prestamos | filter:$select.search">
+                                                {{ prestamo.descripcion}}
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+
+
+                    <br>
+                    <br>
+
+                    <div class="row"> 
+                        <div class="col-md-12">
+                            <legend>Productos</legend>
+                            <div class="row">  
+                                <div class="">
+                                    <div class="col-md-3">
+                                        <p class="input-group">
+                                            <button  type="button" class="btn btn-info btn-medium pull-right ng-scope"  ng-disabled="habilitar_btn_productos()" ng-click="btn_seleccionar_productos()">
+                                                <span class="glyphicon glyphicon-plus"></span> Buscar Productos
+                                            </button>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="table-responsive" style="margin-top:3px;" > 
+                                <div style="height: 340px" class="defaultGrid grid-responsive" ng-grid="lista_productos_traslado"> </div> 
+                            </div>  
+                        </div>
+
+
+
+                        <div ng-if="isTmp()">    
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div ng-if="true" class="modal-footer col-md-12" >
+                                        <button  class="btn btn-default" ng-click="cancelar_documento()">
+                                            <span class="glyphicon glyphicon-share-alt" ></span> Volver
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-if="!isTmp()">    
+                            <div class="modal-footer col-md-12">
+                                <div class="container text-center">
+                                    <button class="btn btn-default" ng-click="cancelar_documento()">
+                                        <span class="glyphicon glyphicon-share-alt" ></span> Volver
+                                    </button>
+                                    <button ng-hide="isEliminarTmp()" class="btn btn-danger" ng-click="btn_eliminar_documento()">
+                                        <span class="glyphicon glyphicon-trash" ></span> Eliminar
+                                    </button>
+<!--                                    <button   class="btn btn-success" ng-click="generar_documento()" >
+                                        <span class="glyphicon glyphicon-ok" ></span> Crear Documento
+                                    </button> -->
+                                </div>  
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<visualizar-reporte></visualizar-reporte>

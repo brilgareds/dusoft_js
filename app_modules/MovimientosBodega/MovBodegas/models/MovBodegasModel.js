@@ -687,8 +687,6 @@ MovimientosBodegasModel.prototype.getItemId = function (callback) {
     });
 };
 
-
-
 MovimientosBodegasModel.prototype.obtener_cantidad_total_ingresada = function (doc_tmp_id, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, callback) {
     //consulta debe ser por codigo_producto, empresa_id, centro_utilidad, bodega
     var sql = " select coalesce(sum(cantidad), 0) as cantidad_total from inv_bodegas_movimiento_tmp_d  where doc_tmp_id = :1 and empresa_id = :2 and centro_utilidad = :3 and bodega = :4 and codigo_producto = :5";
@@ -729,8 +727,6 @@ MovimientosBodegasModel.prototype.consultarDocumentoBodegaTemporal = function (d
         }
     });
 };
-
-
 
 MovimientosBodegasModel.prototype.getDoc = function (parametros, callback) {
 
@@ -799,7 +795,6 @@ MovimientosBodegasModel.prototype.getDoc = function (parametros, callback) {
     });
 };
 
-
 MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (parametro, callback) {
     var inner = '';
     var select = "''";
@@ -820,6 +815,12 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function (paramet
         inner = " join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id) ";
         inner += " join compras_ordenes_pedidos as cop on (oc.orden_pedido_id=cop.orden_pedido_id)";
     }
+    
+    if (parametro.tipoDocGeneralId === 'I007') {
+        select4 = " tp.tipo_id_tercero, tp.tercero_id, tp.tipo_prestamo_id";
+        inner = " join inv_bodegas_movimiento_tmp_prestamo as tp on (t.usuario_id = tp.usuario_id and t.doc_tmp_id = tp.doc_tmp_id)";
+    }
+    
     if (parametro.tipoDocGeneralId === 'I011') {
         select2 = " df.numero as numero_edb, df.farmacia_id, df.prefijo";
         inner = " join inv_bodegas_movimiento_tmp_devolucion_farmacia as df on (t.usuario_id=df.usuario_id and t.doc_tmp_id=df.doc_tmp_id)";
@@ -890,6 +891,10 @@ MovimientosBodegasModel.prototype.getDocumentosBodegaUsuario = function (paramet
     if (parametro.tipoDocGeneralId === 'E007') {
         select = " ce.concepto_egreso_id as numero_doc_cliente, ce.tercero_id, ce.tipo_id_tercero";
         inner = " join inv_bodegas_movimiento_conceptos_egresos as ce on (m.prefijo = ce.prefijo and m.numero = ce.numero)";
+    }
+    if (parametro.tipoDocGeneralId === 'I007') {
+        select = " mp.tipo_prestamo_id as numero_doc_cliente, mp.tercero_id, mp.tipo_id_tercero";
+        inner = " join inv_bodegas_movimiento_prestamos as mp on (m.prefijo = mp.prefijo and m.numero = mp.numero)";
     }
     if (parametro.tipoDocGeneralId === 'I011') {
         select = " df.numero_doc_farmacia as numero_doc_cliente, df.prefijo_doc_farmacia as prefijo_doc_cliente";

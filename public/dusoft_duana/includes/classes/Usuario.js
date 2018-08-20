@@ -34,6 +34,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.empresasUsuario = [];
                 this.seleccionado = false;
                 this.socketId = "";
+                this.identificacion;
+                this.tipo_id;
             }
             
                                  
@@ -186,6 +188,22 @@ define(["angular", "js/models"], function(angular, models) {
             Usuario.prototype.getEmpresasFarmacias = function(){
                 return this.empresasFarmacias;
             };
+            
+            Usuario.prototype.setIdentificacion = function(identificacion){
+                this.identificacion = identificacion;
+            };
+            
+            Usuario.prototype.getIdentificacion = function(){
+                return this.identificacion;
+            }; 
+            
+            Usuario.prototype.setTipo_id = function(tipo_id){
+                this.tipo_id = tipo_id;
+            };
+            
+            Usuario.prototype.getTipo_id = function(){
+                return this.tipo_id;
+            }; 
             
             Usuario.prototype.agregarEmpresaFarmacia = function(empresaFarmacia){
                 for(var i in this.empresasFarmacias){

@@ -702,6 +702,28 @@ Usuarios.prototype.guardarCentroUtilidadBodegaUsuario = function(req, res) {
 
 };
 
+/*
+ * @author German Galvis
+ * @fecha 13/07/2018
+ * +Descripcion Controlador encargado de listar los tipos de terceros
+ *              
+ */
+Usuarios.prototype.listarTiposTerceros = function (req, res) {
+
+    var that = this;
+    G.Q.nfcall(that.m_usuarios.listarTiposTerceros).
+            then(function (resultado) {
+
+                if (resultado.length > 0) {
+                    res.send(G.utils.r(req.url, 'Consulta lista tipos terceros', 200, {listar_tipo_terceros: resultado}));
+                } else {
+                    throw 'Consulta sin resultados';
+                }
+
+            }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar lista tipos terceros', 500, {}));
+    }).done();
+};
 
 function __subirAvatarUsuario(data, files, callback) {
 

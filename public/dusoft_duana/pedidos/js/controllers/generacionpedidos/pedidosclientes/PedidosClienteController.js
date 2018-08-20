@@ -1112,6 +1112,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         cotizacion: $scope.Pedido,
                         bodega_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                         estadoMultiplePedido: localStorageService.get("multiple_pedido").multiple_pedido
+
                     }
                 });
                 $scope.opciones_archivo.upload();

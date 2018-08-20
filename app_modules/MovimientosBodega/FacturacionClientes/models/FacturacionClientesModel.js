@@ -1043,7 +1043,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(estado,obj
     }
     
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
-     console.log("qq>>> ",G.sqlformatter.format(query.toString()));  
+ 
     if(transaccion) query.transacting(transaccion);
     query.then(function(resultado){     
         
@@ -1081,7 +1081,7 @@ FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,tran
         tipo_pago_id: obj.tipoPago,
         facturacion_cosmitet: obj.facturacion_cosmitet
     };
-     
+  
     var query = G.knex('inv_facturas_despacho').insert(parametros);     
     
     if(transaccion) query.transacting(transaccion);     
@@ -1170,7 +1170,7 @@ function __insertarFacturaIndividualDetalle(obj,transaccion, callback){
         cantidad_devuelta:parseInt(0),
         porc_iva: obj.porcentaje_gravamen
     };
-    
+
     var query = G.knex('inv_facturas_despacho_d').insert(parametros);     
        
     if(transaccion) query.transacting(transaccion);     
@@ -1209,7 +1209,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function(obj
     }; 
     
     var query = G.knex(tabla).insert(parametros);     
-  console.log(">>> ",G.sqlformatter.format(query.toString()));   
+ 
    if(transaccion) query.transacting(transaccion);     
     query.then(function(resultado){
         callback(false, resultado);
@@ -1284,7 +1284,7 @@ FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,
  * @fecha 2017-15-05 YYYY-DD-MM        
  */          
 FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(obj, callback){
-             
+
     var query = G.knex.select(["a.empresa_id as empresa","a.*","b.*",
        G.knex.raw("case when a.tipo_pago_id=1 then 'Efectivo' \
         when a.tipo_pago_id=2 then 'Cheque'\
@@ -2161,7 +2161,7 @@ function __guardarDespachoIndividual(that, index, documentos,consultaCompleta,tr
  * @fecha 17/05/2017 DD/MM/YYYY
  */
 FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = function(obj, callback){   
-   
+
     var that = this;
     var def = G.Q.defer();
     var porcentajeRtf = '0';

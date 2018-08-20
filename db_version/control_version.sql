@@ -388,14 +388,88 @@ BEGIN TRANSACTION;
 INSERT INTO version (version, modulo, comentario) VALUES ('02.00.61', 'Facturacion Despachos', 'Se modifica el controlador para que genere el id del temporal');
 COMMIT TRANSACTION;
 
-CREATE TABLE "public"."ventas_ordenes_pedido_multiple_clientes" (
-  "id_orden_cotizacion_origen" int4 NOT NULL,
-  "id_orden_cotizacion_destino" int4 NOT NULL,
-  "id_orden_pedido_origen" int4,
-  "id_orden_pedido_destino" int4
-);
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.62  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.62', 'Formulacion Externa', 'Se ajusta en dispensacion de pendientes, el formula_id no se enviaba para calcular la cantidad dispensada dle pendiente.');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.63  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.63', 'Formulacion Externa', 'Se ajusta en dispensacion de pendientes, validacion en formula_id y formula_id_tmp al momento de buscar los medicamentos en temporal');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.64  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.64', 'DOCUMENTOS BODEGA', 'se agrega el boton flotante a todos los documentos y se elimina el paso de crear el temporal');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.65  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.65', 'PEDIDOS', 'SE COMENTA PEDIDO MULTIPLE');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.66  ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.66', 'FORMULACION EXTERNA', 'SE AJUSTA LA OBSERVACION DE LOS DOCUMENTOS EN LA ENTREGA DE PENDIENTES DE DISPENSACION');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.67 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.67', 'FACTURACION', 'se corrige un error a la hora de facturar y se agrega la funcion de eliminar la factura temporal');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.68 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.68', 'PEDIDOS', 'Se ajusta el calculo de la disponibilidad para que tenga en cuenta la empresa, centro de utilidad y bodega.');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.69 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.69', 'USUARIOS', 'Se agrega el campo identificacion a la creacion de usuarios.');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.70 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.70', 'FORMULACION HC', 'Se cambia el paso de valores entre controladores de LocalStorage a usar el servicio con una variable compartida');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.71 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.71', 'FORMULACION HC', 'Cronjob para sincronizar formulas en cosmitet');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.72 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.72', 'FORMULACION HC', 'Cronjob para sincronizar formulas en cosmitet se modifica sw productos');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.73 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.73', 'FACTURACION', 'Se corrige error por multiples temporales');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.74 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.74', 'FACTURACION GENERADAS', 'Se modifica el calculo de los impuestos');
+COMMIT TRANSACTION;
+-----------------------------------------------------------------------------
+------------------------------  Version 2.00.75 ------------------------------
+-----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO version (version, modulo, comentario) VALUES ('02.00.75', 'FACTURACION GENERADAS', 'se modifica validacion de impuestos');
+COMMIT TRANSACTION;
 
--- ----------------------------
--- Primary Key structure for table ventas_ordenes_pedido_multiple_clientes
--- ----------------------------
-ALTER TABLE "public"."ventas_ordenes_pedido_multiple_clientes" ADD CONSTRAINT "ventas_ordenes_pedido_multiple_clientes_pkey" PRIMARY KEY ("id_orden_cotizacion_origen", "id_orden_cotizacion_destino");

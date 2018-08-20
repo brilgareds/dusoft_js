@@ -1,0 +1,26 @@
+{
+    "module": "I007",
+    "dependency": {
+        "controllers": [{
+                "i007_controller": {
+                    "module": "MovimientosBodega/I007",
+                    "controller": "I007Controller",
+                    "alias": "c_i007"
+                }
+            }],
+        "models": [{
+                "movimientos_bodegas_model": {
+                    "module": "MovimientosBodega/MovBodegas",
+                    "model": "MovBodegasModel",
+                    "alias": "m_movimientos_bodegas"
+                },
+                "i007_model": {
+                    "module": "MovimientosBodega/I007",
+                    "model": "DocBodegaI007",
+                    "alias": "m_i007"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

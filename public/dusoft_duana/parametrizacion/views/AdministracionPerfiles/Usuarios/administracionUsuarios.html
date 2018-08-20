@@ -70,6 +70,25 @@
                             </span>
                         </p>
 
+                        <div class="input-group">
+                            <div class="input-group-btn">                                                                      
+                                <button type="button" class="btn btn-default dropdown-toggle" 
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{rootUsuario.usuarioAGuardar.tipo_id}} <span class="caret"></span></button>
+                                <ul class="dropdown-menu" >
+
+                                    <li ng-repeat="tipoDoc in rootUsuario.tiposDoc">
+                                        <a href="javascript:void(0)" ng-click="onSeleccionTipoTercero(tipoDoc)">
+                                            {{tipoDoc.id}}
+                                        </a>
+                                    </li>
+                                </ul>                                         
+                            </div>                                                 
+                            <input type="text" 
+                                   class="form-control" 
+                                   ng-model="rootUsuario.usuarioAGuardar.identificacion" 
+                                   placeholder="No Identificacion"/>                                              
+                        </div>  
+                        <br>
                         <div class="row">
                             <div class="col-md-6">
                                 <p class="input-group">
@@ -149,10 +168,10 @@
 
                 <div class="panel">
                     <div class="panel-body">
-                        
+
                         <p class="contenedorPredeterminado ">
-                                <label for="habilitar" style='margin-right: 5px;' >Empresa Predeterminada</label>
-                                <input-check ng-model="rootUsuario.empresaSeleccionada.predeterminada" ng-change="onCambiarPredeterminadoEmpresa()" ng-disabled="rootUsuario.rolAGuardar.getId() == 0 || rootUsuario.empresaSeleccionada.predeterminada"   ></input-check>
+                            <label for="habilitar" style='margin-right: 5px;' >Empresa Predeterminada</label>
+                        <input-check ng-model="rootUsuario.empresaSeleccionada.predeterminada" ng-change="onCambiarPredeterminadoEmpresa()" ng-disabled="rootUsuario.rolAGuardar.getId() == 0 || rootUsuario.empresaSeleccionada.predeterminada"   ></input-check>
                         </p>
                         <ui-select ng-model="rootUsuario.empresaSeleccionada"
                                    theme="select2"
@@ -163,18 +182,18 @@
                                 {{empresa.getNombre()}}
                             </ui-select-choices>
                         </ui-select>
-                       
+
 
                         <div class="input-group contenedorBuscarRol">
 
                             <input type="text" class="form-control pull-right input-sm" ng-keypress="onBuscarRol($event)" ng-model="rootUsuario.termino_busqueda" placeholder="Buscar Rol" />
                             <div class="input-group-btn" >
-                                <button class="btn btn-default input-sm" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                                <button class="btn btn-default input-sm" type="submit" ng-click="onBuscarRol({which: 13})"><i class="glyphicon glyphicon-search"></i></button>
                             </div>
 
                         </div>
-                        
-                        
+
+
                         <div class="table-responsive tablaRoles" >
                             <div class="grid-responsive listado_roles" ng-grid="listado_roles">
 
@@ -192,58 +211,58 @@
                     </div>
                 </div>
             </tab>
-            
+
             <tab ng-if='rootUsuario.rolAGuardar.id > 0'>
                 <tab-heading>
                     Centro Utilidad
                 </tab-heading>
-                        
-                         <div class="input-group contenedorBuscarRol">
 
-                            <input type="text" class="form-control pull-right input-sm" ng-keypress="onBuscarCentroUtilidad($event)" ng-model="rootUsuario.termino_busqueda_centro" placeholder="Buscar Centro Utilidad" />
-                            <div class="input-group-btn" >
-                                <button class="btn btn-default input-sm" type="submit" ng-click="onBuscarCentroUtilidad({which:13})"><i class="glyphicon glyphicon-search"></i></button>
-                            </div>
+                <div class="input-group contenedorBuscarRol">
 
-                        </div>
-                        
-                        <div class="table-responsive tablaRoles" >
-                            <div class="grid-responsive listado_centros_utilidad" ng-grid="listado_centros_utilidad">
+                    <input type="text" class="form-control pull-right input-sm" ng-keypress="onBuscarCentroUtilidad($event)" ng-model="rootUsuario.termino_busqueda_centro" placeholder="Buscar Centro Utilidad" />
+                    <div class="input-group-btn" >
+                        <button class="btn btn-default input-sm" type="submit" ng-click="onBuscarCentroUtilidad({which: 13})"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
 
-                            </div>
-                        </div>
-                
-                        <div class="row text-center">
-                            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuarios.paginaActualCentros == 1" ng-click="paginaAnteriorCentros()">
-                                <span class="glyphicon glyphicon-chevron-left" ></span>
-                            </button>
-                            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuario.empresaSeleccionada.centrosUtilidad.length == 0" ng-click="paginaSiguienteCentros()">
-                                <span class="glyphicon glyphicon-chevron-right" ></span>
-                            </button>
-                        </div>
-                        
-                        
-                        
-                        <div class="table-responsive tablaRoles" >
-                            <div class="grid-responsive listado_bodegas" ng-grid="listado_bodegas">
+                </div>
 
-                            </div>
-                        </div>
-                
-                
+                <div class="table-responsive tablaRoles" >
+                    <div class="grid-responsive listado_centros_utilidad" ng-grid="listado_centros_utilidad">
+
+                    </div>
+                </div>
+
+                <div class="row text-center">
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuarios.paginaActualCentros == 1" ng-click="paginaAnteriorCentros()">
+                        <span class="glyphicon glyphicon-chevron-left" ></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuario.empresaSeleccionada.centrosUtilidad.length == 0" ng-click="paginaSiguienteCentros()">
+                        <span class="glyphicon glyphicon-chevron-right" ></span>
+                    </button>
+                </div>
+
+
+
+                <div class="table-responsive tablaRoles" >
+                    <div class="grid-responsive listado_bodegas" ng-grid="listado_bodegas">
+
+                    </div>
+                </div>
+
+
             </tab>
             <tab ng-if="rootUsuario.usuarioAGuardar.id != ''">
                 <tab-heading>
                     Sesiones
                 </tab-heading>
-                
-                                        
+
+
                 <div class="table-responsive tablaRoles" >
                     <div class="grid-responsive listado_roles" ng-grid="listado_roles">
 
                     </div>
                 </div>
-                
+
             </tab>
     </div>
 

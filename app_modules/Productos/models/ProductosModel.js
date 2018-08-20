@@ -64,7 +64,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         "g.valor_pactado",
         "c.precio_regulado"
      ];
-    
+
    
     G.knex.column(campos).
     from("existencias_bodegas as a").
@@ -174,7 +174,7 @@ ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, ter
 // Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
 //               PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 
-ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_producto, filtro, callback) {
+ProductosModel.prototype.consultar_stock_producto = function(empresa_id, bodega_id,  codigo_producto, filtro, callback) {
     
     var sqlAux = "";
     
@@ -189,10 +189,11 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_
     var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia, c.estado from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
-                where a.empresa_id = :1  and a.codigo_producto = :2 and a.estado = '1'" +sqlAux +" group by 2";
+                where a.empresa_id = :1  and a.codigo_producto = :2 and a.bodega = :3 and a.estado = '1'" +sqlAux +" group by 2";
     
-   G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto}).
-   then(function(resultado){
+   var query =  G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto, 3 : bodega_id});
+    //G.logError(G.sqlformatter.format(query.toString()));
+   query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
        callback(err);
@@ -273,8 +274,10 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
                 "order by a.existencia_actual desc, a.fecha_registro desc ;";
 
     
-   G.knex.raw(sql, obj).
-   then(function(resultado){
+   var query = G.knex.raw(sql, obj);
+
+    //G.logError(G.sqlformatter.format(query.toString()));
+   query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
        callback(err);
@@ -473,6 +476,119 @@ ProductosModel.prototype.consultar_stock_producto_kardex = function(empresa_id, 
    }).catch(function(err){
        callback(err);
    });
+};
+
+
+// Autor:      : Andres Mauricio Gonzalez
+// Descripcion : Buscar producto para codificacion
+//  
+ProductosModel.prototype.buscarProductosCodificacion = function(parametros, callback) {
+
+    var campos = [ 
+        G.knex.raw("case when f.descripcion is null then '-- NO SE USA EN TRATAMIENTOS ESPECIALES --' else f.descripcion end as descripcion_tratamiento"), 
+        G.knex.raw("a.descripcion||'-'||prod.cod_anatofarmacologico as descripcion_cod_anatofarmacologico"),
+        G.knex.raw("b.descripcion||'-'||b.unidad_id as descripcion_unidad"),
+        "b.unidad_id as abreviatura_unidad",
+        "c.descripcion as descripcion_med_cod",
+        G.knex.raw("'' as unidad_dosificacion"),
+        G.knex.raw("'2' as sw_dosificacion"), //"prod.cod_adm_presenta as sw_dosificacion",
+        "grp.grupo_id",
+        "grp.descripcion as descripcion_grupo",
+        "mol.sw_medicamento",
+        "cla.clase_id",
+        "cla.descripcion as descripcion_clase",
+        "cla.sw_tipo_empresa",
+        "sub.descripcion as descripcion_subclase",
+        "mol.molecula_id",      
+        "sub.subclase_id",
+        "prod.descripcion",
+        "prod.descripcion_abreviada",
+        "prod.codigo_cum",
+        "prod.codigo_alterno",
+        "prod.codigo_barras",
+        "prod.fabricante_id",
+        "prod.sw_pos",
+        "prod.cod_acuerdo228_id",
+        "prod.unidad_id",
+        "prod.contenido_unidad_venta as cantidad",
+        "prod.cod_anatofarmacologico",
+        "prod.mensaje_id",
+        "prod.codigo_mindefensa",
+        "prod.codigo_invima",
+        G.knex.raw("to_char(prod.vencimiento_codigo_invima, 'YYYY-MM-DD') AS vencimiento_codigo_invima"),
+        "prod.porc_iva",
+        "prod.sw_generico",
+        "prod.sw_venta_directa",
+        "prod.tipo_pais_id",
+        "prod.tipo_producto_id",
+        "prod.presentacioncomercial_id",
+        "prod.cantidad as cantidad_p",
+        "prod.tratamiento_id",//-- NO SE USA EN TRATAMIENTOS ESPECIALES --
+        G.knex.raw("'2' as usuario_id"),
+        "prod.cod_adm_presenta as cod_presenta",
+        "prod.dci_id",
+        G.knex.raw("case when prod.estado_unico=1 then '1' else '0' end as estado_unico"),
+        "prod.sw_solicita_autorizacion",
+        "prod.codigo_producto", 
+        "prod.rips_no_pos",
+        "prod.tipo_riesgo_id",
+        "prod.tipo_pais_id as tipo_pais_titular_reginvima_id",
+        "tri.descripcion as descripcion_titular_reginvima",
+        "prod.titular_reginvima_id",
+        "prod.estado_invima" ,   
+        "prod.cod_forma_farmacologica as descripcion_medida_medicamento",  
+        G.knex.raw("'' as descripcion_principio_activo"),  
+        "med.sw_fotosensible",  
+        "prod.cantidad as concentracion",
+        "mol.molecula_id as cod_principio_activo",
+        "prod.cod_adm_presenta AS cod_concentracion",
+        "med.sw_liquidos_electrolitos",
+        "med.sw_manejo_luz",
+        "med.sw_uso_controlado",
+        "med.sw_antibiotico",
+        "med.sw_refrigerado",
+        "med.sw_alimento_parenteral",
+        "med.sw_alimento_enteral",
+        "med.dias_previos_vencimiento",
+        "med.sw_farmacovigilancia",
+        "med.descripcion_alerta",
+     ];
+    
+                          
+    var query = G.knex.column(campos).distinct().
+    from("inv_grupos_inventarios as grp").
+    innerJoin("inventarios_productos as prod", "prod.grupo_id","grp.grupo_id").
+    innerJoin("inv_subclases_inventarios as sub", function(){
+         this.on("sub.subclase_id", "prod.subclase_id" ).
+         on("sub.clase_id", "prod.clase_id").
+         on("sub.grupo_id", "prod.grupo_id");
+    }).
+    innerJoin("inv_titulares_reginvima as tri", "prod.titular_reginvima_id","tri.titular_reginvima_id").
+    innerJoin("inv_fabricantes as fab", "prod.fabricante_id","fab.fabricante_id").    
+    innerJoin("inv_clases_inventarios as cla", function(){
+         this.on("sub.clase_id", "cla.clase_id" ).
+         on("cla.grupo_id", "prod.grupo_id");
+    }).
+    innerJoin("inv_laboratorios as lab", "lab.laboratorio_id","cla.laboratorio_id").          
+    innerJoin("inv_med_cod_anatofarmacologico as a", "a.cod_anatomofarmacologico","prod.cod_anatofarmacologico").          
+    innerJoin("unidades as b", "b.unidad_id","prod.unidad_id").          
+    innerJoin("inv_presentacioncomercial as c", "c.presentacioncomercial_id","prod.presentacioncomercial_id").         
+    innerJoin("medicamentos as med", "med.codigo_medicamento","prod.codigo_producto").         
+    leftJoin("hc_formulacion_factor_conversion as d", "d.codigo_producto","prod.codigo_producto").      
+    leftJoin("inv_tratamientos_productos as f", "f.tratamiento_id","prod.tratamiento_id").      
+    innerJoin("inv_moleculas as mol",function(){
+        this.on( "mol.molecula_id","sub.molecula_id")
+            .on( G.knex.raw("mol.estado='1'"));
+    }). 
+    where(function(){
+        this.where("prod.codigo_producto",parametros.codigoProducto);
+    });
+  
+    query.then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+        callback(err);
+    });
 };
 
 

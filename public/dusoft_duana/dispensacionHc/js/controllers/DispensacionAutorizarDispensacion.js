@@ -98,13 +98,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          */
         that.realizarEntregaFormula = function(){
             
-            
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
+            //console.log('shared', dispensacionHcService.shared);
+            //console.log('shared 1', dispensacionHcService.shared1);
+            //var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
             var obj = {                   
                 session: $scope.session,
                 data: {
                    autorizar_dispensacion: {
-                        evolucion: resultadoStorage.evolucionId,                    
+                        evolucion: dispensacionHcService.shared.evolucionId,                    
                         observacion: seleccionTipoObservacion.descripcion,
                         producto: detalleFormula.codigo_producto
                         
@@ -114,13 +115,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
           
             
             dispensacionHcService.autorizarDispensacionMedicamento(obj,function(data){
-                var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");            
+                //var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");            
                 if(data.status === 200){
                      
                     AlertService.mostrarMensaje("success", data.msj);
                  
                     $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: data.obj.autorizar_dispensacion.evolucion_id, 
-                                                                      pendientes: resultadoStorage.pendientes});
+                                                                      pendientes: dispensacionHcService.shared.pendientes});
                     
                     that.cerrarVentana(data);
                     //$state.go('DispensacionHc');

@@ -2738,8 +2738,14 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                           
                               var _producto = (productos.length > 0) ? productos[0] : null;
 
-                                if (!_producto) {
-                                    productoAgrupado.mensajeError = "No esta habilitado en la farmacia origen";
+                                if (!_producto || (productos[0].existe_producto_bodega_actual!=='06' && productos[0].existe_producto_bodega_actual === 0 )) {
+                                    var msj="";
+                                    if(productos[0].existe_producto_bodega_actual!=='06' && productos[0].existe_producto_bodega_actual === 0 ){
+                                      msj= "No esta habilitado en la Bodega Actual";  
+                                    }else{
+                                       msj= "No esta habilitado en la farmacia origen";
+                                    }
+                                    productoAgrupado.mensajeError = msj;
                                     productoAgrupado.enFarmaciaOrigen = false;
                                     productosInvalidosArchivo.push(productoAgrupado);
                                     index++;
@@ -2747,7 +2753,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                                     return;
                                 }
 
-                                if (productoAgrupado.cantidad_solicitada > productos[0].cantidad_total_bodegas) {
+                                if (productoAgrupado.cantidad_solicitada > productos[0].cantidad_total_bodegas ) {
 
                                     productoAgrupado.mensajeError = "La cantidad ingresada " + productoAgrupado.cantidad_solicitada + " es superior a la disponible " + productos[0].cantidad_total_bodegas;
                                     productoAgrupado.enFarmaciaOrigen = false;
@@ -2960,7 +2966,7 @@ function __agruparProductosPorTipo(productos,productosAgrupados,index, callback)
  */
 
 function __validar_productos_archivo_plano(contexto, filas, index, productos_validos, productos_invalidos, callback) {
-   
+
     var fila = filas[index];
     var that = contexto;
     var def = G.Q.defer();
@@ -2976,7 +2982,7 @@ function __validar_productos_archivo_plano(contexto, filas, index, productos_val
     var producto = {codigo_producto: fila.codigo || '', cantidad_solicitada: fila.cantidad || 0};
 
     G.Q.ninvoke(that.m_productos, "validar_producto", producto.codigo_producto).then(function(resultado) {
-	
+
         if (resultado.length > 0 && producto.cantidad_solicitada > 0) {
 
             producto.tipoProductoId = resultado[0].tipo_producto_id;

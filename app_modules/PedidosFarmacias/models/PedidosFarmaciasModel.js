@@ -1556,7 +1556,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     var parametros = {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:empresa_destino, 
                             5:centro_destino, 6:bodega_destino, 7:"%" + filtro.termino_busqueda + "%"};
     var sql_filtro = "";
-
+    var existe=bodega_id==='06'?'03':'06';
     // Se realiza este cambio para permitir buscar productos de un determiando tipo.
     if (filtro.tipo_producto !== '0') {
         sql_aux = " and b.tipo_producto_id = '"+filtro.tipo_producto+"' ";
@@ -1633,7 +1633,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                         else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
                 coalesce(j.existencias_farmacia, 0) as existencias_farmacia,\
                 b.unidad_medida,\
-                (select descripcion from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega\
+                (select descripcion from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega,\
+                 case when exists(select * from existencias_bodegas where empresa_id=a.empresa_id and centro_utilidad=a.centro_utilidad and bodega='"+existe+"' and codigo_producto=a.codigo_producto) then 1 else 0 end as existe_producto_bodega_actual\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\

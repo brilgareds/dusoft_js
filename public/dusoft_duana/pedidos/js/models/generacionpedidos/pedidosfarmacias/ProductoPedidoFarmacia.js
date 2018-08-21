@@ -27,6 +27,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.centroUtilidadOrigenProducto = "";
             this.bodegaOrigenProducto = "";
             this.mensajeError = "";
+            this.existeProductoBodegaActual = "";
         }
 
         ProductoPedidoFarmacia.prototype = Object.create(Producto.getClass().prototype);
@@ -219,6 +220,17 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         
         ProductoPedidoFarmacia.prototype.getBodegaOrigenProducto = function() {
             return this.bodegaOrigenProducto;
+        };
+        
+        // cantidad pendiente
+        ProductoPedidoFarmacia.prototype.setExisteProductoBodegaActual = function(existeProductoBodegaActual) {
+            this.existeProductoBodegaActual = existeProductoBodegaActual;
+            return this;
+        };
+            
+        // cantidad pendiente
+        ProductoPedidoFarmacia.prototype.getExisteProductoBodegaActual = function() {               
+            return this.existeProductoBodegaActual;
         };
         
         this.get = function(codigo, nombre, existencia) {

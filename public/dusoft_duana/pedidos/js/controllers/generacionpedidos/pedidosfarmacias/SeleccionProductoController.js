@@ -41,13 +41,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                     {field: 'cantidadSolicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                         cellTemplate: ' <div class="col-xs-12">\n\
                                                 <input ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidadSolicitada" validacion-numero-entero class="form-control grid-inline-input"\
-                                ng-keyup="onIngresarProducto($event, row.entity)" ng-disabled="!row.entity.getEnFarmaciaSeleccionada()"/>\
+                                ng-keyup="onIngresarProducto($event, row.entity)" ng-disabled="!row.entity.getEnFarmaciaSeleccionada() || !valida_existencia_codigo(row.entity)"/>\
                                             </div>'
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.getEnFarmaciaSeleccionada()" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
-                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada())  ">\
+                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada()  || !valida_existencia_codigo(row.entity))  ">\
                                                     <span class="glyphicon glyphicon-ok"></span>\
                                                 </button>\
                                                 <button ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-click="mostrarAlertaProducto()" class="btn btn-default btn-xs" >\
@@ -57,6 +57,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                     }
                 ]
             };
+            
+            $scope.valida_existencia_codigo=function(data){
+              var disable=true;
+              if( data.bodegaOrigenProducto!==Usuario.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo && data.existeProductoBodegaActual===0){
+                  data.cantidadSolicitada="NE";//no existe en bodega
+                  return false;
+              }
+              return disable;
+            };
+            
 
             /*
              * @Author: Eduar
@@ -98,7 +108,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                             setNombreBodega(_producto.nombre_bodega).
                             setEmpresaOrigenProducto(_producto.empresa_id).
                             setCentroUtilidadOrigenProducto(_producto.centro_utilidad).
-                            setBodegaOrigenProducto(_producto.bodega);
+                            setBodegaOrigenProducto(_producto.bodega).
+                            setExisteProductoBodegaActual(_producto.existe_producto_bodega_actual);
                     $scope.root.pedido.agregarProducto(producto);
 
                 }

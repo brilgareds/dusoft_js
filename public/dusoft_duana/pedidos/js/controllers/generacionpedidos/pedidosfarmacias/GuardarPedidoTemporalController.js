@@ -271,7 +271,7 @@ define(["angular", "js/controllers",
                     vendedor: {tipo_id_tercero: 'CC ', id: '67039648'}, //pedir a Mauricio
                     cliente: { //ESTE CLIENTE DEBE SER COSMITET SIEMPRE
                         tipo_id_tercero: 'NIT',
-                        id: 83002320,
+                        id: 830023202,
                     },
                     /*farmacia : { //LA FARMACIA SE USARA PARA CUANDO LOS PRODUCTOS PEDIDOS A DUANA INGRESEN A COSMITET SE HAGA EL PEDIDO AL NOMBRE DE LA FARMACIA
                         tipo_id : 'AS',

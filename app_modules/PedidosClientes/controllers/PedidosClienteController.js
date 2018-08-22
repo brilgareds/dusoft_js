@@ -1358,7 +1358,7 @@ function __insertarCabeceraClientesCotizacion(datos,parametros,index,idsPedidos,
        bodega : Object.keys(datos)[index], 
        numero_cotizacion : datos[Object.keys(datos)[index]][0].numero_cotizacion,
        control: parametros.bodegaActual !== Object.keys(datos)[index],
-       nit: Object.keys(datos)[index]==='03'?'83002320':Object.keys(datos)[index]==='06'?'830080649':'' //si la bodega actual es duana se crea el pedido con el nit de cosmitet y viceversa
+       nit: Object.keys(datos)[index]==='03'?'830023202':Object.keys(datos)[index]==='06'?'830080649':'' //si la bodega actual es duana se crea el pedido con el nit de cosmitet y viceversa
        
    };
 //   console.log(index+"Object.keys(datos)[index] ",Object.keys(datos)[index]);

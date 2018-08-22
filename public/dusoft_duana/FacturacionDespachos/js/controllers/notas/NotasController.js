@@ -698,6 +698,22 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     };
 
                                     /**
+                                     * +Descripcion Metodo encargado de validar la activacion del check
+                                     * @author German Galvis
+                                     * @fecha 09/08/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    $scope.ocultarValor = function () {
+                                        var disabled = false;
+
+                                        if (nota === 2) {
+                                            disabled = true;
+                                        }
+
+                                        return disabled;
+                                    };
+
+                                    /**
                                      * +Descripcion Metodo encargado de validar la activacion de el valor nota
                                      * @author German Galvis
                                      * @fecha 15/08/2018 DD/MM/YYYY
@@ -828,7 +844,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             {field: 'Lote', width: "6%", displayName: 'Lote', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getLote()}}</p></div>'},
                                             {field: 'Valor Unitario', width: "10%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()}}</p></div>'},
                                             {field: 'Valor Nota', width: "10%", displayName: 'Valor Nota', cellClass: "ngCellText",
-                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
+                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-hide="ocultarValor()" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
                                             {field: 'Total Nota', width: "10%", displayName: 'Total Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()}}</p></div>'},
                                             {field: 'Observacion', width: "20%", displayName: 'Observacion', cellClass: "ngCellText",
                                                 cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-model="row.entity.observacion" class="form-control grid-inline-input" name="observacion" id="observacion" /> </div>'},
@@ -990,7 +1006,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'NC', width: "5%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)"  ng-disabled="habilitarCredito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'NC', width: "5%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'ND', width: "5%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
                         ]
 //                                {field: 'Imprimir', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'}

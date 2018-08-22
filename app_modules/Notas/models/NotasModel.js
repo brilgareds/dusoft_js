@@ -536,7 +536,7 @@ NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, c
         G.knex.raw("fc_descripcion_producto ( b.codigo_producto ) AS producto"),
         "b.item_id",
         "b.codigo_producto",
-        "b.cantidad",
+        //"b.cantidad",
         "b.lote",
         "b.valor_unitario",
         "b.cantidad_devuelta",
@@ -545,8 +545,8 @@ NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, c
         "e.numero as numero_devolucion",
         "f.documento_id",
         "g.movimiento_id",
-        G.knex.raw("( CASE WHEN g.cantidad IS NULL THEN 0 ELSE CAST ( g.cantidad AS INTEGER ) END ) AS cantidad_producto_devuelto"),
-        G.knex.raw("( CASE WHEN g.cantidad IS NOT NULL THEN ( g.cantidad * b.valor_unitario ) ELSE NULL END ) AS valor_total_producto_devuelto")
+        G.knex.raw("( CASE WHEN g.cantidad IS NULL THEN 0 ELSE CAST ( g.cantidad AS INTEGER ) END ) AS cantidad"),
+        G.knex.raw("b.valor_unitario AS valor_digitado_nota")
     ];
 
     var query = G.knex.select(G.knex.raw("distinct ON (g.movimiento_id)" + columnas))
@@ -594,6 +594,8 @@ NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, c
             .where('a.empresa_id', obj.empresa_id)
             .andWhere('a.factura_fiscal', obj.facturaFiscal);
 
+console.log("Query resultado", G.sqlformatter.format(
+                query.toString()));
     query.then(function (resultado) {
 
         callback(false, resultado)

@@ -592,7 +592,7 @@ define(["angular", "js/controllers",
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
                     url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
                 }
-console.log('url', url);
+//console.log('url', url);
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -606,7 +606,7 @@ console.log('url', url);
                         }
                     }
                 };
-                console.log('url', url);
+                //console.log('url', url);
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
@@ -744,7 +744,7 @@ console.log('url', url);
             socket.on("onNotificarGenerarI002", function (datos) {
                 
                 var bodega=empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo;
-                console.log("bodega ",bodega);
+                //console.log("bodega ",bodega);
                 var timer = setTimeout(function () {
                     //se valida la bodega para que no se genere ICD desde DUANA a Cosmitet  
                     //sw_origen_destino 1 pedido multiple generado automatic desde cosmitet bodega 06
@@ -853,7 +853,7 @@ console.log('url', url);
                 			}, 4000);
 
                         //pasa el pedido cliente Duana a pedido farmacia Cosmitet
-                        console.log("swTipoPedidoswTipoPedidoswTipoPedido ",swTipoPedido);
+                        //console.log("swTipoPedidoswTipoPedidoswTipoPedido ",swTipoPedido);
                 
                   
                         if(swTipoPedido === '0'){
@@ -867,7 +867,7 @@ console.log('url', url);
                             };
 
                             Request.realizarRequest(API.PEDIDOS.CLIENTES.PEDIDO_CLIENTE_A_PEDIDO_FARMACIA, "POST", obj, function(data) {
-                                console.log('PEDIDO_CLIENTE_A_PEDIDO_FARMACIA ',data);
+                                //console.log('PEDIDO_CLIENTE_A_PEDIDO_FARMACIA ',data);
                                     var obj = {
                                         session: $scope.session,
                                         data: {
@@ -890,10 +890,12 @@ console.log('url', url);
                                     sw_origen_destino : sw_origen_destino
                                 }
                             };
+                            //console.log('obj.data', obj.data);
 
                             //Ingresan productos provenientes de Cosmitet entonces se crear un pedido cliente en Duana basado en el pedido cliente cosmitet que generó este ingreso.
                             Request.realizarRequest(API.PEDIDOS.CLIENTES.DUPLICAR_PEDIDO, "POST", obj, function(data) {
-                                console.log('DUPLICAR_PEDIDO ',data);
+                                //console.log('la data que llega de ducplicar el pedido', data);
+                                //console.log('DUPLICAR_PEDIDO ',data);
                                 var obj = {
                                         session: $scope.session,
                                         data: {

@@ -1260,7 +1260,8 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         that :that,
         clienteMultiple : args.pedidos_clientes.clienteMultiple
     };
- 
+
+ //cotizacion.numero_cotizacion
 
     G.Q.nfcall(that.m_pedidos_clientes.actualizarCabeceraCotizacion, cotizacion).then(function (rows) {
          
@@ -1304,7 +1305,8 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros,callback){
   //  console.log("parametros.bodegaActual ",parametros.bodegaActual);
      resultado.swOrigenDestino =  parametros.bodegaActual==='03'?'0':'1'; 
      resultado.swTipoPedido = '1';
-        
+
+        resultado.numeroCotizacionOrigen = parametros.cotizacion.numero_cotizacion;
         return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",resultado);
 //        var productos=datos[Object.keys(datos)[index]];
 //        
@@ -5511,7 +5513,7 @@ PedidosCliente.prototype.duplicarPedido = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
-
+    console.log('se esta duplicando el pedido', args);
     G.Q.ninvoke(that.m_pedidos_clientes, 'duplicarPedido', args.numero_pedido,args.sw_origen_destino).then(function (resultado) {
         res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {pedido:resultado}));
     }).fail(function (err) {

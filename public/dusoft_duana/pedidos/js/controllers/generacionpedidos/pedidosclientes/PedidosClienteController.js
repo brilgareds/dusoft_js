@@ -1978,7 +1978,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
                 Request.realizarRequest(url, "POST", obj, function (data) {
                   if (data.status === 200) {
-                       console.log("actualizarBodegaCotizacionClientesMultiple ",data);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }

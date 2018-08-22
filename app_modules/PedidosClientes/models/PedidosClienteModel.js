@@ -2978,7 +2978,7 @@ PedidosClienteModel.prototype.duplicarPedido = function(numero_pedido,sw_origen_
     var pedido;
     G.Q.nfcall(__consultarTerceroPedidoOrigen, numero_pedido).then(function(resultado) {
        // console.log('resultado tercero', resultado);
-       var bodegaDestino = sw_origen_destino === 0 ? '03':'06';
+        var bodegaDestino = sw_origen_destino === 0 ? '03':'06';
         return G.Q.nfcall(__insertar_encabezado_pedido_cliente_duplicado, numero_pedido, resultado[0].tipo_id_tercero, resultado[0].tercero_id,bodegaDestino);
     }).then(function(resultado) {
         pedido = {numero_pedido: (resultado.rows.length > 0) ? resultado.rows[0].numero_pedido : 0, estado: 0};
@@ -3168,11 +3168,20 @@ function __consultarTerceroPedidoOrigen(numero_pedido, callback) {
              'vopmc.id_orden_cotizacion_origen',
              'vopmc.id_orden_cotizacion_destino'
          ])
-            .from('ventas_ordenes_pedidos as vop')
+            .from('ventas_ordenes_pedidos_tmp as vop')
             .innerJoin('ventas_ordenes_pedido_multiple_clientes as vopmc', function(){
-                this.on('vopmc.id_orden_pedido_origen', 'vop.pedido_cliente_id');
+                this.on('vopmc.id_orden_cotizacion_origen', 'vop.pedido_cliente_id_tmp');
             })
             .where('vopmc.id_orden_pedido_destino', numero_pedido);
+
+/*
+select vop.tipo_id_tercero, vop.tercero_id, vopmc.sw_tipo_pedido, vopmc.sw_estado, vopmc.id_orden_cotizacion_origen, vopmc.id_orden_cotizacion_destino
+from ventas_ordenes_pedidos_tmp as vop 
+    inner join  ventas_ordenes_pedido_multiple_clientes as vopmc on  (vopmc.id_orden_cotizacion_origen = vop.pedido_cliente_id_tmp)
+ where vopmc.id_orden_pedido_destino = 94568
+ */
+
+    //console.log('consulta en bodega multiple -->' + G.sqlformatter.format(query.toString()));
 
     query.then(function(rows) {
         callback(false, rows);

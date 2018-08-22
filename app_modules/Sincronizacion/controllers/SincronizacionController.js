@@ -177,8 +177,8 @@ function __jsonNotaCredito(obj, callback) {
             perfilUsuario: obj.x, //String
             productos: {//OPCIONAL
                 atributosAdicionalesProd: {
-                    nombreAtributo: obj.x, //String
-                    valor: obj.x //String
+                    nombreAtributo:"observacionProd", //String
+                    valor: "Observación" //String
                 },
                 cantidad: obj.x, //decimal OPCIONAL
                 descripcion: obj.x, //String OPCIONAL
@@ -217,11 +217,31 @@ function __jsonNotaCredito(obj, callback) {
             totalNotaCreditoElectronica: obj.x //decimal
         },
         notaEspecializada: {
-            AtributosAdicionales: {
-                nombreAtributo: obj.x, //String
-                valor: obj.x, //String
-                tipo: obj.x //String
-            }
+            AtributosAdicionales: [{
+                nombreAtributo: "conceptoNota", //String
+                valor: "Concepto de Nota", //String
+                tipo: "String" //String
+            },{
+                nombreAtributo: "TipoNota", //String
+                valor: "Tipo Nota", //String
+                tipo: "String" //String
+            },{
+                nombreAtributo: "descuento", //String
+                valor: 0.00, //Decimal
+                tipo: "Decimal" //String
+            },{
+                nombreAtributo: "valorTotal", //String
+                valor: 0.00, //Decimal
+                tipo: "Decimal" //String
+            },{
+                nombreAtributo: "elaborado", //String
+                valor: "Elaborador por", //String
+                tipo: "String" //String
+            },{
+                nombreAtributo: "valorLetras", //String
+                valor: "Valor en Letras", //String
+                tipo: "String" //String
+            }]
         }
     };
     callback(crearNotaCredito);
@@ -247,8 +267,8 @@ function __jsonNotaDebito(obj, callback) {
             perfilUsuario: obj.x, //String
             productos: {//OPCIONAL
                 atributosAdicionalesProd: {
-                    nombreAtributo: obj.x, //String
-                    valor: obj.x //String
+                    nombreAtributo:"observacionProd", //String
+                    valor: "Observación" //String
                 },
                 cantidad: obj.x, //decimal OPCIONAL
                 descripcion: obj.x, //String OPCIONAL
@@ -287,11 +307,31 @@ function __jsonNotaDebito(obj, callback) {
             totalNotaCreditoElectronica: obj.x //decimal
         },
         notaEspecializada: {
-            AtributosAdicionales: {
-                nombreAtributo: obj.x, //String
-                valor: obj.x, //String
-                tipo: obj.x //String
-            }
+            AtributosAdicionales: [{
+                nombreAtributo: "conceptoNota", //String
+                valor: "Concepto de Nota", //String
+                tipo: "String" //String
+            },{
+                nombreAtributo: "TipoNota", //String
+                valor: "Tipo Nota", //String
+                tipo: "String" //String
+            },{
+                nombreAtributo: "descuento", //String
+                valor: 0.00, //Decimal
+                tipo: "Decimal" //String
+            },{
+                nombreAtributo: "valorTotal", //String
+                valor: 0.00, //Decimal
+                tipo: "Decimal" //String
+            },{
+                nombreAtributo: "elaborado", //String
+                valor: "Elaborador por", //String
+                tipo: "String" //String
+            },{
+                nombreAtributo: "valorLetras", //String
+                valor: "Valor en Letras", //String
+                tipo: "String" //String
+            }]
         }
     };
     callback(crearNotaDebito);
@@ -328,10 +368,23 @@ function __jsonFactura(obj, callback) {
             perfilEmision: obj.x, //String
             perfilUsuario: obj.x, //String
             productos: {//OPCIONAL
-                atributosAdicionalesProd: {
-                    nombreAtributo: obj.x, //String
-                    valor: obj.x //String
-                },
+                atributosAdicionalesProd:[{
+                    nombreAtributo: "FechaVencimientoProd", //String
+                    valor: '30-11-2018' //Fecha dd-MM-yyyy HH24:mm:ss
+                },{
+                    nombreAtributo: "loteProd", //String
+                    valor: "Lote" //String
+                },{
+                    nombreAtributo: "codigoCumProd", //String
+                    valor: "Código CUM" //String
+                },{
+                    nombreAtributo: "codigoInvimaProd", //String
+                    valor: "Código Invima" //String
+                },{
+                    nombreAtributo: "valorTotalProd", //String
+                    valor: 0.00 //decimal
+                }]
+                ,
                 cantidad: obj.x, //decimal OPCIONAL
                 descripcion: obj.x, //String OPCIONAL
                 identificador: obj.x, //String
@@ -369,11 +422,51 @@ function __jsonFactura(obj, callback) {
             totalFactura: obj.x //decimal OPCIONAL
         },
         facturaEspecializada: {
-            AtributosAdicionales: {// OPCIONAL
-                nombreAtributo: obj.x, //String
-                valor: obj.x, //String
-                tipo: obj.x //String
-            }
+            AtributosAdicionales:[ {// OPCIONAL
+                nombreAtributo: "mensajeContribuyente", //String
+                valor: "Mensaje Grandes Contrib.", //String
+                tipo: "String"
+            },{// OPCIONAL
+                nombreAtributo: "mensajeResolucion", //String
+                valor: "Mensaje Resolución", //String
+                tipo: "String"
+            },{// OPCIONAL
+                nombreAtributo: "nombreAdquirente", //String
+                valor: "Nombre adquirente", //String
+                tipo: "String"
+            },{// OPCIONAL
+                nombreAtributo: "vendedor", //String
+                valor: "Nombre Vendedor", //String
+                tipo: "String"
+            },{// OPCIONAL
+                nombreAtributo: "numeroPedido", //String
+                valor: "Numero de Pedido", //String
+                tipo: "String"
+            },{// OPCIONAL
+                nombreAtributo: "Descuento", //String
+                valor: 0.00, //decimal
+                tipo: "Decimal"
+            },{// OPCIONAL
+                nombreAtributo: "totalenLetras", //String
+                valor: "TotalLetras", //String
+                tipo: "String"
+            },{// OPCIONAL
+                nombreAtributo: "observacionesPedido", //String
+                valor: "Observaciones Pedido", //String
+                tipo: "String"
+            },{// OPCIONAL
+                nombreAtributo: "observacionesDespacho", //String
+                valor: "Observaciones Despacho", //String
+                tipo: "String"
+            },{// OPCIONAL
+                nombreAtributo: "elaboradoPor", //String
+                valor: "ElaboradoPor", //String
+                tipo: "String"
+            },{// OPCIONAL
+                nombreAtributo: "tipoFormato", //String
+                valor: "Tipo formato de factura", //String
+                tipo: "String"
+            }]
         }
     };
     callback(crearFacturaElectronica);

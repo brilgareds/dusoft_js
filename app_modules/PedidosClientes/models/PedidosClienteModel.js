@@ -1692,7 +1692,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit);
-   console.log(G.sqlformatter.format(query.toString()));     
+//   console.log(G.sqlformatter.format(query.toString()));     
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
@@ -1758,6 +1758,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     var query = G.knex.raw(sql, parametros);
     G.logError(G.sqlformatter.format(query.toString()));
+    
     query.then(function(resultado) { 
      
         callback(false, resultado.rows, resultado);

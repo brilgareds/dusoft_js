@@ -268,7 +268,7 @@ define(["angular", "js/controllers",
                     aprobado_cartera: '0',
                     estado_cotizacion: '',
                     estado: '0',
-                    vendedor: {tipo_id_tercero: 'CC ', id: '67039648'}, //pedir a Mauricio
+                    vendedor: {tipo_id_tercero: 'CC', id: '7777'}, //pedir a Mauricio
                     cliente: { //ESTE CLIENTE DEBE SER COSMITET SIEMPRE
                         tipo_id_tercero: 'NIT',
                         id: 830023202,

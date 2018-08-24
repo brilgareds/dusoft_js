@@ -232,7 +232,7 @@ define(["angular", "js/controllers",
         /*
          * @Author: AMGT
          * +Descripcion: Realiza la peticion al API para generar un pedido desde el temporal de farmacia.
-         */
+        */
         self.generarPedidoAutomaticoCliente = function(callback) {
             var pedido = $scope.root.pedido.getProductosSeleccionados();
             var empresa = $scope.root.session.empresaId;
@@ -254,12 +254,16 @@ define(["angular", "js/controllers",
             if(pedido.length===productos.length){
                 self.generarPedidoFarmacia=false;
             }
+
   
             if (productos.length > 0) {
                 var cotizacions = {
                     empresa_id: '03',
                     centro_utilidad_id: '1 ',
                     bodega_id: '03',
+                    empresa_id_original: farmacia.getCodigo(),
+                    centro_utilidad_id_original: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
+                    bodega_id_original: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                     numero_cotizacion: 0,
                     observacion: 'Pedido Generado desde Farmacia',
                     productos: productos,
@@ -273,10 +277,6 @@ define(["angular", "js/controllers",
                         tipo_id_tercero: 'NIT',
                         id: 830023202,
                     },
-                    /*farmacia : { //LA FARMACIA SE USARA PARA CUANDO LOS PRODUCTOS PEDIDOS A DUANA INGRESEN A COSMITET SE HAGA EL PEDIDO AL NOMBRE DE LA FARMACIA
-                        tipo_id : 'AS',
-                        id: clienteFarmacia
-                    },*/
                     fecha_registro: fecha,
                     usuario_id: $scope.root.session.usuario_id,
                     pedido_multiple_farmacia:1,

@@ -874,12 +874,16 @@ define(["angular", "js/controllers",
                 $scope.Empresa.limpiar_pedidos();
 
                 pedidos.forEach(function(data) {
-
+                     
+                    //console.log('la data', data.es_pedido_destino? true: false, data.es_pedido_destino);
+                    //console.log('la data', data.es_pedido_final);
+                    
                     var pedido = Pedido.get(data.empresa_id, data.centro_utilidad_id, data.bodega_id);
 
                     var cliente = Cliente.get(data.nombre_cliente, data.direccion_cliente, data.tipo_id_cliente, data.identificacion_cliente, data.telefono_cliente);
 
                     var vendedor = Vendedor.get(data.nombre_vendedor, data.tipo_id_vendedor, data.idetificacion_vendedor, '');
+
 
                     pedido.setDatos(data);
                     pedido.setNumeroPedido(data.numero_pedido).set_vendedor(vendedor).setCliente(cliente);
@@ -893,6 +897,7 @@ define(["angular", "js/controllers",
                             setDespachoNumero(data.despacho_numero).
                             setFacturaFiscal(data.factura_fiscal).
                             setEstadoFacturaFiscal(data.estado_factura_fiscal);
+                    pedido.trazabilidadPedidoMultiple = data.es_pedido_origen? data.es_pedido_origen: data.es_pedido_destino? data.es_pedido_destino : data.es_pedido_final?  data.es_pedido_final : 'No Multiple';
                     $scope.Empresa.set_pedidos(pedido);
                 });
 
@@ -967,9 +972,10 @@ define(["angular", "js/controllers",
                                         </button>\
 					'},
                     {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
+                    {field: 'trazabilidadPedidoMultiple', displayName: 'Multiple', width: "10%"},
                     {field: 'getFacturaFiscal()', displayName: 'Factura', width:  "10%", visible:  true},
-                    {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
-                    {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
+                    {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "25%"},
+                    {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "20%"},
                     {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\

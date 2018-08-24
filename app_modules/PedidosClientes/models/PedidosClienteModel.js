@@ -430,10 +430,13 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, bod
         "e.prefijo as despacho_prefijo",
         "e.numero as despacho_numero",
         G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
+        G.knex.raw("(select CASE WHEN id_orden_pedido_origen IS NULL THEN (select  'CT' || cast(id_orden_cotizacion_origen as text) from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_origen = a.numero_pedido limit 1) ELSE cast(id_orden_pedido_origen as text) END   || ' - ' || CASE WHEN id_orden_pedido_destino IS NULL THEN '' ELSE cast(id_orden_pedido_destino as text) END  || ' - ' || CASE WHEN id_orden_pedido_final IS NULL THEN '' ELSE cast(id_orden_pedido_final as text) END  as destino from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_origen = a.numero_pedido limit 1) as es_pedido_origen"),
+        G.knex.raw("(select CASE WHEN id_orden_pedido_origen IS NULL THEN (select  'CT' || cast(id_orden_cotizacion_origen as text) from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_destino = a.numero_pedido limit 1) ELSE cast(id_orden_pedido_origen as text) END   || ' - ' || CASE WHEN id_orden_pedido_destino IS NULL THEN '' ELSE cast(id_orden_pedido_destino as text) END  || ' - ' || CASE WHEN id_orden_pedido_final IS NULL THEN '' ELSE cast(id_orden_pedido_final as text) END  as destino from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_destino = a.numero_pedido limit 1) as es_pedido_destino"),
+        G.knex.raw("(select CASE WHEN id_orden_pedido_origen IS NULL THEN (select  'CT' || cast(id_orden_cotizacion_origen as text) from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_final = a.numero_pedido limit 1) ELSE cast(id_orden_pedido_origen as text) END   || ' - ' || CASE WHEN id_orden_pedido_destino IS NULL THEN '' ELSE cast(id_orden_pedido_destino as text) END  || ' - ' || CASE WHEN id_orden_pedido_final IS NULL THEN '' ELSE cast(id_orden_pedido_final as text) END  as destino from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_final = a.numero_pedido limit 1) as es_pedido_final"),
         subQuery
     ]).from(query).
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");
-    
+    //console.log(G.sqlformatter.format(queryPrincipal.toString()));
     queryPrincipal.then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
@@ -507,8 +510,13 @@ PedidosClienteModel.prototype.eliminarTemporalesClientes = function(callback) {
  * @returns {void}
  */
 
-PedidosClienteModel.prototype.insertarEncabezadoFarmaciaRelacionadoNumeroPedido = function(numero_pedido ,callback) {
-        var sql = " INSERT INTO solicitud_productos_a_bodega_principal(\
+PedidosClienteModel.prototype.insertarEncabezadoFarmaciaRelacionadoNumeroPedido = function(farmacia_id, centro_utilidad, bodega, usuario_id, numero_pedido ,callback) {
+
+    var sql = " INSERT INTO solicitud_productos_a_bodega_principal( farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido, centro_destino, bodega_destino, pedido_cliente ) VALUES (\
+                    '" + farmacia_id + "' , '" + centro_utilidad + "' , '" + bodega + "', 'Generado desde Duana del pedido " + numero_pedido+ "', " + usuario_id + ", now(), '03', 0, 0, 1, 1, '06', " + numero_pedido + "\
+                ) returning solicitud_prod_a_bod_ppal_id as solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega";
+
+        /*var sql = " INSERT INTO solicitud_productos_a_bodega_principal(\
                 farmacia_id,\
                 centro_utilidad,\
                 bodega,\
@@ -545,14 +553,13 @@ PedidosClienteModel.prototype.insertarEncabezadoFarmaciaRelacionadoNumeroPedido 
                     numero_pedido\
                   from solicitud_productos_a_bodega_principal\
                   where pedido_cliente = :1\
-                ) returning solicitud_prod_a_bod_ppal_id as solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega";
+                ) returning solicitud_prod_a_bod_ppal_id as solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega";*/
 
-    var query = G.knex.raw(sql, {1 : numero_pedido});
-
+    var query = G.knex.raw(sql);
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-        console.log("err [eliminarTemporalesClientes]: ", err);
+        console.log("err [insertarEncabezadoFarmaciaRelacionadoNumeroPedido]: ", err);
         callback(err);
     });
 };
@@ -735,7 +742,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
  */
 
 PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
-
+    console.log('=======================================================================================================>');
     var sql = " select c.estado,\
                     a.pedido_cliente_id as numero_pedido,\
                     a.codigo_producto,\
@@ -1692,7 +1699,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit);
-   console.log(G.sqlformatter.format(query.toString()));     
+
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
@@ -1757,7 +1764,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     var query = G.knex.raw(sql, parametros);
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado) { 
      
         callback(false, resultado.rows, resultado);
@@ -1769,7 +1776,6 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 };
 
 PedidosClienteModel.prototype.insertar_encabezado_pedido_cliente = function(cotizacion,callback) {
-              console.log("cotizacion ",cotizacion);                
 if(cotizacion.control===true){
     
     var sql = " INSERT INTO ventas_ordenes_pedidos_tmp(\
@@ -1890,7 +1896,6 @@ PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_clientes =
                 sw_tipo_pedido : obj.swTipoPedido
                 }
             );
-    console.log(G.sqlformatter.format(query.toString()));       
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
@@ -1904,10 +1909,13 @@ PedidosClienteModel.prototype.insertar_ventas_ordenes_pedido_multiple_farmacias 
     var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
         .insert(
         {
-            id_orden_pedido_origen: obj.numeroPedido,
-            id_orden_pedido_destino: obj.numeroPedidoorigen,
-            id_orden_cotizacion_origen: obj.numeroPedido,
-            id_orden_cotizacion_destino: obj.numeroPedidoorigen ,
+            id_orden_pedido_origen: obj.pedidoOrigen,
+            id_orden_pedido_destino: obj.pedidoDestino,
+            id_orden_cotizacion_origen: obj.cotizacionOrigen,
+            id_orden_cotizacion_destino: obj.cotizacionDestino ,
+            farmacia_id: obj.farmaciaId,
+            centro_utilidad: obj.centroUtilidad,
+            bodega: obj.bodega,
             sw_origen_destino : 1,
             sw_tipo_pedido : '0'
         }
@@ -1927,7 +1935,7 @@ PedidosClienteModel.prototype.actualizarPedidoMultipleCliente = function(obj,cal
     var query =  G.knex('ventas_ordenes_pedido_multiple_clientes').where({
                     id_orden_cotizacion_origen: obj.cotizacion
                   }).update(update);
-        console.log(G.sqlformatter.format(query.toString()));
+        //console.log(G.sqlformatter.format(query.toString()));
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
@@ -1957,10 +1965,12 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function(obj,call
                            'sw_origen_destino',
                            'sw_tipo_pedido',
                            'sw_estado',
-                           'id_orden_cotizacion_origen',
-                           'id_orden_cotizacion_destino'
+                           'id_orden_pedido_final',
+                           'farmacia_id',
+                           'centro_utilidad',
+                           'bodega'
                           ]);
-        console.log(G.sqlformatter.format(query.toString()));
+        //console.log(G.sqlformatter.format(query.toString()));
         query.then(function(resultado){    
             callback(false, resultado);
         }).catch(function(err){
@@ -1981,6 +1991,32 @@ PedidosClienteModel.prototype.actualizarBodegaCotizacionClientesMultiples = func
         }).catch(function(err){
             console.log("err (/catch) [actualizarBodegaCotizacionClientesMultiples]: ", err);
             callback({err:err, msj: "Error al generar actualizar Bodega otizacion Clientes Multiples"});   
+        });  
+};
+
+PedidosClienteModel.prototype.actualizar_pedido_multiple_farmacia = function(obj,callback){
+    var query =  G.knex('ventas_ordenes_pedido_multiple_clientes').where({
+                    id_orden_pedido_destino: obj.pedidoDestino
+                  }).update({id_orden_pedido_origen:obj.pedidoOrigen, farmacia_id : obj.farmaciaId, centro_utilidad: obj.centroUtilidad, bodega: obj.bodega});
+
+        query.then(function(resultado){    
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [actualizar_pedido_multiple_farmacia]: ", err);
+            callback({err:err, msj: "Error al actualizar pedido multiple farmacia"});   
+        });  
+};
+
+PedidosClienteModel.prototype.actualizar_pedido_multiple_final_farmacia = function(obj,callback){
+    var query =  G.knex('ventas_ordenes_pedido_multiple_clientes').where({
+                    id_orden_pedido_destino: obj.pedidoDestino
+                  }).update({id_orden_pedido_final : obj.pedidoFinal});
+
+        query.then(function(resultado){    
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("err (/catch) [actualizar_pedido_multiple_final_farmacia]: ", err);
+            callback({err:err, msj: "Error alactualizar_pedido_multiple_final_farmacia"});   
         });  
 };
 
@@ -2221,7 +2257,12 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
         "h.pedido_cliente_id as numero_pedido",
         "j.sw_autorizacion", 
         "j.sw_facturacion_agrupada",
-        G.knex.raw("coalesce(g.descripcion,'') as descripcion_tipo_producto")
+        G.knex.raw("coalesce(g.descripcion,'') as descripcion_tipo_producto"),
+        /*
+            (select id_orden_pedido_origen || ',' || id_orden_pedido_destino || ',' || id_orden_pedido_final from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_origen = h.pedido_cliente_id) as es_pedido_origen,
+                (select id_orden_pedido_origen || ',' || id_orden_pedido_destino || ',' || id_orden_pedido_final from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_destino = h.pedido_cliente_id) as es_pedido_destino,
+                (select id_orden_pedido_origen || ',' || id_orden_pedido_destino || ',' || id_orden_pedido_final from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_final = h.pedido_cliente_id) as es_pedido_final
+        */
     ]).from(query).
     leftJoin("inv_tipo_producto as g", "a.tipo_producto", "g.tipo_producto_id").
     leftJoin("ventas_ordenes_pedidos as h", "a.numero_cotizacion", "h.pedido_cliente_id_tmp").
@@ -2233,7 +2274,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
     //where("j.estado", "1").
     queryPrincipal.then(function(resultado) {
         
-// console.log(G.sqlformatter.format("AAAAAA",queryPrincipal.toString()));
+console.log("AAAAAA " ,G.sqlformatter.format( queryPrincipal.toString()));
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [listar_cotizaciones]: ", err);
@@ -2362,7 +2403,7 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizaci
         estado: sql_aux
 
     });
-    console.log("observacion_cartera_cotizacion",G.sqlformatter.format(query.toString()));
+    //console.log("observacion_cartera_cotizacion",G.sqlformatter.format(query.toString()));
     query.then(function(resultado) {
 
         callback(false, resultado.rows, resultado);
@@ -2697,11 +2738,30 @@ PedidosClienteModel.prototype.actualizarCabeceraCotizacion = function(cotizacion
     G.knex('ventas_ordenes_pedidos_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
             .update({
-        observaciones: cotizacion.observacion
+        observaciones: cotizacion.observacion,
+        
     }).then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
         console.log("err [actualizarCabeceraCotizacion]", error);
+        callback(error);
+    });
+
+};
+
+PedidosClienteModel.prototype.autorizarCabeceraCotizacion = function(cotizacion, callback)
+{
+
+    G.knex('ventas_ordenes_pedidos_tmp')
+            .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
+            .update({
+        sw_aprobado_cartera: 1,
+        observacion_cartera : cotizacion.observacion_cartera
+
+    }).then(function(rows) {
+        callback(false, rows);
+    }). catch (function(error) {
+        console.log("err [autorizarCabeceraCotizacion]", error);
         callback(error);
     });
 
@@ -2981,6 +3041,7 @@ PedidosClienteModel.prototype.duplicarPedido = function(numero_pedido,sw_origen_
         var bodegaDestino = sw_origen_destino === 0 ? '03':'06';
         return G.Q.nfcall(__insertar_encabezado_pedido_cliente_duplicado, numero_pedido, resultado[0].tipo_id_tercero, resultado[0].tercero_id,bodegaDestino);
     }).then(function(resultado) {
+        console.log('se duplica el pedido =====******************************************', resultado);
         pedido = {numero_pedido: (resultado.rows.length > 0) ? resultado.rows[0].numero_pedido : 0, estado: 0};
         return G.Q.nfcall(__generar_detalle_pedido_cliente_duplicado, numero_pedido, pedido.numero_pedido);
     }).then(function(resultado) {
@@ -3109,7 +3170,7 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
                 ) returning pedido_cliente_id as numero_pedido ";
 
     var query = G.knex.raw(sql, {1: numero_pedido});
-    console.log(G.sqlformatter.format(query.toString()));
+    //console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {

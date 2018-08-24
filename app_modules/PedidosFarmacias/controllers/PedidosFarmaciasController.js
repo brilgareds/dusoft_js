@@ -1365,10 +1365,14 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
         //inserta en la tabla ventas_ordenes_pedidos_multiples_cliente si tiene pedido cliente asociado
         if(tmp.pedidoCliente){
             var obj = {
-                numeroPedidoorigen : tmp.pedidoFarmacia,
-                numeroPedido : tmp.pedidoCliente
-            };
-            return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_ventas_ordenes_pedido_multiple_farmacias", obj);
+                pedidoOrigen : tmp.pedidoFarmacia,
+                pedidoDestino : tmp.pedidoCliente,
+                farmaciaId: empresa_id,
+                centroUtilidad: centro_utilidad_id,
+                bodega: bodega_id
+            }; 
+
+            return G.Q.ninvoke(that.m_pedidos_clientes, "actualizar_pedido_multiple_farmacia", obj);
         }
         return;
 

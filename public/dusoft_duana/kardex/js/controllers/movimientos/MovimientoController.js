@@ -33,7 +33,7 @@ function(angular, controllers) {
 
             ];
 
-
+            
             $scope.validarHtml = function(html) {
                 var htmlValido = $sce.trustAsHtml(html);
                 return htmlValido;

@@ -1261,7 +1261,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         clienteMultiple: args.pedidos_clientes.clienteMultiple
     };
 
- //cotizacion.numero_cotizacion
+    //cotizacion.numero_cotizacion
 
     G.Q.nfcall(that.m_pedidos_clientes.actualizarCabeceraCotizacion, cotizacion).then(function (rows) {
 
@@ -1278,10 +1278,10 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
             return false;
 
         }
-        
-    }).then(function (resultado) {   
+
+    }).then(function (resultado) {
         return G.Q.ninvoke(that.m_pedidos_clientes, 'autorizarCabeceraCotizacion', cotizacion);
-    }).then(function (resultado) {   
+    }).then(function (resultado) {
         res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {pedidos_clientes: ''}));
 
     }).fail(function (err) {
@@ -1302,13 +1302,13 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros, callback) {
 
         return G.Q.nfcall(__insertarCabeceraClientesCotizacion, resultado, parametros, 0, {});
     }).then(function (resultado) {
-       
-  //  console.log("parametros.bodegaActual ",parametros.bodegaActual);
-     resultado.swOrigenDestino =  parametros.bodegaActual==='03'?'0':'1'; 
-     resultado.swTipoPedido = '1';
+
+        //  console.log("parametros.bodegaActual ",parametros.bodegaActual);
+        resultado.swOrigenDestino = parametros.bodegaActual === '03' ? '0' : '1';
+        resultado.swTipoPedido = '1';
 
         resultado.numeroCotizacionOrigen = parametros.cotizacion.numero_cotizacion;
-        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",resultado);
+        return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "insertar_ventas_ordenes_pedido_multiple_clientes", resultado);
 //        var productos=datos[Object.keys(datos)[index]];
 //        
 //         var cotizacion = {
@@ -4793,7 +4793,7 @@ function __validarPrecioVenta(producto, resultado, tipo) {
     }
 
     var valido = true;
-
+    var contrato = resultado[0].contrato_cliente_id;
     var precioRegulado = Number(resultado[0].precio_regulado);
     var precioPactado = Number(resultado[0].precio_pactado);
     var costoCompra = Number(resultado[0].costo_ultima_compra);
@@ -4826,10 +4826,24 @@ function __validarPrecioVenta(producto, resultado, tipo) {
      *               esta en 0
      */
     if (resultado[0].sw_regulado !== '1' && precioPactado === 0) {
-        if (precioVenta < costoCompra) {
+
+        if (costoCompra > 0) {
+            
+            if (precioVenta < costoCompra && contrato === 987) {
+                
+                valor = costoCompra;
+                
+            }else if (precioVenta < costoCompra) {
+                
+                valido = false;
+                msj = "El precio de venta esta por debajo del costo";
+            }
+
+        } else {
             valido = false;
-            msj = "El precio de venta esta por debajo del costo";
+            msj = "El costo ultima compra debe ser mayor a cero (0)";
         }
+
     }
 
     if (precioVenta === 0) {
@@ -5370,7 +5384,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function (req, res) {
         return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
 
 
-    }).then(function(resultado){
+    }).then(function (resultado) {
 
         generarPedidoCliente = resultado;
         if (!cotizacion.pedido_multiple_farmacia || cotizacion.pedido_multiple_farmacia === undefined) {
@@ -5387,21 +5401,21 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function (req, res) {
 
 
         /*
-        insertar_ventas_ordenes_pedido_multiple_farmacias
-        {
-            id_orden_pedido_origen: obj.pedidoOrigen,
-            id_orden_pedido_destino: obj.pedidoDestino,
-            id_orden_cotizacion_origen: obj.cotizacionOrigen,
-            id_orden_cotizacion_destino: obj.cotizacionDestino ,
-            farmaciaId: empresa_id_original,
-            centroUtilidad: centro_utilidad_original,
-            bodega: bodega_id_original
-        }
-        */
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_ventas_ordenes_pedido_multiple_farmacias', {pedidoDestino: generarPedidoCliente.numero_pedido, cotizacionDestino: cotizacion.numero_cotizacion , farmaciaId: empresa_id_original, centroUtilidad: centro_utilidad_original,bodega: bodega_id_original});
+         insertar_ventas_ordenes_pedido_multiple_farmacias
+         {
+         id_orden_pedido_origen: obj.pedidoOrigen,
+         id_orden_pedido_destino: obj.pedidoDestino,
+         id_orden_cotizacion_origen: obj.cotizacionOrigen,
+         id_orden_cotizacion_destino: obj.cotizacionDestino ,
+         farmaciaId: empresa_id_original,
+         centroUtilidad: centro_utilidad_original,
+         bodega: bodega_id_original
+         }
+         */
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_ventas_ordenes_pedido_multiple_farmacias', {pedidoDestino: generarPedidoCliente.numero_pedido, cotizacionDestino: cotizacion.numero_cotizacion, farmaciaId: empresa_id_original, centroUtilidad: centro_utilidad_original, bodega: bodega_id_original});
 
     }).then(function (resultado) {
-  
+
 
         return G.Q.ninvoke(that, "__asignarResponsablesPedidos", cotizacion, generarPedidoCliente);
 
@@ -5523,7 +5537,7 @@ PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
-    var obj = {pedidoDestino : args.numero_pedido};
+    var obj = {pedidoDestino: args.numero_pedido};
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultarPedidoMultipleCliente', {numero_pedido: args.numero_pedido}).then(function (resultado) {
         //farmacia_id, centro_utilidad, bodega, usuario_id, numero_pedido ,
@@ -5535,18 +5549,18 @@ PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
     }).then(function (resultado) {
         //if (resultado.rows.length > 0) {
 
-            var solicitud_prod_a_bod_ppal_id = resultado.rows[0].solicitud_prod_a_bod_ppal_id;
-            obj.pedidoFinal = resultado.rows[0].solicitud_prod_a_bod_ppal_id;
-            var farmacia = resultado.rows[0].farmacia_id;
-            var centro_utilidad = resultado.rows[0].centro_utilidad;
-            var bodega = resultado.rows[0].bodega;
-           // console.log('solicitud_prod_a_bod_ppal_id', solicitud_prod_a_bod_ppal_id, 'farmacia', farmacia, 'centro_utilidad', centro_utilidad, 'bodega', bodega); 
-            return G.Q.ninvoke(that.m_pedidos_clientes, "insertarProductosPedidoClienteFarmacia", solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, args.productos);
+        var solicitud_prod_a_bod_ppal_id = resultado.rows[0].solicitud_prod_a_bod_ppal_id;
+        obj.pedidoFinal = resultado.rows[0].solicitud_prod_a_bod_ppal_id;
+        var farmacia = resultado.rows[0].farmacia_id;
+        var centro_utilidad = resultado.rows[0].centro_utilidad;
+        var bodega = resultado.rows[0].bodega;
+        // console.log('solicitud_prod_a_bod_ppal_id', solicitud_prod_a_bod_ppal_id, 'farmacia', farmacia, 'centro_utilidad', centro_utilidad, 'bodega', bodega); 
+        return G.Q.ninvoke(that.m_pedidos_clientes, "insertarProductosPedidoClienteFarmacia", solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, args.productos);
         //}
     }).then(function (resultado) {
-        return G.Q.ninvoke(that.m_pedidos_clientes, "actualizar_pedido_multiple_final_farmacia", {pedidoDestino: obj.pedidoDestino, pedidoFinal:  obj.pedidoFinal});
+        return G.Q.ninvoke(that.m_pedidos_clientes, "actualizar_pedido_multiple_final_farmacia", {pedidoDestino: obj.pedidoDestino, pedidoFinal: obj.pedidoFinal});
     }).then(function (resultado) {
-        res.send(G.utils.r(req.url, 'Producto actualizado satisfactoriamente', 200, {pedido:resultado}));
+        res.send(G.utils.r(req.url, 'Producto actualizado satisfactoriamente', 200, {pedido: resultado}));
 
     }).fail(function (err) {
         console.log("err [pedidoClienteAPedidoFarmacia]: ", err);
@@ -5560,8 +5574,8 @@ PedidosCliente.prototype.duplicarPedido = function (req, res) {
     var usuario_id = req.session.user.usuario_id;
 
 
-    G.Q.ninvoke(that.m_pedidos_clientes, 'duplicarPedido', args.numero_pedido,args.sw_origen_destino).then(function (resultado) {
-        res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {pedido:resultado}));
+    G.Q.ninvoke(that.m_pedidos_clientes, 'duplicarPedido', args.numero_pedido, args.sw_origen_destino).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {pedido: resultado}));
 
     }).fail(function (err) {
         console.log("err [duplicarPedido]: ", err);

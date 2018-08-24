@@ -68,7 +68,7 @@ function(angular, controllers) {
                     {field: 'cantidad_entradas', displayName: 'Entradas', width: "5%"},
                     {field: 'cantidad_salidas', displayName: 'Salidas', width: "5%"},
                     {field: 'stock_actual', displayName: 'Existencia', width: "5%"},
-                    {field: 'costo', displayName: 'Costo', width: "6%"},
+                    {field: 'costo', displayName: 'Costo', visible:$scope.opcionesModulo.columnaCosto.visible, width: "6%"},
                     {field: 'lote', displayName: 'Lote', width: "150"},
                     {field: 'fecha_vencimiento', displayName: 'Fecha V', cellTemplate: "<div> {{formatearFecha(row.entity.fecha_vencimiento)}} </div>", width: "10%"},
                     {field: 'nombre', displayName: 'Usuario', width: "7%"}

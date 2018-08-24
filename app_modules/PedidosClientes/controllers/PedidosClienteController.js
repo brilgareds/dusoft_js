@@ -1261,10 +1261,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         clienteMultiple: args.pedidos_clientes.clienteMultiple
     };
 
-<<<<<<< HEAD
-=======
  //cotizacion.numero_cotizacion
->>>>>>> f612e78f0dff4e7b5be3c5904ff60923f21b0b16
 
     G.Q.nfcall(that.m_pedidos_clientes.actualizarCabeceraCotizacion, cotizacion).then(function (rows) {
 

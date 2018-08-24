@@ -111,13 +111,13 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
                 res.send(G.utils.r(req.url, 'Error Seleccionado los Movimientos del Producto', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
             else {
                 // Seleccionar los Pedidos de Farmacia que estan Pendientes con ese producto
-                that.m_pedidos_farmacias.listar_pedidos_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_farmacias) {
+                that.m_pedidos_farmacias.listar_pedidos_pendientes_by_producto(empresa_id, codigo_producto, bodega_id,function(err, pendientes_farmacias) {
 
                     if (err)
                         res.send(G.utils.r(req.url, 'Error Seleccionado los Pendientes en Farmacias', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
                     else {
                         // Seleccionar los Pedidos de Clientes que estan Pendientes con ese producto
-                        that.m_pedidos_clientes.listar_pedidos_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_clientes) {
+                        that.m_pedidos_clientes.listar_pedidos_pendientes_by_producto(empresa_id, codigo_producto, bodega_id, function(err, pendientes_clientes) {
 
                             if (err)
                                 res.send(G.utils.r(req.url, 'Error Seleccionado los Pendientes en Clientes', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));

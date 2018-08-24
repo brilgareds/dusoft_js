@@ -1423,7 +1423,7 @@ PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, num
  * Modificacion: Se migra a KNEX.js
  * @fecha: 04/12/2015 11:33 am
  * */
-PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
+PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, bodega_id,callback) {
 
     var sql = " SELECT\
                 a.pedido_cliente_id as numero_pedido,\
@@ -1461,10 +1461,10 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
                       from inv_bodegas_movimiento_despachos_clientes aa\
                       inner join inv_bodegas_movimiento_justificaciones_pendientes bb on aa.numero = bb.numero and aa.prefijo = bb.prefijo\
                 ) e on e.pedido_cliente_id = a.pedido_cliente_id  and e.codigo_producto = b.codigo_producto\
-                WHERE a.empresa_id = :1 and b.codigo_producto= :2 and a.estado = '1' and b.numero_unidades <> b.cantidad_despachada\
+                WHERE a.empresa_id = :1 and b.codigo_producto= :2 and a.estado = '1' and b.numero_unidades <> b.cantidad_despachada and a.bodega_destino = :3\
                 ORDER BY a.pedido_cliente_id; ";
 
-    G.knex.raw(sql, {1: empresa, 2: codigo_producto}).then(function(resultado) {
+    G.knex.raw(sql, {1: empresa, 2: codigo_producto, 3:bodega_id}).then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
         console.log("err [listar_pedidos_pendientes_by_producto]: ", err);

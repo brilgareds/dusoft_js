@@ -1252,7 +1252,7 @@ PedidosFarmaciasModel.prototype.terminar_estado_pedido = function(numero_pedido,
  * @fecha: 29/10/2015
  * @returns {undefined}
  */
-PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, bodega_id, callback) {
 
     var sql = " select distinct \
                 a.farmacia_id,\
@@ -1291,9 +1291,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function
                       from inv_bodegas_movimiento_despachos_farmacias aa\
                       inner join inv_bodegas_movimiento_justificaciones_pendientes bb on aa.numero = bb.numero and aa.prefijo = bb.prefijo\
                 ) e on e.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id  and e.codigo_producto = b.codigo_producto\
-                where a.empresa_destino = :1 and b.codigo_producto = :2 and b.cantidad_pendiente > 0 ; ";
+                where a.empresa_destino = :1 and b.codigo_producto = :2 and b.cantidad_pendiente > 0 and a.bodega_destino = :3; ";
     
-    G.knex.raw(sql, {1:empresa, 2:codigo_producto}).then(function(resultado){
+    G.knex.raw(sql, {1:empresa, 2:codigo_producto, 3:bodega_id}).then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
         callback(err);

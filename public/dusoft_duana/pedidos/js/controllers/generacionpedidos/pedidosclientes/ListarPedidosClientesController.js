@@ -488,6 +488,7 @@ define(["angular", "js/controllers",
                     cotizacion.setFechaRegistro(data.fecha_registro);
                     cotizacion.setNumeroPedido(data.numero_pedido);
                     
+                    cotizacion.trazabilidadPedidoMultiple = data.es_pedido_origen? data.es_pedido_origen: data.es_pedido_destino? data.es_pedido_destino : data.es_pedido_final?  data.es_pedido_final : 'No Multiple';
                     cotizacion.setTipoPedido(data.tipo_pedido);
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
@@ -502,15 +503,16 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'get_descripcion_estado_cotizacion()', displayName: "Estado Actual", cellClass: "txt-center", width: "10%",
+                    {field: 'get_descripcion_estado_cotizacion()', displayName: "Estado Actual", cellClass: "txt-center", width: "8%",
                         cellTemplate: "<button type='button' \
                                         ng-class='agregar_clase_cotizacion(row.entity.get_estado_cotizacion())'> \
                                         <span ng-class=''></span> {{ row.entity.get_descripcion_estado_cotizacion() }} </button>"},
-                    {field: 'get_numero_cotizacion()', displayName: 'No. Cotización', width: "10%"},
-                    {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
-                    {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
-                    {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
-                    {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%", cellFilter: 'date : "dd-MM-yyyy" '},
+                    {field: 'get_numero_cotizacion()', displayName: 'No. Cotización', width: "6%"},
+                    {field: 'trazabilidadPedidoMultiple', displayName: 'Multiple', width: "20%"},
+                    {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "7%"},
+                    {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "28%"},
+                    {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "15%"},
+                    {field: 'getFechaRegistro()', displayName: "F. Registro", width: "10%", cellFilter: 'date : "dd-MM-yyyy" '},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
@@ -971,11 +973,11 @@ define(["angular", "js/controllers",
 			                  </span>\
                                         </button>\
 					'},
-                    {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
-                    {field: 'trazabilidadPedidoMultiple', displayName: 'Multiple', width: "10%"},
-                    {field: 'getFacturaFiscal()', displayName: 'Factura', width:  "10%", visible:  true},
-                    {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "25%"},
-                    {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "20%"},
+                    {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "7%"},
+                    {field: 'trazabilidadPedidoMultiple', displayName: 'Multiple', width: "25%"},
+                    {field: 'getFacturaFiscal()', displayName: 'Factura', width:  "8%", visible:  true},
+                    {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "20%"},
+                    {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "15%"},
                     {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\

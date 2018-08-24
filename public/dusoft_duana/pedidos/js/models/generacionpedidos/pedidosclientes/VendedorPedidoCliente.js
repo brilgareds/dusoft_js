@@ -20,7 +20,7 @@ define(["angular", "js/models", "includes/classes/Vendedor"], function(angular, 
                 var descripcion = "";
 
                 if (this.nombre_tercero !== "") {
-                    descripcion = this.getTipoId() + " " + this.getId() + " - " + this.getNombre();
+                    descripcion =  this.getNombre();
                 }
 
                 return descripcion;

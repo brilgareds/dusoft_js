@@ -430,13 +430,80 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, bod
         "e.prefijo as despacho_prefijo",
         "e.numero as despacho_numero",
         G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
-        G.knex.raw("(select CASE WHEN id_orden_pedido_origen IS NULL THEN (select  'CT' || cast(id_orden_cotizacion_origen as text) from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_origen = a.numero_pedido limit 1) ELSE cast(id_orden_pedido_origen as text) END   || ' - ' || CASE WHEN id_orden_pedido_destino IS NULL THEN '' ELSE cast(id_orden_pedido_destino as text) END  || ' - ' || CASE WHEN id_orden_pedido_final IS NULL THEN '' ELSE cast(id_orden_pedido_final as text) END  as destino from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_origen = a.numero_pedido limit 1) as es_pedido_origen"),
-        G.knex.raw("(select CASE WHEN id_orden_pedido_origen IS NULL THEN (select  'CT' || cast(id_orden_cotizacion_origen as text) from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_destino = a.numero_pedido limit 1) ELSE cast(id_orden_pedido_origen as text) END   || ' - ' || CASE WHEN id_orden_pedido_destino IS NULL THEN '' ELSE cast(id_orden_pedido_destino as text) END  || ' - ' || CASE WHEN id_orden_pedido_final IS NULL THEN '' ELSE cast(id_orden_pedido_final as text) END  as destino from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_destino = a.numero_pedido limit 1) as es_pedido_destino"),
-        G.knex.raw("(select CASE WHEN id_orden_pedido_origen IS NULL THEN (select  'CT' || cast(id_orden_cotizacion_origen as text) from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_final = a.numero_pedido limit 1) ELSE cast(id_orden_pedido_origen as text) END   || ' - ' || CASE WHEN id_orden_pedido_destino IS NULL THEN '' ELSE cast(id_orden_pedido_destino as text) END  || ' - ' || CASE WHEN id_orden_pedido_final IS NULL THEN '' ELSE cast(id_orden_pedido_final as text) END  as destino from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_final = a.numero_pedido limit 1) as es_pedido_final"),
+        G.knex.raw("(select\
+            CASE WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)  from ventas_ordenes_pedido_multiple_clientes  where  id_orden_pedido_origen = a.numero_pedido limit 1)\
+                ELSE cast(id_orden_pedido_origen as text)\
+            END   || ' - ' || \
+                        CASE\
+                WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                ELSE cast(id_orden_pedido_destino as text)\
+            END  || ' - ' || \
+                        CASE\
+                WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                ELSE cast(id_orden_pedido_final as text)\
+                        END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
+        from\
+            ventas_ordenes_pedido_multiple_clientes as vopmc \
+                                left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp) \
+                                left join terceros t on (vopt.tercero_id = t.tercero_id and vopt.tipo_id_tercero = t.tipo_id_tercero)\
+                                left join bodegas b on (vopmc.farmacia_id = b.empresa_id and vopmc.centro_utilidad = b.centro_utilidad and vopmc.bodega = b.bodega)\
+        where\
+            id_orden_pedido_origen = a.numero_pedido limit 1\
+        ) as es_pedido_origen"),
+        G.knex.raw("(SELECT\
+                CASE\
+                    WHEN id_orden_pedido_origen IS NULL THEN (\
+                                            select\
+                                                    'CT' || cast(id_orden_cotizacion_origen as text)\
+                                            from\
+                                                    ventas_ordenes_pedido_multiple_clientes\
+                                            where\
+                                                    id_orden_pedido_destino = a.numero_pedido limit 1)\
+                    ELSE cast(id_orden_pedido_origen as text)\
+                END   || ' - ' || CASE\
+                    WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                    ELSE cast(id_orden_pedido_destino as text)\
+                END  || ' - ' || CASE\
+                    WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                    ELSE cast(id_orden_pedido_final as text)\
+                END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
+            from\
+                ventas_ordenes_pedido_multiple_clientes as vopmc \
+                                left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp) \
+                                left join terceros t on (vopt.tercero_id = t.tercero_id and vopt.tipo_id_tercero = t.tipo_id_tercero)\
+                                left join bodegas b on (vopmc.farmacia_id = b.empresa_id and vopmc.centro_utilidad = b.centro_utilidad and vopmc.bodega = b.bodega)\
+            where\
+                id_orden_pedido_destino = a.numero_pedido limit 1\
+            ) as es_pedido_destino"),
+        G.knex.raw("(\
+                select\
+                    CASE\
+                        WHEN id_orden_pedido_origen IS NULL THEN (select\
+                            'CT' || cast(id_orden_cotizacion_origen as text)\
+                        from\
+                            ventas_ordenes_pedido_multiple_clientes\
+                        where\
+                            id_orden_pedido_final = a.numero_pedido limit 1)\
+                        ELSE cast(id_orden_pedido_origen as text)\
+                    END   || ' - ' || CASE\
+                        WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                        ELSE cast(id_orden_pedido_destino as text)\
+                    END  || ' - ' || CASE\
+                        WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                        ELSE cast(id_orden_pedido_final as text)\
+                    END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
+                from\
+                    ventas_ordenes_pedido_multiple_clientes as vopmc \
+                                left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp) \
+                                left join terceros t on (vopt.tercero_id = t.tercero_id and vopt.tipo_id_tercero = t.tipo_id_tercero)\
+                                left join bodegas b on (vopmc.farmacia_id = b.empresa_id and vopmc.centro_utilidad = b.centro_utilidad and vopmc.bodega = b.bodega)\
+                where\
+                    id_orden_pedido_final = a.numero_pedido limit 1\
+                ) as es_pedido_final"),
         subQuery
     ]).from(query).
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");
-    //console.log(G.sqlformatter.format(queryPrincipal.toString()));
+    console.log(G.sqlformatter.format(queryPrincipal.toString()));
     queryPrincipal.then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
@@ -2258,11 +2325,74 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
         "j.sw_autorizacion", 
         "j.sw_facturacion_agrupada",
         G.knex.raw("coalesce(g.descripcion,'') as descripcion_tipo_producto"),
-        /*
-            (select id_orden_pedido_origen || ',' || id_orden_pedido_destino || ',' || id_orden_pedido_final from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_origen = h.pedido_cliente_id) as es_pedido_origen,
-                (select id_orden_pedido_origen || ',' || id_orden_pedido_destino || ',' || id_orden_pedido_final from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_destino = h.pedido_cliente_id) as es_pedido_destino,
-                (select id_orden_pedido_origen || ',' || id_orden_pedido_destino || ',' || id_orden_pedido_final from ventas_ordenes_pedido_multiple_clientes where id_orden_pedido_final = h.pedido_cliente_id) as es_pedido_final
-        */
+        G.knex.raw("(select\
+            CASE WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)  from ventas_ordenes_pedido_multiple_clientes  where  id_orden_pedido_origen = h.pedido_cliente_id limit 1)\
+                ELSE cast(id_orden_pedido_origen as text)\
+            END   || ' - ' || \
+                        CASE\
+                WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                ELSE cast(id_orden_pedido_destino as text)\
+            END  || ' - ' || \
+                        CASE\
+                WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                ELSE cast(id_orden_pedido_final as text)\
+                        END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
+        from\
+            ventas_ordenes_pedido_multiple_clientes as vopmc \
+                                left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp) \
+                                left join terceros t on (vopt.tercero_id = t.tercero_id and vopt.tipo_id_tercero = t.tipo_id_tercero)\
+                                left join bodegas b on (vopmc.farmacia_id = b.empresa_id and vopmc.centro_utilidad = b.centro_utilidad and vopmc.bodega = b.bodega)\
+        where\
+            id_orden_pedido_origen = h.pedido_cliente_id limit 1\
+        ) as es_pedido_origen"),
+        G.knex.raw("(SELECT\
+                CASE\
+                    WHEN id_orden_pedido_origen IS NULL THEN (\
+                                            select\
+                                                    'CT' || cast(id_orden_cotizacion_origen as text)\
+                                            from\
+                                                    ventas_ordenes_pedido_multiple_clientes\
+                                            where\
+                                                    id_orden_pedido_destino = h.pedido_cliente_id limit 1)\
+                    ELSE cast(id_orden_pedido_origen as text)\
+                END   || ' - ' || CASE\
+                    WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                    ELSE cast(id_orden_pedido_destino as text)\
+                END  || ' - ' || CASE\
+                    WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                    ELSE cast(id_orden_pedido_final as text)\
+                END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
+            from\
+                ventas_ordenes_pedido_multiple_clientes as vopmc \
+                                left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp) \
+                                left join terceros t on (vopt.tercero_id = t.tercero_id and vopt.tipo_id_tercero = t.tipo_id_tercero)\
+                                left join bodegas b on (vopmc.farmacia_id = b.empresa_id and vopmc.centro_utilidad = b.centro_utilidad and vopmc.bodega = b.bodega)\
+            where\
+                id_orden_pedido_destino = h.pedido_cliente_id limit 1\
+            ) as es_pedido_destino"),
+        G.knex.raw("(select\
+                    CASE\
+                        WHEN id_orden_pedido_origen IS NULL THEN (select\
+                            'CT' || cast(id_orden_cotizacion_origen as text)\
+                        from\
+                            ventas_ordenes_pedido_multiple_clientes\
+                        where\
+                            id_orden_pedido_final = h.pedido_cliente_id limit 1)\
+                        ELSE cast(id_orden_pedido_origen as text)\
+                    END   || ' - ' || CASE\
+                        WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                        ELSE cast(id_orden_pedido_destino as text)\
+                    END  || ' - ' || CASE\
+                        WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                        ELSE cast(id_orden_pedido_final as text)\
+                    END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
+                from\
+                    ventas_ordenes_pedido_multiple_clientes as vopmc \
+                                        left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp) \
+                                        left join terceros t on (vopt.tercero_id = t.tercero_id and vopt.tipo_id_tercero = t.tipo_id_tercero)\
+                                        left join bodegas b on (vopmc.farmacia_id = b.empresa_id and vopmc.centro_utilidad = b.centro_utilidad and vopmc.bodega = b.bodega)\
+                where id_orden_pedido_final = h.pedido_cliente_id limit 1\
+            ) as es_pedido_final")
     ]).from(query).
     leftJoin("inv_tipo_producto as g", "a.tipo_producto", "g.tipo_producto_id").
     leftJoin("ventas_ordenes_pedidos as h", "a.numero_cotizacion", "h.pedido_cliente_id_tmp").

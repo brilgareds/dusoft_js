@@ -1261,6 +1261,10 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         clienteMultiple: args.pedidos_clientes.clienteMultiple
     };
 
+<<<<<<< HEAD
+=======
+ //cotizacion.numero_cotizacion
+>>>>>>> f612e78f0dff4e7b5be3c5904ff60923f21b0b16
 
     G.Q.nfcall(that.m_pedidos_clientes.actualizarCabeceraCotizacion, cotizacion).then(function (rows) {
 
@@ -1300,12 +1304,13 @@ function __insertarCabeceraDetalleBodegasMultiple(parametros, callback) {
 
         return G.Q.nfcall(__insertarCabeceraClientesCotizacion, resultado, parametros, 0, {});
     }).then(function (resultado) {
+       
+  //  console.log("parametros.bodegaActual ",parametros.bodegaActual);
+     resultado.swOrigenDestino =  parametros.bodegaActual==='03'?'0':'1'; 
+     resultado.swTipoPedido = '1';
 
-        //  console.log("parametros.bodegaActual ",parametros.bodegaActual);
-        resultado.swOrigenDestino = parametros.bodegaActual === '03' ? '0' : '1';
-        resultado.swTipoPedido = '1';
-
-        return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "insertar_ventas_ordenes_pedido_multiple_clientes", resultado);
+        resultado.numeroCotizacionOrigen = parametros.cotizacion.numero_cotizacion;
+        return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",resultado);
 //        var productos=datos[Object.keys(datos)[index]];
 //        
 //         var cotizacion = {
@@ -5526,8 +5531,10 @@ PedidosCliente.prototype.duplicarPedido = function (req, res) {
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
 
-    G.Q.ninvoke(that.m_pedidos_clientes, 'duplicarPedido', args.numero_pedido, args.sw_origen_destino).then(function (resultado) {
-        res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {pedido: resultado}));
+    console.log('se esta duplicando el pedido', args);
+    G.Q.ninvoke(that.m_pedidos_clientes, 'duplicarPedido', args.numero_pedido,args.sw_origen_destino).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Pedido duplicado en Duana', 200, {pedido:resultado}));
+
     }).fail(function (err) {
         console.log("err [duplicarPedido]: ", err);
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));

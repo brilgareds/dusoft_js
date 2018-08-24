@@ -199,18 +199,18 @@ define([
                 });
             };
 
-            function sumarDias(fecha, dias) {
-                fecha.setDate(fecha.getDate() + dias);
-                return fecha;
-            }
+//            function sumarDias(fecha, dias) {
+//                fecha.setDate(fecha.getDate() + dias);
+//                return fecha;
+//            }
 
             that.renderProductosTraslado = function (productos) {
                 $scope.datos_view.listado_productos_validados = [];
                 productos.forEach(function (data) {
-                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
+//                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             parseFloat(data.cantidad_disponible).toFixed(), data.tipo_producto_id, data.item_id, parseFloat(data.cantidad).toFixed());
-                    producto.setFechaVencimiento($filter('date')(fecha, "dd/MM/yyyy"));
+                    producto.setFechaVencimiento($filter('date')(data.fecha_vencimiento, "dd/MM/yyyy"));
                     producto.setLote(data.lote);
                     $scope.datos_view.listado_productos_validados.push(producto);
                 });

@@ -129,10 +129,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 ]
             };
 
-            function sumarDias(fecha, dias) {
-                fecha.setDate(fecha.getDate() + dias);
-                return fecha;
-            }
+//            function sumarDias(fecha, dias) {
+//                fecha.setDate(fecha.getDate() + dias);
+//                return fecha;
+//            }
 
             $scope.btn_adicionar_producto = function (fila) {
 
@@ -143,8 +143,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 that.listarLotesProductos(fila, function (result) {
                     var lotes = [];
                     for (var i in result) {
-                        var fecha = sumarDias(new Date(result[i].fecha_vencimiento), 1);
-                        var _lote = {lote: result[i].lote, existencia: result[i].existencia_actual, fecha_vencimiento: $filter('date')(fecha, "dd/MM/yyyy"), cantidad: 0};
+//                        var fecha = sumarDias(new Date(result[i].fecha_vencimiento), 1);
+                        var _lote = {lote: result[i].lote, existencia: result[i].existencia_actual, fecha_vencimiento: $filter('date')(result[i].fecha_vencimiento, "dd/MM/yyyy"), cantidad: 0};
                         lotes.push(_lote);
                     }
                     that.listar_lotes(fila, lotes);

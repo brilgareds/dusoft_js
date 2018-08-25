@@ -197,6 +197,8 @@ define(["angular", "js/services"], function(angular, services) {
                         }
                         
                         pedido.setDatos(_pedido);
+                        var pedidosMultiples=_pedido.es_pedido_origen? _pedido.es_pedido_origen: _pedido.es_pedido_destino? _pedido.es_pedido_destino : _pedido.es_pedido_final?  _pedido.es_pedido_final : 'No Multiple';
+                        pedido.setPedidoMultiple(pedidosMultiples);
                         
                         pedido.agregarDetallePedido(ProductoPedido, _pedido.lista_productos);
                         pedido.setCantidadProductos(pedido.getProductos().length);

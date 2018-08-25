@@ -15,6 +15,7 @@ define(["angular", "js/controllers",
                  localStorageService) {
 
             $scope.Empresa = Empresa;
+            
             $scope.pedidosSeparadosSeleccionados = [];
 
             $scope.paginas = 0;
@@ -62,17 +63,18 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
-                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido',
+                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido', width: "7%",
                         cellTemplate: "<div class='ngCellText ng-scope col1 colt1'>\
                                         <span class='pull-left'>{{row.entity.pedido.numero_pedido}}</span>\
                                         <span  ng-show='row.entity.esDocumentoNuevo' class='label label-danger pull-right'>Nuevo</span>\
                                      </div>"
                     },
+                    {field: 'pedido.pedidosMultiple', displayName: 'Multiple', width: "20%"},
                     {field: 'pedido.cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'pedido.nombre_vendedor', displayName: 'Vendedor'},
                     {field: 'separador.nombre_operario', displayName: 'Separador'},
                     {field: 'auditor.nombre_responsable', displayName: 'Auditor'},
-                    {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
+                    {field: 'fecha_separacion_pedido', displayName: "Fecha Separación", width: "7%"},
                     {field: 'movimiento', displayName: "Detalle", cellClass: "txt-center", width: "7%",
                         cellTemplate: '<div ng-switch="esAuditorCreador(row)">\
                                         <button ng-switch-when="true" ng-validate-events="{{opcionesModulo.btnAuditarClientes}}" class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in"></span> Auditar</button>\

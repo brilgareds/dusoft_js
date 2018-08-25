@@ -18,6 +18,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.empresa_id = 0;
             this.centro_utilidad = 0;
             this.bodega_id = 0;
+            this.pedidosMultiple;
             
             this.fechaRegistro;
             //this.detalle_documento_temporal = [];
@@ -82,6 +83,15 @@ define(["angular", "js/models"], function(angular, models) {
         DocumentoTemporal.prototype.getFechaRegistro = function () {
             return this.fechaRegistro;
         };
+        
+        DocumentoTemporal.prototype.setPedidoMultiple= function(pedidosMultiple) {
+          this.pedidosMultiple = pedidosMultiple;
+          return this;
+        };
+        
+        DocumentoTemporal.prototype.getPedidosMultiple = function() {
+            return this.pedidosMultiple;
+        }; 
         
 
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that

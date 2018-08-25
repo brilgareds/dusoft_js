@@ -988,7 +988,131 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         "e.nombre as responsable_pedido",
         "d.fecha as fecha_asignacion_pedido",
         "g.fecha_registro as fecha_separacion_pedido",
-        "a.observacion"
+        "a.observacion",
+        G.knex.raw("(select\
+           CASE\
+               WHEN id_orden_pedido_origen IS NULL THEN (select\
+                   'CT' || cast(id_orden_cotizacion_origen as text)\
+               from\
+                   ventas_ordenes_pedido_multiple_clientes\
+               where\
+                   id_orden_pedido_origen = a.pedido_cliente_id limit 1)\
+               ELSE cast(id_orden_pedido_origen as text)\
+           END   || ' - ' ||                         CASE\
+               WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+               ELSE cast(id_orden_pedido_destino as text)\
+           END  || ' - ' ||                         CASE\
+               WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+               ELSE cast(id_orden_pedido_final as text)\
+           END || ' - ' || cast(coalesce(t.nombre_tercero,\
+           '') as text) || '' || cast(coalesce(b.descripcion,\
+           '') as text) as destino\
+       from\
+           ventas_ordenes_pedido_multiple_clientes as vopmc\
+       left join\
+           ventas_ordenes_pedidos_tmp vopt\
+               on (\
+                   vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp\
+               )\
+       left join\
+           terceros t\
+               on (\
+                   vopt.tercero_id = t.tercero_id\
+                   and vopt.tipo_id_tercero = t.tipo_id_tercero\
+               )\
+       left join\
+           bodegas b\
+               on (\
+                   vopmc.farmacia_id = b.empresa_id\
+                   and vopmc.centro_utilidad = b.centro_utilidad\
+                   and vopmc.bodega = a.pedido_cliente_id\
+               )\
+       where\
+           id_orden_pedido_origen = a.pedido_cliente_id limit 1\
+       ) as es_pedido_origen"),       
+       G.knex.raw("(\
+           SELECT\
+               CASE\
+                   WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)\
+                   from\
+                       ventas_ordenes_pedido_multiple_clientes\
+                   where\
+                       id_orden_pedido_destino = a.pedido_cliente_id limit 1)\
+                   ELSE cast(id_orden_pedido_origen as text)\
+               END   || ' - ' || CASE\
+                   WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                   ELSE cast(id_orden_pedido_destino as text)\
+               END  || ' - ' || CASE\
+                   WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                   ELSE cast(id_orden_pedido_final as text)\
+               END || ' - ' || cast(coalesce(t.nombre_tercero,\
+               '') as text) || '' || cast(coalesce(b.descripcion,\
+               '') as text) as destino\
+           from\
+               ventas_ordenes_pedido_multiple_clientes as vopmc\
+           left join\
+               ventas_ordenes_pedidos_tmp vopt\
+                   on (\
+                       vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp\
+                   )\
+           left join\
+               terceros t\
+                   on (\
+                       vopt.tercero_id = t.tercero_id\
+                       and vopt.tipo_id_tercero = t.tipo_id_tercero\
+                   )\
+           left join\
+               bodegas b\
+                   on (\
+                       vopmc.farmacia_id = b.empresa_id\
+                       and vopmc.centro_utilidad = b.centro_utilidad\
+                       and vopmc.bodega = b.bodega\
+                   )\
+           where\
+               id_orden_pedido_destino = a.pedido_cliente_id limit 1\
+           ) as es_pedido_destino"),              
+        G.knex.raw("(\
+               select\
+                   CASE\
+                       WHEN id_orden_pedido_origen IS NULL THEN (select\
+                           'CT' || cast(id_orden_cotizacion_origen as text)\
+                       from\
+                           ventas_ordenes_pedido_multiple_clientes\
+                       where\
+                           id_orden_pedido_final = a.pedido_cliente_id limit 1)\
+                       ELSE cast(id_orden_pedido_origen as text)\
+                   END   || ' - ' || CASE\
+                       WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                       ELSE cast(id_orden_pedido_destino as text)\
+                   END  || ' - ' || CASE\
+                       WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                       ELSE cast(id_orden_pedido_final as text)\
+                   END || ' - ' || cast(coalesce(t.nombre_tercero,\
+                   '') as text) || '' || cast(coalesce(b.descripcion,\
+                   '') as text) as destino\
+               from\
+                   ventas_ordenes_pedido_multiple_clientes as vopmc\
+               left join\
+                   ventas_ordenes_pedidos_tmp vopt\
+                       on (\
+                           vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp\
+                       )\
+               left join\
+                   terceros t\
+                       on (\
+                           vopt.tercero_id = t.tercero_id\
+                           and vopt.tipo_id_tercero = t.tipo_id_tercero\
+                       )\
+               left join\
+                   bodegas b\
+                       on (\
+                           vopmc.farmacia_id = b.empresa_id\
+                           and vopmc.centro_utilidad = b.centro_utilidad\
+                           and vopmc.bodega = b.bodega\
+                       )\
+               where\
+                   id_orden_pedido_final = a.pedido_cliente_id limit 1\
+               ) as es_pedido_final")
     ];
 
     var query = G.knex.column(columnas).from("ventas_ordenes_pedidos as a").innerJoin("terceros as b", function() {
@@ -1067,7 +1191,9 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         query.totalRegistros = total.length;
         return registros;
 
-    }).then(function(rows) {
+    });
+    console.log(G.sqlformatter.format(query.toString())); 
+    query.then(function(rows) {
         callback(false, rows, query.totalRegistros);
     }). catch (function(err) {
         console.log("err [listar_pedidos_del_operario]: ", err);

@@ -20,6 +20,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.empresaDestino;
             this.centroDestino;
             this.bodegaDestino;
+            this.pedidosMultiple;
             this.temporalId = 0;
             this.productoSeleccionado = {};
             this.prefijo;
@@ -171,7 +172,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoAuditoria.prototype.getBodegaDestino = function() {
             return this.bodegaDestino;
         };
-            
+        
+        PedidoAuditoria.prototype.setPedidoMultiple= function(pedidosMultiple) {
+          this.pedidosMultiple = pedidosMultiple;
+          return this;
+        };
+        
+        PedidoAuditoria.prototype.getPedidosMultiple = function() {
+            return this.pedidosMultiple;
+        };            
         
         PedidoAuditoria.prototype.agregarDetallePedido = function(modeloProducto, productos, temporal, modeloLote) {
             for(var i in productos){

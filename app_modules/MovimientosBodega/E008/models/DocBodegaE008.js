@@ -349,10 +349,134 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                     when a.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion"),
         G.knex.raw("to_char(c.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),    
         G.knex.raw("to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_separacion_pedido"), 
-        "c.empresa_id"
+        "c.empresa_id",
+        G.knex.raw("(select\
+           CASE\
+               WHEN id_orden_pedido_origen IS NULL THEN (select\
+                   'CT' || cast(id_orden_cotizacion_origen as text)\
+               from\
+                   ventas_ordenes_pedido_multiple_clientes\
+               where\
+                   id_orden_pedido_origen = a.pedido_cliente_id limit 1)\
+               ELSE cast(id_orden_pedido_origen as text)\
+           END   || ' - ' ||                         CASE\
+               WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+               ELSE cast(id_orden_pedido_destino as text)\
+           END  || ' - ' ||                         CASE\
+               WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+               ELSE cast(id_orden_pedido_final as text)\
+           END || ' - ' || cast(coalesce(t.nombre_tercero,\
+           '') as text) || '' || cast(coalesce(b.descripcion,\
+           '') as text) as destino\
+       from\
+           ventas_ordenes_pedido_multiple_clientes as vopmc\
+       left join\
+           ventas_ordenes_pedidos_tmp vopt\
+               on (\
+                   vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp\
+               )\
+       left join\
+           terceros t\
+               on (\
+                   vopt.tercero_id = t.tercero_id\
+                   and vopt.tipo_id_tercero = t.tipo_id_tercero\
+               )\
+       left join\
+           bodegas b\
+               on (\
+                   vopmc.farmacia_id = b.empresa_id\
+                   and vopmc.centro_utilidad = b.centro_utilidad\
+                   and vopmc.bodega = a.pedido_cliente_id\
+               )\
+       where\
+           id_orden_pedido_origen = a.pedido_cliente_id limit 1\
+       ) as es_pedido_origen"),       
+       G.knex.raw("(\
+           SELECT\
+               CASE\
+                   WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)\
+                   from\
+                       ventas_ordenes_pedido_multiple_clientes\
+                   where\
+                       id_orden_pedido_destino = a.pedido_cliente_id limit 1)\
+                   ELSE cast(id_orden_pedido_origen as text)\
+               END   || ' - ' || CASE\
+                   WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                   ELSE cast(id_orden_pedido_destino as text)\
+               END  || ' - ' || CASE\
+                   WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                   ELSE cast(id_orden_pedido_final as text)\
+               END || ' - ' || cast(coalesce(t.nombre_tercero,\
+               '') as text) || '' || cast(coalesce(b.descripcion,\
+               '') as text) as destino\
+           from\
+               ventas_ordenes_pedido_multiple_clientes as vopmc\
+           left join\
+               ventas_ordenes_pedidos_tmp vopt\
+                   on (\
+                       vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp\
+                   )\
+           left join\
+               terceros t\
+                   on (\
+                       vopt.tercero_id = t.tercero_id\
+                       and vopt.tipo_id_tercero = t.tipo_id_tercero\
+                   )\
+           left join\
+               bodegas b\
+                   on (\
+                       vopmc.farmacia_id = b.empresa_id\
+                       and vopmc.centro_utilidad = b.centro_utilidad\
+                       and vopmc.bodega = b.bodega\
+                   )\
+           where\
+               id_orden_pedido_destino = a.pedido_cliente_id limit 1\
+           ) as es_pedido_destino"),              
+        G.knex.raw("(\
+               select\
+                   CASE\
+                       WHEN id_orden_pedido_origen IS NULL THEN (select\
+                           'CT' || cast(id_orden_cotizacion_origen as text)\
+                       from\
+                           ventas_ordenes_pedido_multiple_clientes\
+                       where\
+                           id_orden_pedido_final = a.pedido_cliente_id limit 1)\
+                       ELSE cast(id_orden_pedido_origen as text)\
+                   END   || ' - ' || CASE\
+                       WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                       ELSE cast(id_orden_pedido_destino as text)\
+                   END  || ' - ' || CASE\
+                       WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                       ELSE cast(id_orden_pedido_final as text)\
+                   END || ' - ' || cast(coalesce(t.nombre_tercero,\
+                   '') as text) || '' || cast(coalesce(b.descripcion,\
+                   '') as text) as destino\
+               from\
+                   ventas_ordenes_pedido_multiple_clientes as vopmc\
+               left join\
+                   ventas_ordenes_pedidos_tmp vopt\
+                       on (\
+                           vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp\
+                       )\
+               left join\
+                   terceros t\
+                       on (\
+                           vopt.tercero_id = t.tercero_id\
+                           and vopt.tipo_id_tercero = t.tipo_id_tercero\
+                       )\
+               left join\
+                   bodegas b\
+                       on (\
+                           vopmc.farmacia_id = b.empresa_id\
+                           and vopmc.centro_utilidad = b.centro_utilidad\
+                           and vopmc.bodega = b.bodega\
+                       )\
+               where\
+                   id_orden_pedido_final = a.pedido_cliente_id limit 1\
+               ) as es_pedido_final")
     ];
         
-    G.knex.column(campos).
+    var query=G.knex.column(campos).
     from("inv_bodegas_movimiento_tmp_despachos_clientes as a").
     innerJoin("inv_bodegas_movimiento_tmp as b", function(){
         this.on("a.doc_tmp_id"," b.doc_tmp_id").
@@ -390,8 +514,9 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
        orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     }).
     limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).
-    then(function(resultado){
+    offset((pagina - 1) * G.settings.limit);
+    console.log(G.sqlformatter.format(query.toString())); 
+    query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
         console.log("error consultar_documentos_temporales_clientes", err);

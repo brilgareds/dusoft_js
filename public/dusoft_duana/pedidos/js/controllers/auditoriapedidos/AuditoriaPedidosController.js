@@ -83,7 +83,7 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
-
+                    
                     if (data.obj && data.obj.documentos_temporales !== undefined) {
                         callback(data.obj, paginando, tipo);
                     }
@@ -91,7 +91,7 @@ define(["angular", "js/controllers",
                 });
 
             };
-
+           
 
             that.crearDocumentoTemporal = function(obj, tipo) {
 
@@ -101,7 +101,9 @@ define(["angular", "js/controllers",
                 var pedido = PedidoAuditoria.get(obj);
                 pedido.setDatos(obj);
                 pedido.setTipo(tipo);
-
+                var multiple=obj.es_pedido_origen? obj.es_pedido_origen: obj.es_pedido_destino? obj.es_pedido_destino : obj.es_pedido_final?  obj.es_pedido_final : 'No Multiple';
+                pedido.setPedidoMultiple(multiple);
+                
                 documento_temporal.empresa_id = obj.empresa_id;
                 documento_temporal.centro_utilidad = obj.centro_utilidad || '1';
                 documento_temporal.bodega_id = obj.bodega_id || '03';
@@ -141,7 +143,7 @@ define(["angular", "js/controllers",
                 documento_temporal.setSeparador(separador);
                 documento_temporal.setAuditor(auditor);
 
-
+console.log("*****",documento_temporal);
                 return documento_temporal;
             };
             
@@ -987,6 +989,7 @@ define(["angular", "js/controllers",
             });
 
             socket.on("onListarDocumentosTemporalesClientes", function(data) {
+                   console.log("onListarDocumentosTemporalesClientes");
                 if (data.status === 200) {
                     var temporal = data.obj.documento_temporal_clientes[0];
                     var empresa = Usuario.getUsuarioActual().getEmpresa(); 
@@ -1010,6 +1013,7 @@ define(["angular", "js/controllers",
             });
 
             socket.on("onListarDocumentosTemporalesFarmacias", function(data) {
+                console.log("onListarDocumentosTemporalesFarmacias");
                 if (data.status === 200) {
                     
                     var temporal = data.obj.documento_temporal_farmacias[0];

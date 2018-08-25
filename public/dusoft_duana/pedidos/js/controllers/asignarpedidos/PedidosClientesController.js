@@ -87,7 +87,7 @@ define(["angular",
             };
 
             that.renderPedidosCliente = function(data, paginando) {
-
+                
                 $scope.items = data.pedidos_clientes.length;
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
@@ -117,6 +117,7 @@ define(["angular",
             };
 
             that.crearPedido = function(obj) {
+                
                 var pedido = PedidoAuditoria.get();
                 pedido.setDatos(obj);
 
@@ -170,13 +171,14 @@ define(["angular",
 					  <span ng-if="row.entity.getEstado()!=2" ng-class="agregarRestriccion(row.entity.estado_separacion)">\
 						{{row.entity.descripcion_estado_actual_pedido}} \
 					  </span> \
-					  </button>', width: "10%"},
+					  </button>', width: "8%"},
                     {field: 'numero_pedido', displayName: 'Pedido', width: "80"},
+                    {field: 'numero_pedido_multiple', displayName: 'Pedido Multiple', width: "12%"},
                     {field: 'descripcionTipoPedido', displayName: 'Tipo Productos', width: "110"},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'observacion', displayName: 'Observacion', width: "25%"},
                     {field: 'nombreSeparador', displayName:"Separador"},
-                    {field: 'descripcion_estado', displayName: "Estado", width: "10%"},
+                    {field: 'descripcion_estado', displayName: "Estado", width: "8%"},
                     {field: 'fecha_registro', displayName: "Fecha Registro", width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button", width:100,
                         cellTemplate: '<div class="btn-group">\

@@ -12,6 +12,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.farmacia;
             this.descripcion = "";
             this.numero_pedido;
+            this.numero_pedido_multiple;
             this.nombre_vendedor;
             this.fecha_registro ;
             this.descripcion_estado;
@@ -29,6 +30,7 @@ define(["angular", "js/models"], function(angular, models) {
         // Pedidos
         Pedido.prototype.setDatos = function(datos) {
             this.numero_pedido = datos.numero_pedido || null;
+            this.numero_pedido_multiple =datos.es_pedido_origen? datos.es_pedido_origen: datos.es_pedido_destino? datos.es_pedido_destino : datos.es_pedido_final?  datos.es_pedido_final : 'No Multiple';
             this.nombre_vendedor = datos.nombre_vendedor || datos.nombre_farmacia; // Se condiciona dependiendo del tipo de cliente si es farmacia o es cliente normal
             this.fecha_registro = datos.fecha_registro || null;
             this.descripcion_estado = datos.descripcion_estado || ''; // Se condiciona dependiendo del tipo de cliente si es farmacia o es cliente normal
@@ -78,6 +80,15 @@ define(["angular", "js/models"], function(angular, models) {
             return this.numero_pedido;
         };
         
+        Pedido.prototype.setNumeroPedidoMultiple = function(numero_pedido_multiple){
+            this.numero_pedido_multiple = numero_pedido_multiple;
+            return this;
+        };
+
+        Pedido.prototype.get_numero_pedido_multiple = function() {
+            return this.numero_pedido_multiple;
+        };
+
         Pedido.prototype.setCliente = function(cliente) {
             this.cliente = cliente;
         };

@@ -158,6 +158,12 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
         res.send(G.utils.r(req.url, 'El item_id_compras esta vacío', 404, {}));
         return;
     }
+    
+    var bodega="";
+    if(args.movimientos_bodegas.prefijo !== undefined){
+        bodega=args.movimientos_bodegas.prefijo;
+    }
+ console.log("AAAAAAAAAA",bodega);
   
     parametros ={
                  usuarioId: args.movimientos_bodegas.usuario_id,
@@ -173,6 +179,7 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
                  valorUnitario:args.movimientos_bodegas.valor_unitario,
                  itemIdCompras:args.movimientos_bodegas.item_id_compras,
                 };
+                
     G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaBodega", parametros).then(function(result) {
 
         
@@ -182,11 +189,14 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
         }else{
             parametros.empresa=result[0].empresa_id;
             parametros.centroUtilidad=result[0].centro_utilidad;
-            parametros.bodega=result[0].bodega;
+            parametros.bodega=bodega!==undefined?bodega:result[0].bodega;
+             console.log("BBBB",result[0].bodega);
+//            console.log("parametros -----",parametros);
             return G.Q.ninvoke(that.m_movimientos_bodegas, "isBodegaDestino", parametros);            
         }
     }).then(function(result) {
         if(result.length!==0){
+//            console.log("Entro traslado **********************");
             parametros.bodegaDestino=result.bodega_destino;
              return G.Q.nfcall(__traslado,that,parametros);
         }

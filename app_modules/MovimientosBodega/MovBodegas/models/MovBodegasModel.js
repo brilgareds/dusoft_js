@@ -6,8 +6,9 @@ var MovimientosBodegasModel = function () {
 MovimientosBodegasModel.prototype.obtener_identificicador_movimiento_temporal = function (usuario_id, callback) {
     var sql = "SELECT (COALESCE(MAX(doc_tmp_id),0) + 1) as doc_tmp_id FROM inv_bodegas_movimiento_tmp; ";
 
-    G.knex.raw(sql, {1: usuario_id}).
-            then(function (resultado) {
+    var query =G.knex.raw(sql, {1: usuario_id});
+    console.log("1 - obtener_identificicador_movimiento_temporal ",G.sqlformatter.format(query.toString())); 
+        query.then(function (resultado) {
                 var movimiento_temporal_id = resultado.rows[0].doc_tmp_id;
                 callback(false, movimiento_temporal_id);
             }).catch(function (err) {
@@ -23,7 +24,7 @@ MovimientosBodegasModel.prototype.ingresar_movimiento_bodega_temporal = function
     var query = G.knex.raw(sql, {1: movimiento_temporal_id, 2: usuario_id, 3: bodegas_doc_id, 4: observacion});
     if (transaccion)
         query.transacting(transaccion);
-
+console.log("2 - ingresar_movimiento_bodega_temporal ",G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado.rows);
     }).catch(function (err) {
@@ -41,10 +42,11 @@ MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
                 porcentaje_gravamen, total_costo, fecha_vencimiento, lote, local_prod, total_costo_pedido, valor_unitario, usuario_id) \
                 VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14) RETURNING item_id; ";
 
-            G.knex.raw(sql, {1: doc_tmp_id, 2: empresa_id, 3: centro_utilidad_id, 4: bodega_id, 5: codigo_producto, 6: cantidad, 7: iva, 8: total_costo, 9: fecha_vencimiento, 10: lote, 11: '', 12: total_costo_pedido, 13: valor_unitario, 14: usuario_id}).
-                    then(function (resultado) {
-                        callback(false, resultado.rows);
-                    }).catch(function (err) {
+           var query= G.knex.raw(sql, {1: doc_tmp_id, 2: empresa_id, 3: centro_utilidad_id, 4: bodega_id, 5: codigo_producto, 6: cantidad, 7: iva, 8: total_costo, 9: fecha_vencimiento, 10: lote, 11: '', 12: total_costo_pedido, 13: valor_unitario, 14: usuario_id});
+                console.log("ingresar_detalle_movimiento_bodega_temporal-> ",G.sqlformatter.format(query.toString()));    
+            query.then(function (resultado) {
+                callback(false, resultado.rows);
+            }).catch(function (err) {
                 callback(err);
             });
 
@@ -383,7 +385,8 @@ MovimientosBodegasModel.prototype.crear_documento = function (documento_temporal
                 } else {
                     // Consultar numeracion del documento    
                     __obtener_numeracion_documento(empresa_id, documento_id, function (err, numeracion, result) {
-
+console.log("__obtener_numeracion_documento ",numeracion);
+console.log("__obtener_numeracion_documento validacion ",err || numeracion.length === 0);
                         if (err || numeracion.length === 0) {
                             console.log('Se ha generado un error o no se pudo tener la numeracion del documento');
                             callback(err);
@@ -393,6 +396,9 @@ MovimientosBodegasModel.prototype.crear_documento = function (documento_temporal
                             var prefijo_documento = numeracion[0].prefijo;
                             var numeracion_documento = numeracion[0].numeracion;
                             var observacion = documento_temporal.observacion;
+                            console.log("prefijo_documento ",prefijo_documento);
+                            console.log("numeracion_documento ",numeracion_documento);
+                            console.log("observacion ",observacion);
 
 
                             // Ingresar Cabecera Documento temporal
@@ -562,7 +568,8 @@ MovimientosBodegasModel.prototype.isExistenciaBodega = function (parametros, cal
             .where('a.usuario_id', parametros.usuarioId)
             .andWhere('a.doc_tmp_id', parametros.docTmpId)
             .andWhere('c.codigo_producto', parametros.codProucto);
-
+    
+console.log("4- isExistenciaBodega", G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (error) {
@@ -582,6 +589,7 @@ MovimientosBodegasModel.prototype.isBodegaDestino = function (parametros, callba
             .where('a.usuario_id', parametros.usuarioId)
             .andWhere('a.doc_tmp_id', parametros.docTmpId);
 
+console.log("5- isBodegaDestino ", G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (error) {
@@ -598,8 +606,9 @@ MovimientosBodegasModel.prototype.isTrasladosTmp = function (parametros, callbac
                      inventarios_productos b \
               WHERE  a.bodega = :1 \
                      AND b.codigo_producto = :2 ";
-    G.knex.raw(sql, {1: parametros.bodega, 2: parametros.codProucto}).
-            then(function (resultado) {
+    var query=G.knex.raw(sql, {1: parametros.bodega, 2: parametros.codProucto});
+    console.log("6- isBodegaDestino ", G.sqlformatter.format(query.toString()));
+            query.then(function (resultado) {
                 callback(false, resultado.rows, resultado);
             }).catch(function (error) {
         console.log("error [isTrasladosTmp]: ", error);
@@ -621,6 +630,7 @@ MovimientosBodegasModel.prototype.isExistenciaEnBodega = function (parametros, c
             .where('a.codigo_producto', parametros.codProucto)
             .andWhere('a.bodega', parametros.bodegaDestino);
 
+console.log("7- isBodegaDestino ", G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (error) {
@@ -998,8 +1008,9 @@ MovimientosBodegasModel.prototype.getTiposDocumentosBodegaEmpresa = function (pa
 function __obtener_numeracion_documento(empresa_id, documento_id, callback) {
 
     var sql = " SELECT prefijo, numeracion FROM documentos WHERE  empresa_id = :1 AND documento_id = :2 ;  ";
-    G.knex.raw(sql, {1: empresa_id, 2: documento_id}).
-            then(function (resultado) {
+    var query=G.knex.raw(sql, {1: empresa_id, 2: documento_id});
+    console.log("__obtener_numeracion_documento",G.sqlformatter.format(query.toString())); 
+            query.then(function (resultado) {
                 sql = " UPDATE documentos SET numeracion = numeracion + 1 WHERE empresa_id = :1 AND  documento_id = :2 ; ";
 
                 G.knex.raw(sql, {1: empresa_id, 2: documento_id}).
@@ -1085,6 +1096,9 @@ function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id,
     if (transaccion)
         query.transacting(transaccion);
 
+console.log("****************OJO AQUI GENERA ERROR inv_bodegas_movimiento_update_existencias ()********************"); 
+console.log("__ingresar_detalle_movimiento_bodega ",G.sqlformatter.format(query.toString())); 
+console.log("***********************************************"); 
     query.then(function (resultado) {
         callback(false, resultado.rows, resultado);
     }).catch(function (err) {
@@ -1116,7 +1130,7 @@ function __consultar_documento_bodega_temporal(documento_temporal_id, usuario_id
                 WHERE doc_tmp_id = :1 AND usuario_id = :2;";
 
     var query= G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id});
-//    console.log(G.sqlformatter.format(query.toString()));
+    console.log(G.sqlformatter.format(query.toString()));
         query.then(function (resultado) {
                 callback(false, resultado.rows.length > 0 ? resultado.rows[0] : null);
             }).catch(function (err) {
@@ -1163,7 +1177,7 @@ function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, u
                 where a.doc_tmp_id = :1 and a.usuario_id = :2 ";
 
     var query=G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id});
-//    console.log("__consultar_detalle_movimiento_bodega_temporal",G.sqlformatter.format(query.toString()));
+    console.log("__consultar_detalle_movimiento_bodega_temporal",G.sqlformatter.format(query.toString()));
             query.then(function (resultado) {
                 callback(false, resultado.rows);
             }).catch(function (err) {

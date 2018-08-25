@@ -2530,7 +2530,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
     //where("j.estado", "1").
     queryPrincipal.then(function(resultado) {
         
-console.log("AAAAAA " ,G.sqlformatter.format( queryPrincipal.toString()));
+//console.log("AAAAAA " ,G.sqlformatter.format( queryPrincipal.toString()));
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [listar_cotizaciones]: ", err);

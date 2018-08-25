@@ -515,7 +515,6 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
     }).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit);
-    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){

@@ -1793,7 +1793,10 @@ function _generarDocumentoRotulo(obj, callback) {
 
 // Generar Documento Despacho Clientes
 E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) {
-
+console.log("--------------------------");
+console.log("--------------------------");
+console.log("----------generarDocumentoDespachoClientes----------------");
+console.log("--------------------------");
 
     // Verificar Pendientes
     // Ingresar Justificacion

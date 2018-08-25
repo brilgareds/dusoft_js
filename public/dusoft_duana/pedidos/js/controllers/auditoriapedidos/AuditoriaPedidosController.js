@@ -594,7 +594,7 @@ console.log("*****",documento_temporal);
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
                     url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
                 }
-//console.log('url', url);
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -775,10 +775,11 @@ console.log("*****",documento_temporal);
                         observacion:  data.parametros.encabezado.observacion
                     }
                 };
-
+console.log("obj-AAA   ",obj.data);
                 Request.realizarRequest(API.I002.CREAR_NEW_DOCUMENTO_TEMPORAL, "POST", obj, function(datas) {
                     if (datas.status === 200) {
                         $scope.doc_tmp_id=datas.obj.movimiento_temporal_id;
+                        console.log("CREAR_NEW_DOCUMENTO_TEMPORAL ok   ",$scope.doc_tmp_id);
                         generarIngresoDetalleI002(data,0,function(){
                            
                             callback(true);
@@ -806,7 +807,7 @@ console.log("*****",documento_temporal);
              
                      var movimientos_bodegas = {
                         doc_tmp_id: $scope.doc_tmp_id,
-                        bodegas_doc_id: data.sw_origen_destino == 1? '1542' : '80',
+                        bodegas_doc_id: data.sw_origen_destino == 1? '1541' : '80',
                         codigo_producto: productos.codigo_producto,
                         cantidad: productos.cantidad,
                         porcentaje_gravamen: productos.porcentaje_gravamen,
@@ -817,7 +818,8 @@ console.log("*****",documento_temporal);
                         total_costo_ped: '0',
                         valor_unitario: '0',
                         usuario_id: $scope.session.usuario_id,
-                        item_id_compras: productosActas.item_id
+                        item_id_compras: productosActas.item_id,
+                        prefijo: data.sw_origen_destino == 1? '06' : '03'
                      }; 
                      
                     
@@ -828,7 +830,7 @@ console.log("*****",documento_temporal);
                     }
                 };
                 
-                Request.realizarRequest(API.I002.ADD_ITEM_DOC_TEMPORAL, "POST", obj, function(datos) {                   
+                Request.realizarRequest(API.I002.ADD_ITEM_DOC_TEMPORAL, "POST", obj, function(datos) {  
                     index++;
                     generarIngresoDetalleI002(data,index,callback);
                  });               

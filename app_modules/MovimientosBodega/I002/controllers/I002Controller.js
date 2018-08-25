@@ -42,10 +42,10 @@ I002Controller.prototype.newDocTemporal = function(req, res) {
         res.send(G.utils.r(req.url, 'La bodega NO esta definida', 404, {}));
         return;
     }
-
+console.log("llega del cliente bodegas_doc_id :: ",bodegas_doc_id);
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificicador_movimiento_temporal", usuarioId).then(function(doc_tmp_id) {
-        
+        console.log("obtener_identificicador_movimiento_temporal->> ",doc_tmp_id);
         movimiento_temporal_id = doc_tmp_id;
 
         G.knex.transaction(function(transaccion) {

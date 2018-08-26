@@ -294,6 +294,10 @@ define(["angular", "js/controllers",
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
                     return;
                 }
+                if(obj.get_estado_cotizacion() === '6' && obj.get_observacion_cartera() !== ''){
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "ya se genero pedido en la bodega contraria");
+                    return;
+                }
                
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
@@ -487,12 +491,13 @@ define(["angular", "js/controllers",
                     cotizacion.set_tipo_producto(data.tipo_producto);
                     cotizacion.setFechaRegistro(data.fecha_registro);
                     cotizacion.setNumeroPedido(data.numero_pedido);
-                    
+                    cotizacion.set_observacion_cartera(data.observacion_cartera);
                     cotizacion.trazabilidadPedidoMultiple = data.es_pedido_origen? data.es_pedido_origen: data.es_pedido_destino? data.es_pedido_destino : data.es_pedido_final?  data.es_pedido_final : 'No Multiple';
                     cotizacion.setTipoPedido(data.tipo_pedido);
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
+                //console.log('Empresa.get_cotizaciones()',$scope.Empresa.get_cotizaciones()[0]);
                 $scope.Empresa.get_cotizaciones();
             };
 

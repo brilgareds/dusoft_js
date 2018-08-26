@@ -244,6 +244,7 @@ define(["angular", "js/controllers",
                     documento.setBodegaDestino((_documento.tipo_pedido === 2) ? _documento.bodega_destino : "BD");
                     documento.setEmpresaDestino(_documento.empresa_destino);
                     var pedido = PedidoAuditoria.get().setNumero(_documento.pedido);
+                    pedido.setDatos(_documento);
                     documento.setPedido(pedido);
                     $scope.documentosAprobados.push(documento);
                 };
@@ -283,9 +284,10 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'getRazonSocial()', displayName: 'Empresa', width: "25%"},
-                    {field: 'getPrefijo()', displayName: 'prefijo', width: "25%"},
-                    {field: 'getNumero()', displayName: 'Numero', width: "20%"},
+                    {field: 'getRazonSocial()', displayName: 'Empresa', width: "15%"},
+                    {field: 'getPrefijo()', displayName: 'prefijo', width: "10%"},
+                    {field: 'getNumero()', displayName: 'Numero', width: "15%"},
+                    {field: 'getPedido().numero_pedido_multiple', displayName: 'Pedido Multiple', width: "25%"},
                     {field: 'fecha_registro', displayName: 'Fecha Registro', width: "20%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\

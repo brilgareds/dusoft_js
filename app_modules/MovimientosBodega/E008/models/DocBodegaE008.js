@@ -1446,6 +1446,81 @@ DocumentoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
          prefijos = "'EFB'";
      }
 
+var sql1 =" a.*,\
+ (select\
+            CASE WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)  from ventas_ordenes_pedido_multiple_clientes  where  id_orden_pedido_origen = a.pedido limit 1)\
+                ELSE cast(id_orden_pedido_origen as text)\
+            END   || ' - ' || \
+                        CASE\
+                WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                ELSE cast(id_orden_pedido_destino as text)\
+            END  || ' - ' || \
+                        CASE\
+                WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                ELSE cast(id_orden_pedido_final as text)\
+                        END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
+        from\
+            ventas_ordenes_pedido_multiple_clientes as vopmc \
+                                left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp) \
+                                left join terceros t on (vopt.tercero_id = t.tercero_id and vopt.tipo_id_tercero = t.tipo_id_tercero)\
+                                left join bodegas b on (vopmc.farmacia_id = b.empresa_id and vopmc.centro_utilidad = b.centro_utilidad and vopmc.bodega = b.bodega)\
+        where\
+            id_orden_pedido_origen = a.pedido limit 1\
+        ) as es_pedido_origen,\
+        (SELECT\
+                CASE\
+                    WHEN id_orden_pedido_origen IS NULL THEN (\
+                                            select\
+                                                    'CT' || cast(id_orden_cotizacion_origen as text)\
+                                            from\
+                                                    ventas_ordenes_pedido_multiple_clientes\
+                                            where\
+                                                    id_orden_pedido_destino = a.pedido limit 1)\
+                    ELSE cast(id_orden_pedido_origen as text)\
+                END   || ' - ' || CASE\
+                    WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                    ELSE cast(id_orden_pedido_destino as text)\
+                END  || ' - ' || CASE\
+                    WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                    ELSE cast(id_orden_pedido_final as text)\
+                END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
+            from\
+                ventas_ordenes_pedido_multiple_clientes as vopmc \
+                                left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp) \
+                                left join terceros t on (vopt.tercero_id = t.tercero_id and vopt.tipo_id_tercero = t.tipo_id_tercero)\
+                                left join bodegas b on (vopmc.farmacia_id = b.empresa_id and vopmc.centro_utilidad = b.centro_utilidad and vopmc.bodega = b.bodega)\
+            where\
+                id_orden_pedido_destino = a.pedido limit 1\
+            ) as es_pedido_destino,\
+       (\
+                select\
+                    CASE\
+                        WHEN id_orden_pedido_origen IS NULL THEN (select\
+                            'CT' || cast(id_orden_cotizacion_origen as text)\
+                        from\
+                            ventas_ordenes_pedido_multiple_clientes\
+                        where\
+                            id_orden_pedido_final = a.pedido limit 1)\
+                        ELSE cast(id_orden_pedido_origen as text)\
+                    END   || ' - ' || CASE\
+                        WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                        ELSE cast(id_orden_pedido_destino as text)\
+                    END  || ' - ' || CASE\
+                        WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                        ELSE cast(id_orden_pedido_final as text)\
+                    END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
+                from\
+                    ventas_ordenes_pedido_multiple_clientes as vopmc \
+                                left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp) \
+                                left join terceros t on (vopt.tercero_id = t.tercero_id and vopt.tipo_id_tercero = t.tipo_id_tercero)\
+                                left join bodegas b on (vopmc.farmacia_id = b.empresa_id and vopmc.centro_utilidad = b.centro_utilidad and vopmc.bodega = b.bodega)\
+                where\
+                    id_orden_pedido_final = a.pedido limit 1\
+                ) as es_pedido_final\
+ \
+ from\
+ (";
+
      var sql = "a.prefijo,\
                 a.numero,\
                 b.razon_social,\
@@ -1470,7 +1545,7 @@ DocumentoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
                     a.numero  :: varchar "+G.constants.db().LIKE+"  :numero\
                    \
                 ) AND a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa_id\
-                AND a.prefijo IN ("+prefijos+")";
+                AND a.prefijo IN ("+prefijos+") )as a";
    
     var parametros = {
         fechaInicial: obj.fechaInicial, 
@@ -1479,10 +1554,11 @@ DocumentoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
         numero: "%"+ obj.numero  +"%",
         empresa_id: obj.empresa_id
     };
-    
-    var query = G.knex.select(G.knex.raw(sql, parametros)).
+
+     var query = G.knex.select(G.knex.raw(sql1 +" "+G.knex.select(G.knex.raw(sql, parametros)))).
     limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.prefijo", "desc");
+
         query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){

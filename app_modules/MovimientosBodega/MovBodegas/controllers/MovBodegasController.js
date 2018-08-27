@@ -189,7 +189,8 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
         }else{
             parametros.empresa=result[0].empresa_id;
             parametros.centroUtilidad=result[0].centro_utilidad;
-            parametros.bodega=bodega!==undefined?bodega:result[0].bodega;
+//            parametros.bodega=result[0].bodega;
+            parametros.bodega=bodega!==''?bodega:result[0].bodega;
              console.log("BBBB",result[0].bodega);
 //            console.log("parametros -----",parametros);
             return G.Q.ninvoke(that.m_movimientos_bodegas, "isBodegaDestino", parametros);            

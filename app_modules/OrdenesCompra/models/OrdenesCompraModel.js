@@ -1589,7 +1589,7 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
 */
 OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(datos, callback) {
    
-    var sql = " insert into \n\
+    var sql = " insert into \
                 inv_bodegas_movimiento_tmp_d ( \
                         usuario_id,\
                         doc_tmp_id,\

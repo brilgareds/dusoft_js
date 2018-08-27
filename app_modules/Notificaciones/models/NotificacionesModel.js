@@ -1022,7 +1022,7 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
             callback(false, resultado.rows, resultado);
         });
     }).catch(function(err){
-       console.log("err [insertar_recepcion_mercancia]:: "), err;
+       console.log("err [insertar_recepcion_mercancia]:: ", err);
        callback(err);
     });
     

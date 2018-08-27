@@ -189,11 +189,11 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     //Correccion de bug de stock en calculo de disponible
                                     if(parseInt(stock) < parseInt(cantidad_despachada)){
                                         disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
-                                        console.log('disponible bodega 1', disponible_bodega);
+//                                        console.log('disponible bodega 1', disponible_bodega);
                                     } else if(parseInt(cantidad_total_pendiente) === 0 && parseInt(cantidad_reservada_temporales) === 0) {
                                         
                                         disponible_bodega = parseInt(stock);
-                                        console.log('disponible bodega 2', disponible_bodega);
+//                                        console.log('disponible bodega 2', disponible_bodega);
                                        
                                     } else {
                                          /*

@@ -1340,7 +1340,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumo = function(ob
     query.then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){
-        console.log(">>> ",G.sqlformatter.format(query.toString())); 
+//        console.log(">>> ",G.sqlformatter.format(query.toString())); 
         console.log("err (/catch) [consultarTemporalFacturaConsumo]: ", err);     
         callback({err:err, msj: "Error al consultar el temporal de la factura de consumo]"});   
     }); 

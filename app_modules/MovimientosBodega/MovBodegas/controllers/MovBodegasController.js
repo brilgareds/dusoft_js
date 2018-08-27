@@ -158,6 +158,12 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
         res.send(G.utils.r(req.url, 'El item_id_compras esta vacío', 404, {}));
         return;
     }
+    
+    var bodega="";
+    if(args.movimientos_bodegas.prefijo !== ''){
+        bodega=args.movimientos_bodegas.prefijo;
+    }
+ console.log("AAAAAAAAAA",bodega);
   
     parametros ={
                  usuarioId: args.movimientos_bodegas.usuario_id,
@@ -173,6 +179,7 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
                  valorUnitario:args.movimientos_bodegas.valor_unitario,
                  itemIdCompras:args.movimientos_bodegas.item_id_compras,
                 };
+                
     G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaBodega", parametros).then(function(result) {
 
         
@@ -180,13 +187,19 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
         if(result.length===0){
             throw {msj:"EL producto "+args.movimientos_bodegas.codigo_producto+" no esta relacionado en existencias_bodega.", status:403};        
         }else{
-            parametros.empresa=result[0].empresa_id;
-            parametros.centroUtilidad=result[0].centro_utilidad;
-            parametros.bodega=result[0].bodega;
+//            parametros.empresa=result[0].empresa_id;
+            parametros.empresa         = (bodega!=='' && bodega!==undefined)?'03':result[0].empresa_id;
+//            parametros.centroUtilidad=result[0].centro_utilidad;
+            parametros.centroUtilidad  = (bodega!=='' && bodega!==undefined)?'1 ':result[0].centro_utilidad;;
+            parametros.bodega          = (bodega!=='' && bodega!==undefined)?bodega:result[0].bodega;
+             console.log("BBBB::: ",parametros);
+             console.log("result[0]::: ",result[0]);
+             console.log("bodega:::: ",bodega);
             return G.Q.ninvoke(that.m_movimientos_bodegas, "isBodegaDestino", parametros);            
         }
     }).then(function(result) {
         if(result.length!==0){
+//            console.log("Entro traslado **********************");
             parametros.bodegaDestino=result.bodega_destino;
              return G.Q.nfcall(__traslado,that,parametros);
         }
@@ -432,6 +445,8 @@ MovBodegasController.prototype.execCrearDocumento=function(req,res){
     var ordenPedidoID=args.movimientos_bodegas.orden_pedido_id;
     
     var docTmpId= args.movimientos_bodegas.doc_tmp_id;
+    
+    console.log("execCrearDocumento docTmpId ",docTmpId);
     
     G.knex.transaction(function(transaccion) {  
         

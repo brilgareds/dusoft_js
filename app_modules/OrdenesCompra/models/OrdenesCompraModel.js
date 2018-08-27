@@ -1589,7 +1589,7 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
 */
 OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(datos, callback) {
    
-    var sql = " insert into \n\
+    var sql = " insert into \
                 inv_bodegas_movimiento_tmp_d ( \
                         usuario_id,\
                         doc_tmp_id,\
@@ -1629,7 +1629,7 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(dato
 
 
     var query=G.knex.raw(sql, parametros);
-
+console.log("8-ingresarBodegaMovimientoTmpProducto ",G.sqlformatter.format(query.toString())); 
             query.then(function(resultado) {
       
         callback(false, resultado.rows, resultado);

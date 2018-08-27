@@ -143,7 +143,7 @@ define(["angular", "js/controllers",
                 documento_temporal.setSeparador(separador);
                 documento_temporal.setAuditor(auditor);
 
-console.log("*****",documento_temporal);
+//console.log("*****",documento_temporal);
                 return documento_temporal;
             };
             
@@ -594,7 +594,7 @@ console.log("*****",documento_temporal);
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
                     url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
                 }
-//console.log('url', url);
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -744,7 +744,8 @@ console.log("*****",documento_temporal);
             
             $scope.ejecutar = true;
             socket.on("onNotificarGenerarI002", function (datos) {
-                
+                console.log("*****************orden de compra**********************");
+                console.log("orden de compra  ",datos);
                 var bodega=empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo;
                 //console.log("bodega ",bodega);
                 var timer = setTimeout(function () {
@@ -756,7 +757,7 @@ console.log("*****",documento_temporal);
                         var cotizacion ={
                             id_orden_cotizacion_origen : datos.parametros.data.id_orden_cotizacion_origen,
                             id_orden_cotizacion_destino : datos.parametros.data.id_orden_cotizacion_destino
-                        }
+                        };
                         that.generarIngresoI002(datos.parametros.data, function (asd) {                           
                             that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos,datos.parametros.data.sw_tipo_pedido,cotizacion);
                         });
@@ -775,10 +776,11 @@ console.log("*****",documento_temporal);
                         observacion:  data.parametros.encabezado.observacion
                     }
                 };
-
+console.log("obj-AAA   ",obj.data);
                 Request.realizarRequest(API.I002.CREAR_NEW_DOCUMENTO_TEMPORAL, "POST", obj, function(datas) {
                     if (datas.status === 200) {
                         $scope.doc_tmp_id=datas.obj.movimiento_temporal_id;
+                        console.log("CREAR_NEW_DOCUMENTO_TEMPORAL ok   ",$scope.doc_tmp_id);
                         generarIngresoDetalleI002(data,0,function(){
                            
                             callback(true);
@@ -806,7 +808,7 @@ console.log("*****",documento_temporal);
              
                      var movimientos_bodegas = {
                         doc_tmp_id: $scope.doc_tmp_id,
-                        bodegas_doc_id: data.sw_origen_destino == 1? '1542' : '80',
+                        bodegas_doc_id: data.sw_origen_destino == 1? '1541' : '80',
                         codigo_producto: productos.codigo_producto,
                         cantidad: productos.cantidad,
                         porcentaje_gravamen: productos.porcentaje_gravamen,
@@ -817,7 +819,8 @@ console.log("*****",documento_temporal);
                         total_costo_ped: '0',
                         valor_unitario: '0',
                         usuario_id: $scope.session.usuario_id,
-                        item_id_compras: productosActas.item_id
+                        item_id_compras: productosActas.item_id,
+                        prefijo: data.sw_origen_destino == 1? '06' : '03'
                      }; 
                      
                     
@@ -828,7 +831,7 @@ console.log("*****",documento_temporal);
                     }
                 };
                 
-                Request.realizarRequest(API.I002.ADD_ITEM_DOC_TEMPORAL, "POST", obj, function(datos) {                   
+                Request.realizarRequest(API.I002.ADD_ITEM_DOC_TEMPORAL, "POST", obj, function(datos) {  
                     index++;
                     generarIngresoDetalleI002(data,index,callback);
                  });               
@@ -845,14 +848,14 @@ console.log("*****",documento_temporal);
                         }
                     }
                 };
-         
+         console.log("$scope.doc_tmp_id   ",$scope.doc_tmp_id);
                 Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
 
                    if (data.status === 200) {
                 			var nombre = data.obj.nomb_pdf;
                 			setTimeout(function() {
                 			    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                			}, 4000);
+                			}, 0);
 
                         //pasa el pedido cliente Duana a pedido farmacia Cosmitet
                         //console.log("swTipoPedidoswTipoPedidoswTipoPedido ",swTipoPedido);

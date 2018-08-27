@@ -3506,7 +3506,8 @@ function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callb
                     a.bodega_origen_producto\
                     FROM ventas_ordenes_pedidos_d a\
                     inner join ventas_ordenes_pedido_multiple_clientes b on b.id_orden_pedido_destino = a.pedido_cliente_id\
-                    inner join ventas_ordenes_pedidos_d_tmp c on c.pedido_cliente_id_tmp = b.id_orden_cotizacion_origen and c.bodega_origen_producto = a.bodega_origen_producto\
+                    inner join ventas_ordenes_pedidos_d_tmp c on c.pedido_cliente_id_tmp = b.id_orden_cotizacion_origen \
+                    and c.bodega_origen_producto = a.bodega_origen_producto and a.codigo_producto = c.codigo_producto\
                     WHERE pedido_cliente_id = :2 \
                 ) ;";                            
    
@@ -3540,7 +3541,6 @@ function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callb
 
 
     var query = G.knex.raw(sql, parametros);
-
 
     G.logError(G.sqlformatter.format(query.toString()));
 

@@ -144,9 +144,12 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 a.valor_unitario, \
                 (a.numero_unidades * a.valor_unitario) as subtotal,\
                 (a.numero_unidades * (a.valor_unitario * (a.porc_iva/100))) as valor_iva,\
-                ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total,\n\
-                a.empresa_origen_producto,\n\
-                a.centro_utilidad_origen_producto,\n\
+                ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total,\
+                c.costo_ultima_compra,\
+                (a.numero_unidades * (c.costo_ultima_compra * (a.porc_iva/100))) as iva_costo,\
+                ((c.costo_ultima_compra+(c.costo_ultima_compra*(a.porc_iva/100))) * a.numero_unidades) as total_costo,\
+                a.empresa_origen_producto,\
+                a.centro_utilidad_origen_producto,\
                 a.bodega_origen_producto,\
                 (SELECT descripcion FROM bodegas WHERE empresa_id = a.empresa_origen_producto AND centro_utilidad = a.centro_utilidad_origen_producto  AND bodega = a.bodega_origen_producto) as nombre_bodega,\
                 a.centro_utilidad_origen_producto,\
@@ -155,6 +158,8 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 b.estado_multiple_pedido\
                 FROM ventas_ordenes_pedidos_tmp as b \
                 INNER JOIN ventas_ordenes_pedidos_d_tmp AS a ON b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
+                INNER JOIN inventarios AS c ON a.codigo_producto = c.codigo_producto\
+                and b.empresa_id = c.empresa_id\
                 WHERE a.pedido_cliente_id_tmp = :1 and \
                 "+andSql+"(\
                     a.codigo_producto ilike :2 or\
@@ -2032,39 +2037,76 @@ if(cotizacion.control===true){
 PedidosClienteModel.prototype.insertar_detalle_pedido_cliente = function(cotizacion,callback) {
 
     var parametros = {1: cotizacion.numeroPedidoorigen,2:cotizacion.bodega};
-    var sql = " INSERT INTO ventas_ordenes_pedidos_d_tmp(\
-                    pedido_cliente_id_tmp, \
-                    codigo_producto, \
-                    porc_iva, \
-                    numero_unidades, \
-                    valor_unitario, \
-                    fecha_registro, \
-                    usuario_id, \
-                    empresa_origen_producto, \
-                    centro_utilidad_origen_producto, \
-                    bodega_origen_producto, \
-                    pedido_farmacia, \
-                    nombre_bodega\
-                )(\
-                    SELECT \
-                    '"+cotizacion.numeroPedido+"' as pedido_cliente_id_tmp, \
-                    codigo_producto, \
-                    porc_iva, \
-                    numero_unidades, \
-                    valor_unitario, \
-                    fecha_registro, \
-                    usuario_id, \
-                    empresa_origen_producto, \
-                    centro_utilidad_origen_producto, \
-                    '"+cotizacion.bodega+"' as bodega_origen_producto, \
-                    0 AS pedido_farmacia, \
-                    nombre_bodega\
-                    FROM ventas_ordenes_pedidos_d_tmp \
-                    WHERE pedido_cliente_id_tmp = :1 \
-                    AND bodega_origen_producto = :2 \
-                ) ;";                            
+   var sql = " INSERT INTO ventas_ordenes_pedidos_d_tmp(\
+                   pedido_cliente_id_tmp, \
+                   codigo_producto, \
+                   porc_iva, \
+                   numero_unidades, \
+                   valor_unitario, \
+                   fecha_registro, \
+                   usuario_id, \
+                   empresa_origen_producto, \
+                   centro_utilidad_origen_producto, \
+                   bodega_origen_producto, \
+                   pedido_farmacia, \
+                   nombre_bodega\
+               )(\
+                   SELECT \
+                   '"+cotizacion.numeroPedido+"' as pedido_cliente_id_tmp, \
+                   a.codigo_producto, \
+                   a.porc_iva, \
+                   a.numero_unidades, \
+                   c.costo_ultima_compra, \
+                   a.fecha_registro, \
+                   a.usuario_id, \
+                   a.empresa_origen_producto, \
+                   a.centro_utilidad_origen_producto, \
+                   '"+cotizacion.bodega+"' as bodega_origen_producto, \
+                   0 AS pedido_farmacia, \
+                   a.nombre_bodega\
+                   FROM ventas_ordenes_pedidos_tmp b \
+                   inner join ventas_ordenes_pedidos_d_tmp a on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
+                   inner join inventarios c on a.codigo_producto = c.codigo_producto and b.empresa_id = c.empresa_id\
+                   WHERE a.pedido_cliente_id_tmp = :1 \
+                   AND a.bodega_origen_producto = :2 \
+               ) ;";  
+
+/*       var sql = " INSERT INTO ventas_ordenes_pedidos_d_tmp(\
+                   pedido_cliente_id_tmp, \
+                   codigo_producto, \
+                   porc_iva, \
+                   numero_unidades, \
+                   valor_unitario, \
+                   fecha_registro, \
+                   usuario_id, \
+                   empresa_origen_producto, \
+                   centro_utilidad_origen_producto, \
+                   bodega_origen_producto, \
+                   pedido_farmacia, \
+                   nombre_bodega\
+               )(\
+                   SELECT \
+                   '"+cotizacion.numeroPedido+"' as pedido_cliente_id_tmp, \
+                   codigo_producto, \
+                   porc_iva, \
+                   numero_unidades, \
+                   valor_unitario, \
+                   fecha_registro, \
+                   usuario_id, \
+                   empresa_origen_producto, \
+                   centro_utilidad_origen_producto, \
+                   '"+cotizacion.bodega+"' as bodega_origen_producto, \
+                   0 AS pedido_farmacia, \
+                   nombre_bodega\
+                   FROM ventas_ordenes_pedidos_d_tmp \
+                   WHERE pedido_cliente_id_tmp = :1 \
+                   AND bodega_origen_producto = :2 \
+               ) ;";   */                         
    
     var query = G.knex.raw(sql, parametros);
+
+console.log("insertar_detalle_pedido_cliente", G.sqlformatter.format(
+             query.toString()));
 
     query.then(function(resultado) {
 
@@ -2530,7 +2572,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
     //where("j.estado", "1").
     queryPrincipal.then(function(resultado) {
         
-console.log("AAAAAA " ,G.sqlformatter.format( queryPrincipal.toString()));
+//console.log("AAAAAA " ,G.sqlformatter.format( queryPrincipal.toString()));
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [listar_cotizaciones]: ", err);
@@ -3292,10 +3334,13 @@ PedidosClienteModel.prototype.consultarTotalProductosCotizacion = function(pedid
 PedidosClienteModel.prototype.duplicarPedido = function(numero_pedido,sw_origen_destino, callback) {
     //consultarTerceroPedidoOrigen
     var pedido;
+    var tercero;
     G.Q.nfcall(__consultarTerceroPedidoOrigen, numero_pedido).then(function(resultado) {
-       // console.log('resultado tercero', resultado);
-        var bodegaDestino = sw_origen_destino === 0 ? '03':'06';
-        return G.Q.nfcall(__insertar_encabezado_pedido_cliente_duplicado, numero_pedido, resultado[0].tipo_id_tercero, resultado[0].tercero_id,bodegaDestino);
+       
+       tercero = resultado;
+       var bodegaDestino = sw_origen_destino === 0 ? '03':'06';
+
+        return G.Q.nfcall(__insertar_encabezado_pedido_cliente_duplicado, numero_pedido, tercero[0].tipo_id_tercero, tercero[0].tercero_id,bodegaDestino);
     }).then(function(resultado) {
         console.log('se duplica el pedido =====******************************************', resultado);
         pedido = {numero_pedido: (resultado.rows.length > 0) ? resultado.rows[0].numero_pedido : 0, estado: 0};
@@ -3382,7 +3427,7 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
 
 };
 
-function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_tercero, tercero_id,bodegaDestino, callback) {
+function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_tercero, tercero_id, bodegaDestino, callback) {
 
     var sql = " INSERT INTO ventas_ordenes_pedidos(\
                     empresa_id,\
@@ -3450,6 +3495,35 @@ function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callb
                 )(\
                     SELECT \
                     :1 as numero_pedido, \
+                    a.codigo_producto, \
+                    a.porc_iva, \
+                    a.numero_unidades, \
+                    c.valor_unitario, \
+                    a.usuario_id,    \
+                    a.fecha_registro,\
+                    a.empresa_origen_producto,\
+                    a.centro_utilidad_origen_producto,\
+                    a.bodega_origen_producto\
+                    FROM ventas_ordenes_pedidos_d a\
+                    inner join ventas_ordenes_pedido_multiple_clientes b on b.id_orden_pedido_destino = a.pedido_cliente_id\
+                    inner join ventas_ordenes_pedidos_d_tmp c on c.pedido_cliente_id_tmp = b.id_orden_cotizacion_origen and c.bodega_origen_producto = a.bodega_origen_producto\
+                    WHERE pedido_cliente_id = :2 \
+                ) ;";                            
+   
+/*     var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
+                    pedido_cliente_id, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    usuario_id,    \
+                    fecha_registro,\
+                    empresa_origen_producto,\
+                    centro_utilidad_origen_producto,\
+                    bodega_origen_producto\
+                )(\
+                    SELECT \
+                    :1 as numero_pedido, \
                     codigo_producto, \
                     porc_iva, \
                     numero_unidades, \
@@ -3461,9 +3535,13 @@ function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callb
                     bodega_origen_producto\
                     FROM ventas_ordenes_pedidos_d \
                     WHERE pedido_cliente_id = :2 \
-                ) ;";                            
-   
+                ) ;";  
+                */
+
+
     var query = G.knex.raw(sql, parametros);
+
+
     G.logError(G.sqlformatter.format(query.toString()));
 
     query.then(function(resultado) {
@@ -3488,7 +3566,7 @@ function __consultarTerceroPedidoOrigen(numero_pedido, callback) {
             .from('ventas_ordenes_pedidos_tmp as vop')
             .innerJoin('ventas_ordenes_pedido_multiple_clientes as vopmc', function(){
                 this.on('vopmc.id_orden_cotizacion_origen', 'vop.pedido_cliente_id_tmp');
-            })
+            })    
             .where('vopmc.id_orden_pedido_destino', numero_pedido);
 
 /*
@@ -3515,7 +3593,6 @@ from ventas_ordenes_pedidos_tmp as vop
                 where vopmc.id_orden_pedido_destino = 94353
 
 */
-
 
 
 /*

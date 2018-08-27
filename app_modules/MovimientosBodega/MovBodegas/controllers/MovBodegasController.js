@@ -160,7 +160,7 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
     }
     
     var bodega="";
-    if(args.movimientos_bodegas.prefijo !== undefined){
+    if(args.movimientos_bodegas.prefijo !== ''){
         bodega=args.movimientos_bodegas.prefijo;
     }
  console.log("AAAAAAAAAA",bodega);

@@ -143,7 +143,7 @@ define(["angular", "js/controllers",
                 documento_temporal.setSeparador(separador);
                 documento_temporal.setAuditor(auditor);
 
-console.log("*****",documento_temporal);
+//console.log("*****",documento_temporal);
                 return documento_temporal;
             };
             
@@ -744,7 +744,8 @@ console.log("*****",documento_temporal);
             
             $scope.ejecutar = true;
             socket.on("onNotificarGenerarI002", function (datos) {
-                
+                console.log("*****************orden de compra**********************");
+                console.log("orden de compra  ",datos);
                 var bodega=empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo;
                 //console.log("bodega ",bodega);
                 var timer = setTimeout(function () {
@@ -756,7 +757,7 @@ console.log("*****",documento_temporal);
                         var cotizacion ={
                             id_orden_cotizacion_origen : datos.parametros.data.id_orden_cotizacion_origen,
                             id_orden_cotizacion_destino : datos.parametros.data.id_orden_cotizacion_destino
-                        }
+                        };
                         that.generarIngresoI002(datos.parametros.data, function (asd) {                           
                             that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos,datos.parametros.data.sw_tipo_pedido,cotizacion);
                         });
@@ -847,14 +848,14 @@ console.log("obj-AAA   ",obj.data);
                         }
                     }
                 };
-         
+         console.log("$scope.doc_tmp_id   ",$scope.doc_tmp_id);
                 Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
 
                    if (data.status === 200) {
                 			var nombre = data.obj.nomb_pdf;
                 			setTimeout(function() {
                 			    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                			}, 4000);
+                			}, 0);
 
                         //pasa el pedido cliente Duana a pedido farmacia Cosmitet
                         //console.log("swTipoPedidoswTipoPedidoswTipoPedido ",swTipoPedido);

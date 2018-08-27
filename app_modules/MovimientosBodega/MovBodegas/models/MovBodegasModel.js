@@ -16,6 +16,50 @@ MovimientosBodegasModel.prototype.obtener_identificicador_movimiento_temporal = 
     });
 };
 
+// Consultar identificador del movimieto temporal
+MovimientosBodegasModel.prototype.obtener_identificador_movimiento_temporal_returning = function (usuario_id,bodegas_doc_id, callback) {
+
+            
+    var sql = " INSERT INTO inv_bodegas_movimiento_tmp \
+                (doc_tmp_id, usuario_id, bodegas_doc_id, fecha_registro) \
+                VALUES ( (SELECT (COALESCE(MAX(doc_tmp_id),0) + 1) as doc_tmp_id FROM inv_bodegas_movimiento_tmp),:1, :2, now()) returning doc_tmp_id;";
+
+    var query = G.knex.raw(sql, { 1: usuario_id, 2: bodegas_doc_id});
+
+console.log("obtener_identificador_movimiento_temporal_returning:: ",G.sqlformatter.format(query.toString())); 
+    query.then(function (resultado) {
+        callback(false, resultado.rows);
+    }).catch(function (err) {
+        console.log("Error obtener_identificador_movimiento_temporal_returning ", err);
+        callback(err);
+    }).done();
+};
+
+// Inserta registros (cabecera) en la tabla principal (temporal) de los movimientos de bodega
+MovimientosBodegasModel.prototype.modificar_movimiento_bodega_temporal = function (movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, transaccion, callback) {
+   
+    var query = G.knex('inv_bodegas_movimiento_tmp')
+        .where('doc_tmp_id', movimiento_temporal_id)
+        .andWhere('usuario_id', usuario_id)
+        .update({
+            bodegas_doc_id: bodegas_doc_id ,
+            observacion: observacion,
+            fecha_registro : 'now()'
+        });
+    
+    if (transaccion)
+        query.transacting(transaccion);
+    
+    query.then(function(resultado){ 
+       callback(false, resultado);
+    }).catch(function(err){ 
+        console.log('el error en modificar_movimiento_bodega_temporal ', err);
+        G.logError("err (/catch) MovBodegaModel[modificar_movimiento_bodega_temporal]: " +  err);
+        callback(err);  
+    });
+
+};
+
 // Inserta registros (cabecera) en la tabla principal (temporal) de los movimientos de bodega
 MovimientosBodegasModel.prototype.ingresar_movimiento_bodega_temporal = function (movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, transaccion, callback) {
     var sql = " INSERT INTO inv_bodegas_movimiento_tmp (doc_tmp_id, usuario_id, bodegas_doc_id, observacion, fecha_registro) \
@@ -30,7 +74,6 @@ console.log("2 - ingresar_movimiento_bodega_temporal ",G.sqlformatter.format(que
     }).catch(function (err) {
         callback(err);
     });
-
 };
 
 // Inserta registros (detalle) en la tabla principal (temporal) de los detalles de movimientos de bodega
@@ -369,6 +412,8 @@ MovimientosBodegasModel.prototype.crear_documento = function (documento_temporal
             callback(err);
             return;
         } else {
+            console.log("crear_documento::::: ",documento_temporal);
+            
             var documento_id = documento_temporal.documento_id;
 
             var empresa_id = documento_temporal.empresa_id;
@@ -1130,7 +1175,7 @@ function __consultar_documento_bodega_temporal(documento_temporal_id, usuario_id
                 WHERE doc_tmp_id = :1 AND usuario_id = :2;";
 
     var query= G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id});
-    console.log(G.sqlformatter.format(query.toString()));
+    console.log("__consultar_documento_bodega_temporal ",G.sqlformatter.format(query.toString()));
         query.then(function (resultado) {
                 callback(false, resultado.rows.length > 0 ? resultado.rows[0] : null);
             }).catch(function (err) {

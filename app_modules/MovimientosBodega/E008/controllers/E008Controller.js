@@ -2160,8 +2160,8 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function (req, res)
             var parametros = {
                 ordenes_compras: {
                     usuario_id: req.session.user.usuario_id,
-                    unidad_negocio: (pedido.bodega_id === '03') ? '4' : '0',
-                    codigo_proveedor: 55,
+                    unidad_negocio: (pedido.bodega_id === '03') ? '0' : '4',
+                    codigo_proveedor: (pedido.bodega_id === '03') ?1685:55,
                     empresa_id: pedido.empresa_id,
                     observacion: "Orden Generada por documento: " + prefijo_documento + " - " + numero_documento,
                     empresa_pedido: pedido.empresa_id,

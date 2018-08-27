@@ -44,13 +44,13 @@ I002Controller.prototype.newDocTemporal = function(req, res) {
     }
 console.log("llega del cliente bodegas_doc_id :: ",bodegas_doc_id);
 
-    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificicador_movimiento_temporal", usuarioId).then(function(doc_tmp_id) {
-        console.log("obtener_identificicador_movimiento_temporal->> ",doc_tmp_id);
-        movimiento_temporal_id = doc_tmp_id;
-
+    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificador_movimiento_temporal_returning", usuarioId,bodegas_doc_id).then(function(doc_tmp_id) {
+        
+        movimiento_temporal_id = doc_tmp_id[0].doc_tmp_id;
+        
         G.knex.transaction(function(transaccion) {
-
-            G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal,
+            
+            G.Q.nfcall(that.m_movimientos_bodegas.modificar_movimiento_bodega_temporal,
                     movimiento_temporal_id, usuarioId, bodegas_doc_id, observacion, transaccion).then(function() {
 
                 var parametros = {
@@ -414,8 +414,11 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
     var consulta = [];
     var impuesto = [];
     var comprasTemporal = [];
+    
+    console.log("execCrearDocumento docTmpId ",docTmpId);
+    
     G.knex.transaction(function(transaccion) {
-
+  
         G.Q.ninvoke(that.m_movimientos_bodegas, "crear_documento", docTmpId, usuarioId, transaccion).then(function(result) {
 
             parametros.empresaId = result.empresa_id;

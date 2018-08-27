@@ -446,6 +446,8 @@ MovBodegasController.prototype.execCrearDocumento=function(req,res){
     
     var docTmpId= args.movimientos_bodegas.doc_tmp_id;
     
+    console.log("execCrearDocumento docTmpId ",docTmpId);
+    
     G.knex.transaction(function(transaccion) {  
         
             G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function(result){

@@ -747,23 +747,31 @@ define(["angular", "js/controllers",
                 console.log("*****************orden de compra**********************");
                 console.log("orden de compra  ",datos);
                 var bodega=empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().codigo;
-                //console.log("bodega ",bodega);
                 var timer = setTimeout(function () {
                     //se valida la bodega para que no se genere ICD desde DUANA a Cosmitet  
                     //sw_origen_destino 1 pedido multiple generado automatic desde cosmitet bodega 06
                     //sw_origen_destino 0 pedido multiple generado automatic desde Duana bodega 03
+                    console.log("********************************");
+                    console.log("validacion crear pedido ",datos.parametros.status === 200 && $scope.ejecutar && datos.parametros.data.sw_estado === '0' && ((bodega === '03' && datos.parametros.data.sw_origen_destino === 1) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 0) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 1) ) );
+                    console.log("datos.parametros.status = 200:::  ",datos.parametros.status);
+                    console.log("$scope.ejecutar =true ::::  ",$scope.ejecutar );
+                    console.log("datos.parametros.data.sw_estado = 0 ::::  ",datos.parametros.data.sw_estado);
+                    console.log("bodega ::::  ",bodega);
+                    console.log("datos.parametros.data.sw_origen_destino ::::  ",datos.parametros.data.sw_origen_destino);
+                    console.log("********************************");
                     if (datos.parametros.status === 200 && $scope.ejecutar && datos.parametros.data.sw_estado === '0' && ((bodega === '03' && datos.parametros.data.sw_origen_destino === 1) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 0) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 1) ) ) {
                         $scope.ejecutar = false;
                         var cotizacion ={
                             id_orden_cotizacion_origen : datos.parametros.data.id_orden_cotizacion_origen,
                             id_orden_cotizacion_destino : datos.parametros.data.id_orden_cotizacion_destino
                         };
+                        console.log("*** ingreso ***");
                         that.generarIngresoI002(datos.parametros.data, function (asd) {                           
                             that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos,datos.parametros.data.sw_tipo_pedido,cotizacion);
                         });
                     }
                     clearTimeout(timer);
-                }, 0);
+                }, 300);
             });
             
             that.generarIngresoI002=function(data,callback){
@@ -771,22 +779,21 @@ define(["angular", "js/controllers",
                     session: $scope.session,
                     data: {
                         orden_pedido_id: data.numero_orden,
-//                        bodegas_doc_id : data.sw_origen_destino == 1? '1542' : '80',
-                        bodegas_doc_id : data.sw_origen_destino == 1? '1541' : '80',
+//                        bodegas_doc_id : data.sw_origen_destino == 1? '1542' : '80', //1541
+                        bodegas_doc_id : data.sw_origen_destino == 1? '1634' : '80',
                         observacion:  data.parametros.encabezado.observacion
                     }
                 };
-console.log("obj-AAA   ",obj.data);
+
                 Request.realizarRequest(API.I002.CREAR_NEW_DOCUMENTO_TEMPORAL, "POST", obj, function(datas) {
+                    console.log("****************CREAR_NEW_DOCUMENTO_TEMPORAL****************");
+                    console.log("datas.status ",datas.status);
+                    console.log("************************************************************");
                     if (datas.status === 200) {
                         $scope.doc_tmp_id=datas.obj.movimiento_temporal_id;
-                        console.log("CREAR_NEW_DOCUMENTO_TEMPORAL ok   ",$scope.doc_tmp_id);
-                        generarIngresoDetalleI002(data,0,function(){
-                           
-                            callback(true);
+                        generarIngresoDetalleI002(data,0,function(){                           
+                          callback(true);
                         });
-
-
                     }
                     if (datas.status === 500) {
                         AlertService.mostrarMensaje("warning", datas.msj);
@@ -832,6 +839,9 @@ console.log("obj-AAA   ",obj.data);
                 };
                 
                 Request.realizarRequest(API.I002.ADD_ITEM_DOC_TEMPORAL, "POST", obj, function(datos) {  
+                    console.log("****************ADD_ITEM_DOC_TEMPORAL****************");
+                    console.log("datas.status ",datos.status);
+                    console.log("*****************************************************");
                     index++;
                     generarIngresoDetalleI002(data,index,callback);
                  });               
@@ -848,14 +858,18 @@ console.log("obj-AAA   ",obj.data);
                         }
                     }
                 };
-         console.log("$scope.doc_tmp_id   ",$scope.doc_tmp_id);
                 Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
-
+                        
+                    console.log("****************EXEC_CREAR_DOCUMENTOS****************");
+                    console.log("datas.status ",data.status);
+                    console.log("*****************************************************");
+                    
                    if (data.status === 200) {
-                			var nombre = data.obj.nomb_pdf;
-                			setTimeout(function() {
-                			    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                			}, 0);
+                       
+                        var nombre = data.obj.nomb_pdf;
+                        setTimeout(function() {
+                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                        }, 0);
 
                         //pasa el pedido cliente Duana a pedido farmacia Cosmitet
                         //console.log("swTipoPedidoswTipoPedidoswTipoPedido ",swTipoPedido);
@@ -872,17 +886,22 @@ console.log("obj-AAA   ",obj.data);
                             };
 
                             Request.realizarRequest(API.PEDIDOS.CLIENTES.PEDIDO_CLIENTE_A_PEDIDO_FARMACIA, "POST", obj, function(data) {
-                                //console.log('PEDIDO_CLIENTE_A_PEDIDO_FARMACIA ',data);
-                                    var obj = {
-                                        session: $scope.session,
-                                        data: {
-                                                id_orden_pedido_final: data.obj.pedido.solicitud_prod_a_bod_ppal_det_id,
-                                                id_orden_cotizacion_origen: cotizacion.id_orden_cotizacion_origen
-                                        }
-                                    };
-                                    Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE, "POST", obj, function(data) {
-                                        
-                                     });
+                                console.log("****************PEDIDO_CLIENTE_A_PEDIDO_FARMACIA****************");
+                                console.log("datas.status ",data.status);
+                                console.log("*****************************************************");
+                               
+                                var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                            id_orden_pedido_final: data.obj.pedido.solicitud_prod_a_bod_ppal_det_id,
+                                            id_orden_cotizacion_origen: cotizacion.id_orden_cotizacion_origen
+                                    }
+                                };
+                                Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE, "POST", obj, function(data) {
+                                    console.log("****************PEDIDO_CLIENTE_A_PEDIDO_FARMACIA****************");
+                                    console.log("datas.status ",data.status);
+                                    console.log("*****************************************************");
+                                 });
                             });
                         }
 
@@ -895,8 +914,7 @@ console.log("obj-AAA   ",obj.data);
                                     sw_origen_destino : sw_origen_destino
                                 }
                             };
-                            //console.log('obj.data', obj.data);
-
+                            
                             //Ingresan productos provenientes de Cosmitet entonces se crear un pedido cliente en Duana basado en el pedido cliente cosmitet que generó este ingreso.
                             Request.realizarRequest(API.PEDIDOS.CLIENTES.DUPLICAR_PEDIDO, "POST", obj, function(data) {
                                 //console.log('la data que llega de ducplicar el pedido', data);
@@ -909,11 +927,12 @@ console.log("obj-AAA   ",obj.data);
                                         }
                                     };
                                     Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE, "POST", obj, function(data) {
-                                        
+                                        console.log("****************ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE****************");
+                                        console.log("datas.status ",data.status);
+                                        console.log("*****************************************************");
                                      });
                             });
-                        }
-                                  
+                        }          
                     }
 		    
                     if (data.status === 500) {

@@ -2246,24 +2246,28 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', status: 404, data: {}});
+        console.log("1onGenerarOrdenDeCompraRespuesta");
         return;
     }
 
     if (args.ordenes_compras.observacion === undefined) {
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'observacion no estan definidas', status: 404, data: {}});
         //res.send(G.utils.r(req.url, 'observacion no estan definidas', 404, {}));
+        console.log("2onGenerarOrdenDeCompraRespuesta");
         return;
     }
 
     if (args.ordenes_compras.unidad_negocio === '' || args.ordenes_compras.codigo_proveedor === '' || args.ordenes_compras.empresa_id === '') {
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'unidad_negocio, codigo_proveedor o empresa_id  estan vacias', status: 404, data: {}});
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor o empresa_id  estan vacias', 404, {}));
+        console.log("3onGenerarOrdenDeCompraRespuesta");
         return;
     }
 
     if (args.ordenes_compras.observacion === '') {
          G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'observacion esta vacia', status: 404, data: {}});
         //res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
+        console.log("4onGenerarOrdenDeCompraRespuesta");
         return;
     }
  
@@ -2292,10 +2296,12 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
     G.Q.ninvoke(that, "__insertarOrdenCompra",parametros.encabezado ).then(function (resultado) {
          
         parametros.encabezado.ordenId = resultado.data.numero_orden;
-        
+ console.log("1__insertarOrdenCompra");       
         return G.Q.ninvoke(that.m_ordenes_compra, "gestionaDetalleOrden",parametros );
          
     }).then(function(resultado){
+        
+        console.log("2gestionaDetalleOrden");
         
         return G.Q.ninvoke(that.m_ordenes_compra, "finalizar_orden_compra",parametros.encabezado.ordenId, 1);
          
@@ -2305,16 +2311,21 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         var param = {
          ordenPedido: parametros.encabezado.ordenId
          };
+         console.log("3finalizar_orden_compra");
         return G.Q.ninvoke(that.m_actasTecnicas, "listarProductosParaActas",param);
         
     }).then(function(resultado){
         productosActas=resultado;
+        console.log("4listarProductosParaActas");
+        console.log("4listarProductosParaActas",args.ordenes_compras.empresa_id === '03' && (args.ordenes_compras.bodega_pedido === '03' || args.ordenes_compras.bodega_pedido === '06'));
+        console.log("4args.ordenes_compras.bodega_pedido",args.ordenes_compras.bodega_pedido);
+        console.log("4args.ordenes_compras.empresa_id",args.ordenes_compras.empresa_id);
          if (args.ordenes_compras.empresa_id === '03' && (args.ordenes_compras.bodega_pedido === '03' || args.ordenes_compras.bodega_pedido === '06')) {
-
+console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespachoAutomatico", {empresa: args.ordenes_compras.empresa_id, prefijoDocumento: args.ordenes_compras.prefijo_documento, numeroDocumento: args.ordenes_compras.numero_documento});
 
         }else{
-      
+         console.log("6obtenerTotalDetalleDespachoAutomatico false");
             return false;
         }
     }).then(function(resultado){
@@ -2334,9 +2345,10 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
                     sw_estado: args.ordenes_compras.estado,
                     id_orden_cotizacion_origen: args.ordenes_compras.id_orden_cotizacion_origen,
                     id_orden_cotizacion_destino	: args.ordenes_compras.id_orden_cotizacion_destino,
+                    bodega:args.ordenes_compras.bodega
                 }
             };
-
+        console.log("7onGenerarOrdenDeCompraRespuesta EMIT");
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta",respuesta);
 
         that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);
@@ -2350,6 +2362,23 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
 
 };
 
+//function __generacionAutomatica(datos){
+//    console.log("__generacionAutomatica");
+//    var bodega= datos.data.bodega;
+//    var ejecutar=true;
+//     if (datos.status === 200 && ejecutar && datos.data.sw_estado === '0' && ((bodega === '03' && datos.parametros.data.sw_origen_destino === 1) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 0) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 1) ) ) {
+//       ejecutar = false;
+//                        var cotizacion ={
+//                            id_orden_cotizacion_origen : datos.parametros.data.id_orden_cotizacion_origen,
+//                            id_orden_cotizacion_destino : datos.parametros.data.id_orden_cotizacion_destino
+//                        };
+//                        console.log("*** ingreso ***");
+//                        that.generarIngresoI002(datos.parametros.data, function (asd) {                           
+//                            that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos,datos.parametros.data.sw_tipo_pedido,cotizacion);
+//                        });
+//   }
+//    
+//}
 
 /**
  * @author Cristian Manuel Ardila Troches

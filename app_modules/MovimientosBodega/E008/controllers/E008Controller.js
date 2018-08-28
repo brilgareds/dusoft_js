@@ -1989,7 +1989,8 @@ console.log("--------------------------");
                     sw_tipo_pedido : tmp.sw_tipo_pedido,
                     estado:tmp.sw_estado,
                     id_orden_cotizacion_origen: tmp.id_orden_cotizacion_origen,
-                    id_orden_cotizacion_destino: tmp.id_orden_cotizacion_destino
+                    id_orden_cotizacion_destino: tmp.id_orden_cotizacion_destino,
+                    bodega : req.session.user.bodega
                 }
             };
          

@@ -190,7 +190,7 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
 //            parametros.empresa=result[0].empresa_id;
             parametros.empresa         = (bodega!=='' && bodega!==undefined)?'03':result[0].empresa_id;
 //            parametros.centroUtilidad=result[0].centro_utilidad;
-            parametros.centroUtilidad  = (bodega!=='' && bodega!==undefined)?'1 ':result[0].centro_utilidad;;
+            parametros.centroUtilidad  = (bodega!=='' && bodega!==undefined)?'1 ':result[0].centro_utilidad;
             parametros.bodega          = (bodega!=='' && bodega!==undefined)?bodega:result[0].bodega;
              console.log("BBBB::: ",parametros);
              console.log("result[0]::: ",result[0]);
@@ -198,8 +198,10 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
             return G.Q.ninvoke(that.m_movimientos_bodegas, "isBodegaDestino", parametros);            
         }
     }).then(function(result) {
+        console.log("isBodegaDestino ",result);
+        console.log("result.length ",result.length);
         if(result.length!==0){
-//            console.log("Entro traslado **********************");
+            console.log("Entro traslado **********************",result.bodega_destino);
             parametros.bodegaDestino=result.bodega_destino;
              return G.Q.nfcall(__traslado,that,parametros);
         }

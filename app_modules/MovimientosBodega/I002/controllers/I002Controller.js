@@ -68,6 +68,7 @@ console.log("llega del cliente bodegas_doc_id :: ",bodegas_doc_id);
             }).done();
 
         }).then(function(movimiento_temporal_id) {
+            console.log("movimiento_temporal_id ",movimiento_temporal_id);
             res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {movimiento_temporal_id: movimiento_temporal_id}));
         }). catch (function(err) {
 	    console.log("Error newDocTemporal ",err);

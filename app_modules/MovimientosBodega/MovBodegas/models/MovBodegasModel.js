@@ -652,7 +652,7 @@ MovimientosBodegasModel.prototype.isTrasladosTmp = function (parametros, callbac
               WHERE  a.bodega = :1 \
                      AND b.codigo_producto = :2 ";
     var query=G.knex.raw(sql, {1: parametros.bodega, 2: parametros.codProucto});
-    console.log("6- isBodegaDestino ", G.sqlformatter.format(query.toString()));
+    console.log("6- isTrasladosTmp ", G.sqlformatter.format(query.toString()));
             query.then(function (resultado) {
                 callback(false, resultado.rows, resultado);
             }).catch(function (error) {

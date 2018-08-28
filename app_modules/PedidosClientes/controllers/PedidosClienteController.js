@@ -1389,7 +1389,6 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
 
 
     }).then(function (resultado) {
-
         //  return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",parametros);
 
         //  }).then(function (resultado) {  

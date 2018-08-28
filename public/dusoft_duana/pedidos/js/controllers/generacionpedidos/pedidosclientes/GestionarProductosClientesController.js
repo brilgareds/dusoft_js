@@ -154,7 +154,6 @@ define(["angular", "js/controllers",
 
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
                                                 
-
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -484,7 +483,6 @@ define(["angular", "js/controllers",
              * @param {type} producto
              */
             $scope.solicitar_producto = function(producto) {
-             
                 $scope.Pedido.limpiar_productos();
 
                 //mensaje a mostrar cuando el producto tiene asociado un estado invima
@@ -512,18 +510,21 @@ define(["angular", "js/controllers",
                         }
 
                         if ($scope.Pedido.get_numero_pedido() > 0) {
+
                             //OJO VOLVER A PONER
                             if(producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0){
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No hay disponibilidad suficiente para el producto");
                             }else{
                             //valida si el producto tiene asociado estado invima y muestra alerta {aceptar | cancelar}
                             if(estadoInvima !== null) {
+
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje, function(respuesta){
                                     if(respuesta){
                                 that.gestionar_pedidos();  
                             }
                                 });
                         }else{
+
                                 that.gestionar_pedidos();  
                             }
                         }
@@ -532,10 +533,12 @@ define(["angular", "js/controllers",
                         if(estadoInvima !== null) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje, function(respuesta){
                                 if(respuesta){
+
                             that.gestionar_cotizaciones();
                         }
                             });
                         }else{
+
                             that.gestionar_cotizaciones();
                         }
 

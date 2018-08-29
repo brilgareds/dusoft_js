@@ -1,5 +1,5 @@
 
-var OperariosBodega = function(operarios, pedidos_clientes, pedidos_farmacias) {
+var OperariosBodega = function (operarios, pedidos_clientes, pedidos_farmacias) {
 
     this.m_operarios = operarios;
     this.m_pedidos_clientes = pedidos_clientes;
@@ -7,7 +7,7 @@ var OperariosBodega = function(operarios, pedidos_clientes, pedidos_farmacias) {
 
 };
 
-OperariosBodega.prototype.listarOperariosBodega = function(req, res) {
+OperariosBodega.prototype.listarOperariosBodega = function (req, res) {
     var that = this;
 
     var args = req.body.data;
@@ -22,29 +22,31 @@ OperariosBodega.prototype.listarOperariosBodega = function(req, res) {
     var total_pedidos_clientes = 0;
     var total_pedidos_farmacias = 0;
 
-    this.m_operarios.listar_operarios_bodega(termino_busqueda, estado_registro, function(err, lista_operarios) {
+    this.m_operarios.listar_operarios_bodega(termino_busqueda, estado_registro, function (err, lista_operarios) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Listado Los Operarios de Bodega', 500, {}));
         else {
-            
-            if(lista_operarios.length === 0){
+
+            if (lista_operarios.length === 0) {
                 res.send(G.utils.r(req.url, 'Lista Operarios Bodega', 200, {lista_operarios: lista_operarios}));
                 return;
             }
-            
+
             var i = lista_operarios.length;
 
-            lista_operarios.forEach(function(operario_bodega) {
-              
-                that.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega.usuario_id, '', {asignados:true}, 1, 1, function(err, rows, total_registros_clientes) {
+            lista_operarios.forEach(function (operario_bodega) {
 
-                    total_pedidos_clientes = (err) ? 0 : parseInt(total_registros_clientes);
+//                that.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega.usuario_id, '', {asignados:true}, 1, 1, function(err, rows, total_registros_clientes) {
+                that.m_pedidos_clientes.cantidad_pedidos_operario(operario_bodega.usuario_id, function (err, total_registros_clientes) {
+
+                    total_pedidos_clientes = (err) ? 0 : parseInt(total_registros_clientes[0].count);
 
                     operario_bodega.total_pedidos_clientes = total_pedidos_clientes;
 
-                    that.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega.usuario_id, '', {asignados:true}, 1, 1, function(err, rows, total_registros_farmacias) {
+//                    that.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega.usuario_id, '', {asignados: true}, 1, 1, function (err, rows, total_registros_farmacias) {
+                    that.m_pedidos_farmacias.cantidad_pedidos_operario(operario_bodega.usuario_id, function (err, total_registros_farmacias) {
 
-                        total_pedidos_farmacias = (err) ? 0 : parseInt(total_registros_farmacias);
+                        total_pedidos_farmacias = (err) ? 0 : parseInt(total_registros_farmacias[0].count);
 
                         operario_bodega.total_pedidos_farmacias = total_pedidos_farmacias;
 
@@ -63,7 +65,7 @@ OperariosBodega.prototype.listarOperariosBodega = function(req, res) {
     });
 };
 
-OperariosBodega.prototype.crearOperariosBodega = function(req, res) {
+OperariosBodega.prototype.crearOperariosBodega = function (req, res) {
 
     var that = this;
 
@@ -81,7 +83,7 @@ OperariosBodega.prototype.crearOperariosBodega = function(req, res) {
 
     var operario = args.operario;
 
-    this.m_operarios.crear_operarios_bodega(operario.nombre_operario, operario.usuario_id, operario.estado, function(err, rows) {
+    this.m_operarios.crear_operarios_bodega(operario.nombre_operario, operario.usuario_id, operario.estado, function (err, rows) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Registrando el Operario', 500, {}));
         else
@@ -90,7 +92,7 @@ OperariosBodega.prototype.crearOperariosBodega = function(req, res) {
     });
 };
 
-OperariosBodega.prototype.modificarOperariosBodega = function(req, res) {
+OperariosBodega.prototype.modificarOperariosBodega = function (req, res) {
 
     var that = this;
 
@@ -108,7 +110,7 @@ OperariosBodega.prototype.modificarOperariosBodega = function(req, res) {
 
     var operario = args.operario;
 
-    this.m_operarios.modificar_operarios_bodega(operario.operario_id, operario.nombre_operario, operario.usuario_id, operario.estado, function(err, rows) {
+    this.m_operarios.modificar_operarios_bodega(operario.operario_id, operario.nombre_operario, operario.usuario_id, operario.estado, function (err, rows) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Modificando el Operario', 500, {}));
         else

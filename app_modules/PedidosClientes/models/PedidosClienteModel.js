@@ -1197,7 +1197,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         return registros;
 
     });
-    console.log(G.sqlformatter.format(query.toString())); 
+    //console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(rows) {
         callback(false, rows, query.totalRegistros);
     }). catch (function(err) {

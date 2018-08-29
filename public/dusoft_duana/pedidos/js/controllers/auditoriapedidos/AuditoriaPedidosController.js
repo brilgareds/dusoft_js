@@ -815,7 +815,7 @@ define(["angular", "js/controllers",
              
                      var movimientos_bodegas = {
                         doc_tmp_id: $scope.doc_tmp_id,
-                        bodegas_doc_id: data.sw_origen_destino == 1? '1541' : '80',
+                        bodegas_doc_id: data.sw_origen_destino == 1? '1634' : '80',
                         codigo_producto: productos.codigo_producto,
                         cantidad: productos.cantidad,
                         porcentaje_gravamen: productos.porcentaje_gravamen,

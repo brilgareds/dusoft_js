@@ -5120,7 +5120,9 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
         return;
     }
 
-    G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion', cotizacion, producto).then(function (resultado) {
+console.log("__insertarProductosFarmaciaCotizacion",producto);
+
+    G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion_multiple', cotizacion, producto).then(function (resultado) {
 
         setTimeout(function () {
             __insertarProductosFarmaciaCotizacion(that, index, cotizacion, productos, callback);
@@ -5202,6 +5204,7 @@ function __precioVentaProductos(that, index, cotizacion, callback) {
         producto.precio_venta = _producto.precio_producto;
         producto.tipo_producto = _producto.tipo_producto_id;
         producto.precioVentaIva = _producto.precio_producto;
+        producto.costo_ultima_compra = _producto.costo_ultima_compra;
         producto.sumaCantidadTotalSolicitadaBodega = 0;
         producto.sumaCantidadTotalDisponibleBodega = 0;
         producto.mensajeError = "";

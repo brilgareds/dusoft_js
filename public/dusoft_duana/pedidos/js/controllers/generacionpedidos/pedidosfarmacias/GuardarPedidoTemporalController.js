@@ -455,7 +455,7 @@ define(["angular", "js/controllers",
              * +Descripcion: Handler del boton generar pedido
              */
           $scope.onGenerarPedido = function() {
-            if ($scope.root.bodegaMultiple.bools) {
+          if ($scope.root.bodegaMultiple.bools) {
                 self.generarPedidoAutomaticoCliente(function(datos) {
                     var mensaje = '';
                     if (datos.status === 200) {

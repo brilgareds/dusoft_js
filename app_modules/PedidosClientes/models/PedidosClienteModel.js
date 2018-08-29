@@ -2355,6 +2355,47 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
 
 
 /*
+ * @author : Cristian Ardila
+ * @fecha:  02/12/2015
+ * Descripcion :  SQL Insertar Detalle Cotizacion
+ * @Funciones que hacen uso del modelo:
+ *  -- Controller: PedidosCliente.prototype.insertarDetalleCotizacion
+ *                 PedidosClienteController __insertarDetalleCotizacion()
+ */
+PedidosClienteModel.prototype.insertar_detalle_cotizacion_multiple = function(cotizacion, producto, callback) {
+   
+    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, \n\
+                codigo_producto, \
+                porc_iva, \
+                numero_unidades, \
+                valor_unitario,\
+                usuario_id,\
+                fecha_registro,\
+                empresa_origen_producto,\
+                centro_utilidad_origen_producto,\
+                bodega_origen_producto)\
+                 VALUES ( :1, :2, :3, :4, :5, :6, NOW(), :7, :8, :9 ) ; ";
+
+    G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 
+                     2: producto.codigo_producto, 
+                     3: producto.iva, 
+                     4: producto.cantidad_solicitada, 
+                     5: producto.costo_ultima_compra, 
+                     6: cotizacion.usuario_id,
+                     7: producto.empresaIdProducto,
+                     8: producto.centroUtilidadProducto,
+                     9: producto.bodegaProducto}).
+            then(function(resultado) {
+               
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err [insertar_detalle_cotizacion]", err);
+        callback(err);
+    });
+
+};
+
+/*
  * Author : Camilo Orozco
  * Descripcion :  SQL Modificar Detalle Cotizacion
  * @Funciones que hacen uso del modelo:

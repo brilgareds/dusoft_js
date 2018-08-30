@@ -5532,11 +5532,31 @@ PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function (
 
 };
 
-PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
+PedidosCliente.prototype.pedidoClienteAPedidoFarmaciaAutomatico = function(req, callback) {
     var that = this;
+    G.Q.nfcall(__pedidoClienteAPedidoFarmacia,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+};
+
+PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function(req, res) {
+    var that = this;
+    G.Q.nfcall(__pedidoClienteAPedidoFarmacia,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("listarGetDocTemporal ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();    
+};
+
+function __pedidoClienteAPedidoFarmacia(req,that,callback) {
+    var that = that;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
     var obj = {pedidoDestino: args.numero_pedido};
+    var send = {};
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultarPedidoMultipleCliente', {numero_pedido: args.numero_pedido}).then(function (resultado) {
         //farmacia_id, centro_utilidad, bodega, usuario_id, numero_pedido ,
@@ -5559,11 +5579,18 @@ PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
     }).then(function (resultado) {
         return G.Q.ninvoke(that.m_pedidos_clientes, "actualizar_pedido_multiple_final_farmacia", {pedidoDestino: obj.pedidoDestino, pedidoFinal: obj.pedidoFinal});
     }).then(function (resultado) {
-        res.send(G.utils.r(req.url, 'Producto actualizado satisfactoriamente', 200, {pedido: resultado}));
-
+//        res.send(G.utils.r(req.url, 'actualizar_pedido_multiple_final_farmacia satisfactoriamente', 200, {pedido: resultado}));
+        send.msj="actualizar_pedido_multiple_final_farmacia satisfactoriamente";
+        send.status=200;
+        send.respuesta={pedido: obj.pedidoFinal};
+        callback(false,send);
     }).fail(function (err) {
         console.log("err [pedidoClienteAPedidoFarmacia]: ", err);
-        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+//        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+        send.msj=err.msj;
+        send.status=err.status;
+        send.respuesta={pedidos_clientes: err.pedidos_clientes};
+        callback(send);
     });
 };
 //Duplica un pedido en la bodega Duana

@@ -1990,7 +1990,10 @@ console.log("--------------------------");
                     estado:tmp.sw_estado,
                     id_orden_cotizacion_origen: tmp.id_orden_cotizacion_origen,
                     id_orden_cotizacion_destino: tmp.id_orden_cotizacion_destino,
-                    bodega : req.session.user.bodega
+                    bodega : req.session.user.bodega,
+                    session : req.session,
+                    protocolo:req.protocol,
+                    host:req.get('host')
                 }
             };
          

@@ -2,6 +2,19 @@ module.exports = function(app, di_container) {
 
 
     var c_ordenes_compra = di_container.get('c_ordenes_compra');
+    var c_i002 = di_container.get('c_i002');
+    var c_pedidos_clientes = di_container.get("c_pedidos_clientes");
+    
+    app.post('/api/movBodegas/I002/execCrearDocumentoAutomatico', function(req, callback) {
+        c_i002.execCrearDocumentoAutomatico(req, function(respuesta){
+            console.log("---------Respuesta: ",respuesta);
+            callback(respuesta);
+        });
+    });
+    
+    app.post('/api/PedidosClientes/pedidoClienteAPedidoFarmacia', function(req, res) {
+        c_pedidos_clientes.pedidoClienteAPedidoFarmacia(req, res);
+    });
 
     // Listar Ordenes de Compras
     app.post('/api/OrdenesCompra/listarOrdenesCompra', function(req, res) {

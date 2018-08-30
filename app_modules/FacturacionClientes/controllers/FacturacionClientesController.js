@@ -1828,7 +1828,6 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         consultarParametrosRetencion = resultado;
-<<<<<<< HEAD
 
         if (resultado.length > 0) {
             ip = '::ffff:10.0.2.158';
@@ -1840,19 +1839,6 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
 
         } else {
             throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
-=======
-       
-        if(resultado.length > 0){
-            
-            if(ip.substr(0, 6) === '::ffff'){               
-                return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
-            }else{                
-                def.resolve();                
-            } 
-            
-        }else{                       
-            throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};                
->>>>>>> 941878612f167adebb5be1741574a0ee5e965e06
         }
 
     }).then(function (resultado) {

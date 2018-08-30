@@ -1562,12 +1562,10 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
      
     }).then(function(resultado){
          
-<<<<<<< HEAD
+
         if(resultado.rowCount > 0){
  
-=======
-        if(resultado.rowCount > 0){  
->>>>>>> 941878612f167adebb5be1741574a0ee5e965e06
+
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',
             {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo,prefijo: parametros.pedidos.prefijo,factura_fiscal: parametros.pedidos.numero});
         }else{

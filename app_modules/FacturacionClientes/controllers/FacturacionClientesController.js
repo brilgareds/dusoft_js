@@ -1508,6 +1508,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
             throw {msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
         }
 
+
     }).then(function (resultado) {
 
         if (resultado.length > 0 && (parametros.id_factura_xconsumo !== undefined && parametros.id_factura_xconsumo !== "")) {
@@ -1516,6 +1517,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
             //if(parametros.id_factura_xconsumo===undefined || parametros.id_factura_xconsumo===""){
             //parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             //}  
+
             def.resolve();
         } else {
 
@@ -1560,8 +1562,10 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
      
     }).then(function(resultado){
          
+
         if(resultado.rowCount > 0){
  
+
             return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',
             {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo,prefijo: parametros.pedidos.prefijo,factura_fiscal: parametros.pedidos.numero});
         }else{
@@ -1824,6 +1828,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         consultarParametrosRetencion = resultado;
+<<<<<<< HEAD
 
         if (resultado.length > 0) {
             ip = '::ffff:10.0.2.158';
@@ -1835,6 +1840,19 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
 
         } else {
             throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
+=======
+       
+        if(resultado.length > 0){
+            
+            if(ip.substr(0, 6) === '::ffff'){               
+                return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
+            }else{                
+                def.resolve();                
+            } 
+            
+        }else{                       
+            throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404};                
+>>>>>>> 941878612f167adebb5be1741574a0ee5e965e06
         }
 
     }).then(function (resultado) {

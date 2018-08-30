@@ -1993,7 +1993,7 @@ console.log("--------------------------");
                     bodega : req.session.user.bodega,
                     session : req.session,
                     protocolo:req.protocol,
-                    host:req.get('host')
+                    req:req
                 }
             };
          

@@ -48,10 +48,10 @@ Reportes.prototype.listarDrArias = function (req, res) {
             return 0;
         }
 
-    }).then(function (tamano) {
+    }).then(function (tamaño) {
 
         datos.fecha_fin = G.moment().format();
-        if (tamano > 0) {
+        if (tamaño > 0) {
             datos.estado = '1';
             return G.Q.nfcall(__generarDetalle, resultado, datos, that);
         } else {
@@ -96,9 +96,9 @@ Reportes.prototype.listarDrArias0 = function (req, res) {
     G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro).then(function (resultado) {
         if (resultado !== -1) {
 
-            __generarCsvDrArias(resultado, filtro, function (tamano) {
+            __generarCsvDrArias(resultado, filtro, function (tamaño) {
                 datos.fecha_fin = G.moment().format();
-                if (tamano > 0) {
+                if (tamaño > 0) {
                     datos.estado = '1';
                     __generarDetalle(resultado, datos, that, function () {
                     });
@@ -178,12 +178,19 @@ Reportes.prototype.rotacionZonas = function (req, res) {
     }).then(function (respuesta) {
     
     res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
+        
+    }).fail(function (err) {
+        console.log("error controller rotacion Zonas ", err);
+        res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
+    }).done();
+};
 
-     }).then(function(resultados) {
-     
-         return G.Q.nfcall(__creaExcel,resultados);
-         
-     }).then(function(resultados) {
+
+Reportes.prototype.rotacionZonasMovil = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas','1').then(function (rotacionZonas) {
          
         res.send(rotacionZonas);
     }).fail(function (err) {

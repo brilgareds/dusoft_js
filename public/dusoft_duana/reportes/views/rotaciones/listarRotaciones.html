@@ -1,0 +1,146 @@
+<style>
+
+    .float{
+        position:fixed;
+        width:100px;
+        height:100px;
+        right:20px;
+        background-color:#0D325F;
+        color:#FFF;
+        border-radius:50px;        
+        box-shadow: 2px 2px 3px #5A99E7;
+        z-index: 2;
+    }
+
+    .radios{
+        position: fixed;
+        width:15px;
+        height:15px; 
+        text-align:center;
+    }
+
+</style>
+<button type="button" class="btn btn-default float col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-click="enviar()"><b>ENVIAR</b></button>
+<!--<a class='flotante' href='#' ><img src='boton-flotante.png' border="0"/></a>-->
+<div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-1 col-lg-1">
+                            <label >Email: </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                            <div class="form-check form-check-inline">
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <input type="checkbox" class="form-check-input" ng-checked="checkedDuarte" name="inlineRadioOptions" id="inlineRadio" ng-click="email(1)" >
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <label class="form-check-label " for="inlineRadio1">Dr. Duarte</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                            <div class="form-check form-check-inline">
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <input type="checkbox" class="form-check-input" ng-checked="checkedSistemas" name="inlineRadioOptions" id="inlineRadio" ng-click="email(0)" >
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <label class="form-check-label" for="inlineRadio2">Sistemas</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                            <div class="form-check form-check-inline">                               
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <label class="form-check-label" for="inlineRadio2">Mes:</label>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                    <ui-select ng-model="mes"
+                                               theme="select2"
+                                               class="form-control selectgeneral pull-left col-xs-6 col-sm-6 col-md-4 col-lg-4 "
+                                               ng-change="onSeleccionMes($select.selected)">
+                                        <ui-select-match  placeholder="Seleccionar Mes">{{ $select.selected.mes}}</ui-select-match>
+                                        <ui-select-choices repeat="item in meses">
+                                            {{ item.id}}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                            <input type="text" class="form-control" ng-model="emails_envio" aria-describedby="emailHelp" placeholder="Remitentes email">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+            <div  ng-repeat="listaRotacionZona in listaRotacionZonas">
+                <div class="row" >
+                    <div class="col-lg-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading"><b>{{listaRotacionZona.getNombreZona() | uppercase}}</b></div>
+                            <div class="panel-body">
+                                <ul class="list-group">
+                                    <div  ng-repeat="listaRotacion in listaRotacionZona.nombreBodegas[0]">
+                                        <li ng-class="validarColor(listaRotacion.swEstadoCorreo)"  >
+                                      
+                                            <div class="row">                                         
+                                                <div class="col-lg-1 text-right">
+                                                    <input type="checkbox" class="form-check-input" ng-model="listaRotacions" id="{{listaRotacion.bodega}}"
+                                                            ng-click="agregar($event.currentTarget.checked, listaRotacion)" >
+                                                </div>
+
+                                                <div class="col-lg-5">
+                                                    <label class="form-check-label col-lg-12   text-light bg-dark"  for="{{listaRotacion.bodega}}" >{{listaRotacion.nombreBodega}}</label>
+                                                </div>
+                                                <div class="col-lg-6 ">
+
+                                                <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '0 '" ><span class="glyphicon glyphicon-cog"></span></label>
+                                                <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '1 '" ><span class="glyphicon glyphicon-file"></span></label>
+                                                <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '2 '" ><span class="glyphicon glyphicon-envelope"></span></label>
+                                                <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '3 '" ><span class="glyphicon glyphicon-envelope"></span></label>
+                                                <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '4 '" ><span class="glyphicon glyphicon-remove-sign"></span></label>
+                                                <label class="form-check-label col-lg-2" ng-if="listaRotacion.swEstadoCorreo === '5 '" ><span class="glyphicon glyphicon-remove-circle"></span></label>
+                                                <label class="form-check-label col-lg-2" ng-if="listaRotacion.fechaRegistro !== null" >{{listaRotacion.fechaRegistro}}</label>
+                                                <!--<label class="form-check-label" ng-if="listaRotacion.swRemitente!=='0'">Enviado a Sistemas</label>-->
+                                                <label class="form-check-label col-lg-2" ng-if="listaRotacion.diferenciaDias > 0" >{{listaRotacion.diferenciaDias}} Dia(s)</label>
+                                                <label class="form-check-label col-lg-2" ng-if="listaRotacion.swRemitente === '1'">Enviado al Dr. Duarte</label>
+                                            <!--<label class="form-check-label" ng-if="listaRotacion.remitentes!==' '">Remitente: {{listaRotacion.remitentes}}</label>
+                                            <label class="form-check-label" ng-if="listaRotacion.meses!==null">Meses: {{listaRotacion.meses}}</label>-->
+
+                                                </div>                                          
+                                            </div>
+                                        </li>
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>                           
+                    </div>      
+                </div>
+            </div>           
+        </div>
+    </div>
+    <br>
+    <div class="row">    
+        <div class="col-md-12 col-lg-12">
+            <div class="table-responsive" >
+            </div>
+            <visualizar-reporte></visualizar-reporte>
+        </div>
+    </div>
+</div>

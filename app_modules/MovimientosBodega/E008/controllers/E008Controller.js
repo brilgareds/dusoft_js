@@ -1999,7 +1999,7 @@ console.log("--------------------------");
                     bodega : args.documento_temporal.bodega_seleccionada,
                     session : req.session,
                     protocolo:req.protocol,
-                    host:req.get('host')
+                    req:req
                 }
             };
          

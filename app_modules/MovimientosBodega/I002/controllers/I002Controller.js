@@ -400,7 +400,6 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
 
 function __execCrearDocumento(req,that,callback){
     console.log("---- execCrearDocumento res-----");
-    console.log("---- execCrearDocumento -----",req);
     var that = that;
     var args = req.body.data;
     var usuarioId;
@@ -644,8 +643,6 @@ function __execCrearDocumento(req,that,callback){
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
 
         if (resultado.length > 0) {
-console.log("req.protocol ",req.protocol);
-console.log("req.get(host) ",req.get('host'));
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],

@@ -594,8 +594,7 @@ define(["angular", "js/controllers",
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
                     url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
                 }
-                
-                
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -605,8 +604,7 @@ define(["angular", "js/controllers",
                             auditor_id: documento.auditor.operario_id,
                             usuario_id: documento.separador.usuario_id,
                             bodega_documento_id : documento.getBodegasDocId(),
-                            bodega: documento.bodega_id,
-                            bodega_seleccionada:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                            bodega: documento.bodega_id
                         }
                     }
                 };
@@ -688,10 +686,6 @@ define(["angular", "js/controllers",
                         });
 
 
-                    } else if(parseInt(data.status) === 404 ) {
-                        
-                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                        
                     } else if(parseInt(data.status) !== 500 ) {
                        
                         var movimientos_bodegas = data.obj.movimientos_bodegas;

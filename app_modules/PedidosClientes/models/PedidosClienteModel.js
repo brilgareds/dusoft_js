@@ -1931,7 +1931,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function (cotizacion, callba
         11: cotizacion.centro_utilidad_id,
         12: cotizacion.bodega_id,
         13: '',
-        14: '',
+        14: '0',
         15: cotizacion.centro_utilidad_id,
         16: cotizacion.bodega_id,
         17: cotizacion.estadoMultiplePedido
@@ -2162,7 +2162,8 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, ca
                     this.orWhere(G.knex.raw(("id_orden_pedido_destino = '" + obj.numero_pedido + "' AND  (sw_origen_destino = 0 or sw_origen_destino = 1)")));
                 }
 
-                if (obj.cotizacion !== undefined) {
+                if (obj.cotizacion !== undefined && obj.cotizacion !=='') {
+                    console.log("obj.cotizacion---> ",obj.cotizacion);
                     this.andWhere("id_orden_cotizacion_origen", obj.cotizacion)
                 }
 
@@ -2179,7 +2180,7 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, ca
                 'centro_utilidad',
                 'bodega'
             ]);
-    //console.log(G.sqlformatter.format(query.toString()));
+    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

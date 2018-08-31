@@ -1954,6 +1954,11 @@ console.log("--------------------------");
      
      }).*/
     }).then(function (rows) {
+        
+        console.log("***********************  numero_pedido ************************* ");
+        console.log("***********************  numero_pedido ************************* ",numero_pedido);
+        
+        
         var obj ={numero_pedido:numero_pedido};
         tmp.numero_pedido = numero_pedido;
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultarPedidoMultipleCliente",obj);

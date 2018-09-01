@@ -78,6 +78,12 @@ define(["angular", "js/services"], function (angular, services) {
                         });
                     };
                     
+                    self.generarSincronizacionDian = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_SINCRONIZACION_DIAN, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
                     /**
                      * @author Cristian Ardila
                      * @fecha  18/05/2017 DD/MM/YYYYY

@@ -550,6 +550,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     colSubQuery2.push("b.nombre");
     colSubQuery2.push("pedi.observacion");
     colSubQuery2.push("a.pedido_cliente_id");
+    colSubQuery2.push("a.tipo_pago_id");
 
     var colSubQuery2B = __camposListaFacturasGeneradas();
     colSubQuery2B.push(G.knex.raw("'1' as factura_agrupada"));
@@ -568,6 +569,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
         WHERE dd.empresa_id = a.empresa_id and dd.prefijo = a.prefijo and dd.factura_fiscal = a.factura_fiscal limit 1 ) as nombre"));
     colSubQuery2B.push(G.knex.raw("'' as observacion"));
     colSubQuery2B.push(G.knex.raw("0 as pedido_cliente_id"));
+    colSubQuery2B.push("a.tipo_pago_id");
 
     var colSubQuery1 = ["a.empresa_id",
         "a.prefijo",
@@ -993,7 +995,7 @@ FacturacionClientesModel.prototype.consultarDireccionIp = function(obj, callback
  */
 FacturacionClientesModel.prototype.insertarPcFactura = function(obj,transaccion, callback){
    
-    var parametros = {ip: obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+    var parametros = {ip: '10.0.2.158',//obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
         prefijo: obj.parametros.documento_facturacion[0].id,
         factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
         sw_tipo_factura : obj.swTipoFactura,

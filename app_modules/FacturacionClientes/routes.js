@@ -2,10 +2,16 @@ module.exports = function(app, di_container) {
  
     var c_facturacion_clientes = di_container.get("c_facturacion_clientes");
     var j_facturacion_clientes = di_container.get("j_facturacion_clientes");
+    var c_sincronizacion = di_container.get("c_sincronizacion");
   
   
     //j_facturacion_clientes.ejecutarJobProcesarDespachos();
   
+    //
+    app.post('/api/Sincronizacion/facturacionElectronica', function(req, res) {      
+        c_sincronizacion.facturacionElectronica(req, res);
+    });
+    
     // Listar los tipos terceros
     app.post('/api/FacturacionClientes/listarTiposTerceros', function(req, res) {      
         c_facturacion_clientes.listarTiposTerceros(req, res);
@@ -103,5 +109,9 @@ module.exports = function(app, di_container) {
     
     app.post('/api/FacturacionClientes/eliminarCabeceraTemporalFacturaConsumo', function(req, res) {       
         c_facturacion_clientes.eliminarCabeceraTemporalFacturaConsumo(req, res);
+    });
+    
+    app.post('/api/FacturacionClientes/generarSincronizacionDian', function(req, res) {       
+        c_facturacion_clientes.generarSincronizacionDian(req, res);
     });
 };

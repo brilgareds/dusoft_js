@@ -330,6 +330,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             ]
         };
 
+ 
+      
 
         /**
          * @author Cristian Ardila
@@ -394,12 +396,32 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                       </div>'
                 },
                 {displayName: "DIAN", width: "10%", cellClass: "txt-center dropdown-button",
-                    cellTemplate: '<div class="btn-group">\
-                           <button class="btn btn-default btn-xs" ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">SINCRONIZAR</button>\
-                      </div>'
+                    cellTemplate: '\
+                        <div class="btn-group" >\
+                            <div ng-if="(row.entity.sincronizacionDian >= 1)" >\
+                               <button class="btn btn-primary btn-xs" ng-disabled="{{!(row.entity.sincronizacionDian > 1)}}" data-toggle="dropdown">\
+                                 SINCRONIZADO\
+                               </button>\
+                            </div>\
+                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
+                               <button class="btn btn-success btn-xs"  ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">\
+                                  SINCRONIZAR\
+                               </button>\
+                            </div>\
+                        </div>'
                 }
             ]
         };
+        
+        $scope.verificaFactuta=function(pref){
+            console.log("pre",pref);
+            var prefijo = false;
+            if(pref==='FDC'){
+                prefijo = true;
+            }
+            console.log("envia pre",prefijo);
+            return prefijo;
+        }
         
         $scope.sincronizarFactura = function(entity){
             
@@ -525,7 +547,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @author Cristian Ardila
          * @fecha 2017/22/05
          */
-        that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+        that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws,parametros="") {
+
+      
+            if(parametros.datos !== undefined && parametros.datos !== "" ){
+             var prefijo=parametros.datos.descripcion;
+             var numero=parametros.datos.numeracion;
+            }
                      
             $scope.opts = {
                 backdrop: true,
@@ -537,7 +565,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 controller: "VentanaMensajeSincronizacionController",
                 resolve: {
                     mensaje: function() {
-                        return {mensaje_bd:mensaje_bd, mensaje_ws:mensaje_ws};
+                        return {mensaje_bd : mensaje_bd, mensaje_ws : mensaje_ws, prefijo : prefijo, numero : numero};
                     }
                 }
 
@@ -564,7 +592,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 
                 $scope.root.activarTabFacturasGeneradas = storageListaFacturaDespachoGenerada.active;                
                 that.listarFacturasGeneradas(storageListaFacturaDespachoGenerada.datos.numeracion,{tipo: 'ME', descripcion: "ME"});              
-                that.mensajeSincronizacion(storageListaFacturaDespachoGenerada.mensaje.mensaje_bd,storageListaFacturaDespachoGenerada.mensaje.mensaje_ws);
+                that.mensajeSincronizacion(storageListaFacturaDespachoGenerada.mensaje.mensaje_bd,storageListaFacturaDespachoGenerada.mensaje.mensaje_ws,storageListaFacturaDespachoGenerada);
             }
             
                         
@@ -1272,11 +1300,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             facturacionClientesService.generarSincronizacionDian(obj,function(data){
              
                 if (data.status === 200) {
-                     console.log("888Mensaje dian ",data.obj);
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>"+data.msj+"</h3></br><p class='bg-success'>&nbsp;</p></br>");
 		    return;         
                 }else{
-                    console.log("888Mensaje dian ",data.obj);
                     if(data.obj.response.statusCode===500){
                        var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
                        var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;

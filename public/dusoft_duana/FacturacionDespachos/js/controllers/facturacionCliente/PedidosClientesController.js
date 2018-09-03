@@ -547,7 +547,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {active:true, 
                             datos:data.obj.generar_factura_individual[0],
                             mensaje:data.obj.resultado_sincronizacion_ws.resultado,
-                            mensaje_factura:data.obj.resultado_sincronizacion_ws.parametros
+                            mensaje_factura:data.obj.resultado_sincronizacion_ws.parametros                            
                            }
                         );
                         $state.go('Despacho');                                          

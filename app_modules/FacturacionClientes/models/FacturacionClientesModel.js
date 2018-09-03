@@ -436,6 +436,7 @@ function __camposListaFacturasGeneradas() {
         G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY') as anio_factura"),
         "m.subtotal",
         "m.iva_total",
+        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=a.factura_fiscal and prefijo=a.prefijo and sw_factura_dian ='1') as sincronizacion"),
     ];
 
     return colSubQuery2;
@@ -986,6 +987,28 @@ FacturacionClientesModel.prototype.consultarDireccionIp = function(obj, callback
 
 };
 
+FacturacionClientesModel.prototype.insertarLogFacturaDian = function(obj,callback){
+   
+    var parametros = {empresa_id: obj.empresa_id,//obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+        prefijo: obj.prefijo,
+        factura_fiscal: obj.factura_fiscal,
+        sw_factura_dian : obj.sw_factura_dian,
+        json_envio: obj.json_envio,
+        fecha_registro: G.knex.raw('now()'),
+        respuesta_ws: obj.respuesta_ws 
+    };
+        
+    var query = G.knex('facturas_dian').insert(parametros);
+     console.log(G.sqlformatter.format(query.toString())); 
+    query.then(function(resultado){   
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [insertarPcFactura]: ", err);     
+        callback({err:err, msj: "Error al guardar la insertarLogFacturaDian]"});   
+    });
+};
+
+
 /**
  * +Descripcion Metodo encargado de registrar la direccion ip en el 
  * @param {type} obj
@@ -1159,7 +1182,7 @@ FacturacionClientesModel.prototype.insertarFacturaEnProcesoDetalle = function(ob
  * @fecha 2017-15-05 YYYY-DD-MM
  */
 function __insertarFacturaIndividualDetalle(obj,transaccion, callback){
-      
+      console.log("obj ",obj);
     var parametros = {
         item_id: G.knex.raw('DEFAULT'),
         prefijo: obj.prefijo,
@@ -1169,7 +1192,8 @@ function __insertarFacturaIndividualDetalle(obj,transaccion, callback){
         cantidad: parseInt(obj.cantidad),
         fecha_vencimiento: obj.fecha_vencimiento,
         lote: obj.lote,
-        valor_unitario: parseInt(obj.valor_unitario),
+//        valor_unitario: parseInt(obj.valor_unitario), //se comenta porque las facturas estaban quedando sin sus decimales
+        valor_unitario: obj.valor_unitario,
         empresa_id: obj.empresa_id,
         cantidad_devuelta:parseInt(0),
         porc_iva: obj.porcentaje_gravamen
@@ -1177,7 +1201,7 @@ function __insertarFacturaIndividualDetalle(obj,transaccion, callback){
 
     var query = G.knex('inv_facturas_despacho_d').insert(parametros);     
        
-    if(transaccion) query.transacting(transaccion);     
+    if(transaccion) query.transacting(transaccion);       
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){

@@ -16,23 +16,19 @@ function __envioRequiriente() {
     __jsonFacturacionRequirientes(obj, function (respuesta) {
         obj.parametros = respuesta;
         obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.ADQUIRIENTE;
-//        console.log("__jsonFacturacionRequiientes",obj);
         __FacturacionDian(obj, function (respuesta) {
-
-//            console.log("__FacturacionDian",respuesta);
+            
         });
     });
 }
 
 function __envioFactura() {
-    console.log("ENTRO");
     var obj = {};
     obj.x = '';
     obj.funcion = "crearFacturaElectronica";
     __jsonFactura(obj, function (respuesta) {
         obj.parametros = respuesta;
         obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
-        console.log("__jsonFactura",obj);
         __FacturacionDian(obj, function (respuesta) {
 
             console.log("__FacturacionDian",respuesta);
@@ -45,7 +41,6 @@ function __envioFactura() {
 Sincronizacion.prototype.adquirientesMasivo = function (req, res) {
     var that = this;
     G.Q.ninvoke(that.m_clientes, 'listar_adquirientes').then(function (resultado) {
-        console.log("AAAAAAAA", resultado);
     }).fail(function (err) {
         console.log("Error adquirientesMasivo ", err);
     }).done();
@@ -53,24 +48,15 @@ Sincronizacion.prototype.adquirientesMasivo = function (req, res) {
 
 Sincronizacion.prototype.facturacionElectronica = function (req, callback) {
     var that = this;
-    console.log("********************* facturacionElectronica ********************");
-    console.log("********************* facturacionElectronica ********************");
-    console.log("********************* facturacionElectronica ********************");
-    console.log("********************* facturacionElectronica ********************");
     
     G.Q.nfcall(__jsonFactura,req).then(function (resultado) {
         
-        console.log("ENTRO",resultado);
         var obj = {};
         obj.x = '';
         obj.funcion = "crearFacturaElectronica";    
         obj.parametros = resultado;
         obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
         
-        console.log("obj.url ",obj.url);
-        console.log("obj.url ",obj.url);
-        console.log("obj.url ",obj.url);
-        console.log("obj.url ",obj.url);
         
        return G.Q.nfcall(__FacturacionDian,obj);
        
@@ -79,8 +65,9 @@ Sincronizacion.prototype.facturacionElectronica = function (req, callback) {
          callback(false,resultado);
          
     }).fail(function (err) {
-        console.log("Error facturacionElectronica ", err);
-         callback(err);
+        
+         callback(false,err);
+         
     }).done();
    
 };
@@ -160,15 +147,9 @@ function __FacturacionDian(obj, callback) {
     var password = G.constants.CREDENCIALESCERTICAMARA().CONTRASENA; // optional password
     var username = G.constants.CREDENCIALESCERTICAMARA().USUARIO; // optional password  
     var tmp = {};
-console.log("Eror password ",password);
-console.log("Eror username ",username);
     //Se invoca el ws
  
     G.Q.nfcall(G.soap.createClient, url).then(function (client) {
-//        
-
-
-        // var wsSecurity = new G.soap.WSSecurityCert(privateKey, publicKey, password);
         tmp = client;
         var options = {
             passwordType: 'PasswordText',
@@ -180,32 +161,22 @@ console.log("Eror username ",username);
         }
         client.setSecurity(new G.soap.WSSecurity(username, password, options));
 
-
-        //client.setSecurity(wsSecurity);
-        //console.log('el xml --> ', client.wsdl);
         return G.Q.ninvoke(client, obj.funcion, obj.parametros);
-
-
 
     }).spread(function (result, raw, soapHeader) {
         resultado.result=result;
         resultado.lastRequest=G.xmlformatter(tmp.lastRequest);
         G.logError(G.xmlformatter(tmp.lastRequest));
-        
-        console.log('El resultado ------------->',G.xmlformatter(tmp.lastRequest));
-//        console.log('El resultado ------------->', result, 'raw', raw, 'soapHeader', soapHeader);
-
     }).then(function () {
-
+        resultado.sw_factura_dian='1';
         callback(false, resultado);
 
     }).fail(function (err) {
-console.log('El resultado ------------->',G.xmlformatter(tmp.lastRequest));
+        err.lastRequest=G.xmlformatter(tmp.lastRequest);
         obj.error = true;
         obj.tipo = '0';
-//        console.log("err ", err);
         G.logError(err);
-
+        err.sw_factura_dian='0';
         callback(err);
 
     }).done();
@@ -429,7 +400,6 @@ function mediosPago(mediosPago) {
 }
 
 function __jsonFactura(obj, callback) {
-//    console.log("obj ",obj);
     
     var formato = 'DD-MM-YYYY';     
     var crearFacturaElectronica = {

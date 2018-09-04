@@ -17,6 +17,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     $scope.root.prefijoBusquedaNota = 'seleccionar';
                     $scope.root.concepto = [];
+                    $scope.root.filtroPrefijo;
+                    $scope.root.filtroPrefijo = {descripcion:"seleccionar"};
                     $scope.root.prefijosNotas = [
 //                        {prefijo: 'F', descripcion: "Factura"},
                         {prefijo: 'NC', descripcion: "Nota Credito"},
@@ -41,9 +43,51 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.columnaSizeBusqueda = "col-md-3";
                         $scope.root.visibleBuscador = true;
                         $scope.root.visibleBotonBuscador = true;
+                        that.listarPrefijosFacturas();
                         callback();
                     };
 
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara 
+                     *              los tipos de facturas
+                     * @author German Galvis
+                     * @fecha 03/09/2018 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+                    that.listarPrefijosFacturas = function () {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listar_prefijos: {
+                                    empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                }
+                            }
+                        };
+
+                        notasService.listarPrefijosFacturas(obj, function (data) {
+
+                            if (data.status === 200) {
+
+                                $scope.tipoPrefijoFactura = notasService.renderListarTipoTerceros(data.obj.listar_prefijos);
+                            } else {
+                                AlertService.mostrarMensaje("Mensaje del sistema", data.msj);
+                            }
+
+                        });
+
+                    };
+
+                    /**
+                     * +Descripcion Metodo encargado de visualizar en el boton del dropdwn
+                     *              el tipo de prefijo
+                     * @param {type} filtro
+                     * @returns {undefined}
+                     */
+                    $scope.onSeleccionFiltroPrefijos = function (filtroPrefijo) {
+
+                        $scope.root.filtroPrefijo = filtroPrefijo;   
+                    };
 
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
@@ -969,6 +1013,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             session: $scope.session,
                             data: {
                                 empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                prefijo: $scope.root.filtroPrefijo.descripcion,
                                 facturaFiscal: $scope.root.factura ? $scope.root.factura : 'undefined'
                             }
                         };
@@ -1006,10 +1051,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'NC', width: "5%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
-                            {field: 'ND', width: "5%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
+                            {field: 'NC', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-disabled="habilitarCredito(row.entity)"   ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'ND', width: "6%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
                         ]
-//                                {field: 'Imprimir', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'}
                     };
 
                     /**

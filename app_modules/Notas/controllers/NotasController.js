@@ -18,9 +18,10 @@ Notas.prototype.listarFacturas = function (req, res) {
 
     var parametros = {
         empresaId: args.empresaId,
+        prefijo:args.prefijo,
         facturaFiscal: args.facturaFiscal
     };
-
+    
     G.Q.ninvoke(that.m_notas, 'listarFacturas', parametros).then(function (resultado) {
 
         if (resultado.length > 0) {

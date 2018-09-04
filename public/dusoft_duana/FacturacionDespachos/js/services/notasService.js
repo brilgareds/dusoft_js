@@ -2,8 +2,8 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('notasService',
-            ['Request', 'API', 'Notas', 'ProductoFacturas', 'Totales', 'FacturaProveedores',
-                function (Request, API, Notas, ProductoFacturas, Totales, FacturaProveedores) {
+            ['Request', 'API', 'Notas', 'ProductoFacturas', 'TipoTerceros', 'FacturaProveedores',
+                function (Request, API, Notas, ProductoFacturas, TipoTerceros, FacturaProveedores) {
 
                     var self = this;
 
@@ -196,8 +196,35 @@ define(["angular", "js/services"], function (angular, services) {
                             callback(data);
                         });
                     };
+                   
+                    /**
+                     * @author German Galvis
+                     * @fecha  03/09/2018 DD/MM/YYYYY
+                     * +Descripcion Consulta los prefijos
+                     */
+                    self.listarPrefijosFacturas = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_PREFIJOS_FACTURAS, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
 
+                    /**
+                     * @author German Galvis
+                     * +Descripcion Funcion encargada de serializar el resultado de la
+                     *              consulta que obtiene los tipos de documentos
+                     * @fecha 03/09/2018 DD/MM/YYYYY
+                     */
+                    self.renderListarTipoTerceros = function (tipoDocumento) {
+                       
+                        var tipoDocumentos = [];
+                        for (var i in tipoDocumento) {
 
+                            var _tipoDocumento = TipoTerceros.get(tipoDocumento[i].id, tipoDocumento[i].descripcion);
+                            tipoDocumentos.push(_tipoDocumento);
+                        }
+                        return tipoDocumentos;
+                    };
+                    
                     return this;
                 }]);
 

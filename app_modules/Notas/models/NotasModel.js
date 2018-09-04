@@ -96,7 +96,11 @@ NotasModel.prototype.listarFacturas = function (obj, callback) {
                 }
 
                 if (obj.facturaFiscal !== 'undefined') {
-                    this.andWhere(G.knex.raw("ifd.factura_fiscal  " + G.constants.db().LIKE + "'%" + obj.facturaFiscal + "%'"))
+                    this.andWhere('ifd.factura_fiscal' ,obj.facturaFiscal);
+                }
+
+                if (obj.prefijo !== 'seleccionar') {
+                    this.andWhere('ifd.prefijo',obj.prefijo);
                 }
 
             });
@@ -131,7 +135,11 @@ NotasModel.prototype.listarFacturas = function (obj, callback) {
                     }
 
                     if (obj.facturaFiscal !== 'undefined') {
-                        this.andWhere(G.knex.raw("ifd.factura_fiscal  " + G.constants.db().LIKE + "'%" + obj.facturaFiscal + "%'"))
+                        this.andWhere('ifd.factura_fiscal' ,obj.facturaFiscal);
+                    }
+
+                    if (obj.prefijo !== 'seleccionar') {
+                        this.andWhere('ifd.prefijo',obj.prefijo);
                     }
 
                 });
@@ -594,8 +602,8 @@ NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, c
             .where('a.empresa_id', obj.empresa_id)
             .andWhere('a.factura_fiscal', obj.facturaFiscal);
 
-console.log("Query resultado", G.sqlformatter.format(
-                query.toString()));
+    console.log("Query resultado", G.sqlformatter.format(
+            query.toString()));
     query.then(function (resultado) {
 
         callback(false, resultado)

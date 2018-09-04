@@ -54,7 +54,6 @@ define([
     "controllers/facturacionCliente/GuardarFacturaConsumoController",
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
-    "controllers/facturacionElectronica/FacturacionElectronicaController",
     "controllers/cajaGeneral/CajaGeneralController",
     "controllers/notas/NotasController",
     "services/facturacionClientesService",
@@ -141,12 +140,6 @@ define([
                     parent_name: "Despacho",
                     templateUrl: "views/notas/index.html",
                     controller: "NotasController"
-                }).state('FacturacionElectronica', {
-                    url: "/FacturacionElectronica",
-                    text: "Facturacion Electronica",
-                    parent_name: "Despacho",
-                    templateUrl: "views/facturacionElectronica/index.html",
-                    controller: "FacturacionElectronicaController"
                 });
 
                 if ($location.path() === "")

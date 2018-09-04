@@ -8,6 +8,19 @@
             <div class="col-xs-12 col-sm-12 col-md-12 pull-right">
                 <div class="col-xs-12 col-sm-6 col-md-2 pull-left">
                     <div class="input-group">
+
+                        <div class="input-group-btn">                                                                      
+                            <button type="button" class="btn btn-default dropdown-toggle" 
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtroPrefijo.descripcion}} <span class="caret"></span></button>
+                            <ul class="dropdown-menu" ng-selected="root.filtroPrefijo.tipo">
+                                <li ng-repeat="tipoPrefijoFactura in tipoPrefijoFactura">
+                                    <a href="javascript:void(0)" ng-click="onSeleccionFiltroPrefijos(tipoPrefijoFactura)">
+                                        {{tipoPrefijoFactura.descripcion}}
+                                    </a>
+                                </li>
+                            </ul>                                         
+                        </div> 
+
                         <input ng-show="root.visibleBuscador"
                                type="text"
                                class="form-control"

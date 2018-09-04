@@ -47,6 +47,7 @@ G.json2csv = require('json2csv');
 G.Excel = require('exceljs');
 G.fcmPush = require('fcm-push');
 G.sqlformatter = require('sqlformatter');
+G.xmlformatter = require('xml-formatter');
 var events = require('events');
 G.eventEmitter = new events.EventEmitter();
 G.logError =  function logError(texto) {  

@@ -2353,7 +2353,7 @@ console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
                     session :args.ordenes_compras.session,
                     that:that,
                     protocolo:args.ordenes_compras.protocolo,
-                    host:args.ordenes_compras.host
+                    req:args.ordenes_compras.req
                 }
             };
         console.log("7onGenerarOrdenDeCompraRespuesta EMIT");
@@ -2416,7 +2416,7 @@ function __generacionAutomatica(datos,callback){
         doc_tmp_id:movimiento_temporal_id,
         that:that,
         protocolo:datos.data.protocolo,
-        host:datos.data.host
+        req:datos.data.req
         };
         
        return G.Q.nfcall(__ejecutarDocumento,parametros);
@@ -2626,11 +2626,8 @@ function __traslado(that,parametros,callback){
 function __ejecutarDocumento(parametros,callback){
     var that = parametros.that;
     var documentoI002;
-    var obj = {
-        protocol:parametros.protocolo,
-        get(host){if(host==='host')return parametros.host; },
-        session: parametros.session,
-        body : {
+  
+    var body = {
             session: parametros.session,
             data: {
                 movimientos_bodegas: {
@@ -2641,9 +2638,10 @@ function __ejecutarDocumento(parametros,callback){
                 }
             }
         }
-    };
     
-    G.Q.ninvoke(that.c_i002, "execCrearDocumentoAutomatico", obj).then(function(result) {
+    parametros.req.body=body;
+    
+    G.Q.ninvoke(that.c_i002, "execCrearDocumentoAutomatico", parametros.req).then(function(result) {
        console.log("execCrearDocumento ",result);
        console.log("parametros ",parametros);
        console.log("parametros.orden ",parametros.orden);

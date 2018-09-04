@@ -1931,7 +1931,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function (cotizacion, callba
         11: cotizacion.centro_utilidad_id,
         12: cotizacion.bodega_id,
         13: '',
-        14: '',
+        14: '0',
         15: cotizacion.centro_utilidad_id,
         16: cotizacion.bodega_id,
         17: cotizacion.estadoMultiplePedido
@@ -2153,40 +2153,6 @@ PedidosClienteModel.prototype.actualizarPedidoMultipleCliente = function (obj, c
         });  
 };
 
-PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function(obj,callback){
-
-    var query =  G.knex('ventas_ordenes_pedido_multiple_clientes')
-                  .where(function() {
-                      if(obj.numero_pedido!==undefined){
-                         this.andWhere("id_orden_pedido_origen", obj.numero_pedido); 
-                         this.orWhere(G.knex.raw(("id_orden_pedido_destino = '" + obj.numero_pedido + "' AND  (sw_origen_destino = 0 or sw_origen_destino = 1)")));
-                      }
-                        
-                      if(obj.cotizacion!==undefined){
-                         this.andWhere("id_orden_cotizacion_origen", obj.cotizacion) 
-                      }
-                        
-                    })
-                  .select(['id_orden_pedido_origen',
-                           'id_orden_pedido_destino',
-                           'id_orden_cotizacion_origen',
-                           'id_orden_cotizacion_destino', 
-                           'sw_origen_destino',
-                           'sw_tipo_pedido',
-                           'sw_estado',
-                           'id_orden_pedido_final',
-                           'farmacia_id',
-                           'centro_utilidad',
-                           'bodega'
-                          ]);
-        query.then(function(resultado){    
-            callback(false, resultado);
-        }).catch(function(err){
-            console.log("err (/catch) [consultarPedidoMultipleCliente]: ", err);
-            callback({err:err, msj: "Error al generar el la consulta Pedido Multiple Cliente"});   
-        });  
-};
-
 PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, callback) {
 
     var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
@@ -2196,7 +2162,8 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, ca
                     this.orWhere(G.knex.raw(("id_orden_pedido_destino = '" + obj.numero_pedido + "' AND  (sw_origen_destino = 0 or sw_origen_destino = 1)")));
                 }
 
-                if (obj.cotizacion !== undefined) {
+                if (obj.cotizacion !== undefined && obj.cotizacion !=='') {
+                    console.log("obj.cotizacion---> ",obj.cotizacion);
                     this.andWhere("id_orden_cotizacion_origen", obj.cotizacion)
                 }
 
@@ -2213,7 +2180,7 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, ca
                 'centro_utilidad',
                 'bodega'
             ]);
-    //console.log(G.sqlformatter.format(query.toString()));
+    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

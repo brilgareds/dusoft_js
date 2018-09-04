@@ -363,7 +363,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Vendedor', width: "18%", cellClass: "ngCellText", displayName: 'Vendedor', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 
-                {field: 'F.Factura', width: "10%", cellClass: "ngCellText", displayName: 'F.Factura', 
+                {field: 'F.Factura', width: "8%", cellClass: "ngCellText", displayName: 'F.Factura', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaFactura()}} </p></div>'},
 
                /* {field: 'F.Ven', width: "5%", cellClass: "ngCellText", displayName: 'F.Ven', 
@@ -393,6 +393,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                            </ul>\
                       </div>'
                 },
+                {displayName: "DIAN", width: "10%", cellClass: "txt-center dropdown-button",
+                    cellTemplate: '<div class="btn-group">\
+                           <button class="btn btn-default btn-xs" ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">SINCRONIZAR</button>\
+                      </div>'
+                }
             ]
         };
         
@@ -1246,6 +1251,40 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 if (data.status === 200) {
                     var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");          
+                }
+            });          
+        };
+        
+        $scope.generarSincronizacionDian = function(entity, estado){
+            
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_factura:{
+                        empresaId: (estado > 0) ? entity.bodegas_doc_id : entity.codigo,
+                        prefijo:   (estado > 0) ? entity.prefijo        : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
+                        numero:    (estado > 0) ? entity.numero         : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
+                        paginaActual: 1
+                    }
+                }
+            };
+                                   
+            facturacionClientesService.generarSincronizacionDian(obj,function(data){
+             
+                if (data.status === 200) {
+                     console.log("888Mensaje dian ",data.obj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>"+data.msj+"</h3></br><p class='bg-success'>&nbsp;</p></br>");
+		    return;         
+                }else{
+                    console.log("888Mensaje dian ",data.obj);
+                    if(data.obj.response.statusCode===500){
+                       var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                       var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                       var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>"+msj+"</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>"+codigo+": "+valor);
+		      return;
+                    }
                 }
             });          
         };

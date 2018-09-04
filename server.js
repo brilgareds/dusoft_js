@@ -47,6 +47,7 @@ G.json2csv = require('json2csv');
 G.Excel = require('exceljs');
 G.fcmPush = require('fcm-push');
 G.sqlformatter = require('sqlformatter');
+G.xmlformatter = require('xml-formatter');
 var events = require('events');
 G.eventEmitter = new events.EventEmitter();
 G.logError =  function logError(texto) {  
@@ -186,13 +187,13 @@ if (cluster.isMaster) {
 } else {
 
     //Carga de Certificados autogenerados para funcionamiento con https
-    var key = G.fs.readFileSync('key.pem');
-    var cert = G.fs.readFileSync( 'localhost.crt' );
-
-    var options = {
-      key: key,
-      cert: cert
-    };
+//    var key = G.fs.readFileSync('key.pem');
+//    var cert = G.fs.readFileSync( 'localhost.crt' );
+//
+//    var options = {
+//      key: key,
+//      cert: cert
+//    };
 
 /*
    //crea servidor http

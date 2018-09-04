@@ -32,7 +32,8 @@ define(["angular"], function(angular) {
                  "ELIMINAR_TOTAL_TEMPORAL_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/eliminarTotalTemporalFacturaConsumo",
                  "ELIMINAR_CABECERA_TEMPORAL_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/eliminarCabeceraTemporalFacturaConsumo",
                  "GENERAR_FACTURA_POR_CONSUMO" : BASE_URL + "/FacturacionClientes/generarFacturaXConsumo",
-                 "LISTAR_FACTURAS_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasTemporales"
+                 "LISTAR_FACTURAS_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasTemporales",
+                 "GENERAR_SINCRONIZACION_DIAN" : BASE_URL + "/FacturacionClientes/generarSincronizacionDian"
             },   
             'FACTURACIONPROVEEDOR': {
                 "LISTAR_ORDENES_COMPRA_PROVEEDORES": BASE_URL + "/FacturacionProveedores/listarOrdenesCompraProveedor",
@@ -60,6 +61,18 @@ define(["angular"], function(angular) {
                 "LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/listarFacConceptosNotas",
                 "LISTAR_IMPUESTOS_TERCERO": BASE_URL + "/CajaGeneral/consultarImpuestosTercero",
                 "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas"
+            },
+            'NOTAS': {
+                "CONSULTAR_NOTAS": BASE_URL + "/Notas/ConsultarNotas",
+                "LISTAR_FACTURAS": BASE_URL + "/Notas/listarFacturas",
+                "LISTAR_PORCENTAJES": BASE_URL + "/Notas/listarPorcentajes",
+                "DETALLE_FACTURA": BASE_URL + "/Notas/ConsultarDetalleFactura",
+                "CREAR_NOTA": BASE_URL + "/Notas/crearNota",
+                "CREAR_NOTA_CREDITO": BASE_URL + "/Notas/crearNotaCredito",
+                "LISTAR_CONCEPTOS": BASE_URL + "/Notas/listarConceptos",
+                "IMPRIMIR_NOTA": BASE_URL + "/Notas/imprimirNota",
+                "IMPRIMIR_NOTA_CREDITO": BASE_URL + "/Notas/imprimirNotaCredito",
+                "SINCRONIZAR_NOTAS": BASE_URL + "/Notas/sincronizarNotas"
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",

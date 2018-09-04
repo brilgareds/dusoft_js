@@ -1,0 +1,22 @@
+{
+    "module": "FacturacionElectronica",
+    "dependency": {
+        "controllers": [{
+                "facturacion_electronica_controller": {
+                    "module": "FacturacionElectronica",
+                    "controller": "FacturacionElectronicaController",
+                    "alias": "c_facturacion_electronica"
+                }
+            }],
+        "models": [{
+                "facturacion_electronica_model": {
+                    "module": "FacturacionElectronica",
+                    "model": "FacturacionElectronicaModel",
+                    "alias": "m_facturacion_electronica"
+                }
+        }],
+        "events": [
+            ],
+        "cronJobs": []
+    }
+}

@@ -1,5 +1,5 @@
 var SincronizacionModel = function () {};
-
+ 
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -41,11 +41,9 @@ SincronizacionModel.prototype.sincronizarCuentasXpagarFi=function(obj, callback)
     }).done();
 };
 
-                
-                
+              
   
 
-SincronizacionModel.$inject = [];
 
 
 module.exports = SincronizacionModel;

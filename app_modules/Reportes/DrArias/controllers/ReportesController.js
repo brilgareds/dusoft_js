@@ -179,13 +179,6 @@ Reportes.prototype.rotacionZonas = function (req, res) {
     
     res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
         
-<<<<<<< HEAD
-     }).then(function(resultados) {
-     
-         return G.Q.nfcall(__creaExcel,resultados);
-         
-     }).then(function(resultados) {
-=======
     }).fail(function (err) {
         console.log("error controller rotacion Zonas ", err);
         res.send(G.utils.r(req.url, 'Error Listado rotacion Zonas', 500, {rotacionZonas: err}));
@@ -198,7 +191,6 @@ Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(that.m_drArias, 'rotacionZonas','1').then(function (rotacionZonas) {
->>>>>>> 941878612f167adebb5be1741574a0ee5e965e06
          
         res.send(rotacionZonas);
     }).fail(function (err) {

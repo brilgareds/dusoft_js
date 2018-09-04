@@ -330,6 +330,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             ]
         };
 
+ 
+      
 
         /**
          * @author Cristian Ardila
@@ -363,7 +365,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Vendedor', width: "18%", cellClass: "ngCellText", displayName: 'Vendedor', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 
-                {field: 'F.Factura', width: "10%", cellClass: "ngCellText", displayName: 'F.Factura', 
+                {field: 'F.Factura', width: "8%", cellClass: "ngCellText", displayName: 'F.Factura', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaFactura()}} </p></div>'},
 
                /* {field: 'F.Ven', width: "5%", cellClass: "ngCellText", displayName: 'F.Ven', 
@@ -393,8 +395,33 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                            </ul>\
                       </div>'
                 },
+                {displayName: "DIAN", width: "10%", cellClass: "txt-center dropdown-button",
+                    cellTemplate: '\
+                        <div class="btn-group" >\
+                            <div ng-if="(row.entity.sincronizacionDian >= 1)" >\
+                               <button class="btn btn-primary btn-xs" ng-disabled="{{!(row.entity.sincronizacionDian > 1)}}" data-toggle="dropdown">\
+                                 SINCRONIZADO\
+                               </button>\
+                            </div>\
+                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
+                               <button class="btn btn-success btn-xs"  ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">\
+                                  SINCRONIZAR\
+                               </button>\
+                            </div>\
+                        </div>'
+                }
             ]
         };
+        
+        $scope.verificaFactuta=function(pref){
+            console.log("pre",pref);
+            var prefijo = false;
+            if(pref==='FDC'){
+                prefijo = true;
+            }
+            console.log("envia pre",prefijo);
+            return prefijo;
+        }
         
         $scope.sincronizarFactura = function(entity){
             
@@ -520,7 +547,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @author Cristian Ardila
          * @fecha 2017/22/05
          */
-        that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+        that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws,parametros="") {
+
+      
+            if(parametros.datos !== undefined && parametros.datos !== "" ){
+             var prefijo=parametros.datos.descripcion;
+             var numero=parametros.datos.numeracion;
+            }
                      
             $scope.opts = {
                 backdrop: true,
@@ -532,7 +565,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 controller: "VentanaMensajeSincronizacionController",
                 resolve: {
                     mensaje: function() {
-                        return {mensaje_bd:mensaje_bd, mensaje_ws:mensaje_ws};
+                        return {mensaje_bd : mensaje_bd, mensaje_ws : mensaje_ws, prefijo : prefijo, numero : numero};
                     }
                 }
 
@@ -559,7 +592,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 
                 $scope.root.activarTabFacturasGeneradas = storageListaFacturaDespachoGenerada.active;                
                 that.listarFacturasGeneradas(storageListaFacturaDespachoGenerada.datos.numeracion,{tipo: 'ME', descripcion: "ME"});              
-                that.mensajeSincronizacion(storageListaFacturaDespachoGenerada.mensaje.mensaje_bd,storageListaFacturaDespachoGenerada.mensaje.mensaje_ws);
+                that.mensajeSincronizacion(storageListaFacturaDespachoGenerada.mensaje.mensaje_bd,storageListaFacturaDespachoGenerada.mensaje.mensaje_ws,storageListaFacturaDespachoGenerada);
             }
             
                         
@@ -1246,6 +1279,38 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 if (data.status === 200) {
                     var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");          
+                }
+            });          
+        };
+        
+        $scope.generarSincronizacionDian = function(entity, estado){
+            
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_factura:{
+                        empresaId: (estado > 0) ? entity.bodegas_doc_id : entity.codigo,
+                        prefijo:   (estado > 0) ? entity.prefijo        : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
+                        numero:    (estado > 0) ? entity.numero         : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
+                        paginaActual: 1
+                    }
+                }
+            };
+                                   
+            facturacionClientesService.generarSincronizacionDian(obj,function(data){
+             
+                if (data.status === 200) {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>"+data.msj+"</h3></br><p class='bg-success'>&nbsp;</p></br>");
+		    return;         
+                }else{
+                    if(data.obj.response.statusCode===500){
+                       var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                       var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                       var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>"+msj+"</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>"+codigo+": "+valor);
+		      return;
+                    }
                 }
             });          
         };

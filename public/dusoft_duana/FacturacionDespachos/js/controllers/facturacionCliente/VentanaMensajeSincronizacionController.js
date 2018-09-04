@@ -30,6 +30,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         
         $scope.mensaje_ws = mensaje.mensaje_ws;
         $scope.mensaje_bd = mensaje.mensaje_bd;
+        $scope.prefijo = mensaje.prefijo;
+        $scope.numero = mensaje.numero;
         
         /**
          * @author Cristian Ardila

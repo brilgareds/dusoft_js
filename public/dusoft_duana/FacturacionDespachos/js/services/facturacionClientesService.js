@@ -358,7 +358,7 @@ define(["angular", "js/services"], function (angular, services) {
                             
                             var _pedido = PedidoDespacho.get(datos[i].empresa_id, '','');
                                 _pedido.set_numero_cotizacion(datos[i].pedido_cliente_id);
-                            
+                                
                             if(estado === 1){
                                 _pedido.setFechaRegistro(datos[i].fecha_registro);
                                 _pedido.setSeleccionado(datos[i].seleccionado);
@@ -391,20 +391,23 @@ define(["angular", "js/services"], function (angular, services) {
                             } 
                                 
                             
-                                _pedido.agregarVendedor(_vendedorDespacho);
+                                _pedido.agregarVendedor(_vendedorDespacho);                                
                                 _terceroDespacho.agregarPedidos(_pedido);
                                 
                             if(estado === 0){
                                 _empresaDespacho.agregarFacturasDespachadas(_terceroDespacho);
+                                _empresaDespacho.sincronizacionDian=datos[i].sincronizacion;
                                 facturasDespachadas.push(_empresaDespacho);
                             }
 
                             if(estado === 1){
-
+                                _terceroDespacho.sincronizacionDian=datos[i].sincronizacion;
                                 facturasDespachadas.push(_terceroDespacho);
                             }
                             
+                            
                         }
+                        
                         return facturasDespachadas;
                     };
                     

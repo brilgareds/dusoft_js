@@ -2553,16 +2553,48 @@ function __productos(productos,index,productosDian,callback){
                     porcentual: obj.x, //decimal -
                     valor: obj.x //decimal -
                 },*/
-                listaImpuestosDeducciones: {// OPCIONAL -
-                    nombre: "IVA19", //String -
-                    //porcentual: obj.x, //decimal 
-                    baseGravable: item.porc_iva, //decimal  -
-                    valor: item.iva_total.replace(",", ".") //decimal -
-                },
+    
+//                listaImpuestosDeducciones: {// OPCIONAL -
+//                    nombre: "IVA19", //String -
+//                    //porcentual: obj.x, //decimal 
+//                    baseGravable: item.porc_iva, //decimal  -
+//                    valor: item.iva_total.replace(",", ".") //decimal -
+//                },
                 pagable: true, //boolean -
                 valorUnitario: item.valor_unitario //decimal -
             };
-        
+            var impuesto;
+            var ivaPorcentaje=parseInt(item.porc_iva);
+                if (ivaPorcentaje === 0) {
+                    impuesto = {// OPCIONAL -
+                        nombre: "IVA0", //String -
+                        //porcentual: obj.x, //decimal 
+                        baseGravable: item.porc_iva, //decimal  -
+                        valor: item.iva_total.replace(",", ".") //decimal -
+
+                    };
+                }
+                ;
+                if (ivaPorcentaje === 19) {
+                    impuesto = {// OPCIONAL -
+                        nombre: "IVA19", //String -
+                        //porcentual: obj.x, //decimal 
+                        baseGravable: item.porc_iva, //decimal  -
+                        valor: item.iva_total.replace(",", ".") //decimal -
+                    }
+
+                }
+                ;
+                if (ivaPorcentaje === 10) {                    
+                    impuesto = {// OPCIONAL -
+                        nombre: "IVA10", //String -
+                        //porcentual: obj.x, //decimal 
+                        baseGravable: item.porc_iva, //decimal  -
+                        valor: item.iva_total.replace(",", ".") //decimal -
+                    };
+                }
+                ;
+        prod.listaImpuestosDeducciones=impuesto;
         productosDian.push(prod);
         
     var timer = setTimeout(function () {
@@ -2574,10 +2606,10 @@ function __productos(productos,index,productosDian,callback){
 
 FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
      that=this;
+     var args = req.body.data.imprimir_reporte_factura;
      var productos;
      var resultado;
-     
-     console.log("---generarSincronizacionDian---");
+     var data;
      
      G.Q.nfcall(__generarSincronizacionDian,that, req).then(function (data) {
          resultado=data;
@@ -2585,7 +2617,6 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         return G.Q.nfcall(__productos,resultado.detalle,0,[]);
          
      }).then(function (productos) {    
-          console.log(".retencionFuente-- ",resultado);
          var json= {
             codigoMoneda: "COP",
             descripcion: "",            
@@ -2641,17 +2672,47 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
          return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
          
          
+         }).then(function (respuesta) {
+            
+             data=respuesta;
+             var parametros = {
+                empresa_id: args.empresaId,//obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+                prefijo: resultado.cabecera.prefijo,
+                factura_fiscal: resultado.cabecera.factura_fiscal,
+                sw_factura_dian : respuesta.sw_factura_dian,
+                json_envio: data.lastRequest,
+                respuesta_ws: data               
+             };
+             
+            if(respuesta.sw_factura_dian==='1'){
+                
+                return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+                
+            }else if(respuesta.sw_factura_dian==='0'){
+                
+               return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+               
+            }
+             
          }).then(function (resultado) {
-         
-         res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, resultado ));
-         
+             
+         if(data.sw_factura_dian==='1'){
+             
+             res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data )); 
+             
+         }else if(data.sw_factura_dian==='0'){
+             
+             res.send(G.utils.r(req.url, data.msj, data.status,data));  
+             
+         }
+        
      }).fail(function (err) {
-//        console.log("Error ",err);
+         
         res.send(G.utils.r(req.url, err.msj, err.status,err));
       
     }).done();
      
-}
+};
 
 /**
  * @author AMGT (duplica de generarReporteDespacho)
@@ -2663,8 +2724,6 @@ function __generarSincronizacionDian(that,req, callback) {
 
     var def = G.Q.defer();
     var args = req.body.data;
-
-    console.log("__generarSincronizacionDian ");
 
     var empresaId = args.imprimir_reporte_factura.empresaId;
     var paginaActual = args.imprimir_reporte_factura.paginaActual;
@@ -2791,10 +2850,7 @@ function __generarSincronizacionDian(that,req, callback) {
             if (subTotal >= resultado[0].base_ica) {
                 retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
             }
-                console.log("subTotal  ",subTotal);
-                console.log("resultado[0].base_reteiva  ",resultado[0].base_reteiva);
             if (subTotal >= resultado[0].base_reteiva) {
-                console.log("resultado[0].base_reteiva  ",(totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100));
                 retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
             }
 
@@ -2985,12 +3041,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
                 retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
             }
                 
-            console.log("subTotal  ",subTotal);
-                console.log("resultado[0].base_reteiva  ",resultado[0].base_reteiva);
-            if (subTotal >= resultado[0].base_reteiva) {
-                console.log("resultado[0].base_reteiva  ",(totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100));
-                console.log("parametrosReporte.cabecera.porcentaje_reteiva  ",parametrosReporte.cabecera.porcentaje_reteiva);
-                
+            if (subTotal >= resultado[0].base_reteiva) {                
                 retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
             }
 

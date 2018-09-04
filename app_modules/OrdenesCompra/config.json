@@ -6,6 +6,16 @@
                     "module": "OrdenesCompra",
                     "controller": "OrdenesCompraController",
                     "alias": "c_ordenes_compra"
+                },
+                "i002_controller": {
+                    "module": "MovimientosBodega/I002",
+                    "controller": "I002Controller",
+                    "alias": "c_i002"
+                },
+                "pedidos_cliente_controller": {
+                    "module": "PedidosClientes",
+                    "controller": "PedidosClienteController",
+                    "alias": "c_pedidos_clientes"
                 }
             }],
         "models": [{
@@ -43,6 +53,21 @@
                     "module": "MovimientosBodega/E008",
                     "model": "DocBodegaE008",
                     "alias": "m_e008"
+                },
+                "movimientos_bodegas_model": {
+                    "module": "MovimientosBodega/MovBodegas",
+                    "model": "MovBodegasModel",
+                    "alias": "m_movimientos_bodegas"
+                },
+                "I002_model": {
+                    "module": "MovimientosBodega/I002",
+                    "model": "DocBodegaI002",
+                    "alias": "m_i002"
+                },
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
                 }
         }],
         "events": [{

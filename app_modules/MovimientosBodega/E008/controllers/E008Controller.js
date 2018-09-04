@@ -1805,7 +1805,13 @@ console.log("--------------------------");
     var that = this;
 
     var args = req.body.data;
-
+    
+    if(args.documento_temporal.bodega_seleccionada!=='03' && args.documento_temporal.bodega_seleccionada!=='06'){
+        res.send(G.utils.r(req.url, 'No llega la bodega de session (Comunicarse con Sistemas)', 404, {}));
+        return;
+    }
+    console.log("req.session ->> ",req.session.user);
+        
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined
             || args.documento_temporal.usuario_id === undefined) {
 
@@ -1948,6 +1954,11 @@ console.log("--------------------------");
      
      }).*/
     }).then(function (rows) {
+        
+        console.log("***********************  numero_pedido ************************* ");
+        console.log("***********************  numero_pedido ************************* ",numero_pedido);
+        
+        
         var obj ={numero_pedido:numero_pedido};
         tmp.numero_pedido = numero_pedido;
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultarPedidoMultipleCliente",obj);
@@ -1990,7 +2001,10 @@ console.log("--------------------------");
                     estado:tmp.sw_estado,
                     id_orden_cotizacion_origen: tmp.id_orden_cotizacion_origen,
                     id_orden_cotizacion_destino: tmp.id_orden_cotizacion_destino,
-                    bodega : req.session.user.bodega
+                    bodega : args.documento_temporal.bodega_seleccionada,
+                    session : req.session,
+                    protocolo:req.protocol,
+                    req:req
                 }
             };
          

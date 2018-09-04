@@ -1,7 +1,6 @@
 
-var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails, m_usuarios,m_actasTecnicas,m_e008) {
-
-
+var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails, m_usuarios,m_actasTecnicas,m_e008,m_movimientos_bodegas,m_i002,c_i002,c_pedidos_clientes,m_pedidos_clientes) {
+   
     this.m_ordenes_compra = ordenes_compras;
     this.m_productos = productos;
     this.e_ordenes_compra = eventos_ordenes_compras;
@@ -9,6 +8,11 @@ var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras
     this.m_usuarios = m_usuarios;
     this.m_actasTecnicas = m_actasTecnicas;
     this.m_e008 = m_e008;
+    this.m_movimientos_bodegas = m_movimientos_bodegas;
+    this.m_i002 = m_i002;
+    this.c_i002 = c_i002;
+    this.c_pedidos_clientes = c_pedidos_clientes;
+    this.m_pedidos_clientes = m_pedidos_clientes;
 };
 
 
@@ -2240,7 +2244,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
  * 
  */
 OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
-
+console.log("generarOrdenDeCompraAuditado");
     var that = this;
     console.log('comenzo  a generar la orden de compra');
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
@@ -2345,13 +2349,23 @@ console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
                     sw_estado: args.ordenes_compras.estado,
                     id_orden_cotizacion_origen: args.ordenes_compras.id_orden_cotizacion_origen,
                     id_orden_cotizacion_destino	: args.ordenes_compras.id_orden_cotizacion_destino,
-                    bodega:args.ordenes_compras.bodega
+                    bodega:args.ordenes_compras.bodega,
+                    session :args.ordenes_compras.session,
+                    that:that,
+                    protocolo:args.ordenes_compras.protocolo,
+                    req:args.ordenes_compras.req
                 }
             };
         console.log("7onGenerarOrdenDeCompraRespuesta EMIT");
-        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta",respuesta);
-
-        that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);
+//        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta",respuesta);
+//
+//        that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);
+        
+        return G.Q.nfcall(__generacionAutomatica,respuesta);
+        
+    }).then(function(resultado){
+        that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, resultado);
+        console.log("__generacionAutomatica!!!! ",resultado);
           
     }).fail(function (err) {
         console.log('error al generar la orden de compra ', err);
@@ -2362,24 +2376,328 @@ console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
 
 };
 
-//function __generacionAutomatica(datos){
-//    console.log("__generacionAutomatica");
-//    var bodega= datos.data.bodega;
-//    var ejecutar=true;
-//     if (datos.status === 200 && ejecutar && datos.data.sw_estado === '0' && ((bodega === '03' && datos.parametros.data.sw_origen_destino === 1) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 0) || (bodega === '06' && datos.parametros.data.sw_origen_destino === 1) ) ) {
-//       ejecutar = false;
-//                        var cotizacion ={
-//                            id_orden_cotizacion_origen : datos.parametros.data.id_orden_cotizacion_origen,
-//                            id_orden_cotizacion_destino : datos.parametros.data.id_orden_cotizacion_destino
-//                        };
-//                        console.log("*** ingreso ***");
-//                        that.generarIngresoI002(datos.parametros.data, function (asd) {                           
-//                            that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos,datos.parametros.data.sw_tipo_pedido,cotizacion);
-//                        });
-//   }
-//    
-//}
+function __generacionAutomatica(datos,callback){
+    var that = datos.data.that;
+    console.log("__generacionAutomatica");
+    var bodega= datos.data.bodega;
+    var ejecutar=true;
+    var movimiento_temporal_id;
+     if (datos.status === 200 && ejecutar && datos.data.sw_estado === '0' && ((bodega === '03' && datos.data.sw_origen_destino === 1) || (bodega === '06' && datos.data.sw_origen_destino === 0) || (bodega === '06' && datos.data.sw_origen_destino === 1) ) ) {
+       ejecutar = false;
+       var cotizacion ={
+            id_orden_cotizacion_origen : datos.data.id_orden_cotizacion_origen,
+            id_orden_cotizacion_destino : datos.data.id_orden_cotizacion_destino
+        };
+        
+       var obj = {
+                    session: datos.data.session,
+                    that:that,
+                    data: {
+                        orden_pedido_id: datos.data.numero_orden,
+                        bodegas_doc_id : datos.data.sw_origen_destino == 1? '1634' : '80', //'1634' : '80' ojo en produccion va 1634 en pruebas 1541
+                        observacion:  datos.data.parametros.encabezado.observacion
+                    }
+                }; 
+          
+    G.Q.nfcall(__newDocTemporalI002,obj).then(function(resultado){
+     movimiento_temporal_id=resultado.movimiento_temporal_id;
+     datos.movimiento_temporal_id=movimiento_temporal_id;
+     return G.Q.nfcall(__recursivaProductosTemporalI002,datos,0);
+        
+    }).then(function(resultado){
+       var parametros ={ 
+        orden:datos.data.numero_orden, 
+        pedido:datos.data.numero_pedido, 
+        sw_origen_destino:datos.data.sw_origen_destino, 
+        productos:datos.data.productos,
+        swTipoPedido:datos.data.sw_tipo_pedido,
+        cotizacion:cotizacion,
+        session: datos.data.session,
+        doc_tmp_id:movimiento_temporal_id,
+        that:that,
+        protocolo:datos.data.protocolo,
+        req:datos.data.req
+        };
+        
+       return G.Q.nfcall(__ejecutarDocumento,parametros);
+        
+    }).then(function(resultado){
+        
+        console.log("respuesta newDocTemporal ",resultado);
+        callback(false,resultado);
+    }).fail(function(err){
+        
+        console.log("se ha generado un error", err);
+        callback(err);
+        
+    });
+       
+//        that.generarIngresoI002(datos.parametros.data, function (asd) {                           
+//            that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos,datos.parametros.data.sw_tipo_pedido,cotizacion);
+//        });
+   }else{
+       console.log("---------no valido-------------- ");
+       console.log("---------no valido-------------- ",(datos.status === 200 && ejecutar && datos.data.sw_estado === '0' && ((bodega === '03' && datos.data.sw_origen_destino === 1) || (bodega === '06' && datos.data.sw_origen_destino === 0) || (bodega === '06' && datos.data.sw_origen_destino === 1) )));
+       console.log("---------no valido--------------datos.status:: ",datos.status);
+       console.log("---------no valido--------------ejecutar ",ejecutar);
+       console.log("---------no valido--------------datos.data.sw_estado ",datos.data.sw_estado);
+       console.log("---------no valido--------------datos.data.sw_origen_destino ",datos.data.sw_origen_destino);
+       console.log("---------no valido--------------bodega ",bodega);
+   } 
+}
 
+function __newDocTemporalI002(req, callback) {
+console.log("------newDocTemporalI002-----");
+    var that = req.that;
+    var args = req.data;
+    var usuarioId = req.session.user.usuario_id;
+    var orden_pedido_id = args.orden_pedido_id;
+    var bodegas_doc_id = args.bodegas_doc_id;
+    var observacion = args.observacion;
+    var movimiento_temporal_id;
+
+    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificador_movimiento_temporal_returning", usuarioId,bodegas_doc_id).then(function(doc_tmp_id) {
+        console.log("obtener_identificador_movimiento_temporal_returning");
+        movimiento_temporal_id = doc_tmp_id[0].doc_tmp_id;
+        
+        G.knex.transaction(function(transaccion) {
+            
+            G.Q.nfcall(that.m_movimientos_bodegas.modificar_movimiento_bodega_temporal,
+                    movimiento_temporal_id, usuarioId, bodegas_doc_id, observacion, transaccion).then(function() {
+
+                var parametros = {
+                    usuario_id: usuarioId,
+                    doc_tmp_id: movimiento_temporal_id,
+                    orden_pedido_id: orden_pedido_id
+                };
+                console.log("modificar_movimiento_bodega_temporal");
+                return G.Q.nfcall(that.m_i002.insertarBodegasMovimientoOrdenesCompraTmp, parametros, transaccion);
+
+            }).then(function() {
+               console.log("transaccion");
+                transaccion.commit(movimiento_temporal_id);
+                
+            }).fail(function(err) {
+                 console.log("fail");
+                transaccion.rollback(err);
+            }).done();
+
+        }).then(function(movimiento_temporal_id) {
+              console.log("movimiento_temporal_id");
+             callback(false,{movimiento_temporal_id: movimiento_temporal_id});
+        }). catch (function(err) {
+	    callback(err);
+        }).done();
+
+    }).fail(function(err) {
+        callback(err);
+    }).done();
+};
+
+/*
+ * 
+ * @param {type} data
+ * @param {type} index entero inicia en 0
+ * @param {type} callback
+ * @returns true
+ */
+function __recursivaProductosTemporalI002(datos,index,callback){
+        
+    if(datos.data.productos[index] === undefined){
+        callback(false,true);
+        return;
+    }
+    var productos = datos.data.productos[index];
+    var productosActas = datos.data.productosActas[index];
+             
+    var movimientos_bodegas = {
+       doc_tmp_id: datos.movimiento_temporal_id,
+       bodegas_doc_id: datos.data.sw_origen_destino == 1? '1634' : '80',//'1634' : '80' ojo en produccion va 1634 en pruebas 1541
+       codigo_producto: productos.codigo_producto,
+       cantidad: productos.cantidad,
+       porcentaje_gravamen: productos.porcentaje_gravamen,
+       total_costo: productos.valor_unitario*productos.cantidad,
+       fecha_vencimiento: productos.fecha_vencimiento,
+       lote: productos.lote,
+       localizacion: 'NA',
+       total_costo_ped: '0',
+       valor_unitario: '0',
+       usuario_id: datos.data.session,
+       item_id_compras: productosActas.item_id,
+       prefijo: datos.data.sw_origen_destino == 1? '06' : '03'
+    }; 
+                    
+    var obj = {
+        that:datos.data.that,
+        session: datos.data.session,
+        data: {
+            movimientos_bodegas: movimientos_bodegas
+        }
+    };
+    
+     G.Q.nfcall(__addItemDocTemporalI002,obj).then(function(data){
+        index++;
+        __recursivaProductosTemporalI002(datos,index,callback);
+    }).fail(function(err){
+        console.log("se ha generado un error", err);
+        callback(err);        
+    });
+}
+
+function __addItemDocTemporalI002(req,callback){
+  
+   var that = req.that;
+   var args = req.data;
+    
+    var bodega="";
+    if(args.movimientos_bodegas.prefijo !== ''){
+        bodega=args.movimientos_bodegas.prefijo;
+    }
+ console.log("AAAAAAAAAA",args.movimientos_bodegas);
+  
+    parametros ={
+                 usuarioId: args.movimientos_bodegas.usuario_id.user.usuario_id,
+                 docTmpId: args.movimientos_bodegas.doc_tmp_id,
+                 codProucto: args.movimientos_bodegas.codigo_producto,
+                 cantidad :args.movimientos_bodegas.cantidad,
+                 porcentajeGravamen:args.movimientos_bodegas.porcentaje_gravamen,
+                 totalCosto:args.movimientos_bodegas.total_costo,
+                 fechaVencimiento:args.movimientos_bodegas.fecha_vencimiento,
+                 lote:args.movimientos_bodegas.lote,
+                 localProd:args.movimientos_bodegas.localizacion,
+                 totalCostoPed:args.movimientos_bodegas.total_costo_ped,
+                 valorUnitario:args.movimientos_bodegas.valor_unitario,
+                 itemIdCompras:args.movimientos_bodegas.item_id_compras
+                };
+             console.log(parametros);   
+    G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaBodega", parametros).then(function(result) {
+        
+        if(result.length===0){
+            throw {msj:"EL producto "+args.movimientos_bodegas.codigo_producto+" no esta relacionado en existencias_bodega.", status:403};        
+        }else{
+            parametros.empresa         = (bodega!=='' && bodega!==undefined)?'03':result[0].empresa_id;
+            parametros.centroUtilidad  = (bodega!=='' && bodega!==undefined)?'1 ':result[0].centro_utilidad;
+            parametros.bodega          = (bodega!=='' && bodega!==undefined)?bodega:result[0].bodega;
+             console.log("BBBB::: ",parametros);
+             console.log("result[0]::: ",result[0]);
+             console.log("bodega:::: ",bodega);
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "isBodegaDestino", parametros);            
+        }
+    }).then(function(result) {
+        console.log("result.length ",result.length);
+        if(result.length!==0){
+            console.log("Entro traslado **********************",result.bodega_destino);
+         parametros.bodegaDestino=result.bodega_destino;
+         return G.Q.nfcall(__traslado,that,parametros);
+        }
+        return false;
+    }).then(function(result) {      
+        return G.Q.ninvoke(that.m_ordenes_compra, "ingresarBodegaMovimientoTmpProducto", parametros);  
+    }).then(function(result) { 
+         callback(false,{status:200,addItemDocTemporal: result});   
+    }).fail(function(err) {
+        console.log("addItemDocTemporal ",err);
+        callback(err);
+    }).done();
+}
+
+function __traslado(that,parametros,callback){
+  var dBodega;
+  var dProducto;
+   G.Q.ninvoke(that.m_movimientos_bodegas, "isTrasladosTmp", parametros).then(function(result) {
+       if(result.length===0){
+            throw {msj:"EL producto "+parametros.codigo_producto+" no esta relacionado en existencias_bodega.", status:403};        
+        }else{
+            dBodega=result.dBodega;
+            dProducto=result.dProducto;
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaEnBodega", parametros);            
+        }
+    }).then(function(result) {
+        if(result.codigo_producto===''){
+            throw {msj:"EL PRODUCTO:"+parametros.codigo_producto+" - "+dProducto+" NO EXISTE EN BODEGA: "+dBodega, status:403};   
+        }else{
+            callback(false);
+        }
+    }).fail(function(err) {
+        callback(true,err);        
+    }).done();
+}
+
+function __ejecutarDocumento(parametros,callback){
+    var that = parametros.that;
+    var documentoI002;
+  
+    var body = {
+            session: parametros.session,
+            data: {
+                movimientos_bodegas: {
+                    orden_pedido_id: parametros.orden,
+                    doc_tmp_id: parametros.doc_tmp_id,
+                    usuario_id: parametros.session.user.usuario_id,
+                    automatico: true
+                }
+            }
+        }
+    
+    parametros.req.body=body;
+    
+    G.Q.ninvoke(that.c_i002, "execCrearDocumentoAutomatico", parametros.req).then(function(result) {
+       console.log("execCrearDocumento ",result);
+       console.log("parametros ",parametros);
+       console.log("parametros.orden ",parametros.orden);
+       console.log("parametros.pedido ",parametros.pedido);
+       console.log("parametros.swTipoPedido ",parametros.swTipoPedido);
+       documentoI002=result.respuesta;
+        if(parametros.swTipoPedido === '0'){
+           
+            var obj = {
+            session: parametros.session,
+            body: {
+                data: {
+                    numero_pedido: parametros.pedido,
+                    productos :parametros.productos
+                }
+            }
+        };
+           return G.Q.ninvoke(that.c_pedidos_clientes, "pedidoClienteAPedidoFarmaciaAutomatico", obj);
+           
+        }else if(parametros.swTipoPedido === '1'){
+           return G.Q.ninvoke(that.m_pedidos_clientes, "duplicarPedido",parametros.pedido, parametros.sw_origen_destino);            
+        }
+    }).then(function(result) { 
+        
+        console.log("***********************");
+        console.log("result---------",result);
+        
+        if(parametros.swTipoPedido === '0'){
+            console.log("***********************swTipoPedido:: ",parametros.swTipoPedido);
+            
+            var obj = {
+                id_orden_pedido_final: result.respuesta.pedido,
+                cotizacion_origen: parametros.cotizacion.id_orden_cotizacion_origen,
+                cotizacion_destino: parametros.cotizacion.id_orden_cotizacion_destino
+            };
+            
+        }else if(parametros.swTipoPedido === '1'){
+            console.log("***********************swTipoPedido:: ",parametros.swTipoPedido);
+           var obj = {
+                id_orden_pedido_final: result.numero_pedido,
+                cotizacion_origen: parametros.cotizacion.id_orden_cotizacion_origen,
+                cotizacion_destino: parametros.cotizacion.id_orden_cotizacion_destino
+            };
+        }
+    
+        documentoI002.pedidoFinal=obj.id_orden_pedido_final;
+       return G.Q.ninvoke(that.m_pedidos_clientes, "actualizarPedidoMultipleCliente", obj); 
+         
+    }).then(function(result) { 
+        
+         callback(false,{status:200,respuesta: documentoI002});   
+    }).fail(function(err) {
+        console.log("__ejecutarDocumento ",err);
+        callback(err);
+    }).done();
+};
 /**
  * @author Cristian Manuel Ardila Troches
  * +Descripcion Metodo encargado de asignar el responsable del pedido, actualizar
@@ -2437,6 +2755,6 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
 
 
 
-OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios","m_actasTecnicas","m_e008"];
+OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios","m_actasTecnicas","m_e008","m_movimientos_bodegas","m_i002","c_i002","c_pedidos_clientes","m_pedidos_clientes"];
 
 module.exports = OrdenesCompra;

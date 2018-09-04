@@ -33,13 +33,10 @@ OrdenesCompraEvents.prototype.onNotificarProgresoArchivoPlanoOrdenes = function(
 };
 
 OrdenesCompraEvents.prototype.onNotificarGenerarI002 = function(usuario_id, parametros) {
-console.log("---onNotificarGenerarI002---",usuario_id);
     var that = this;
     G.auth.getSessionsUser(usuario_id, function(err, sessions) {
-console.log("---onNotificarGenerarI002--- sessions ");
          //Se recorre cada una de las sesiones abiertas por el usuario
          sessions.forEach(function(session) {
-             console.log("---onNotificarGenerarI002--- session  ",session);
              //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
              that.io.to(session.socket_id).emit('onNotificarGenerarI002', {parametros: parametros});
          });

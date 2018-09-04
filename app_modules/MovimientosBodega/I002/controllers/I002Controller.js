@@ -379,19 +379,47 @@ I002Controller.prototype.listarGetDocTemporal = function(req, res) {
 };
 
 
+I002Controller.prototype.execCrearDocumentoAutomatico = function(req, callback) {
+    var that = this;
+    G.Q.nfcall(__execCrearDocumento,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+};
+
 I002Controller.prototype.execCrearDocumento = function(req, res) {
     var that = this;
+    G.Q.nfcall(__execCrearDocumento,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("listarGetDocTemporal ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();    
+};
+
+function __execCrearDocumento(req,that,callback){
+    console.log("---- execCrearDocumento res-----");
+    var that = that;
     var args = req.body.data;
     var usuarioId;
     var parametros = {};
-
+    var send = {};
 
     if (args.movimientos_bodegas.doc_tmp_id === '') {
-        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        //res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        send.msj="El doc_tmp_id esta vacío";
+        send.status=404;
+        send.respuesta="";
+        callback(send);
         return;
     }
     if (args.movimientos_bodegas.orden_pedido_id === '') {
-        res.send(G.utils.r(req.url, 'El orden_pedido_id esta vacío', 404, {}));
+//        res.send(G.utils.r(req.url, 'El orden_pedido_id esta vacío', 404, {}));
+        send.msj="El orden_pedido_id esta vacío";
+        send.status=404;
+        send.respuesta="";
+        callback(send);
         return;
     }
 
@@ -417,6 +445,7 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
     var comprasTemporal = [];
     
     console.log("execCrearDocumento docTmpId ",docTmpId);
+    console.log("execCrearDocumento parametros ",parametros);
     
     G.knex.transaction(function(transaccion) {
   
@@ -614,7 +643,6 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
 
         if (resultado.length > 0) {
-
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],
@@ -624,7 +652,11 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
                 impuestos: resultado[0],
                 archivoHtml: 'documentoI002.html',
                 reporte: "documentoI002"}, function(nombre_pdf) {
-                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero, recepcion_parcial_id: resultadoProducto.recepcion_parcial_id}));
+//                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero, recepcion_parcial_id: resultadoProducto.recepcion_parcial_id}));
+                  send.msj="SE HA CREADO EL DOCUMENTO EXITOSAMENTE";
+                  send.status=200;
+                  send.respuesta={nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero, recepcion_parcial_id: resultadoProducto.recepcion_parcial_id};
+                  callback(false,send);
             });
         } else {
             throw 'Consulta listarParametrosRetencion sin resultados';
@@ -633,7 +665,11 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
     }). catch (function(err) {
 
         console.log("execCrearDocumento>>>>", err);
-        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
+//        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
+        send.msj="Error al Crear el Documento";
+        send.status=500;
+        send.respuesta=err;
+        callback(send);
 
     }).done();
 };

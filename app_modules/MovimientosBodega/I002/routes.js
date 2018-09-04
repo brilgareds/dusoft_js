@@ -53,5 +53,15 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/I002/crearHtmlAutorizacion', function(req, res) {
         c_i002.crearHtmlAutorizacion(req, res);
     });
+    
+    
+    app.post('/api/movBodegas/I002/newDocTemporal', function(req, res) {
+        c_i002.newDocTemporal(req, res);
+    });
+    
+    G.eventEmitter.on("onNewDocTemporal",function(req, res){
+//        c_ordenes_compra.generarOrdenDeCompraAuditado(parametros)
+        c_i002.newDocTemporal(req, res);
+    });
       
 };

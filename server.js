@@ -187,13 +187,13 @@ if (cluster.isMaster) {
 } else {
 
     //Carga de Certificados autogenerados para funcionamiento con https
-    var key = G.fs.readFileSync('key.pem');
-    var cert = G.fs.readFileSync( 'localhost.crt' );
-
-    var options = {
-      key: key,
-      cert: cert
-    };
+//    var key = G.fs.readFileSync('key.pem');
+//    var cert = G.fs.readFileSync( 'localhost.crt' );
+//
+//    var options = {
+//      key: key,
+//      cert: cert
+//    };
 
 /*
    //crea servidor http

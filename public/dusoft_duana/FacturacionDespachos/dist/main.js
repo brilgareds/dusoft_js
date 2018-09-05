@@ -52095,6 +52095,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                    device:"web",
                    appId: "dusoft-web"
                 };
+                 console.log("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ",datos);
                 //localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });
@@ -56655,13 +56656,13 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                 },
                 {displayName: "DIAN", width: "10%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '\
-                        <div class="btn-group">\
+                        <div class="btn-group" >\
                             <div ng-if="(row.entity.sincronizacionDian >= 1)" >\
                                <button class="btn btn-primary btn-xs" ng-disabled="{{!(row.entity.sincronizacionDian > 1)}}" data-toggle="dropdown">\
                                  SINCRONIZADO\
                                </button>\
                             </div>\
-                            <div ng-if="(row.entity.sincronizacionDian == 0)" >\
+                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
                                <button class="btn btn-success btn-xs"  ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">\
                                   SINCRONIZAR\
                                </button>\
@@ -56670,6 +56671,16 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                 }
             ]
         };
+        
+        $scope.verificaFactuta=function(pref){
+            console.log("pre",pref);
+            var prefijo = false;
+            if(pref==='FDC'){
+                prefijo = true;
+            }
+            console.log("envia pre",prefijo);
+            return prefijo;
+        }
         
         $scope.sincronizarFactura = function(entity){
             

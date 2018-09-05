@@ -688,11 +688,11 @@ define(["angular", "js/controllers",
                         });
 
 
-                    } else if(parseInt(data.status) === 404 ) {
+                    }  else if(parseInt(data.status) !== 500 ) { 
                         
-                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                        
-                    } else if(parseInt(data.status) !== 500 ) {
+                     if(parseInt(data.status) === 404 ) {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                     }
                        
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];
@@ -708,7 +708,6 @@ define(["angular", "js/controllers",
                             return;
                         }
                         
-                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                         if (documento, movimientos_bodegas.productos_no_auditados !== undefined) {
                             that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);

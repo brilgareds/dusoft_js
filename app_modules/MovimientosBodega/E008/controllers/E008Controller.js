@@ -2439,10 +2439,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
 //	   }
 //       }
     }).then(function (resultado) {
-
-        res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200,
-                {movimientos_bodegas: {}}));
-        return;
+       if (!args.documento_despacho.background) {   
+        res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200,{movimientos_bodegas: {}}));        
+       }
+       return;
 
     }).fail(function (err) {
 

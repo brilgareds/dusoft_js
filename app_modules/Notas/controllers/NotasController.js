@@ -1,8 +1,9 @@
-var Notas = function (m_notas, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes) {
+var Notas = function (m_notas, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes,c_sincronizacion) {
     this.m_notas = m_notas;
     this.m_sincronizacion = m_sincronizacion;
     this.m_facturacion_proveedores = m_facturacion_proveedores;
     this.m_facturacion_clientes = m_facturacion_clientes;
+    this.c_sincronizacion = c_sincronizacion;
 };
 
 
@@ -18,10 +19,10 @@ Notas.prototype.listarFacturas = function (req, res) {
 
     var parametros = {
         empresaId: args.empresaId,
-        prefijo:args.prefijo,
+        prefijo: args.prefijo,
         facturaFiscal: args.facturaFiscal
     };
-    
+
     G.Q.ninvoke(that.m_notas, 'listarFacturas', parametros).then(function (resultado) {
 
         if (resultado.length > 0) {
@@ -566,8 +567,8 @@ Notas.prototype.imprimirNota = function (req, res) {
                 subTotal += parseFloat(row.subtotal);
                 totalIva += parseFloat(row.valor_iva);
             });
-                  
-            
+
+
             if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_rtf)) {
                 retencionFuente = (subTotal * ((porcentajes_factura[0].porcentaje_rtf) / 100));
             }
@@ -783,7 +784,7 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
 
 /**
  * @author German Galvis
- * +Descripcion  Metodo encargado para sincronizar las facturas generadas en caja general 
+ * +Descripcion  Metodo encargado para sincronizar las notas generadas  
  * @fecha 2018-08-14 (YYYY-MM-DD)
  */
 Notas.prototype.sincronizarNotas = function (req, res) {
@@ -843,6 +844,508 @@ Notas.prototype.sincronizarNotas = function (req, res) {
         }).done();
 
     }
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion  Metodo encargado para sincronizar las notas generadas
+ * @fecha 2018-09-04 (YYYY-MM-DD)
+ */
+Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
+    
+    that = this;
+    var args = req.body.data;
+    var resultado;
+    var data;
+
+    G.Q.nfcall(__generarSincronizacionDianDebito, that, req).then(function (data) {
+        resultado = data;
+        
+        return G.Q.nfcall(__productos, resultado.productos, 0, []);
+    }).then(function (productos) {
+
+        var json = {
+            codigoMoneda: "COP",
+            conceptoNota: "3", // falta validar
+            fechaExpedicion: resultado.nota.fecha_registro_nota,
+            fechaVencimiento:"", //falta
+            codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
+            numeroIdentificacion: resultado.cliente.tercero_id,
+            identificadorFactura: resultado.nota.prefijo +"_"+ resultado.nota.factura_fiscal +"_E", //validar
+            nombreSucursal: "",
+            numeroNota: resultado.nota.numero,
+            observaciones:"", //falta
+            perfilEmision: "CLIENTE",
+            perfilUsuario: "CLIENTE",
+            productos: productos,
+            
+            subtotalNotaDebitoElectronica: resultado.valores.subTotal,
+            ReteFuente: resultado.valores.retencionFuente,
+            baseGravableReteFuente: resultado.valores.bases.base_rtf,
+            IVA: resultado.valores.ivaTotal, 
+            baseGravableIVA: resultado.valores.subTotal,
+            ReteICA: resultado.valores.retencionIca, 
+            baseGravableReteICA: resultado.valores.bases.base_ica,
+            ReteIVA: resultado.valores.retencionIva,
+            baseGravableReteIVA: resultado.valores.bases.base_reteiva,
+            
+            tipoFactura: "ELECTRONICA",
+            totalNotaDebitoElectronica: resultado.valores.totalFactura,
+            
+            conceptoNotaAdicional: "", //validar creando nueva nota
+            TipoNota: resultado.nota.tipo_nota,
+            descuento: "",
+            totalenLetras: resultado.valores.totalFacturaLetra,
+            valorTotal: resultado.valores.totalFactura,
+            elaboradoPor: resultado.usuario
+        };
+
+        return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaDebito', json);
+
+    }).then(function (respuesta) {
+        
+//console.log("respuesta ",respuesta);
+
+        data = respuesta;
+        var parametros = {
+            empresa_id: args.empresaId, //obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+            prefijo: 'ND',
+            factura_fiscal: resultado.nota.numero,
+            sw_factura_dian: respuesta.sw_factura_dian,
+            json_envio: data.lastRequest,
+            respuesta_ws: data
+        };
+
+        if (respuesta.sw_factura_dian === '1') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        } else if (respuesta.sw_factura_dian === '0') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        }
+
+    }).then(function (resultado) {
+
+        if (data.sw_factura_dian === '1') {
+
+            res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+
+        } else if (data.sw_factura_dian === '0') {
+
+            res.send(G.utils.r(req.url, data.msj, data.status, data));
+
+        }
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, err.msj, err.status, err));
+
+    }).done();
+
+};
+
+/**
+ * @author German Galvis (duplica de imprimirNota)
+ * +Descripcion Metodo encargado de generar el informe detallado de la nota debito generada
+ * @fecha 2018-09-04 (YYYY-MM-DD)
+ */
+function __generarSincronizacionDianDebito(that, req, callback) {
+
+    var that = that;
+    var args = req.body.data;
+    var valores = {};
+    var tabla_1;
+    var tabla_2;
+    var tabla_3;
+    var tabla_4;
+    var subtotal_factura;
+    var cliente = [];
+    var porcentajes_factura = [];
+    var empresa = [];
+    var nota = [];
+    var productos = [];
+    var retencionFuente = 0;
+    var retencionIca = 0;
+    var retencionIva = 0;
+    var totalFactura = 0;
+    var subTotal = 0;
+    var totalIva = 0;
+
+    var parametros = {
+        empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        numero: args.numeroNota,
+        numeroNota: args.numeroNota
+    };
+
+
+    G.Q.ninvoke(that.m_notas,'ConsultarNotasDebito', parametros).then(function (result) {
+
+        nota = result;
+        parametros.nombreNota = "DEBITO";
+        nota[0].tipo_nota = "VALOR";
+
+        if (nota[0].tipo_factura === 0) {
+            tabla_1 = "notas_debito_despachos_clientes";
+            tabla_2 = "inv_facturas_despacho";
+            tabla_3 = "detalles_notas_debito_despachos_clientes";
+            tabla_4 = "inv_facturas_despacho_d";
+        }
+
+        if (nota[0].tipo_factura === 1) {
+            tabla_1 = "notas_debito_despachos_clientes_agrupados";
+            tabla_2 = "inv_facturas_agrupadas_despacho";
+            tabla_3 = "detalles_notas_debito_despachos_clientes_agrupados";
+            tabla_4 = "inv_facturas_agrupadas_despacho_d";
+        }
+        parametros.tabla_1 = tabla_1;
+        parametros.tabla_2 = tabla_2;
+        parametros.tabla_3 = tabla_3;
+        parametros.tabla_4 = tabla_4;
+
+
+        return G.Q.nfcall(that.m_notas.clienteNota, parametros);
+    }).then(function (result) {
+
+        cliente = result;
+
+        return G.Q.nfcall(that.m_notas.consultarProductosNotasDebito, parametros);
+
+    }).then(function (result) {
+
+        productos = result;
+
+        parametros.prefijo = nota[0].prefijo;
+        parametros.factura_fiscal = nota[0].factura_fiscal;
+
+        return G.Q.ninvoke(that.m_notas, 'porcentajes', parametros);
+
+    }).then(function (resultado) {
+
+        porcentajes_factura = resultado;
+
+        return G.Q.nfcall(that.m_notas.ConsultarSubtotalFactura, parametros);
+
+    }).then(function (resultado) {
+
+        subtotal_factura = resultado;
+
+        return G.Q.ninvoke(that.m_notas, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id, fecha: cliente[0].anio_factura});
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            valores.bases=resultado[0];
+            productos.forEach(function (row) {
+
+                subTotal += parseFloat(row.subtotal);
+                totalIva += parseFloat(row.valor_iva);
+            });
+
+
+            if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_rtf)) {
+                retencionFuente = (subTotal * ((porcentajes_factura[0].porcentaje_rtf) / 100));
+            }
+
+            if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_ica)) {
+                retencionIca = (subTotal) * (parseFloat(porcentajes_factura[0].porcentaje_ica) / 1000);
+            }
+
+            if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_reteiva)) {
+                retencionIva = (totalIva) * (parseFloat(porcentajes_factura[0].porcentaje_reteiva) / 100);
+            }
+
+            totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
+
+        }
+
+        valores.retencionIca = G.utils.numberFormat(retencionIca, 2);
+        valores.retencionFuente = G.utils.numberFormat(retencionFuente, 2);
+        valores.retencionIva = G.utils.numberFormat(retencionIva, 2);
+        valores.ivaTotal = G.utils.numberFormat(parseFloat(totalIva), 2);
+        valores.subTotal = G.utils.numberFormat(parseFloat(subTotal), 2);
+        valores.totalFactura = G.utils.numberFormat(parseFloat(totalFactura), 2);
+        valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
+
+
+        return G.Q.ninvoke(that.m_notas, 'listarEmpresa', parametros);
+
+    }).then(function (result) {
+
+        empresa = result;
+        var informacion = {
+            empresa: empresa[0],
+            cliente: cliente[0],
+            nota: nota[0],
+            parametros: parametros,
+            productos: productos,
+            usuario: req.session.user.nombre_usuario,
+            valores: valores
+        };
+
+        callback(false, informacion);
+
+    }).fail(function (err) {
+        console.log("Error  ", err);
+        callback(err);
+    }).done();
+}
+;
+
+/**
+ * @author German Galvis
+ * +Descripcion  Metodo encargado para sincronizar las notas generadas
+ * @fecha 2018-09-04 (YYYY-MM-DD)
+ */
+Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
+    
+    that = this;
+    var args = req.body.data;
+    var resultado;
+    var data;
+
+    G.Q.nfcall(__generarSincronizacionDianCredito, that, req).then(function (data) {
+        resultado = data;
+        
+        return G.Q.nfcall(__productos, resultado.productos, 0, []);
+    }).then(function (productos) {
+
+        var json = {
+            codigoMoneda: "COP",
+            conceptoNota: "6", // falta validar
+            fechaExpedicion: resultado.nota.fecha_registro_nota,
+            fechaVencimiento:"", //falta
+            codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
+            numeroIdentificacion: resultado.cliente.tercero_id,
+            identificadorFactura: resultado.nota.prefijo +"_"+ resultado.nota.factura_fiscal +"_E", //validar
+            nombreSucursal: "",
+            numeroNota: resultado.nota.numero,
+            observaciones:"", //falta
+            perfilEmision: "CLIENTE",
+            perfilUsuario: "CLIENTE",
+            productos: productos,
+            
+            subtotalNotaCreditoElectronica: resultado.valores.subTotal,
+            ReteFuente: resultado.valores.retencionFuente,
+            baseGravableReteFuente: resultado.valores.bases.base_rtf,
+            IVA: resultado.valores.ivaTotal, 
+            baseGravableIVA: resultado.valores.subTotal,
+            ReteICA: resultado.valores.retencionIca, 
+            baseGravableReteICA: resultado.valores.bases.base_ica,
+            ReteIVA: resultado.valores.retencionIva,
+            baseGravableReteIVA: resultado.valores.bases.base_reteiva,
+            
+            tipoFactura: "ELECTRONICA",
+            totalNotaCreditoElectronica: resultado.valores.totalFactura,
+            
+            conceptoNotaAdicional: resultado.nota.descripcion_concepto,
+            TipoNota: resultado.nota.tipo_nota,
+            descuento: "",
+            totalenLetras: resultado.valores.totalFacturaLetra,
+            valorTotal: resultado.valores.totalFactura,
+            elaboradoPor: resultado.usuario
+        };
+console.log("json",json);
+
+        return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaCredito', json);
+
+    }).then(function (respuesta) {
+        
+//console.log("respuesta ",respuesta);
+
+        data = respuesta;
+        var parametros = {
+            empresa_id: args.empresaId, //obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+            prefijo: 'NC',
+            factura_fiscal: resultado.nota.numero,
+            sw_factura_dian: respuesta.sw_factura_dian,
+            json_envio: data.lastRequest,
+            respuesta_ws: data
+        };
+
+        if (respuesta.sw_factura_dian === '1') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        } else if (respuesta.sw_factura_dian === '0') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        }
+
+    }).then(function (resultado) {
+
+        if (data.sw_factura_dian === '1') {
+
+            res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+
+        } else if (data.sw_factura_dian === '0') {
+
+            res.send(G.utils.r(req.url, data.msj, data.status, data));
+
+        }
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, err.msj, err.status, err));
+
+    }).done();
+
+};
+/**
+ * @author German Galvis (duplica de imprimirNota)
+ * +Descripcion Metodo encargado de generar el informe detallado de la nota credito generada
+ * @fecha 2018-09-04 (YYYY-MM-DD)
+ */
+function __generarSincronizacionDianCredito(that, req, callback) {
+   
+    var that = that;
+    var args = req.body.data;
+    var valores = {};
+    var tabla_1;
+    var tabla_2;
+    var tabla_3;
+    var tabla_4;
+    var cliente = [];
+    var empresa = [];
+    var nota = [];
+    var productos = [];
+    var subtotal_factura;
+    var porcentajes_factura = [];
+    var retencionFuente = 0;
+    var retencionIca = 0;
+    var retencionIva = 0;
+    var totalFactura = 0;
+    var subTotal = 0;
+    var totalIva = 0;
+
+    var parametros = {
+        empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        numero: args.numeroNota,
+        numeroNota: args.numeroNota
+    };
+
+
+
+    G.Q.ninvoke(that.m_notas, 'ConsultarNotasCredito', parametros).then(function (result) {
+
+        nota = result;
+
+
+        parametros.nombreNota = "CREDITO";
+
+        if (nota[0].tipo_factura === 0) {
+            tabla_1 = "notas_credito_despachos_clientes";
+            tabla_2 = "inv_facturas_despacho";
+            tabla_3 = "detalles_notas_credito_despachos_clientes";
+            tabla_4 = "inv_facturas_despacho_d";
+        }
+
+        if (nota[0].tipo_factura === 1) {
+            tabla_1 = "notas_credito_despachos_clientes_agrupados";
+            tabla_2 = "inv_facturas_agrupadas_despacho";
+            tabla_3 = "detalles_notas_credito_despachos_clientes_agrupados";
+            tabla_4 = "inv_facturas_agrupadas_despacho_d";
+        }
+        parametros.tabla_1 = tabla_1;
+        parametros.tabla_2 = tabla_2;
+        parametros.tabla_3 = tabla_3;
+        parametros.tabla_4 = tabla_4;
+
+
+        return G.Q.nfcall(that.m_notas.clienteNotaCredito, parametros);
+    }).then(function (result) {
+
+        cliente = result;
+
+        return G.Q.nfcall(that.m_notas.consultarProductosNotasCredito, parametros);
+
+    }).then(function (result) {
+
+        productos = result;
+
+        parametros.prefijo = nota[0].prefijo;
+        parametros.factura_fiscal = nota[0].factura_fiscal;
+
+        return G.Q.ninvoke(that.m_notas, 'porcentajes', parametros);
+
+    }).then(function (resultado) {
+
+        porcentajes_factura = resultado;
+
+        return G.Q.nfcall(that.m_notas.ConsultarSubtotalFactura, parametros);
+
+    }).then(function (resultado) {
+
+        subtotal_factura = resultado;
+
+        return G.Q.ninvoke(that.m_notas, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id, fecha: cliente[0].anio_factura});
+
+    }).then(function (resultado) {
+
+        if (nota[0].concepto_id === 1 || nota[0].concepto_id === null) {
+
+            if (resultado.length > 0) {
+                valores.bases=resultado[0];
+                productos.forEach(function (row) {
+
+                    subTotal += parseFloat(row.subtotal);
+                    totalIva += parseFloat(row.valor_iva);
+                });
+
+                if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_rtf)) {
+                    retencionFuente = (subTotal * ((porcentajes_factura[0].porcentaje_rtf) / 100));
+                }
+
+                if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_ica)) {
+                    retencionIca = (subTotal) * (parseFloat(porcentajes_factura[0].porcentaje_ica) / 1000);
+                }
+
+                if (subtotal_factura[0].subtotal >= parseFloat(resultado[0].base_reteiva)) {
+                    retencionIva = (totalIva) * (parseFloat(porcentajes_factura[0].porcentaje_reteiva) / 100);
+                }
+
+                totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
+
+            }
+        } else {
+            subTotal = nota[0].valor_nota;
+            totalFactura = nota[0].valor_nota;
+        }
+
+        valores.retencionIca = G.utils.numberFormat(retencionIca, 2);
+        valores.retencionFuente = G.utils.numberFormat(retencionFuente, 2);
+        valores.retencionIva = G.utils.numberFormat(retencionIva, 2);
+        valores.ivaTotal = G.utils.numberFormat(parseFloat(totalIva), 2);
+        valores.subTotal = G.utils.numberFormat(parseFloat(subTotal), 2);
+        valores.totalFactura = G.utils.numberFormat(parseFloat(totalFactura), 2);
+        valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
+
+
+        return G.Q.ninvoke(that.m_notas, 'listarEmpresa', parametros);
+
+    }).then(function (result) {
+
+        empresa = result;
+        var informacion = {
+            empresa: empresa[0],
+            cliente: cliente[0],
+            nota: nota[0],
+            parametros: parametros,
+            productos: productos,
+            usuario: req.session.user.nombre_usuario,
+            valores: valores
+        };
+
+        callback(false, informacion);
+
+    }).fail(function (err) {
+        console.log("Error  ", err);
+        callback(err);
+    }).done();
 };
 
 function __recorreListado(that, listado, parametros, index, transaccion, callback) {
@@ -944,5 +1447,77 @@ function __generarPdf(datos, callback) {
     });
 }
 
-Notas.$inject = ["m_notas", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes"];
+function __productos(productos,index,productosDian,callback){
+      var item=productos[index];
+     
+      if(!item){          
+          callback(false,productosDian);
+          return;
+      }
+      
+    var atrip1 = {
+        nombreAtributo: "observacionProd", //String 
+        valor: item.observacion
+    };
+
+    var atributoAdicionalProd=[];
+        atributoAdicionalProd.push(atrip1);
+        
+        var prod = {//OPCIONAL
+                atributosAdicionalesProd:{
+                    atributoAdicionalProd:atributoAdicionalProd
+                }
+                ,
+                cantidad:"", //falta
+                descripcion: item.descripcion, //String OPCIONAL -
+                identificador:item.codigo_producto, //String -
+                imprimible: true, //boolean -
+                pagable: true, //boolean -
+                valorUnitario: "" // falta
+            };
+//            var impuesto;
+//            var ivaPorcentaje=parseInt(item.porc_iva);
+//                if (ivaPorcentaje === 0) {
+//                    impuesto = {// OPCIONAL -
+//                        nombre: "IVA0", //String -
+//                        //porcentual: obj.x, //decimal 
+//                        baseGravable: item.porc_iva, //decimal  -
+//                        valor: item.iva_total.replace(",", ".") //decimal -
+//
+//                    };
+//                }
+//                ;
+//                if (ivaPorcentaje === 19) {
+//                    impuesto = {// OPCIONAL -
+//                        nombre: "IVA19", //String -
+//                        //porcentual: obj.x, //decimal 
+//                        baseGravable: item.porc_iva, //decimal  -
+//                        valor: item.iva_total.replace(",", ".") //decimal -
+//                    }
+//
+//                }
+//                ;
+//                if (ivaPorcentaje === 10) {                    
+//                    impuesto = {// OPCIONAL -
+//                        nombre: "IVA10", //String -
+//                        //porcentual: obj.x, //decimal 
+//                        baseGravable: item.porc_iva, //decimal  -
+//                        valor: item.iva_total.replace(",", ".") //decimal -
+//                    };
+//                }
+//                ;
+//        prod.listaImpuestosDeducciones=impuesto;
+        prod.listaImpuestosDeducciones="";
+        productosDian.push(prod);
+        
+    var timer = setTimeout(function () {
+        index++;
+        __productos(productos, index, productosDian, callback);
+        clearTimeout(timer);
+    }, 0);
+}
+
+
+
+Notas.$inject = ["m_notas", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes","c_sincronizacion"];
 module.exports = Notas;

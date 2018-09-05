@@ -1,7 +1,16 @@
 module.exports = function(app, di_container) {
 
     var c_notas = di_container.get("c_notas");
+    var c_sincronizacion = di_container.get("c_sincronizacion");
 
+    app.post('/api/Sincronizacion/facturacionElectronicaNotaDebito', function(req, res) {      
+        c_sincronizacion.facturacionElectronicaNotaDebito(req, res);
+    });
+
+    app.post('/api/Sincronizacion/facturacionElectronicaNotaCredito', function(req, res) {      
+        c_sincronizacion.facturacionElectronicaNotaDebito(req, res);
+    });
+    
     app.post('/api/Notas/listarFacturas', function(req, res) {
         c_notas.listarFacturas(req, res);
     });
@@ -40,6 +49,14 @@ module.exports = function(app, di_container) {
     
     app.post('/api/Notas/sincronizarNotas', function(req, res) {
         c_notas.sincronizarNotas(req, res);
+    });
+    
+    app.post('/api/Notas/generarSincronizacionDianDebito', function(req, res) {
+        c_notas.generarSincronizacionDianDebito(req, res);
+    });
+    
+    app.post('/api/Notas/generarSincronizacionDianCredito', function(req, res) {
+        c_notas.generarSincronizacionDianCredito(req, res);
     });
     
 };

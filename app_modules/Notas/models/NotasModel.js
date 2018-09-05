@@ -602,8 +602,6 @@ NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, c
             .where('a.empresa_id', obj.empresa_id)
             .andWhere('a.factura_fiscal', obj.facturaFiscal);
 
-    console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));
     query.then(function (resultado) {
 
         callback(false, resultado)

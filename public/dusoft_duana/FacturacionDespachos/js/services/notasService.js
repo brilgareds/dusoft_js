@@ -196,7 +196,7 @@ define(["angular", "js/services"], function (angular, services) {
                             callback(data);
                         });
                     };
-                   
+
                     /**
                      * @author German Galvis
                      * @fecha  03/09/2018 DD/MM/YYYYY
@@ -215,7 +215,7 @@ define(["angular", "js/services"], function (angular, services) {
                      * @fecha 03/09/2018 DD/MM/YYYYY
                      */
                     self.renderListarTipoTerceros = function (tipoDocumento) {
-                       
+
                         var tipoDocumentos = [];
                         for (var i in tipoDocumento) {
 
@@ -224,7 +224,29 @@ define(["angular", "js/services"], function (angular, services) {
                         }
                         return tipoDocumentos;
                     };
-                    
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  04/09/2018 DD/MM/YYYYY
+                     * +Descripcion envia la nota debito a la dian
+                     */
+                    self.generarSincronizacionDianDebito = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.GENERAR_SINCRONIZACION_DIAN_DEBITO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  04/09/2018 DD/MM/YYYYY
+                     * +Descripcion envia la nota credito a la dian
+                     */
+                    self.generarSincronizacionDianCredito = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.GENERAR_SINCRONIZACION_DIAN_CREDITO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
                     return this;
                 }]);
 

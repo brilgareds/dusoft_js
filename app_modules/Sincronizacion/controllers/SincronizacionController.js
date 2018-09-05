@@ -4,135 +4,178 @@ var Sincronizacion = function (m_sincronizacion, m_clientes) {
     this.m_clientes = m_clientes;
 };
 
-
-//__envioFactura();
-//Sincronizacion.prototype.adquirientesMasivo();
-
-
-function __envioRequiriente() {
-    var obj = {};
-    obj.x = "prueba";
-    obj.funcion = "crearAdquirienteConUsuarioACliente";
-    __jsonFacturacionRequirientes(obj, function (respuesta) {
-        obj.parametros = respuesta;
-        obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.ADQUIRIENTE;
-        __FacturacionDian(obj, function (respuesta) {
-            
-        });
-    });
-}
-
-function __envioFactura() {
-    var obj = {};
-    obj.x = '';
-    obj.funcion = "crearFacturaElectronica";
-    __jsonFactura(obj, function (respuesta) {
-        obj.parametros = respuesta;
-        obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
-        __FacturacionDian(obj, function (respuesta) {
-
-            console.log("__FacturacionDian",respuesta);
-        });
-    });
-}
-
-
-//function __adquirientesMasivo(){
-Sincronizacion.prototype.adquirientesMasivo = function (req, res) {
-    var that = this;
-    G.Q.ninvoke(that.m_clientes, 'listar_adquirientes').then(function (resultado) {
-    }).fail(function (err) {
-        console.log("Error adquirientesMasivo ", err);
-    }).done();
-};
+/*
+ //function __envioRequiriente() {
+ //    var obj = {};
+ //    obj.x = "prueba";
+ //    obj.funcion = "crearAdquirienteConUsuarioACliente";
+ //    __jsonFacturacionRequirientes(obj, function (respuesta) {
+ //        obj.parametros = respuesta;
+ //        obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.ADQUIRIENTE;
+ //        __FacturacionDian(obj, function (respuesta) {
+ //            
+ //        });
+ //    });
+ //}
+ //
+ //function __jsonFacturacionRequirientes(obj, callback) {
+ //
+ //    var crearAdquirienteConUsuarioACliente = {
+ //        attributes: {
+ //            xmlns: 'http://contrato.adquiriente.cliente.webservices.servicios.certifactura.certicamara.com/'
+ //        },
+ //        adquiriente: {
+ //            attributes: {
+ //                xmlns: ''
+ //            },
+ //            acuerdoFisicoFacturacionElectronica: false, //boolean
+ //            adjuntarPdfNotificaciones: true, //boolean
+ //            adjuntarXmlNotificaciones: true, //boolean
+ //            apellidos: 'GONZALEZ', //String - obligatorio si campo naturaleza = 'NATURAL'
+ ////            camposDinamicosAdquirientes: {
+ ////                nombreCampo: obj.x,
+ ////                valor: obj.x
+ ////            },
+ //            cantidadDiasAceptacionAutomatica: 3, // int
+ ////            ciudadExtranjera: obj.x, // opcional
+ //            codigoCiudad: '11001', // string Dane
+ //            codigoDepartamento: '11', // string Dane
+ ////            codigoPais: obj.x, //string Dane Opcional,
+ //            direccion: 'cra7 NO 9 - 9', // string obligatorio
+ //            emailPrincipal: 'desarrollo2@duanaltda.com', // string
+ ////            emailSecundarios: '', // string maximo 10 correos separados por coma Opcional
+ //            enviarCorreoCertificado: true, //boolean
+ //            enviarCorreoDeBienvenida: true, //boolean
+ //            enviarFisico: true, //boolean Opcional
+ //            enviarNotificaciones: true, //boolean
+ //            enviarPlataformaFacturacion: true, //boolean
+ //            fax: '', //string Opcional
+ //            formatoFactura: 'ORIGINAL XML',
+ ////            idClienteCreador: '',
+ //            identificacionAdquirienteWS: {
+ //                codigoDian: 13,
+ ////                digitoDeVerificacion: ,
+ //                numeroIdentificacion: 94151793
+ //            },
+ //            naturaleza: 'NATURAL', //[JURIDICA o NATURAL]
+ //            nombre: 'consentimiento2128', //String - obligatorio si campo naturaleza = 'NATURAL'
+ //            observaciones: '', // string opcinal
+ ////            razonSocial: '',
+ //            registradoEnCatalogo: true, //boolean
+ //            telefono: 4321871,
+ //            tipoEstablecimiento: 'E-99;E-11',
+ //            tipoObligacion: 'O-99;O-11',
+ //            tipoUsuarioAduanero: 'A-1;A-2',
+ //            tiposRepresentacion: 'R-99-PN;R-12-PN'
+ //        },
+ //        usuario: {
+ //            attributes: {
+ //                xmlns: ''
+ //            },
+ //            contrasena: '',
+ //            generarContrasena: true, //boolean
+ //            nombreUsuario: 'consentimiento2128'
+ //        }
+ //    };
+ //    callback(crearAdquirienteConUsuarioACliente);
+ //}
+ //
+ //
+ //function __envioFactura() {
+ //    var obj = {};
+ //    obj.x = '';
+ //    obj.funcion = "crearFacturaElectronica";
+ //    __jsonFactura(obj, function (respuesta) {
+ //        obj.parametros = respuesta;
+ //        obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
+ //        __FacturacionDian(obj, function (respuesta) {
+ //
+ //            console.log("__FacturacionDian",respuesta);
+ //        });
+ //    });
+ //}
+ ////function __adquirientesMasivo(){
+ //Sincronizacion.prototype.adquirientesMasivo = function (req, res) {
+ //    var that = this;
+ //    G.Q.ninvoke(that.m_clientes, 'listar_adquirientes').then(function (resultado) {
+ //    }).fail(function (err) {
+ //        console.log("Error adquirientesMasivo ", err);
+ //    }).done();
+ //};*/
 
 Sincronizacion.prototype.facturacionElectronica = function (req, callback) {
     var that = this;
-    
-    G.Q.nfcall(__jsonFactura,req).then(function (resultado) {
-        
+
+    G.Q.nfcall(__jsonFactura, req).then(function (resultado) {
+
         var obj = {};
         obj.x = '';
-        obj.funcion = "crearFacturaElectronica";    
+        obj.funcion = "crearFacturaElectronica";
         obj.parametros = resultado;
-        obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
-        
-        
-       return G.Q.nfcall(__FacturacionDian,obj);
-       
+        obj.url = G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
+
+
+        return G.Q.nfcall(__FacturacionDian, obj);
+
     }).then(function (resultado) {
-        
-         callback(false,resultado);
-         
+
+        callback(false, resultado);
+
     }).fail(function (err) {
-        
-         callback(false,err);
-         
+
+        callback(false, err);
+
     }).done();
-   
+
 };
 
-function __jsonFacturacionRequirientes(obj, callback) {
+Sincronizacion.prototype.facturacionElectronicaNotaDebito = function (req, callback) {
 
-    var crearAdquirienteConUsuarioACliente = {
-        attributes: {
-            xmlns: 'http://contrato.adquiriente.cliente.webservices.servicios.certifactura.certicamara.com/'
-        },
-        adquiriente: {
-            attributes: {
-                xmlns: ''
-            },
-            acuerdoFisicoFacturacionElectronica: false, //boolean
-            adjuntarPdfNotificaciones: true, //boolean
-            adjuntarXmlNotificaciones: true, //boolean
-            apellidos: 'GONZALEZ', //String - obligatorio si campo naturaleza = 'NATURAL'
-//            camposDinamicosAdquirientes: {
-//                nombreCampo: obj.x,
-//                valor: obj.x
-//            },
-            cantidadDiasAceptacionAutomatica: 3, // int
-//            ciudadExtranjera: obj.x, // opcional
-            codigoCiudad: '11001', // string Dane
-            codigoDepartamento: '11', // string Dane
-//            codigoPais: obj.x, //string Dane Opcional,
-            direccion: 'cra7 NO 9 - 9', // string obligatorio
-            emailPrincipal: 'desarrollo2@duanaltda.com', // string
-//            emailSecundarios: '', // string maximo 10 correos separados por coma Opcional
-            enviarCorreoCertificado: true, //boolean
-            enviarCorreoDeBienvenida: true, //boolean
-            enviarFisico: true, //boolean Opcional
-            enviarNotificaciones: true, //boolean
-            enviarPlataformaFacturacion: true, //boolean
-            fax: '', //string Opcional
-            formatoFactura: 'ORIGINAL XML',
-//            idClienteCreador: '',
-            identificacionAdquirienteWS: {
-                codigoDian: 13,
-//                digitoDeVerificacion: ,
-                numeroIdentificacion: 94151793
-            },
-            naturaleza: 'NATURAL', //[JURIDICA o NATURAL]
-            nombre: 'consentimiento2128', //String - obligatorio si campo naturaleza = 'NATURAL'
-            observaciones: '', // string opcinal
-//            razonSocial: '',
-            registradoEnCatalogo: true, //boolean
-            telefono: 4321871,
-            tipoEstablecimiento: 'E-99;E-11',
-            tipoObligacion: 'O-99;O-11',
-            tipoUsuarioAduanero: 'A-1;A-2',
-            tiposRepresentacion: 'R-99-PN;R-12-PN'
-        },
-        usuario: {
-            attributes: {
-                xmlns: ''
-            },
-            contrasena: '',
-            generarContrasena: true, //boolean
-            nombreUsuario: 'consentimiento2128'
-        }
-    };
-    callback(crearAdquirienteConUsuarioACliente);
-}
+    var that = this;
+
+    G.Q.nfcall(__jsonNotaDebito, req).then(function (resultado) {
+
+        var obj = {};
+        obj.funcion = "crearNotaDebitoElectronica";
+        obj.parametros = resultado;
+        obj.url = G.constants.WS().FACTURACION_ELECTRONICA.NOTA_DEBITO;
+
+        return G.Q.nfcall(__FacturacionDian, obj);
+
+    }).then(function (resultado) {
+        callback(false, resultado);
+
+    }).fail(function (err) {
+        callback(false, err);
+
+    }).done();
+};
+
+Sincronizacion.prototype.facturacionElectronicaNotaCredito = function (req, callback) {
+    var that = this;
+
+    G.Q.nfcall(__jsonNotaCredito, req).then(function (resultado) {
+
+        var obj = {};
+        obj.x = '';
+        obj.funcion = "crearNotaCreditoElectronica";
+        obj.parametros = resultado;
+        obj.url = G.constants.WS().FACTURACION_ELECTRONICA.NOTA_CREDITO;
+
+
+        return G.Q.nfcall(__FacturacionDian, obj);
+
+    }).then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).fail(function (err) {
+
+        callback(false, err);
+
+    }).done();
+
+};
 
 /*
  * Andres Mauricio Gonzalez
@@ -140,15 +183,15 @@ function __jsonFacturacionRequirientes(obj, callback) {
  */
 function __FacturacionDian(obj, callback) {
     var url = obj.url;
-    var resultado ={};
+    var resultado = {};
     obj.error = false;
-     
+
 
     var password = G.constants.CREDENCIALESCERTICAMARA().CONTRASENA; // optional password
     var username = G.constants.CREDENCIALESCERTICAMARA().USUARIO; // optional password  
     var tmp = {};
     //Se invoca el ws
- 
+
     G.Q.nfcall(G.soap.createClient, url).then(function (client) {
         tmp = client;
         var options = {
@@ -164,202 +207,196 @@ function __FacturacionDian(obj, callback) {
         return G.Q.ninvoke(client, obj.funcion, obj.parametros);
 
     }).spread(function (result, raw, soapHeader) {
-        resultado.result=result;
-        resultado.lastRequest=G.xmlformatter(tmp.lastRequest);
+        resultado.result = result;
+        resultado.lastRequest = G.xmlformatter(tmp.lastRequest);
         G.logError(G.xmlformatter(tmp.lastRequest));
     }).then(function () {
-        resultado.sw_factura_dian='1';
+        resultado.sw_factura_dian = '1';
         callback(false, resultado);
 
     }).fail(function (err) {
-        err.lastRequest=G.xmlformatter(tmp.lastRequest);
+        err.lastRequest = G.xmlformatter(tmp.lastRequest);
         obj.error = true;
         obj.tipo = '0';
         G.logError(err);
-        err.sw_factura_dian='0';
+        err.sw_factura_dian = '0';
         callback(err);
 
     }).done();
 }
 
 function __jsonNotaCredito(obj, callback) {
-
+    var formato = 'DD-MM-YYYY';
     var crearNotaCredito = {
+        attributes: {
+            xmlns: 'http://contrato.nota.webservices.servicios.certifactura.certicamara.com/'
+        },
         notaCreditoElectronicaCanonica: {
-            codigoMoneda: obj.x, //String
-            conceptoNota: obj.x, //numeric
-            fechaExpedicion: obj.x, //String
-            fechaVencimiento: obj.x, //String OPCIONAL
+            attributes: {
+                xmlns: ''
+            },
+            codigoMoneda: obj.codigoMoneda, //String
+            conceptoNota: obj.conceptoNota, //numeric
+            fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String
+            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
             identificacionReceptor: {
-                codigoDocumentoDian: obj.x, //int
-                numeroIdentificacion: obj.x //String
+                codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int
+                numeroIdentificacion: obj.numeroIdentificacion //String
             },
-            identificadorFactura: obj.x, //long
-            nombreSucursal: obj.x, //String OPCIONAL
-            numeroNota: obj.x, //numeric
-            observaciones: obj.x, //String OPCIONAL
-            perfilEmision: obj.x, //String
-            perfilUsuario: obj.x, //String
-            productos: {//OPCIONAL
-                atributosAdicionalesProd: {
-                    nombreAtributo: "observacionProd", //String
-                    valor: "Observación" //String
+            identificadorFactura: obj.identificadorFactura, //long
+            nombreSucursal: obj.nombreSucursal, //String
+            numeroNota: obj.numeroNota, //numeric
+            observaciones: obj.observaciones, //String OPCIONAL
+            perfilEmision: obj.perfilEmision, //String
+            perfilUsuario: obj.perfilUsuario, //String
+            productos: obj.productos,
+            subtotalNotaCreditoElectronica: obj.subtotalNotaDebitoElectronica, //decimal OPCIONAL
+            subtotalesImpuestosDeduccion: [
+                {// OPCIONAL
+                    nombre: "ReteFuente", //String -
+                    valor: obj.ReteFuente, //decimal -
+                    baseGravable: obj.baseGravableReteFuente.replace(".", "") //decimal -
                 },
-                cantidad: obj.x, //decimal OPCIONAL
-                descripcion: obj.x, //String OPCIONAL
-                identificador: obj.x, //String
-                imprimible: obj.x, //boolean
-                impuestoAlConsumo: {
-                    nombre: obj.x, //String
-                    porcentual: obj.x, //decimal
-                    valor: obj.x //decimal
+                {// OPCIONAL
+                    nombre: "IVA", //String -
+                    valor: obj.IVA, //decimal -
+                    baseGravable: obj.baseGravableIVA //decimal -
                 },
-                impuestoICA: {
-                    nombre: obj.x, //String
-                    porcentual: obj.x, //decimal
-                    valor: obj.x //decimal
+                {// OPCIONAL
+                    nombre: "ReteICA", //String -
+                    valor: obj.ReteICA, //decimal -
+                    baseGravable: obj.baseGravableReteICA.replace(".", "") //decimal -
                 },
-                impuestoIVA: {
-                    nombre: obj.x, //String
-                    porcentual: obj.x, //decimal
-                    valor: obj.x //decimal
-                },
-                listaImpuestosDeducciones: {// OPCIONAL
-                    nombre: obj.x, //String
-                    porcentual: obj.x, //decimal
-                    valor: obj.x //decimal
-                },
-                pagable: obj.x, //boolean
-                valorUnitario: obj.x //decimal
-            },
-            subtotalNotaCreditoElectronica: obj.x, //decimal OPCIONAL
-            subtotalesImpuestosDeduccion: {// OPCIONAL
-                nombre: obj.x, //String
-                valor: obj.x, //decimal
-                baseGravable: obj.x //decimal
-            },
-            tipoFactura: obj.x, //numeric
-            totalNotaCreditoElectronica: obj.x //decimal
+                {// OPCIONAL
+                    nombre: "ReteIVA", //String -
+                    valor: obj.ReteIVA, //decimal -
+                    baseGravable: obj.baseGravableReteIVA.replace(".", "") //decimal -
+                }
+            ],
+            tipoFactura: obj.tipoFactura, //numeric
+            totalNotaCreditoElectronica: obj.totalNotaDebitoElectronica //decimal
         },
         notaEspecializada: {
-            AtributosAdicionales: [{
-                    nombreAtributo: "conceptoNota", //String
-                    valor: "Concepto de Nota", //String
-                    tipo: "String" //String
-                }, {
-                    nombreAtributo: "TipoNota", //String
-                    valor: "Tipo Nota", //String
-                    tipo: "String" //String
-                }, {
-                    nombreAtributo: "descuento", //String
-                    valor: 0.00, //Decimal
-                    tipo: "Decimal" //String
-                }, {
-                    nombreAtributo: "valorTotal", //String
-                    valor: 0.00, //Decimal
-                    tipo: "Decimal" //String
-                }, {
-                    nombreAtributo: "elaborado", //String
-                    valor: "Elaborador por", //String
-                    tipo: "String" //String
-                }, {
-                    nombreAtributo: "valorLetras", //String
-                    valor: "Valor en Letras", //String
-                    tipo: "String" //String
-                }]
+            attributes: {
+                xmlns: ''
+            },
+            AtributosAdicionales: {
+                AtributoAdicional: [{
+                        nombreAtributo: "conceptoNota", //String
+                        valor: obj.conceptoNotaAdicional, //String
+                        tipo: "String" //String
+                    }, {
+                        nombreAtributo: "TipoNota", //String
+                        valor: obj.TipoNota, //String
+                        tipo: "String" //String
+                    }, {
+                        nombreAtributo: "descuento", //String
+                        valor: obj.descuento, //Decimal
+                        tipo: "Decimal" //String
+                    }, {
+                        nombreAtributo: "valorTotal", //String
+                        valor: obj.valorTotal, //Decimal
+                        tipo: "Decimal" //String
+                    }, {
+                        nombreAtributo: "elaborado", //String
+                        valor: obj.elaboradoPor, //String
+                        tipo: "String" //String
+                    }, {
+                        nombreAtributo: "valorLetras", //String
+                        valor: obj.totalenLetras, //String
+                        tipo: "String" //String
+                    }]
+            }
         }
     };
-    callback(crearNotaCredito);
+    callback(false, crearNotaCredito);
 }
 
 function __jsonNotaDebito(obj, callback) {
-
+    var formato = 'DD-MM-YYYY';
     var crearNotaDebito = {
+        attributes: {
+            xmlns: 'http://contrato.nota.webservices.servicios.certifactura.certicamara.com/'
+        },
         notaDebitoElectronicaCanonica: {
-            codigoMoneda: obj.x, //String
-            conceptoNota: obj.x, //numeric
-            fechaExpedicion: obj.x, //String
-            fechaVencimiento: obj.x, //String OPCIONAL
+            attributes: {
+                xmlns: ''
+            },
+            codigoMoneda: obj.codigoMoneda, //String
+            conceptoNota: obj.conceptoNota, //numeric
+            fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String
+            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
             identificacionReceptor: {
-                codigoDocumentoDian: obj.x, //int
-                numeroIdentificacion: obj.x //String
+                codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int
+                numeroIdentificacion: obj.numeroIdentificacion //String
             },
-            identificadorFactura: obj.x, //long
-            nombreSucursal: obj.x, //String
-            numeroNota: obj.x, //numeric
-            observaciones: obj.x, //String OPCIONAL
-            perfilEmision: obj.x, //String
-            perfilUsuario: obj.x, //String
-            productos: {//OPCIONAL
-                atributosAdicionalesProd: {
-                    nombreAtributo: "observacionProd", //String
-                    valor: "Observación" //String
+            identificadorFactura: obj.identificadorFactura, //long
+            nombreSucursal: obj.nombreSucursal, //String
+            numeroNota: obj.numeroNota, //numeric
+            observaciones: obj.observaciones, //String OPCIONAL
+            perfilEmision: obj.perfilEmision, //String
+            perfilUsuario: obj.perfilUsuario, //String
+            productos: obj.productos,
+            subtotalNotaDebitoElectronica: obj.subtotalNotaDebitoElectronica, //decimal OPCIONAL
+            subtotalesImpuestosDeduccion: [
+                {// OPCIONAL
+                    nombre: "ReteFuente", //String -
+                    valor: obj.ReteFuente, //decimal -
+                    baseGravable: obj.baseGravableReteFuente.replace(".", "") //decimal -
                 },
-                cantidad: obj.x, //decimal OPCIONAL
-                descripcion: obj.x, //String OPCIONAL
-                identificador: obj.x, //String
-                imprimible: obj.x, //boolean
-                impuestoAlConsumo: {
-                    nombre: obj.x, //String
-                    porcentual: obj.x, //decimal
-                    valor: obj.x //decimal
+                {// OPCIONAL
+                    nombre: "IVA", //String -
+                    valor: obj.IVA, //decimal -
+                    baseGravable: obj.baseGravableIVA //decimal -
                 },
-                impuestoICA: {
-                    nombre: obj.x, //String
-                    porcentual: obj.x, //decimal
-                    valor: obj.x //decimal
+                {// OPCIONAL
+                    nombre: "ReteICA", //String -
+                    valor: obj.ReteICA, //decimal -
+                    baseGravable: obj.baseGravableReteICA.replace(".", "") //decimal -
                 },
-                impuestoIVA: {
-                    nombre: obj.x, //String
-                    porcentual: obj.x, //decimal
-                    valor: obj.x //decimal
-                },
-                listaImpuestosDeducciones: {// OPCIONAL
-                    nombre: obj.x, //String
-                    porcentual: obj.x, //decimal
-                    valor: obj.x //decimal
-                },
-                pagable: obj.x, //boolean
-                valorUnitario: obj.x //decimal
-            },
-            subtotalNotaCreditoElectronica: obj.x, //decimal OPCIONAL
-            subtotalesImpuestosDeduccion: {// OPCIONAL
-                nombre: obj.x, //String
-                valor: obj.x, //decimal
-                baseGravable: obj.x //decimal
-            },
-            tipoFactura: obj.x, //numeric
-            totalNotaCreditoElectronica: obj.x //decimal
+                {// OPCIONAL
+                    nombre: "ReteIVA", //String -
+                    valor: obj.ReteIVA, //decimal -
+                    baseGravable: obj.baseGravableReteIVA.replace(".", "") //decimal -
+                }
+            ],
+            tipoFactura: obj.tipoFactura, //numeric
+            totalNotaDebitoElectronica: obj.totalNotaDebitoElectronica //decimal
         },
         notaEspecializada: {
-            AtributosAdicionales: [{
-                    nombreAtributo: "conceptoNota", //String
-                    valor: "Concepto de Nota", //String
-                    tipo: "String" //String
-                }, {
-                    nombreAtributo: "TipoNota", //String
-                    valor: "Tipo Nota", //String
-                    tipo: "String" //String
-                }, {
-                    nombreAtributo: "descuento", //String
-                    valor: 0.00, //Decimal
-                    tipo: "Decimal" //String
-                }, {
-                    nombreAtributo: "valorTotal", //String
-                    valor: 0.00, //Decimal
-                    tipo: "Decimal" //String
-                }, {
-                    nombreAtributo: "elaborado", //String
-                    valor: "Elaborador por", //String
-                    tipo: "String" //String
-                }, {
-                    nombreAtributo: "valorLetras", //String
-                    valor: "Valor en Letras", //String
-                    tipo: "String" //String
-                }]
+            attributes: {
+                xmlns: ''
+            },
+            AtributosAdicionales: {
+                AtributoAdicional: [{
+                        nombreAtributo: "conceptoNota", //String
+                        valor: obj.conceptoNotaAdicional, //String
+                        tipo: "String" //String
+                    }, {
+                        nombreAtributo: "TipoNota", //String
+                        valor: obj.TipoNota, //String
+                        tipo: "String" //String
+                    }, {
+                        nombreAtributo: "descuento", //String
+                        valor: obj.descuento, //Decimal
+                        tipo: "Decimal" //String
+                    }, {
+                        nombreAtributo: "valorTotal", //String
+                        valor: obj.valorTotal, //Decimal
+                        tipo: "Decimal" //String
+                    }, {
+                        nombreAtributo: "elaborado", //String
+                        valor: obj.elaboradoPor, //String
+                        tipo: "String" //String
+                    }, {
+                        nombreAtributo: "valorLetras", //String
+                        valor: obj.totalenLetras, //String
+                        tipo: "String" //String
+                    }]
+            }
         }
     };
-    callback(crearNotaDebito);
+    callback(false, crearNotaDebito);
 }
 
 function codigoDocumentoDian(codigoDocumentoDian) {
@@ -400,8 +437,8 @@ function mediosPago(mediosPago) {
 }
 
 function __jsonFactura(obj, callback) {
-    
-    var formato = 'DD-MM-YYYY';     
+
+    var formato = 'DD-MM-YYYY';
     var crearFacturaElectronica = {
         attributes: {
             xmlns: 'http://contrato.factura.webservices.servicios.certifactura.certicamara.com/'
@@ -420,7 +457,7 @@ function __jsonFactura(obj, callback) {
             },
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String OPCIONAL  DD/MM/YYYY -
             fechaVencimiento: G.moment(obj.fechaVencimiento).format(formato), //String OPCIONAL DD/MM/YYYY -
-            icoterms:'', //String OPCIONAL -
+            icoterms: '', //String OPCIONAL -
             identificacionReceptor: {
                 codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int -
                 numeroIdentificacion: obj.numeroIdentificacion//String -
@@ -436,30 +473,30 @@ function __jsonFactura(obj, callback) {
             },
             perfilEmision: "CLIENTE", //String -
             perfilUsuario: "CLIENTE", //String -
-            productos: obj.productos,//OPCIONAL
+            productos: obj.productos, //OPCIONAL
             subtotalFactura: obj.subtotalFactura, //decimal OPCIONAL -
             subtotalesImpuestosDeduccion: [
-            {// OPCIONAL
-                nombre: "ReteFuente", //String -
-                valor: obj.ReteFuente, //decimal -
-                baseGravable: obj.baseGravableReteFuente.replace(".","") //decimal -
-            },
-            {// OPCIONAL
-                nombre: "IVA", //String -
-                valor: obj.IVA, //decimal -
-                baseGravable: obj.baseGravableIVA //decimal -
-            },
-            {// OPCIONAL
-                nombre: "ReteICA", //String -
-                valor: obj.ReteICA, //decimal -
-                baseGravable: obj.baseGravableReteICA.replace(".", "") //decimal -
-            },
-            {// OPCIONAL
-                nombre: "ReteIVA", //String -
-                valor: obj.ReteIVA, //decimal -
-                baseGravable: obj.baseGravableReteIVA.replace(".", "") //decimal -
-            }
-        ],
+                {// OPCIONAL
+                    nombre: "ReteFuente", //String -
+                    valor: obj.ReteFuente, //decimal -
+                    baseGravable: obj.baseGravableReteFuente.replace(".", "") //decimal -
+                },
+                {// OPCIONAL
+                    nombre: "IVA", //String -
+                    valor: obj.IVA, //decimal -
+                    baseGravable: obj.baseGravableIVA //decimal -
+                },
+                {// OPCIONAL
+                    nombre: "ReteICA", //String -
+                    valor: obj.ReteICA, //decimal -
+                    baseGravable: obj.baseGravableReteICA.replace(".", "") //decimal -
+                },
+                {// OPCIONAL
+                    nombre: "ReteIVA", //String -
+                    valor: obj.ReteIVA, //decimal -
+                    baseGravable: obj.baseGravableReteIVA.replace(".", "") //decimal -
+                }
+            ],
             tipoFactura: obj.tipoFactura, //numeric -
             totalFactura: obj.totalFactura //decimal OPCIONAL -
         },
@@ -467,60 +504,60 @@ function __jsonFactura(obj, callback) {
             attributes: {
                 xmlns: ''
             },
-            AtributosAdicionales:{ 
-                AtributoAdicional:[{// OPCIONAL
-                    nombreAtributo: "mensajeContribuyente", //String
-                    valor: obj.mensajeContribuyente, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "mensajeResolucion", //String
-                    valor: obj.mensajeResolucion, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "nombreAdquirente", //String
-                    valor: obj.nombreAdquirente, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "vendedor", //String
-                    valor: obj.vendedor, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "numeroPedido", //String
-                    valor: obj.numeroPedido, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "Descuento", //String
-                    valor: 0, //decimal
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "totalenLetras", //String
-                    valor: obj.totalenLetras, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "observacionesPedido", //String
-                    valor: obj.observacionesPedido, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "observacionesDespacho", //String
-                    valor: obj.observacionesDespacho, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "elaboradoPor", //String
-                    valor: obj.elaboradoPor, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "tipoFormato", //String
-                    valor: obj.tipoFormato, //String
-                    tipo: "Texto"
-                }, {// OPCIONAL
-                    nombreAtributo: "condiciones", //String
-                    valor: obj.condiciones, //String
-                    tipo: "Texto"
-                }]
+            AtributosAdicionales: {
+                AtributoAdicional: [{// OPCIONAL
+                        nombreAtributo: "mensajeContribuyente", //String
+                        valor: obj.mensajeContribuyente, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "mensajeResolucion", //String
+                        valor: obj.mensajeResolucion, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "nombreAdquirente", //String
+                        valor: obj.nombreAdquirente, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "vendedor", //String
+                        valor: obj.vendedor, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "numeroPedido", //String
+                        valor: obj.numeroPedido, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "Descuento", //String
+                        valor: 0, //decimal
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "totalenLetras", //String
+                        valor: obj.totalenLetras, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "observacionesPedido", //String
+                        valor: obj.observacionesPedido, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "observacionesDespacho", //String
+                        valor: obj.observacionesDespacho, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "elaboradoPor", //String
+                        valor: obj.elaboradoPor, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "tipoFormato", //String
+                        valor: obj.tipoFormato, //String
+                        tipo: "Texto"
+                    }, {// OPCIONAL
+                        nombreAtributo: "condiciones", //String
+                        valor: obj.condiciones, //String
+                        tipo: "Texto"
+                    }]
+            }
         }
-    }
     };
-    callback(false,crearFacturaElectronica);
+    callback(false, crearFacturaElectronica);
 }
 
 

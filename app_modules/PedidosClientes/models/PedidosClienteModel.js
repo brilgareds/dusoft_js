@@ -1187,6 +1187,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function (responsabl
         });
     }
     query.totalRegistros = 0;
+    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (total) {
         var registros = query.
                 limit(limite).

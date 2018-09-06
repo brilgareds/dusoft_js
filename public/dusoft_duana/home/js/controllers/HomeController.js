@@ -42,7 +42,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var modalInstance = $modal.open($scope.opts);
                 
             }
-
+            
             $scope.Usuario = Usuario.getUsuarioActual();
 
             $scope.exampleData = [{

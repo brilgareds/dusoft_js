@@ -989,7 +989,131 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
         "f.fecha as fecha_asignacion_pedido",
         "i.fecha_registro as fecha_separacion_pedido",
         "j.descripcion as zona",
-        "a.observacion"
+        "a.observacion",
+        G.knex.raw("(select\
+           CASE\
+               WHEN id_orden_pedido_origen IS NULL THEN (select\
+                   'CT' || cast(id_orden_cotizacion_origen as text)\
+               from\
+                   ventas_ordenes_pedido_multiple_clientes\
+               where\
+                   id_orden_pedido_origen = a.solicitud_prod_a_bod_ppal_id limit 1)\
+               ELSE cast(id_orden_pedido_origen as text)\
+           END   || ' - ' ||                         CASE\
+               WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+               ELSE cast(id_orden_pedido_destino as text)\
+           END  || ' - ' ||                         CASE\
+               WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+               ELSE cast(id_orden_pedido_final as text)\
+           END || ' - ' || cast(coalesce(t.nombre_tercero,\
+           '') as text) || '' || cast(coalesce(b.descripcion,\
+           '') as text) as destino\
+       from\
+           ventas_ordenes_pedido_multiple_clientes as vopmc\
+       left join\
+           ventas_ordenes_pedidos_tmp vopt\
+               on (\
+                   vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp\
+               )\
+       left join\
+           terceros t\
+               on (\
+                   vopt.tercero_id = t.tercero_id\
+                   and vopt.tipo_id_tercero = t.tipo_id_tercero\
+               )\
+       left join\
+           bodegas b\
+               on (\
+                   vopmc.farmacia_id = b.empresa_id\
+                   and vopmc.centro_utilidad = b.centro_utilidad\
+                   and vopmc.bodega = a.solicitud_prod_a_bod_ppal_id\
+               )\
+       where\
+           id_orden_pedido_origen = a.solicitud_prod_a_bod_ppal_id limit 1\
+       ) as es_pedido_origen"),
+        G.knex.raw("(\
+           SELECT\
+               CASE\
+                   WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)\
+                   from\
+                       ventas_ordenes_pedido_multiple_clientes\
+                   where\
+                       id_orden_pedido_destino = a.solicitud_prod_a_bod_ppal_id limit 1)\
+                   ELSE cast(id_orden_pedido_origen as text)\
+               END   || ' - ' || CASE\
+                   WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                   ELSE cast(id_orden_pedido_destino as text)\
+               END  || ' - ' || CASE\
+                   WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                   ELSE cast(id_orden_pedido_final as text)\
+               END || ' - ' || cast(coalesce(t.nombre_tercero,\
+               '') as text) || '' || cast(coalesce(b.descripcion,\
+               '') as text) as destino\
+           from\
+               ventas_ordenes_pedido_multiple_clientes as vopmc\
+           left join\
+               ventas_ordenes_pedidos_tmp vopt\
+                   on (\
+                       vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp\
+                   )\
+           left join\
+               terceros t\
+                   on (\
+                       vopt.tercero_id = t.tercero_id\
+                       and vopt.tipo_id_tercero = t.tipo_id_tercero\
+                   )\
+           left join\
+               bodegas b\
+                   on (\
+                       vopmc.farmacia_id = b.empresa_id\
+                       and vopmc.centro_utilidad = b.centro_utilidad\
+                       and vopmc.bodega = b.bodega\
+                   )\
+           where\
+               id_orden_pedido_destino = a.solicitud_prod_a_bod_ppal_id limit 1\
+           ) as es_pedido_destino"),
+        G.knex.raw("(\
+               select\
+                   CASE\
+                       WHEN id_orden_pedido_origen IS NULL THEN (select\
+                           'CT' || cast(id_orden_cotizacion_origen as text)\
+                       from\
+                           ventas_ordenes_pedido_multiple_clientes\
+                       where\
+                           id_orden_pedido_final = a.solicitud_prod_a_bod_ppal_id limit 1)\
+                       ELSE cast(id_orden_pedido_origen as text)\
+                   END   || ' - ' || CASE\
+                       WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
+                       ELSE cast(id_orden_pedido_destino as text)\
+                   END  || ' - ' || CASE\
+                       WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                       ELSE cast(id_orden_pedido_final as text)\
+                   END || ' - ' || cast(coalesce(t.nombre_tercero,\
+                   '') as text) || '' || cast(coalesce(b.descripcion,\
+                   '') as text) as destino\
+               from\
+                   ventas_ordenes_pedido_multiple_clientes as vopmc\
+               left join\
+                   ventas_ordenes_pedidos_tmp vopt\
+                       on (\
+                           vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp\
+                       )\
+               left join\
+                   terceros t\
+                       on (\
+                           vopt.tercero_id = t.tercero_id\
+                           and vopt.tipo_id_tercero = t.tipo_id_tercero\
+                       )\
+               left join\
+                   bodegas b\
+                       on (\
+                           vopmc.farmacia_id = b.empresa_id\
+                           and vopmc.centro_utilidad = b.centro_utilidad\
+                           and vopmc.bodega = b.bodega\
+                       )\
+               where\
+                   id_orden_pedido_final = a.solicitud_prod_a_bod_ppal_id limit 1\
+               ) as es_pedido_final")
     ];
 
     var query = G.knex("solicitud_productos_a_bodega_principal as a").
@@ -1066,6 +1190,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
 
 
     query.totalRegistros = 0;
+    
+    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (total) {
         var registros = query.
                 limit(limite).

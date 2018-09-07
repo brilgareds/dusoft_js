@@ -1,4 +1,4 @@
-var Notas = function (m_notas, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes,c_sincronizacion) {
+var Notas = function (m_notas, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes, c_sincronizacion) {
     this.m_notas = m_notas;
     this.m_sincronizacion = m_sincronizacion;
     this.m_facturacion_proveedores = m_facturacion_proveedores;
@@ -852,7 +852,7 @@ Notas.prototype.sincronizarNotas = function (req, res) {
  * @fecha 2018-09-04 (YYYY-MM-DD)
  */
 Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
-    
+
     that = this;
     var args = req.body.data;
     var resultado;
@@ -860,7 +860,7 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
 
     G.Q.nfcall(__generarSincronizacionDianDebito, that, req).then(function (data) {
         resultado = data;
-        
+
         return G.Q.nfcall(__productos, resultado.productos, 0, []);
     }).then(function (productos) {
 
@@ -868,30 +868,27 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
             codigoMoneda: "COP",
             conceptoNota: "3", // falta validar
             fechaExpedicion: resultado.nota.fecha_registro_nota,
-            fechaVencimiento:"", //falta
+            fechaVencimiento: "", //falta
             codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
             numeroIdentificacion: resultado.cliente.tercero_id,
-            identificadorFactura: resultado.nota.prefijo +"_"+ resultado.nota.factura_fiscal +"_E", //validar
+            identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E", //validar
             nombreSucursal: "",
             numeroNota: resultado.nota.numero,
-            observaciones:"", //falta
+            observaciones: "", //falta
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
             productos: productos,
-            
             subtotalNotaDebitoElectronica: resultado.valores.subTotal,
             ReteFuente: resultado.valores.retencionFuente,
             baseGravableReteFuente: resultado.valores.bases.base_rtf,
-            IVA: resultado.valores.ivaTotal, 
+            IVA: resultado.valores.ivaTotal,
             baseGravableIVA: resultado.valores.subTotal,
-            ReteICA: resultado.valores.retencionIca, 
+            ReteICA: resultado.valores.retencionIca,
             baseGravableReteICA: resultado.valores.bases.base_ica,
             ReteIVA: resultado.valores.retencionIva,
             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
-            
             tipoFactura: "ELECTRONICA",
             totalNotaDebitoElectronica: resultado.valores.totalFactura,
-            
             conceptoNotaAdicional: "", //validar creando nueva nota
             TipoNota: resultado.nota.tipo_nota,
             descuento: "",
@@ -903,8 +900,7 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaDebito', json);
 
     }).then(function (respuesta) {
-        
-//console.log("respuesta ",respuesta);
+
 
         data = respuesta;
         var parametros = {
@@ -981,7 +977,7 @@ function __generarSincronizacionDianDebito(that, req, callback) {
     };
 
 
-    G.Q.ninvoke(that.m_notas,'ConsultarNotasDebito', parametros).then(function (result) {
+    G.Q.ninvoke(that.m_notas, 'ConsultarNotasDebito', parametros).then(function (result) {
 
         nota = result;
         parametros.nombreNota = "DEBITO";
@@ -1037,7 +1033,7 @@ function __generarSincronizacionDianDebito(that, req, callback) {
     }).then(function (resultado) {
 
         if (resultado.length > 0) {
-            valores.bases=resultado[0];
+            valores.bases = resultado[0];
             productos.forEach(function (row) {
 
                 subTotal += parseFloat(row.subtotal);
@@ -1100,7 +1096,7 @@ function __generarSincronizacionDianDebito(that, req, callback) {
  * @fecha 2018-09-04 (YYYY-MM-DD)
  */
 Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
-    
+
     that = this;
     var args = req.body.data;
     var resultado;
@@ -1108,7 +1104,6 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
 
     G.Q.nfcall(__generarSincronizacionDianCredito, that, req).then(function (data) {
         resultado = data;
-        
         return G.Q.nfcall(__productos, resultado.productos, 0, []);
     }).then(function (productos) {
 
@@ -1116,30 +1111,27 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
             codigoMoneda: "COP",
             conceptoNota: "6", // falta validar
             fechaExpedicion: resultado.nota.fecha_registro_nota,
-            fechaVencimiento:"", //falta
-            codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
-            numeroIdentificacion: resultado.cliente.tercero_id,
-            identificadorFactura: resultado.nota.prefijo +"_"+ resultado.nota.factura_fiscal +"_E", //validar
+            fechaVencimiento: "", //falta
+            codigoDocumentoDian: resultado.nota.tipo_id_tercero,
+            numeroIdentificacion: resultado.nota.tercero_id,
+            identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E", //validar
             nombreSucursal: "",
             numeroNota: resultado.nota.numero,
-            observaciones:"", //falta
+            observaciones: "", //falta
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
-            productos: productos,
-            
+            productos: productos.length > 0 ? productos: "",
             subtotalNotaCreditoElectronica: resultado.valores.subTotal,
             ReteFuente: resultado.valores.retencionFuente,
             baseGravableReteFuente: resultado.valores.bases.base_rtf,
-            IVA: resultado.valores.ivaTotal, 
+            IVA: resultado.valores.ivaTotal,
             baseGravableIVA: resultado.valores.subTotal,
-            ReteICA: resultado.valores.retencionIca, 
+            ReteICA: resultado.valores.retencionIca,
             baseGravableReteICA: resultado.valores.bases.base_ica,
             ReteIVA: resultado.valores.retencionIva,
             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
-            
             tipoFactura: "ELECTRONICA",
             totalNotaCreditoElectronica: resultado.valores.totalFactura,
-            
             conceptoNotaAdicional: resultado.nota.descripcion_concepto,
             TipoNota: resultado.nota.tipo_nota,
             descuento: "",
@@ -1147,13 +1139,10 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
             valorTotal: resultado.valores.totalFactura,
             elaboradoPor: resultado.usuario
         };
-console.log("json",json);
 
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaCredito', json);
 
     }).then(function (respuesta) {
-        
-//console.log("respuesta ",respuesta);
 
         data = respuesta;
         var parametros = {
@@ -1200,7 +1189,7 @@ console.log("json",json);
  * @fecha 2018-09-04 (YYYY-MM-DD)
  */
 function __generarSincronizacionDianCredito(that, req, callback) {
-   
+
     var that = that;
     var args = req.body.data;
     var valores = {};
@@ -1289,7 +1278,7 @@ function __generarSincronizacionDianCredito(that, req, callback) {
         if (nota[0].concepto_id === 1 || nota[0].concepto_id === null) {
 
             if (resultado.length > 0) {
-                valores.bases=resultado[0];
+                valores.bases = resultado[0];
                 productos.forEach(function (row) {
 
                     subTotal += parseFloat(row.subtotal);
@@ -1312,6 +1301,7 @@ function __generarSincronizacionDianCredito(that, req, callback) {
 
             }
         } else {
+            valores.bases = resultado[0];
             subTotal = nota[0].valor_nota;
             totalFactura = nota[0].valor_nota;
         }
@@ -1332,7 +1322,6 @@ function __generarSincronizacionDianCredito(that, req, callback) {
         empresa = result;
         var informacion = {
             empresa: empresa[0],
-            cliente: cliente[0],
             nota: nota[0],
             parametros: parametros,
             productos: productos,
@@ -1346,7 +1335,8 @@ function __generarSincronizacionDianCredito(that, req, callback) {
         console.log("Error  ", err);
         callback(err);
     }).done();
-};
+}
+;
 
 function __recorreListado(that, listado, parametros, index, transaccion, callback) {
 
@@ -1447,69 +1437,77 @@ function __generarPdf(datos, callback) {
     });
 }
 
-function __productos(productos,index,productosDian,callback){
-      var item=productos[index];
-     
-      if(!item){          
-          callback(false,productosDian);
-          return;
-      }
-      
+function __productos(productos, index, productosDian, callback) {
+    var item = productos[index];
+
+    if (!item) {
+        callback(false, productosDian);
+        return;
+    }
+
     var atrip1 = {
         nombreAtributo: "observacionProd", //String 
         valor: item.observacion
     };
 
-    var atributoAdicionalProd=[];
-        atributoAdicionalProd.push(atrip1);
-        
-        var prod = {//OPCIONAL
-                atributosAdicionalesProd:{
-                    atributoAdicionalProd:atributoAdicionalProd
-                }
-                ,
-                cantidad:"", //falta
-                descripcion: item.descripcion, //String OPCIONAL -
-                identificador:item.codigo_producto, //String -
-                imprimible: true, //boolean -
-                pagable: true, //boolean -
-                valorUnitario: "" // falta
-            };
-//            var impuesto;
-//            var ivaPorcentaje=parseInt(item.porc_iva);
-//                if (ivaPorcentaje === 0) {
-//                    impuesto = {// OPCIONAL -
-//                        nombre: "IVA0", //String -
-//                        //porcentual: obj.x, //decimal 
-//                        baseGravable: item.porc_iva, //decimal  -
-//                        valor: item.iva_total.replace(",", ".") //decimal -
-//
-//                    };
-//                }
-//                ;
-//                if (ivaPorcentaje === 19) {
-//                    impuesto = {// OPCIONAL -
-//                        nombre: "IVA19", //String -
-//                        //porcentual: obj.x, //decimal 
-//                        baseGravable: item.porc_iva, //decimal  -
-//                        valor: item.iva_total.replace(",", ".") //decimal -
-//                    }
-//
-//                }
-//                ;
-//                if (ivaPorcentaje === 10) {                    
-//                    impuesto = {// OPCIONAL -
-//                        nombre: "IVA10", //String -
-//                        //porcentual: obj.x, //decimal 
-//                        baseGravable: item.porc_iva, //decimal  -
-//                        valor: item.iva_total.replace(",", ".") //decimal -
-//                    };
-//                }
-//                ;
-//        prod.listaImpuestosDeducciones=impuesto;
-        prod.listaImpuestosDeducciones="";
-        productosDian.push(prod);
-        
+    var atributoAdicionalProd = [];
+    atributoAdicionalProd.push(atrip1);
+
+    var prod = {//OPCIONAL
+        atributosAdicionalesProd: {
+            atributoAdicionalProd: atributoAdicionalProd
+        }
+        ,
+        cantidad: item.cantidad,
+        descripcion: item.descripcion, //String OPCIONAL -
+        identificador: item.codigo_producto, //String -
+        imprimible: true, //boolean -
+        pagable: true, //boolean -
+        valorUnitario:  parseFloat(item.valor_unitario).toFixed(2), // falta
+        impuestoAlConsumo: {
+            nombre: "",
+            porcentual: "",
+            valor: ""},
+        impuestoICA: {
+            nombre: "",
+//            porcentual: "",
+            valor: ""},
+        impuestoIVA: {
+            nombre: "",
+            porcentual: "",
+            valor: ""}
+    };
+    var impuesto;
+    var ivaPorcentaje = parseInt(item.porc_iva);
+    if (ivaPorcentaje === 0) {
+        impuesto = {
+            nombre: "IVA0",
+            baseGravable: item.porc_iva,
+            valor: item.iva_total.replace(",", ".")
+
+        };
+    }
+    ;
+    if (ivaPorcentaje === 19) {
+        impuesto = {
+            nombre: "IVA19",
+            baseGravable: item.porc_iva,
+            valor: item.iva_total.replace(",", ".")
+        }
+
+    }
+    ;
+    if (ivaPorcentaje === 10) {
+        impuesto = {
+            nombre: "IVA10",
+            baseGravable: item.porc_iva,
+            valor: item.iva_total.replace(",", ".")
+        };
+    }
+    ;
+    prod.listaImpuestosDeducciones = impuesto;
+    productosDian.push(prod);
+
     var timer = setTimeout(function () {
         index++;
         __productos(productos, index, productosDian, callback);
@@ -1519,5 +1517,5 @@ function __productos(productos,index,productosDian,callback){
 
 
 
-Notas.$inject = ["m_notas", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes","c_sincronizacion"];
+Notas.$inject = ["m_notas", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes", "c_sincronizacion"];
 module.exports = Notas;

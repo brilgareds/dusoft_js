@@ -45361,7 +45361,9 @@ define('url',["angular"], function(angular) {
                 "LISTAR_CONCEPTOS": BASE_URL + "/Notas/listarConceptos",
                 "IMPRIMIR_NOTA": BASE_URL + "/Notas/imprimirNota",
                 "IMPRIMIR_NOTA_CREDITO": BASE_URL + "/Notas/imprimirNotaCredito",
-                "SINCRONIZAR_NOTAS": BASE_URL + "/Notas/sincronizarNotas"
+                "SINCRONIZAR_NOTAS": BASE_URL + "/Notas/sincronizarNotas",
+                "GENERAR_SINCRONIZACION_DIAN_DEBITO" : BASE_URL + "/Notas/generarSincronizacionDianDebito",
+                "GENERAR_SINCRONIZACION_DIAN_CREDITO" : BASE_URL + "/Notas/generarSincronizacionDianCredito"
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",
@@ -56655,13 +56657,13 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                 },
                 {displayName: "DIAN", width: "10%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '\
-                        <div class="btn-group">\
+                        <div class="btn-group" >\
                             <div ng-if="(row.entity.sincronizacionDian >= 1)" >\
                                <button class="btn btn-primary btn-xs" ng-disabled="{{!(row.entity.sincronizacionDian > 1)}}" data-toggle="dropdown">\
                                  SINCRONIZADO\
                                </button>\
                             </div>\
-                            <div ng-if="(row.entity.sincronizacionDian == 0)" >\
+                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
                                <button class="btn btn-success btn-xs"  ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">\
                                   SINCRONIZAR\
                                </button>\
@@ -56670,6 +56672,16 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                 }
             ]
         };
+        
+        $scope.verificaFactuta=function(pref){
+            console.log("pre",pref);
+            var prefijo = false;
+            if(pref==='FDC'){
+                prefijo = true;
+            }
+            console.log("envia pre",prefijo);
+            return prefijo;
+        }
         
         $scope.sincronizarFactura = function(entity){
             
@@ -61480,397 +61492,6 @@ define('controllers/facturacionProveedor/DetalleRecepcionParcialController',["an
                     var filtroPedido = localStorageService.get("verificacionDetalle");
                }]);
 });
-define('controllers/facturacionElectronica/FacturacionElectronicaController',["angular", "js/controllers"], function (angular, controllers) {
-
-    var fo = controllers.controller('FacturacionElectronicaController',
-            ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
-                "$timeout",
-                "$filter",
-                "localStorageService",
-                "$state", "$modal", "socket", "EmpresaDespacho", "Usuario", "notasService", "ProductoFacturas", "Tercero",
-                function ($scope, $rootScope, Request, API, AlertService, Usuario,
-                        $timeout, $filter, localStorageService, $state, $modal, socket,
-                        EmpresaDespacho, Sesion, notasService, ProductoFacturas, Tercero) {
-
-                    var that = this;
-                    var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-                    $scope.root = {
-                    };
-
-                    $scope.root.prefijoBusquedaNota = 'seleccionar';
-                    $scope.root.concepto = [];
-                    $scope.root.prefijosNotas = [
-                        {prefijo: 'NC', descripcion: "Nota Credito"},
-                        {prefijo: 'ND', descripcion: "Nota Debito"}
-                    ];
-
-                    /*
-                     * Inicializacion de variables
-                     * @param {type} empresa
-                     * @param {type} callback
-                     * @returns {void}
-                     */
-                    that.init = function (empresa, callback) {
-
-                        $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
-                        $scope.session = {
-                            usuario_id: Usuario.getUsuarioActual().getId(),
-                            auth_token: Usuario.getUsuarioActual().getToken()
-                        };
-                        $scope.documentosAprobados = [];
-                        $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
-                        $scope.columnaSizeBusqueda = "col-md-3";
-                        $scope.root.visibleBuscador = true;
-                        $scope.root.visibleBotonBuscador = true;
-                        callback();
-                    };
-
-
-                    /**
-                     * +Descripcion Metodo encargado de invocar el servicio que listara
-                     *              los conceptos de las notas credito
-                     * @author German Galvis
-                     * @fecha 11/08/2018 DD/MM/YYYY
-                     * @returns {undefined}
-                     */
-                    that.listarConceptos = function () {
-                        var obj = {
-                            session: $scope.session,
-                            data: {}
-                        };
-
-                        notasService.consultarConceptos(obj, function (data) {
-                            if (data.status === 200) {
-                                $scope.conceptos = data.obj.listarConceptos;
-                            } else {
-                                AlertService.mostrarMensaje("Mensaje del sistema", data.msj);
-                            }
-                        });
-                    };
-
-                    /**
-                     * +Descripcion Metodo encargado de invocar el servicio que listara
-                     *              las Notas
-                     * @author German Galvis
-                     * @fecha 06/08/2018 DD/MM/YYYY
-                     * @returns {undefined}
-                     */
-                    that.listarNotas = function (parametros) {
-                        var obj = {
-                            session: $scope.session,
-                            data: {
-                                tipoConsulta: parametros.tipoConsulta,
-                                numero: parametros.numero,
-                                empresaId: parametros.empresaId
-                            }
-                        };
-
-                        notasService.consultarNotas(obj, function (data) {
-                            if (data.status === 200) {
-                                $scope.root.listadoNota = notasService.renderNotas(data.obj.ConsultarNotas);
-                            } else {
-                                $scope.root.listadoNota = {};
-                                AlertService.mostrarMensaje("warning", data.msj);
-                            }
-
-                        });
-                    };
-
-
-                    /**
-                     * +Descripcion 
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha 18/05/2017
-                     * @returns {undefined}
-                     */
-                    $scope.listaNotas = {
-                        data: 'root.listadoNota',
-                        enableColumnResize: true,
-                        enableRowSelection: false,
-                        enableCellSelection: true,
-                        enableHighlighting: true,
-                        columnDefs: [
-                            {field: 'No. Nota', width: "5%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNumeroNota()}}</p></div>'}, //
-                            {field: 'Valor Nota', width: "7%", displayName: 'Valor Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorNota()| currency:"$ "}}</p></div>'},
-                            {field: 'Fecha Nota', width: "7%", displayName: 'Fecha Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistroNota() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'No. Factura', width: "7%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
-                            {field: 'Tercero', width: "24%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreTercero()}}</p></div>'},
-                            {field: 'Identificación', width: "7%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
-                            {field: 'Valor Factura', width: "8%", displayName: 'Valor Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
-                            {field: 'Saldo Factura', width: "7%", displayName: 'Saldo Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
-                            {field: 'Fecha Factura', width: "7%", displayName: 'Fecha Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistroFactura() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'Tipo Nota', width: "6%", displayName: 'Tipo Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoNota()}}</p></div>'},
-                            {field: 'concepto', width: "5%", displayName: 'concepto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getConcepto()}}</p></div>'},
-                            {displayName: "DIAN", cellClass: "txt-center dropdown-button", width: "10%",
-                                cellTemplate: ' <div class="row">\
-							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
-								<span class="glyphicon glyphicon-export"> Sincronizar</span>\
-							    </button>\
-							  </div>\
-							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-success btn-xs  disabled">\
-								<span class="glyphicon glyphicon-saved"> Sincronizado</span>\
-							    </button>\
-							  </div>\
-						       </div>'
-                            }
-                        ]
-                    };
-
-
-                    /**
-                     * +Descripcion sincronizar FI
-                     * @author German Galvis
-                     * @fecha 14/08/2018
-                     * @returns {undefined}
-                     */
-                    $scope.sincronizarFI = function (data) {
-
-                        that.sincronizarFI(data, function (resultado) {
-                        });
-                    };
-
-                    /**
-                     * +Descripcion Metodo encargado de sincronizar en WS FI
-                     * @author German Galvis
-                     * @fecha 14/08/2018
-                     * @returns {undefined}
-                     */
-                    that.sincronizarFI = function (data, callback) {
-
-                        var obj = {
-                            session: $scope.session,
-                            data: {
-                                sincronizarFI: {
-                                    nota: data.numeroNota,
-                                    tipoNota: data.tipoImpresion
-                                }
-                            }
-                        };
-
-                        notasService.sincronizarFi(obj, function (data) {
-                            if (data.status === 200) {
-
-                                $scope.buscarNota({which: 13});
-                                that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd, data.obj.respuestaFI.resultado.mensaje_ws);
-                                callback(true);
-                            } else {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                                callback(false);
-                            }
-
-                        });
-
-                    };
-
-                    /**
-                     * +Descripcion mensaje de respuesta de WS
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha 18/05/2017
-                     * @returns {undefined}
-                     */
-                    that.mensajeSincronizacion = function (mensaje_bd, mensaje_ws) {
-
-                        $scope.mensaje_bd = mensaje_bd;
-                        $scope.mensaje_ws = mensaje_ws;
-                        $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: false,
-                            keyboard: true,
-                            template: ' <div class="modal-header">\
-                                           <button type="button" class="close" ng-click="close()">&times;</button>\
-                                           <h4 class="modal-title">Resultado sincronizacion</h4>\
-                                       </div>\
-                                       <div class="modal-body">\
-                                           <h4>Respuesta WS</h4>\
-                                           <h5> {{ mensaje_ws }}</h5>\
-                                           <h4>Respuesta BD</h4>\
-                                           <h5> {{ mensaje_bd }} </h5>\
-                                       </div>\
-                                       <div class="modal-footer">\
-                                           <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                       </div>',
-                            scope: $scope,
-                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
-
-                                    $scope.close = function () {
-                                        $modalInstance.close();
-                                    };
-                                }]
-                        };
-                        var modalInstance = $modal.open($scope.opts);
-                    };
-
-                    that.mensajeCreacion = function (nota, mensaje_ws) {
-
-                        $scope.nota = nota;
-                        $scope.mensaje_ws = mensaje_ws;
-                        $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: false,
-                            keyboard: true,
-                            template: ' <div class="modal-header">\
-                                           <button type="button" class="close" ng-click="close()">&times;</button>\
-                                           <h4 class="modal-title">Resultado Creacion</h4>\
-                                       </div>\
-                                       <div class="modal-body">\
-                                           <h4>Numero Nota</h4>\
-                                           <h5> {{ nota }} </h5>\
-                                           <h4>Respuesta WS</h4>\
-                                           <h5> {{ mensaje_ws }}</h5>\
-                                       </div>\
-                                       <div class="modal-footer">\
-                                           <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                       </div>',
-                            scope: $scope,
-                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
-
-                                    $scope.close = function () {
-                                        $modalInstance.close();
-                                    };
-                                }]
-                        };
-                        var modalInstance = $modal.open($scope.opts);
-                    };
-
-                    /**
-                     * +Descripcion metodo para validar sincronizacion
-                     * @author German Galvis
-                     * @fecha 13/08/2018
-                     * @returns {undefined}
-                     */
-                    $scope.validarSincronizacion = function (estado) {
-                        var respuesta = false;
-                        if (estado === '1') {
-                            respuesta = true;
-                        }
-                        return respuesta;
-                    };
-
-
-                    /**
-                     * @author German Galvis
-                     * @fecha 02/08/2018
-                     * +Descripcion scope selector del filtro
-                     * @param {type} $event
-                     */
-                    $scope.onSeleccionPrefijoNota = function (filtro) {
-                        $scope.root.prefijoBusquedaNota = filtro.descripcion;
-                        $scope.root.tipoBusquedaNota = filtro.prefijo;
-                    };
-
-                    /**
-                     * @author German Galvis
-                     * @fecha 06/08/2018
-                     * +Descripcion seleccionar busqueda
-                     * @param {type} $event
-                     */
-                    $scope.buscarNota = function (event) {
-
-                        if (event.which === 13) {
-
-                            if ($scope.root.prefijoBusquedaNota !== 'seleccionar' && $scope.root.numeroBusquedaNota !== '') {
-                                var parametros = {
-                                    tipoConsulta: $scope.root.tipoBusquedaNota,
-                                    numero: $scope.root.numeroBusquedaNota,
-                                    empresaId: $scope.root.empresaSeleccionada.getCodigo()
-                                };
-                                that.listarNotas(parametros);
-                            } else {
-
-                            }
-                        }
-                    };
-
-                    /**
-                     * @author German Galvis
-                     * @fecha 02/08/2018
-                     * +Descripcion seleccionar busqueda
-                     * @param {type} $event
-                     */
-                    $scope.buscarTercero = function (event) {
-                        if (event.which === 13) {
-                            that.listarFacturasGeneradas();
-                        }
-                    };
-
-                    /**
-                     * +Descripcion Metodo encargado de invocar el servicio que listara
-                     *              las facturas
-                     * @author German Galvis
-                     * @fecha 02/08/2018 DD/MM/YYYY
-                     * @returns {undefined}
-                     */
-                    that.listarFacturasGeneradas = function () {
-
-                        var obj = {
-                            session: $scope.session,
-                            data: {
-                                empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-                                facturaFiscal: $scope.root.factura ? $scope.root.factura : 'undefined'
-                            }
-                        };
-                        notasService.listarFacturas(obj, function (data) {
-
-                            if (data.status === 200) {
-
-                                $scope.root.listarFacturas = notasService.renderFacturas(data.obj.listarFacturas);
-
-                            } else {
-                                $scope.root.listarFacturas = null;
-
-                            }
-
-                        });
-                    };
-
-                    /**
-                     * +Descripcion 
-                     * @author German Galvis
-                     * @fecha 08/02/2018 DD/MM/YYYY
-                     * @returns {undefined}
-                     */
-                    $scope.listaFacturas = {
-                        data: 'root.listarFacturas',
-                        enableColumnResize: true,
-                        enableRowSelection: false,
-                        enableCellSelection: true,
-                        enableHighlighting: true,
-                        showFilter: true,
-                        columnDefs: [
-                            {field: 'No. Factura', width: "9%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
-                            {field: 'Identificación', width: "15%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
-                            {field: 'Tercero', width: "30%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
-                            {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
-                            {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
-                            {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'estado', width: "6%", displayName: 'Estado', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {displayName: "DIAN", cellClass: "txt-center dropdown-button", width: "10%",
-                                cellTemplate: ' <div class="row">\
-							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
-								<span class="glyphicon glyphicon-export"> Sincronizar</span>\
-							    </button>\
-							  </div>\
-							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-success btn-xs  disabled">\
-								<span class="glyphicon glyphicon-saved"> Sincronizado</span>\
-							    </button>\
-							  </div>\
-						       </div>'
-                            }
-                        ]
-                    };
-
-                    that.init(empresa, function () {
-                    });
-
-                }]);
-});
-
 define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controllers"], function(angular, controllers) {
 
     var fo = controllers.controller('CajaGeneralController',
@@ -63471,6 +63092,8 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
 
                     $scope.root.prefijoBusquedaNota = 'seleccionar';
                     $scope.root.concepto = [];
+                    $scope.root.filtroPrefijo;
+                    $scope.root.filtroPrefijo = {descripcion: "seleccionar"};
                     $scope.root.prefijosNotas = [
 //                        {prefijo: 'F', descripcion: "Factura"},
                         {prefijo: 'NC', descripcion: "Nota Credito"},
@@ -63495,9 +63118,51 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                         $scope.columnaSizeBusqueda = "col-md-3";
                         $scope.root.visibleBuscador = true;
                         $scope.root.visibleBotonBuscador = true;
+                        that.listarPrefijosFacturas();
                         callback();
                     };
 
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara 
+                     *              los tipos de facturas
+                     * @author German Galvis
+                     * @fecha 03/09/2018 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+                    that.listarPrefijosFacturas = function () {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listar_prefijos: {
+                                    empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                }
+                            }
+                        };
+
+                        notasService.listarPrefijosFacturas(obj, function (data) {
+
+                            if (data.status === 200) {
+
+                                $scope.tipoPrefijoFactura = notasService.renderListarTipoTerceros(data.obj.listar_prefijos);
+                            } else {
+                                AlertService.mostrarMensaje("Mensaje del sistema", data.msj);
+                            }
+
+                        });
+
+                    };
+
+                    /**
+                     * +Descripcion Metodo encargado de visualizar en el boton del dropdwn
+                     *              el tipo de prefijo
+                     * @param {type} filtro
+                     * @returns {undefined}
+                     */
+                    $scope.onSeleccionFiltroPrefijos = function (filtroPrefijo) {
+
+                        $scope.root.filtroPrefijo = filtroPrefijo;
+                    };
 
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
@@ -63565,9 +63230,9 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                         columnDefs: [
                             {field: 'No. Nota', width: "5%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNumeroNota()}}</p></div>'}, //
                             {field: 'Valor Nota', width: "7%", displayName: 'Valor Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorNota()| currency:"$ "}}</p></div>'},
-                            {field: 'Fecha Nota', width: "7%", displayName: 'Fecha Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistroNota() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'No. Factura', width: "7%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
-                            {field: 'Tercero', width: "24%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreTercero()}}</p></div>'},
+                            {field: 'Fecha Nota', width: "5%", displayName: 'Fecha Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistroNota() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'No. Factura', width: "5%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
+                            {field: 'Tercero', width: "21%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreTercero()}}</p></div>'},
                             {field: 'Identificación', width: "7%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
                             {field: 'Valor Factura', width: "8%", displayName: 'Valor Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Saldo Factura', width: "7%", displayName: 'Saldo Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
@@ -63575,7 +63240,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                             {field: 'Tipo Nota', width: "6%", displayName: 'Tipo Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoNota()}}</p></div>'},
                             {field: 'concepto', width: "5%", displayName: 'concepto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getConcepto()}}</p></div>'},
                             {field: 'Imprimir', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirNota(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
-                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "5%",
+                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "6%",
                                 cellTemplate: ' <div class="row">\
 							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
@@ -63584,11 +63249,27 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
 							  </div>\
 							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-success btn-xs  disabled">\
-								<span class="glyphicon glyphicon-saved"> Sincronizar</span>\
+								<span class="glyphicon glyphicon-saved"> Sincronizado</span>\
 							    </button>\
 							  </div>\
 						       </div>'
+                            },
+                            {displayName: "DIAN", width: "6%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '\
+                        <div class="btn-group" >\
+                            <div ng-if="(row.entity.sincronizacionDian >= 1)" >\
+                               <button class="btn btn-success btn-xs" ng-disabled="{{!(row.entity.sincronizacionDian > 1)}}" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-saved"> Sincronizado</span>\
+                               </button>\
+                            </div>\
+                            <div>\
+                               <button class="btn btn-danger btn-xs"  ng-click="generarSincronizacionDian(row.entity)" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-export"> Sincronizar</span>\
+                               </button>\
+                            </div>\
+                        </div>'
                             }
+//                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
                         ]
                     };
 
@@ -63764,6 +63445,64 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                             });
                         }
                     };
+
+                    /**
+                     * +Descripcion Metodo encargado de sincronizar en WS certicamara
+                     * @author German Galvis
+                     * @fecha 04/09/2018
+                     * @returns {undefined}
+                     */
+                    $scope.generarSincronizacionDian = function (datos) {
+                        console.log("datos", datos);
+                        var parametros = {
+                            session: $scope.session,
+                            data: {
+                                numeroNota: datos.numeroNota,
+                                empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo()
+                            }
+                        };
+
+                        if (datos.tipoImpresion === "D") {
+                            notasService.generarSincronizacionDianDebito(parametros, function (data) {
+
+                            if (data.status === 200) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                return;
+                            } else {
+                                if (data.obj.response.statusCode === 500) {
+                                    var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                                    var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                                    var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                    return;
+                                }
+                            }
+                            });
+
+                        } else if (datos.tipoImpresion === "C") {
+                            notasService.generarSincronizacionDianCredito(parametros, function (data) {
+
+                            if (data.status === 200) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                return;
+                            } else {
+                                if (data.obj.response.statusCode === 500) {
+                                    var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                                    var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                                    var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                    return;
+                                }
+                            }
+                            
+                            });
+                        }
+
+                    };
+
+
 
                     /**
                      * +Descripcion scope del grid para mostrar el detalle de las facturas
@@ -64423,6 +64162,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                             session: $scope.session,
                             data: {
                                 empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                prefijo: $scope.root.filtroPrefijo.descripcion,
                                 facturaFiscal: $scope.root.factura ? $scope.root.factura : 'undefined'
                             }
                         };
@@ -64460,10 +64200,9 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                             {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'NC', width: "5%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
-                            {field: 'ND', width: "5%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
+                            {field: 'NC', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'ND', width: "6%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
                         ]
-//                                {field: 'Imprimir', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'}
                     };
 
                     /**
@@ -64483,7 +64222,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
 
 
                     $scope.btn_seleccionar_nota = function (datos) {
-
+//ng-disabled="habilitarCredito(row.entity)"
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -65686,8 +65425,8 @@ define('services/notasService',["angular", "js/services"], function (angular, se
 
 
     services.factory('notasService',
-            ['Request', 'API', 'Notas', 'ProductoFacturas', 'Totales', 'FacturaProveedores',
-                function (Request, API, Notas, ProductoFacturas, Totales, FacturaProveedores) {
+            ['Request', 'API', 'Notas', 'ProductoFacturas', 'TipoTerceros', 'FacturaProveedores',
+                function (Request, API, Notas, ProductoFacturas, TipoTerceros, FacturaProveedores) {
 
                     var self = this;
 
@@ -65881,6 +65620,55 @@ define('services/notasService',["angular", "js/services"], function (angular, se
                         });
                     };
 
+                    /**
+                     * @author German Galvis
+                     * @fecha  03/09/2018 DD/MM/YYYYY
+                     * +Descripcion Consulta los prefijos
+                     */
+                    self.listarPrefijosFacturas = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_PREFIJOS_FACTURAS, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * +Descripcion Funcion encargada de serializar el resultado de la
+                     *              consulta que obtiene los tipos de documentos
+                     * @fecha 03/09/2018 DD/MM/YYYYY
+                     */
+                    self.renderListarTipoTerceros = function (tipoDocumento) {
+
+                        var tipoDocumentos = [];
+                        for (var i in tipoDocumento) {
+
+                            var _tipoDocumento = TipoTerceros.get(tipoDocumento[i].id, tipoDocumento[i].descripcion);
+                            tipoDocumentos.push(_tipoDocumento);
+                        }
+                        return tipoDocumentos;
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  04/09/2018 DD/MM/YYYYY
+                     * +Descripcion envia la nota debito a la dian
+                     */
+                    self.generarSincronizacionDianDebito = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.GENERAR_SINCRONIZACION_DIAN_DEBITO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  04/09/2018 DD/MM/YYYYY
+                     * +Descripcion envia la nota credito a la dian
+                     */
+                    self.generarSincronizacionDianCredito = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.GENERAR_SINCRONIZACION_DIAN_CREDITO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
 
                     return this;
                 }]);
@@ -66362,7 +66150,6 @@ define('app',[
     "controllers/facturacionCliente/GuardarFacturaConsumoController",
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",
-    "controllers/facturacionElectronica/FacturacionElectronicaController",
     "controllers/cajaGeneral/CajaGeneralController",
     "controllers/notas/NotasController",
     "services/facturacionClientesService",
@@ -66449,12 +66236,6 @@ define('app',[
                     parent_name: "Despacho",
                     templateUrl: "views/notas/index.html",
                     controller: "NotasController"
-                }).state('FacturacionElectronica', {
-                    url: "/FacturacionElectronica",
-                    text: "Facturacion Electronica",
-                    parent_name: "Despacho",
-                    templateUrl: "views/facturacionElectronica/index.html",
-                    controller: "FacturacionElectronicaController"
                 });
 
                 if ($location.path() === "")

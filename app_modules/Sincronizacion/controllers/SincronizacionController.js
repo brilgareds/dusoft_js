@@ -250,7 +250,7 @@ function __jsonNotaCredito(obj, callback) {
             perfilEmision: obj.perfilEmision, //String
             perfilUsuario: obj.perfilUsuario, //String
             productos: obj.productos,
-            subtotalNotaCreditoElectronica: obj.subtotalNotaDebitoElectronica, //decimal OPCIONAL
+            subtotalNotaCreditoElectronica: obj.subtotalNotaCreditoElectronica, //decimal OPCIONAL
             subtotalesImpuestosDeduccion: [
                 {// OPCIONAL
                     nombre: "ReteFuente", //String -
@@ -274,7 +274,7 @@ function __jsonNotaCredito(obj, callback) {
                 }
             ],
             tipoFactura: obj.tipoFactura, //numeric
-            totalNotaCreditoElectronica: obj.totalNotaDebitoElectronica //decimal
+            totalNotaCreditoElectronica: obj.totalNotaCreditoElectronica //decimal
         },
         notaEspecializada: {
             attributes: {

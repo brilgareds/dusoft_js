@@ -378,7 +378,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @returns {undefined}
                      */
                     $scope.generarSincronizacionDian = function (datos) {
-                        console.log("datos", datos);
                         var parametros = {
                             session: $scope.session,
                             data: {
@@ -390,38 +389,38 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         if (datos.tipoImpresion === "D") {
                             notasService.generarSincronizacionDianDebito(parametros, function (data) {
 
-                            if (data.status === 200) {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
-                                return;
-                            } else {
-                                if (data.obj.response.statusCode === 500) {
-                                    var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
-                                    var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
-                                    var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
-
-                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                if (data.status === 200) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
                                     return;
+                                } else {
+                                    if (data.obj.response.statusCode === 500) {
+                                        var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                                        var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                                        var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                        return;
+                                    }
                                 }
-                            }
                             });
 
                         } else if (datos.tipoImpresion === "C") {
                             notasService.generarSincronizacionDianCredito(parametros, function (data) {
 
-                            if (data.status === 200) {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
-                                return;
-                            } else {
-                                if (data.obj.response.statusCode === 500) {
-                                    var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
-                                    var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
-                                    var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
-
-                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                if (data.status === 200) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
                                     return;
+                                } else {
+                                    if (data.obj.response.statusCode === 500) {
+                                        var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                                        var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                                        var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                        return;
+                                    }
                                 }
-                            }
-                            
+
                             });
                         }
 
@@ -1125,7 +1124,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'NC', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-disabled="habilitarCredito(row.entity)"   ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'NC', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'ND', width: "6%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
                         ]
                     };
@@ -1136,14 +1135,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @fecha 15/08/2018 DD/MM/YYYY
                      * @returns {undefined}
                      */
-                    $scope.habilitarCredito = function (factura) {
-                        var disabled = false;
-                        if (factura.saldo === undefined || factura.saldo === "" || parseInt(factura.saldo) <= 0) {
-                            disabled = true;
-                        }
-
-                        return disabled;
-                    };
+//                    $scope.habilitarCredito = function (factura) {
+//                        console.log("hola",factura);
+//                        var disabled = false;
+//                        if (factura.saldo === undefined || factura.saldo === "" || parseInt(factura.saldo) <= 0) {
+//                            disabled = true;
+//                        }
+//
+//                        return disabled;
+//                    };
 
 
                     $scope.btn_seleccionar_nota = function (datos) {
@@ -1162,12 +1162,21 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 </div>\
                                 <div class="modal-footer">\
                                     <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
-                                    <button class="btn btn-primary" ng-click="valor()">Valor</button>\
+                                    <button class="btn btn-primary" ng-disabled="habilitarCredito()" ng-click="valor()">Valor</button>\
                                     <button class="btn btn-primary" ng-click="devolucion()">Devolucion</button>\
                                 </div>',
                             scope: $scope,
                             controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
 
+                                    $scope.habilitarCredito = function () {
+                                   
+                                        var disabled = false;
+                                        if (datos.saldo === undefined || datos.saldo === "" || parseInt(datos.saldo) <= 0) {
+                                            disabled = true;
+                                        }
+
+                                        return disabled;
+                                    };
                                     $scope.valor = function () {
                                         $scope.onNotaCreditoValor(datos);
                                         $modalInstance.close();

@@ -999,7 +999,6 @@ FacturacionClientesModel.prototype.insertarLogFacturaDian = function(obj,callbac
     };
         
     var query = G.knex('facturas_dian').insert(parametros);
-     console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){   
         callback(false, resultado);
     }).catch(function(err){

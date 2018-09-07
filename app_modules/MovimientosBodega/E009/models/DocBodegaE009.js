@@ -12,7 +12,8 @@ DocumentoBodegaE009.prototype.listarBodegas = function (callback) {
     var query = G.knex
             .select()
             .from('bodegas')
-            .where('bodega', '03');
+            .where('bodega', '06')
+            .andWhere('empresa_id', '03');
 
     query.then(function (resultado) {
         callback(false, resultado);

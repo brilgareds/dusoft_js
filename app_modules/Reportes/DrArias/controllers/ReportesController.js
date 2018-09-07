@@ -330,7 +330,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
 
             if (data.estado !== 200) {
                 if (item.remitente === '1') {
-                    var subject = "Error al Generar Rotación (ver detalles) " + fechaToday;
+                    var subject = "Error al Generar Rotacion (ver detalles) " + fechaToday;
                     var to = G.settings.email_desarrollo1;
                     var ruta_archivo = "";
                     var nombre_archivo = "";
@@ -386,7 +386,7 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
             __rotacionesBodegas(that, item,function (data) {
                 if (data.estado !== 200) {
                     if (item.remitente === '1') {
-                        var subject = "Error al Generar Rotación (ver detalles) " + fechaToday;
+                        var subject = "Error al Generar Rotacion (ver detalles) " + fechaToday;
                         var to = G.settings.email_desarrollo1;
                         var ruta_archivo = "";
                         var nombre_archivo = "";
@@ -504,7 +504,7 @@ function __rotacionesBodegas(that, bodega, callback) {
             remitente += "," + bodega.remitentes;
         }
 
-        var subject = "Rotación " + name;
+        var subject = "Rotacion " + name;
         var to = remitente;
         var ruta_archivo = G.dirname + "/files/Rotaciones/" + archivoName;
 
@@ -621,7 +621,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
             remitente += "," + bodega.remitentes;
         }
 
-        var subject = "Rotación " + name;
+        var subject = "Rotacion " + name;
         var to = remitente;
         var ruta_archivo = G.dirname + "/files/Rotaciones/" + archivoName;
 
@@ -653,6 +653,9 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
 }
 
 function __creaExcel(data, callback) {
+    
+    console.log("__creaExcel");
+    
     var workbook = new G.Excel.Workbook();
     var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
 

@@ -370,22 +370,43 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
                 inner join inv_clases_inventarios ff on ee.clase_id = ff.clase_id and ee.grupo_id = ff.grupo_id\
                 inner join inv_tipo_producto gg on r.tipo_producto_id = gg.tipo_producto_id\
                 left join\
-                (select \
+                (\
+                        select a.codigo_producto, sum(a.cantidad)  as cantidad\
+                        from (\
+                        select \
                         b.codigo_producto, \
                         sum(b.cantidad) as cantidad\
                         from \
                         inv_bodegas_movimiento as a\
                         inner join inv_bodegas_movimiento_d as b on (b.empresa_id=a.empresa_id and b.prefijo=a.prefijo and b.numero=a.numero) \
+                        inner join inv_bodegas_movimiento_despachos_clientes as c on (b.empresa_id=c.empresa_id and c.prefijo=b.prefijo and b.numero=c.numero and c.tercero_id not in ('830023202','830080649'))\
                         where \
-                        a.empresa_id='03' and a.centro_utilidad='1' and a.bodega='03'\
+                        a.empresa_id='03' and a.centro_utilidad='1' and a.bodega in ('03','06')\
                         and  a.prefijo in ('EFC','EFM')\
                         and a.fecha_registro between (current_date - interval '"+obj.meses+" month') and now() \
+                        group by 1\
+                        \
+                        union\
+                        \
+                        select \
+                        b.codigo_producto, \
+                        sum(b.cantidad) as cantidad\
+                        from \
+                        inv_bodegas_movimiento as a\
+                        inner join inv_bodegas_movimiento_d as b on (b.empresa_id=a.empresa_id and b.prefijo=a.prefijo and b.numero=a.numero) \
+                        inner join inv_bodegas_movimiento_despachos_farmacias as d on (b.empresa_id=d.empresa_id and d.prefijo=b.prefijo and b.numero=d.numero)\
+                        where \
+                        a.empresa_id='03' and a.centro_utilidad='1' and a.bodega in ('03','06')\
+                        and  a.prefijo in ('EFC','EFM')\
+                        and a.fecha_registro between (current_date - interval '"+obj.meses+" month') and now() \
+                        group by 1\
+                        ) as a\
                         group by 1\
                 ) as q on (q.codigo_producto=r.codigo_producto)\
                 left join (\
                                 select aaa.codigo_producto,sum(aaa.existencia)::integer as stock_bodega\
                                 from existencias_bodegas aaa \
-                                where aaa.empresa_id = '03' and aaa.bodega = '03' \
+                                where aaa.empresa_id = '03' and aaa.bodega in ('03','06') \
                                 GROUP BY 1 \
                           ) as t on (t.codigo_producto=r.codigo_producto)\
                 left join\
@@ -461,7 +482,7 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
     
      var query = G.knex.raw(sql);
     query.then(function(resultado) {
-    //    G.logError(G.sqlformatter.format(query.toString()));
+        G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);
     }). catch (function(err) {
 	console.log("Error [listarPlanes] Parametros: ", err);

@@ -213,7 +213,7 @@ var selectPrimerUnion = [
     "aa.existencia::integer as stock_farmacia",   
     G.knex.raw("(select sum(aaa.existencia)::integer \n\
                 from existencias_bodegas aaa \n\
-                where aaa.empresa_id = '03' and aaa.bodega = '03' and aaa.codigo_producto= aa.codigo_producto   \
+                where aaa.empresa_id = '03' and aaa.bodega in ('03','06') and aaa.codigo_producto= aa.codigo_producto   \
     ) as stock_bodega"),   
     G.knex.raw("COALESCE(bb.cantidad_total_despachada, 0) as cantidad_total_despachada"),   
     "nivel"  
@@ -271,7 +271,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
             aa.existencia::integer as stock_farmacia,   \
             (   \
               select sum(aaa.existencia)::integer from existencias_bodegas aaa    \
-              where aaa.empresa_id = '03' and aaa.bodega = '03' and aaa.codigo_producto= aa.codigo_producto   \
+              where aaa.empresa_id = '03' and aaa.bodega in ('03','06') and aaa.codigo_producto= aa.codigo_producto   \
             ) as stock_bodega,   \
             COALESCE(bb.cantidad_total_despachada, 0) as cantidad_total_despachada,   \
             nivel    \

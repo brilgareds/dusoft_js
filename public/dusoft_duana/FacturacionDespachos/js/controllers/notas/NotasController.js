@@ -20,7 +20,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.root.filtroPrefijo;
                     $scope.root.filtroPrefijo = {descripcion: "seleccionar"};
                     $scope.root.prefijosNotas = [
-//                        {prefijo: 'F', descripcion: "Factura"},
                         {prefijo: 'NC', descripcion: "Nota Credito"},
                         {prefijo: 'ND', descripcion: "Nota Debito"}
                     ];
@@ -187,17 +186,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                  <span class="glyphicon glyphicon-saved"> Sincronizado</span>\
                                </button>\
                             </div>\
-                            <div>\
+                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.getPrefijo()))" >\
                                <button class="btn btn-danger btn-xs"  ng-click="generarSincronizacionDian(row.entity)" data-toggle="dropdown">\
                                  <span class="glyphicon glyphicon-export"> Sincronizar</span>\
                                </button>\
                             </div>\
                         </div>'
                             }
-//                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
                         ]
                     };
 
+
+                    $scope.verificaFactuta = function (pref) {
+                        var prefijo = false;
+                        if (pref === 'FDC') {
+                            prefijo = true;
+                        }
+                        return prefijo;
+                    }
 
                     /**
                      * +Descripcion sincronizar FI
@@ -936,7 +942,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         if (nota === 1 && ($scope.root.concepto.id === undefined || $scope.root.concepto.id === "")) {
                                             disabled = true;
                                         }
-                                        if (parseInt($scope.root.impuestosnota.totalGeneral) > parseInt(datos.saldo)) {
+                                        if (parseInt($scope.root.impuestosnota.totalGeneral) > parseInt(datos.saldo) && nota === 1) {
                                             AlertService.mostrarMensaje("warning", "el total de la nota no puede superar el saldo " + datos.saldo);
                                             disabled = true;
                                         }
@@ -998,6 +1004,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                         if (nota === 1) {
                                             obj.data.concepto = $scope.root.concepto.id;
+                                            obj.data.descripcionNota = $scope.root.descripcionNota;
                                         }
                                         if (nota === 2) {
                                             obj.data.empresa_id_devolucion = listado[0].empresa_devolucion;
@@ -1169,7 +1176,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
 
                                     $scope.habilitarCredito = function () {
-                                   
+
                                         var disabled = false;
                                         if (datos.saldo === undefined || datos.saldo === "" || parseInt(datos.saldo) <= 0) {
                                             disabled = true;

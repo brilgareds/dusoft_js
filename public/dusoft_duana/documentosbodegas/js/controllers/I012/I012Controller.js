@@ -199,7 +199,8 @@ define([
             that.renderProductosFactura = function (productos) {
                 $scope.datos_view.listado_productos = [];
                 productos.forEach(function (data) {
-                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
+//                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
+                    var fecha = data.fecha_vencimiento;
                     var resta = (data.cantidad - data.cantidad_devuelta);
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, data.tipo_producto_id, data.lote,
                             data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, parseFloat(data.porc_iva).toFixed(2), parseFloat(data.iva).toFixed(2), data.valor_unitario);
@@ -293,7 +294,8 @@ define([
                 that.limpiarTotales();
                 $scope.datos_view.listado_productos_devueltos = [];
                 productos.forEach(function (data) {
-                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
+//                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
+                    var fecha = data.fecha_vencimiento;
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, parseFloat(data.porcentaje_gravamen).toFixed(2), parseFloat(data.iva).toFixed(2), data.valor_unitario);
                     producto.setCostoTotal(data.total_costo);

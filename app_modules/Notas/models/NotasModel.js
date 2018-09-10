@@ -179,7 +179,8 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         G.knex.raw("'D' AS tipo_nota_impresion"),
         G.knex.raw("CASE WHEN a.estado = 0 THEN\
 	'Sincronizado' ELSE'NO sincronizado'\
-	END AS descripcion_estado")
+	END AS descripcion_estado"),
+        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=nddc.nota_debito_despacho_cliente_id and prefijo= 'ND' and sw_factura_dian ='1') as sincronizacion")
     ];
 
     var columna_b = [
@@ -199,7 +200,8 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         G.knex.raw("'D' AS tipo_nota_impresion"),
         G.knex.raw("CASE WHEN a.estado = 0 THEN\
 	'Sincronizado' ELSE'NO sincronizado'\
-	END AS descripcion_estado")
+	END AS descripcion_estado"),
+        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=nddc.nota_debito_despacho_cliente_id and prefijo= 'ND' and sw_factura_dian ='1') as sincronizacion")
     ];
 
     var query = G.knex.select(columna_a)
@@ -318,7 +320,9 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
 	'Sincronizado' ELSE'NO sincronizado'\
 	END AS descripcion_estado"),
         "b.descripcion AS descripcion_concepto",
-        "ncdc.concepto_id"
+        "ncdc.concepto_id",
+        "ncdc.descripcion",
+        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=ncdc.nota_credito_despacho_cliente_id and prefijo= 'NC' and sw_factura_dian ='1') as sincronizacion")
     ];
 
     var columna_b = [
@@ -341,7 +345,9 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
 	'Sincronizado' ELSE'NO sincronizado'\
 	END AS descripcion_estado"),
         "b.descripcion AS descripcion_concepto",
-        "ncdc.concepto_id"
+        "ncdc.concepto_id",
+        "ncdc.descripcion",
+        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=ncdc.nota_credito_despacho_cliente_id and prefijo= 'NC' and sw_factura_dian ='1') as sincronizacion")
     ];
 
     var query = G.knex.select(columna_a)
@@ -548,6 +554,7 @@ NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, c
         "b.lote",
         "b.valor_unitario",
         "b.cantidad_devuelta",
+        "b.porc_iva",
         "e.prefijo as prefijo_devolucion",
         "e.empresa_id as empresa_devolucion",
         "e.numero as numero_devolucion",
@@ -601,7 +608,7 @@ NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, c
             })
             .where('a.empresa_id', obj.empresa_id)
             .andWhere('a.factura_fiscal', obj.facturaFiscal);
-
+    
     query.then(function (resultado) {
 
         callback(false, resultado)
@@ -736,7 +743,8 @@ NotasModel.prototype.agregarCabeceraNotaCredito = function (parametros, transacc
     var query = G.knex(parametros.tabla_1).
             returning('nota_credito_despacho_cliente_id').
             insert({empresa_id: parametros.empresaId, prefijo: parametros.prefijo, factura_fiscal: parametros.factura_fiscal,
-                valor: parametros.valor, usuario_id: parametros.usuario_id, tipo: parametros.tipoNota, concepto_id: parametros.conceptoId
+                valor: parametros.valor, usuario_id: parametros.usuario_id, tipo: parametros.tipoNota, concepto_id: parametros.conceptoId,
+                descripcion:parametros.descripcionNota
             });
 
     if (transaccion)
@@ -969,10 +977,7 @@ NotasModel.prototype.consultarProductosNotasCredito = function (parametros, call
 
             })
             .where("dncdc.nota_credito_despacho_cliente_id", parametros.numeroNota);
-    
-    console.log("Query resultado", G.sqlformatter.format(
-               query.toString()));
-
+   
     query.then(function (resultado) {
         callback(false, resultado);
 

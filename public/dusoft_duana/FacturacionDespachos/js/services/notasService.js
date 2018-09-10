@@ -89,6 +89,7 @@ define(["angular", "js/services"], function (angular, services) {
                             nota.setValorNota(data.valor_nota);
                             nota.setValorFactura(data.valor_total);
                             nota.setIdentificacion(data.tipo_id_tercero + " - " + data.tercero_id);
+                            nota.setSincronizacionDian(data.sincronizacion);
                             notas.push(nota);
                         });
 

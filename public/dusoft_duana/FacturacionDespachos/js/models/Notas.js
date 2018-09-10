@@ -64,6 +64,14 @@ define(["angular", "js/models"], function (angular, models) {
                 return this.estado;
             };
 
+            Notas.prototype.setSincronizacionDian = function (sincronizacionDian) {
+                this.sincronizacionDian = sincronizacionDian;
+            };
+
+            Notas.prototype.getSincronizacionDian = function () {
+                return this.sincronizacionDian;
+            };
+
             Notas.prototype.setDescripcionEstado = function (descripcionEstado) {
                 this.descripcionEstado = descripcionEstado;
             };

@@ -56151,6 +56151,14 @@ define('models/Notas',["angular", "js/models"], function (angular, models) {
                 return this.estado;
             };
 
+            Notas.prototype.setSincronizacionDian = function (sincronizacionDian) {
+                this.sincronizacionDian = sincronizacionDian;
+            };
+
+            Notas.prototype.getSincronizacionDian = function () {
+                return this.sincronizacionDian;
+            };
+
             Notas.prototype.setDescripcionEstado = function (descripcionEstado) {
                 this.descripcionEstado = descripcionEstado;
             };
@@ -63095,7 +63103,6 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                     $scope.root.filtroPrefijo;
                     $scope.root.filtroPrefijo = {descripcion: "seleccionar"};
                     $scope.root.prefijosNotas = [
-//                        {prefijo: 'F', descripcion: "Factura"},
                         {prefijo: 'NC', descripcion: "Nota Credito"},
                         {prefijo: 'ND', descripcion: "Nota Debito"}
                     ];
@@ -63262,17 +63269,24 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                  <span class="glyphicon glyphicon-saved"> Sincronizado</span>\
                                </button>\
                             </div>\
-                            <div>\
+                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.getPrefijo()))" >\
                                <button class="btn btn-danger btn-xs"  ng-click="generarSincronizacionDian(row.entity)" data-toggle="dropdown">\
                                  <span class="glyphicon glyphicon-export"> Sincronizar</span>\
                                </button>\
                             </div>\
                         </div>'
                             }
-//                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
                         ]
                     };
 
+
+                    $scope.verificaFactuta = function (pref) {
+                        var prefijo = false;
+                        if (pref === 'FDC') {
+                            prefijo = true;
+                        }
+                        return prefijo;
+                    }
 
                     /**
                      * +Descripcion sincronizar FI
@@ -63453,7 +63467,6 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                      * @returns {undefined}
                      */
                     $scope.generarSincronizacionDian = function (datos) {
-                        console.log("datos", datos);
                         var parametros = {
                             session: $scope.session,
                             data: {
@@ -63465,38 +63478,38 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                         if (datos.tipoImpresion === "D") {
                             notasService.generarSincronizacionDianDebito(parametros, function (data) {
 
-                            if (data.status === 200) {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
-                                return;
-                            } else {
-                                if (data.obj.response.statusCode === 500) {
-                                    var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
-                                    var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
-                                    var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
-
-                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                if (data.status === 200) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
                                     return;
+                                } else {
+                                    if (data.obj.response.statusCode === 500) {
+                                        var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                                        var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                                        var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                        return;
+                                    }
                                 }
-                            }
                             });
 
                         } else if (datos.tipoImpresion === "C") {
                             notasService.generarSincronizacionDianCredito(parametros, function (data) {
 
-                            if (data.status === 200) {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
-                                return;
-                            } else {
-                                if (data.obj.response.statusCode === 500) {
-                                    var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
-                                    var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
-                                    var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
-
-                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                if (data.status === 200) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
                                     return;
+                                } else {
+                                    if (data.obj.response.statusCode === 500) {
+                                        var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                                        var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                                        var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                        return;
+                                    }
                                 }
-                            }
-                            
+
                             });
                         }
 
@@ -64012,7 +64025,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                         if (nota === 1 && ($scope.root.concepto.id === undefined || $scope.root.concepto.id === "")) {
                                             disabled = true;
                                         }
-                                        if (parseInt($scope.root.impuestosnota.totalGeneral) > parseInt(datos.saldo)) {
+                                        if (parseInt($scope.root.impuestosnota.totalGeneral) > parseInt(datos.saldo) && nota === 1) {
                                             AlertService.mostrarMensaje("warning", "el total de la nota no puede superar el saldo " + datos.saldo);
                                             disabled = true;
                                         }
@@ -64074,6 +64087,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
 
                                         if (nota === 1) {
                                             obj.data.concepto = $scope.root.concepto.id;
+                                            obj.data.descripcionNota = $scope.root.descripcionNota;
                                         }
                                         if (nota === 2) {
                                             obj.data.empresa_id_devolucion = listado[0].empresa_devolucion;
@@ -64211,18 +64225,19 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                      * @fecha 15/08/2018 DD/MM/YYYY
                      * @returns {undefined}
                      */
-                    $scope.habilitarCredito = function (factura) {
-                        var disabled = false;
-                        if (factura.saldo === undefined || factura.saldo === "" || parseInt(factura.saldo) <= 0) {
-                            disabled = true;
-                        }
-
-                        return disabled;
-                    };
+//                    $scope.habilitarCredito = function (factura) {
+//                        console.log("hola",factura);
+//                        var disabled = false;
+//                        if (factura.saldo === undefined || factura.saldo === "" || parseInt(factura.saldo) <= 0) {
+//                            disabled = true;
+//                        }
+//
+//                        return disabled;
+//                    };
 
 
                     $scope.btn_seleccionar_nota = function (datos) {
-//ng-disabled="habilitarCredito(row.entity)"
+
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -64237,12 +64252,21 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                 </div>\
                                 <div class="modal-footer">\
                                     <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
-                                    <button class="btn btn-primary" ng-click="valor()">Valor</button>\
+                                    <button class="btn btn-primary" ng-disabled="habilitarCredito()" ng-click="valor()">Valor</button>\
                                     <button class="btn btn-primary" ng-click="devolucion()">Devolucion</button>\
                                 </div>',
                             scope: $scope,
                             controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
 
+                                    $scope.habilitarCredito = function () {
+
+                                        var disabled = false;
+                                        if (datos.saldo === undefined || datos.saldo === "" || parseInt(datos.saldo) <= 0) {
+                                            disabled = true;
+                                        }
+
+                                        return disabled;
+                                    };
                                     $scope.valor = function () {
                                         $scope.onNotaCreditoValor(datos);
                                         $modalInstance.close();
@@ -65512,6 +65536,7 @@ define('services/notasService',["angular", "js/services"], function (angular, se
                             nota.setValorNota(data.valor_nota);
                             nota.setValorFactura(data.valor_total);
                             nota.setIdentificacion(data.tipo_id_tercero + " - " + data.tercero_id);
+                            nota.setSincronizacionDian(data.sincronizacion);
                             notas.push(nota);
                         });
 

@@ -238,43 +238,43 @@ function __jsonNotaCredito(obj, callback) {
             codigoMoneda: obj.codigoMoneda, //String
             conceptoNota: obj.conceptoNota, //numeric
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String
-            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
+//            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
             identificacionReceptor: {
                 codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int
                 numeroIdentificacion: obj.numeroIdentificacion //String
             },
             identificadorFactura: obj.identificadorFactura, //long
-            nombreSucursal: obj.nombreSucursal, //String
+//            nombreSucursal: obj.nombreSucursal, //String
             numeroNota: obj.numeroNota, //numeric
             observaciones: obj.observaciones, //String OPCIONAL
             perfilEmision: obj.perfilEmision, //String
             perfilUsuario: obj.perfilUsuario, //String
-            productos: obj.productos,
-            subtotalNotaCreditoElectronica: obj.subtotalNotaCreditoElectronica, //decimal OPCIONAL
+//            productos: obj.productos,
+            subtotalNotaCreditoElectronica: obj.subtotalNotaCreditoElectronica.replace(",", "."), //decimal OPCIONAL
             subtotalesImpuestosDeduccion: [
                 {// OPCIONAL
                     nombre: "ReteFuente", //String -
-                    valor: obj.ReteFuente, //decimal -
+                    valor: obj.ReteFuente.replace(",", "."), //decimal -
                     baseGravable: obj.baseGravableReteFuente.replace(".", "") //decimal -
                 },
                 {// OPCIONAL
                     nombre: "IVA", //String -
-                    valor: obj.IVA, //decimal -
-                    baseGravable: obj.baseGravableIVA //decimal -
+                    valor: obj.IVA.replace(",", "."), //decimal -
+                    baseGravable: obj.baseGravableIVA.split(",",1) //decimal -
                 },
                 {// OPCIONAL
                     nombre: "ReteICA", //String -
-                    valor: obj.ReteICA, //decimal -
+                    valor: obj.ReteICA.replace(",", "."), //decimal -
                     baseGravable: obj.baseGravableReteICA.replace(".", "") //decimal -
                 },
                 {// OPCIONAL
                     nombre: "ReteIVA", //String -
-                    valor: obj.ReteIVA, //decimal -
+                    valor: obj.ReteIVA.replace(",", "."), //decimal -
                     baseGravable: obj.baseGravableReteIVA.replace(".", "") //decimal -
                 }
             ],
             tipoFactura: obj.tipoFactura, //numeric
-            totalNotaCreditoElectronica: obj.totalNotaCreditoElectronica //decimal
+            totalNotaCreditoElectronica: obj.totalNotaCreditoElectronica.replace(",", ".") //decimal
         },
         notaEspecializada: {
             attributes: {
@@ -284,31 +284,36 @@ function __jsonNotaCredito(obj, callback) {
                 AtributoAdicional: [{
                         nombreAtributo: "conceptoNota", //String
                         valor: obj.conceptoNotaAdicional, //String
-                        tipo: "String" //String
+                        tipo: "Texto" //String
                     }, {
                         nombreAtributo: "TipoNota", //String
                         valor: obj.TipoNota, //String
-                        tipo: "String" //String
+                        tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "descuento", //String
+                        nombreAtributo: "Descuento", //String
                         valor: obj.descuento, //Decimal
-                        tipo: "Decimal" //String
+                        tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "valorTotal", //String
-                        valor: obj.valorTotal, //Decimal
-                        tipo: "Decimal" //String
-                    }, {
-                        nombreAtributo: "elaborado", //String
+//                        nombreAtributo: "valorTotal", //String
+//                        valor: obj.valorTotal, //Decimal
+//                        tipo: "Texto" //String
+//                    }, {
+                        nombreAtributo: "elaboradoPor", //String
                         valor: obj.elaboradoPor, //String
-                        tipo: "String" //String
+                        tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "valorLetras", //String
+                        nombreAtributo: "totalenLetras", //String
                         valor: obj.totalenLetras, //String
-                        tipo: "String" //String
+                        tipo: "Texto" //String
                     }]
             }
         }
     };
+    
+    if(obj.productos.length > 0){
+        crearNotaCredito.notaCreditoElectronicaCanonica.productos = obj.productos;
+    }
+    
     callback(false, crearNotaCredito);
 }
 
@@ -325,43 +330,43 @@ function __jsonNotaDebito(obj, callback) {
             codigoMoneda: obj.codigoMoneda, //String
             conceptoNota: obj.conceptoNota, //numeric
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String
-            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
+//            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
             identificacionReceptor: {
                 codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int
                 numeroIdentificacion: obj.numeroIdentificacion //String
             },
             identificadorFactura: obj.identificadorFactura, //long
-            nombreSucursal: obj.nombreSucursal, //String
+//            nombreSucursal: obj.nombreSucursal, //String
             numeroNota: obj.numeroNota, //numeric
             observaciones: obj.observaciones, //String OPCIONAL
             perfilEmision: obj.perfilEmision, //String
             perfilUsuario: obj.perfilUsuario, //String
             productos: obj.productos,
-            subtotalNotaDebitoElectronica: obj.subtotalNotaDebitoElectronica, //decimal OPCIONAL
+            subtotalNotaDebitoElectronica: obj.subtotalNotaDebitoElectronica.replace(",", "."), //decimal OPCIONAL
             subtotalesImpuestosDeduccion: [
                 {// OPCIONAL
                     nombre: "ReteFuente", //String -
-                    valor: obj.ReteFuente, //decimal -
+                    valor: obj.ReteFuente.replace(",", "."), //decimal -
                     baseGravable: obj.baseGravableReteFuente.replace(".", "") //decimal -
                 },
                 {// OPCIONAL
                     nombre: "IVA", //String -
-                    valor: obj.IVA, //decimal -
-                    baseGravable: obj.baseGravableIVA //decimal -
+                    valor: obj.IVA.replace(",", "."), //decimal -
+                    baseGravable: obj.baseGravableIVA.split(",",1) //decimal -
                 },
                 {// OPCIONAL
                     nombre: "ReteICA", //String -
-                    valor: obj.ReteICA, //decimal -
+                    valor: obj.ReteICA.replace(",", "."), //decimal -
                     baseGravable: obj.baseGravableReteICA.replace(".", "") //decimal -
                 },
                 {// OPCIONAL
                     nombre: "ReteIVA", //String -
-                    valor: obj.ReteIVA, //decimal -
+                    valor: obj.ReteIVA.replace(",", "."), //decimal -
                     baseGravable: obj.baseGravableReteIVA.replace(".", "") //decimal -
                 }
             ],
             tipoFactura: obj.tipoFactura, //numeric
-            totalNotaDebitoElectronica: obj.totalNotaDebitoElectronica //decimal
+            totalNotaDebitoElectronica: obj.totalNotaDebitoElectronica.replace(",", ".") //decimal
         },
         notaEspecializada: {
             attributes: {
@@ -371,27 +376,27 @@ function __jsonNotaDebito(obj, callback) {
                 AtributoAdicional: [{
                         nombreAtributo: "conceptoNota", //String
                         valor: obj.conceptoNotaAdicional, //String
-                        tipo: "String" //String
+                        tipo: "Texto" //String
                     }, {
                         nombreAtributo: "TipoNota", //String
                         valor: obj.TipoNota, //String
-                        tipo: "String" //String
+                        tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "descuento", //String
-                        valor: obj.descuento, //Decimal
-                        tipo: "Decimal" //String
+                        nombreAtributo: "Descuento", //String
+                        valor: 0, //Decimal
+                        tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "valorTotal", //String
-                        valor: obj.valorTotal, //Decimal
-                        tipo: "Decimal" //String
-                    }, {
-                        nombreAtributo: "elaborado", //String
+//                        nombreAtributo: "valorTotal", //String
+//                        valor: obj.valorTotal, //Decimal
+//                        tipo: "Texto" //String
+//                    }, {
+                        nombreAtributo: "elaboradoPor", //String
                         valor: obj.elaboradoPor, //String
-                        tipo: "String" //String
+                        tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "valorLetras", //String
+                        nombreAtributo: "totalenLetras", //String
                         valor: obj.totalenLetras, //String
-                        tipo: "String" //String
+                        tipo: "Texto" //String
                     }]
             }
         }

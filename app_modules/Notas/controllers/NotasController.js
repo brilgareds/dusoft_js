@@ -377,6 +377,7 @@ Notas.prototype.crearNotaCredito = function (req, res) {
         valor: args.valor,
         total: args.total,
         tipo_factura: args.tipo_factura,
+        descripcionNota: args.descripcionNota,
         tabla_1: tabla,
         tabla_2: tabla2,
         tabla_3: tabla3
@@ -871,34 +872,34 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
             fechaVencimiento: "", //falta
             codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
             numeroIdentificacion: resultado.cliente.tercero_id,
-            identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E", //validar
+            identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E",
             nombreSucursal: "",
             numeroNota: resultado.nota.numero,
             observaciones: "", //falta
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
             productos: productos,
-            subtotalNotaDebitoElectronica: resultado.valores.subTotal,
-            ReteFuente: resultado.valores.retencionFuente,
+            subtotalNotaDebitoElectronica: resultado.valores.subTotal.replace(".", ""),
+            ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
             baseGravableReteFuente: resultado.valores.bases.base_rtf,
-            IVA: resultado.valores.ivaTotal,
+            IVA: resultado.valores.ivaTotal.replace(".", ""),
             baseGravableIVA: resultado.valores.subTotal,
-            ReteICA: resultado.valores.retencionIca,
+            ReteICA: resultado.valores.retencionIca.replace(".", ""),
             baseGravableReteICA: resultado.valores.bases.base_ica,
-            ReteIVA: resultado.valores.retencionIva,
+            ReteIVA: resultado.valores.retencionIva.replace(".", ""),
             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
             tipoFactura: "ELECTRONICA",
-            totalNotaDebitoElectronica: resultado.valores.totalFactura,
-            conceptoNotaAdicional: "", //validar creando nueva nota
+            totalNotaDebitoElectronica: resultado.valores.totalFactura.replace(".", ""),
+            conceptoNotaAdicional: "",
             TipoNota: resultado.nota.tipo_nota,
             descuento: "",
             totalenLetras: resultado.valores.totalFacturaLetra,
             valorTotal: resultado.valores.totalFactura,
             elaboradoPor: resultado.usuario
         };
-
+        
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaDebito', json);
-
+        
     }).then(function (respuesta) {
 
 
@@ -911,7 +912,7 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
             json_envio: data.lastRequest,
             respuesta_ws: data
         };
-
+        
         if (respuesta.sw_factura_dian === '1') {
 
             return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
@@ -1117,21 +1118,22 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
             identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E", //validar
             nombreSucursal: "",
             numeroNota: resultado.nota.numero,
-            observaciones: "", //falta
+            observaciones: resultado.nota.descripcion, //falta
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
-            productos: productos.length > 0 ? productos: "",
-            subtotalNotaCreditoElectronica: resultado.valores.subTotal,
-            ReteFuente: resultado.valores.retencionFuente,
+//            productos: productos.length > 0 ? productos: "",
+            productos: productos,
+            subtotalNotaCreditoElectronica: resultado.valores.subTotal.replace(".", ""),
+            ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
             baseGravableReteFuente: resultado.valores.bases.base_rtf,
-            IVA: resultado.valores.ivaTotal,
+            IVA: resultado.valores.ivaTotal.replace(".", ""),
             baseGravableIVA: resultado.valores.subTotal,
-            ReteICA: resultado.valores.retencionIca,
+            ReteICA: resultado.valores.retencionIca.replace(".", ""),
             baseGravableReteICA: resultado.valores.bases.base_ica,
-            ReteIVA: resultado.valores.retencionIva,
+            ReteIVA: resultado.valores.retencionIva.replace(".", ""),
             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
             tipoFactura: "ELECTRONICA",
-            totalNotaCreditoElectronica: resultado.valores.totalFactura,
+            totalNotaCreditoElectronica: resultado.valores.totalFactura.replace(".", ""),
             conceptoNotaAdicional: resultado.nota.descripcion_concepto,
             TipoNota: resultado.nota.tipo_nota,
             descuento: "",
@@ -1464,18 +1466,18 @@ function __productos(productos, index, productosDian, callback) {
         imprimible: true, //boolean -
         pagable: true, //boolean -
         valorUnitario:  parseFloat(item.valor_unitario).toFixed(2), // falta
-        impuestoAlConsumo: {
-            nombre: "",
-            porcentual: "",
-            valor: ""},
-        impuestoICA: {
-            nombre: "",
+//        impuestoAlConsumo: {
+//            nombre: "",
 //            porcentual: "",
-            valor: ""},
-        impuestoIVA: {
-            nombre: "",
-            porcentual: "",
-            valor: ""}
+//            valor: ""},
+//        impuestoICA: {
+//            nombre: "",
+////            porcentual: "",
+//            valor: ""},
+//        impuestoIVA: {
+//            nombre: "",
+//            porcentual: "",
+//            valor: ""}
     };
     var impuesto;
     var ivaPorcentaje = parseInt(item.porc_iva);
@@ -1483,7 +1485,7 @@ function __productos(productos, index, productosDian, callback) {
         impuesto = {
             nombre: "IVA0",
             baseGravable: item.porc_iva,
-            valor: item.iva_total.replace(",", ".")
+            valor: (parseFloat(item.iva_total).toFixed(2)).replace(",", ".")
 
         };
     }
@@ -1492,7 +1494,7 @@ function __productos(productos, index, productosDian, callback) {
         impuesto = {
             nombre: "IVA19",
             baseGravable: item.porc_iva,
-            valor: item.iva_total.replace(",", ".")
+            valor: (parseFloat(item.iva_total).toFixed(2)).replace(",", ".")
         }
 
     }
@@ -1501,7 +1503,7 @@ function __productos(productos, index, productosDian, callback) {
         impuesto = {
             nombre: "IVA10",
             baseGravable: item.porc_iva,
-            valor: item.iva_total.replace(",", ".")
+            valor: (parseFloat(item.iva_total).toFixed(2)).replace(",", ".")
         };
     }
     ;

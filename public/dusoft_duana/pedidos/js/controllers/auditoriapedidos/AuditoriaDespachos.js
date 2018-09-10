@@ -439,7 +439,7 @@ define(["angular", "js/controllers",
                         } else {
                             $scope.datos_view.estadoSesion = false;
                             that.listarEmpresas(function(estado) {
-                                that.listarDespachosAuditados();
+                             //   that.listarDespachosAuditados();
                             });
                         }
                     }

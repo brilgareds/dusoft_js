@@ -818,8 +818,14 @@ function __organizaRotacionFarmacia(index, data, resultado, callback) {
         resultColumna.pedido90dias = pedido90dias<0?0:pedido90dias;
            
         var color=(((resultColumna.totalSalidas/2)+(_resultado.cantidad/2))*5)-(resultColumna.totalStockFarmacias+resultColumna.stockBodega);
+        
+        var control = ((resultColumna.totalStockFarmacias+resultColumna.stockBodega)/Math.ceil(_resultado.cantidad/2));
+        
+        var mayor5 = (resultColumna.totalStockFarmacias+resultColumna.stockBodega)>5;
+    //    resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
  
-        resultColumna.color = (color <= 0)? "ROJO" : "N/A";
+//        resultColumna.color = (color <= 0 && (control >= 5 || control === Infinity))? "ROJO" : "N/A";
+        resultColumna.color = ( color <= 0 && mayor5 === true && (control >= 5 || control === Infinity))? "ROJO" : "N/A";
 
         resultado.push(resultColumna);
         __organizaRotacionFarmacia(index, data, resultado, callback);
@@ -910,10 +916,10 @@ function __creaExcelFarmacias(data,farmacias, callback) {
     cabecera.push({header: 'Total Salidas', key: "'"+j+"'", width: 9, style: style});
     cabecera.push({header: 'Promedio Mes Fcias', key: "'"+j+"'", width: 15, style: style});
     cabecera.push({header: 'Promedio Mes Bodega Duana', key: "'"+j+"'", width: 15, style: style});
-    cabecera.push({header: 'Total Stock Farmacias', key: "'"+j+"'", width: 15, style: style});
+    cabecera.push({header: 'Total Stock Farmacias', key: "'"+j+"'", width: 15, style: style});//
     cabecera.push({header: 'Pedido 90 dias', key: "'"+j+"'", width: 9, style: style});
     cabecera.push({header: '', key: "'"+j+"'", width: 15, style: style});
-    cabecera.push({header: 'Stock Bodega Duana', key: "'"+j+"'", width: 15, style: style});
+    cabecera.push({header: 'Stock Bodega Duana', key: "'"+j+"'", width: 15, style: style});//
     
     
     worksheet.columns = cabecera;
@@ -960,10 +966,10 @@ function __creaExcelFarmacias(data,farmacias, callback) {
             columnas.push(element.totalSalidas);
             columnas.push(Math.ceil(element.totalSalidas/2));
             columnas.push(Math.ceil(element.cantidad/2));
-            columnas.push(element.totalStockFarmacias);
+            columnas.push(element.totalStockFarmacias);//
             columnas.push(element.pedido90dias);
             columnas.push('');
-            columnas.push(element.stockBodega);
+            columnas.push(element.stockBodega);//
             
             if (element.color === 'ROJO') {
              worksheet.addRow(columnas).font = {color: {argb: 'C42807'}, name: 'Calibri', size: 9};

@@ -2013,7 +2013,7 @@ PedidosClienteModel.prototype.insertar_encabezado_pedido_cliente = function (cot
                     centro_utilidad_id,\
                     '" + cotizacion.bodega + "' as bodega_id,\
                     'Aprobado automatico' as observacion_cartera,\
-                    '1' as sw_aprobado_cartera,\
+                    '0' as sw_aprobado_cartera,\
                     centro_destino,\
                     '" + cotizacion.bodega + "' as bodega_destino,\
                     estado_multiple_pedido\

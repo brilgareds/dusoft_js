@@ -825,7 +825,8 @@ function __organizaRotacionFarmacia(index, data, resultado, callback) {
     //    resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
  
 //        resultColumna.color = (color <= 0 && (control >= 5 || control === Infinity))? "ROJO" : "N/A";
-        resultColumna.color = ( color <= 0 && mayor5 === true && (control >= 5 || control === Infinity))? "ROJO" : "N/A";
+//        resultColumna.color = ( color <= 0 && mayor5 === true && (control >= 5 || control === Infinity))? "ROJO" : "N/A";
+        resultColumna.color = ( (control >= 5 || control === Infinity))? "ROJO" : "N/A";
 
         resultado.push(resultColumna);
         __organizaRotacionFarmacia(index, data, resultado, callback);

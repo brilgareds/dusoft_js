@@ -2190,6 +2190,23 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, ca
     });
 };
 
+PedidosClienteModel.prototype.verificarPedidoMultiple= function (obj, callback) {
+
+    var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
+            .where(function () {
+          //   this.whereNull("id_orden_pedido_destino");
+             this.andWhere("id_orden_pedido_destino", obj.numero_pedido);
+            })
+            .select(['id_orden_pedido_destino']);
+    console.log("verificarPedidoMultiple",G.sqlformatter.format(query.toString()));
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [verificarPedidoMultiplw]: ", err);
+        callback({err: err, msj: "Error al verificarPedidoMultiple"});
+    });
+};
+
 PedidosClienteModel.prototype.actualizarBodegaCotizacionClientesMultiples = function (obj, callback) {
 
     var query = G.knex('ventas_ordenes_pedidos_d_tmp').where({

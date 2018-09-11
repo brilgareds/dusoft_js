@@ -650,6 +650,7 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
     var totalFactura = 0;
     var subTotal = 0;
     var totalIva = 0;
+    var reporte;
 
     var parametros = {
         empresaId: args.empresaId,
@@ -696,6 +697,13 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
     }).then(function (result) {
 
         productos = result;
+        
+        if (productos.length > 0) {
+            reporte = 'notaFactura.html';
+        } else {
+            reporte = 'notaFacturaSinProducto.html';
+        }
+
 
         parametros.prefijo = nota[0].prefijo;
         parametros.factura_fiscal = nota[0].factura_fiscal;
@@ -767,7 +775,7 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
             parametros: parametros,
             productos: productos,
             usuario: req.session.user.nombre_usuario,
-            archivoHtml: 'notaFactura.html',
+            archivoHtml: reporte,
             valores: valores
         };
 
@@ -897,9 +905,9 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
             valorTotal: resultado.valores.totalFactura,
             elaboradoPor: resultado.usuario
         };
-        
+
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaDebito', json);
-        
+
     }).then(function (respuesta) {
 
 
@@ -912,7 +920,7 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
             json_envio: data.lastRequest,
             respuesta_ws: data
         };
-        
+
         if (respuesta.sw_factura_dian === '1') {
 
             return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
@@ -1465,7 +1473,7 @@ function __productos(productos, index, productosDian, callback) {
         identificador: item.codigo_producto, //String -
         imprimible: true, //boolean -
         pagable: true, //boolean -
-        valorUnitario:  parseFloat(item.valor_unitario).toFixed(2), // falta
+        valorUnitario: parseFloat(item.valor_unitario).toFixed(2), // falta
 //        impuestoAlConsumo: {
 //            nombre: "",
 //            porcentual: "",

@@ -1003,7 +1003,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
                WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                ELSE cast(id_orden_pedido_destino as text)\
            END  || ' - ' ||                         CASE\
-               WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+               WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0 THEN 'PP'\
                ELSE cast(id_orden_pedido_final as text)\
            END || ' - ' || cast(coalesce(t.nombre_tercero,\
            '') as text) || '' || cast(coalesce(b.descripcion,\
@@ -1034,17 +1034,19 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
         G.knex.raw("(\
            SELECT\
                CASE\
-                   WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)\
+                   WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NOT NULL  THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)\
                    from\
                        ventas_ordenes_pedido_multiple_clientes\
                    where\
                        id_orden_pedido_destino = a.solicitud_prod_a_bod_ppal_id limit 1)\
+               WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NULL  THEN \
+                       'PF'\
                    ELSE cast(id_orden_pedido_origen as text)\
                END   || ' - ' || CASE\
                    WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                    ELSE cast(id_orden_pedido_destino as text)\
                END  || ' - ' || CASE\
-                   WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                   WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0 THEN 'PP'\
                    ELSE cast(id_orden_pedido_final as text)\
                END || ' - ' || cast(coalesce(t.nombre_tercero,\
                '') as text) || '' || cast(coalesce(b.descripcion,\
@@ -1086,7 +1088,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
                        WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                        ELSE cast(id_orden_pedido_destino as text)\
                    END  || ' - ' || CASE\
-                       WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                       WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0 THEN 'PP'\
                        ELSE cast(id_orden_pedido_final as text)\
                    END || ' - ' || cast(coalesce(t.nombre_tercero,\
                    '') as text) || '' || cast(coalesce(b.descripcion,\
@@ -1191,7 +1193,6 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
 
     query.totalRegistros = 0;
     
-    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (total) {
         var registros = query.
                 limit(limite).

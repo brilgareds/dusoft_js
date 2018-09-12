@@ -363,7 +363,7 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                ELSE cast(id_orden_pedido_destino as text)\
            END  || ' - ' ||                         CASE\
-               WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+               WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0 THEN 'PP'\
                ELSE cast(id_orden_pedido_final as text)\
            END || ' - ' || cast(coalesce(t.nombre_tercero,\
            '') as text) || '' || cast(coalesce(b.descripcion,\
@@ -394,17 +394,19 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
        G.knex.raw("(\
            SELECT\
                CASE\
-                   WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)\
+                   WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NOT NULL  THEN  (select 'CT' || cast(id_orden_cotizacion_origen as text)\
                    from\
                        ventas_ordenes_pedido_multiple_clientes\
                    where\
                        id_orden_pedido_destino = a.pedido_cliente_id limit 1)\
+                WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NULL  THEN \
+                       'PF'\
                    ELSE cast(id_orden_pedido_origen as text)\
                END   || ' - ' || CASE\
                    WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                    ELSE cast(id_orden_pedido_destino as text)\
                END  || ' - ' || CASE\
-                   WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                   WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0 THEN  'PP'\
                    ELSE cast(id_orden_pedido_final as text)\
                END || ' - ' || cast(coalesce(t.nombre_tercero,\
                '') as text) || '' || cast(coalesce(b.descripcion,\
@@ -446,7 +448,7 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                        WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                        ELSE cast(id_orden_pedido_destino as text)\
                    END  || ' - ' || CASE\
-                       WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                       WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0 THEN 'PP'\
                        ELSE cast(id_orden_pedido_final as text)\
                    END || ' - ' || cast(coalesce(t.nombre_tercero,\
                    '') as text) || '' || cast(coalesce(b.descripcion,\
@@ -1456,7 +1458,7 @@ var sql1 =" a.*,\
                 ELSE cast(id_orden_pedido_destino as text)\
             END  || ' - ' || \
                         CASE\
-                WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                WHEN id_orden_pedido_final IS NULL  OR id_orden_pedido_final = 0 THEN 'PP'\
                 ELSE cast(id_orden_pedido_final as text)\
                         END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
         from\
@@ -1469,19 +1471,21 @@ var sql1 =" a.*,\
         ) as es_pedido_origen,\
         (SELECT\
                 CASE\
-                    WHEN id_orden_pedido_origen IS NULL THEN (\
+                    WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NOT NULL  THEN  (\
                                             select\
                                                     'CT' || cast(id_orden_cotizacion_origen as text)\
                                             from\
                                                     ventas_ordenes_pedido_multiple_clientes\
                                             where\
                                                     id_orden_pedido_destino = a.pedido limit 1)\
+                WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NULL  THEN \
+                       'PF'\
                     ELSE cast(id_orden_pedido_origen as text)\
                 END   || ' - ' || CASE\
                     WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                     ELSE cast(id_orden_pedido_destino as text)\
                 END  || ' - ' || CASE\
-                    WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                    WHEN id_orden_pedido_final IS NULL  OR id_orden_pedido_final = 0 THEN 'PP'\
                     ELSE cast(id_orden_pedido_final as text)\
                 END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
             from\
@@ -1506,7 +1510,7 @@ var sql1 =" a.*,\
                         WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                         ELSE cast(id_orden_pedido_destino as text)\
                     END  || ' - ' || CASE\
-                        WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                        WHEN id_orden_pedido_final IS NULL  OR id_orden_pedido_final = 0 THEN 'PP'\
                         ELSE cast(id_orden_pedido_final as text)\
                     END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
                 from\

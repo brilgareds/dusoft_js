@@ -322,6 +322,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "b.descripcion AS descripcion_concepto",
         "ncdc.concepto_id",
         "ncdc.descripcion",
+        "ncdc.prefijo_devolucion",
         G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=ncdc.nota_credito_despacho_cliente_id and prefijo= 'NC' and sw_factura_dian ='1') as sincronizacion")
     ];
 
@@ -347,6 +348,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "b.descripcion AS descripcion_concepto",
         "ncdc.concepto_id",
         "ncdc.descripcion",
+        "ncdc.prefijo_devolucion",
         G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=ncdc.nota_credito_despacho_cliente_id and prefijo= 'NC' and sw_factura_dian ='1') as sincronizacion")
     ];
 

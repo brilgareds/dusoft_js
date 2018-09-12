@@ -1115,21 +1115,20 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         resultado = data;
         return G.Q.nfcall(__productos, resultado.productos, 0, []);
     }).then(function (productos) {
-
+        
         var json = {
             codigoMoneda: "COP",
-            conceptoNota: "6", // falta validar
+            conceptoNota:  resultado.nota.prefijo_devolucion === 'IDC' ? "1" :"6",
             fechaExpedicion: resultado.nota.fecha_registro_nota,
             fechaVencimiento: "", //falta
             codigoDocumentoDian: resultado.nota.tipo_id_tercero,
             numeroIdentificacion: resultado.nota.tercero_id,
-            identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E", //validar
+            identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E",
             nombreSucursal: "",
             numeroNota: resultado.nota.numero,
-            observaciones: resultado.nota.descripcion, //falta
+            observaciones: resultado.nota.descripcion,
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
-//            productos: productos.length > 0 ? productos: "",
             productos: productos,
             subtotalNotaCreditoElectronica: resultado.valores.subTotal.replace(".", ""),
             ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
@@ -1149,7 +1148,7 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
             valorTotal: resultado.valores.totalFactura,
             elaboradoPor: resultado.usuario
         };
-
+        
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaCredito', json);
 
     }).then(function (respuesta) {

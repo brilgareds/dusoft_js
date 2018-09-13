@@ -1017,7 +1017,7 @@ FacturacionClientesModel.prototype.insertarLogFacturaDian = function(obj,callbac
  */
 FacturacionClientesModel.prototype.insertarPcFactura = function(obj,transaccion, callback){
    
-    var parametros = {ip: '10.0.2.158',//obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+    var parametros = {ip: obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
         prefijo: obj.parametros.documento_facturacion[0].id,
         factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
         sw_tipo_factura : obj.swTipoFactura,

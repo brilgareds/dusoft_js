@@ -443,8 +443,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
                 WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                 ELSE cast(id_orden_pedido_destino as text)\
             END  || ' - ' || \
-                        CASE\
-                WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+             CASE\
+                WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0 THEN 'PP'\
                 ELSE cast(id_orden_pedido_final as text)\
                         END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
         from\
@@ -457,19 +457,21 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
         ) as es_pedido_origen"),
         G.knex.raw("(SELECT\
                 CASE\
-                    WHEN id_orden_pedido_origen IS NULL THEN (\
+                    WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NOT NULL  THEN  (\
                                             select\
                                                     'CT' || cast(id_orden_cotizacion_origen as text)\
                                             from\
                                                     ventas_ordenes_pedido_multiple_clientes\
                                             where\
                                                     id_orden_pedido_destino = a.numero_pedido limit 1)\
+                WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NULL  THEN \
+                       'PF'\
                     ELSE cast(id_orden_pedido_origen as text)\
                 END   || ' - ' || CASE\
                     WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                     ELSE cast(id_orden_pedido_destino as text)\
                 END  || ' - ' || CASE\
-                    WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                    WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0 THEN 'PP'\
                     ELSE cast(id_orden_pedido_final as text)\
                 END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
             from\
@@ -494,7 +496,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
                         WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                         ELSE cast(id_orden_pedido_destino as text)\
                     END  || ' - ' || CASE\
-                        WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                        WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0 THEN 'PP'\
                         ELSE cast(id_orden_pedido_final as text)\
                     END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
                 from\
@@ -508,7 +510,6 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
         subQuery
     ]).from(query).
             leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");
-//    console.log(G.sqlformatter.format(queryPrincipal.toString()));
     queryPrincipal.then(function (rows) {
         callback(false, rows);
     }).catch(function (err) {
@@ -1007,7 +1008,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function (responsabl
                WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                ELSE cast(id_orden_pedido_destino as text)\
            END  || ' - ' ||                         CASE\
-               WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+               WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0  THEN 'PP'\
                ELSE cast(id_orden_pedido_final as text)\
            END || ' - ' || cast(coalesce(t.nombre_tercero,\
            '') as text) || '' || cast(coalesce(b.descripcion,\
@@ -1038,17 +1039,19 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function (responsabl
         G.knex.raw("(\
            SELECT\
                CASE\
-                   WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)\
+                   WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NOT NULL   THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)\
                    from\
                        ventas_ordenes_pedido_multiple_clientes\
                    where\
                        id_orden_pedido_destino = a.pedido_cliente_id limit 1)\
+               WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NULL  THEN \
+                       'PF'\
                    ELSE cast(id_orden_pedido_origen as text)\
                END   || ' - ' || CASE\
                    WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                    ELSE cast(id_orden_pedido_destino as text)\
                END  || ' - ' || CASE\
-                   WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                   WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0  THEN 'PP'\
                    ELSE cast(id_orden_pedido_final as text)\
                END || ' - ' || cast(coalesce(t.nombre_tercero,\
                '') as text) || '' || cast(coalesce(b.descripcion,\
@@ -1090,7 +1093,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function (responsabl
                        WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                        ELSE cast(id_orden_pedido_destino as text)\
                    END  || ' - ' || CASE\
-                       WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                       WHEN id_orden_pedido_final IS NULL OR id_orden_pedido_final = 0  THEN 'PP'\
                        ELSE cast(id_orden_pedido_final as text)\
                    END || ' - ' || cast(coalesce(t.nombre_tercero,\
                    '') as text) || '' || cast(coalesce(b.descripcion,\
@@ -1187,6 +1190,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function (responsabl
         });
     }
     query.totalRegistros = 0;
+ 
     query.then(function (total) {
         var registros = query.
                 limit(limite).
@@ -2012,7 +2016,7 @@ PedidosClienteModel.prototype.insertar_encabezado_pedido_cliente = function (cot
                     centro_utilidad_id,\
                     '" + cotizacion.bodega + "' as bodega_id,\
                     'Aprobado automatico' as observacion_cartera,\
-                    '1' as sw_aprobado_cartera,\
+                    '0' as sw_aprobado_cartera,\
                     centro_destino,\
                     '" + cotizacion.bodega + "' as bodega_destino,\
                     estado_multiple_pedido\
@@ -2186,6 +2190,23 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, ca
     }).catch(function (err) {
         console.log("err (/catch) [consultarPedidoMultipleCliente]: ", err);
         callback({err: err, msj: "Error al generar el la consulta Pedido Multiple Cliente"});
+    });
+};
+
+PedidosClienteModel.prototype.verificarPedidoMultiple= function (obj, callback) {
+
+    var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
+            .where(function () {
+          //   this.whereNull("id_orden_pedido_destino");
+             this.andWhere("id_orden_pedido_destino", obj.numero_pedido);
+            })
+            .select(['id_orden_pedido_destino']);
+    console.log("verificarPedidoMultiple",G.sqlformatter.format(query.toString()));
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [verificarPedidoMultiplw]: ", err);
+        callback({err: err, msj: "Error al verificarPedidoMultiple"});
     });
 };
 
@@ -2518,7 +2539,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
                 ELSE cast(id_orden_pedido_destino as text)\
             END  || ' - ' || \
                         CASE\
-                WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                WHEN id_orden_pedido_final IS NULL  OR id_orden_pedido_final = 0 THEN 'PP'\
                 ELSE cast(id_orden_pedido_final as text)\
                         END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
         from\
@@ -2538,12 +2559,14 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
                                                     ventas_ordenes_pedido_multiple_clientes\
                                             where\
                                                     id_orden_pedido_destino = h.pedido_cliente_id limit 1)\
+                WHEN id_orden_pedido_origen IS NULL and id_orden_cotizacion_origen IS NULL  THEN \
+                       'PF'\
                     ELSE cast(id_orden_pedido_origen as text)\
                 END   || ' - ' || CASE\
                     WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                     ELSE cast(id_orden_pedido_destino as text)\
                 END  || ' - ' || CASE\
-                    WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                    WHEN id_orden_pedido_final IS NULL  OR id_orden_pedido_final = 0 THEN 'PP'\
                     ELSE cast(id_orden_pedido_final as text)\
                 END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
             from\
@@ -2567,7 +2590,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
                         WHEN id_orden_pedido_destino IS NULL THEN 'PP'\
                         ELSE cast(id_orden_pedido_destino as text)\
                     END  || ' - ' || CASE\
-                        WHEN id_orden_pedido_final IS NULL THEN 'PP'\
+                        WHEN id_orden_pedido_final IS NULL  OR id_orden_pedido_final = 0 THEN 'PP'\
                         ELSE cast(id_orden_pedido_final as text)\
                     END || ' - ' || cast(coalesce(t.nombre_tercero, '') as text) || '' || cast(coalesce(b.descripcion, '') as text) as destino\
                 from\

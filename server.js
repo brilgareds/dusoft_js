@@ -44,6 +44,7 @@ G.XlsParser =  require("./lib/XlsParser");
 G.moment = require("moment");
 G.jsonQuery = require('jinq');
 G.json2csv = require('json2csv');
+G.Excel = require('exceljs');
 G.fcmPush = require('fcm-push');
 G.sqlformatter = require('sqlformatter');
 G.xmlformatter = require('xml-formatter');
@@ -298,6 +299,17 @@ if (cluster.isMaster) {
     } else {
         app.use(express.static(path.join(__dirname, 'public')));
     }
+    
+    
+    app.use(express.static(path.join(__dirname, 'public'), { maxAge: '30 days' }));
+    
+    app.get('/*', function (req, res, next) {
+        if (req.url.indexOf("/images/") === 0 || req.url.indexOf("/stylesheets/") === 0) {
+            res.setHeader("Cache-Control", "public, max-age=2592000");
+            res.setHeader("Expires", new Date(Date.now() + 2592000000).toUTCString());
+        }
+        next();
+    });
     
     app.use(express.static(path.join(__dirname, 'files')));
     

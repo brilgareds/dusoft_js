@@ -522,6 +522,9 @@ function __generarReporteFactura(rows, callback) {
             serverUrl: rows['serverUrl']
         }
     }, function(err, response) {
+        if(err){
+          callback(true, err);
+        }else{
         response.body(function(body) {
 
             var fecha_actual = new Date();
@@ -537,6 +540,7 @@ function __generarReporteFactura(rows, callback) {
             });
 
         });
+      }
     });
 }
 ;

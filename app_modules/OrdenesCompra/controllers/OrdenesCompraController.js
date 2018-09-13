@@ -2274,7 +2274,7 @@ console.log("generarOrdenDeCompraAuditado");
         console.log("4onGenerarOrdenDeCompraRespuesta");
         return;
     }
- 
+    var respuesta={};
     var productosActas;
     var parametros = {
         encabezado:{
@@ -2334,7 +2334,7 @@ console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
         }
     }).then(function(resultado){
 
-        var respuesta= {
+       respuesta= {
                 msj: "La orden de compra # " + parametros.encabezado.ordenId + " se ha generado satisfactoriamente",
                 status: 200,
                 data: {
@@ -2356,13 +2356,20 @@ console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
                     req:args.ordenes_compras.req
                 }
             };
-        console.log("7onGenerarOrdenDeCompraRespuesta EMIT");
+            
+        return G.Q.ninvoke(that.m_pedidos_clientes, "verificarPedidoMultiple",respuesta.data);            
+            
+    }).then(function(resultado){
+        console.log("7onGenerarOrdenDeCompraRespuesta EMIT",resultado);
+        console.log("7onGenerarOrdenDeCompraRespuesta EMIT resultado.length",resultado.length);
 //        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta",respuesta);
 //
 //        that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);
-        
-        return G.Q.nfcall(__generacionAutomatica,respuesta);
-        
+        if (resultado.length > 0) {
+            return G.Q.nfcall(__generacionAutomatica, respuesta);
+        } else {
+            throw {msj:'No se genera Documento de Entrada porque no es pedido Multiple',status:500};
+        }
     }).then(function(resultado){
         that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, resultado);
         console.log("__generacionAutomatica!!!! ",resultado);

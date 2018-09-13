@@ -9,6 +9,7 @@ define(["angular",
     "nggrid",
     "js/directive",
     "controllers/drArias/DrAriasController",
+    "controllers/rotaciones/RotacionesController",
     "includes/menu/menucontroller",
     "url",
     "includes/header/HeaderController",
@@ -19,7 +20,7 @@ define(["angular",
     "includes/classes/Pedido",
     "includes/classes/Bodega",
     "includes/classes/Usuario",
-    "models/Planes",
+    "models/Zona",
     "models/ReportesGenerados",
     "socketservice",
     "includes/http/Request",
@@ -73,6 +74,11 @@ define(["angular",
                     text: "Dr Arias",
                     templateUrl: "views/drArias/listarDrArias.html",
                     controller: "DrAriasController"
+                }).state('Rotaciones', {
+                    url: "/Rotaciones",
+                    text: "Rotaciones",
+                    templateUrl: "views/rotaciones/listarRotaciones.html",
+                    controller: "RotacionesController"
                 });
 
                 if ($location.path() === "") {

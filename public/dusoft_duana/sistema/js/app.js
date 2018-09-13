@@ -12,6 +12,7 @@ define(["angular",
     "js/directive",
     "controllers/Sistema/SistemaController",
     "controllers/Sistema/LogsController",
+    "controllers/Sistema/MovilController",
     "includes/menu/menucontroller",
     "url",
     "includes/header/HeaderController",
@@ -77,6 +78,11 @@ define(["angular",
                     text: "Logs",
                     templateUrl: "views/sistema/logs.html",
                     controller: "LogsController"
+                }).state('Movil', {
+                    url: "/Movil",
+                    text: "Movil",
+                    templateUrl: "views/sistema/movil.html",
+                    controller: "MovilController"
                 });
 
                 if ($location.path() === "") {

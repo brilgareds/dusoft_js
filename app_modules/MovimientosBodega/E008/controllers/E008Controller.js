@@ -2277,7 +2277,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
         resultadoCabecera = resultado[0];
 
         if ((tipoPedido !== 1 && pedido.farmacia_id === '01') ||
-                (tipoPedido === 1 && pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") ||
+             //   (tipoPedido === 1 && pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") ||
                 (tipoPedido === 1 && pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
                 (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS") ||
                 (tipoPedido === 1 && pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS") ||
@@ -2305,10 +2305,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                 } else if ((pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")) {//cucuta
                     bodega = "FG";
                     documentoId = 51;
-                } else if ((pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE")) {//cartagena
+                }/* else if ((pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE")) {//cartagena
                     bodega = "BD";
                     documentoId = 445;
-                }
+                }*/
 
             }
 
@@ -2439,10 +2439,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
 //	   }
 //       }
     }).then(function (resultado) {
-
-        res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200,
-                {movimientos_bodegas: {}}));
-        return;
+       if (!args.documento_despacho.background) {   
+        res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200,{movimientos_bodegas: {}}));        
+       }
+       return;
 
     }).fail(function (err) {
 
@@ -2509,10 +2509,10 @@ function __sincronizarEncabezadoDocumento(obj, callback) {
 
     } else {
 
-        if (obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE") { //Cartagena
+       /* if (obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE") { //Cartagena
             url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
 
-        } else if ((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+        } else*/ if ((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
                 (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")) {
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
@@ -2635,11 +2635,11 @@ function __sincronizarDetalleDocumento(obj, callback) {
 
     } else {
 
-        if (obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE") { //Cartagena 
+       /* if (obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE") { //Cartagena 
             url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
             soloPrecioVenta = false;
 
-        } else if ((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+        } else */if ((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
                 (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")) {
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;

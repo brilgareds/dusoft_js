@@ -2527,14 +2527,19 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
         return;
 
     }).then(function (resultado) {
-
+console.log("resultado::1 ",(resultado.length > 0 && resultado[0].valido === '1' && (producto.bodega !== obj.pedidos_clientes.cotizacion.bodega_id && producto.existe_producto_bodega_actual === 1)));
+console.log("resultado::2 ",resultado.length);
+console.log("resultado::3 ",resultado[0].valido);
+console.log("resultado::4 ",producto.bodega);
+console.log("resultado::5 ",obj.pedidos_clientes.cotizacion.bodega_id);
+console.log("resultado::6 ",producto.existe_producto_bodega_actual);
         if (!resultado) {
 
             setTimeout(function () {
                 __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
             }, 0);
 
-        } else if (resultado.length > 0 && resultado[0].valido === '1' && (producto.bodega !== obj.pedidos_clientes.cotizacion.bodega_id && producto.existe_producto_bodega_actual === 1)) {
+        } else if (resultado.length > 0 && resultado[0].valido === '1' && ( producto.existe_producto_bodega_actual === 1)) {
 
             productosValidos.push(productoUnidadMedida);
 

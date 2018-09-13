@@ -143,7 +143,7 @@ function __consultaDetalleFacturaGenerada(parametros,tabla1,tabla2, campo) {
         G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal2"),
         G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal_factura"),
         G.knex.raw("to_char((a.valor_unitario*(a.porc_iva/100)),'LFM9,999,999.00') as iva"),
-        G.knex.raw("((a.valor_unitario * (a.porc_iva/100))* a.cantidad) as iva_total"),         
+        G.knex.raw("trunc(((a.valor_unitario * (a.porc_iva/100))* a.cantidad),2) as iva_total"),         
         G.knex.raw("to_char((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))),'LFM9,999,999.00') as valor_unitario_iva"),
         G.knex.raw("to_char((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))),'LFM9,999,999.00') as total"),
         "c.observacion",

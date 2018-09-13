@@ -901,7 +901,7 @@ NotasModel.prototype.consultarProductosNotasDebito = function (parametros, callb
         "ifdd.cantidad",
         "ifdd.porc_iva",
         G.knex.raw("(dnddc.valor * (ifdd.porc_iva/100)) AS iva_total"),
-        G.knex.raw("(dnddc.valor/ ifdd.cantidad) AS valor_unitario"),
+        G.knex.raw("trunc((dnddc.valor/ ifdd.cantidad),2) AS valor_unitario"),
         "dnddc.valor as subtotal",
         "b.sw_medicamento",
         "b.sw_insumos",
@@ -949,7 +949,7 @@ NotasModel.prototype.consultarProductosNotasCredito = function (parametros, call
         G.knex.raw("CASE WHEN ibmd.cantidad IS NULL THEN\
         ifdd.cantidad ELSE ibmd.cantidad END AS cantidad"),
         G.knex.raw("CASE WHEN ibmd.cantidad IS NULL THEN\
-        (dncdc.valor / ifdd.cantidad ) ELSE (dncdc.valor / ibmd.cantidad ) END AS valor_unitario"),
+        trunc((dncdc.valor / ifdd.cantidad ),2) ELSE trunc((dncdc.valor / ibmd.cantidad ),2) END AS valor_unitario"),
         G.knex.raw("(dncdc.valor * (ifdd.porc_iva/100)) AS iva_total"),
         "dncdc.valor as subtotal",
         "b.sw_medicamento",

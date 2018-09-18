@@ -2223,7 +2223,7 @@ function __validarDumian(identificacion_cliente, tipo_id_cliente) {
             (identificacion_cliente === '10367' && tipo_id_cliente === "CE") || //CLINICA SAN RAFAEL DUMIAN CONSULTA EXTERNA GIRARDOT+
             (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") || //dumian medical sas+
             (identificacion_cliente === '10365' && tipo_id_cliente === "CE") || //clinica santa gracia buenaventura+
-            (identificacion_cliente === '10366' && tipo_id_cliente === "CE") || //CL√çNICA SAN RAFAEL DUMIAN GIRARDOT+
+            (identificacion_cliente === '10366' && tipo_id_cliente === "CE") || //CL√?NICA SAN RAFAEL DUMIAN GIRARDOT+
             (identificacion_cliente === '10119' && tipo_id_cliente === "CE") || //UCI MARIO CORREA- LOS CHORROS+
             (identificacion_cliente === '10368' && tipo_id_cliente === "CC") || //LABORATORIO CLINICA SAN RAFAEL DUMIAN GIRARDOT+
             //(identificacion_cliente === '900775143' && tipo_id_cliente === "NIT")|| //UNION TEMPORAL DUCOT 
@@ -2235,6 +2235,7 @@ function __validarDumian(identificacion_cliente, tipo_id_cliente) {
                     (identificacion_cliente === '890304155' && tipo_id_cliente === "NIT") || //HOSPITAL UNIVERSITARIO DEL VALLE+
                     (identificacion_cliente === '900112820' && tipo_id_cliente === "AS") || //LABORATORIO CLINICA AMAN CMS +
                     (identificacion_cliente === '800088098' && tipo_id_cliente === "NIT") || //LABORATORIO CLINICA AMAN CMS +
+                    (identificacion_cliente === '900470642' && tipo_id_cliente === "NIT") || //MEDICAL DUARTE Z.F SAS +
                     (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")) { //HOSPITAL SAN ANDRES DE TUMACO+
 
         return true;
@@ -2400,6 +2401,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
             } else if (pedido.identificacion_cliente === '800088098') {
                 
                 $tercero = '800088098';
+                
+            } else if (pedido.identificacion_cliente === '900470642') {
+                
+                $tercero = '900470642';
                 
             } else {
 

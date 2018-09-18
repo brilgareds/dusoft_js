@@ -785,7 +785,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         parametros.push(G.knex.raw("distinct on (a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario) a.prefijo"))
         parametros.push(G.knex.raw("round(sum(a.cantidad))::integer as cantidad_despachada")),
         parametros.push(G.knex.raw("round(sum(coalesce(a.cantidad_pendiente_por_facturar, 0)))::integer as cantidad_pendiente_por_facturar")),
-        parametros.push(G.knex.raw("split_part(coalesce(fc_precio_producto_contrato_cliente('"+obj.contratoClienteId+"', a.codigo_producto, '"+obj.empresa_id+"' ),'0'), '@', 1) as valor_unitario")),       
+       // parametros.push(G.knex.raw("split_part(coalesce(fc_precio_producto_contrato_cliente('"+obj.contratoClienteId+"', a.codigo_producto, '"+obj.empresa_id+"' ),'0'), '@', 1) as valor_unitario")),       
         parametros.push(G.knex.raw("coalesce((SELECT sum(cantidad_despachada)\
             FROM inv_facturas_xconsumo_tmp_d as tmp\
             WHERE tmp.codigo_producto = a.codigo_producto AND tmp.lote = a.lote\
@@ -798,6 +798,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
     }
     
     parametros.push("a.numero"),
+    parametros.push("a.valor_unitario"),
     parametros.push("a.codigo_producto"),
     parametros.push(G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion")),
     parametros.push("a.lote"),
@@ -842,7 +843,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         G.knex.raw("case when  a.cantidad_pendiente_por_facturar = 0 then 0 else 1 end as estado_entrega") ])).from(query)
          
     }
-   
+       
     query2.then(function(resultado){
         callback(false, resultado);   
     }).catch(function(err) { 

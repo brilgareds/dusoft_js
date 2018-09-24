@@ -2940,7 +2940,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
         valores: {},
         productos: {},
         imprimio: {usuario: '', fecha: fechaToday},
-        archivoHtml: 'facturaGeneradaDetalle.html',
+        archivoHtml: 'PreFacturaGeneradaDetalle.html',
         reporte: "factura_generada_detalle_"
     };
 

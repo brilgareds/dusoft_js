@@ -59550,6 +59550,7 @@ define('controllers/facturacionCliente/GuardarFacturaConsumoController',["angula
          *              los productos del EFC a facturar
          */
         $scope.guardarTemporalFacturaConsumo = function(documento){
+
             var obj = {
                 session: $scope.session,
                 data: {
@@ -59573,7 +59574,6 @@ define('controllers/facturacionCliente/GuardarFacturaConsumoController',["angula
                     }
                 }
             };
-console.log("obj",obj);
             
             facturacionClientesService.generarTemporalFacturaConsumo(obj,function(data){
                 

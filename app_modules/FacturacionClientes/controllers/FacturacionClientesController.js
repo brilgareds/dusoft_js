@@ -2663,8 +2663,8 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
             vendedor: resultado.cabecera.nombre,
             numeroPedido: resultado.cabecera.pedido_cliente_id,
             totalenLetras: resultado.valores.totalFacturaLetra,
-            observacionesPedido : resultado.cabecera.observacion,
-            observacionesDespacho : "",//*******************************************************************************
+            observacionesPedido : resultado.detalle[0].observacion,              //resultado.cabecera.observacion,
+            observacionesDespacho :resultado.detalle[0].obs_despacho,  // "",
             elaboradoPor : resultado.imprimio.usuario,
             tipoFormato : '1',
             condiciones: resultado.cabecera.observaciones,

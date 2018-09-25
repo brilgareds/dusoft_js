@@ -2,7 +2,7 @@
 define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosclientes/Laboratorio",
     "models/generacionpedidos/pedidosclientes/Molecula"
-], function(angular, controllers) {
+], function (angular, controllers) {
 
     controllers.controller('GestionarProductosClientesController', [
         '$scope',
@@ -18,68 +18,68 @@ define(["angular", "js/controllers",
         "Laboratorio",
         "ProductoPedidoCliente",
         "Usuario", "Molecula", "$sce",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,
+        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,
                 Laboratorio, Producto, Sesion, Molecula, $sce) {
 
             var that = this;
-            
+
             that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
-            $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
+            $rootScope.$on('gestionar_productos_clientesCompleto', function (e, parametros) {
 
                 /**
                  * +Descripcion Menu desplegable para filtar en la busqueda de
                  *              un producto
                  */
-                
+
 
                 //$scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
                 //that.buscar_laboratorios();
                 $scope.Empresa.limpiar_productos();
             });
-            
+
             $scope.rootSeleccionProducto = {};
-                $scope.rootSeleccionProducto.filtros = [
-                    {nombre: "Descripcion", tipo_busqueda: 0},
-                    {nombre: "Molecula", tipo_busqueda: 1},
-                    {nombre: "Codigo", tipo_busqueda: 2}
-                ];
+            $scope.rootSeleccionProducto.filtros = [
+                {nombre: "Descripcion", tipo_busqueda: 0},
+                {nombre: "Molecula", tipo_busqueda: 1},
+                {nombre: "Codigo", tipo_busqueda: 2}
+            ];
 
-                $scope.rootSeleccionProducto.filtro = $scope.rootSeleccionProducto.filtros[0];
+            $scope.rootSeleccionProducto.filtro = $scope.rootSeleccionProducto.filtros[0];
 
 
-                // Variables del View
-                $scope.datos_form = {
-                    clases_tipo_producto: ["", "label label-success", "label label-danger", "label label-info", "label label-warning", "label label-default"],
-                    tipo_producto: $scope.Pedido.get_tipo_producto(),
-                    seleccion_tipo_producto: '- Todos -',
-                    paginando: false,
-                    cantidad_items: 0,
-                    termino_busqueda: "",
-                    ultima_busqueda: "",
-                    pagina_actual: 1,
-                    laboratorio: Laboratorio.get('', ''),
-                    producto_seleccionado: Producto.get(),
-                    molecula: '', //Molecula.get('', ''),
-                    laboratorioAvanzado: Laboratorio.get('', ''),
-                    codigoProductoAvanzado: '',
-                    nombreProductoAvanzado: '',
-                    concentracionProductoAvanzado: '',
-                    tipoBusqueda: 0
-                };
-                
-            $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
+            // Variables del View
+            $scope.datos_form = {
+                clases_tipo_producto: ["", "label label-success", "label label-danger", "label label-info", "label label-warning", "label label-default"],
+                tipo_producto: $scope.Pedido.get_tipo_producto(),
+                seleccion_tipo_producto: '- Todos -',
+                paginando: false,
+                cantidad_items: 0,
+                termino_busqueda: "",
+                ultima_busqueda: "",
+                pagina_actual: 1,
+                laboratorio: Laboratorio.get('', ''),
+                producto_seleccionado: Producto.get(),
+                molecula: '', //Molecula.get('', ''),
+                laboratorioAvanzado: Laboratorio.get('', ''),
+                codigoProductoAvanzado: '',
+                nombreProductoAvanzado: '',
+                concentracionProductoAvanzado: '',
+                tipoBusqueda: 0
+            };
+
+            $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function (e, parametros) {
                 $scope.$$watchers = null;
             });
 
             // Gestionar Cotizaciones
-            that.gestionar_cotizaciones = function(callback) {
-                
-                 localStorageService.add("cotizacion", null);
+            that.gestionar_cotizaciones = function (callback) {
+
+                localStorageService.add("cotizacion", null);
                 if ($scope.Pedido.get_numero_cotizacion() === 0) {
                     //Crear Cotizacion y Agregar Productos
-                    $scope.insertar_cabercera_cotizacion(function(continuar) {
+                    $scope.insertar_cabercera_cotizacion(function (continuar) {
                         if (continuar) {
-                            that.insertar_detalle_cotizacion(function(resultado) {
+                            that.insertar_detalle_cotizacion(function (resultado) {
                                 if (resultado)
                                     that.buscar_productos_clientes();
                             });
@@ -87,7 +87,7 @@ define(["angular", "js/controllers",
                     });
                 } else {
                     // Agregar Productos a la Cotizacion
-                    that.insertar_detalle_cotizacion(function(resultado) {
+                    that.insertar_detalle_cotizacion(function (resultado) {
                         if (resultado)
                             that.buscar_productos_clientes();
                     });
@@ -95,54 +95,54 @@ define(["angular", "js/controllers",
             };
 
             // Gestionar Pedidos
-            that.gestionar_pedidos = function(callback) {
+            that.gestionar_pedidos = function (callback) {
 
-                that.insertar_detalle_pedido(function(resultado) {
+                that.insertar_detalle_pedido(function (resultado) {
                     if (resultado)
                         that.buscar_productos_clientes();
                 });
             };
 
             // Insertar Encabezado Cotizacion
-            $scope.insertar_cabercera_cotizacion = function(callback) {
+            $scope.insertar_cabercera_cotizacion = function (callback) {
                 var multiplePedido = localStorageService.get("multiple_pedido");
-              
+
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
-                            estadoMultiplePedido:  multiplePedido === null ? 0 : multiplePedido.multiple_pedido
+                            estadoMultiplePedido: multiplePedido === null ? 0 : multiplePedido.multiple_pedido
                         }
                     }
                 };
-                 
+
                 //valida si la cantidad solicitada del producto en la cotizacion es mayor que 0
-                if(obj.data.pedidos_clientes.cotizacion.productos[0].cantidad_solicitada > 0){
+                if (obj.data.pedidos_clientes.cotizacion.productos[0].cantidad_solicitada > 0) {
 
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
+                    Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function (data) {
 
 
-                    if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
+                        if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
 
-                        $scope.Pedido.set_numero_cotizacion(data.obj.pedidos_clientes.numero_cotizacion);
-                        $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+                            $scope.Pedido.set_numero_cotizacion(data.obj.pedidos_clientes.numero_cotizacion);
+                            $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
 
-                        localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
-                        callback(true);
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ocurrio un error mientras se guardaba la cotización.");
-                        callback(false);
-                    }
-                });
-                }else{
+                            localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
+                            callback(true);
+                        } else {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ocurrio un error mientras se guardaba la cotización.");
+                            callback(false);
+                        }
+                    });
+                } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La cantidad solicitada no puede ser menor o igual a cero");
                 }
             };
 
             // Insertar Productos a la Cotizacion
-            that.insertar_detalle_cotizacion = function(callback) {
-                 
+            that.insertar_detalle_cotizacion = function (callback) {
+
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
@@ -153,30 +153,30 @@ define(["angular", "js/controllers",
                 var precioVentaIva = precioVenta + valorTotalIva;
 
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
-                                                
+
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
                             producto: $scope.datos_form.producto_seleccionado,
-                            estadoMultiplePedido:  that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
+                            estadoMultiplePedido: that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
                         }
-                    }                
+                    }
                 };
-                 
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function (data) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
 
-                   
+
 
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("success", data.msj);
                         callback(true);
-                         socket.remove(['onListarEstadoCotizacion']);
+                        socket.remove(['onListarEstadoCotizacion']);
                     } else {
-                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         callback(false);
                     }
                 });
@@ -184,9 +184,9 @@ define(["angular", "js/controllers",
 
 
             // Insertar Productos al pedido
-            that.insertar_detalle_pedido = function(callback) {
-                
-              
+            that.insertar_detalle_pedido = function (callback) {
+
+
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
@@ -208,7 +208,7 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_PEDIDO, "POST", obj, function(data) {
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_PEDIDO, "POST", obj, function (data) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
 
@@ -227,7 +227,7 @@ define(["angular", "js/controllers",
              * @fecha  04/03/2016
              * +Descripcion Funcion encargada de invocar los laboratorios
              */
-            that.buscar_laboratorios = function() {
+            that.buscar_laboratorios = function () {
 
                 var obj = {
                     session: $scope.session,
@@ -238,7 +238,7 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_LABORATORIOS, "POST", obj, function(data) {
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_LABORATORIOS, "POST", obj, function (data) {
 
                     if (data.status === 200) {
                         that.render_laboratorios(data.obj.laboratorios);
@@ -246,26 +246,26 @@ define(["angular", "js/controllers",
                 });
             };
 
-            that.render_laboratorios = function(laboratorios) {
+            that.render_laboratorios = function (laboratorios) {
 
                 $scope.Empresa.limpiar_laboratorios();
                 var laboratorio = Laboratorio.get("", "-- TODOS --");
                 $scope.Empresa.set_laboratorios(laboratorio);
-                laboratorios.forEach(function(data) {
+                laboratorios.forEach(function (data) {
                     laboratorio = Laboratorio.get(data.laboratorio_id, data.descripcion_laboratorio);
                     $scope.Empresa.set_laboratorios(laboratorio);
                 });
             };
 
-            $scope.seleccionar_laboratorio = function() {
+            $scope.seleccionar_laboratorio = function () {
                 that.buscar_productos_clientes();
             };
 
             // Productos
-            $scope.seleccionar_tipo_producto = function(tipo_producto) {
-                
+            $scope.seleccionar_tipo_producto = function (tipo_producto) {
+
                 $scope.Pedido.tipo_producto = tipo_producto;
-                
+
                 $scope.datos_form.tipo_producto = tipo_producto;
                 $scope.datos_form.pagina_actual = 1;
 
@@ -273,7 +273,7 @@ define(["angular", "js/controllers",
                 that.buscar_productos_clientes();
             };
 
-            that.obtener_seleccion_tipo_producto = function() {
+            that.obtener_seleccion_tipo_producto = function () {
 
                 $scope.datos_form.seleccion_tipo_producto = '';
 
@@ -289,30 +289,30 @@ define(["angular", "js/controllers",
                     $scope.datos_form.seleccion_tipo_producto = "- Insumos -";
                 if ($scope.datos_form.tipo_producto === '5')
                     $scope.datos_form.seleccion_tipo_producto = "- Neveras -";
-                
+
                 if ($scope.datos_form.tipo_producto === '8')
                     $scope.datos_form.seleccion_tipo_producto = "- Nutricional -";
-                
+
                 if ($scope.datos_form.tipo_producto === '9')
                     $scope.datos_form.seleccion_tipo_producto = "- Gerencia -";
             };
 
-            $scope.buscador_productos = function(ev, tipo) {
+            $scope.buscador_productos = function (ev, tipo) {
                 $scope.datos_form.tipoBusqueda = tipo;
                 if (ev.which === 13) {
                     that.buscar_productos_clientes();
                 }
 
-            };   
+            };
 
-            $scope.onSeleccionFiltro = function(filtro) {
+            $scope.onSeleccionFiltro = function (filtro) {
                 $scope.rootSeleccionProducto.filtro = filtro;
             };
 
-            that.buscar_productos_clientes = function() {
-                
+            that.buscar_productos_clientes = function () {
+
 //                that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
-                 
+
 //                 if($scope.Pedido.estadoMultiplePedido){
 //                    if($scope.Pedido.estadoMultiplePedido !== that.estadoMultipleCotizacion.multiple_pedido){
 //                        that.estadoMultipleCotizacion.multiple_pedido = parseInt($scope.Pedido.estadoMultiplePedido);
@@ -321,19 +321,19 @@ define(["angular", "js/controllers",
                 var obj = {};
                 $scope.rootSeleccionProducto.filtro.numero = [$scope.Pedido.get_numero_pedido()];
                 $scope.rootSeleccionProducto.filtro.tipo = 2;
-                
-                var pedidoFiltroBodega = localStorageService.get("pedido");
-                    
-                    if(pedidoFiltroBodega){
-                        if(pedidoFiltroBodega.modifica_pedido === 1){
 
-                             $scope.Pedido.set_bodega_id(pedidoFiltroBodega.bodega_pedido_id);
-                        }
+                var pedidoFiltroBodega = localStorageService.get("pedido");
+
+                if (pedidoFiltroBodega) {
+                    if (pedidoFiltroBodega.modifica_pedido === 1) {
+
+                        $scope.Pedido.set_bodega_id(pedidoFiltroBodega.bodega_pedido_id);
                     }
-                    
+                }
+
                 if ($scope.datos_form.tipoBusqueda === 1) {
 
-                    obj = {                                 
+                    obj = {
                         session: $scope.session,
                         data: {
                             pedidos_clientes: {
@@ -343,7 +343,7 @@ define(["angular", "js/controllers",
                                 contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
                                 pagina_actual: $scope.datos_form.pagina_actual,
                                 termino_busqueda: $scope.datos_form.termino_busqueda,
-                                tipo_producto: $scope.Pedido.tipo_producto,//$scope.datos_form.tipo_producto,
+                                tipo_producto: $scope.Pedido.tipo_producto, //$scope.datos_form.tipo_producto,
                                 numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
                                 numero_pedido: $scope.Pedido.get_numero_pedido(),
                                 filtro: $scope.rootSeleccionProducto.filtro,
@@ -389,18 +389,18 @@ define(["angular", "js/controllers",
                                 descripcionProducto: '',
                                 concentracion: '',
                                 tipoBusqueda: $scope.datos_form.tipoBusqueda,
-                                estadoMultiplePedido:  that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
-                                
-                                
+                                estadoMultiplePedido: that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
+
+
                             }
                         }
                     };
                 }
-                
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data){
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function (data) {
 
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
-                  
+
                     if (data.status === 200) {
 
                         $scope.datos_form.cantidad_items = data.obj.pedidos_clientes.lista_productos.length;
@@ -410,25 +410,25 @@ define(["angular", "js/controllers",
                                 $scope.datos_form.pagina_actual--;
                             }
                             /*AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
-                            return;*/
+                             return;*/
                         }
-                        
+
                         that.render_productos(data.obj.pedidos_clientes.lista_productos);
-                    }else{
-                        
+                    } else {
+
                         AlertService.mostrarMensaje("warning", data.msj.err);
                         return;
-                        
+
                     }
                 });
             };
 
 
-            that.render_productos = function(productos) {
+            that.render_productos = function (productos) {
 
                 $scope.Empresa.limpiar_productos();
 
-                productos.forEach(function(data) {
+                productos.forEach(function (data) {
 
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, data.existencia, data.iva, data.tipo_producto_id, data.estado);
                     producto.set_descripcion_tipo_producto(data.descripcion_tipo_producto);
@@ -447,14 +447,14 @@ define(["angular", "js/controllers",
                     producto.setBodegaProducto(data.bodega);
                     producto.setEstadoInvima(data.estado_invima);
                     producto.setExisteProductoBodegaActual(data.existe_producto_bodega_actual);
-                    
+
                     $scope.Empresa.set_productos(producto);
-                    
+
                 });
 
             };
 
-            $scope.habilitar_seleccion_producto = function() {
+            $scope.habilitar_seleccion_producto = function () {
 
                 // Pedido
                 if ($scope.Pedido.get_numero_pedido() > 0) {
@@ -469,8 +469,8 @@ define(["angular", "js/controllers",
 
             };
 
-            $scope.validar_seleccion_producto = function() {
-                 
+            $scope.validar_seleccion_producto = function () {
+
                 if ($scope.Pedido.get_productos().length >= 60)
                     return true;
 
@@ -482,11 +482,12 @@ define(["angular", "js/controllers",
              *               dichos productos
              * @param {type} producto
              */
-            $scope.solicitar_producto = function(producto) {
+            $scope.solicitar_producto = function (producto) {
+
                 $scope.Pedido.limpiar_productos();
 
                 //mensaje a mostrar cuando el producto tiene asociado un estado invima
-                var estadoInvima =  producto.getEstadoInvima(); 
+                var estadoInvima = producto.getEstadoInvima();
                 var mensaje = "<div class='alert alert-danger' style='margin-bottom:0px;' role='alert'>\
                                    <div style='float: left;'><span class='glyphicon glyphicon-warning-sign' style='font-size: 5em;margin: 10px;' aria-hidden='true'></span></div>\
                                    <div>\
@@ -496,61 +497,81 @@ define(["angular", "js/controllers",
                                     </div>\
                                 </div>";
 
-                if(producto.precio_venta > 0){
+                if (producto.precio_venta > 0) {
 
-                        $scope.datos_form.producto_seleccionado = producto;
+                    if (producto.sw_regulado === '1') {
 
-                        $scope.Pedido.set_productos(producto);
-
-                        $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
-
-                        if ($scope.datos_form.tipo_producto === '') {
-                            $scope.datos_form.tipo_producto = producto.get_tipo_producto();
-                            $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
+                        if (parseFloat(producto.precio_venta) > parseFloat(producto.precio_regulado)) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado");
+                            return;
                         }
 
-                        if ($scope.Pedido.get_numero_pedido() > 0) {
+                        if (parseFloat(producto.precioVentaAnterior) > parseFloat(producto.precio_regulado)) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El costo ultima compra esta por encima del regulado");
+                            return;
+                        }
 
-                            //OJO VOLVER A PONER
-                            if(producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0){
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No hay disponibilidad suficiente para el producto");
-                            }else{
+                    }
+
+                    if (parseFloat(producto.precio_venta) < parseFloat(producto.precioVentaAnterior)) {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo");
+                        return;
+                    }
+
+
+                    $scope.datos_form.producto_seleccionado = producto;
+
+                    $scope.Pedido.set_productos(producto);
+
+                    $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+
+                    if ($scope.datos_form.tipo_producto === '') {
+                        $scope.datos_form.tipo_producto = producto.get_tipo_producto();
+                        $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
+                    }
+
+                    if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                        //OJO VOLVER A PONER
+                        if (producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No hay disponibilidad suficiente para el producto");
+                        } else {
                             //valida si el producto tiene asociado estado invima y muestra alerta {aceptar | cancelar}
-                            if(estadoInvima !== null) {
+                            if (estadoInvima !== null) {
 
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje, function(respuesta){
-                                    if(respuesta){
-                                that.gestionar_pedidos();  
-                            }
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje, function (respuesta) {
+                                    if (respuesta) {
+                                        that.gestionar_pedidos();
+                                    }
                                 });
-                        }else{
+                            } else {
 
-                                that.gestionar_pedidos();  
+                                that.gestionar_pedidos();
                             }
                         }
-                    }else{
+                    } else {
                         //valida si el producto tiene asociado estado invima y muestra alerta {aceptar | cancelar}
-                        if(estadoInvima !== null) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje, function(respuesta){
-                                if(respuesta){
+                        if (estadoInvima !== null) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje, function (respuesta) {
+                                if (respuesta) {
 
-                            that.gestionar_cotizaciones();
-                        }
+                                    that.gestionar_cotizaciones();
+                                }
                             });
-                        }else{
+                        } else {
 
                             that.gestionar_cotizaciones();
                         }
 
                     }
 
-                }else{
-                  AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta debe ser mayor a cero (0)");
+                } else {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta debe ser mayor a cero (0)");
                 }
-            
+
             };
 
-            $scope.validarHtml = function(html) {
+            $scope.validarHtml = function (html) {
                 var htmlValido = $sce.trustAsHtml(html);
                 return htmlValido;
             };
@@ -564,7 +585,7 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: 140,
-                        
+
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.get_tipo_producto() == 1" >N</span>\
                                                 <span class="label label-danger" ng-show="row.entity.get_tipo_producto() == 2">A</span>\
@@ -579,18 +600,18 @@ define(["angular", "js/controllers",
                     },
                     {field: 'descripcion', displayName: 'Nombre',
                         // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
-                        cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>", width:450},
-                    {field: 'nombreBodega', displayName: 'Bodss', width: "50", 
-                        cellTemplate:'<div class="ngCellText">\
+                        cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>", width: 450},
+                    {field: 'nombreBodega', displayName: 'Bodss', width: "50",
+                        cellTemplate: '<div class="ngCellText">\
                                         <span class="label label-primary"  ng-if="row.entity.getNombreBodega() == \'DUA\' "> {{row.entity.getNombreBodega()}}</span>\
                                         <span class="label label-success"  ng-if="row.entity.getNombreBodega() == \'COS\' "> {{row.entity.getNombreBodega()}}</span>\
                                       </div>'
                     },
                     {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
-                    {field: '#Cod.invima/F.Ven',  displayName: '#Cod.invima/F.Ven', 
+                    {field: '#Cod.invima/F.Ven', displayName: '#Cod.invima/F.Ven',
                         cellTemplate: '<div class="col-xs-16 ">\n\
                             <p class="text-uppercase">{{row.entity.codigo_invima}} / {{row.entity.fecha_vencimiento_invima}}</p></div>'},
-                  
+
                     {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
@@ -626,28 +647,28 @@ define(["angular", "js/controllers",
 
                 ]
             };
-            
-            $scope.valida_existencia_codigo=function(data){
-              var disable=true;
-              if( data.bodegaProducto!==Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo && data.existeProductoBodegaActual===0){
-                  data.cantidad_solicitada="NE";//no existe en bodega
-                  return false;
-              }
-              return disable;
+
+            $scope.valida_existencia_codigo = function (data) {
+                var disable = true;
+                if (data.bodegaProducto !== Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo && data.existeProductoBodegaActual === 0) {
+                    data.cantidad_solicitada = "NE";//no existe en bodega
+                    return false;
+                }
+                return disable;
             };
 
 
-            $scope.agregar_clase_tipo_producto = function(tipo_producto) {
+            $scope.agregar_clase_tipo_producto = function (tipo_producto) {
                 return $scope.datos_form.clases_tipo_producto[tipo_producto];
             };
 
-            $scope.pagina_anterior = function() {
+            $scope.pagina_anterior = function () {
                 $scope.datos_form.paginando = true;
                 $scope.datos_form.pagina_actual--;
                 that.buscar_productos_clientes();
             };
 
-            $scope.pagina_siguiente = function() {
+            $scope.pagina_siguiente = function () {
                 $scope.datos_form.paginando = true;
                 $scope.datos_form.pagina_actual++;
                 that.buscar_productos_clientes();
@@ -660,7 +681,7 @@ define(["angular", "js/controllers",
              * +Descripcion Funcion encargada de invocar el servicio que consulta
              *              las moleculas
              */
-            that.buscar_moleculas = function(callback) {
+            that.buscar_moleculas = function (callback) {
 
                 var obj = {
                     session: $scope.session,
@@ -671,26 +692,26 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_MOLECULA, "POST", obj, function(data) {
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_MOLECULA, "POST", obj, function (data) {
 
                     if (data.status === 200) {
                         callback(data.obj.moleculas);
                     }
                 });
             };
-            that.render_moleculas = function(moleculas) {
+            that.render_moleculas = function (moleculas) {
 
                 $scope.Empresa.limpiar_moleculas();
                 var molecula = Molecula.get("", "-- TODOS --");
                 $scope.Empresa.set_moleculas(moleculas);
-                moleculas.forEach(function(data) {
+                moleculas.forEach(function (data) {
                     molecula = Molecula.get(data.subclase_id, data.descripcion_molecula);
                     $scope.Empresa.set_moleculas(molecula);
                 });
 
             };
 
-            $scope.listar_moleculas = function(termino_busqueda) {
+            $scope.listar_moleculas = function (termino_busqueda) {
 
                 if (termino_busqueda.length < 3) {
                     return;
@@ -698,8 +719,8 @@ define(["angular", "js/controllers",
 
                 $scope.datos_view.termino_busqueda_moleculas = termino_busqueda;
 
-                that.buscar_moleculas(function(moleculas) {
-                  
+                that.buscar_moleculas(function (moleculas) {
+
                     that.render_moleculas(moleculas);
                 });
             };
@@ -715,7 +736,7 @@ define(["angular", "js/controllers",
              *               producto
              * @param {type} cotizacion_pedido
              */
-            $scope.busquedaAvanzadaProducto = function(cotizacion_pedido) {
+            $scope.busquedaAvanzadaProducto = function (cotizacion_pedido) {
 
                 $scope.datos_view.pedido_seleccionado = cotizacion_pedido;
 
@@ -727,13 +748,13 @@ define(["angular", "js/controllers",
                     templateUrl: 'views/generacionpedidos/pedidosclientes/formularioBusquedaAvanzadaProducto.html',
                     scope: $scope,
                     height: 300,
-                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
 
-                        $scope.cerrarVentanaBusquedaAvanzada = function() {
+                            $scope.cerrarVentanaBusquedaAvanzada = function () {
 
-                            $modalInstance.close();
-                        };
-                    }]
+                                $modalInstance.close();
+                            };
+                        }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
@@ -741,10 +762,10 @@ define(["angular", "js/controllers",
 
             that.buscar_laboratorios();
 
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+            $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-                
-               
+
+
             });
         }]);
 });

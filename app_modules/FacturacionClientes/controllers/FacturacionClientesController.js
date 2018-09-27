@@ -366,7 +366,7 @@ FacturacionClientes.prototype.listarPedidosClientes = function (req, res) {
     var terceroId = args.listar_pedidos_clientes.terceroId;
     var paginaActual = args.listar_pedidos_clientes.paginaActual;
     var usuario = req.session.user.usuario_id;
-
+    var bodega = req.session.user.bodega;
     var parametros = {
         empresaId: args.listar_pedidos_clientes.empresaId,
         tipoIdTercero: tipoIdTercero,
@@ -375,7 +375,8 @@ FacturacionClientes.prototype.listarPedidosClientes = function (req, res) {
         paginaActual: paginaActual,
         pedidoMultipleFarmacia: pedidoMultipleFarmacia,
         estadoProcesoPedido: estadoProcesoPedido,
-        procesoFacturacion: 1
+        procesoFacturacion: 1,
+        bodega:bodega
     };
 
     if (pedidoMultipleFarmacia === '1') {
@@ -561,6 +562,7 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
     }
 
     var usuario = req.session.user.usuario_id;
+    var bodega = req.session.user.bodega;
     var parametros = {
         empresaId: args.procesar_factura_cosmitet.empresaId,
         tipoIdTercero: '',
@@ -576,6 +578,7 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
         pedidoMultipleFarmacia: args.procesar_factura_cosmitet.pedidoMultipleFarmacia,
         paginaActual: 1,
         pedidoClienteId: '',
+        bodega:bodega,
         idProceso: ''
     };
 

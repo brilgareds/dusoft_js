@@ -706,6 +706,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                 this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)
                 .andWhere('a.tercero_id',obj.terceroId); 
             }
+            this.andWhere('a.bodega_destino', obj.bodega);
             this.andWhere('a.pedido_multiple_farmacia', obj.pedidoMultipleFarmacia);
             if(obj.pedidoMultipleFarmacia === '1'){
                 var fechaFinal = G.moment(obj.fechaFinal).format(formato);

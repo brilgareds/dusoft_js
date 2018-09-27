@@ -1,3 +1,5 @@
+/* global G */
+
 var Notas = function (m_notas, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes, c_sincronizacion) {
     this.m_notas = m_notas;
     this.m_sincronizacion = m_sincronizacion;
@@ -1467,7 +1469,7 @@ function __productos(productos, index, productosDian, callback) {
             atributoAdicionalProd: atributoAdicionalProd
         }
         ,
-        cantidad: item.cantidad,
+        cantidad: parseFloat(item.cantidad).toFixed(0),
         descripcion: item.descripcion, //String OPCIONAL -
         identificador: item.codigo_producto, //String -
         imprimible: true, //boolean -

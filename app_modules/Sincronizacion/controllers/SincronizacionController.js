@@ -155,7 +155,7 @@ Sincronizacion.prototype.facturacionElectronicaNotaCredito = function (req, call
     var that = this;
 
     G.Q.nfcall(__jsonNotaCredito, req).then(function (resultado) {
-
+        
         var obj = {};
         obj.x = '';
         obj.funcion = "crearNotaCreditoElectronica";

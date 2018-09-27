@@ -250,9 +250,6 @@ define([
 
             $scope.habilitarAdicion = function (producto) {
                 var disabled = false;
-//                if ($scope.doc_tmp_id === "00000") {
-//                    disabled = true;
-//                }
 
                 if (producto.cantidad_ingresada === undefined || producto.cantidad_ingresada === "" || parseInt(producto.cantidad_ingresada) <= 0) {
                     disabled = true;

@@ -1,4 +1,6 @@
 
+/* global G */
+
 var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };

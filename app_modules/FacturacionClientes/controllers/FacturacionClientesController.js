@@ -924,22 +924,22 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
 
     }).then(function (resultado) {
 
-        var parametros = [];
-        parametros[0] = resultado.empresa_id;
-        parametros[1] = resultado.id;
-        parametros[2] = resultado.numeracion;
-
-        var param = {param: parametros, funcion: 'facturas_venta_fi'};
-
-        return G.Q.ninvoke(that.m_sincronizacion, "sincronizarCuentasXpagarFi", param);
-
-    }).then(function (resultado) {
+//        var parametros = [];
+//        parametros[0] = resultado.empresa_id;
+//        parametros[1] = resultado.id;
+//        parametros[2] = resultado.numeracion;
+//
+//        var param = {param: parametros, funcion: 'facturas_venta_fi'};
+//
+//        return G.Q.ninvoke(that.m_sincronizacion, "sincronizarCuentasXpagarFi", param);
+//
+//    }).then(function (resultado) {
 
         callback(false, {
             status: 200,
             msj: 'Se genera la factura satisfactoriamente',
             data: {generar_factura_agrupada: documentoFacturacion,
-                resultado_sincronizacion_ws: resultado
+                resultado_sincronizacion_ws:{resultado:{mensaje_ws:'No sincronizado',mensaje_bd: "Log Registrado Correctamente "}}// resultado
             }
         }
         );
@@ -2391,18 +2391,18 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
 
     }).then(function (resultado) {
 
-        var parametros = [];
-        parametros[0] = resultado.empresa_id;
-        parametros[1] = resultado.prefijo;
-        parametros[2] = resultado.numeracion;
-
-        var param = {param: parametros, funcion: 'facturas_venta_fi'};
-        return G.Q.ninvoke(that.m_sincronizacion, "sincronizarCuentasXpagarFi", param);
-
-    }).then(function (resultado) {
+//        var parametros = [];
+//        parametros[0] = resultado.empresa_id;
+//        parametros[1] = resultado.prefijo;
+//        parametros[2] = resultado.numeracion;
+//
+//        var param = {param: parametros, funcion: 'facturas_venta_fi'};
+//        return G.Q.ninvoke(that.m_sincronizacion, "sincronizarCuentasXpagarFi", param);
+//
+//    }).then(function (resultado) {
 
         return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_individual: documentoFacturacion,
-            resultado_sincronizacion_ws: resultado
+            resultado_sincronizacion_ws:{resultado:{mensaje_ws:'No sincronizado',mensaje_bd: "Log Registrado Correctamente "}}// resultado
         }));
 
     }).fail(function (err) {

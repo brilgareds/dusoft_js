@@ -1912,11 +1912,11 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
                                         valor_unitario: rowDetalle.valor_unitario,
                                         lote:rowDetalle.lote,
                                         fecha_vencimiento: rowDetalle.fecha_vencimiento,
-                                        porcentaje_gravamen: rowDetalle.porcentaje_gravamen,
+                                        porc_iva: rowDetalle.porcentaje_gravamen,
                                         prefijo_documento: null,
                                         numeracion_documento: null,
                                         estado_factura_fiscal: '1'
-                                    };                                                                
+                                    };      
                                     parametrosInsertaFacturaAgrupadaDetalle.push(parametrosFacturasAgrupadas);                            
                                 });
                             });                      

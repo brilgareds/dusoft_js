@@ -154,7 +154,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         resultado.prefijo,
                                         resultado.numero,
                                         row.pedidos[0].fechaRegistro,
-                                        resultado.empresa_id))
+                                        resultado.empresa_id,
+                                        resultado.tiene_iva));
                                 }                                             
                             });                                        
                         });
@@ -266,7 +267,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
                             <span class="label" style="color:black;"><a href="javascript:void(0);" ng-click="imprimirReporteDocumento(row.entity, item)" class = "glyphicon glyphicon-print"></a>\
                             <input type="checkbox" class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)"\n\
-                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} </span> <br> \
+                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}<p style="color:red;">({{item.tieneIva}})</p></span> <br> \
                         </li>\
                       </ul>'},
                 {displayName: "Opc", cellClass: "txt-center dropdown-button",

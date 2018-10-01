@@ -499,24 +499,24 @@ define(["angular", "js/controllers",
 
                 if (producto.precio_venta > 0) {
 
-                    if (producto.sw_regulado === '1') {
-
-                        if (parseFloat(producto.precio_venta) > parseFloat(producto.precio_regulado)) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado");
-                            return;
-                        }
-
-                        if (parseFloat(producto.precioVentaAnterior) > parseFloat(producto.precio_regulado)) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El costo ultima compra esta por encima del regulado");
-                            return;
-                        }
-
-                    }
-
-                    if (parseFloat(producto.precio_venta) < parseFloat(producto.precioVentaAnterior)) {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo");
-                        return;
-                    }
+//                    if (producto.sw_regulado === '1') {
+//
+//                        if (parseFloat(producto.precio_venta) > parseFloat(producto.precio_regulado)) {
+//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado");
+//                            return;
+//                        }
+//
+//                        if (parseFloat(producto.precioVentaAnterior) > parseFloat(producto.precio_regulado)) {
+//                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El costo ultima compra esta por encima del regulado");
+//                            return;
+//                        }
+//
+//                    }
+//
+//                    if (parseFloat(producto.precio_venta) < parseFloat(producto.precioVentaAnterior)) {
+//                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo");
+//                        return;
+//                    }
 
 
                     $scope.datos_form.producto_seleccionado = producto;

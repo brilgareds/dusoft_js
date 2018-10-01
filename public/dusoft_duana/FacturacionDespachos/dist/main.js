@@ -55024,12 +55024,12 @@ define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Doc
     models.factory('DocumentoDespacho', ["Documento", function (Documento) {
 
 
-            function DocumentoDespacho(bodegas_doc_id, prefijo, numero, fecha_registro){
+            function DocumentoDespacho(bodegas_doc_id, prefijo, numero, fecha_registro) {
                 Documento.getClass().call(this, bodegas_doc_id, prefijo, numero, fecha_registro);
                 this.valor;
                 this.saldo;
                 this.estadoSincronizacion;
-                this.descripcionEstado;    
+                this.descripcionEstado;
                 this.fechaFactura;
                 this.fechaVencimientoFactura;
                 this.prefijoNumero;
@@ -55051,187 +55051,196 @@ define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Doc
             }
 
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
-            
-            DocumentoDespacho.prototype.setFechaInicial = function(fechaInicial){
+
+            DocumentoDespacho.prototype.setFechaInicial = function (fechaInicial) {
                 this.fechaInicial = fechaInicial;
             };
-            
-            DocumentoDespacho.prototype.getFechaInicial = function(){
+
+            DocumentoDespacho.prototype.getFechaInicial = function () {
                 return this.fechaInicial;
             };
-            
-            DocumentoDespacho.prototype.setFechaFinal = function(fechaFinal){
+
+            DocumentoDespacho.prototype.setFechaFinal = function (fechaFinal) {
                 this.fechaFinal = fechaFinal;
             };
-            
-            DocumentoDespacho.prototype.getFechaFinal = function(){
+
+            DocumentoDespacho.prototype.getFechaFinal = function () {
                 return this.fechaFinal;
             };
-            
-            DocumentoDespacho.prototype.setDescripcionEstadoFacturacion = function(descripcionEstadoFacturacion){
+
+            DocumentoDespacho.prototype.setDescripcionEstadoFacturacion = function (descripcionEstadoFacturacion) {
                 this.descripcionEstadoFacturacion = descripcionEstadoFacturacion;
             };
-    
-            DocumentoDespacho.prototype.setEstadoFacturacion = function(estadoFacturacion){
+
+            DocumentoDespacho.prototype.setEstadoFacturacion = function (estadoFacturacion) {
                 this.estadoFacturacion = estadoFacturacion;
             };
-            
-            DocumentoDespacho.prototype.setDocumentoSeleccionado = function(documentoSeleccionado){
+
+            DocumentoDespacho.prototype.setDocumentoSeleccionado = function (documentoSeleccionado) {
                 this.documentoSeleccionado = documentoSeleccionado;
             };
-            
-            DocumentoDespacho.prototype.setPorcentajeIca = function(porcentajeIca){
+
+            DocumentoDespacho.prototype.setPorcentajeIca = function (porcentajeIca) {
                 this.porcentajeIca = porcentajeIca;
             };
-            
-            DocumentoDespacho.prototype.setPorcentajeReteIva = function(porcentajeReteIva){
+
+            DocumentoDespacho.prototype.setPorcentajeReteIva = function (porcentajeReteIva) {
                 this.porcentajeReteIva = porcentajeReteIva;
             };
-    
-            DocumentoDespacho.prototype.setPorcentajeRtf = function(porcentajeRtf){
+
+            DocumentoDespacho.prototype.setPorcentajeRtf = function (porcentajeRtf) {
                 this.porcentajeRtf = porcentajeRtf;
             };
-            
-            DocumentoDespacho.prototype.setTipoFactura = function(tipoFactura){
+
+            DocumentoDespacho.prototype.setTipoFactura = function (tipoFactura) {
                 this.tipoFactura = tipoFactura;
             };
-            
-            DocumentoDespacho.prototype.setObservacion = function(observacion){
+
+            DocumentoDespacho.prototype.setObservacion = function (observacion) {
                 this.observacion = observacion;
             };
-            
-            DocumentoDespacho.prototype.setMensaje1 = function(mensaje1){
+
+            DocumentoDespacho.prototype.setMensaje1 = function (mensaje1) {
                 this.mensaje1 = mensaje1;
             };
-            
-            DocumentoDespacho.prototype.setMensaje2 = function(mensaje2){
+
+            DocumentoDespacho.prototype.setMensaje2 = function (mensaje2) {
                 this.mensaje2 = mensaje2;
             };
-            
-            DocumentoDespacho.prototype.setMensaje3 = function(mensaje3){
+
+            DocumentoDespacho.prototype.setMensaje3 = function (mensaje3) {
                 this.mensaje3 = mensaje3;
             };
-            
-            DocumentoDespacho.prototype.setMensaje4 = function(mensaje4){
+
+            DocumentoDespacho.prototype.setMensaje4 = function (mensaje4) {
                 this.mensaje4 = mensaje4;
             };
-            
-            DocumentoDespacho.prototype.setPrefijoNumero = function(prefijoNumero){
+
+            DocumentoDespacho.prototype.setPrefijoNumero = function (prefijoNumero) {
                 this.prefijoNumero = prefijoNumero;
             };
-            
-            DocumentoDespacho.prototype.setValor = function(valor){
+
+            DocumentoDespacho.prototype.setValor = function (valor) {
                 this.valor = valor;
             };
-            
-            DocumentoDespacho.prototype.setSaldo = function(saldo){
+
+            DocumentoDespacho.prototype.setSaldo = function (saldo) {
                 this.saldo = saldo;
             };
-            
-            DocumentoDespacho.prototype.setDescripcionEstado = function(descripcionEstado){
+
+            DocumentoDespacho.prototype.setDescripcionEstado = function (descripcionEstado) {
                 this.descripcionEstado = descripcionEstado;
             };
-            
-            DocumentoDespacho.prototype.setEstadoSincronizacion = function(estadoSincronizacion){
+
+            DocumentoDespacho.prototype.setEstadoSincronizacion = function (estadoSincronizacion) {
                 this.estadoSincronizacion = estadoSincronizacion;
             };
-            
-            DocumentoDespacho.prototype.setFechaFactura = function(fechaFactura){
+
+            DocumentoDespacho.prototype.setFechaFactura = function (fechaFactura) {
                 this.fechaFactura = fechaFactura;
             };
-            
-            DocumentoDespacho.prototype.setFechaVencimientoFactura = function(fechaVencimientoFactura){
+
+            DocumentoDespacho.prototype.setFechaVencimientoFactura = function (fechaVencimientoFactura) {
                 this.fechaVencimientoFactura = fechaVencimientoFactura;
             };
-            
-            DocumentoDespacho.prototype.getDescripcionEstadoFacturacion = function(){
+
+            DocumentoDespacho.prototype.getDescripcionEstadoFacturacion = function () {
                 return this.descripcionEstadoFacturacion;
             };
-            
-            DocumentoDespacho.prototype.getEstadoFacturacion = function(){
+
+            DocumentoDespacho.prototype.getEstadoFacturacion = function () {
                 return this.estadoFacturacion;
             };
-            
-            DocumentoDespacho.prototype.getValor = function(){
+
+            DocumentoDespacho.prototype.getValor = function () {
                 return this.valor;
             };
-            
-            DocumentoDespacho.prototype.getSaldo = function(){
+
+            DocumentoDespacho.prototype.getSaldo = function () {
                 return this.saldo;
             };
-            
-            DocumentoDespacho.prototype.getDescripcionEstado = function(){
+
+            DocumentoDespacho.prototype.getDescripcionEstado = function () {
                 return this.descripcionEstado;
             };
-            
-            DocumentoDespacho.prototype.getEstadoSincronizacion = function(){
+
+            DocumentoDespacho.prototype.getEstadoSincronizacion = function () {
                 return this.estadoSincronizacion;
             };
-            
-            DocumentoDespacho.prototype.getFechaFactura = function(){
+
+            DocumentoDespacho.prototype.getFechaFactura = function () {
                 return this.fechaFactura;
             };
-            
-            DocumentoDespacho.prototype.getFechaVencimientoFactura = function(){
+
+            DocumentoDespacho.prototype.getFechaVencimientoFactura = function () {
                 return this.fechaVencimientoFactura;
             };
-            
-            DocumentoDespacho.prototype.getPrefijoNumero = function(){
+
+            DocumentoDespacho.prototype.getPrefijoNumero = function () {
                 return this.prefijoNumero;
             };
-            
-            DocumentoDespacho.prototype.getMensaje1 = function(){
+
+            DocumentoDespacho.prototype.getMensaje1 = function () {
                 return this.mensaje1;
             };
-            
-            DocumentoDespacho.prototype.getMensaje2 = function(){
+
+            DocumentoDespacho.prototype.getMensaje2 = function () {
                 return this.mensaje2;
             };
-            
-            DocumentoDespacho.prototype.getMensaje3 = function(){
+
+            DocumentoDespacho.prototype.getMensaje3 = function () {
                 return this.mensaje3;
             };
-            
-            DocumentoDespacho.prototype.getMensaje4 = function(){
+
+            DocumentoDespacho.prototype.getMensaje4 = function () {
                 return this.mensaje4;
             };
-            
-            DocumentoDespacho.prototype.getObservacion = function(){
+
+            DocumentoDespacho.prototype.getObservacion = function () {
                 return this.observacion;
             };
-            
-            DocumentoDespacho.prototype.getTipoFactura = function(){
+
+            DocumentoDespacho.prototype.getTipoFactura = function () {
                 return this.tipoFactura;
             };
-            
-            DocumentoDespacho.prototype.getPorcentajeIca = function(){
+
+            DocumentoDespacho.prototype.getPorcentajeIca = function () {
                 return this.porcentajeIca;
             };
-            
-            DocumentoDespacho.prototype.getPorcentajeReteIva = function(){
+
+            DocumentoDespacho.prototype.getPorcentajeReteIva = function () {
                 return this.porcentajeReteIva;
             };
-    
-            DocumentoDespacho.prototype.getPorcentajeRtf = function(){
+
+            DocumentoDespacho.prototype.getPorcentajeRtf = function () {
                 return this.porcentajeRtf;
             };
-            
-            DocumentoDespacho.prototype.getDocumentoSeleccionado = function(){
+
+            DocumentoDespacho.prototype.getDocumentoSeleccionado = function () {
                 return this.documentoSeleccionado;
             };
-            
-            DocumentoDespacho.prototype.agregarDetalle = function(detalle){
+
+            DocumentoDespacho.prototype.agregarDetalle = function (detalle) {
                 return this.detalle.push(detalle);
             };
-            
-            DocumentoDespacho.prototype.vaciarDetalle = function(){
+
+            DocumentoDespacho.prototype.vaciarDetalle = function () {
                 this.detalle = [];
             };
-            
-            DocumentoDespacho.prototype.getDetalle = function(){
+
+            DocumentoDespacho.prototype.getDetalle = function () {
                 return this.detalle;
             };
-            
+
+
+            DocumentoDespacho.prototype.getTieneIva = function () {
+                return this.tieneIva;
+            };
+
+            DocumentoDespacho.prototype.setTieneIva = function (tieneIva) {
+                this.tieneIva = tieneIva;
+            };
+
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {
                 return new DocumentoDespacho(bodegas_doc_id, prefijo, numero, fecha_registro);
             };
@@ -57882,7 +57891,8 @@ define('controllers/facturacionCliente/PedidosClientesController',["angular", "j
                                         resultado.prefijo,
                                         resultado.numero,
                                         row.pedidos[0].fechaRegistro,
-                                        resultado.empresa_id))
+                                        resultado.empresa_id,
+                                        resultado.tiene_iva));
                                 }                                             
                             });                                        
                         });
@@ -57994,7 +58004,7 @@ define('controllers/facturacionCliente/PedidosClientesController',["angular", "j
                             class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
                             <span class="label" style="color:black;"><a href="javascript:void(0);" ng-click="imprimirReporteDocumento(row.entity, item)" class = "glyphicon glyphicon-print"></a>\
                             <input type="checkbox" class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)"\n\
-                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} </span> <br> \
+                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}<p style="color:red;">({{item.tieneIva}})</p></span> <br> \
                         </li>\
                       </ul>'},
                 {displayName: "Opc", cellClass: "txt-center dropdown-button",
@@ -64704,12 +64714,13 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                     };
                     
                     
-                    self.renderDocumentosPrefijosClientes = function (documento_id,prefijo,factura_fiscal,fecha_registro,empresa_id) {     
+                    self.renderDocumentosPrefijosClientes = function (documento_id,prefijo,factura_fiscal,fecha_registro,empresa_id,tiene_iva) {     
                
                         
                          
                             var _documento = DocumentoDespacho.get(documento_id, prefijo, factura_fiscal||'', fecha_registro||'');
                                 _documento.set_empresa(empresa_id);
+                                _documento.setTieneIva(tiene_iva);
                                 //setDocumentoSeleccionado
                             return _documento;
                         

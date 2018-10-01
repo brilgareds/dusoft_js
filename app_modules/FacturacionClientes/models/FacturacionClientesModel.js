@@ -629,6 +629,12 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,cal
     if(obj.estado ===1){
         campos = [G.knex.raw(" x.pedido_cliente_id as bodegas_doc_id"),  "x.numero", "x.prefijo", G.knex.raw("x.empresa_id as empresa")];
     }
+    var tiene_iva = G.knex.raw("CASE WHEN\
+		(SELECT SUM(b.porcentaje_gravamen)\
+		FROM inv_bodegas_movimiento_d as b\
+		WHERE\
+		b.prefijo = x.prefijo AND b.numero = x.numero) > 0 THEN 'IVA' ELSE '' END as tiene_iva");	
+    campos.push(tiene_iva);
     
     var query = G.knex.column(campos)
         .select().from("inv_bodegas_movimiento_despachos_clientes as x")

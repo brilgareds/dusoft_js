@@ -2527,19 +2527,19 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
         return;
 
     }).then(function (resultado) {
-console.log("resultado::1 ",(resultado.length > 0 && resultado[0].valido === '1' && (producto.bodega !== obj.pedidos_clientes.cotizacion.bodega_id && producto.existe_producto_bodega_actual === 1)));
-console.log("resultado::2 ",resultado.length);
-console.log("resultado::3 ",resultado[0].valido);
-console.log("resultado::4 ",producto.bodega);
-console.log("resultado::5 ",obj.pedidos_clientes.cotizacion.bodega_id);
-console.log("resultado::6 ",producto.existe_producto_bodega_actual);
+        console.log("resultado::1 ", (resultado.length > 0 && resultado[0].valido === '1' && (producto.bodega !== obj.pedidos_clientes.cotizacion.bodega_id && producto.existe_producto_bodega_actual === 1)));
+        console.log("resultado::2 ", resultado.length);
+        console.log("resultado::3 ", resultado[0].valido);
+        console.log("resultado::4 ", producto.bodega);
+        console.log("resultado::5 ", obj.pedidos_clientes.cotizacion.bodega_id);
+        console.log("resultado::6 ", producto.existe_producto_bodega_actual);
         if (!resultado) {
 
             setTimeout(function () {
                 __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
             }, 0);
 
-        } else if (resultado.length > 0 && resultado[0].valido === '1' && ( producto.existe_producto_bodega_actual === 1)) {
+        } else if (resultado.length > 0 && resultado[0].valido === '1' && (producto.existe_producto_bodega_actual === 1)) {
 
             productosValidos.push(productoUnidadMedida);
 
@@ -4797,6 +4797,85 @@ function __validarPrecioVenta(producto, resultado, tipo) {
     }
 
     var valido = true;
+   // var contrato = resultado[0].contrato_cliente_id;
+    var precioRegulado = Number(resultado[0].precio_regulado);
+    var precioPactado = Number(resultado[0].precio_pactado);
+    var costoCompra = Number(resultado[0].costo_ultima_compra);
+    var msj = "";
+    console.log("resultado[0]", resultado[0]);
+    /**
+     * +Descripcion: Valida si el producto es regulado
+     */
+    if (resultado[0].sw_regulado === '1') {
+
+        /**
+         * +Descripcion: Si precio de venta es mayor al precio regulado
+         *             cancele la accion
+         */
+        if (precioVenta > precioRegulado) {
+            valido = false;
+            msj = 'El precio venta esta por encima del regulado';
+        }
+        /**
+         * +Descripcion: Si el precio pactado es mayor al regulado
+         *              cancele la accion
+         */
+        if (precioPactado > precioRegulado) {
+            valido = false;
+            msj = 'El precio pactado esta por encima del regulado';
+        }
+    }
+    /**
+     * +Descripcion: Valida si el producto no es regulado y su precio pctado
+     *               esta en 0
+     */
+    // if (resultado[0].sw_regulado !== '1' && precioPactado === 0) {
+
+//    else {
+//
+//        if (precioVenta < costoCompra && contrato === 987) {
+//
+//            valor = costoCompra;
+//
+//        } else
+//    }
+    if (precioVenta < costoCompra) {
+
+        valido = false;
+        msj = "El precio de venta esta por debajo del costo";
+    }
+
+    if (costoCompra <= 0) {
+        valido = false;
+        msj = "El costo ultima compra debe ser mayor a cero (0)";
+    }
+
+    if (precioVenta === 0) {
+        valido = false;
+        msj = "El precio de venta debe ser mayor a cero (0)";
+    }
+
+    return {valido: valido, msj: msj}
+}
+
+/**
+ * @author German Galvis
+ * @fecha  28/09/2018
+ * +Descripcion Metodo encargado de validar si un producto es regulado,
+ *              regulado = 1 (regulado), 2(no regulado)
+ * @param {type} producto
+ * @param {type} resultado
+ */
+function __validarPrecioVentaFarmacia(producto, resultado, tipo) {
+
+    var precioVenta;
+    if (tipo === 0) {
+        precioVenta = Number(producto.precioVentaIva);
+    } else {
+        precioVenta = Number(resultado[0].precio_producto);
+    }
+
+    var valido = true;
     var contrato = resultado[0].contrato_cliente_id;
     var precioRegulado = Number(resultado[0].precio_regulado);
     var precioPactado = Number(resultado[0].precio_pactado);
@@ -4832,13 +4911,13 @@ function __validarPrecioVenta(producto, resultado, tipo) {
     if (resultado[0].sw_regulado !== '1' && precioPactado === 0) {
 
         if (costoCompra > 0) {
-            
+
             if (precioVenta < costoCompra && contrato === 987) {
-                
+
                 valor = costoCompra;
-                
-            }else if (precioVenta < costoCompra) {
-                
+
+            } else if (precioVenta < costoCompra) {
+
                 valido = false;
                 msj = "El precio de venta esta por debajo del costo";
             }
@@ -4857,7 +4936,6 @@ function __validarPrecioVenta(producto, resultado, tipo) {
 
     return {valido: valido, msj: msj, valor: valor}
 }
-
 
 /*
  * @author Camilo Orozco
@@ -5081,7 +5159,7 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
          **/
-        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
+        var precioVenta = __validarPrecioVentaFarmacia(producto, resultado, 0);
 
         if (precioVenta.valido) {
 
@@ -5125,7 +5203,7 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
         return;
     }
 
-console.log("__insertarProductosFarmaciaCotizacion",producto);
+    console.log("__insertarProductosFarmaciaCotizacion", producto);
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion_multiple', cotizacion, producto).then(function (resultado) {
 
@@ -5540,26 +5618,26 @@ PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function (
 
 };
 
-PedidosCliente.prototype.pedidoClienteAPedidoFarmaciaAutomatico = function(req, callback) {
+PedidosCliente.prototype.pedidoClienteAPedidoFarmaciaAutomatico = function (req, callback) {
     var that = this;
-    G.Q.nfcall(__pedidoClienteAPedidoFarmacia,req,that).then(function(send) {
-        callback(false,send);
-    }).fail(function(err) {
-	callback(err);
-    }).done(); 
+    G.Q.nfcall(__pedidoClienteAPedidoFarmacia, req, that).then(function (send) {
+        callback(false, send);
+    }).fail(function (err) {
+        callback(err);
+    }).done();
 };
 
-PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function(req, res) {
+PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
     var that = this;
-    G.Q.nfcall(__pedidoClienteAPedidoFarmacia,req,that).then(function(send) {
-        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
-    }).fail(function(err) {
-	console.log("listarGetDocTemporal ",err);
-        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
-    }).done();    
+    G.Q.nfcall(__pedidoClienteAPedidoFarmacia, req, that).then(function (send) {
+        res.send(G.utils.r(req.url, send.msj, send.status, send.respuesta));
+    }).fail(function (err) {
+        console.log("listarGetDocTemporal ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {err: err.respuesta}));
+    }).done();
 };
 
-function __pedidoClienteAPedidoFarmacia(req,that,callback) {
+function __pedidoClienteAPedidoFarmacia(req, that, callback) {
     var that = that;
     var args = req.body.data;
     var usuario_id = req.session.user.usuario_id;
@@ -5588,19 +5666,20 @@ function __pedidoClienteAPedidoFarmacia(req,that,callback) {
         return G.Q.ninvoke(that.m_pedidos_clientes, "actualizar_pedido_multiple_final_farmacia", {pedidoDestino: obj.pedidoDestino, pedidoFinal: obj.pedidoFinal});
     }).then(function (resultado) {
 //        res.send(G.utils.r(req.url, 'actualizar_pedido_multiple_final_farmacia satisfactoriamente', 200, {pedido: resultado}));
-        send.msj="actualizar_pedido_multiple_final_farmacia satisfactoriamente";
-        send.status=200;
-        send.respuesta={pedido: obj.pedidoFinal};
-        callback(false,send);
+        send.msj = "actualizar_pedido_multiple_final_farmacia satisfactoriamente";
+        send.status = 200;
+        send.respuesta = {pedido: obj.pedidoFinal};
+        callback(false, send);
     }).fail(function (err) {
         console.log("err [pedidoClienteAPedidoFarmacia]: ", err);
 //        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
-        send.msj=err.msj;
-        send.status=err.status;
-        send.respuesta={pedidos_clientes: err.pedidos_clientes};
+        send.msj = err.msj;
+        send.status = err.status;
+        send.respuesta = {pedidos_clientes: err.pedidos_clientes};
         callback(send);
     });
-};
+}
+;
 //Duplica un pedido en la bodega Duana
 PedidosCliente.prototype.duplicarPedido = function (req, res) {
     var that = this;

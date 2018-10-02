@@ -1852,16 +1852,18 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
     datosAdicionalesAgrupados = [];
     parametrosActualizarEstadoFactura = [];
     parametrosInsertaFacturaAgrupadaDetalle = [];
-     
-    if (obj.consultar_parametros_retencion.sw_rtf === '1' || obj.consultar_parametros_retencion.sw_rtf === '3')
+
+    if (obj.consultar_parametros_retencion[0].sw_rtf === '1' || obj.consultar_parametros_retencion[0].sw_rtf === '3'){
         porcentajeRtf = obj.consultar_tercero_contrato[0].porcentaje_rtf;
-    if (obj.consultar_parametros_retencion.sw_ica === '1' || obj.consultar_parametros_retencion.sw_ica === '3')
+        }
+    if (obj.consultar_parametros_retencion[0].sw_ica === '1' || obj.consultar_parametros_retencion[0].sw_ica === '3'){
         porcentajeIca = obj.consultar_tercero_contrato[0].porcentaje_ica;
-    if (obj.consultar_parametros_retencion.sw_reteiva === '1' || obj.consultar_parametros_retencion.sw_reteiva === '3')
+    }
+    if (obj.consultar_parametros_retencion[0].sw_reteiva === '1' || obj.consultar_parametros_retencion[0].sw_reteiva === '3')
         porcentajeReteiva = obj.consultar_tercero_contrato[0].porcentaje_reteiva;
         
     G.knex.transaction(function(transaccion) {  
-        
+             
         G.Q.ninvoke(that,'insertarFacturaAgrupada',0,
         {parametros:obj,
          porcentaje_rtf:porcentajeRtf,

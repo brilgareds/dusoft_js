@@ -1805,8 +1805,8 @@ console.log("--------------------------");
     var that = this;
 
     var args = req.body.data;
-    
-    if(args.documento_temporal.bodega_seleccionada!=='03' && args.documento_temporal.bodega_seleccionada!=='06'){
+
+    if(args.documento_temporal.bodega_seleccionada!=='03' && args.documento_temporal.bodega_seleccionada!=='06' && args.documento_temporal.bodega_seleccionada!=='BQ'){
         res.send(G.utils.r(req.url, 'No llega la bodega de session (Comunicarse con Sistemas)', 404, {}));
         return;
     }
@@ -2223,7 +2223,7 @@ function __validarDumian(identificacion_cliente, tipo_id_cliente) {
             (identificacion_cliente === '10367' && tipo_id_cliente === "CE") || //CLINICA SAN RAFAEL DUMIAN CONSULTA EXTERNA GIRARDOT+
             (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") || //dumian medical sas+
             (identificacion_cliente === '10365' && tipo_id_cliente === "CE") || //clinica santa gracia buenaventura+
-            (identificacion_cliente === '10366' && tipo_id_cliente === "CE") || //CLÃ?NICA SAN RAFAEL DUMIAN GIRARDOT+
+            (identificacion_cliente === '10366' && tipo_id_cliente === "CE") || //CLï¿½?NICA SAN RAFAEL DUMIAN GIRARDOT+
             (identificacion_cliente === '10119' && tipo_id_cliente === "CE") || //UCI MARIO CORREA- LOS CHORROS+
             (identificacion_cliente === '10368' && tipo_id_cliente === "CC") || //LABORATORIO CLINICA SAN RAFAEL DUMIAN GIRARDOT+
             //(identificacion_cliente === '900775143' && tipo_id_cliente === "NIT")|| //UNION TEMPORAL DUCOT 

@@ -1,4 +1,6 @@
 
+/* global G */
+
 var PedidosCliente = function (pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos,
         m_terceros, emails, pedidos_farmacias, m_pedidos_clientes_log, terceros_clientes_model, m_pedidos_logs) {
 
@@ -4802,7 +4804,7 @@ function __validarPrecioVenta(producto, resultado, tipo) {
     var precioPactado = Number(resultado[0].precio_pactado);
     var costoCompra = Number(resultado[0].costo_ultima_compra);
     var msj = "";
-    console.log("resultado[0]", resultado[0]);
+//    console.log("resultado[0]", resultado[0]);
     /**
      * +Descripcion: Valida si el producto es regulado
      */

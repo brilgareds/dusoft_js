@@ -1,7 +1,7 @@
 
 /* global G */
 
-var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion, e_facturacion_clientes, m_pedidos_clientes,c_sincronizacion) {
+var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion, e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
@@ -376,7 +376,7 @@ FacturacionClientes.prototype.listarPedidosClientes = function (req, res) {
         pedidoMultipleFarmacia: pedidoMultipleFarmacia,
         estadoProcesoPedido: estadoProcesoPedido,
         procesoFacturacion: 1,
-        bodega:bodega
+        bodega: bodega
     };
 
     if (pedidoMultipleFarmacia === '1') {
@@ -578,7 +578,7 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
         pedidoMultipleFarmacia: args.procesar_factura_cosmitet.pedidoMultipleFarmacia,
         paginaActual: 1,
         pedidoClienteId: '',
-        bodega:bodega,
+        bodega: bodega,
         idProceso: ''
     };
 
@@ -939,7 +939,7 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
             status: 200,
             msj: 'Se genera la factura satisfactoriamente',
             data: {generar_factura_agrupada: documentoFacturacion,
-                resultado_sincronizacion_ws:{resultado:{mensaje_ws:'No sincronizado',mensaje_bd: "Log Registrado Correctamente "}}// resultado
+                resultado_sincronizacion_ws: {resultado: {mensaje_ws: 'No sincronizado', mensaje_bd: "Log Registrado Correctamente "}}// resultado
             }
         }
         );
@@ -1273,7 +1273,7 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function 
     if (args.facturas_consumo.estado === 0) {
         estado = 6;
     }
-  
+
     var parametros = {
         empresaId: args.facturas_consumo.empresa_id,
         tipoIdTercero: args.facturas_consumo.tipoTerceroId,
@@ -1492,17 +1492,17 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
             throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
 
         }
-         
-    }).then(function(resultado){
-       
-        if(resultado !== undefined ){ 
-            if(resultado.length > 0){
-                
-            parametros.direccion_ip = ip;    
-     
-            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',
-            {tipo_id_tercero:parametros.tipoIdTercero, 
-            tercero_id: parametros.terceroId, 
+
+    }).then(function (resultado) {
+
+        if (resultado !== undefined) {
+            if (resultado.length > 0) {
+
+                parametros.direccion_ip = ip;
+
+                return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumo',
+                        {tipo_id_tercero: parametros.tipoIdTercero,
+                            tercero_id: parametros.terceroId,
 
                             paginaActual: 1, terminoBusqueda: '', filtro: '', empresa_id: args.facturas_consumo.documentos.empresa
                         });
@@ -1566,22 +1566,22 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarDetalleFacturaConsumo', parametrosDetalleFactura);
 
 
-     
-    }).then(function(resultado){
-         
 
-        if(resultado.rowCount > 0){
- 
+    }).then(function (resultado) {
 
-            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',
-            {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo,prefijo: parametros.pedidos.prefijo,factura_fiscal: parametros.pedidos.numero});
-        }else{
-            throw {msj:'No se registro ninguna unidad', status: 404}; 
+
+        if (resultado.rowCount > 0) {
+
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo',
+                    {estado: 5, id_factura_xconsumo: parametros.id_factura_xconsumo, prefijo: parametros.pedidos.prefijo, factura_fiscal: parametros.pedidos.numero});
+        } else {
+            throw {msj: 'No se registro ninguna unidad', status: 404};
             return;
         }
 
     }).then(function (resultado) {
-     
+
         if (resultado.length > 0) {
 
             resultado.forEach(function (row) {
@@ -1678,14 +1678,14 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
         paginaActual: paginaActual,
         terminoBusqueda: terminoBusqueda,
         filtro: filtro};
-    
-    G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
-        
-        if(resultado.length >0){
 
-            return res.send(G.utils.r(req.url, 'Lista de facturas temporales', 200,{listar_facturas_temporal:resultado}));
-        }else{
-            throw {msj:'[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404}; 
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumo', parametros).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            return res.send(G.utils.r(req.url, 'Lista de facturas temporales', 200, {listar_facturas_temporal: resultado}));
+        } else {
+            throw {msj: '[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404};
         }
 
     }).fail(function (err) {
@@ -2402,7 +2402,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
 //    }).then(function (resultado) {
 
         return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_individual: documentoFacturacion,
-            resultado_sincronizacion_ws:{resultado:{mensaje_ws:'No sincronizado',mensaje_bd: "Log Registrado Correctamente "}}// resultado
+            resultado_sincronizacion_ws: {resultado: {mensaje_ws: 'No sincronizado', mensaje_bd: "Log Registrado Correctamente "}}// resultado
         }));
 
     }).fail(function (err) {
@@ -2502,16 +2502,16 @@ FacturacionClientes.prototype.sincronizarFactura = function (req, res) {
 
 }
 
-function __productos(productos,index,productosDian,callback){
-      var item=productos[index];
-      var formato = 'DD-MM-YYYY';
+function __productos(productos, index, productosDian, callback) {
+    var item = productos[index];
+    var formato = 'DD-MM-YYYY';
 
-     
-      if(!item){          
-          callback(false,productosDian);
-          return;
-      }
-      
+
+    if (!item) {
+        callback(false, productosDian);
+        return;
+    }
+
     var atrip1 = {
         nombreAtributo: "FechaVencimientoProd", //String 
         valor: G.moment(item.fecha_vencimiento).format(formato) //Fecha dd-MM-yyyy HH24:mm:ss  *****corregir formato
@@ -2532,81 +2532,81 @@ function __productos(productos,index,productosDian,callback){
         nombreAtributo: "valorTotalProd", //String
         valor: item.subtotal//decimal
     };
-    var atributoAdicionalProd=[];
-        atributoAdicionalProd.push(atrip1);
-        atributoAdicionalProd.push(atrip2);
-        atributoAdicionalProd.push(atrip3);
-        atributoAdicionalProd.push(atrip4);
-        atributoAdicionalProd.push(atrip5);
-        
-        var prod = {//OPCIONAL
-                atributosAdicionalesProd:{
-                    atributoAdicionalProd:atributoAdicionalProd
-                }
-                ,
-                cantidad: item.cantidad, //decimal OPCIONAL -
-                descripcion: item.descripcion, //String OPCIONAL -
-                identificador:item.codigo_producto, //String -
-                imprimible: true, //boolean -
- /*               impuestoAlConsumo: { //-
-                    nombre: obj.x, //String -
-                    porcentual: obj.x, //decimal -
-                    valor: obj.x //decimal -
-                },
-                impuestoICA: { // -
-                    nombre: obj.x, //String -
-                   // porcentual: obj.x, //decimal *
-                    valor: obj.x //decimal -
-                },
-                impuestoIVA: {
-                    nombre: obj.x, //String -
-                    porcentual: obj.x, //decimal -
-                    valor: obj.x //decimal -
-                },*/
-    
+    var atributoAdicionalProd = [];
+    atributoAdicionalProd.push(atrip1);
+    atributoAdicionalProd.push(atrip2);
+    atributoAdicionalProd.push(atrip3);
+    atributoAdicionalProd.push(atrip4);
+    atributoAdicionalProd.push(atrip5);
+
+    var prod = {//OPCIONAL
+        atributosAdicionalesProd: {
+            atributoAdicionalProd: atributoAdicionalProd
+        }
+        ,
+        cantidad: item.cantidad, //decimal OPCIONAL -
+        descripcion: item.descripcion, //String OPCIONAL -
+        identificador: item.codigo_producto, //String -
+        imprimible: true, //boolean -
+        /*               impuestoAlConsumo: { //-
+         nombre: obj.x, //String -
+         porcentual: obj.x, //decimal -
+         valor: obj.x //decimal -
+         },
+         impuestoICA: { // -
+         nombre: obj.x, //String -
+         // porcentual: obj.x, //decimal *
+         valor: obj.x //decimal -
+         },
+         impuestoIVA: {
+         nombre: obj.x, //String -
+         porcentual: obj.x, //decimal -
+         valor: obj.x //decimal -
+         },*/
+
 //                listaImpuestosDeducciones: {// OPCIONAL -
 //                    nombre: "IVA19", //String -
 //                    //porcentual: obj.x, //decimal 
 //                    baseGravable: item.porc_iva, //decimal  -
 //                    valor: item.iva_total.replace(",", ".") //decimal -
 //                },
-                pagable: true, //boolean -
-                valorUnitario: item.valor_unitario //decimal -
-            };
-            var impuesto;
-            var ivaPorcentaje=parseInt(item.porc_iva);
-                if (ivaPorcentaje === 0) {
-                    impuesto = {// OPCIONAL -
-                        nombre: "IVA0", //String -
-                        //porcentual: obj.x, //decimal 
-                        baseGravable: item.porc_iva, //decimal  -
-                        valor: item.iva_total.replace(",", ".") //decimal -
+        pagable: true, //boolean -
+        valorUnitario: item.valor_unitario //decimal -
+    };
+    var impuesto;
+    var ivaPorcentaje = parseInt(item.porc_iva);
+    if (ivaPorcentaje === 0) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA0", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
 
-                    };
-                }
-                ;
-                if (ivaPorcentaje === 19) {
-                    impuesto = {// OPCIONAL -
-                        nombre: "IVA19", //String -
-                        //porcentual: obj.x, //decimal 
-                        baseGravable: item.porc_iva, //decimal  -
-                        valor: item.iva_total.replace(",", ".") //decimal -
-                    }
+        };
+    }
+    ;
+    if (ivaPorcentaje === 19) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA19", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        }
 
-                }
-                ;
-                if (ivaPorcentaje === 10) {                    
-                    impuesto = {// OPCIONAL -
-                        nombre: "IVA10", //String -
-                        //porcentual: obj.x, //decimal 
-                        baseGravable: item.porc_iva, //decimal  -
-                        valor: item.iva_total.replace(",", ".") //decimal -
-                    };
-                }
-                ;
-        prod.listaImpuestosDeducciones=impuesto;
-        productosDian.push(prod);
-        
+    }
+    ;
+    if (ivaPorcentaje === 10) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA10", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        };
+    }
+    ;
+    prod.listaImpuestosDeducciones = impuesto;
+    productosDian.push(prod);
+
     var timer = setTimeout(function () {
         index++;
         __productos(productos, index, productosDian, callback);
@@ -2615,38 +2615,38 @@ function __productos(productos,index,productosDian,callback){
 }
 
 FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
-     that=this;
-     var args = req.body.data.imprimir_reporte_factura;
-     var productos;
-     var resultado;
-     var data;
-     
-     G.Q.nfcall(__generarSincronizacionDian,that, req).then(function (data) {
-         resultado=data;
-         
-        return G.Q.nfcall(__productos,resultado.detalle,0,[]);
-         
-     }).then(function (productos) {    
-         var json= {
+    that = this;
+    var args = req.body.data.imprimir_reporte_factura;
+    var productos;
+    var resultado;
+    var data;
+
+    G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
+        resultado = data;
+
+        return G.Q.nfcall(__productos, resultado.detalle, 0, []);
+
+    }).then(function (productos) {
+        var json = {
             codigoMoneda: "COP",
-            descripcion: "",            
-            fechaExpedicion : resultado.cabecera.fecha_registro,
+            descripcion: "",
+            fechaExpedicion: resultado.cabecera.fecha_registro,
             fechaVencimiento: resultado.cabecera.fecha_vencimiento_factura,
-            icoterms:'',
+            icoterms: '',
             codigoDocumentoDian: resultado.cabecera.tipo_id_tercero,
             numeroIdentificacion: resultado.cabecera.tercero_id,
             identificadorConsecutivo: resultado.cabecera.factura_fiscal,
-            identificadorResolucion: G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION,
-            mediosPago :resultado.cabecera.tipo_pago_id,
-            nombreSucursal:"",
-            desde: G.constants.IDENTIFICADOR_DIAN().DESDE, //long -
-            hasta: G.constants.IDENTIFICADOR_DIAN().HASTA, //long -
+            identificadorResolucion: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ,
+            mediosPago: resultado.cabecera.tipo_pago_id,
+            nombreSucursal: "",
+            desde: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ, //long -
+            hasta: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ, //long -
             prefijo: resultado.cabecera.prefijo,
             perfilEmision: "CLIENTE",
-            perfilUsuario: "CLIENTE", 
+            perfilUsuario: "CLIENTE",
             productos: productos,
             subtotalFactura: resultado.cabecera.subtotal, //decimal OPCIONAL -
-            
+
 //            nombreReteFuente: "ReteFuente", //String -
             ReteFuente: resultado.valores.retencionFuenteSf, //decimal -
             baseGravableReteFuente: resultado.valores.baseRetencionFuente, //decimal -
@@ -2662,66 +2662,66 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
 //            nombreReteIVA: "ReteIVA", //String -
             ReteIVA: resultado.valores.retencionIvaSf, //decimal -
             baseGravableReteIVA: resultado.valores.baseRetencionIva, //decimal -
-            
+
             tipoFactura: 1, //numeric -
-            totalFactura: resultado.valores.totalFactura,//decimal OPCIONAL -
-            nombreAdquirente:resultado.cabecera.nombre_tercero,
+            totalFactura: resultado.valores.totalFactura, //decimal OPCIONAL -
+            nombreAdquirente: resultado.cabecera.nombre_tercero,
             vendedor: resultado.cabecera.nombre,
             numeroPedido: resultado.cabecera.pedido_cliente_id,
             totalenLetras: resultado.valores.totalFacturaLetra,
-            observacionesPedido : resultado.detalle[0].observacion,              //resultado.cabecera.observacion,
-            observacionesDespacho :/*resultado.detalle[0].obs_despacho,*/   "",
-            elaboradoPor : resultado.imprimio.usuario,
-            tipoFormato : '1',
+            observacionesPedido: resultado.detalle[0].observacion, //resultado.cabecera.observacion,
+            observacionesDespacho: /*resultado.detalle[0].obs_despacho,*/   "",
+            elaboradoPor: resultado.imprimio.usuario,
+            tipoFormato: '1',
             condiciones: resultado.cabecera.observaciones,
-            mensajeResolucion:resultado.cabecera.texto1,
-            mensajeContribuyente: resultado.cabecera.texto2 +" "+resultado.cabecera.texto3
-         };
-         
-         
-         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
-         
-         
-         }).then(function (respuesta) {
-            
-             data=respuesta;
-             var parametros = {
-                empresa_id: args.empresaId,//obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
-                prefijo: resultado.cabecera.prefijo,
-                factura_fiscal: resultado.cabecera.factura_fiscal,
-                sw_factura_dian : respuesta.sw_factura_dian,
-                json_envio: data.lastRequest,
-                respuesta_ws: data               
-             };
-             
-            if(respuesta.sw_factura_dian==='1'){
-                
-                return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-                
-            }else if(respuesta.sw_factura_dian==='0'){
-                
-               return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-               
-            }
-             
-         }).then(function (resultado) {
-             
-         if(data.sw_factura_dian==='1'){
-             
-             res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data )); 
-             
-         }else if(data.sw_factura_dian==='0'){
-             
-             res.send(G.utils.r(req.url, data.msj, data.status,data));  
-             
-         }
-        
-     }).fail(function (err) {
-         
-        res.send(G.utils.r(req.url, err.msj, err.status,err));
-      
+            mensajeResolucion: resultado.cabecera.texto1,
+            mensajeContribuyente: resultado.cabecera.texto2 + " " + resultado.cabecera.texto3
+        };
+
+
+        return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
+
+
+    }).then(function (respuesta) {
+
+        data = respuesta;
+        var parametros = {
+            empresa_id: args.empresaId, //obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+            prefijo: resultado.cabecera.prefijo,
+            factura_fiscal: resultado.cabecera.factura_fiscal,
+            sw_factura_dian: respuesta.sw_factura_dian,
+            json_envio: data.lastRequest,
+            respuesta_ws: data
+        };
+
+        if (respuesta.sw_factura_dian === '1') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        } else if (respuesta.sw_factura_dian === '0') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        }
+
+    }).then(function (resultado) {
+
+        if (data.sw_factura_dian === '1') {
+
+            res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+
+        } else if (data.sw_factura_dian === '0') {
+
+            res.send(G.utils.r(req.url, data.msj, data.status, data));
+
+        }
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, err.msj, err.status, err));
+
     }).done();
-     
+
 };
 
 /**
@@ -2730,7 +2730,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
  *              generada
  * @fecha 18/05/2017
  */
-function __generarSincronizacionDian(that,req, callback) {
+function __generarSincronizacionDian(that, req, callback) {
 
     var def = G.Q.defer();
     var args = req.body.data;
@@ -2849,7 +2849,7 @@ function __generarSincronizacionDian(that,req, callback) {
 
             parametrosReporte.detalle.forEach(function (row) {
                 subTotal += parseFloat(row.subtotal_factura);
-                totalIva += parseFloat(row.iva_total);             
+                totalIva += parseFloat(row.iva_total);
             });
 
             if (subTotal >= resultado[0].base_rtf) {
@@ -2868,14 +2868,14 @@ function __generarSincronizacionDian(that,req, callback) {
 
 
             parametrosReporte.valores.baseRetencionFuente = resultado[0].base_rtf;
-            parametrosReporte.valores.baseRetencionIca= resultado[0].base_ica;
+            parametrosReporte.valores.baseRetencionIca = resultado[0].base_ica;
             parametrosReporte.valores.baseRetencionIva = resultado[0].base_reteiva;
             parametrosReporte.valores.Iva = totalIva;
             parametrosReporte.valores.retencionFuenteSf = retencionFuente;
             parametrosReporte.valores.retencionIcaSf = retencionIca;
             parametrosReporte.valores.retencionIvaSf = retencionIva;
-            
-            
+
+
             parametrosReporte.valores.retencionFuente = G.utils.numberFormat(retencionFuente, 2);
             parametrosReporte.valores.retencionIca = G.utils.numberFormat(retencionIca, 2);
             parametrosReporte.valores.retencionIva = G.utils.numberFormat(retencionIva, 2);
@@ -2884,17 +2884,18 @@ function __generarSincronizacionDian(that,req, callback) {
             parametrosReporte.valores.totalFactura = totalFactura;
             parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
 
-           callback(false,parametrosReporte);
+            callback(false, parametrosReporte);
 
         } else {
             throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
         }
-        
+
     }).fail(function (err) {
-        console.log("Error  ",err);
-       callback(err);
+        console.log("Error  ", err);
+        callback(err);
     }).done();
-};
+}
+;
 
 
 
@@ -3039,7 +3040,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
 
             parametrosReporte.detalle.forEach(function (row) {
                 subTotal += parseFloat(row.subtotal_factura);
-                totalIva += parseFloat(row.iva_total);             
+                totalIva += parseFloat(row.iva_total);
             });
 
             if (subTotal >= resultado[0].base_rtf) {
@@ -3050,8 +3051,8 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
             if (subTotal >= resultado[0].base_ica) {
                 retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
             }
-                
-            if (subTotal >= resultado[0].base_reteiva) {                
+
+            if (subTotal >= resultado[0].base_reteiva) {
                 retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
             }
 
@@ -3364,6 +3365,6 @@ function __generarPdf(datos, callback) {
 }
 
 
-FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes","c_sincronizacion"];
+FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion"];
 
 module.exports = FacturacionClientes;

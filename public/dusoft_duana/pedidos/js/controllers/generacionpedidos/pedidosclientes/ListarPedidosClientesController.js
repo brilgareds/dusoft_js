@@ -122,7 +122,7 @@ define(["angular", "js/controllers",
             $scope.onSeleccionOpcionPedido = function(opcion) {
                 $scope.datos_view.opcion_inicial = opcion;
                 
-               
+               if($scope.datos_view.opciones.sw_crear_cotizacion && $scope.datos_view.opciones.sw_crear_pedido){
                 if(opcion.tipo_pedido === 0){   
                     localStorageService.add("multiple_pedido",{multiple_pedido:0});
                     localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0' });
@@ -135,6 +135,10 @@ define(["angular", "js/controllers",
                     $state.go('Cotizaciones');
                  
                 }
+            }else{
+                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El usuario no tiene permisos para crear cotizaciones");
+                    return;
+            }
                  
             };
             

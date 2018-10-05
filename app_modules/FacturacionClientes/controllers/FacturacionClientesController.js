@@ -782,11 +782,11 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function (req, res) {
      * +Descripcion Variable encargada de capturar la ip del cliente que se conecta
      * @example '::ffff:10.0.2.158'
      */
-    var ip ='::ffff:10.0.2.158';
-//    var ip = req.headers['x-forwarded-for'] ||
-//            req.connection.remoteAddress ||
-//            req.socket.remoteAddress ||
-//            req.connection.socket.remoteAddress;
+//    var ip ='::ffff:10.0.2.158';
+    var ip = req.headers['x-forwarded-for'] ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
 
     if (args.generar_factura_agrupada === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {generar_factura_agrupada: []}));

@@ -1346,7 +1346,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             pedidos_clientes: {
                                 cotizacion: $scope.Pedido,
                                 bodega : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                                clienteMultiple:crearCotizacionDoble
+                                clienteMultiple:crearCotizacionDoble,
+                                sw_aprobado_cartera:0
                             }
                         }
                     };
@@ -1944,7 +1945,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         pedidos_clientes: {
                                             cotizacion: $scope.Pedido,
                                             bodega : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                                            clienteMultiple:1
+                                            clienteMultiple:1,
+                                            sw_aprobado_cartera:1
                                         }
                                     }
                                 };

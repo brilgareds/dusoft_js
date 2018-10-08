@@ -1260,6 +1260,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         bodegaActual: args.pedidos_clientes.bodega,
         bodegaDestino: args.pedidos_clientes.bodega,
         that: that,
+        sw_aprobado_cartera: args.pedidos_clientes.sw_aprobado_cartera,
         clienteMultiple: args.pedidos_clientes.clienteMultiple
     };
 

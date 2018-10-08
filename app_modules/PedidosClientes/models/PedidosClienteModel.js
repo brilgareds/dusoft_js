@@ -2169,8 +2169,7 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, ca
                 }
 
                 if (obj.cotizacion !== undefined && obj.cotizacion !=='') {
-                    console.log("obj.cotizacion---> ",obj.cotizacion);
-                    this.andWhere("id_orden_cotizacion_origen", obj.cotizacion)
+                   this.andWhere("id_orden_cotizacion_origen", obj.cotizacion)
                 }
 
             })
@@ -2186,7 +2185,7 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, ca
                 'centro_utilidad',
                 'bodega'
             ]);
-    console.log(G.sqlformatter.format(query.toString()));
+//    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -3093,7 +3092,8 @@ PedidosClienteModel.prototype.autorizarCabeceraCotizacion = function (cotizacion
     G.knex('ventas_ordenes_pedidos_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
             .update({
-                sw_aprobado_cartera: 1,
+                //sw_aprobado_cartera: 1,
+                sw_aprobado_cartera: cotizacion.sw_aprobado_cartera,
                 observacion_cartera: cotizacion.observacion_cartera
 
             }).then(function (rows) {

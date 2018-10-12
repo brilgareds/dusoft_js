@@ -45355,6 +45355,7 @@ define('url',["angular"], function(angular) {
                 "CONSULTAR_NOTAS": BASE_URL + "/Notas/ConsultarNotas",
                 "LISTAR_FACTURAS": BASE_URL + "/Notas/listarFacturas",
                 "LISTAR_PORCENTAJES": BASE_URL + "/Notas/listarPorcentajes",
+                "LISTAR_PORCENTAJES_ANIO": BASE_URL + "/Notas/listarPorcentajesAnio",
                 "DETALLE_FACTURA": BASE_URL + "/Notas/ConsultarDetalleFactura",
                 "CREAR_NOTA": BASE_URL + "/Notas/crearNota",
                 "CREAR_NOTA_CREDITO": BASE_URL + "/Notas/crearNotaCredito",
@@ -63660,8 +63661,38 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                         });
                                     };
 
+                                    /**
+                                     * +Descripcion Metodo encargado de invocar el servicio que consulta
+                                     *              los porcentajes de iva,ica,rete-fte del año 
+                                     * @author German Galvis
+                                     * @fecha 10/09/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    that.listarPorcentajesAnio = function () {
+
+                                        var fecha = new Date(datos.fechaRegistro);
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresaId: datos.empresa,
+                                                fecha: fecha.getFullYear()
+                                            }
+                                        };
+
+                                        notasService.listarPorcentajesAnio(obj, function (data) {
+
+                                            if (data.status === 200) {
+                                                $scope.root.porcentajesAnio = data.obj.listarPorcentajesAnio;
+                                            } else {
+                                                $scope.root.porcentajesAnio = null;
+                                            }
+
+                                        });
+                                    };
+
                                     that.listarDetalleFactura();
                                     that.listarPorcentajes();
+                                    that.listarPorcentajesAnio();
 
                                     $scope.cerrar = function () {
                                         $modalInstance.close();
@@ -63718,11 +63749,12 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                         $scope.root.impuestosnota.iva = iva;
 
                                         if ($scope.root.porcentajes.length > 0) {
-
-                                            $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
-
-                                            $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
-
+                                            if ($scope.root.porcentajes[0].valor_total >= parseFloat($scope.root.porcentajesAnio[0].base_rtf)) {
+                                                $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
+                                            }
+                                            if ($scope.root.porcentajes[0].valor_total >= parseFloat($scope.root.porcentajesAnio[0].base_ica)) {
+                                                $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
+                                            }
 
                                         }
 
@@ -63890,8 +63922,38 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                         });
                                     };
 
+                                    /**
+                                     * +Descripcion Metodo encargado de invocar el servicio que consulta
+                                     *              los porcentajes de iva,ica,rete-fte del año 
+                                     * @author German Galvis
+                                     * @fecha 10/09/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    that.listarPorcentajesAnio1 = function () {
+
+                                        var fecha = new Date(datos.fechaRegistro);
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresaId: datos.empresa,
+                                                fecha: fecha.getFullYear()
+                                            }
+                                        };
+
+                                        notasService.listarPorcentajesAnio(obj, function (data) {
+
+                                            if (data.status === 200) {
+                                                $scope.root.porcentajesAnio = data.obj.listarPorcentajesAnio;
+                                            } else {
+                                                $scope.root.porcentajesAnio = null;
+                                            }
+
+                                        });
+                                    };
+
                                     that.listarDetalleFactura();
                                     that.listarPorcentajes1();
+                                    that.listarPorcentajesAnio1();
 
                                     $scope.cerrar = function () {
                                         $scope.root.concepto = [];
@@ -64011,12 +64073,13 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                         $scope.root.impuestosnota.valorSubtotal = subtotal;
                                         $scope.root.impuestosnota.iva = iva;
                                         if ($scope.root.porcentajes.length > 0) {
+                                            if ($scope.root.porcentajes[0].valor_total >= parseFloat($scope.root.porcentajesAnio[0].base_rtf)) {
+                                                $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
+                                            }
+                                            if ($scope.root.porcentajes[0].valor_total >= parseFloat($scope.root.porcentajesAnio[0].base_ica)) {
+                                                $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
 
-                                            $scope.root.impuestosnota.retencionFuente = ($scope.root.impuestosnota.valorSubtotal * (($scope.root.porcentajes[0].porcentaje_rtf) / 100));
-
-                                            $scope.root.impuestosnota.retencionIca = ($scope.root.impuestosnota.valorSubtotal) * (parseFloat($scope.root.porcentajes[0].porcentaje_ica) / 1000);
-
-
+                                            }
 
                                         }
 
@@ -65484,6 +65547,17 @@ define('services/notasService',["angular", "js/services"], function (angular, se
                      */
                     self.listarPorcentajes = function (obj, callback) {
                         Request.realizarRequest(API.NOTAS.LISTAR_PORCENTAJES, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  15/08/2018 DD/MM/YYYYY
+                     * +Descripcion LISTAR PORCENTAJES 
+                     */
+                    self.listarPorcentajesAnio = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.LISTAR_PORCENTAJES_ANIO, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

@@ -2372,7 +2372,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             that.init = function () {
-
                 that.buscar_vendedores(function () {
 
                 });
@@ -2383,8 +2382,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
                     that.gestionar_consultas_cotizaciones();
                 }
+                if(($scope.Pedido.get_numero_cotizacion() === 0 || $scope.Pedido.get_numero_cotizacion() === undefined) && ($scope.Pedido.get_numero_pedido() === 0 || $scope.Pedido.get_numero_pedido() === undefined)){
+                  AlertService.mostrarVentanaAlerta("","<h2 class='text-info text-center'>"+Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()+"</h2>");
+                }
             };
-
+            
             that.init();
 
 

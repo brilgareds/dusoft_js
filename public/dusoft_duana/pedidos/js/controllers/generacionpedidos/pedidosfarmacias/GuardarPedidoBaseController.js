@@ -70,8 +70,9 @@ define(["angular", "js/controllers",
                        $scope.root.pedido.setFarmaciaOrigen(empresa);
                
                 }
+            AlertService.mostrarVentanaAlerta("","<h2 class='text-info text-center'>"+Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()+"</h2>");
             };
-                        
+                                   
             $scope.root.lista_productos = {
                 data: 'root.pedido.getProductosSeleccionados()',
                 enableColumnResize: true,
@@ -199,6 +200,9 @@ define(["angular", "js/controllers",
                 $scope.seleccionarEmpresaPedido(false, data.empresa_destino, data.centro_destino, data.bodega_destino);
                 $scope.seleccionarEmpresaPedido(true, data.farmacia_id, data.centro_utilidad, data.bodega || data.bodega_id);
                 $scope.root.pedido.setValido(true).setDescripcion(data.observacion);
+                              
+                
+   
             };
             
             
@@ -224,7 +228,7 @@ define(["angular", "js/controllers",
                     $scope.root.pedido.agregarProductoSeleccionado(producto);
 
                 }
-                
+                             
             };
             
             /*
@@ -260,7 +264,7 @@ define(["angular", "js/controllers",
                 empresa.agregarCentroUtilidad(centroUtilidad);
                 $scope.root.pedido.setFarmaciaOrigen(empresa);
             };
-            
+       
             
             /*
              * @Author: Eduar

@@ -40,7 +40,7 @@ Notas.prototype.listarFacturas = function (req, res) {
 
 /**
  * @author German Galvis
- * +Descripcion  Metodo encargado de obtener los porcentajes 
+ * +Descripcion  Metodo encargado de obtener los porcentajes de la factura
  * @fecha 2018-08-15 (YYYY-MM-DD)
  */
 Notas.prototype.listarPorcentajes = function (req, res) {
@@ -72,6 +72,34 @@ Notas.prototype.listarPorcentajes = function (req, res) {
 
         if (resultado.length > 0) {
             res.send(G.utils.r(req.url, 'listarPorcentajes', 200, {listarPorcentajes: resultado}));
+        } else {
+            throw 'Consulta sin resultados';
+        }
+
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion  Metodo encargado de obtener los porcentajes por año
+ * @fecha 2018-09-10 (YYYY-MM-DD)
+ */
+Notas.prototype.listarPorcentajesAnio = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        empresaId: args.empresaId,
+        fecha: args.fecha
+    };
+
+    G.Q.ninvoke(that.m_notas, 'consultarParametrosRetencion', parametros).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            res.send(G.utils.r(req.url, 'listarPorcentajesAnio', 200, {listarPorcentajesAnio: resultado}));
         } else {
             throw 'Consulta sin resultados';
         }

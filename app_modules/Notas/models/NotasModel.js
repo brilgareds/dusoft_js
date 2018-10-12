@@ -1,3 +1,5 @@
+/* global G */
+
 var NotasModel = function () {
 };
 
@@ -1167,6 +1169,7 @@ NotasModel.prototype.porcentajes = function (obj, callback) {
     var columna = [
         "porcentaje_rtf",
         "porcentaje_ica",
+        "valor_total",
         "porcentaje_reteiva"
 
     ];

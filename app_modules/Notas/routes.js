@@ -47,6 +47,10 @@ module.exports = function(app, di_container) {
         c_notas.listarPorcentajes(req, res);
     });
     
+    app.post('/api/Notas/listarPorcentajesAnio', function(req, res) {
+        c_notas.listarPorcentajesAnio(req, res);
+    });
+    
     app.post('/api/Notas/sincronizarNotas', function(req, res) {
         c_notas.sincronizarNotas(req, res);
     });

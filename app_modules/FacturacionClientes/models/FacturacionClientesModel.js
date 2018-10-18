@@ -852,7 +852,7 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function(obj, cal
         G.knex.raw("case when  a.cantidad_pendiente_por_facturar = 0 then 0 else 1 end as estado_entrega") ])).from(query)
          
     }
-       
+     console.log(G.sqlformatter.format(query2.toString()));   
     query2.then(function(resultado){
         callback(false, resultado);   
     }).catch(function(err) { 
@@ -1420,7 +1420,7 @@ FacturacionClientesModel.prototype.consultarDetalleFacturaConsumo = function(obj
         .groupBy("b.tipo_id_vendedor","b.vendedor_id","b.pedido_cliente_id","b.empresa_id",
         "b.codigo_producto","b.fecha_vencimiento","b.lote",
         "b.prefijo_documento","b.numeracion_documento");     
- 
+// console.log("consultarDetalleFacturaConsumo::::",G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){   
        
         callback(false, resultado);

@@ -1886,12 +1886,14 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         //CAMBIAR LA CONSULTA PARA QUE VAYA A LA TEMPORAL
+        
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo, that, 0, datosDocumentosXConsumo, []);
 
     }).then(function (resultado) {
 
         if (resultado.length > 0) {
             resultadoFacturasXConsumo = resultado;
+            console.log("Aresultado::::: resultadoFacturasXConsumo ",resultado );
             return G.Q.nfcall(__obtenerDetallePorFacturar, that, 0, resultado, []);
         } else {
             throw {msj: '[Detalle de factura]: Consulta sin resultados', status: 404};
@@ -1900,13 +1902,15 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         if (resultado.length > 0) {
+//            console.log("Aresultado resultadoFacturasXConsumo ",resultadoFacturasXConsumo );
+//            console.log("Aresultado resultado ",resultado );
             return G.Q.nfcall(__distribuirUnidadesFacturadas, that, 0, 0, resultadoFacturasXConsumo, resultado, []);
         } else {
             throw {msj: '[Detalle de productos por facturar]: Consulta sin resultados', status: 404};
         }
 
     }).then(function (resultado) {
-
+//console.log("Aresultado ",resultado );
         productosActualizados = [];
         //Se sugiere insertar desde esta parte en una transaccion mejor
         if (resultado.length > 0) {

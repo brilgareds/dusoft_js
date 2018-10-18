@@ -60,7 +60,8 @@ define(["angular"], function(angular) {
                 "INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/insertarFacFacturasConceptosNotas",
                 "LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/listarFacConceptosNotas",
                 "LISTAR_IMPUESTOS_TERCERO": BASE_URL + "/CajaGeneral/consultarImpuestosTercero",
-                "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas"
+                "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas",
+                "GENERAR_SINCRONIZACION_DIAN_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDian"
             },
             'NOTAS': {
                 "CONSULTAR_NOTAS": BASE_URL + "/Notas/ConsultarNotas",

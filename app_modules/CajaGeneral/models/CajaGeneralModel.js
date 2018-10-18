@@ -1,3 +1,5 @@
+/* global G */
+
 var CajaGeneralModel = function() {
 };
 
@@ -216,7 +218,8 @@ CajaGeneralModel.prototype.listarFacturasGeneradas = function(obj, callback) {
 	"a.total_factura",
 	"a.gravamen",
 	"a.saldo",
-	G.knex.raw("(a.total_factura - a.gravamen) as subtotal")
+	G.knex.raw("(a.total_factura - a.gravamen) as subtotal"),
+        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=a.factura_fiscal and prefijo= a.prefijo and sw_factura_dian ='1') as sincronizacion")
     ];
     
     var query = G.knex.select(columna_a)
@@ -522,6 +525,7 @@ CajaGeneralModel.prototype.listarFacturasNotas = function(obj, callback) {
 	    "a.concepto as descripcion",
 	    "d.tipo_id_tercero",
 	    "d.tercero_id",
+	    "d.fecha_registro",
 	    "c.descripcion as desconcepto",
 	    "c.concepto_id",
 	    "c.grupo_concepto"
@@ -1099,6 +1103,35 @@ CajaGeneralModel.prototype.listarEmpresa = function(obj, callback) {
 	
     }). catch (function(err) {
         console.log("err [listarGrupos]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los Conceptos
+ * @fecha 2018-10-16 YYYY-MM-DD
+ * @returns {callback}
+ */
+CajaGeneralModel.prototype.consultarTipoDocumento = function(obj, callback) {
+
+    var columna = [
+        "a.texto1",
+        "a.texto2",
+        "a.texto3",
+        "a.documento_id"
+    ];
+
+    var query = G.knex.select(columna)
+            .from('documentos as a')
+            .where("empresa_id", obj.empresaId)
+            .andWhere("prefijo", obj.prefijo);
+
+	query.then(function(resultado) {
+        callback(false, resultado);
+	
+    }). catch (function(err) {
+        console.log("err [consultarTipoDocumento]:", err);
         callback(err);
     });
 };

@@ -454,14 +454,9 @@ function __jsonFactura(obj, callback) {
             },
             codigoMoneda: obj.codigoMoneda, //String -
             descripcion: "", //String OPCIONAL-
-            descuentos: {//OPCIONAL
-//                prontoPago: { 
-//                    fecha:'' , //string -
-//                    valorPagar: ''//decimal -
-//                }
-            },
+            descuentos: {},
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String OPCIONAL  DD/MM/YYYY -
-            fechaVencimiento: G.moment(obj.fechaVencimiento).format(formato), //String OPCIONAL DD/MM/YYYY -
+//            fechaVencimiento: G.moment(obj.fechaVencimiento).format(formato), //String OPCIONAL DD/MM/YYYY -
             icoterms: '', //String OPCIONAL -
             identificacionReceptor: {
                 codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int -
@@ -562,6 +557,11 @@ function __jsonFactura(obj, callback) {
             }
         }
     };
+
+     if(obj.fechaVencimiento){
+        crearFacturaElectronica.facturaElectronicaCanonica.fechaVencimiento = G.moment(obj.fechaVencimiento).format(formato); //String OPCIONAL DD/MM/YYYY -
+    }
+
     callback(false, crearFacturaElectronica);
 }
 

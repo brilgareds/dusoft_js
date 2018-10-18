@@ -199,7 +199,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     $scope.verificaFactuta = function (pref) {
                         var prefijo = false;
-                        if (pref === 'FDC') {
+                        if (pref === 'FDC' || pref === 'FDB') {
                             prefijo = true;
                         }
                         return prefijo;

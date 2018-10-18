@@ -2127,7 +2127,32 @@ function __detallePedidosClientes(that, index, pedidos,transaccion, callback) {
 };
 
  
+ function __DatosProductoConsumo(that, obj ,callback) {
+      var arreglo=[]; 
+    G.Q.nfcall(that.consultarProductosConsumo, obj).then(function(resultado){ 
+        var consultaCompleta={detalle : resultado};
+        arreglo.push(consultaCompleta);
+        callback(false,arreglo);                                   
+        return; 
+        
+    }).fail(function(err){    
+        console.log("err (/fail) [__DatosProductoConsumo]: ", err);
+        callback(err);            
+    }).done();
+ };//retorno.detalle
+ 
+ FacturacionClientesModel.prototype.consultarProductosConsumo = function(obj, callback){
+    
+    var query = G.knex.column("*")
+               .from('productos_consumo as a');        
 
+    query.then(function(resultado){ 
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [consultarProductosConsumo]: ", err);     
+        callback({err:err, msj: "Error al consultarProductosConsumo]"});   
+    }); 
+};
 
 /**
  * @author Cristian Manuel Ardila
@@ -2245,10 +2270,11 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
             return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);                                  
         }).then(function(){
                                 
-            return G.Q.nfcall(__guardarDespachoIndividual,that,0, obj.parametros.documentos,[],transaccion);
+           // return G.Q.nfcall(__guardarDespachoIndividual,that,0, obj.parametros.documentos,[],transaccion);
+           return G.Q.nfcall(__DatosProductoConsumo,that,0);
             
         }).then(function(consultaCompleta){
-            
+           
             if(consultaCompleta.length > 0){
                 
                 obj.documento_facturacion.forEach(function(documento){

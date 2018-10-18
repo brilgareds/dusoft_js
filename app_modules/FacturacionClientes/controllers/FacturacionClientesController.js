@@ -2306,10 +2306,6 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
         return;
     }
 
-    if (args.generar_factura_individual.tipoPago === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {generar_factura_individual: []}));
-        return;
-    }
 
     var usuario = req.session.user.usuario_id;
     var parametros = {

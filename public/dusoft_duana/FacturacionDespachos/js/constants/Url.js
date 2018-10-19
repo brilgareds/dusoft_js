@@ -34,6 +34,8 @@ define(["angular"], function(angular) {
                  "GENERAR_FACTURA_POR_CONSUMO" : BASE_URL + "/FacturacionClientes/generarFacturaXConsumo",
                  "LISTAR_FACTURAS_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasTemporales",
                  "LISTAR_FACTURAS_BARRANQUILLA_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasConsumoBarranquillaTemporales",
+                 "ELIMINAR_TEMPORAL_FACTURA_CONSUMO_BARRANQUILLA" : BASE_URL + "/FacturacionClientes/eliminarTemporalFacturaConsumoBarranquilla",
+                 "LISTAR_PRODUCTOS" : BASE_URL + "/FacturacionClientes/listarProductos",
                  "GENERAR_SINCRONIZACION_DIAN" : BASE_URL + "/FacturacionClientes/generarSincronizacionDian"
             },   
             'FACTURACIONPROVEEDOR': {

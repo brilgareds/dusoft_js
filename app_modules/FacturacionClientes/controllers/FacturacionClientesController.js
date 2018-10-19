@@ -1735,6 +1735,78 @@ FacturacionClientes.prototype.listarFacturasConsumoBarranquillaTemporales = func
             done();
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos detallados
+ * @fecha 2018-10-19
+ */
+FacturacionClientes.prototype.listarProductos = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        empresa_id: args.empresa_id,
+        grupo_id: args.grupo_id};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listarProductos: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listarProductos: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de eliminar la factura barranquilla temporal
+ * @fecha 2018-10-19 YYYY-MM-DD
+ */
+FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.empresaId === undefined || args.empresaId === '') {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {eliminar_tmp: []}));
+        return;
+    }
+
+    if (args.grupo_id === undefined || args.grupo_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el id', 404, {eliminar_tmp: []}));
+        return;
+    }
+
+    var parametros = {
+        grupo_id: args.grupo_id,
+        empresa_id: args.empresaId
+    };
+    var usuario = req.session.user.usuario_id;
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'eliminarProductosTemporalBarranquilla', parametros)
+
+            .then(function () {
+
+                return res.send(G.utils.r(req.url, "Se elimina el temporal satisfactoriamente", 200, {eliminar_tmp: ''}));
+
+            }).catch(function (err) {
+        logger.error("-----------------------------------");
+        logger.error({"metodo": "FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla",
+            "usuario_id": usuario,
+            "parametros: ": parametros,
+            "resultado: ": err});
+        logger.error("-----------------------------------");
+        if (!err.status) {
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+        res.send(G.utils.r(req.url, err.msj, err.status, {}));
+
+    }).done();
+};
+
+
 /*
  * @author Cristian Ardila
  * @fecha 12/08/2017

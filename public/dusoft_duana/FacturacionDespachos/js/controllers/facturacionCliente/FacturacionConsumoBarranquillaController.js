@@ -27,22 +27,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             termino_busqueda: '',
                             visibleBuscador: true,
                             visibleBotonBuscador: true,
-                            fechaInicialPedidosCosmitet: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
-                            fechaFinalPedidosCosmitet: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
                             vistaFacturacion: "",
                             facturasTemporales: "",
                             itemsFacturasTemporales: 0,
-                            vistas: [
-                                {
-                                    id: 1,
-                                    descripcion: "Facturas Generadas"
-                                },
-                                {
-                                    id: 2,
-                                    descripcion: "Facturas Temporales"
-                                }
-                            ],
                             estadoBotones: ["glyphicon glyphicon-edit",
                                 "glyphicon glyphicon-ok",
                                 "fa fa-spinner fa-spin",
@@ -54,7 +42,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             usuario_id: Usuario.getUsuarioActual().getId(),
                             auth_token: Usuario.getUsuarioActual().getToken()
                         };
-                        $scope.root.vistaSeleccionada = $scope.root.vistas[0];
 
                         callback();
                     };
@@ -68,9 +55,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     ];
                     $scope.filtro = $scope.root.filtros[0];
 
-                    $scope.onColumnaSize = function (tipo) {
-
-                    };
                     /**
                      * +Descripcion Metodo encargado de visualizar en el boton del dropdwn
                      *              el tipo de documento seleccionado
@@ -94,8 +78,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
                     /**
-                     * @author Cristian Ardila
-                     * @fecha 2017-08-25
+                     * @author German Galvis
+                     * @fecha 18/10/2018
                      * +Descripcion Metodo encargado de invocar el servicio que consultara  
                      *              las facturas en temporal
                      */
@@ -128,9 +112,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
                     /**
-                     * @author Cristian Ardila
+                     * @author German Galvis
                      * +Descripcion Grid que listara todos los temporales de las facturas
-                     * @fecha 25/08/2017
+                     * @fecha 18/10/2018
                      */
                     $scope.listarConsumoBarranquillaTemporales = {
                         data: 'root.facturasTemporales',
@@ -139,15 +123,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         enableCellSelection: true,
                         enableHighlighting: true,
                         columnDefs: [
-                            {cellClass: "ngCellText", width: "5%", displayName: 'Id',
-                                cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.get_prefijo()}}- {{row.entity.get_numero()}}</p></div>'},
-                            {cellClass: "ngCellText", width: "18%", displayName: 'Nombre Corte',
-                                cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarTerceros()[0].getTipoId()}}- {{row.entity.mostrarTerceros()[0].getId()}}: {{ row.entity.mostrarTerceros()[0].getNombre()}}</p></div>'},
+                            {field: 'factura', cellClass: "ngCellText", width: "6%", displayName: 'No Factura'},
+                            {field: 'id', cellClass: "ngCellText", width: "6%", displayName: 'Id'},
+                            {field: 'nombre', cellClass: "ngCellText", width: "25%", displayName: 'Nombre Corte'},
                             {field: 'observaciones', cellClass: "ngCellText", width: "25%", displayName: 'Observacion'},
-                            {field: 'fechaRegistro', cellClass: "ngCellText", width: "10%", displayName: 'F. Registro'},
-                            {field: 'valorSubTotal', cellClass: "ngCellText", width: "12%", displayName: 'Sub Total'},
-                            {field: 'valorTotal', cellClass: "ngCellText", width: "12%", displayName: 'Total'},
-                            {displayName: "Opc", width: "8%",heigth: "6%", cellClass: "txt-center dropdown-button",
+                            {field: 'fechaRegistro', cellClass: "ngCellText", width: "15%", displayName: 'F. Registro'},
+                            {displayName: "Opc", width: "8%", heigth: "10%", cellClass: "txt-center dropdown-button",
                                 cellTemplate: '<div class="btn-group">\
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
@@ -157,8 +138,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 <li ng-if="row.entity.getEstadoFacturacion() == 0">\
                                    <a href="javascript:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
                                 </li>\
-                                <li ng-if="row.entity.getEstadoFacturacion() == 1 ">\
-                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity)" class = "glyphicon glyphicon-print"> ver </a>\
+                                <li>\
+                                   <a href="javascript:void(0);" ng-click="verProductos(row.entity)" class = "glyphicon glyphicon-print"> ver </a>\
                                 </li>\
                            </ul>\
                       </div>'
@@ -209,12 +190,117 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var modalInstance = $modal.open($scope.opts);
                     };
 
-                    $scope.onCambiarVista = function (vista) {
-                        $scope.root.vistaFacturacion = vista;
+
+                    /**
+                     * +Descripcion German Galvis
+                     * @fecha 19/10/2018
+                     * +Descripcion Metodo encargado de eliminar el temporal de facturacion
+                     */
+                    $scope.eliminarFacturaTemporal = function (entity) {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                empresaId: entity.empresaId,
+                                grupo_id: entity.id
+                            }
+                        };
+
+                        facturacionClientesService.eliminarGetDocTemporalBarranquilla(obj, function (data) {
+                            if (data.status === 200) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                                that.listarFacturasTemporal();
+                            }
+
+                            if (data.status === 404) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                        });
                     };
 
-                    $scope.onBtnGenearFactura = function () {
-                        $state.go("GuardarFacturaConsumo");
+                   /**
+                     * +Descripcion scope del grid para mostrar el detalle de las facturas
+                     * @author German Galvis
+                     * @fecha 19/10/2018
+                     */
+                    $scope.verProductos = function (datos) {
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            windowClass: 'app-modal-window-xlg-ls',
+                            keyboard: true,
+                            showFilter: true,
+                            cellClass: "ngCellText",
+                            templateUrl: 'views/facturacionClientes/listarProductosBarranquilla.html',
+                            scope: $scope,
+                            controller: ['$scope', '$modalInstance', 'facturacionClientesService', function ($scope, $modalInstance, facturacionClientesService) {
+
+
+                                    /**
+                                     * +Descripcion Metodo encargado de invocar el servicio que consulta
+                                     *              el detalle de la factura
+                                     * @author German Galvis
+                                     * @fecha 19/10/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    that.listarDetalle = function () {
+
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresa_id: datos.empresaId,
+                                                grupo_id: datos.id
+                                            }
+                                        };
+
+                                        facturacionClientesService.listarProductos(obj, function (data) {
+                                          
+                                            if (data.status === 200) {
+
+                                                $scope.root.listadoProductos = facturacionClientesService.renderProductoFacturas(data.obj.listarProductos);
+                                            } else {
+                                                $scope.root.listadoProductos = null;
+                                            }
+
+                                        });
+                                    };
+
+
+                                    that.listarDetalle();
+
+                                    $scope.cerrar = function () {
+                                        $modalInstance.close();
+                                    };
+
+                                    $scope.listaProductos = {
+                                        data: 'root.listadoProductos',
+                                        enableColumnResize: true,
+                                        enableRowSelection: false,
+                                        enableCellSelection: true,
+                                        enableHighlighting: true,
+                                        columnDefs: [
+                                            {field: 'Codigo', width: "10%", displayName: 'Codigo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getCodigo()}}</p></div>'}, //
+                                            {field: 'Producto', width: "30%", displayName: 'Producto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
+                                            {field: 'Cantidad', width: "6%", displayName: 'Cantidad', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getCantidad()}}</p></div>'},
+                                            {field: 'Lote', width: "8%", displayName: 'Lote', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getLote()}}</p></div>'},
+                                            {field: 'Fecha Vencimiento', width: "12%", displayName: 'Fecha Vencimiento', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaVencimiento()}}</p></div>'},
+                                            {field: 'Valor Unitario', width: "15%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()| currency:"$ "}}</p></div>'},
+                                            {field: 'Iva', width: "4%", displayName: '% IVA', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPorcentajeIva()}}</p></div>'},
+                                            {field: 'Valor Total', width: "15%", displayName: 'Valor Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()| currency:"$ "}}</p></div>'}
+                                            
+                                        ]
+                                    };
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+
+
                     };
 
                     /*
@@ -238,14 +324,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         that.listarFacturasTemporal();
                     };
 
-                    
+
                     /**
                      * +Descripcion Metodo principal, el cual cargara el modulo
                      *              siempre y cuando se cumplan las restricciones
                      *              de empresa, centro de utilidad y bodega
                      */
                     that.init(function () {
-                                    that.listarFacturasTemporal();                           
+                        that.listarFacturasTemporal();
                     });
 
                 }]);

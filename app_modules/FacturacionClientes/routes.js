@@ -111,6 +111,10 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.eliminarCabeceraTemporalFacturaConsumo(req, res);
     });
     
+    app.post('/api/FacturacionClientes/listarFacturasConsumoBarranquillaTemporales', function(req, res) {       
+        c_facturacion_clientes.listarFacturasConsumoBarranquillaTemporales(req, res);
+    });
+    
     app.post('/api/FacturacionClientes/generarSincronizacionDian', function(req, res) {       
         c_facturacion_clientes.generarSincronizacionDian(req, res);
     });

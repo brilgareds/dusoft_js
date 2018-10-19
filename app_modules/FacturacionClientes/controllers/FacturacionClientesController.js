@@ -1705,6 +1705,36 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
 
 }
 
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos consumidos
+ * @fecha 2018-10-18
+ */
+FacturacionClientes.prototype.listarFacturasConsumoBarranquillaTemporales = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var empresa_id = req.session.user.empresa;
+
+    var terminoBusqueda = args.listar_facturas_consumo_temporal.terminoBusqueda;
+    var filtro = args.listar_facturas_consumo_temporal.filtro;
+    var paginaActual = args.listar_facturas_consumo_temporal.paginaActual;
+
+    var parametros = {
+        empresa_id: empresa_id,
+        paginaActual: paginaActual,
+        terminoBusqueda: terminoBusqueda,
+        filtro: filtro};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumoBarranquilla', parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listar_facturas_consumo_temporal: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listar_facturas_consumo_temporal: {}}));
+            }).
+            done();
+};
+
 /*
  * @author Cristian Ardila
  * @fecha 12/08/2017
@@ -1886,14 +1916,14 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         //CAMBIAR LA CONSULTA PARA QUE VAYA A LA TEMPORAL
-        
+
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo, that, 0, datosDocumentosXConsumo, []);
 
     }).then(function (resultado) {
 
         if (resultado.length > 0) {
             resultadoFacturasXConsumo = resultado;
-            console.log("Aresultado::::: resultadoFacturasXConsumo ",resultado );
+            console.log("Aresultado::::: resultadoFacturasXConsumo ", resultado);
             return G.Q.nfcall(__obtenerDetallePorFacturar, that, 0, resultado, []);
         } else {
             throw {msj: '[Detalle de factura]: Consulta sin resultados', status: 404};
@@ -2669,7 +2699,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
             vendedor: resultado.cabecera.nombre,
             numeroPedido: resultado.cabecera.pedido_cliente_id,
             totalenLetras: resultado.valores.totalFacturaLetra,
-            observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: "+resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
+            observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: " + resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
             observacionesDespacho: /*resultado.detalle[0].obs_despacho,*/   "",
             elaboradoPor: resultado.imprimio.usuario,
             tipoFormato: '1',

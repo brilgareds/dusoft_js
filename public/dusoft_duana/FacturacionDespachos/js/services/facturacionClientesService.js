@@ -3,9 +3,9 @@ define(["angular", "js/services"], function (angular, services) {
 
     services.factory('facturacionClientesService',
             ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho","VendedorDespacho","PedidoDespacho","EmpresaDespacho","DocumentoDetalleConsumo",
-                "FacturaConsumo",
+                "FacturaConsumo","FacturaConsumoBarranquilla",
                 function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho,PedidoDespacho,EmpresaDespacho,DocumentoDetalleConsumo,
-                FacturaConsumo) {
+                FacturaConsumo,FacturaConsumoBarranquilla) {
 
                     var self = this;
  
@@ -16,6 +16,16 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.listarFacturasTemporal = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_FACTURAS_TEMPORALES, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author German Galvis
+                     * @fecha  18/10/2018 DD/MM/YYYYY
+                     * +Descripcion lista las facturas de consumo de barranquilla en temporal
+                     */
+                    self.listarConsumoBarranquillaTemporal = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_FACTURAS_BARRANQUILLA_TEMPORALES, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -621,7 +631,23 @@ define(["angular", "js/services"], function (angular, services) {
                         });
                     };
                     
-                    
+                      self.renderCabeceraTmpFacturaConsumoBarranquilla = function (datos) {      
+                       
+                        var cabeceraFacturaTmp = [];
+                        for (var i in datos) {
+                            
+                            var _documento = FacturaConsumoBarranquilla.get(datos[i].documento_id,datos[i].prefijo,datos[i].factura_fiscal,1);
+                            
+                            _documento.setId(datos[i].id_factura_xconsumo);                          
+                            _documento.setEmpresaId(datos[i].empresa_id);                       
+                            _documento.setFechaRegistro(datos[i].fecha_registro_corte);                        
+                            _documento.setObservaciones(datos[i].observaciones);
+                            _documento.setEstadoFacturacion(datos[i].sw_facturacion);
+                            
+                            cabeceraFacturaTmp.push(_documento);
+                        }
+                        return cabeceraFacturaTmp;
+                    };                  
                    
                     return this;
                 }]);

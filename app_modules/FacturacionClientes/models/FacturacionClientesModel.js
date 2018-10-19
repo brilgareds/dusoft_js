@@ -2401,6 +2401,24 @@ FacturacionClientesModel.prototype.eliminarDocumentoTemporal = function (paramet
         callback(err);
     });
 };
+
+/**
+ * @author German Galvis
+ * +Descripcion elimina la cabecera del documento temporal de facturacion
+ * @fecha 05/07/2018
+ */
+ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumoBarranquilla = function(obj, callback){
+    
+    var query = G.knex.distinct(G.knex.raw("grupo_id,nombre_producto_consumo,observacion"))
+               .from('productos_consumo');        
+
+    query.then(function(resultado){ 
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [consultarProductosConsumo]: ", err);     
+        callback({err:err, msj: "Error al consultarProductosConsumo]"});   
+    }); 
+};
    
 FacturacionClientesModel.$inject = ["m_e008"];
 

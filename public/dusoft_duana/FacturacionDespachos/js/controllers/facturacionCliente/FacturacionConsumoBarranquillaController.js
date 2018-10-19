@@ -323,8 +323,73 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.paginaactual++;
                         that.listarFacturasTemporal();
                     };
+                    
+                    $scope.onBtnGenearFacturaPrueba = function(){
+                        that.generarFacturaIndividual(1);
+                    };
+                    
+                    that.generarFacturaIndividual = function (facturaEspecial) {
+                        var pedido = {
+                                tipo_id_tercero: "NIT",
+                                id: "892200273",
+                                facturaEspecial: facturaEspecial,
+                                pedidos: [
+                                    {
+                                        numero_cotizacion: 0,
+                                        vendedor: [
+                                            {
+                                                tipo_id_tercero: "NIT",
+                                                id: "830080649"
+                                            }
+                                        ]
+                                    }
+                                ]
+                        };
 
+                        var parametros = {
+                            pedido: pedido,
+                            tipoIdTercero: 'NIT',
+                            terceroId: '892200273',
+                            AlertService: AlertService,
+                            documentoSeleccionados: [],
+                            session: $scope.session,
+                            terminoBusqueda: '', 
+                            empresaSeleccionada: $scope.root.empresaSeleccionada,
+                            paginaactual: 1,
+                            tipoPagoFactura: '1',
+                            facturacionCosmitet: 0
+                        };
 
+                        facturacionClientesService.generarFacturaIndividualCompleta(parametros, function (data) {
+
+                            /**
+                             * +Descripcion si se genera la factura satisfacturiamente,
+                             *              el sistema activara la vista que lista las facturas generadas
+                             *              haciendo referencia a la factura reciente
+                             */
+                            if (data.status === 200) {
+                                localStorageService.add("listaFacturaDespachoGenerada",
+                                        {active: true,
+                                            datos: data.obj.generar_factura_individual[0],
+                                            mensaje: data.obj.resultado_sincronizacion_ws.resultado,
+                                            mensaje_factura: data.obj.resultado_sincronizacion_ws.parametros
+                                        }
+                                );
+                                $state.go('Despacho');
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                            if (data.status === 404) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                            if (data.status === 409) {
+                                AlertService.mostrarMensaje("danger", data.msj);
+                            }
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("danger", data.msj);
+                            }
+                        });
+                    };
+                    
                     /**
                      * +Descripcion Metodo principal, el cual cargara el modulo
                      *              siempre y cuando se cumplan las restricciones

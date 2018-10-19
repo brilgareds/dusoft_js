@@ -1995,7 +1995,6 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
 
         if (resultado.length > 0) {
             resultadoFacturasXConsumo = resultado;
-            console.log("Aresultado::::: resultadoFacturasXConsumo ", resultado);
             return G.Q.nfcall(__obtenerDetallePorFacturar, that, 0, resultado, []);
         } else {
             throw {msj: '[Detalle de factura]: Consulta sin resultados', status: 404};

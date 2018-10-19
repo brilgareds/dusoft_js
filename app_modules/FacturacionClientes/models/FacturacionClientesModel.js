@@ -148,7 +148,11 @@ function __consultaDetalleFacturaGenerada(parametros, tabla1, tabla2, campo) {
         G.knex.raw("trunc(((a.valor_unitario * (a.porc_iva/100))* a.cantidad),2) as iva_total"),
         G.knex.raw("to_char((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))),'LFM9,999,999.00') as valor_unitario_iva"),
         G.knex.raw("to_char((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))),'LFM9,999,999.00') as total"),
-        "c.observacion",
+        G.knex.raw("(c.observacion ||''||(select \
+                                    observacion from\
+                                    productos_consumo\
+                                    where factura_fiscal = a.factura_fiscal \
+                                    and empresa_id=a.empresa_id and prefijo=a.prefijo limit 1)) as observacion"),
         "e.sw_medicamento",
         "e.sw_insumos",
         G.knex.raw(campo)
@@ -554,7 +558,12 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     colSubQuery2.push("a.tipo_id_vendedor");
     colSubQuery2.push("a.vendedor_id");
     colSubQuery2.push("b.nombre");
-    colSubQuery2.push("pedi.observacion");
+//    colSubQuery2.push("pedi.observacion");
+    colSubQuery2.push(G.knex.raw("(pedi.observacion ||''||(select \
+                                    observacion from\
+                                    productos_consumo\
+                                    where factura_fiscal = a.factura_fiscal \
+                                    and empresa_id=a.empresa_id and prefijo=a.prefijo limit 1)) as observacion"));
     colSubQuery2.push("a.pedido_cliente_id");
     colSubQuery2.push("a.tipo_pago_id");
 
@@ -610,7 +619,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
 
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit);
-   // console.log(G.sqlformatter.format(query.toString()));
+    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
 
         callback(false, resultado)

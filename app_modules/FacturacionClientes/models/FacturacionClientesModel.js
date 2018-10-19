@@ -607,7 +607,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
 
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit);
-    //console.log(G.sqlformatter.format(query.toString()));
+    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         
         callback(false, resultado)
@@ -2244,16 +2244,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
         porcentajeReteiva = obj.consultar_tercero_contrato[0].porcentaje_reteiva;
     }
         
-          var s= {parametros:obj,
-         porcentaje_rtf:porcentajeRtf,
-         porcentaje_ica: porcentajeIca,
-         porcentaje_reteiva: porcentajeReteiva,
-         porcentaje_cree: porcentajeCree,
-         usuario: obj.parametros.usuario,
-         tipoPago: obj.parametros.tipoPago,
-         facturacion_cosmitet:obj.parametros.facturacionCosmitet
-        };
-        
+          
     G.knex.transaction(function(transaccion) {          
         
         G.Q.ninvoke(that,'insertarFacturaIndividual',

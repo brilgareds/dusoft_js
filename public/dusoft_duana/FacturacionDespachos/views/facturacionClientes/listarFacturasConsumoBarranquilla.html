@@ -1,8 +1,23 @@
 <br>
-<div class="col-md-9">
+<div class="col-md-12">
 
-    <div class="row">  
-        <div class="col-md-4">
+    <div class="row">
+        <div class="col-md-3">
+            <fieldset>
+                <legend>Farmacia</legend> 
+                <div class="row">
+                    <div class="col-md-7">                                          
+                        <ui-select ng-change="onBuscarDocumentosTraslado()" ng-model="documento_ingreso.bodega_origen" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
+                            <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.descripcion}}</ui-select-match>
+                            <ui-select-choices repeat="bodega in bodegas | filter:$select.search">
+                                {{ bodega.descripcion}}
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-3">
 
             <fieldset>
                 <legend>Nombre del Corte</legend>                                 
@@ -13,7 +28,7 @@
                 </div>
             </fieldset>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
 
             <fieldset>
                 <legend>Observación</legend>                                 
@@ -34,16 +49,6 @@
                 </div>
             </fieldset>
         </div>
-<div>
-    <fieldset>
-        <legend>facturar prueba </legend>     
-        <div class="col-md-2">
-            <div class="input-group-btn">                                                                      
-                <button type="button" class="btn btn-info pull-center" aria-expanded="false" ng-click="onBtnGenearFacturaPrueba()" >factura</button>                   
-            </div>
-        </div>
-    </fieldset>
-</div>
     </div>
 </div>
 <div class ="row"> 

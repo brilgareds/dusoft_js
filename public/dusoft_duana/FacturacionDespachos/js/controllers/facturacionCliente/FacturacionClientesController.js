@@ -414,12 +414,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
         
         $scope.verificaFactuta=function(pref){
-            console.log("pre",pref);
+            
             var prefijo = false;
             if(pref==='FDC' || pref==='FDB'){
                 prefijo = true;
             }
-            console.log("envia pre",prefijo);
+
             return prefijo;
         }
         

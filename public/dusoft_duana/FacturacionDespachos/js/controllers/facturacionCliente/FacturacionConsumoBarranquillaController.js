@@ -110,6 +110,36 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
                     };
+                    
+                    
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que listara 
+             *              las farmacias
+             * @author German Galvis
+             * @fecha 18/10/2018
+             */
+            that.listarFarmacias = function () {
+
+                var usuario = Usuario.getUsuarioActual();
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        bodega: usuario.empresa.centroUtilidad.bodega.codigo,
+                        centro: usuario.empresa.centroUtilidad.codigo,
+                        empresa: usuario.empresa.codigo
+                    }
+                };
+
+                facturacionClientesService.buscarBodega(obj, function (data) {
+
+                    if (data.status === 200) {
+                        $scope.bodegas = data.obj.listarBodegas;
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+                    
 
                     /**
                      * @author German Galvis
@@ -133,7 +163,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
                                 <li ng-if="row.entity.getEstadoFacturacion() == 0">\
-                                   <a href="javascript:void(0);" ng-click="detalleFacturaTemporal(row.entity)" class= "glyphicon glyphicon-edit"> Facturar </a>\
+                                   <a href="javascript:void(0);" ng-click="onBtnGenearFacturaPrueba(row.entity)" class= "glyphicon glyphicon-edit"> Facturar </a>\
                                 </li>\
                                 <li ng-if="row.entity.getEstadoFacturacion() == 0">\
                                    <a href="javascript:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
@@ -324,8 +354,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         that.listarFacturasTemporal();
                     };
                     
-                    $scope.onBtnGenearFacturaPrueba = function(){
-                        that.generarFacturaIndividual(1);
+                    $scope.onBtnGenearFacturaPrueba = function(entity){
+                        that.generarFacturaIndividual(entity.id);
                     };
                     
                     that.generarFacturaIndividual = function (facturaEspecial) {
@@ -368,14 +398,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                              *              haciendo referencia a la factura reciente
                              */
                             if (data.status === 200) {
-                                localStorageService.add("listaFacturaDespachoGenerada",
-                                        {active: true,
-                                            datos: data.obj.generar_factura_individual[0],
-                                            mensaje: data.obj.resultado_sincronizacion_ws.resultado,
-                                            mensaje_factura: data.obj.resultado_sincronizacion_ws.parametros
-                                        }
-                                );
-                                $state.go('Despacho');
+//                                localStorageService.add("listaFacturaDespachoGenerada",
+//                                        {active: true,
+//                                            datos: data.obj.generar_factura_individual[0],
+//                                            mensaje: data.obj.resultado_sincronizacion_ws.resultado,
+//                                            mensaje_factura: data.obj.resultado_sincronizacion_ws.parametros
+//                                        }
+//                                );
+//                                $state.go('Despacho');
+                                that.listarFacturasTemporal();
                                 AlertService.mostrarMensaje("warning", data.msj);
                             }
                             if (data.status === 404) {

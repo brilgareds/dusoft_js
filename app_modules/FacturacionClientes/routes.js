@@ -107,6 +107,10 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.listarFacturasTemporales(req, res);
     });
     
+    app.post('/api/FacturacionClientes/buscarFarmacias', function(req, res) {       
+        c_facturacion_clientes.buscarFarmacias(req, res);
+    });
+    
     app.post('/api/FacturacionClientes/eliminarCabeceraTemporalFacturaConsumo', function(req, res) {       
         c_facturacion_clientes.eliminarCabeceraTemporalFacturaConsumo(req, res);
     });

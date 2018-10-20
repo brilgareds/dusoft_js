@@ -384,10 +384,11 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
                     this.andWhere(G.knex.raw("a.nombre_tercero  " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"))
                 }
             }).andWhere('b.empresa_id', obj.empresaId)
-            .andWhere("cntrtos.estado", 1)
-
+            .andWhere("cntrtos.estado", 1);
+if(obj.paginaActual !=='-1'){
     query.limit(G.settings.limit).
-            offset((obj.paginaActual - 1) * G.settings.limit)
+            offset((obj.paginaActual - 1) * G.settings.limit);
+    }
     query.then(function (resultado) {
 
         callback(false, resultado)
@@ -2546,6 +2547,33 @@ FacturacionClientesModel.prototype.eliminarProductosTemporalBarranquilla = funct
         callback(false, resultado);
     }).catch(function (err) {
         console.log("Error eliminarProductosTemporalBarranquilla", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta todas las bodegas que pertenezcan a la empresa y la bodega
+ * seleccionada
+ * @params obj: bodega
+ * @fecha 19/10/2018
+ */
+FacturacionClientesModel.prototype.buscarFarmacias = function (parametro, callback) {
+    var query = G.knex
+            .distinct('a.*')
+            .select()
+            .from('bodegas as a')
+            .where('a.empresa_id', 'FD')
+            .andWhere('c.farmacia_id', parametro.empresa)
+            .andWhere('c.centro_utilidad', parametro.centro)
+            .andWhere('c.bodega', parametro.bodega)
+            .andWhere('c.sw_estado', '1')
+            .orderBy('a.descripcion', 'asc');
+    
+            query.then(function (resultado) {
+                callback(false, resultado);
+            }).catch(function (err) {
+        console.log("err [listarBodegas]:", err);
         callback(err);
     });
 };

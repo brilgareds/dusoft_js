@@ -25,11 +25,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var fecha_actual = new Date();
                         $scope.root = {
                             termino_busqueda: '',
-                            visibleBuscador: true,
-                            visibleBotonBuscador: true,
+                            termino_busqueda_farmacia: '',
                             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
-                            vistaFacturacion: "",
-                            facturasTemporales: "",
+                            nombre: "",
+                            observacion: "",
                             itemsFacturasTemporales: 0,
                             estadoBotones: ["glyphicon glyphicon-edit",
                                 "glyphicon glyphicon-ok",
@@ -110,36 +109,40 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
                     };
-                    
-                    
-            /**
-             * +Descripcion Metodo encargado de invocar el servicio que listara 
-             *              las farmacias
-             * @author German Galvis
-             * @fecha 18/10/2018
-             */
-            that.listarFarmacias = function () {
 
-                var usuario = Usuario.getUsuarioActual();
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        bodega: usuario.empresa.centroUtilidad.bodega.codigo,
-                        centro: usuario.empresa.centroUtilidad.codigo,
-                        empresa: usuario.empresa.codigo
-                    }
-                };
 
-                facturacionClientesService.buscarBodega(obj, function (data) {
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara 
+                     *              las farmacias
+                     * @author German Galvis
+                     * @fecha 18/10/2018
+                     */
+                    that.listarFarmacias = function () {
 
-                    if (data.status === 200) {
-                        $scope.bodegas = data.obj.listarBodegas;
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                    }
-                });
-            };
-                    
+                        var usuario = Usuario.getUsuarioActual();
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listar_clientes: {
+                                    filtro: 'Nombre', //$scope.root.filtro,
+                                    terminoBusqueda: $scope.root.termino_busqueda_farmacia, //$scope.root.numero,
+                                    empresaId: usuario.empresa.codigo,
+                                    paginaActual: '-1'
+                                }
+                            }
+                        };
+                        facturacionClientesService.listarClientes(obj, function (data) {
+                            if (data.status === 200) {
+                                $scope.bodegas = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+
+                        });
+
+                    };
+
 
                     /**
                      * @author German Galvis
@@ -252,7 +255,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         });
                     };
 
-                   /**
+                    /**
                      * +Descripcion scope del grid para mostrar el detalle de las facturas
                      * @author German Galvis
                      * @fecha 19/10/2018
@@ -290,7 +293,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         };
 
                                         facturacionClientesService.listarProductos(obj, function (data) {
-                                          
+
                                             if (data.status === 200) {
 
                                                 $scope.root.listadoProductos = facturacionClientesService.renderProductoFacturas(data.obj.listarProductos);
@@ -323,7 +326,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             {field: 'Valor Unitario', width: "15%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()| currency:"$ "}}</p></div>'},
                                             {field: 'Iva', width: "4%", displayName: '% IVA', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPorcentajeIva()}}</p></div>'},
                                             {field: 'Valor Total', width: "15%", displayName: 'Valor Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()| currency:"$ "}}</p></div>'}
-                                            
+
                                         ]
                                     };
                                 }]
@@ -353,27 +356,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.paginaactual++;
                         that.listarFacturasTemporal();
                     };
-                    
-                    $scope.onBtnGenearFacturaPrueba = function(entity){
+
+                    $scope.onBtnGenearFacturaPrueba = function (entity) {
                         that.generarFacturaIndividual(entity.id);
                     };
-                    
+
                     that.generarFacturaIndividual = function (facturaEspecial) {
                         var pedido = {
-                                tipo_id_tercero: "NIT",
-                                id: "892200273",
-                                facturaEspecial: facturaEspecial,
-                                pedidos: [
-                                    {
-                                        numero_cotizacion: 0,
-                                        vendedor: [
-                                            {
-                                                tipo_id_tercero: "NIT",
-                                                id: "830080649"
-                                            }
-                                        ]
-                                    }
-                                ]
+                            tipo_id_tercero: "NIT",
+                            id: "892200273",
+                            facturaEspecial: facturaEspecial,
+                            pedidos: [
+                                {
+                                    numero_cotizacion: 0,
+                                    vendedor: [
+                                        {
+                                            tipo_id_tercero: "NIT",
+                                            id: "830080649"
+                                        }
+                                    ]
+                                }
+                            ]
                         };
 
                         var parametros = {
@@ -383,7 +386,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             AlertService: AlertService,
                             documentoSeleccionados: [],
                             session: $scope.session,
-                            terminoBusqueda: '', 
+                            terminoBusqueda: '',
                             empresaSeleccionada: $scope.root.empresaSeleccionada,
                             paginaactual: 1,
                             tipoPagoFactura: '1',
@@ -420,7 +423,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                         });
                     };
-                    
+
                     /**
                      * +Descripcion Metodo principal, el cual cargara el modulo
                      *              siempre y cuando se cumplan las restricciones
@@ -428,6 +431,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
                     that.init(function () {
                         that.listarFacturasTemporal();
+                        that.listarFarmacias();
                     });
 
                 }]);

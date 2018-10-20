@@ -6,11 +6,11 @@
             <fieldset>
                 <legend>Farmacia</legend> 
                 <div class="row">
-                    <div class="col-md-7">                                          
-                        <ui-select ng-change="onBuscarDocumentosTraslado()" ng-model="documento_ingreso.bodega_origen" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
-                            <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.descripcion}}</ui-select-match>
+                    <div class="col-md-12">                                          
+                        <ui-select ng-model="documento_ingreso.bodega_origen" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="validarDesdeLink">
+                            <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.nombre_tercero}}</ui-select-match>
                             <ui-select-choices repeat="bodega in bodegas | filter:$select.search">
-                                {{ bodega.descripcion}}
+                                {{ bodega.nombre_tercero}}
                             </ui-select-choices>
                         </ui-select>
                     </div>
@@ -23,7 +23,7 @@
                 <legend>Nombre del Corte</legend>                                 
                 <div class="row">  
                     <div class="col-md-12">
-                        <input type="text" class="form-control" ng-model="root.impuestosnota.valorSubtotal" name="" id=""/>
+                        <input type="text" class="form-control" ng-model="root.nombre" name="" id=""/>
                     </div>
                 </div>
             </fieldset>
@@ -34,7 +34,7 @@
                 <legend>Observación</legend>                                 
                 <div class="row">  
                     <div class="col-md-12">
-                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='documento_ingreso.observacion' name="" placeholder="Ingresar Observación" ng-disabled="validarDesdeLink"></textarea>
+                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='root.observacion' name="" placeholder="Ingresar Observación" ng-disabled="validarDesdeLink"></textarea>
                     </div>
                 </div>
             </fieldset>
@@ -65,8 +65,7 @@
                         </li>
                     </ul>                                         
                 </div>                                                 
-                <input ng-show="root.visibleBuscador" 
-                       type="text" 
+                <input type="text" 
                        class="form-control" 
                        ng-keypress="buscarClienteFacturaTemporal($event);"  
                        ng-model="root.termino_busqueda" 

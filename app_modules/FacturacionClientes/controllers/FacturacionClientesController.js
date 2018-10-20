@@ -1707,6 +1707,30 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
 
 /**
  * @author German Galvis
+ * +Descripcion Metodo encargado de listar las farmacias
+ * @fecha 2018-10-19
+ */
+FacturacionClientes.prototype.buscarFarmacias = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        empresa_id: args.empresa_id,
+        centro: args.centro,
+        bodega: args.bodega};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'buscarFarmacias', parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listado farmacias ok!!!!', 200, {listarBodegas: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de farmacias', 500, {listarBodegas: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
  * +Descripcion Metodo encargado de listar los productos consumidos
  * @fecha 2018-10-18
  */

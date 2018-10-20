@@ -19,6 +19,7 @@ define(["angular", "js/services"], function (angular, services) {
                             callback(data);
                         });
                     };
+                    
                     /**
                      * @author German Galvis
                      * @fecha  18/10/2018 DD/MM/YYYYY
@@ -26,6 +27,17 @@ define(["angular", "js/services"], function (angular, services) {
                      */
                     self.listarConsumoBarranquillaTemporal = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_FACTURAS_BARRANQUILLA_TEMPORALES, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author German Galvis
+                     * @fecha  19/10/2018 DD/MM/YYYYY
+                     * +Descripcion lista las farmacias a facturar
+                     */
+                    self.buscarBodega = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.BUSCAR_FARMACIAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

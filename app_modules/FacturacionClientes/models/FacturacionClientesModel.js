@@ -531,8 +531,8 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
         consulta.join('ventas_ordenes_pedidos as pedi', function () {
             this.on("pedi.empresa_id", "a.empresa_id")
                     .on("pedi.pedido_cliente_id", "a.pedido_cliente_id")
-                    //.on("pedi.tercero_id", "a.tercero_id")
-                    //.on("pedi.tipo_id_tercero", "a.tipo_id_tercero")
+            //.on("pedi.tercero_id", "a.tercero_id")
+            //.on("pedi.tipo_id_tercero", "a.tipo_id_tercero")
 
         }).as("a");
 
@@ -2526,6 +2526,8 @@ FacturacionClientesModel.prototype.listarProductos = function (obj, callback) {
             .from('productos_consumo')
             .where("empresa_id", obj.empresa_id)
             .andWhere("grupo_id", obj.grupo_id);
+
+    query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
 
     query.then(function (resultado) {
         callback(false, resultado);

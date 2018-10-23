@@ -1241,7 +1241,7 @@ FacturacionClientes.prototype.subirArchivo = function (req, res) {
             /*
              * +Descripcion Se valida si cada uno de los productos existe en el inventario
              */
-            return G.Q.nfcall(__validar_productos_archivo_plano, that, 0, contenido, [], []);
+            return G.Q.nfcall(__validar_productos_archivo_plano, that, 0, contenido, [], [], parametros);
 
         } else {
             throw {msj: "El archivo esta vacio", status: 500, data: {pedidos_clientes: {}}};
@@ -1898,7 +1898,8 @@ FacturacionClientes.prototype.listarProductos = function (req, res) {
     var args = req.body.data;
     var parametros = {
         empresa_id: args.empresa_id,
-        grupo_id: args.grupo_id};
+        grupo_id: args.grupo_id,
+        paginaActual: args.paginaActual};
 
     G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).
             then(function (resultado) {
@@ -3665,7 +3666,7 @@ function __subir_archivo_plano(files, callback) {
  * Descripcion : Validar que los codigos de los productos del archivo plano sean validos.
  *
  */
-function __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback) {
+function __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, parametros, callback) {
 
     var producto = filas[index];
     if (!producto) {
@@ -3673,12 +3674,26 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
         callback(false, productosValidos, productosInvalidos);
         return;
     }
-
+    var obj = {
+        codigo_producto: producto.codigo,
+        empresa_id: parametros.empresa_id
+    };
     /**
      * +Descripcion Funcion encargada de modificar el detalle del pedido
      */
-    G.Q.ninvoke(that.m_productos, 'validar_producto', producto.codigo).then(function (resultado) {
-        var _producto = {codigo_producto: producto.codigo, cantidad: producto.cantidad, lote: producto.lote};
+    var _producto = {codigo_producto: producto.codigo, cantidad: producto.cantidad, lote: producto.lote};
+
+    G.Q.ninvoke(that.m_productos, 'validar_producto_inventario', obj).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_productos, 'validar_producto', producto.codigo);
+        } else {
+
+            return false;
+
+        }
+
+    }).then(function (resultado) {
 
         if (resultado.length > 0) {
 
@@ -3698,7 +3713,7 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
 
         index++;
         setTimeout(function () {
-            __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback);
+            __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, parametros, callback);
         }, 0);
 
     }).fail(function (error) {
@@ -3715,7 +3730,7 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
  * 
  */
 function __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback) {
-    
+
     var producto = _productos_validos[index];
     if (!producto) {
         callback(false, _productos_invalidos);

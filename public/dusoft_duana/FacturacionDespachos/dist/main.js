@@ -45322,6 +45322,11 @@ define('url',["angular"], function(angular) {
                  "ELIMINAR_CABECERA_TEMPORAL_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/eliminarCabeceraTemporalFacturaConsumo",
                  "GENERAR_FACTURA_POR_CONSUMO" : BASE_URL + "/FacturacionClientes/generarFacturaXConsumo",
                  "LISTAR_FACTURAS_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasTemporales",
+                 "BUSCAR_FARMACIAS" : BASE_URL + "/FacturacionClientes/buscarFarmacias",
+                 "LISTAR_FACTURAS_BARRANQUILLA_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasConsumoBarranquillaTemporales",
+                 "ELIMINAR_TEMPORAL_FACTURA_CONSUMO_BARRANQUILLA" : BASE_URL + "/FacturacionClientes/eliminarTemporalFacturaConsumoBarranquilla",
+                 "LISTAR_PRODUCTOS" : BASE_URL + "/FacturacionClientes/listarProductos",
+                 "SUBIR_ARCHIVO" : BASE_URL + "/FacturacionClientes/subirArchivo",
                  "GENERAR_SINCRONIZACION_DIAN" : BASE_URL + "/FacturacionClientes/generarSincronizacionDian"
             },   
             'FACTURACIONPROVEEDOR': {
@@ -54088,6 +54093,232 @@ define('models/EmpresaDespacho',["angular", "js/models", "includes/classes/Empre
         }]);
 
 });
+define('includes/classes/Documento',["angular", "js/models"], function(angular, models) {
+
+    models.factory('Documento', function() {
+
+        function Documento(bodegas_doc_id, prefijo, numero, fecha_registro) {
+
+            this.bodegas_doc_id = bodegas_doc_id;
+            this.prefijo = prefijo || "";
+            this.numero = numero || "";
+            this.fecha_registro = fecha_registro || "";
+        }
+        ;
+
+        Documento.prototype.set_fecha_registro = function(fecha_registro) {
+            this.fecha_registro = fecha_registro;
+            return this;
+        };
+
+        Documento.prototype.set_empresa = function(empresa) {
+            this.empresa = empresa;
+            return this;
+        };
+
+        Documento.prototype.set_centro_utilidad = function(centro_utilidad) {
+            this.centro_utilidad = centro_utilidad;
+            return this;
+        };
+
+        Documento.prototype.set_bodega = function(bodega) {
+            this.bodega = bodega;
+            return this;
+        };
+
+        Documento.prototype.set_descripcion = function(descripcion) {
+            this.descripcion = descripcion;
+            return this;
+        };
+
+
+        Documento.prototype.set_tipo = function(tipo) {
+            this.tipo = tipo; // I002
+            return this;
+        };
+
+        Documento.prototype.set_tipo_clase_documento = function(tipo_clase_documento) {
+            this.tipo_clase_documento = tipo_clase_documento; //"EGRESO POR PRESTAMO A OTRAS ENTIDADES"
+            return this;
+        };
+
+
+        Documento.prototype.set_tipo_movimiento = function(tipo_movimiento) {
+            this.tipo_movimiento = tipo_movimiento; // E o I
+            return this;
+        };
+
+        Documento.prototype.set_bodegas_doc_id = function(bodegas_doc_id) {
+            this.bodegas_doc_id = bodegas_doc_id;
+            return this;
+        };
+
+        Documento.prototype.set_observaciones = function(observaciones) {
+            this.observaciones = observaciones;
+            return this;
+        };
+
+
+        Documento.prototype.get_fecha_registro = function() {
+            return this.fecha_registro;
+        };
+
+        Documento.prototype.get_prefijo = function() {
+            return this.prefijo;
+        };
+
+        Documento.prototype.setPrefijo = function(prefijo) {
+            this.prefijo = prefijo;
+        };
+
+        Documento.prototype.get_numero = function() {
+            return this.numero;
+        };
+
+
+        Documento.prototype.get_empresa = function() {
+            return this.empresa;
+        };
+
+        Documento.prototype.get_centro_utilidad = function() {
+            return this.centro_utilidad;
+        };
+
+        Documento.prototype.get_bodega = function() {
+            return this.bodega;
+        };
+
+        Documento.prototype.get_descripcion = function() {
+            return this.descripcion;
+        };
+
+        Documento.prototype.get_tipo_clase_documento = function() {
+            return this.tipo_clase_documento;
+        };
+
+        Documento.prototype.get_tipo = function() {
+            return this.tipo;
+        };
+
+        Documento.prototype.get_tipo_movimiento = function() {
+            return this.tipo_movimiento;
+        };
+
+        Documento.prototype.get_bodegas_doc_id = function() {
+            return this.bodegas_doc_id;
+        };
+
+        Documento.prototype.get_observaciones = function() {
+            return this.observaciones;
+        };
+
+        this.getClass = function() {
+            return Documento;
+        };
+
+        return this;
+
+    });
+});
+define('models/FacturaConsumoBarranquilla',["angular", "js/models", "includes/classes/Documento"], function (angular, models) {
+
+    models.factory('FacturaConsumoBarranquilla', ["Documento", function (Documento) {
+
+
+            function FacturaConsumoBarranquilla(id, empresa_id, nombre, fecha_registro) {
+                Documento.getClass().call(this, id, empresa_id, nombre, fecha_registro);
+                this.id = id || 0;
+                this.empresaId = empresa_id;
+                this.fechaRegistro = fecha_registro || '';
+                this.observaciones = '';
+                this.nombre = nombre || '';
+                this.estadoFacturacion;
+                this.descripcionEstadoFacturacion;
+            }
+
+            FacturaConsumoBarranquilla.prototype = Object.create(Documento.getClass().prototype);
+
+            FacturaConsumoBarranquilla.prototype.setId = function (id) {
+                this.id = id;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getId = function () {
+                return this.id;
+            };
+
+            FacturaConsumoBarranquilla.prototype.setEmpresaId = function (empresaId) {
+                this.empresaId = empresaId;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getEmpresaId = function () {
+                return this.empresaId;
+            };
+
+            FacturaConsumoBarranquilla.prototype.setFechaRegistro = function (fechaRegistro) {
+                this.fechaRegistro = fechaRegistro;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getFechaRegistro = function () {
+                return this.fechaRegistro;
+            };
+
+            FacturaConsumoBarranquilla.prototype.setObservaciones = function (observaciones) {
+                this.observaciones = observaciones;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getObservaciones = function () {
+                return this.observaciones;
+            };
+
+            FacturaConsumoBarranquilla.prototype.setEstadoFacturacion = function (estadoFacturacion) {
+                this.estadoFacturacion = estadoFacturacion;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getEstadoFacturacion = function () {
+                return this.estadoFacturacion;
+            };
+
+            FacturaConsumoBarranquilla.prototype.setDescripcionEstadoFacturacion = function (descripcionEstadoFacturacion) {
+                this.descripcionEstadoFacturacion = descripcionEstadoFacturacion;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getDescripcionEstadoFacturacion = function () {
+                return this.descripcionEstadoFacturacion;
+            };
+
+            FacturaConsumoBarranquilla.prototype.setFactura = function (factura) {
+                this.factura = factura;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getFactura = function () {
+                return this.factura;
+            };
+
+            FacturaConsumoBarranquilla.prototype.setTerceroId = function (tercero_id) {
+                this.tercero_id = tercero_id;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getTerceroId = function () {
+                return this.tercero_id;
+            };
+
+            FacturaConsumoBarranquilla.prototype.setTipoIdTercero = function (tipo_id_tercero) {
+                this.tipo_id_tercero = tipo_id_tercero;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getTipoIdTercero = function () {
+                return this.tipo_id_tercero;
+            };
+
+            this.get = function (id, empresa_id, nombre, fecha_registro, observaciones, estadoFacturacion, descripcionEstadoFacturacion) {
+                return new FacturaConsumoBarranquilla(id, empresa_id, nombre, fecha_registro, observaciones, estadoFacturacion, descripcionEstadoFacturacion);
+            };
+
+            return this;
+
+        }]);
+
+});
 
 define('models/FacturaProveedores',["angular", "js/models"], function(angular, models) {
 
@@ -54876,6 +55107,14 @@ define('models/ProductoFacturas',["angular", "js/models", "includes/classes/Prod
             ProductoFacturas.prototype.getMovimientoId = function () {
                 return this.movimiento_id;
             };
+
+            ProductoFacturas.prototype.setFechaVencimiento = function (fecha_vencimiento) {
+                this.fecha_vencimiento = fecha_vencimiento;
+            };
+
+            ProductoFacturas.prototype.getFechaVencimiento = function () {
+                return this.fecha_vencimiento;
+            };
             
             ProductoFacturas.prototype.getLote = function () {
                 return this.lote;
@@ -54891,133 +55130,6 @@ define('models/ProductoFacturas',["angular", "js/models", "includes/classes/Prod
 
             return this;
         }]);
-});
-define('includes/classes/Documento',["angular", "js/models"], function(angular, models) {
-
-    models.factory('Documento', function() {
-
-        function Documento(bodegas_doc_id, prefijo, numero, fecha_registro) {
-
-            this.bodegas_doc_id = bodegas_doc_id;
-            this.prefijo = prefijo || "";
-            this.numero = numero || "";
-            this.fecha_registro = fecha_registro || "";
-        }
-        ;
-
-        Documento.prototype.set_fecha_registro = function(fecha_registro) {
-            this.fecha_registro = fecha_registro;
-            return this;
-        };
-
-        Documento.prototype.set_empresa = function(empresa) {
-            this.empresa = empresa;
-            return this;
-        };
-
-        Documento.prototype.set_centro_utilidad = function(centro_utilidad) {
-            this.centro_utilidad = centro_utilidad;
-            return this;
-        };
-
-        Documento.prototype.set_bodega = function(bodega) {
-            this.bodega = bodega;
-            return this;
-        };
-
-        Documento.prototype.set_descripcion = function(descripcion) {
-            this.descripcion = descripcion;
-            return this;
-        };
-
-
-        Documento.prototype.set_tipo = function(tipo) {
-            this.tipo = tipo; // I002
-            return this;
-        };
-
-        Documento.prototype.set_tipo_clase_documento = function(tipo_clase_documento) {
-            this.tipo_clase_documento = tipo_clase_documento; //"EGRESO POR PRESTAMO A OTRAS ENTIDADES"
-            return this;
-        };
-
-
-        Documento.prototype.set_tipo_movimiento = function(tipo_movimiento) {
-            this.tipo_movimiento = tipo_movimiento; // E o I
-            return this;
-        };
-
-        Documento.prototype.set_bodegas_doc_id = function(bodegas_doc_id) {
-            this.bodegas_doc_id = bodegas_doc_id;
-            return this;
-        };
-
-        Documento.prototype.set_observaciones = function(observaciones) {
-            this.observaciones = observaciones;
-            return this;
-        };
-
-
-        Documento.prototype.get_fecha_registro = function() {
-            return this.fecha_registro;
-        };
-
-        Documento.prototype.get_prefijo = function() {
-            return this.prefijo;
-        };
-
-        Documento.prototype.setPrefijo = function(prefijo) {
-            this.prefijo = prefijo;
-        };
-
-        Documento.prototype.get_numero = function() {
-            return this.numero;
-        };
-
-
-        Documento.prototype.get_empresa = function() {
-            return this.empresa;
-        };
-
-        Documento.prototype.get_centro_utilidad = function() {
-            return this.centro_utilidad;
-        };
-
-        Documento.prototype.get_bodega = function() {
-            return this.bodega;
-        };
-
-        Documento.prototype.get_descripcion = function() {
-            return this.descripcion;
-        };
-
-        Documento.prototype.get_tipo_clase_documento = function() {
-            return this.tipo_clase_documento;
-        };
-
-        Documento.prototype.get_tipo = function() {
-            return this.tipo;
-        };
-
-        Documento.prototype.get_tipo_movimiento = function() {
-            return this.tipo_movimiento;
-        };
-
-        Documento.prototype.get_bodegas_doc_id = function() {
-            return this.bodegas_doc_id;
-        };
-
-        Documento.prototype.get_observaciones = function() {
-            return this.observaciones;
-        };
-
-        this.getClass = function() {
-            return Documento;
-        };
-
-        return this;
-
-    });
 });
 
 define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Documento"], function (angular, models) {
@@ -56693,12 +56805,12 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
         };
         
         $scope.verificaFactuta=function(pref){
-            console.log("pre",pref);
+            
             var prefijo = false;
             if(pref==='FDC' || pref==='FDB'){
                 prefijo = true;
             }
-            console.log("envia pre",prefijo);
+
             return prefijo;
         }
         
@@ -58957,6 +59069,617 @@ define('controllers/facturacionCliente/FacturacionConsumoController',["angular",
                         localStorageService.add("localStorageService", null);
                         $scope.root = null;
                     });
+                }]);
+});
+
+
+define('controllers/facturacionCliente/FacturacionConsumoBarranquillaController',["angular", "js/controllers"], function (angular, controllers) {
+
+    var fo = controllers.controller('FacturacionConsumoBarranquillaController',
+            ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
+                "$timeout",
+                "$filter",
+                "localStorageService",
+                "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho", "webNotification",
+                function ($scope, $rootScope, Request, API, AlertService, Usuario,
+                        $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho, webNotification) {
+
+                    var that = this;
+                    $scope.notificarFacturaConsumo = 0;
+                    /*
+                     * Inicializacion de variables
+                     * @param {type} empresa
+                     * @param {type} callback
+                     * @returns {void}
+                     */
+                    that.init = function (callback) {
+                        $scope.paginaactual = 1;
+                        $scope.paginaDetalle = 1;
+                        var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
+                        $scope.root = {
+                            termino_busqueda: '',
+                            progresoArchivo: 0,
+                            termino_busqueda_farmacia: '',
+                            opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
+                            nombre: "",
+                            observacion: "",
+                            itemsFacturasTemporales: 0,
+                            estadoBotones: ["glyphicon glyphicon-edit",
+                                "glyphicon glyphicon-ok",
+                                "fa fa-spinner fa-spin",
+                                "glyphicon glyphicon-remove"
+                            ]
+                        };
+                        $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
+                        $scope.session = {
+                            usuario_id: Usuario.getUsuarioActual().getId(),
+                            auth_token: Usuario.getUsuarioActual().getToken()
+                        };
+
+                        callback();
+                    };
+
+                    $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
+
+                    $scope.filtros = [
+                        {tipo: 'id', descripcion: "Id"},
+                        {tipo: 'Nombre', descripcion: "Nombre"}
+                    ];
+                    $scope.filtro = $scope.root.filtros[0];
+
+                    /**
+                     * +Descripcion Metodo encargado de visualizar en el boton del dropdwn
+                     *              el tipo de documento seleccionado
+                     * @param {type} filtro
+                     * @returns {undefined}
+                     */
+                    $scope.onSeleccionFiltro = function (filtro) {
+
+                        $scope.filtro = filtro;
+                        $scope.root.termino_busqueda = '';
+                    };
+
+                    that.borrarVariables = function () {
+                        $scope.root.termino_busqueda = '';
+                        $scope.root.farmacia_seleccionada = [];
+                        $scope.root.progresoArchivo = 0;
+                        $scope.root.termino_busqueda_farmacia = '';
+                        $scope.root.nombre = "";
+                        $scope.root.observacion = "";
+                    };
+
+                    $scope.buscarClienteFacturaTemporal = function (event) {
+
+                        if (event.which === 13 || event.which === 1) {
+
+                            that.listarFacturasTemporal();
+                        }
+
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha 18/10/2018
+                     * +Descripcion Metodo encargado de invocar el servicio que consultara  
+                     *              las facturas en temporal
+                     */
+                    that.listarFacturasTemporal = function () {
+                        $scope.notificarFacturaConsumo = 0;
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listar_facturas_consumo_temporal: {
+                                    filtro: $scope.filtro,
+                                    terminoBusqueda: $scope.root.termino_busqueda,
+                                    paginaActual: $scope.paginaactual
+
+                                }
+                            }
+                        };
+
+                        facturacionClientesService.listarConsumoBarranquillaTemporal(obj, function (data) {
+
+                            if (data.status === 200) {
+                                $scope.root.facturasTemporales = facturacionClientesService.renderCabeceraTmpFacturaConsumoBarranquilla(data.obj.listar_facturas_consumo_temporal);
+                                $scope.root.itemsFacturasTemporales = data.obj.listar_facturas_consumo_temporal.length;
+                            } else {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                        });
+
+
+                    };
+
+
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara 
+                     *              las farmacias
+                     * @author German Galvis
+                     * @fecha 18/10/2018
+                     */
+                    that.listarFarmacias = function () {
+
+                        var usuario = Usuario.getUsuarioActual();
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listar_clientes: {
+                                    filtro: 'Nombre', //$scope.root.filtro,
+                                    terminoBusqueda: $scope.root.termino_busqueda_farmacia, //$scope.root.numero,
+                                    empresaId: usuario.empresa.codigo,
+                                    paginaActual: '-1'
+                                }
+                            }
+                        };
+                        facturacionClientesService.listarClientes(obj, function (data) {
+                            if (data.status === 200) {
+                                $scope.bodegas = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+
+                        });
+
+                    };
+
+
+                    /**
+                     * @author German Galvis
+                     * +Descripcion Grid que listara todos los temporales de las facturas
+                     * @fecha 18/10/2018
+                     */
+                    $scope.listarConsumoBarranquillaTemporales = {
+                        data: 'root.facturasTemporales',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+                        columnDefs: [
+                            {field: 'factura', cellClass: "ngCellText", width: "6%", displayName: 'No Factura'},
+                            {field: 'id', cellClass: "ngCellText", width: "6%", displayName: 'Id'},
+                            {field: 'nombre', cellClass: "ngCellText", width: "25%", displayName: 'Nombre Corte'},
+                            {field: 'observaciones', cellClass: "ngCellText", width: "25%", displayName: 'Observacion'},
+                            {field: 'fechaRegistro', cellClass: "ngCellText", width: "15%", displayName: 'F. Registro'},
+                            {displayName: "Opc", width: "8%", heigth: "10%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '<div class="btn-group">\
+                           <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                           <ul class="dropdown-menu dropdown-options">\
+                                <li ng-if="row.entity.getEstadoFacturacion() == 0">\
+                                   <a href="javascript:void(0);" ng-click="onBtnGenearFacturaPrueba(row.entity)" class= "glyphicon glyphicon-edit"> Facturar </a>\
+                                </li>\
+                                <li ng-if="row.entity.getEstadoFacturacion() == 0">\
+                                   <a href="javascript:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
+                                </li>\
+                                <li>\
+                                   <a href="javascript:void(0);" ng-click="verProductos(row.entity)" class = "glyphicon glyphicon-print"> ver </a>\
+                                </li>\
+                           </ul>\
+                      </div>'
+                            },
+                            {field: 'Estado facturacion', cellClass: "ngCellText", displayName: 'Estado facturacion',
+                                cellTemplate: '<div class="col-xs-16 ">\
+                                <p class="text-uppercase">{{row.entity.getDescripcionEstadoFacturacion()}}\
+                                   <span ng-class="agregar_clase_facturacion(row.entity.getEstadoFacturacion())"></span>\
+                                </p>\
+                              </div>'}
+                        ]
+                    };
+
+                    $scope.agregar_clase_facturacion = function (index) {
+                        return $scope.root.estadoBotones[index];
+                    };
+
+                    $scope.btn_eliminar_temporal = function (entity) {
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea eliminar el documento?</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                            scope: $scope,
+                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+
+                                    $scope.confirmar = function () {
+                                        $scope.eliminarFacturaTemporal(entity);
+                                        $modalInstance.close();
+                                    };
+                                    $scope.close = function () {
+                                        $modalInstance.close();
+                                    };
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    };
+
+
+                    /**
+                     * +Descripcion German Galvis
+                     * @fecha 19/10/2018
+                     * +Descripcion Metodo encargado de eliminar el temporal de facturacion
+                     */
+                    $scope.eliminarFacturaTemporal = function (entity) {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                empresaId: entity.empresaId,
+                                grupo_id: entity.id
+                            }
+                        };
+
+                        facturacionClientesService.eliminarGetDocTemporalBarranquilla(obj, function (data) {
+                            if (data.status === 200) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                                that.listarFacturasTemporal();
+                            }
+
+                            if (data.status === 404) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                        });
+                    };
+
+                    /**
+                     * +Descripcion scope del grid para cargar los productos
+                     * @author German Galvis
+                     * @fecha 22/10/2018
+                     */
+                    $scope.cargarProductos = function () {
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            windowClass: 'app-modal-window-xlg-ls',
+                            keyboard: true,
+                            showFilter: true,
+                            cellClass: "ngCellText",
+                            templateUrl: 'views/facturacionClientes/CargarProductosBarranquilla.html',
+                            scope: $scope,
+                            controller: ['$scope', '$modalInstance', 'API', 'facturacionClientesService', function ($scope, $modalInstance, API, facturacionClientesService) {
+
+
+                                    $scope.opciones_archivo = new Flow();
+                                    $scope.opciones_archivo.target = API.FACTURACIONCLIENTES.SUBIR_ARCHIVO;
+                                    $scope.opciones_archivo.testChunks = false;
+                                    $scope.opciones_archivo.singleFile = true;
+                                    $scope.opciones_archivo.query = {
+                                        session: JSON.stringify($scope.session)
+                                    };
+                                    $scope.cargar_archivo_plano = function ($flow) {
+
+                                        $scope.opciones_archivo = $flow;
+                                    };
+                                    $scope.cerrar = function () {
+                                        $modalInstance.close();
+                                    };
+
+                                    $scope.subir_archivo_plano = function () {
+
+                                        var usuario = Usuario.getUsuarioActual();
+                                        $scope.root.progresoArchivo = 2;
+
+                                        $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                                            data: {
+                                                nombre: $scope.root.nombre,
+                                                observacion: $scope.root.observacion,
+                                                tipo_id_tercero: $scope.root.farmacia_seleccionada.tipo_id_tercero,
+                                                tercero_id: $scope.root.farmacia_seleccionada.id,
+                                                empresa_id: usuario.empresa.codigo,
+                                                centro_id: usuario.empresa.centroUtilidad.codigo,
+                                                bodega_id: usuario.empresa.centroUtilidad.bodega.codigo
+
+                                            }
+                                        });
+                                        $scope.opciones_archivo.upload();
+                                    };
+
+                                    $scope.respuesta_archivo_plano = function (file, message) {
+
+                                        var data = (message !== undefined) ? JSON.parse(message) : {};
+
+                                        if (data.status === 200) {
+
+                                            AlertService.mostrarMensaje("warning", data.msj);
+
+                                            $scope.root.productos_invalidos = data.obj.cargue_archivo.productos_invalidos;
+                                            $scope.opciones_archivo.cancel();
+                                            $scope.root.productosInvalidos = [];
+                                            $scope.root.productosInvalidosSinRepetir;
+
+
+                                            $scope.root.productos_invalidos.forEach(function (row) {
+
+                                                $scope.root.productosInvalidos.push({codigo_producto: row.codigo_producto, mensajeError: row.mensajeError});
+
+                                            });
+
+                                            function removeDuplicates(originalArray, prop) {
+                                                var newArray = [];
+                                                var lookupObject = {};
+
+                                                for (var i in originalArray) {
+                                                    lookupObject[originalArray[i][prop]] = originalArray[i];
+                                                }
+
+                                                for (i in lookupObject) {
+                                                    newArray.push(lookupObject[i]);
+                                                }
+                                                return newArray;
+                                            }
+
+                                            $scope.root.productosInvalidosSinRepetir = removeDuplicates($scope.root.productosInvalidos, "codigo_producto")
+
+                                            if ($scope.root.productosInvalidosSinRepetir.length > 0) {
+                                                $scope.opts = {
+                                                    backdrop: true,
+                                                    backdropClick: true,
+                                                    dialogFade: false,
+                                                    keyboard: true,
+                                                    template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Listado Productos </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Lista Productos NO validos.</h4>\
+                                                <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                    <div class="list-group">\
+                                                        <a ng-repeat="producto in root.productosInvalidosSinRepetir" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                            {{ producto.codigo_producto}} - {{ producto.mensajeError }}\
+                                                        </a>\
+                                                    </div>\
+                                                </div>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                                                    scope: $scope,
+                                                    controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                                                            $scope.close = function () {
+                                                                $scope.root.progresoArchivo = 0;
+                                                                $modalInstance.close();
+                                                            };
+                                                        }]
+                                                };
+                                                var modalInstance = $modal.open($scope.opts);
+                                            }
+
+                                            that.listarFacturasTemporal();
+                                            that.borrarVariables();
+
+                                        } else {
+                                            AlertService.mostrarMensaje("warning", data.msj);
+                                        }
+                                    };
+
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+
+
+                    };
+
+                    /**
+                     * +Descripcion scope del grid para mostrar el detalle de las facturas
+                     * @author German Galvis
+                     * @fecha 19/10/2018
+                     */
+                    $scope.verProductos = function (datos) {
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            windowClass: 'app-modal-window-xlg-ls',
+                            keyboard: true,
+                            showFilter: true,
+                            cellClass: "ngCellText",
+                            templateUrl: 'views/facturacionClientes/listarProductosBarranquilla.html',
+                            scope: $scope,
+                            controller: ['$scope', '$modalInstance', 'facturacionClientesService', function ($scope, $modalInstance, facturacionClientesService) {
+
+
+                                    /*
+                                     * funcion para paginar anterior
+                                     * @returns {lista datos}
+                                     */
+                                    $scope.paginaAnteriorDetalle = function () {
+                                        if ($scope.paginaDetalle === 1)
+                                            return;
+                                        $scope.paginaDetalle--;
+                                        that.listarDetalle();
+                                    };
+
+
+                                    /*
+                                     * funcion para paginar siguiente
+                                     * @returns {lista datos}
+                                     */
+                                    $scope.paginaSiguienteDetalle = function () {
+                                        $scope.paginaDetalle++;
+                                        that.listarDetalle();
+                                    };
+
+
+                                    /**
+                                     * +Descripcion Metodo encargado de invocar el servicio que consulta
+                                     *              el detalle de la factura
+                                     * @author German Galvis
+                                     * @fecha 19/10/2018 DD/MM/YYYY
+                                     * @returns {undefined}
+                                     */
+                                    that.listarDetalle = function () {
+
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                empresa_id: datos.empresaId,
+                                                grupo_id: datos.id,
+                                                paginaActual: $scope.paginaDetalle
+                                            }
+                                        };
+
+                                        facturacionClientesService.listarProductos(obj, function (data) {
+
+                                            if (data.status === 200) {
+
+                                                $scope.root.listadoProductos = facturacionClientesService.renderProductoFacturas(data.obj.listarProductos);
+                                            } else {
+                                                $scope.root.listadoProductos = null;
+                                            }
+
+                                        });
+                                    };
+
+
+                                    that.listarDetalle();
+
+                                    $scope.cerrar = function () {
+                                        $modalInstance.close();
+                                    };
+
+                                    $scope.listaProductos = {
+                                        data: 'root.listadoProductos',
+                                        enableColumnResize: true,
+                                        enableRowSelection: false,
+                                        enableCellSelection: true,
+                                        enableHighlighting: true,
+                                        columnDefs: [
+                                            {field: 'Codigo', width: "10%", displayName: 'Codigo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getCodigo()}}</p></div>'}, //
+                                            {field: 'Producto', width: "30%", displayName: 'Producto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
+                                            {field: 'Cantidad', width: "6%", displayName: 'Cantidad', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getCantidad()}}</p></div>'},
+                                            {field: 'Lote', width: "8%", displayName: 'Lote', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getLote()}}</p></div>'},
+                                            {field: 'Fecha Vencimiento', width: "12%", displayName: 'Fecha Vencimiento', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaVencimiento()}}</p></div>'},
+                                            {field: 'Valor Unitario', width: "15%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()| currency:"$ "}}</p></div>'},
+                                            {field: 'Iva', width: "4%", displayName: '% IVA', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPorcentajeIva()}}</p></div>'},
+                                            {field: 'Valor Total', width: "15%", displayName: 'Valor Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()| currency:"$ "}}</p></div>'}
+
+                                        ]
+                                    };
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+
+
+                    };
+
+                    /*
+                     * funcion para paginar anterior
+                     * @returns {lista datos}
+                     */
+                    $scope.paginaAnterior = function () {
+                        if ($scope.paginaactual === 1)
+                            return;
+                        $scope.paginaactual--;
+                        that.listarFacturasTemporal();
+                    };
+
+
+                    /*
+                     * funcion para paginar siguiente
+                     * @returns {lista datos}
+                     */
+                    $scope.paginaSiguiente = function () {
+                        $scope.paginaactual++;
+                        that.listarFacturasTemporal();
+                    };
+
+                    $scope.onBtnGenearFacturaPrueba = function (entity) {
+                        that.generarFacturaIndividual(entity);
+                    };
+
+                    that.generarFacturaIndividual = function (facturaEspecial) {
+                        var pedido = {
+                            tipo_id_tercero: facturaEspecial.tipo_id_tercero, //"NIT",
+                            id: facturaEspecial.tercero_id, //"892200273",
+                            facturaEspecial: facturaEspecial.id,
+                            pedidos: [
+                                {
+                                    numero_cotizacion: 0,
+                                    vendedor: [
+                                        {
+                                            tipo_id_tercero: "NIT",
+                                            id: "830080649"
+                                        }
+                                    ]
+                                }
+                            ]
+                        };
+
+                        var parametros = {
+                            pedido: pedido,
+                            tipoIdTercero: facturaEspecial.tipo_id_tercero, //'NIT',
+                            terceroId: facturaEspecial.tercero_id, //'892200273',
+                            AlertService: AlertService,
+                            documentoSeleccionados: [],
+                            session: $scope.session,
+                            terminoBusqueda: '',
+                            empresaSeleccionada: $scope.root.empresaSeleccionada,
+                            paginaactual: 1,
+                            tipoPagoFactura: '1',
+                            facturacionCosmitet: 0
+                        };
+
+                        facturacionClientesService.generarFacturaIndividualCompleta(parametros, function (data) {
+
+                            /**
+                             * +Descripcion si se genera la factura satisfacturiamente,
+                             *              el sistema activara la vista que lista las facturas generadas
+                             *              haciendo referencia a la factura reciente
+                             */
+                            if (data.status === 200) {
+//                                localStorageService.add("listaFacturaDespachoGenerada",
+//                                        {active: true,
+//                                            datos: data.obj.generar_factura_individual[0],
+//                                            mensaje: data.obj.resultado_sincronizacion_ws.resultado,
+//                                            mensaje_factura: data.obj.resultado_sincronizacion_ws.parametros
+//                                        }
+//                                );
+//                                $state.go('Despacho');
+                                that.listarFacturasTemporal();
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                            if (data.status === 404) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                            if (data.status === 409) {
+                                AlertService.mostrarMensaje("danger", data.msj);
+                            }
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("danger", data.msj);
+                            }
+                        });
+                    };
+
+                    /**
+                     * +Descripcion Metodo principal, el cual cargara el modulo
+                     *              siempre y cuando se cumplan las restricciones
+                     *              de empresa, centro de utilidad y bodega
+                     */
+                    that.init(function () {
+                        that.listarFacturasTemporal();
+                        that.listarFarmacias();
+                    });
+
                 }]);
 });
 
@@ -64367,13 +65090,13 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
 
 
     services.factory('facturacionClientesService',
-            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho","VendedorDespacho","PedidoDespacho","EmpresaDespacho","DocumentoDetalleConsumo",
-                "FacturaConsumo",
-                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho,PedidoDespacho,EmpresaDespacho,DocumentoDetalleConsumo,
-                FacturaConsumo) {
+            ['Request', 'API', "Usuario", "TipoTerceros", "TerceroDespacho", "DocumentoDespacho", "VendedorDespacho", "PedidoDespacho", "EmpresaDespacho", "DocumentoDetalleConsumo",
+                "FacturaConsumo", "FacturaConsumoBarranquilla", "ProductoFacturas",
+                function (Request, API, Usuario, TipoTerceros, TerceroDespacho, DocumentoDespacho, VendedorDespacho, PedidoDespacho, EmpresaDespacho, DocumentoDetalleConsumo,
+                        FacturaConsumo, FacturaConsumoBarranquilla, ProductoFacturas) {
 
                     var self = this;
- 
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  25/08/2017 DD/MM/YYYYY
@@ -64386,6 +65109,28 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                     };
                     
                     /**
+                     * @author German Galvis
+                     * @fecha  18/10/2018 DD/MM/YYYYY
+                     * +Descripcion lista las facturas de consumo de barranquilla en temporal
+                     */
+                    self.listarConsumoBarranquillaTemporal = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_FACTURAS_BARRANQUILLA_TEMPORALES, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author German Galvis
+                     * @fecha  19/10/2018 DD/MM/YYYYY
+                     * +Descripcion lista las farmacias a facturar
+                     */
+                    self.buscarBodega = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.BUSCAR_FARMACIAS, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
                      * @author Cristian Ardila
                      * @fecha  18/05/2017 DD/MM/YYYYY
                      * +Descripcion Servicio que sincronizara una factura
@@ -64395,8 +65140,8 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
-                    
+
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  18/05/2017 DD/MM/YYYYY
@@ -64417,7 +65162,7 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  18/05/2017 DD/MM/YYYYY
@@ -64429,8 +65174,8 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
-                    
+
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  18/05/2017 DD/MM/YYYYY
@@ -64442,13 +65187,13 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     self.generarSincronizacionDian = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_SINCRONIZACION_DIAN, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  18/05/2017 DD/MM/YYYYY
@@ -64460,7 +65205,7 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  18/05/2017 DD/MM/YYYYY
@@ -64472,7 +65217,7 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  05/05/2017 DD/MM/YYYYY
@@ -64483,8 +65228,8 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
-                    
+
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
@@ -64495,7 +65240,7 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  03/05/2017 DD/MM/YYYYY
@@ -64506,7 +65251,7 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
@@ -64517,8 +65262,8 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
-                    
+
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
@@ -64529,9 +65274,9 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
-                    
-                    
+
+
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
@@ -64543,20 +65288,20 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Eduar Garcia
                      * @fecha  24/07/2017 DD/MM/YYYYY
                      * +Descripcion Permite traer los documentos del cliente seleccionado
                      */
-                    self.listarDocumentos = function(obj, callback){
+                    self.listarDocumentos = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.DOCUMENTOS_POR_FACTURAR, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
-                    
-                    
-                    
+
+
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  09/05/2017 DD/MM/YYYYY
@@ -64568,20 +65313,20 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Eduar Garcia
                      * +Descripcion Permite traer el detalle del documento para facturar por consumo
                      * @fecha 10/05/2017 DD/MM/YYYYY
                      */
-                    self.obtenerDetallePorFacturar = function(obj, callback){
-                        
-                        Request.realizarRequest(API.FACTURACIONCLIENTES.OBTENER_DETALLE_POR_FACTURAR, "POST", obj, function(data) {
+                    self.obtenerDetallePorFacturar = function (obj, callback) {
+
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.OBTENER_DETALLE_POR_FACTURAR, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
-                   
-                   /**
+
+                    /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
                      * +Descripcion Metodo encargado del Invocar el path para generar las facturas
@@ -64592,7 +65337,7 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
@@ -64605,8 +65350,8 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
-                    
+
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
@@ -64619,7 +65364,7 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
@@ -64630,8 +65375,8 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
-                    
+
+
                     /**
                      * @author Cristian Ardila
                      * @fecha  02/05/2017 DD/MM/YYYYY
@@ -64649,7 +65394,7 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                      * @fecha 02/05/2017 DD/MM/YYYYY
                      */
                     self.renderListarTipoTerceros = function (tipoDocumento) {
-                       
+
                         var tipoDocumentos = [];
                         for (var i in tipoDocumento) {
 
@@ -64659,7 +65404,7 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                         return tipoDocumentos;
                     };
 
-                    
+
                     /**
                      * +Descripcion Metodo encargado de serializar el resultado de
                      *              la consulta que obtiene los clientes
@@ -64667,35 +65412,35 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                      * @returns {Array|nm$_shim-array.exports}
                      */
                     self.renderTerceroDespacho = function (tipoDocumento) {
-                       
+
                         var tercerosDespacho = [];
                         for (var i in tipoDocumento) {
 
-                            var _terceroDespacho = TerceroDespacho.get(tipoDocumento[i].nombre_tercero, tipoDocumento[i].tipo_id_tercero, 
-                                                    tipoDocumento[i].tercero_id,
-                                                    tipoDocumento[i].direccion,
-                                                    tipoDocumento[i].telefono);
-                                _terceroDespacho.setEmail(tipoDocumento[i].email); 
-                                _terceroDespacho.setTipoBloqueoId(tipoDocumento[i].tipo_bloqueo_id); 
-                                _terceroDespacho.setMunicipio(tipoDocumento[i].municipio); 
-                                _terceroDespacho.setDepartamento(tipoDocumento[i].departamento); 
-                                _terceroDespacho.setPais(tipoDocumento[i].pais); 
-                                _terceroDespacho.setContratoClienteId(tipoDocumento[i].contrato_cliente_id); 
-                                
-                          
+                            var _terceroDespacho = TerceroDespacho.get(tipoDocumento[i].nombre_tercero, tipoDocumento[i].tipo_id_tercero,
+                                    tipoDocumento[i].tercero_id,
+                                    tipoDocumento[i].direccion,
+                                    tipoDocumento[i].telefono);
+                            _terceroDespacho.setEmail(tipoDocumento[i].email);
+                            _terceroDespacho.setTipoBloqueoId(tipoDocumento[i].tipo_bloqueo_id);
+                            _terceroDespacho.setMunicipio(tipoDocumento[i].municipio);
+                            _terceroDespacho.setDepartamento(tipoDocumento[i].departamento);
+                            _terceroDespacho.setPais(tipoDocumento[i].pais);
+                            _terceroDespacho.setContratoClienteId(tipoDocumento[i].contrato_cliente_id);
+
+
                             tercerosDespacho.push(_terceroDespacho);
                         }
                         return tercerosDespacho;
                     };
-                    
-                    self.renderDocumentosClientes = function (datos,estado) {
-                         
+
+                    self.renderDocumentosClientes = function (datos, estado) {
+
                         var facturasDespachadas = [];
                         for (var i in datos) {
-                            
-                            var _empresaDespacho = EmpresaDespacho.get(datos[i].razon_social || '',datos[i].empresa_id);   
-                            if(estado === 0){
-                                                    
+
+                            var _empresaDespacho = EmpresaDespacho.get(datos[i].razon_social || '', datos[i].empresa_id);
+                            if (estado === 0) {
+
                                 _empresaDespacho.setTipoIdEmpresa(datos[i].tipo_id_empresa);
                                 _empresaDespacho.setId(datos[i].id);
                                 _empresaDespacho.setDigitoVerificacion(datos[i].digito_verificacion);
@@ -64705,36 +65450,36 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                                 _empresaDespacho.setDireccionEmpresa(datos[i].direccion_empresa);
                                 _empresaDespacho.setTelefonoEmpresa(datos[i].telefono_empresa);
                             }
-                            
-                            var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
-                                datos[i].tercero_id,
-                                datos[i].direccion,
-                                datos[i].telefono||'');
-                            
-                            var _vendedorDespacho = VendedorDespacho.get(datos[i].nombre, datos[i].tipo_id_vendedor, 
-                                datos[i].vendedor_id,
-                                "",
-                                "");
-                            
-                            
-                            
-                            var _documento = DocumentoDespacho.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal||'', datos[i].fecha_registro||'');
-                             
-                            
-                            var _pedido = PedidoDespacho.get(datos[i].empresa_id, '','');
-                                _pedido.set_numero_cotizacion(datos[i].pedido_cliente_id);
-                                
-                            if(estado === 1){
+
+                            var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero,
+                                    datos[i].tercero_id,
+                                    datos[i].direccion,
+                                    datos[i].telefono || '');
+
+                            var _vendedorDespacho = VendedorDespacho.get(datos[i].nombre, datos[i].tipo_id_vendedor,
+                                    datos[i].vendedor_id,
+                                    "",
+                                    "");
+
+
+
+                            var _documento = DocumentoDespacho.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal || '', datos[i].fecha_registro || '');
+
+
+                            var _pedido = PedidoDespacho.get(datos[i].empresa_id, '', '');
+                            _pedido.set_numero_cotizacion(datos[i].pedido_cliente_id);
+
+                            if (estado === 1) {
                                 _pedido.setFechaRegistro(datos[i].fecha_registro);
                                 _pedido.setSeleccionado(datos[i].seleccionado);
                                 _pedido.set_observacion(datos[i].observacion);
                                 _vendedorDespacho.setNumeroTelefonico(datos[i].telefono);
                             }
-                             
-                            if(estado === 0){    
+
+                            if (estado === 0) {
                                 _documento.setValor(datos[i].valor_total);
                                 _documento.setSaldo(datos[i].saldo);
-                                _documento.setDescripcionEstado(datos[i].descripcion_estado);                              
+                                _documento.setDescripcionEstado(datos[i].descripcion_estado);
                                 _documento.setEstadoSincronizacion(datos[i].estado);
                                 _documento.setFechaFactura(datos[i].fecha_registro);
                                 _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
@@ -64748,104 +65493,104 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                                 _documento.setPorcentajeReteIva(datos[i].porcentaje_reteiva);
                                 _documento.setPorcentajeIca(datos[i].porcentaje_ica);
                                 // _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
-                                _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
-                                _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
-                                _terceroDespacho.setPais(datos[i].pais_empresa); 
+                                _terceroDespacho.setMunicipio(datos[i].municipio_empresa);
+                                _terceroDespacho.setDepartamento(datos[i].departamento_empresa);
+                                _terceroDespacho.setPais(datos[i].pais_empresa);
                                 _terceroDespacho.setUbicacion(datos[i].ubicacion);
                                 _pedido.agregarDocumentos(_documento);
-                            } 
-                                
-                            
-                                _pedido.agregarVendedor(_vendedorDespacho);                                
-                                _terceroDespacho.agregarPedidos(_pedido);
-                                
-                            if(estado === 0){
+                            }
+
+
+                            _pedido.agregarVendedor(_vendedorDespacho);
+                            _terceroDespacho.agregarPedidos(_pedido);
+
+                            if (estado === 0) {
                                 _empresaDespacho.agregarFacturasDespachadas(_terceroDespacho);
-                                _empresaDespacho.sincronizacionDian=datos[i].sincronizacion;
+                                _empresaDespacho.sincronizacionDian = datos[i].sincronizacion;
                                 facturasDespachadas.push(_empresaDespacho);
                             }
 
-                            if(estado === 1){
-                                _terceroDespacho.sincronizacionDian=datos[i].sincronizacion;
+                            if (estado === 1) {
+                                _terceroDespacho.sincronizacionDian = datos[i].sincronizacion;
                                 facturasDespachadas.push(_terceroDespacho);
                             }
-                            
-                            
+
+
                         }
-                        
+
                         return facturasDespachadas;
                     };
-                    
-                    
-                    self.renderDocumentosPrefijosClientes = function (documento_id,prefijo,factura_fiscal,fecha_registro,empresa_id,tiene_iva) {     
-               
-                        
-                         
-                            var _documento = DocumentoDespacho.get(documento_id, prefijo, factura_fiscal||'', fecha_registro||'');
-                                _documento.set_empresa(empresa_id);
-                                _documento.setTieneIva(tiene_iva);
-                                //setDocumentoSeleccionado
-                            return _documento;
-                        
-                       
+
+
+                    self.renderDocumentosPrefijosClientes = function (documento_id, prefijo, factura_fiscal, fecha_registro, empresa_id, tiene_iva) {
+
+
+
+                        var _documento = DocumentoDespacho.get(documento_id, prefijo, factura_fiscal || '', fecha_registro || '');
+                        _documento.set_empresa(empresa_id);
+                        _documento.setTieneIva(tiene_iva);
+                        //setDocumentoSeleccionado
+                        return _documento;
+
+
                     };
-                    
-                    
+
+
                     /**
                      * @author Cristian Ardila
                      * +Descripcion Metodo encargado de generar la factura individual 
                      * @fecha 2017/25/05
                      */
-                    self.generarFacturaIndividualCompleta = function (parametros,callback) {
-                     
-                        parametros.AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizara la facturacion ?",
-                            function(estadoConfirm){                
-                                if(estadoConfirm){
+                    self.generarFacturaIndividualCompleta = function (parametros, callback) {
 
-                                    var documentosSeleccionadosFiltrados = [];
-                                    /**
-                                     * +Descripcion Se recorren los documentos checkeados en los pedidos
-                                     *              y se valida cual corresponde con cada pedido
-                                     *              para almacenarlos en un nuevo arreglo el cual sera
-                                     *              enviado al servidor para posteriormente ser
-                                     *              registrados
-                                     */
-                                    parametros.documentoSeleccionados.forEach(function(documentos){
+                        parametros.AlertService.mostrarVentanaAlerta("Generar factura individual", "Confirma que realizara la facturacion ?",
+                                function (estadoConfirm) {
+                                    if (estadoConfirm) {
 
-                                        if(parametros.pedido.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id ){
+                                        var documentosSeleccionadosFiltrados = [];
+                                        /**
+                                         * +Descripcion Se recorren los documentos checkeados en los pedidos
+                                         *              y se valida cual corresponde con cada pedido
+                                         *              para almacenarlos en un nuevo arreglo el cual sera
+                                         *              enviado al servidor para posteriormente ser
+                                         *              registrados
+                                         */
+                                        parametros.documentoSeleccionados.forEach(function (documentos) {
 
-                                          documentosSeleccionadosFiltrados.push(documentos);
+                                            if (parametros.pedido.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id) {
 
-                                        }
+                                                documentosSeleccionadosFiltrados.push(documentos);
 
-                                    });
-
-                                    var obj = {
-                                        session: parametros.session,
-                                        data: {
-                                            generar_factura_individual: {
-                                                terminoBusqueda: parametros.termino_busqueda, //$scope.root.numero,
-                                                empresaId: parametros.empresaSeleccionada.getCodigo(),
-                                                paginaActual: parametros.paginaactual,
-                                                tipoIdTercero: parametros.tipoIdTercero,
-                                                terceroId: parametros.terceroId,
-                                                tipoPago: parametros.tipoPagoFactura,  
-                                                pedido: parametros.pedido,
-                                                documentos: documentosSeleccionadosFiltrados,
-                                                facturacionCosmitet:parametros.facturacionCosmitet
                                             }
-                                        }
-                                    };
 
-                                    self.generarFacturaIndividual(obj, function (data) {
-                                        callback(data);
-                                    });                                            
+                                        });
+
+                                        var obj = {
+                                            session: parametros.session,
+                                            data: {
+                                                generar_factura_individual: {
+                                                    terminoBusqueda: parametros.termino_busqueda, //$scope.root.numero,
+                                                    empresaId: parametros.empresaSeleccionada.getCodigo(),
+                                                    paginaActual: parametros.paginaactual,
+                                                    tipoIdTercero: parametros.tipoIdTercero,
+                                                    terceroId: parametros.terceroId,
+                                                    tipoPago: parametros.tipoPagoFactura,
+                                                    pedido: parametros.pedido,
+                                                    documentos: documentosSeleccionadosFiltrados,
+                                                    facturacionCosmitet: parametros.facturacionCosmitet
+                                                }
+                                            }
+                                        };
+
+                                        self.generarFacturaIndividual(obj, function (data) {
+                                            callback(data);
+                                        });
+                                    }
                                 }
-                            }
-                        );                            
+                        );
                     };
-                    
-                    
+
+
                     /**
                      * @author Cristian Ardila
                      * +Descripcion Metodo encargado de generar la factura agrupada 
@@ -64854,128 +65599,128 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                     self.generarFacturasAgrupadasCompleta = function (parametros, callback) {
 
                         parametros.AlertService.mostrarVentanaAlerta("Generar factura agrupada", "Confirma que realizara la facturacion ? ",
-                            function (estadoConfirm) {
-                                if (estadoConfirm) {
+                                function (estadoConfirm) {
+                                    if (estadoConfirm) {
 
-                                    /**
-                                     * +Descripcion Se recorren los documentos checkeados en los pedidos
-                                     *              y se valida cual corresponde con cada pedido
-                                     *              para almacenarlos en un nuevo arreglo el cual sera
-                                     *              enviado al servidor para posteriormente ser
-                                     *              registrados
-                                     */
-                                    parametros.pedidosSeleccionados.forEach(function (row) {
+                                        /**
+                                         * +Descripcion Se recorren los documentos checkeados en los pedidos
+                                         *              y se valida cual corresponde con cada pedido
+                                         *              para almacenarlos en un nuevo arreglo el cual sera
+                                         *              enviado al servidor para posteriormente ser
+                                         *              registrados
+                                         */
+                                        parametros.pedidosSeleccionados.forEach(function (row) {
 
-                                        row.pedidos[0].vaciarDocumentosSeleccionados();
-                                        parametros.documentoSeleccionados.forEach(function (documentos) {
+                                            row.pedidos[0].vaciarDocumentosSeleccionados();
+                                            parametros.documentoSeleccionados.forEach(function (documentos) {
 
-                                            if (row.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id) {
-                                                row.pedidos[0].agregarDocumentosSeleccionados(documentos);
-                                            }
+                                                if (row.pedidos[0].numero_cotizacion === documentos.bodegas_doc_id) {
+                                                    row.pedidos[0].agregarDocumentosSeleccionados(documentos);
+                                                }
+                                            });
+
                                         });
 
-                                    });
-
-                                    var obj = {
-                                        session: parametros.session,
-                                        data: {
-                                            generar_factura_agrupada: {
-                                                terminoBusqueda: parametros.terminoBusqueda, //$scope.root.numero,
-                                                empresaId: parametros.empresaSeleccionada.getCodigo(),
-                                                paginaActual: parametros.paginaactual,
-                                                tipoIdTercero: parametros.tipoIdTercero,
-                                                terceroId: parametros.terceroId,
-                                                tipoPago: parametros.tipoPagoFactura,
-                                                documentos: parametros.pedidosSeleccionados,
-                                                facturacionCosmitet: parametros.facturacionCosmitet
+                                        var obj = {
+                                            session: parametros.session,
+                                            data: {
+                                                generar_factura_agrupada: {
+                                                    terminoBusqueda: parametros.terminoBusqueda, //$scope.root.numero,
+                                                    empresaId: parametros.empresaSeleccionada.getCodigo(),
+                                                    paginaActual: parametros.paginaactual,
+                                                    tipoIdTercero: parametros.tipoIdTercero,
+                                                    terceroId: parametros.terceroId,
+                                                    tipoPago: parametros.tipoPagoFactura,
+                                                    documentos: parametros.pedidosSeleccionados,
+                                                    facturacionCosmitet: parametros.facturacionCosmitet
+                                                }
                                             }
-                                        }
-                                    };
+                                        };
 
-                                    self.generarFacturaAgrupada(obj, function (data) {
-                                        callback(data);
-                                    });
+                                        self.generarFacturaAgrupada(obj, function (data) {
+                                            callback(data);
+                                        });
+                                    }
                                 }
-                            }
                         );
                     };
-                    
-                    self.renderFacturasEnProceso = function (datos) {      
-                            
+
+                    self.renderFacturasEnProceso = function (datos) {
+
                         var facturaProceso = [];
                         for (var i in datos) {
 
-                            var _documento = DocumentoDespacho.get(datos[i].empresa_id, 
-                            datos[i].prefijo, 
-                            datos[i].factura_fiscal||'', 
-                            datos[i].fecha_creacion||'');
+                            var _documento = DocumentoDespacho.get(datos[i].empresa_id,
+                                    datos[i].prefijo,
+                                    datos[i].factura_fiscal || '',
+                                    datos[i].fecha_creacion || '');
                             _documento.set_empresa(datos[i].nombre_empresa);
                             _documento.setFechaInicial(datos[i].fecha_inicial);
                             _documento.setFechaFinal(datos[i].fecha_final);
                             _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
                             _documento.setEstadoFacturacion(datos[i].estado);
-                           
+
                             facturaProceso.push(_documento);
                         }
                         return facturaProceso;
                     };
-                    
-                    self.renderDetalleTmpFacturaConsumo = function (datos) {      
-                      
+
+                    self.renderDetalleTmpFacturaConsumo = function (datos) {
+
                         var detalleFacturaTmp = [];
                         for (var i in datos) {
-                            
-                            var _documento = DocumentoDetalleConsumo.get(datos[i].codigo_producto, 
-                            datos[i].cantidad_despachada, 
-                            datos[i].lote, 
-                            datos[i].fecha_vencimiento,
-                            datos[i].prefijo,
-                            datos[i].factura_fiscal);
-                                                    
-                            _documento.setValorUnitario(datos[i].valor_unitario);                          
-                            _documento.setPorcIva(datos[i].porc_iva);                          
-                            _documento.setPorcIvaTotal(datos[i].porc_iva_total);                          
-                            _documento.setId(datos[i].id_factura_xconsumo); 
+
+                            var _documento = DocumentoDetalleConsumo.get(datos[i].codigo_producto,
+                                    datos[i].cantidad_despachada,
+                                    datos[i].lote,
+                                    datos[i].fecha_vencimiento,
+                                    datos[i].prefijo,
+                                    datos[i].factura_fiscal);
+
+                            _documento.setValorUnitario(datos[i].valor_unitario);
+                            _documento.setPorcIva(datos[i].porc_iva);
+                            _documento.setPorcIvaTotal(datos[i].porc_iva_total);
+                            _documento.setId(datos[i].id_factura_xconsumo);
                             _documento.setDescripcionProducto(datos[i].descripcion);
-                            
-                           
+
+
                             detalleFacturaTmp.push(_documento);
                         }
                         return detalleFacturaTmp;
                     };
-                    
-                    self.renderCabeceraTmpFacturaConsumo = function (datos) {      
-                       
+
+                    self.renderCabeceraTmpFacturaConsumo = function (datos) {
+
                         var cabeceraFacturaTmp = [];
                         for (var i in datos) {
-                            
-                            var _documento = FacturaConsumo.get(datos[i].documento_id,datos[i].prefijo,datos[i].factura_fiscal,1);
-                            var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
-                                datos[i].tercero_id,
-                                datos[i].direccion,
-                                datos[i].telefono||'');
-                                _terceroDespacho.setContratoClienteId(datos[i].contrato_cliente_id);
-                                
-                            _documento.setId(datos[i].id_factura_xconsumo);                          
-                            _documento.setEmpresaId(datos[i].empresa_id);                          
-                            _documento.setEmpresa(datos[i].nombre_empresa);                          
-                            _documento.setTipoPago(datos[i].descripcion_tipo_pago);                          
-                            _documento.setTipoPagoId(datos[i].tipo_pago_id);                          
-                            _documento.setUsuario(datos[i].nombre_usuario);                          
-                            _documento.setFechaRegistro(datos[i].fecha_registro_corte);                          
-                            _documento.setValorTotal(datos[i].valor_total);                          
-                            _documento.setValorSubTotal(datos[i].valor_sub_total);                          
-                            _documento.setObservaciones(datos[i].observaciones);  
+
+                            var _documento = FacturaConsumo.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal, 1);
+                            var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero,
+                                    datos[i].tercero_id,
+                                    datos[i].direccion,
+                                    datos[i].telefono || '');
+                            _terceroDespacho.setContratoClienteId(datos[i].contrato_cliente_id);
+
+                            _documento.setId(datos[i].id_factura_xconsumo);
+                            _documento.setEmpresaId(datos[i].empresa_id);
+                            _documento.setEmpresa(datos[i].nombre_empresa);
+                            _documento.setTipoPago(datos[i].descripcion_tipo_pago);
+                            _documento.setTipoPagoId(datos[i].tipo_pago_id);
+                            _documento.setUsuario(datos[i].nombre_usuario);
+                            _documento.setFechaRegistro(datos[i].fecha_registro_corte);
+                            _documento.setValorTotal(datos[i].valor_total);
+                            _documento.setValorSubTotal(datos[i].valor_sub_total);
+                            _documento.setObservaciones(datos[i].observaciones);
                             _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
                             _documento.setEstadoFacturacion(datos[i].sw_facturacion);
-                            
+
                             _documento.agregarTerceros(_terceroDespacho);
                             cabeceraFacturaTmp.push(_documento);
                         }
                         return cabeceraFacturaTmp;
                     };
-                    
-                                        /**
+
+                    /**
                      * @author German Galvis
                      * @fecha  05/07/2018 DD/MM/YYYYY
                      * +Descripcion Servicio que elimina una factura temporal
@@ -64985,12 +65730,69 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                             callback(data);
                         });
                     };
-                    
-                    
-                   
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  19/10/2018 DD/MM/YYYYY
+                     * +Descripcion Servicio que elimina una factura temporal
+                     */
+                    self.eliminarGetDocTemporalBarranquilla = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.ELIMINAR_TEMPORAL_FACTURA_CONSUMO_BARRANQUILLA, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  19/10/2018 DD/MM/YYYYY
+                     * +Descripcion Servicio que generara el reporte con el detalle
+                     *              de la factura generada
+                     */
+                    self.listarProductos = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_PRODUCTOS, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    self.renderCabeceraTmpFacturaConsumoBarranquilla = function (datos) {
+
+                        var cabeceraFacturaTmp = [];
+                        for (var i in datos) {
+
+                            var _documento = FacturaConsumoBarranquilla.get(datos[i].grupo_id, datos[i].empresa_id, datos[i].nombre_producto_consumo, datos[i].fecha_registro);
+
+                            _documento.setObservaciones(datos[i].observacion);
+                            _documento.setEstadoFacturacion(datos[i].sw_facturacion);
+                            _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
+                            _documento.setTipoIdTercero(datos[i].tipo_id_tercero);
+                            _documento.setTerceroId(datos[i].tercero_id);
+                            if (datos[i].prefijo && datos[i].factura_fiscal) {
+                                _documento.setFactura(datos[i].prefijo + " - " + datos[i].factura_fiscal);
+                            } else {
+                                _documento.setFactura("");
+                            }
+                            cabeceraFacturaTmp.push(_documento);
+                        }
+                        return cabeceraFacturaTmp;
+                    };
+
+                    self.renderProductoFacturas = function (datos) {
+                        var productoFacturaTmp = [];
+                        for (var i in datos) {
+                            var _producto = ProductoFacturas.get(datos[i].codigo_producto, datos[i].descripcion, datos[i].lote, datos[i].cantidad, datos[i].producto_consumo_id, datos[i].valor_unitario);
+
+                            _producto.setFechaVencimiento(datos[i].fecha_vencimiento);
+                            _producto.setPorcentajeIva(datos[i].iva);
+                            _producto.setTotalNota(datos[i].total);
+
+                            productoFacturaTmp.push(_producto);
+                        }
+                        return productoFacturaTmp;
+                    };
+
                     return this;
                 }]);
-             
+
 
 });
 
@@ -66245,6 +67047,7 @@ define('app',[
     "models/ConceptoCaja",
     "models/TerceroDespacho",
     "models/EmpresaDespacho",
+    "models/FacturaConsumoBarranquilla",
     "models/FacturaProveedores",
     "models/ProductoRecepcion",
     "models/ProductoFacturas",
@@ -66258,6 +67061,7 @@ define('app',[
     "controllers/facturacionCliente/PedidosClientesController",
     "controllers/facturacionCliente/VentanaMensajeSincronizacionController",
     "controllers/facturacionCliente/FacturacionConsumoController",
+    "controllers/facturacionCliente/FacturacionConsumoBarranquillaController",
     "controllers/facturacionCliente/GuardarFacturaConsumoController",
     "controllers/facturacionProveedor/FacturacionProveedorController",
     "controllers/facturacionProveedor/DetalleRecepcionParcialController",

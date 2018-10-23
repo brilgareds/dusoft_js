@@ -1,11 +1,12 @@
 
 /* global G */
 
-var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion, e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion) {
+var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion, e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
     this.m_usuarios = m_usuarios;
+    this.m_productos = m_productos;
     this.m_sincronizacion = m_sincronizacion;
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
@@ -1180,6 +1181,134 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function 
         }
         res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de cargar el archivo plano
+ * @fecha 2018-10-22 YYYY-MM-DD
+ */
+FacturacionClientes.prototype.subirArchivo = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    // data
+    if (args.data === undefined) {
+        res.send(G.utils.r(req.url, 'la data  No Esta Definida', 404, {}));
+        return;
+    }
+    // nombre
+    if (args.data.nombre === '') {
+        res.send(G.utils.r(req.url, 'nombre esta vacio', 404, {}));
+        return;
+    }
+
+    // Empresa, Centro Utilidad,  Bodega
+    if (args.data.empresa_id === '' || args.data.centro_id === '' || args.data.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacios', 404, {}));
+        return;
+    }
+    // Validar Cliente
+    if (args.data.tipo_id_tercero === '' || args.data.tercero_id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id o tercero_id estan vacios', 404, {}));
+        return;
+    }
+
+    // Observaciones
+    if (args.data.observacion === '') {
+        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        nombre: args.data.nombre,
+        observacion: args.data.observacion,
+        tipo_id_tercero: args.data.tipo_id_tercero,
+        tercero_id: args.data.tercero_id,
+        empresa_id: args.data.empresa_id,
+        centro_id: args.data.centro_id,
+        bodega_id: args.data.bodega_id
+    };
+    var _productosInvalidosNoExistentes = "";
+    var _productosValidosExistentes = "";
+
+    /**
+     * +Descripcion Se obtienen los productos del archivo plano
+     */
+    G.Q.nfcall(__subir_archivo_plano, req.files).then(function (contenido) {
+
+        if (contenido.length > 0) {
+            /*
+             * +Descripcion Se valida si cada uno de los productos existe en el inventario
+             */
+            return G.Q.nfcall(__validar_productos_archivo_plano, that, 0, contenido, [], []);
+
+        } else {
+            throw {msj: "El archivo esta vacio", status: 500, data: {pedidos_clientes: {}}};
+        }
+
+    }).then(function (productosPlano) {
+        /*
+         * +Descripcion Productos que no se encuentran en el inventario
+         */
+        _productosInvalidosNoExistentes = productosPlano[1];
+        _productosValidosExistentes = productosPlano[0];
+
+        if (_productosValidosExistentes.length === 0) {
+
+            throw {msj: 'Lista de Productos',
+                status: 200,
+                data: {pedidos_clientes: {
+                        productos_validos: _productosValidosExistentes,
+                        productos_invalidos: _productosInvalidosNoExistentes
+                    }}};
+            return;
+        }
+
+        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarUltimoGrupo');
+
+    }).then(function (grupo) {
+
+        parametros.grupo = grupo[0].nextval;
+
+        if (_productosValidosExistentes.length > 0) {
+            return G.Q.nfcall(__insertarProductosConsumo, that, 0, parametros, _productosValidosExistentes, []);
+        } else {
+
+            return true;
+
+        }
+
+    }).then(function (resultado) {
+
+        productosDuplicadosInvalidos = resultado;
+
+        if (productosDuplicadosInvalidos.length > 0) {
+            productosInvalidosTodos = productosDuplicadosInvalidos.concat(_productosInvalidosNoExistentes);
+        } else {
+            productosInvalidosTodos = _productosInvalidosNoExistentes;
+        }
+
+        throw {msj: 'Productos cargados correctamente', status: 200, data: {cargue_archivo: {
+                    productos_validos: _productosValidosExistentes,
+                    productos_invalidos: productosInvalidosTodos
+
+                }}};
+        return;
+
+    }).fail(function (err) {
+
+        console.log("err [subirArchivo]:", err);
+        var msj = "Erro Interno";
+        var status = 500;
+
+        if (err.status) {
+            msj = err.msj;
+            status = err.status;
+        }
+        res.send(G.utils.r(req.url, msj, status, err.data));
+    }).done();
+
 };
 
 /**
@@ -3489,7 +3618,134 @@ function __generarPdf(datos, callback) {
     });
 }
 
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Cargar Archivo Plano
+ */
+function __subir_archivo_plano(files, callback) {
 
-FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion"];
+    var ruta_tmp = files.file.path;
+    var ext = G.path.extname(ruta_tmp);
+    var nombre_archivo = G.random.randomKey(3, 3) + ext;
+    var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
+
+    if (G.fs.existsSync(ruta_tmp)) {
+        // Copiar Archivo
+        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
+                then(function () {
+                    return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
+                }).then(function () {
+            var parser = G.XlsParser;
+            var workbook = parser.readFile(ruta_nueva);
+            var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad', 'lote', 'fecha_vencimiento', 'valor_unitario', 'iva']);
+
+            if (!filas) {
+                callback(true);
+                return;
+            } else {
+                G.fs.unlinkSync(ruta_nueva);
+                callback(false, filas);
+            }
+        }).
+                fail(function (err) {
+                    G.fs.unlinkSync(ruta_nueva);
+                    callback(true);
+                }).
+                done();
+
+    } else {
+        callback(true);
+    }
+}
+;
+
+
+/*
+ * Autor : Eduar Garcia
+ * Descripcion : Validar que los codigos de los productos del archivo plano sean validos.
+ *
+ */
+function __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback) {
+
+    var producto = filas[index];
+    if (!producto) {
+
+        callback(false, productosValidos, productosInvalidos);
+        return;
+    }
+
+    /**
+     * +Descripcion Funcion encargada de modificar el detalle del pedido
+     */
+    G.Q.ninvoke(that.m_productos, 'validar_producto', producto.codigo).then(function (resultado) {
+        var _producto = {codigo_producto: producto.codigo, cantidad: producto.cantidad, lote: producto.lote};
+
+        if (resultado.length > 0) {
+
+            _producto.tipoProductoId = resultado[0].tipo_producto_id;
+            _producto.descripcion = resultado[0].descripcion_producto;
+            _producto.fecha_vencimiento = producto.fecha_vencimiento;
+            _producto.valor_unitario = producto.valor_unitario;
+            _producto.iva = producto.iva;
+            productosValidos.push(_producto);
+
+        } else {
+            _producto.mensajeError = "No existe en inventario";
+            _producto.existeInventario = false;
+            productosInvalidos.push(_producto);
+
+        }
+
+        index++;
+        setTimeout(function () {
+            __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback);
+        }, 0);
+
+    }).fail(function (error) {
+
+        callback(error);
+    });
+}
+;
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de insertar un arreglo de productos en la tabla
+ *              productos_consumo
+ * 
+ */
+function __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback) {
+    
+    var producto = _productos_validos[index];
+    if (!producto) {
+        callback(false, _productos_invalidos);
+        return;
+    }
+
+    producto.empresa_id = parametros.empresa_id;
+    producto.bodega_id = parametros.bodega_id;
+    producto.centro_id = parametros.centro_id;
+    producto.observacion = parametros.observacion;
+    producto.nombre = parametros.nombre;
+    producto.grupo = parametros.grupo;
+    producto.tipo_id_tercero = parametros.tipo_id_tercero;
+    producto.tercero_id = parametros.tercero_id;
+
+    that.m_facturacion_clientes.insertar_productos_consumo(producto, function (err, rows) {
+        if (err) {
+
+            _productos_invalidos.push(producto);
+        }
+
+        index++;
+        setTimeout(function () {
+            __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback);
+        }, 0);
+
+    });
+}
+
+
+FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion", "m_productos"];
 
 module.exports = FacturacionClientes;

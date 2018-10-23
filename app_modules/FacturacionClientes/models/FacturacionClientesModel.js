@@ -531,8 +531,8 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
         consulta.join('ventas_ordenes_pedidos as pedi', function () {
             this.on("pedi.empresa_id", "a.empresa_id")
                     .on("pedi.pedido_cliente_id", "a.pedido_cliente_id")
-                    .on("pedi.tercero_id", "a.tercero_id")
-                    .on("pedi.tipo_id_tercero", "a.tipo_id_tercero")
+                    //.on("pedi.tercero_id", "a.tercero_id")
+                    //.on("pedi.tipo_id_tercero", "a.tipo_id_tercero")
 
         }).as("a");
 
@@ -2478,7 +2478,9 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumoBarranquilla =
         when sw_facturacion=0 then 'SIN FACTURAR'\
         end as descripcion_estado_facturacion"),
         "prefijo",
-        "factura_fiscal"
+        "factura_fiscal",
+        "tipo_id_tercero",
+        "tercero_id"
     ];
     var query = G.knex.distinct(columnas)
             .from('productos_consumo')
@@ -2579,6 +2581,56 @@ FacturacionClientesModel.prototype.buscarFarmacias = function (parametro, callba
     });
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion consulta el ultimo grupo
+ * @fecha 22/10/2018
+ */
+FacturacionClientesModel.prototype.consultarUltimoGrupo = function (callback) {
+
+    var query = G.knex.select(G.knex.raw("NEXTVAL ('grupo_producto_consumo')"));
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [consultarUltimoGrupo]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @fecha 22/10/2018
+ * +Descripcion Metodo encargado de insertar los productos del archivo plano a 
+ * la tabla productos_consumo
+ * @author German Galvis
+ */
+
+FacturacionClientesModel.prototype.insertar_productos_consumo = function (obj, callback) {
+
+    var parametros = {empresa_id: obj.empresa_id,
+        centro_utilidad: obj.centro_id,
+        bodega: obj.bodega_id,
+        observacion: obj.observacion,
+        nombre_producto_consumo: obj.nombre,
+        codigo_producto: obj.codigo_producto,
+        lote: obj.lote,
+        fecha_vencimiento: obj.fecha_vencimiento,
+        cantidad: obj.cantidad,
+        valor_unitario: obj.valor_unitario,
+        porcentaje_gravamen: obj.iva,
+        grupo_id: obj.grupo,
+        tipo_id_tercero: obj.tipo_id_tercero,
+        tercero_id: obj.tercero_id
+    };
+
+    var query = G.knex('productos_consumo').insert(parametros);
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [insertar_productos_consumo]: ", err);
+        callback({err: err, msj: "Error al guardar la insertar_productos_consumo"});
+    });
+};
 
 FacturacionClientesModel.$inject = ["m_e008"];
 

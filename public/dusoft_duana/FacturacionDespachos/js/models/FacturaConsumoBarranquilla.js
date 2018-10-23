@@ -72,6 +72,22 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 return this.factura;
             };
 
+            FacturaConsumoBarranquilla.prototype.setTerceroId = function (tercero_id) {
+                this.tercero_id = tercero_id;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getTerceroId = function () {
+                return this.tercero_id;
+            };
+
+            FacturaConsumoBarranquilla.prototype.setTipoIdTercero = function (tipo_id_tercero) {
+                this.tipo_id_tercero = tipo_id_tercero;
+            };
+
+            FacturaConsumoBarranquilla.prototype.getTipoIdTercero = function () {
+                return this.tipo_id_tercero;
+            };
+
             this.get = function (id, empresa_id, nombre, fecha_registro, observaciones, estadoFacturacion, descripcionEstadoFacturacion) {
                 return new FacturaConsumoBarranquilla(id, empresa_id, nombre, fecha_registro, observaciones, estadoFacturacion, descripcionEstadoFacturacion);
             };

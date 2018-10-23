@@ -126,6 +126,10 @@ module.exports = function(app, di_container) {
     app.post('/api/FacturacionClientes/listarProductos', function(req, res) {       
         c_facturacion_clientes.listarProductos(req, res);
     });
+     
+    app.post('/api/FacturacionClientes/subirArchivo', function(req, res) {       
+        c_facturacion_clientes.subirArchivo(req, res);
+    });
     
     app.post('/api/FacturacionClientes/generarSincronizacionDian', function(req, res) {       
         c_facturacion_clientes.generarSincronizacionDian(req, res);

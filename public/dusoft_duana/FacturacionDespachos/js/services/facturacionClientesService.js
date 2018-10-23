@@ -676,6 +676,8 @@ define(["angular", "js/services"], function (angular, services) {
                             _documento.setObservaciones(datos[i].observacion);
                             _documento.setEstadoFacturacion(datos[i].sw_facturacion);
                             _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
+                            _documento.setTipoIdTercero(datos[i].tipo_id_tercero);
+                            _documento.setTerceroId(datos[i].tercero_id);
                             if (datos[i].prefijo && datos[i].factura_fiscal) {
                                 _documento.setFactura(datos[i].prefijo + " - " + datos[i].factura_fiscal);
                             } else {

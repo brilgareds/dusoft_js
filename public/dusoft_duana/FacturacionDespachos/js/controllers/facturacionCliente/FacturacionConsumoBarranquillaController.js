@@ -20,11 +20,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
                     that.init = function (callback) {
                         $scope.paginaactual = 1;
-                        $scope.columnaSizeBusqueda = "col-md-3";
                         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-                        var fecha_actual = new Date();
                         $scope.root = {
                             termino_busqueda: '',
+                            progresoArchivo: 0,
                             termino_busqueda_farmacia: '',
                             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
                             nombre: "",
@@ -46,7 +45,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
                     $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
-                    $scope.columnaSizeBusqueda = "col-md-3";
 
                     $scope.filtros = [
                         {tipo: 'id', descripcion: "Id"},
@@ -66,6 +64,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.termino_busqueda = '';
                     };
 
+                    that.borrarVariables = function () {
+                        $scope.root.termino_busqueda = '';
+                        $scope.root.farmacia_seleccionada = [];
+                        $scope.root.progresoArchivo = 0;
+                        $scope.root.termino_busqueda_farmacia = '';
+                        $scope.root.nombre = "";
+                        $scope.root.observacion = "";
+                    };
 
                     $scope.buscarClienteFacturaTemporal = function (event) {
 
@@ -256,6 +262,148 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
                     /**
+                     * +Descripcion scope del grid para cargar los productos
+                     * @author German Galvis
+                     * @fecha 22/10/2018
+                     */
+                    $scope.cargarProductos = function () {
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            windowClass: 'app-modal-window-xlg-ls',
+                            keyboard: true,
+                            showFilter: true,
+                            cellClass: "ngCellText",
+                            templateUrl: 'views/facturacionClientes/CargarProductosBarranquilla.html',
+                            scope: $scope,
+                            controller: ['$scope', '$modalInstance', 'API', 'facturacionClientesService', function ($scope, $modalInstance, API, facturacionClientesService) {
+
+
+                                    $scope.opciones_archivo = new Flow();
+                                    $scope.opciones_archivo.target = API.FACTURACIONCLIENTES.SUBIR_ARCHIVO;
+                                    $scope.opciones_archivo.testChunks = false;
+                                    $scope.opciones_archivo.singleFile = true;
+                                    $scope.opciones_archivo.query = {
+                                        session: JSON.stringify($scope.session)
+                                    };
+                                    $scope.cargar_archivo_plano = function ($flow) {
+
+                                        $scope.opciones_archivo = $flow;
+                                    };
+                                    $scope.cerrar = function () {
+                                        $modalInstance.close();
+                                    };
+
+                                    $scope.subir_archivo_plano = function () {
+
+                                        var usuario = Usuario.getUsuarioActual();
+                                        $scope.root.progresoArchivo = 2;
+
+                                        $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                                            data: {
+                                                nombre: $scope.root.nombre,
+                                                observacion: $scope.root.observacion,
+                                                tipo_id_tercero: $scope.root.farmacia_seleccionada.tipo_id_tercero,
+                                                tercero_id: $scope.root.farmacia_seleccionada.id,
+                                                empresa_id: usuario.empresa.codigo,
+                                                centro_id: usuario.empresa.centroUtilidad.codigo,
+                                                bodega_id: usuario.empresa.centroUtilidad.bodega.codigo
+
+                                            }
+                                        });
+                                        $scope.opciones_archivo.upload();
+                                    };
+
+                                    $scope.respuesta_archivo_plano = function (file, message) {
+
+                                        var data = (message !== undefined) ? JSON.parse(message) : {};
+
+                                        if (data.status === 200) {
+
+                                            AlertService.mostrarMensaje("warning", data.msj);
+
+                                            $scope.root.productos_invalidos = data.obj.cargue_archivo.productos_invalidos;
+                                            $scope.opciones_archivo.cancel();
+                                            $scope.root.productosInvalidos = [];
+                                            $scope.root.productosInvalidosSinRepetir;
+
+
+                                            $scope.root.productos_invalidos.forEach(function (row) {
+
+                                                $scope.root.productosInvalidos.push({codigo_producto: row.codigo_producto, mensajeError: row.mensajeError});
+
+                                            });
+
+                                            function removeDuplicates(originalArray, prop) {
+                                                var newArray = [];
+                                                var lookupObject = {};
+
+                                                for (var i in originalArray) {
+                                                    lookupObject[originalArray[i][prop]] = originalArray[i];
+                                                }
+
+                                                for (i in lookupObject) {
+                                                    newArray.push(lookupObject[i]);
+                                                }
+                                                return newArray;
+                                            }
+
+                                            $scope.root.productosInvalidosSinRepetir = removeDuplicates($scope.root.productosInvalidos, "codigo_producto")
+
+                                            if ($scope.root.productosInvalidosSinRepetir.length > 0) {
+                                                $scope.opts = {
+                                                    backdrop: true,
+                                                    backdropClick: true,
+                                                    dialogFade: false,
+                                                    keyboard: true,
+                                                    template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Listado Productos </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Lista Productos NO validos.</h4>\
+                                                <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                    <div class="list-group">\
+                                                        <a ng-repeat="producto in root.productosInvalidosSinRepetir" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                            {{ producto.codigo_producto}} - {{ producto.mensajeError }}\
+                                                        </a>\
+                                                    </div>\
+                                                </div>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                                                    scope: $scope,
+                                                    controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                                                            $scope.close = function () {
+                                                                $scope.root.progresoArchivo = 0;
+                                                                $modalInstance.close();
+                                                            };
+                                                        }]
+                                                };
+                                                var modalInstance = $modal.open($scope.opts);
+                                            }
+
+                                            that.listarFacturasTemporal();
+                                            that.borrarVariables();
+
+                                        } else {
+                                            AlertService.mostrarMensaje("warning", data.msj);
+                                        }
+                                    };
+
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+
+
+                    };
+
+                    /**
                      * +Descripcion scope del grid para mostrar el detalle de las facturas
                      * @author German Galvis
                      * @fecha 19/10/2018
@@ -358,14 +506,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
                     $scope.onBtnGenearFacturaPrueba = function (entity) {
-                        that.generarFacturaIndividual(entity.id);
+                        that.generarFacturaIndividual(entity);
                     };
 
                     that.generarFacturaIndividual = function (facturaEspecial) {
                         var pedido = {
-                            tipo_id_tercero: "NIT",
-                            id: "892200273",
-                            facturaEspecial: facturaEspecial,
+                            tipo_id_tercero: facturaEspecial.tipo_id_tercero, //"NIT",
+                            id: facturaEspecial.tercero_id, //"892200273",
+                            facturaEspecial: facturaEspecial.id,
                             pedidos: [
                                 {
                                     numero_cotizacion: 0,
@@ -381,8 +529,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                         var parametros = {
                             pedido: pedido,
-                            tipoIdTercero: 'NIT',
-                            terceroId: '892200273',
+                            tipoIdTercero: facturaEspecial.tipo_id_tercero, //'NIT',
+                            terceroId: facturaEspecial.tercero_id, //'892200273',
                             AlertService: AlertService,
                             documentoSeleccionados: [],
                             session: $scope.session,

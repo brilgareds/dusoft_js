@@ -20,6 +20,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
                     that.init = function (callback) {
                         $scope.paginaactual = 1;
+                        $scope.paginaDetalle = 1;
                         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
                         $scope.root = {
                             termino_busqueda: '',
@@ -423,6 +424,28 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             controller: ['$scope', '$modalInstance', 'facturacionClientesService', function ($scope, $modalInstance, facturacionClientesService) {
 
 
+                                    /*
+                                     * funcion para paginar anterior
+                                     * @returns {lista datos}
+                                     */
+                                    $scope.paginaAnteriorDetalle = function () {
+                                        if ($scope.paginaDetalle === 1)
+                                            return;
+                                        $scope.paginaDetalle--;
+                                        that.listarDetalle();
+                                    };
+
+
+                                    /*
+                                     * funcion para paginar siguiente
+                                     * @returns {lista datos}
+                                     */
+                                    $scope.paginaSiguienteDetalle = function () {
+                                        $scope.paginaDetalle++;
+                                        that.listarDetalle();
+                                    };
+
+
                                     /**
                                      * +Descripcion Metodo encargado de invocar el servicio que consulta
                                      *              el detalle de la factura
@@ -436,7 +459,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             session: $scope.session,
                                             data: {
                                                 empresa_id: datos.empresaId,
-                                                grupo_id: datos.id
+                                                grupo_id: datos.id,
+                                                paginaActual: $scope.paginaDetalle
                                             }
                                         };
 

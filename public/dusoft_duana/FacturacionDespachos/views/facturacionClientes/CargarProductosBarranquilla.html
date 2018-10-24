@@ -19,7 +19,7 @@
                     <ui-select ng-model="root.farmacia_seleccionada" theme="select2" class="form-control selectgeneral pull-left">
                         <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.nombre_tercero}}</ui-select-match>
                         <ui-select-choices repeat="bodega in bodegas | filter:$select.search">
-                            {{ bodega.nombre_tercero}}
+                            {{ bodega.nombre_tercero}} - {{bodega.tipo_id_tercero}} : {{bodega.id}}
                         </ui-select-choices>
                     </ui-select>
                 </div>

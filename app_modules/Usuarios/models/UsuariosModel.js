@@ -478,11 +478,8 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callbac
         } else {
           
             callback(err, JSON.parse(resultado));
-        }
-        
+        }        
     });
-    
-
 };
 
 function __serializarJson(modulos){

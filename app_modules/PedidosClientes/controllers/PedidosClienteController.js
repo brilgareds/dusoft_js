@@ -3825,7 +3825,7 @@ PedidosCliente.prototype.modificarDetallePedido = function (req, res) {
     }
 
     if (!producto.cantidadPendienteDespachar || producto.cantidadPendienteDespachar.length === 0) {
-        res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacÃ­a', 404, {}));
+        res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacia', 404, {}));
         return;
     }
 
@@ -4575,15 +4575,16 @@ PedidosCliente.prototype.validarDisponibilidad = function (req, res) {
     };
 
     var productos = args.pedidos_clientes.productos;
-
+console.log("productos ",productos);
+console.log("parametros ",parametros);
     G.Q.nfcall(__disponibilidadProductos, that, 0, productos, parametros).then(function (resultado) {
 
         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto: resultado}}));
 
-
     }).fail(function (err) {
 
         res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
+        
     }).done();
 
 };
@@ -4600,6 +4601,8 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
     var producto = productos[index];
     var def = G.Q.defer();
     var productoUnidadMedida = "";
+    console.log("index ",index);
+    console.log("producto-index ",producto);
     if (!producto) {
 
         callback(false, productosSinDisponible);//rowCount  
@@ -4610,7 +4613,7 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
 
     //se asigna la bodega del producto para que valide la existencia en la bodega de origen
     //y no en la bodega donde se genera el pedido
-    if (producto.bodegaProducto !== undefined) {
+    if (producto.bodegaProducto !== undefined && producto.bodegaProducto !== '') {
         parametros.bodega = producto.bodegaProducto;
     }
 
@@ -4624,24 +4627,25 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
             parametros.filtros,
             parametros.filtroAvanzado)
             .then(function (resultado) {
-
+console.log("listar_productos-index ",resultado);
 
                 if (producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0) {
                     productoUnidadMedida = resultado[0];
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productosSinDisponible.push(resultado[0]);
+                    console.log("entro ");
                     def.resolve();
                 } else {
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productoUnidadMedida = resultado[0];
-
+                      console.log("else ");
                     return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
 
                 }
 
 
             }).then(function (resultado) {
-
+console.log("resultado ",resultado);
         index++;
 
         if (!resultado) {
@@ -4667,6 +4671,8 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
         }
 
     }).fail(function (err) {
+        console.log("Error ",err);
+        callback(err);
     }).done();
 
 }

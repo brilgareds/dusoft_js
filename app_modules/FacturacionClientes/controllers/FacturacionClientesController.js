@@ -3696,11 +3696,11 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
     }).then(function (resultado) {
 
         if (resultado.length > 0) {
-
+                
             _producto.tipoProductoId = resultado[0].tipo_producto_id;
             _producto.descripcion = resultado[0].descripcion_producto;
-            _producto.fecha_vencimiento = producto.fecha_vencimiento;
-            _producto.valor_unitario = producto.valor_unitario;
+            _producto.fecha_vencimiento = new Date((producto.fecha_vencimiento - (25567 + 1))*86400*1000); //producto.fecha_vencimiento;
+            _producto.valor_unitario = parseFloat(producto.valor_unitario);
             _producto.iva = producto.iva;
             productosValidos.push(_producto);
 

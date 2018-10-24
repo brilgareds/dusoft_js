@@ -1055,7 +1055,7 @@ FacturacionClientesModel.prototype.insertarPcFactura = function (obj, transaccio
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err (/catch) [insertarPcFactura]: ", err);
-        callback({err: err, msj: "Error al guardar la factura agrupada]"});
+        callback({err: err, msj: "Error al guardar la factura agrupada- insertarPcFactura]"});
     });
 };
 
@@ -1099,7 +1099,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function (estado, o
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err (/catch) [insertarFacturaAgrupada]: ", err);
-        callback({err: err, msj: "Error al guardar la factura agrupada]"});
+        callback({err: err, msj: "Error al guardar la factura agrupada -insertarFacturaAgrupada]"});
     });
 };
 
@@ -1268,8 +1268,8 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupadaDetalle = function (ob
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
-        console.log("err (/catch) [insertarFacturaAgrupadaDetalle]: ", err);
-        callback({err: err, msj: "Error al guardar la factura agrupada]"});
+        console.log("err (/catch) [insertarFacturaAgrupadaDetalle]: -insertarFacturaAgrupadaDetalle ", err);
+        callback({err: err, msj: "Error al guardar la factura agrupada] -insertarFacturaAgrupadaDetalle"});
     });
 };
 
@@ -1741,7 +1741,7 @@ FacturacionClientesModel.prototype.insertarFacturaConsumo = function (obj, callb
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err (/catch) [insertarFacturaConsumo]: ", err);
-        callback({err: err, msj: "Error al guardar la factura agrupada]"});
+        callback({err: err, msj: "Error al guardar la factura agrupada] -insertarFacturaConsumo"});
     });
 };
 
@@ -1760,7 +1760,7 @@ FacturacionClientesModel.prototype.insertarDetalleFacturaConsumo = function (par
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err (/catch) [insertarDetalleFacturaConsumo]: ", err);
-        callback({err: err, msj: "Error al guardar la factura agrupada]"});
+        callback({err: err, msj: "Error al guardar la factura agrupada] -insertarDetalleFacturaConsumo"});
     });
 
 };
@@ -1844,7 +1844,7 @@ FacturacionClientesModel.prototype.generarTemporalFacturaConsumo = function (obj
 
     }).catch(function (err) {
         console.log("err (/catch) [generarTemporalFacturaConsumo]: ", err);
-        callback({err: err, msj: "Error al guardar la factura agrupada]"});
+        callback({err: err, msj: "Error al guardar la factura agrupada] -generarTemporalFacturaConsumo"});
     });
 }
 

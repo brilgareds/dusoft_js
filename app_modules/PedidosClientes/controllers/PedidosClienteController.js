@@ -4575,8 +4575,8 @@ PedidosCliente.prototype.validarDisponibilidad = function (req, res) {
     };
 
     var productos = args.pedidos_clientes.productos;
-console.log("productos ",productos);
-console.log("parametros ",parametros);
+    console.log("productos ", productos);
+    console.log("parametros ", parametros);
     G.Q.nfcall(__disponibilidadProductos, that, 0, productos, parametros).then(function (resultado) {
 
         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto: resultado}}));
@@ -4584,7 +4584,7 @@ console.log("parametros ",parametros);
     }).fail(function (err) {
 
         res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
-        
+
     }).done();
 
 };
@@ -4601,8 +4601,7 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
     var producto = productos[index];
     var def = G.Q.defer();
     var productoUnidadMedida = "";
-    console.log("index ",index);
-    console.log("producto-index ",producto);
+    
     if (!producto) {
 
         callback(false, productosSinDisponible);//rowCount  
@@ -4627,7 +4626,6 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
             parametros.filtros,
             parametros.filtroAvanzado)
             .then(function (resultado) {
-console.log("listar_productos-index ",resultado);
 
                 if (producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0) {
                     productoUnidadMedida = resultado[0];
@@ -4638,14 +4636,14 @@ console.log("listar_productos-index ",resultado);
                 } else {
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productoUnidadMedida = resultado[0];
-                      console.log("else ");
+                    console.log("else ");
                     return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
 
                 }
 
 
             }).then(function (resultado) {
-console.log("resultado ",resultado);
+        console.log("resultado ", resultado);
         index++;
 
         if (!resultado) {
@@ -4671,7 +4669,7 @@ console.log("resultado ",resultado);
         }
 
     }).fail(function (err) {
-        console.log("Error ",err);
+        console.log("Error ", err);
         callback(err);
     }).done();
 
@@ -4806,7 +4804,7 @@ function __validarPrecioVenta(producto, resultado, tipo) {
     }
 
     var valido = true;
-   // var contrato = resultado[0].contrato_cliente_id;
+    // var contrato = resultado[0].contrato_cliente_id;
     var precioRegulado = Number(resultado[0].precio_regulado);
     var precioPactado = Number(resultado[0].precio_pactado);
     var costoCompra = Number(resultado[0].costo_ultima_compra);
@@ -5652,13 +5650,23 @@ function __pedidoClienteAPedidoFarmacia(req, that, callback) {
     var usuario_id = req.session.user.usuario_id;
     var obj = {pedidoDestino: args.numero_pedido};
     var send = {};
+    var farmacia_id;
+    var centro_utilidad;
+    var bodega;
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultarPedidoMultipleCliente', {numero_pedido: args.numero_pedido}).then(function (resultado) {
         //farmacia_id, centro_utilidad, bodega, usuario_id, numero_pedido ,
-        var farmacia_id = resultado[0].farmacia_id;
-        var centro_utilidad = resultado[0].centro_utilidad;
-        var bodega = resultado[0].bodega;
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarEncabezadoFarmaciaRelacionadoNumeroPedido', farmacia_id, centro_utilidad, bodega, usuario_id, args.numero_pedido);
+        farmacia_id = resultado[0].farmacia_id;
+        centro_utilidad = resultado[0].centro_utilidad;
+        bodega = resultado[0].bodega;
+        
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'consultar_pedido', args.numero_pedido);
+
+    }).then(function (resultado) {
+
+        var observacion = resultado[0].observacion.substr(30);
+
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarEncabezadoFarmaciaRelacionadoNumeroPedido', farmacia_id, centro_utilidad, bodega, usuario_id, args.numero_pedido, observacion);
 
     }).then(function (resultado) {
         //if (resultado.rows.length > 0) {

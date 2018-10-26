@@ -2270,8 +2270,7 @@ console.log("generarOrdenDeCompraAuditado");
 
     if (args.ordenes_compras.observacion === '') {
          G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'observacion esta vacia', status: 404, data: {}});
-        //res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
-        console.log("4onGenerarOrdenDeCompraRespuesta");
+
         return;
     }
     var respuesta={};
@@ -2300,12 +2299,12 @@ console.log("generarOrdenDeCompraAuditado");
     G.Q.ninvoke(that, "__insertarOrdenCompra",parametros.encabezado ).then(function (resultado) {
          
         parametros.encabezado.ordenId = resultado.data.numero_orden;
- console.log("1__insertarOrdenCompra");       
+        
         return G.Q.ninvoke(that.m_ordenes_compra, "gestionaDetalleOrden",parametros );
          
     }).then(function(resultado){
         
-        console.log("2gestionaDetalleOrden");
+
         
         return G.Q.ninvoke(that.m_ordenes_compra, "finalizar_orden_compra",parametros.encabezado.ordenId, 1);
          
@@ -2315,21 +2314,18 @@ console.log("generarOrdenDeCompraAuditado");
         var param = {
          ordenPedido: parametros.encabezado.ordenId
          };
-         console.log("3finalizar_orden_compra");
+         
         return G.Q.ninvoke(that.m_actasTecnicas, "listarProductosParaActas",param);
         
     }).then(function(resultado){
         productosActas=resultado;
-        console.log("4listarProductosParaActas");
-        console.log("4listarProductosParaActas",args.ordenes_compras.empresa_id === '03' && (args.ordenes_compras.bodega_pedido === '03' || args.ordenes_compras.bodega_pedido === '06'));
-        console.log("4args.ordenes_compras.bodega_pedido",args.ordenes_compras.bodega_pedido);
-        console.log("4args.ordenes_compras.empresa_id",args.ordenes_compras.empresa_id);
+        
          if (args.ordenes_compras.empresa_id === '03' && (args.ordenes_compras.bodega_pedido === '03' || args.ordenes_compras.bodega_pedido === '06')) {
-console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
+             
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespachoAutomatico", {empresa: args.ordenes_compras.empresa_id, prefijoDocumento: args.ordenes_compras.prefijo_documento, numeroDocumento: args.ordenes_compras.numero_documento});
 
         }else{
-         console.log("6obtenerTotalDetalleDespachoAutomatico false");
+            
             return false;
         }
     }).then(function(resultado){
@@ -2360,8 +2356,7 @@ console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
         return G.Q.ninvoke(that.m_pedidos_clientes, "verificarPedidoMultiple",respuesta.data);            
             
     }).then(function(resultado){
-        console.log("7onGenerarOrdenDeCompraRespuesta EMIT",resultado);
-        console.log("7onGenerarOrdenDeCompraRespuesta EMIT resultado.length",resultado.length);
+        
 //        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta",respuesta);
 //
 //        that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);
@@ -2372,7 +2367,7 @@ console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
         }
     }).then(function(resultado){
         that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, resultado);
-        console.log("__generacionAutomatica!!!! ",resultado);
+        
           
     }).fail(function (err) {
         console.log('error al generar la orden de compra ', err);
@@ -2385,7 +2380,7 @@ console.log("5obtenerTotalDetalleDespachoAutomatico INgreso");
 
 function __generacionAutomatica(datos,callback){
     var that = datos.data.that;
-    console.log("__generacionAutomatica");
+    
     var bodega= datos.data.bodega;
     var ejecutar=true;
     var movimiento_temporal_id;
@@ -2430,7 +2425,6 @@ function __generacionAutomatica(datos,callback){
         
     }).then(function(resultado){
         
-        console.log("respuesta newDocTemporal ",resultado);
         callback(false,resultado);
     }).fail(function(err){
         
@@ -2454,7 +2448,7 @@ function __generacionAutomatica(datos,callback){
 }
 
 function __newDocTemporalI002(req, callback) {
-console.log("------newDocTemporalI002-----");
+    
     var that = req.that;
     var args = req.data;
     var usuarioId = req.session.user.usuario_id;
@@ -2464,7 +2458,7 @@ console.log("------newDocTemporalI002-----");
     var movimiento_temporal_id;
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificador_movimiento_temporal_returning", usuarioId,bodegas_doc_id).then(function(doc_tmp_id) {
-        console.log("obtener_identificador_movimiento_temporal_returning");
+        
         movimiento_temporal_id = doc_tmp_id[0].doc_tmp_id;
         
         G.knex.transaction(function(transaccion) {
@@ -2477,7 +2471,7 @@ console.log("------newDocTemporalI002-----");
                     doc_tmp_id: movimiento_temporal_id,
                     orden_pedido_id: orden_pedido_id
                 };
-                console.log("modificar_movimiento_bodega_temporal");
+                
                 return G.Q.nfcall(that.m_i002.insertarBodegasMovimientoOrdenesCompraTmp, parametros, transaccion);
 
             }).then(function() {
@@ -2649,11 +2643,7 @@ function __ejecutarDocumento(parametros,callback){
     parametros.req.body=body;
     
     G.Q.ninvoke(that.c_i002, "execCrearDocumentoAutomatico", parametros.req).then(function(result) {
-       console.log("execCrearDocumento ",result);
-       console.log("parametros ",parametros);
-       console.log("parametros.orden ",parametros.orden);
-       console.log("parametros.pedido ",parametros.pedido);
-       console.log("parametros.swTipoPedido ",parametros.swTipoPedido);
+
        documentoI002=result.respuesta;
         if(parametros.swTipoPedido === '0'){
            
@@ -2673,11 +2663,7 @@ function __ejecutarDocumento(parametros,callback){
         }
     }).then(function(result) { 
         
-        console.log("***********************");
-        console.log("result---------",result);
-        
         if(parametros.swTipoPedido === '0'){
-            console.log("***********************swTipoPedido:: ",parametros.swTipoPedido);
             
             var obj = {
                 id_orden_pedido_final: result.respuesta.pedido,
@@ -2686,7 +2672,7 @@ function __ejecutarDocumento(parametros,callback){
             };
             
         }else if(parametros.swTipoPedido === '1'){
-            console.log("***********************swTipoPedido:: ",parametros.swTipoPedido);
+            
            var obj = {
                 id_orden_pedido_final: result.numero_pedido,
                 cotizacion_origen: parametros.cotizacion.id_orden_cotizacion_origen,

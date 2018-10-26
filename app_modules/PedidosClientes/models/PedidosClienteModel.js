@@ -585,10 +585,10 @@ PedidosClienteModel.prototype.eliminarTemporalesClientes = function (callback) {
  * @returns {void}
  */
 
-PedidosClienteModel.prototype.insertarEncabezadoFarmaciaRelacionadoNumeroPedido = function (farmacia_id, centro_utilidad, bodega, usuario_id, numero_pedido, callback) {
+PedidosClienteModel.prototype.insertarEncabezadoFarmaciaRelacionadoNumeroPedido = function (farmacia_id, centro_utilidad, bodega, usuario_id, numero_pedido, observacion, callback) {
 
     var sql = " INSERT INTO solicitud_productos_a_bodega_principal( farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido, centro_destino, bodega_destino, pedido_cliente ) VALUES (\
-                    '" + farmacia_id + "' , '" + centro_utilidad + "' , '" + bodega + "', 'Generado desde Duana del pedido " + numero_pedido + "', " + usuario_id + ", now(), '03', 0, 0, 1, 1, '06', " + numero_pedido + "\
+                    '" + farmacia_id + "' , '" + centro_utilidad + "' , '" + bodega + "', '" + observacion + "', " + usuario_id + ", now(), '03', 0, 0, 1, 1, '06', " + numero_pedido + "\
                 ) returning solicitud_prod_a_bod_ppal_id as solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega";
 
     /*var sql = " INSERT INTO solicitud_productos_a_bodega_principal(\

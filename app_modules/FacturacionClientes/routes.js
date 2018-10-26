@@ -127,6 +127,10 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.listarProductos(req, res);
     });
      
+    app.post('/api/FacturacionClientes/imprimirCsv', function(req, res) {       
+        c_facturacion_clientes.imprimirCsv(req, res);
+    });
+     
     app.post('/api/FacturacionClientes/subirArchivo', function(req, res) {       
         c_facturacion_clientes.subirArchivo(req, res);
     });

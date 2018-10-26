@@ -1913,6 +1913,32 @@ FacturacionClientes.prototype.listarProductos = function (req, res) {
 
 /**
  * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos detallados
+ * @fecha 2018-10-19
+ */
+FacturacionClientes.prototype.imprimirCsv = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        empresa_id: args.empresa_id,
+        grupo_id: args.grupo_id,
+        paginaActual: '-1'};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).then(function (resultado) {
+        
+                    return G.Q.nfcall(__generarCsvBarranquilla, resultado);
+        }).then(function (resultado) {
+            console.log("resultado",resultado);
+                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {imprimirCsv: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {imprimirCsv: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
  * +Descripcion Metodo encargado de eliminar la factura barranquilla temporal
  * @fecha 2018-10-19 YYYY-MM-DD
  */
@@ -3696,10 +3722,10 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
     }).then(function (resultado) {
 
         if (resultado.length > 0) {
-                
+
             _producto.tipoProductoId = resultado[0].tipo_producto_id;
             _producto.descripcion = resultado[0].descripcion_producto;
-            _producto.fecha_vencimiento = new Date((producto.fecha_vencimiento - (25567 + 1))*86400*1000); //producto.fecha_vencimiento;
+            _producto.fecha_vencimiento = new Date((producto.fecha_vencimiento - (25567 + 1)) * 86400 * 1000); //producto.fecha_vencimiento;
             _producto.valor_unitario = parseFloat(producto.valor_unitario);
             _producto.iva = producto.iva;
             productosValidos.push(_producto);
@@ -3760,6 +3786,137 @@ function __insertarProductosConsumo(that, index, parametros, _productos_validos,
     });
 }
 
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado generar un archivo xls
+ *              productos_consumo
+ * 
+ */
+function __creaExcel(data, callback) {
+
+    console.log("__creaExcel");
+
+    var workbook = new G.Excel.Workbook();
+    var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
+
+    var alignment = {vertical: 'middle', horizontal: 'center'};
+    var border = {
+        top: {style: 'thin'},
+        left: {style: 'thin'},
+        bottom: {style: 'thin'},
+        right: {style: 'thin'}};
+
+    var font = {name: 'Calibri', size: 9};
+
+    var style = {font: font, border: border};
+
+    worksheet.columns = [
+        {header: 'CODIGO', key: 'a', style: style},
+        {header: 'PRODUCTO - ' + data.name, key: 'b', width: 50, style: style},
+        {header: 'MOLECULA', key: 'c', width: 25, style: style},
+        {header: 'LABORATORIO', key: 'd', style: style},
+        {header: 'TIPO PRODUCTO', key: 'e', style: style},
+        {header: 'NIVEL', key: 'f', style: style},
+        {header: 'Promedio Mes', key: 'g', width: 9, style: style},
+        {header: 'Stock Farmacia', key: 'h', width: 8.5, style: style},
+        {header: 'Pedido 60 Dias', key: 'i', width: 7.5, style: style},
+        {header: '', key: 'j', width: 10, style: style},
+        {header: 'Stock Bodega', key: 'k', width: 7.5, style: style}
+    ];
+
+    worksheet.views = [
+        {zoomScale: 160, state: 'frozen', xSplit: 1, ySplit: 1, activeCell: 'A1'}
+    ];
+    var i = 1;
+    data.forEach(function (element) {
+
+        if (element.color === 'ROJO') {
+            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+                element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
+                color: {argb: 'C42807'}, name: 'Calibri', size: 9
+            };
+        } else {
+            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+                element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]);
+        }
+
+        worksheet.getColumn('A').hidden = true;
+        worksheet.getColumn('D').hidden = true;
+        worksheet.getColumn('E').hidden = true;
+        worksheet.getColumn('F').hidden = true;
+
+        i++;
+    });
+
+    var font = {
+        name: 'SansSerif',
+        size: 9,
+        bold: true
+    };
+
+    var alignment = {vertical: 'center', horizontal: 'distributed'};
+
+    var border = {
+        top: {style: 'double'},
+        left: {style: 'double'},
+        bottom: {style: 'double'},
+        right: {style: 'double'}
+    };
+
+    var style = {font: font, border: border, alignment: alignment};
+
+    worksheet.getCell('A1').style = style;
+    worksheet.getCell('B1').style = style;
+    worksheet.getCell('C1').style = style;
+    worksheet.getCell('D1').style = style;
+    worksheet.getCell('E1').style = style;
+    worksheet.getCell('F1').style = style;
+    worksheet.getCell('G1').style = style;
+    worksheet.getCell('H1').style = style;
+    worksheet.getCell('I1').style = style;
+    worksheet.getCell('J1').style = style;
+    worksheet.getCell('K1').style = style;
+
+// save workbook to disk
+    workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
+        console.log("saved");
+        callback(false, data.nameArchivo);
+    });
+}
+;
+
+/**
+ * @author German Galvis
+ * +Descripcion controlador que genera csv
+ */
+function __generarCsvBarranquilla(datos, callback) {
+
+    var fields = ["codigo_producto", "cantidad", "lote", "fecha_vencimiento", "valor_unitario", "iva"];
+
+    var fieldNames = ["CODIGO", "CANTIDAD", "LOTE", "FECHA VENCIMIENTO", "VALOR UNITARIO", "IVA"];
+
+    var opts = {
+        data: datos,
+        fields: fields,
+        fieldNames: fieldNames,
+        del: ';',
+        hasCSVColumnTitle: 'Productos Consumo'
+    };
+
+    G.json2csv(opts, function (err, csv) {
+        if (err)
+            console.log("Eror de Archivo: ", err);
+        var nombreReporte = "CSV_" + datos[0].grupo_id + ".csv";
+        G.fs.writeFile(G.dirname + "/public/reports/" + nombreReporte, csv, function (err) {
+            if (err) {
+                console.log('Error __generarCsvBarranquilla', err);
+                throw err;
+            }
+            callback(false, nombreReporte);
+
+        });
+    });
+}
 
 FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion", "m_productos"];
 

@@ -179,7 +179,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                    <a href="javascript:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
                                 </li>\
                                 <li>\
-                                   <a href="javascript:void(0);" ng-click="verProductos(row.entity)" class = "glyphicon glyphicon-print"> ver </a>\
+                                   <a href="javascript:void(0);" ng-click="verProductos(row.entity)" class = "glyphicon glyphicon-send"> ver </a>\
+                                </li>\
+                                <li ng-if="row.entity.getEstadoFacturacion() == 0">\
+                                   <a href="javascript:void(0);" ng-click="onDescagarArchivo(row.entity)" class= "glyphicon glyphicon-print"> Imprimir </a>\
                                 </li>\
                            </ul>\
                       </div>'
@@ -508,6 +511,30 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     };
 
+
+                    $scope.onDescagarArchivo = function (entity) {
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                empresa_id: entity.empresaId,
+                                grupo_id: entity.id
+                            }
+                        };
+
+                        facturacionClientesService.imprimirCsv(obj, function (data) {
+
+                            if (data.status === 200) {
+
+                                $scope.visualizarReporte("/reports/" + data.obj.imprimirCsv, data.obj.imprimirCsv, "download");
+
+                            } else {
+
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                        });
+
+                    }
                     /*
                      * funcion para paginar anterior
                      * @returns {lista datos}

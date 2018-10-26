@@ -702,6 +702,19 @@ define(["angular", "js/services"], function (angular, services) {
                         return productoFacturaTmp;
                     };
 
+                    /**
+                     * @author German Galvis
+                     * @fecha  26/10/2018 DD/MM/YYYYY
+                     * +Descripcion Servicio que generara el reporte con el detalle
+                     *              de la factura generada en formato csv
+                     */
+                    self.imprimirCsv = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.IMPRIMIRCSV, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+
                     return this;
                 }]);
 

@@ -45326,6 +45326,7 @@ define('url',["angular"], function(angular) {
                  "LISTAR_FACTURAS_BARRANQUILLA_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasConsumoBarranquillaTemporales",
                  "ELIMINAR_TEMPORAL_FACTURA_CONSUMO_BARRANQUILLA" : BASE_URL + "/FacturacionClientes/eliminarTemporalFacturaConsumoBarranquilla",
                  "LISTAR_PRODUCTOS" : BASE_URL + "/FacturacionClientes/listarProductos",
+                 "IMPRIMIRCSV" : BASE_URL + "/FacturacionClientes/imprimirCsv",
                  "SUBIR_ARCHIVO" : BASE_URL + "/FacturacionClientes/subirArchivo",
                  "GENERAR_SINCRONIZACION_DIAN" : BASE_URL + "/FacturacionClientes/generarSincronizacionDian"
             },   
@@ -59253,7 +59254,10 @@ define('controllers/facturacionCliente/FacturacionConsumoBarranquillaController'
                                    <a href="javascript:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
                                 </li>\
                                 <li>\
-                                   <a href="javascript:void(0);" ng-click="verProductos(row.entity)" class = "glyphicon glyphicon-print"> ver </a>\
+                                   <a href="javascript:void(0);" ng-click="verProductos(row.entity)" class = "glyphicon glyphicon-send"> ver </a>\
+                                </li>\
+                                <li ng-if="row.entity.getEstadoFacturacion() == 0">\
+                                   <a href="javascript:void(0);" ng-click="onDescagarArchivo(row.entity)" class= "glyphicon glyphicon-print"> Imprimir </a>\
                                 </li>\
                            </ul>\
                       </div>'
@@ -59582,6 +59586,30 @@ define('controllers/facturacionCliente/FacturacionConsumoBarranquillaController'
 
                     };
 
+
+                    $scope.onDescagarArchivo = function (entity) {
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                empresa_id: entity.empresaId,
+                                grupo_id: entity.id
+                            }
+                        };
+
+                        facturacionClientesService.imprimirCsv(obj, function (data) {
+
+                            if (data.status === 200) {
+
+                                $scope.visualizarReporte("/reports/" + data.obj.imprimirCsv, data.obj.imprimirCsv, "download");
+
+                            } else {
+
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                        });
+
+                    }
                     /*
                      * funcion para paginar anterior
                      * @returns {lista datos}
@@ -65789,6 +65817,19 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                         }
                         return productoFacturaTmp;
                     };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  26/10/2018 DD/MM/YYYYY
+                     * +Descripcion Servicio que generara el reporte con el detalle
+                     *              de la factura generada en formato csv
+                     */
+                    self.imprimirCsv = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.IMPRIMIRCSV, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
 
                     return this;
                 }]);

@@ -2526,9 +2526,9 @@ FacturacionClientesModel.prototype.listarProductos = function (obj, callback) {
             .from('productos_consumo')
             .where("empresa_id", obj.empresa_id)
             .andWhere("grupo_id", obj.grupo_id);
-
-    query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
-
+    if (obj.paginaActual !== '-1') {
+        query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
+    }
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

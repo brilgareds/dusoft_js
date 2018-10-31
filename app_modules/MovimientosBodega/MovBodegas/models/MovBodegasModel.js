@@ -1222,7 +1222,7 @@ function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, u
                 where a.doc_tmp_id = :1 and a.usuario_id = :2 ";
 
     var query=G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id});
-    console.log("__consultar_detalle_movimiento_bodega_temporal",G.sqlformatter.format(query.toString()));
+    
             query.then(function (resultado) {
                 callback(false, resultado.rows);
             }).catch(function (err) {

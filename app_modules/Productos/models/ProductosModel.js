@@ -19,6 +19,21 @@ ProductosModel.prototype.validar_producto = function(codigo_producto, callback) 
    });
 };
 
+// Autor:      : German Galvis 
+// Descripcion : Validar si un producto existe en la bodega
+// 
+ProductosModel.prototype.validar_producto_inventario = function(obj, callback) {
+
+    var sql = " select a. * from inventarios a where a.codigo_producto = :1 and a.empresa_id = :2";
+    
+   G.knex.raw(sql, {1:obj.codigo_producto,2:obj.empresa_id}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+};
+
 // Autor:      : Camilo Orozco 
 // Descripcion : Buscar producto
 // Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();

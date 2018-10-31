@@ -413,13 +413,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             ]
         };
         
-        $scope.verificaFactuta=function(pref){
+        $scope.verificaFactuta=function(pref){           
             var prefijo = false;
             if(pref==='FDC' || pref==='FDB'){
                 prefijo = true;
             }
             return prefijo;
-        }
+        };
         
         $scope.sincronizarFactura = function(entity){
             

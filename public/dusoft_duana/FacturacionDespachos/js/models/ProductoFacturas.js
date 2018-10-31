@@ -117,6 +117,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
             ProductoFacturas.prototype.getMovimientoId = function () {
                 return this.movimiento_id;
             };
+
+            ProductoFacturas.prototype.setFechaVencimiento = function (fecha_vencimiento) {
+                this.fecha_vencimiento = fecha_vencimiento;
+            };
+
+            ProductoFacturas.prototype.getFechaVencimiento = function () {
+                return this.fecha_vencimiento;
+            };
             
             ProductoFacturas.prototype.getLote = function () {
                 return this.lote;

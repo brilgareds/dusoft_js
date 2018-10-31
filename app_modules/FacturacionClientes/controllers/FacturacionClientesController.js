@@ -1,11 +1,12 @@
 
 /* global G */
 
-var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion, e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion) {
+var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion, e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
     this.m_usuarios = m_usuarios;
+    this.m_productos = m_productos;
     this.m_sincronizacion = m_sincronizacion;
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
@@ -1184,6 +1185,134 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function 
 
 /**
  * @author German Galvis
+ * +Descripcion Metodo encargado de cargar el archivo plano
+ * @fecha 2018-10-22 YYYY-MM-DD
+ */
+FacturacionClientes.prototype.subirArchivo = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    // data
+    if (args.data === undefined) {
+        res.send(G.utils.r(req.url, 'la data  No Esta Definida', 404, {}));
+        return;
+    }
+    // nombre
+    if (args.data.nombre === '') {
+        res.send(G.utils.r(req.url, 'nombre esta vacio', 404, {}));
+        return;
+    }
+
+    // Empresa, Centro Utilidad,  Bodega
+    if (args.data.empresa_id === '' || args.data.centro_id === '' || args.data.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacios', 404, {}));
+        return;
+    }
+    // Validar Cliente
+    if (args.data.tipo_id_tercero === '' || args.data.tercero_id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id o tercero_id estan vacios', 404, {}));
+        return;
+    }
+
+    // Observaciones
+    if (args.data.observacion === '') {
+        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        nombre: args.data.nombre,
+        observacion: args.data.observacion,
+        tipo_id_tercero: args.data.tipo_id_tercero,
+        tercero_id: args.data.tercero_id,
+        empresa_id: args.data.empresa_id,
+        centro_id: args.data.centro_id,
+        bodega_id: args.data.bodega_id
+    };
+    var _productosInvalidosNoExistentes = "";
+    var _productosValidosExistentes = "";
+
+    /**
+     * +Descripcion Se obtienen los productos del archivo plano
+     */
+    G.Q.nfcall(__subir_archivo_plano, req.files).then(function (contenido) {
+
+        if (contenido.length > 0) {
+            /*
+             * +Descripcion Se valida si cada uno de los productos existe en el inventario
+             */
+            return G.Q.nfcall(__validar_productos_archivo_plano, that, 0, contenido, [], [], parametros);
+
+        } else {
+            throw {msj: "El archivo esta vacio", status: 500, data: {pedidos_clientes: {}}};
+        }
+
+    }).then(function (productosPlano) {
+        /*
+         * +Descripcion Productos que no se encuentran en el inventario
+         */
+        _productosInvalidosNoExistentes = productosPlano[1];
+        _productosValidosExistentes = productosPlano[0];
+
+        if (_productosValidosExistentes.length === 0) {
+
+            throw {msj: 'Lista de Productos',
+                status: 200,
+                data: {pedidos_clientes: {
+                        productos_validos: _productosValidosExistentes,
+                        productos_invalidos: _productosInvalidosNoExistentes
+                    }}};
+            return;
+        }
+
+        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarUltimoGrupo');
+
+    }).then(function (grupo) {
+
+        parametros.grupo = grupo[0].nextval;
+
+        if (_productosValidosExistentes.length > 0) {
+            return G.Q.nfcall(__insertarProductosConsumo, that, 0, parametros, _productosValidosExistentes, []);
+        } else {
+
+            return true;
+
+        }
+
+    }).then(function (resultado) {
+
+        productosDuplicadosInvalidos = resultado;
+
+        if (productosDuplicadosInvalidos.length > 0) {
+            productosInvalidosTodos = productosDuplicadosInvalidos.concat(_productosInvalidosNoExistentes);
+        } else {
+            productosInvalidosTodos = _productosInvalidosNoExistentes;
+        }
+
+        throw {msj: 'Productos cargados correctamente', status: 200, data: {cargue_archivo: {
+                    productos_validos: _productosValidosExistentes,
+                    productos_invalidos: productosInvalidosTodos
+
+                }}};
+        return;
+
+    }).fail(function (err) {
+
+        console.log("err [subirArchivo]:", err);
+        var msj = "Erro Interno";
+        var status = 500;
+
+        if (err.status) {
+            msj = err.msj;
+            status = err.status;
+        }
+        res.send(G.utils.r(req.url, msj, status, err.data));
+    }).done();
+
+};
+
+/**
+ * @author German Galvis
  * +Descripcion Metodo encargado de eliminar la factura temporal
  * @fecha 2018-07-05 YYYY-MM-DD
  */
@@ -1705,6 +1834,159 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
 
 }
 
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar las farmacias
+ * @fecha 2018-10-19
+ */
+FacturacionClientes.prototype.buscarFarmacias = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        empresa_id: args.empresa_id,
+        centro: args.centro,
+        bodega: args.bodega};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'buscarFarmacias', parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listado farmacias ok!!!!', 200, {listarBodegas: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de farmacias', 500, {listarBodegas: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos consumidos
+ * @fecha 2018-10-18
+ */
+FacturacionClientes.prototype.listarFacturasConsumoBarranquillaTemporales = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var empresa_id = req.session.user.empresa;
+
+    var terminoBusqueda = args.listar_facturas_consumo_temporal.terminoBusqueda;
+    var filtro = args.listar_facturas_consumo_temporal.filtro;
+    var paginaActual = args.listar_facturas_consumo_temporal.paginaActual;
+
+    var parametros = {
+        empresa_id: empresa_id,
+        paginaActual: paginaActual,
+        terminoBusqueda: terminoBusqueda,
+        filtro: filtro};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumoBarranquilla', parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listar_facturas_consumo_temporal: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listar_facturas_consumo_temporal: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos detallados
+ * @fecha 2018-10-19
+ */
+FacturacionClientes.prototype.listarProductos = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        empresa_id: args.empresa_id,
+        grupo_id: args.grupo_id,
+        paginaActual: args.paginaActual};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listarProductos: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listarProductos: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos detallados
+ * @fecha 2018-10-19
+ */
+FacturacionClientes.prototype.imprimirCsv = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        empresa_id: args.empresa_id,
+        grupo_id: args.grupo_id,
+        paginaActual: '-1'};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).then(function (resultado) {
+        
+                    return G.Q.nfcall(__generarCsvBarranquilla, resultado);
+        }).then(function (resultado) {
+            console.log("resultado",resultado);
+                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {imprimirCsv: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {imprimirCsv: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de eliminar la factura barranquilla temporal
+ * @fecha 2018-10-19 YYYY-MM-DD
+ */
+FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.empresaId === undefined || args.empresaId === '') {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {eliminar_tmp: []}));
+        return;
+    }
+
+    if (args.grupo_id === undefined || args.grupo_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el id', 404, {eliminar_tmp: []}));
+        return;
+    }
+
+    var parametros = {
+        grupo_id: args.grupo_id,
+        empresa_id: args.empresaId
+    };
+    var usuario = req.session.user.usuario_id;
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'eliminarProductosTemporalBarranquilla', parametros)
+
+            .then(function () {
+
+                return res.send(G.utils.r(req.url, "Se elimina el temporal satisfactoriamente", 200, {eliminar_tmp: ''}));
+
+            }).catch(function (err) {
+        logger.error("-----------------------------------");
+        logger.error({"metodo": "FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla",
+            "usuario_id": usuario,
+            "parametros: ": parametros,
+            "resultado: ": err});
+        logger.error("-----------------------------------");
+        if (!err.status) {
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+        res.send(G.utils.r(req.url, err.msj, err.status, {}));
+
+    }).done();
+};
+
+
 /*
  * @author Cristian Ardila
  * @fecha 12/08/2017
@@ -1886,6 +2168,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         //CAMBIAR LA CONSULTA PARA QUE VAYA A LA TEMPORAL
+
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo, that, 0, datosDocumentosXConsumo, []);
 
     }).then(function (resultado) {
@@ -1900,13 +2183,15 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         if (resultado.length > 0) {
+//            console.log("Aresultado resultadoFacturasXConsumo ",resultadoFacturasXConsumo );
+//            console.log("Aresultado resultado ",resultado );
             return G.Q.nfcall(__distribuirUnidadesFacturadas, that, 0, 0, resultadoFacturasXConsumo, resultado, []);
         } else {
             throw {msj: '[Detalle de productos por facturar]: Consulta sin resultados', status: 404};
         }
 
     }).then(function (resultado) {
-
+//console.log("Aresultado ",resultado );
         productosActualizados = [];
         //Se sugiere insertar desde esta parte en una transaccion mejor
         if (resultado.length > 0) {
@@ -2302,10 +2587,6 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
         return;
     }
 
-    if (args.generar_factura_individual.tipoPago === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {generar_factura_individual: []}));
-        return;
-    }
 
     var usuario = req.session.user.usuario_id;
     var parametros = {
@@ -2669,7 +2950,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
             vendedor: resultado.cabecera.nombre,
             numeroPedido: resultado.cabecera.pedido_cliente_id,
             totalenLetras: resultado.valores.totalFacturaLetra,
-            observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: "+resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
+            observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: " + resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
             observacionesDespacho: /*resultado.detalle[0].obs_despacho,*/   "",
             elaboradoPor: resultado.imprimio.usuario,
             tipoFormato: '1',
@@ -3364,7 +3645,279 @@ function __generarPdf(datos, callback) {
     });
 }
 
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Cargar Archivo Plano
+ */
+function __subir_archivo_plano(files, callback) {
 
-FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion"];
+    var ruta_tmp = files.file.path;
+    var ext = G.path.extname(ruta_tmp);
+    var nombre_archivo = G.random.randomKey(3, 3) + ext;
+    var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
+
+    if (G.fs.existsSync(ruta_tmp)) {
+        // Copiar Archivo
+        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
+                then(function () {
+                    return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
+                }).then(function () {
+            var parser = G.XlsParser;
+            var workbook = parser.readFile(ruta_nueva);
+            var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad', 'lote', 'fecha_vencimiento', 'valor_unitario', 'iva']);
+
+            if (!filas) {
+                callback(true);
+                return;
+            } else {
+                G.fs.unlinkSync(ruta_nueva);
+                callback(false, filas);
+            }
+        }).
+                fail(function (err) {
+                    G.fs.unlinkSync(ruta_nueva);
+                    callback(true);
+                }).
+                done();
+
+    } else {
+        callback(true);
+    }
+}
+;
+
+
+/*
+ * Autor : Eduar Garcia
+ * Descripcion : Validar que los codigos de los productos del archivo plano sean validos.
+ *
+ */
+function __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, parametros, callback) {
+
+    var producto = filas[index];
+    if (!producto) {
+
+        callback(false, productosValidos, productosInvalidos);
+        return;
+    }
+    var obj = {
+        codigo_producto: producto.codigo,
+        empresa_id: parametros.empresa_id
+    };
+    /**
+     * +Descripcion Funcion encargada de modificar el detalle del pedido
+     */
+    var _producto = {codigo_producto: producto.codigo, cantidad: producto.cantidad, lote: producto.lote};
+
+    G.Q.ninvoke(that.m_productos, 'validar_producto_inventario', obj).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_productos, 'validar_producto', producto.codigo);
+        } else {
+
+            return false;
+
+        }
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            _producto.tipoProductoId = resultado[0].tipo_producto_id;
+            _producto.descripcion = resultado[0].descripcion_producto;
+            _producto.fecha_vencimiento = new Date((producto.fecha_vencimiento - (25567 + 1)) * 86400 * 1000); //producto.fecha_vencimiento;
+            _producto.valor_unitario = parseFloat(producto.valor_unitario);
+            _producto.iva = producto.iva;
+            productosValidos.push(_producto);
+
+        } else {
+            _producto.mensajeError = "No existe en inventario";
+            _producto.existeInventario = false;
+            productosInvalidos.push(_producto);
+
+        }
+
+        index++;
+        setTimeout(function () {
+            __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, parametros, callback);
+        }, 0);
+
+    }).fail(function (error) {
+
+        callback(error);
+    });
+}
+;
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de insertar un arreglo de productos en la tabla
+ *              productos_consumo
+ * 
+ */
+function __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback) {
+
+    var producto = _productos_validos[index];
+    if (!producto) {
+        callback(false, _productos_invalidos);
+        return;
+    }
+
+    producto.empresa_id = parametros.empresa_id;
+    producto.bodega_id = parametros.bodega_id;
+    producto.centro_id = parametros.centro_id;
+    producto.observacion = parametros.observacion;
+    producto.nombre = parametros.nombre;
+    producto.grupo = parametros.grupo;
+    producto.tipo_id_tercero = parametros.tipo_id_tercero;
+    producto.tercero_id = parametros.tercero_id;
+
+    that.m_facturacion_clientes.insertar_productos_consumo(producto, function (err, rows) {
+        if (err) {
+
+            _productos_invalidos.push(producto);
+        }
+
+        index++;
+        setTimeout(function () {
+            __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback);
+        }, 0);
+
+    });
+}
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado generar un archivo xls
+ *              productos_consumo
+ * 
+ */
+function __creaExcel(data, callback) {
+
+    console.log("__creaExcel");
+
+    var workbook = new G.Excel.Workbook();
+    var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
+
+    var alignment = {vertical: 'middle', horizontal: 'center'};
+    var border = {
+        top: {style: 'thin'},
+        left: {style: 'thin'},
+        bottom: {style: 'thin'},
+        right: {style: 'thin'}};
+
+    var font = {name: 'Calibri', size: 9};
+
+    var style = {font: font, border: border};
+
+    worksheet.columns = [
+        {header: 'CODIGO', key: 'a', style: style},
+        {header: 'PRODUCTO - ' + data.name, key: 'b', width: 50, style: style},
+        {header: 'MOLECULA', key: 'c', width: 25, style: style},
+        {header: 'LABORATORIO', key: 'd', style: style},
+        {header: 'TIPO PRODUCTO', key: 'e', style: style},
+        {header: 'NIVEL', key: 'f', style: style},
+        {header: 'Promedio Mes', key: 'g', width: 9, style: style},
+        {header: 'Stock Farmacia', key: 'h', width: 8.5, style: style},
+        {header: 'Pedido 60 Dias', key: 'i', width: 7.5, style: style},
+        {header: '', key: 'j', width: 10, style: style},
+        {header: 'Stock Bodega', key: 'k', width: 7.5, style: style}
+    ];
+
+    worksheet.views = [
+        {zoomScale: 160, state: 'frozen', xSplit: 1, ySplit: 1, activeCell: 'A1'}
+    ];
+    var i = 1;
+    data.forEach(function (element) {
+
+        if (element.color === 'ROJO') {
+            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+                element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
+                color: {argb: 'C42807'}, name: 'Calibri', size: 9
+            };
+        } else {
+            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+                element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]);
+        }
+
+        worksheet.getColumn('A').hidden = true;
+        worksheet.getColumn('D').hidden = true;
+        worksheet.getColumn('E').hidden = true;
+        worksheet.getColumn('F').hidden = true;
+
+        i++;
+    });
+
+    var font = {
+        name: 'SansSerif',
+        size: 9,
+        bold: true
+    };
+
+    var alignment = {vertical: 'center', horizontal: 'distributed'};
+
+    var border = {
+        top: {style: 'double'},
+        left: {style: 'double'},
+        bottom: {style: 'double'},
+        right: {style: 'double'}
+    };
+
+    var style = {font: font, border: border, alignment: alignment};
+
+    worksheet.getCell('A1').style = style;
+    worksheet.getCell('B1').style = style;
+    worksheet.getCell('C1').style = style;
+    worksheet.getCell('D1').style = style;
+    worksheet.getCell('E1').style = style;
+    worksheet.getCell('F1').style = style;
+    worksheet.getCell('G1').style = style;
+    worksheet.getCell('H1').style = style;
+    worksheet.getCell('I1').style = style;
+    worksheet.getCell('J1').style = style;
+    worksheet.getCell('K1').style = style;
+
+// save workbook to disk
+    workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
+        console.log("saved");
+        callback(false, data.nameArchivo);
+    });
+}
+;
+
+/**
+ * @author German Galvis
+ * +Descripcion controlador que genera csv
+ */
+function __generarCsvBarranquilla(datos, callback) {
+
+    var fields = ["codigo_producto", "cantidad", "lote", "fecha_vencimiento", "valor_unitario", "iva"];
+
+    var fieldNames = ["CODIGO", "CANTIDAD", "LOTE", "FECHA VENCIMIENTO", "VALOR UNITARIO", "IVA"];
+
+    var opts = {
+        data: datos,
+        fields: fields,
+        fieldNames: fieldNames,
+        del: ';',
+        hasCSVColumnTitle: 'Productos Consumo'
+    };
+
+    G.json2csv(opts, function (err, csv) {
+        if (err)
+            console.log("Eror de Archivo: ", err);
+        var nombreReporte = "CSV_" + datos[0].grupo_id + ".csv";
+        G.fs.writeFile(G.dirname + "/public/reports/" + nombreReporte, csv, function (err) {
+            if (err) {
+                console.log('Error __generarCsvBarranquilla', err);
+                throw err;
+            }
+            callback(false, nombreReporte);
+
+        });
+    });
+}
+
+FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion", "m_productos"];
 
 module.exports = FacturacionClientes;

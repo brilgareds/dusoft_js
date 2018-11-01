@@ -1165,7 +1165,7 @@ CajaGeneral.prototype.generarSincronizacionDian = function (req, res) {
             nombreAdquirente: resultado.cliente.nombre_tercero,
             vendedor: '',
             numeroPedido: '',
-            totalenLetras: '',
+            totalenLetras: resultado.impuesto.totalFacturaLetra,
             observacionesPedido: '',
             observacionesDespacho: /*resultado.detalle[0].obs_despacho,*/   "",
             elaboradoPor: resultado.usuario,
@@ -1264,6 +1264,7 @@ function __generarSincronizacionDian(that, req, callback) {
         impuesto.empresaId = parametros.empresaId;
         impuesto.prefijo = parametros.prefijo;
         impuesto.factura = parametros.facturaFiscal;
+        impuesto.totalFacturaLetra = G.utils.numeroLetra(result.totalGeneral);
         parametros.totalAbono = impuesto.totalGeneral;
         parametros.totalEfectivo = impuesto.totalGeneral;
         parametros.totalCheque = 0;

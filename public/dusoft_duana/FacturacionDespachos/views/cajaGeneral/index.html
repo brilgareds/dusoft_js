@@ -4,21 +4,21 @@
         <tabset>
             <tab ng-click="tipoTab(1)" >
                 <tab-heading >
-                    <i class=""></i> Facturas
+                    <i class=""></i> Fact. Servicio
                 </tab-heading>
                 <br>
-                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+                <div ng-include="'views/cajaGeneral/vistaFacturaServicio.html'"></div>
             </tab>
             <tab  ng-click="tipoTab(3)" >
                 <tab-heading >
-                    <i class=""></i> Manejo Facturas
+                    <i class=""></i> Manejo Fact. Servicio
                 </tab-heading>
                 <br>
                 <div ng-include="'views/cajaGeneral/vistaManejoFactura.html'"></div>
             </tab>
             <tab ng-click="tipoTab(2)">
                 <tab-heading >
-                    <i class=""></i> Notas Facturas
+                    <i class=""></i> Notas Fact. Servicio
                 </tab-heading>
                 <br>
                 <div ng-include="'views/cajaGeneral/vistaNotas.html'"></div>
@@ -30,13 +30,13 @@
                 <br>
                 <div ng-include="'views/cajaGeneral/vistaManejoNota.html'"></div>
             </tab>
-            <tab ng-click="tipoTab(4)" >
+<!--            <tab ng-click="tipoTab(4)" >
                 <tab-heading >
                     <i class=""></i> Cuadre Facturas
                 </tab-heading>
                 <br>
-                <!--<div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>-->
-            </tab>
+                <div ng-include="'views/cajaGeneral/vistaCredito.html'"></div>
+            </tab>-->
         </tabset>
     </div>
 </div>

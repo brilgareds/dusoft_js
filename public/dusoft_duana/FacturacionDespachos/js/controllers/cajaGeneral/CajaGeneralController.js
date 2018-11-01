@@ -47,7 +47,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.root.filtro = $scope.root.filtros[0];
                     $scope.root.tipoTercero = $scope.root.filtros[0];
                     $scope.root.tab = 1;
-                    $scope.terceroSeleccionado = null;
+                    $scope.root.terceroSeleccionado = null;
                     /*
                      * Inicializacion de variables
                      * @param {type} empresa
@@ -448,7 +448,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
                     that.listarConceptosDetalle = function () {
                         $scope.root.conceptoTmp = "";
-                        if ($scope.root.terceros === undefined || $scope.root.terceros[0] === undefined) {
+                        if ($scope.root.terceroSeleccionado === undefined) {
                             return;
                         }
                         if ($scope.root.cajas === undefined) {
@@ -461,8 +461,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             data: {
                                 datos: {
                                     empresa_id: $scope.root.empresaSeleccionada.getCodigo(),
-                                    tipo_id_tercero: $scope.root.terceros[0].getTipoId(),
-                                    tercero_id: $scope.root.terceros[0].getId(),
+                                    tipo_id_tercero: $scope.root.terceroSeleccionado.tipo_id_tercero,
+                                    tercero_id: $scope.root.terceroSeleccionado.id,
                                     concepto_id: $scope.root.cajas.conceptoCaja
                                 }
                             }
@@ -502,8 +502,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 prefijoFac: prefijo,
                                 empresaId: $scope.root.empresaSeleccionada.getCodigo(),
                                 centroUtilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
-                                tipoIdTercero: $scope.root.terceros[0].getTipoId(),
-                                terceroId: $scope.root.terceros[0].getId(),
+                                tipoIdTercero: $scope.root.terceroSeleccionado.tipo_id_tercero,
+                                terceroId: $scope.root.terceroSeleccionado.id,
                                 conceptoId: $scope.root.cajas.conceptoCaja,
                                 swClaseFactura: claseFactura,
                                 tipoFactura: tipoFactura,
@@ -677,7 +677,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                         };
                         cajaGeneralService.generarSincronizacionDian(parametros, function (data) {
-                            
+
                             if (data.status === 200) {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
                                 return;
@@ -1364,8 +1364,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             centro_utilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
                             concepto_id: $scope.root.concepto.getConceptoId(),
                             grupo_concepto: $scope.root.grupo.getGruposConcepto(),
-                            tipo_id_tercero: $scope.root.terceros[0].getTipoId(),
-                            tercero_id: $scope.root.terceros[0].getId(),
+                            tipo_id_tercero: $scope.root.terceroSeleccionado.tipo_id_tercero,
+                            tercero_id: $scope.root.terceroSeleccionado.id,
                             sw_tipo: '0',
                             cantidad: '1',
                             precio: parseInt($scope.root.precio) + parseInt($scope.root.gravamen),
@@ -1547,9 +1547,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 $scope.root.termino_busqueda_tercero = busqueda;
                                 if ($scope.root.termino_busqueda_tercero.length > 3) {
                                     that.listarTerceros(function (respuesta) {
-                                        if (respuesta) {
-                                            that.listarConceptosDetalle();
-                                        }
+//                                        if (respuesta) {
+//                                            that.listarConceptosDetalle();
+//                                        }
                                     });
                                 }
                                 break;
@@ -1582,6 +1582,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 break;
                         }
 //                        }
+                    };
+
+                    $scope.buscarConcepto = function () {
+                        that.listarConceptosDetalle();
                     };
 
                     /**

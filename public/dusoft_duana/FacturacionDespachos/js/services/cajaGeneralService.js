@@ -327,6 +327,17 @@ define(["angular", "js/services"], function (angular, services) {
                         });
                     };
 
+                    /**
+                     * @author German Galvis
+                     * @fecha  02/11/2018 DD/MM/YYYYY
+                     * +Descripcion envia la nota a la dian
+                     */
+                    self.generarSincronizacionDianNota = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.GENERAR_SINCRONIZACION_DIAN_NOTA_SERVICIO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
                     return this;
                 }]);
 

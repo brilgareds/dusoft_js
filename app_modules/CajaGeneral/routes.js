@@ -74,4 +74,8 @@ module.exports = function (app, di_container) {
     app.post('/api/CajaGeneral/generarSincronizacionDian', function (req, res) {
         c_caja_general.generarSincronizacionDian(req, res);
     });
+
+    app.post('/api/CajaGeneral/generarSincronizacionDianNota', function (req, res) {
+        c_caja_general.generarSincronizacionDianNota(req, res);
+    });
 };

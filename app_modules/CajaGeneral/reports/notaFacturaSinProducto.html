@@ -112,10 +112,10 @@
                             </tr>
                             <tr>
                                 <td  align='left' height='10px' >
-                                    <b>FACTURA No: {{:nota.prefijo}} - {{:nota.factura_fiscal}}</b>
+                                    <b>FACTURA No: {{:parametros.prefijo}} - {{:parametros.facturaFiscal}}</b>
                                 </td>
                                 <td  align='left' height='10px' >
-                                    <b>FECHA FACTURA {{:nota.fecha_registro}}</b>
+                                    <b>FECHA FACTURA {{:conceptosDetalle.fecha_registro_factura}}</b>
                                 </td>
                             </tr>
                         </table>
@@ -126,11 +126,11 @@
                         <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
                             <tr>
                                 <td>FECHA NOTA: </td>
-                                <td>{{:nota.fecha_registro_nota}} </td>
+                                <td>{{:conceptosDetalle.fecha_registro}} </td>
                                 <td>CONCEPTO NOTA: </td>
-                                <td>{{:nota.descripcion_concepto}}</td>
+                                <td>{{:parametros.descripcion_concepto}}</td>
                                 <td>TIPO NOTA:  </td>
-                                <td>{{:nota.tipo_nota}}</td>
+                                <td>{{:parametros.tipo_nota}}</td>
                             </tr>
                         </table>
                     </td>
@@ -140,26 +140,11 @@
             <br>	
                 <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" rules="all">
                     <tr class="label">
-                        <td align="center" colspan="6">DETALLE</td>
+                        <td align="center" colspan="6">CONCEPTO</td>
                     </tr>
-                    <tr class="label" align="center">
-                        <td>CODIGO</td>
-                        <td>PRODUCTO</td>
-                        <td>OBSERVACION</td>
-                        <td>CANTIDAD DEVUELTA</td>
-                        <td>VALOR UNITARIO</td>
-                        <td>VALOR</td>
+                    <tr class="label">
+                        <td align="center" colspan="6">{{:conceptosDetalle.descripcion}}</td>
                     </tr>
-                    {{for productos }}
-                    <tr>
-                        <td width='12%'>{{:codigo_producto}}</td>
-                        <td width='30%'>{{:descripcion}}</td>
-                        <td width='30%'>{{:observacion}}</td>
-                        <td width='8%'>{{:cantidad_devuelta}}</td>
-                        <td width='10%'>{{:valor_unitario}}</td>
-                        <td width='10%'>${{:subtotal}}</td>
-                    </tr>
-                    {{/for}}
                 </table>
                 <br>
                     <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
@@ -177,12 +162,12 @@
                                         <td><B>VALOR TOTAL</B></td>
                                     </tr>
                                     <tr align="center">
-                                        <td><B>${{:valores.subTotal}}</B></td>
-                                        <td><B>${{:valores.ivaTotal}}</B></td>
+                                        <td><B>${{:valores.valorSubtotal}}</B></td>
+                                        <td><B>${{:valores.iva}}</B></td>
                                         <td><B>${{:valores.retencionFuente}}</B></td>
                                         <td><B>${{:valores.retencionIca}}</B></td>
                                         <td><B>${{:valores.retencionIva}}</B></td>
-                                        <td><B>${{:valores.totalFactura}}</B></td>
+                                        <td><B>${{:valores.totalGeneral}}</B></td>
 
                                     </tr>
                                     <tr align="left">

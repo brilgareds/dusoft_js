@@ -341,7 +341,7 @@ function __jsonNotaDebito(obj, callback) {
             observaciones: obj.observaciones, //String OPCIONAL
             perfilEmision: obj.perfilEmision, //String
             perfilUsuario: obj.perfilUsuario, //String
-            productos: obj.productos,
+//            productos: obj.productos,
             subtotalNotaDebitoElectronica: obj.subtotalNotaDebitoElectronica.replace(",", "."), //decimal OPCIONAL
             subtotalesImpuestosDeduccion: [
                 {// OPCIONAL
@@ -401,6 +401,11 @@ function __jsonNotaDebito(obj, callback) {
             }
         }
     };
+    
+        if(obj.productos.length > 0){
+        crearNotaDebito.notaDebitoElectronicaCanonica.productos = obj.productos;
+    }
+
     callback(false, crearNotaDebito);
 }
 

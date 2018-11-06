@@ -38,7 +38,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.root.prefijoBusquedaNota = 'seleccionar';
                     $scope.root.prefijosNotas = [
                         {prefijo: 'NCFC', descripcion: "NCFC"},
-                        {prefijo: 'NDFD', descripcion: "NDFD"}
+                        {prefijo: 'NDFC', descripcion: "NDFC"}
                     ];
 
                     $scope.root.prefijo =
@@ -291,7 +291,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                         cajaGeneralService.listarNotas(obj, function (data) {
                             if (data.status === 200) {
-                                $scope.root.listadoNota = cajaGeneralService.renderFacturasProveedores(data.obj.listadoNota);
+//                                $scope.root.listadoNota = cajaGeneralService.renderFacturasProveedores(data.obj.listadoNota);
+                                $scope.root.listadoNota = data.obj.listadoNota;
                             } else {
                                 $scope.root.listadoNota = {};
                             }
@@ -556,6 +557,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 valorNotaImpuestos: $scope.root.impuestos.totalGeneral
                             }
                         };
+
                         cajaGeneralService.insertarFacFacturasConceptosNotas(parametros, function (data) {
                             if (data.status === 200) {
                                 callback(true);
@@ -580,25 +582,41 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         enableCellSelection: true,
                         enableHighlighting: true,
                         columnDefs: [
-                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
-                            {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
-                            {field: 'Tercero', width: "30%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
-                            {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
+                            {field: 'No. Nota', width: "8%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo_nota}} {{row.entity.numero_nota}}</p></div>'}, //
+                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
+                            {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.identificacion}}</p></div>'},
+                            {field: 'Tercero', width: "22%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre_tercero}}</p></div>'},
+                            {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Usuario', width: "12%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
                             {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
-                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
-                                cellTemplate: ' <div class="row">\
-							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
-								<span class="glyphicon glyphicon-export"> Sincronizar</span>\
-							    </button>\
-							  </div>\
-							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-success btn-xs  disabled">\
-								<span class="glyphicon glyphicon-saved"> Sincronizar</span>\
-							    </button>\
-							  </div>\
-						       </div>'
+//                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
+//                                cellTemplate: ' <div class="row">\
+//							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
+//							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
+//								<span class="glyphicon glyphicon-export"> Sincronizar</span>\
+//							    </button>\
+//							  </div>\
+//							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
+//							    <button class="btn btn-success btn-xs  disabled">\
+//								<span class="glyphicon glyphicon-saved"> Sincronizar</span>\
+//							    </button>\
+//							  </div>\
+//						       </div>'
+//                            },
+                            {displayName: "DIAN", width: "8%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '\
+                        <div class="btn-group" >\
+                            <div ng-if="(row.entity.sincronizacion >= 1)" >\
+                               <button class="btn btn-success btn-xs" ng-disabled="{{!(row.entity.sincronizacion > 1)}}" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-saved"> Sincronizado</span>\
+                               </button>\
+                            </div>\
+                            <div ng-if="(row.entity.sincronizacion == 0 && verificaFactuta(row.entity.prefijo))" >\
+                               <button class="btn btn-danger btn-xs"  ng-click="generarSincronizacionDianNota(row.entity)" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-export"> Sincronizar</span>\
+                               </button>\
+                            </div>\
+                        </div>'
                             }
                         ]
                     };
@@ -630,7 +648,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 							  </div>\
 							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-success btn-xs  disabled">\
-								<span class="glyphicon glyphicon-saved"> Sincronizar</span>\
+								<span class="glyphicon glyphicon-saved"> Sincronizado</span>\
 							    </button>\
 							  </div>\
 						       </div>'
@@ -710,15 +728,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         enableHighlighting: true,
                         showFilter: true,
                         columnDefs: [
-                            {field: 'No. Nota', width: "10%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo_nota}} {{row.entity.numero_nota}}</p></div>'}, //
-                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
-                            {field: 'Nota', width: "10%", displayName: 'Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nota_contable}}</p></div>'}, //
+                            {field: 'No. Nota', width: "8%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo_nota}} {{row.entity.numero_nota}}</p></div>'}, //
+                            {field: 'No. Factura', width: "8%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
+                            {field: 'Nota', width: "8%", displayName: 'Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nota_contable}}</p></div>'}, //
                             {field: 'SubTotal', width: "11%", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="right" >{{row.entity.valor_nota_total | currency:"$ " }}</p></div>'},
                             {field: 'Valor Gravamen', width: "11%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="right" >{{row.entity.valor_gravamen | currency:"$ " }}</p></div>'}, //
                             {field: 'Valor Total', width: "11%", displayName: 'Valor Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="right" >{{row.entity.total | currency:"$ "}}</p></div>'}, //
                             {field: 'Usuario', width: "13%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
                             {field: 'Fecha', width: "8%", displayName: 'Fecha', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="center">{{row.entity.fecha_registro | date:"dd/MM/yyyy hh:mm a"}}</p></div>'},
-                            {field: 'Imprimir', width: "8%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirNota(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
+                            {field: 'Imprimir', width: "6%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirNota(row.entity)"><span class="glyphicon glyphicon-print"></span> </button></div>'},
                             {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "8%",
                                 cellTemplate: ' <div class="row">\
 							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
@@ -732,9 +750,67 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 							    </button>\
 							  </div>\
 						       </div>'
+                            },
+                            {displayName: "DIAN", width: "8%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '\
+                        <div class="btn-group" >\
+                            <div ng-if="(row.entity.sincronizaciondian >= 1)" >\
+                               <button class="btn btn-success btn-xs" ng-disabled="{{!(row.entity.sincronizaciondian > 1)}}" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-saved"> Sincronizado</span>\
+                               </button>\
+                            </div>\
+                            <div ng-if="(row.entity.sincronizaciondian == 0 && verificaFactuta(row.entity.prefijo))" >\
+                               <button class="btn btn-danger btn-xs"  ng-click="generarSincronizacionDianNota(row.entity)" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-export"> Sincronizar</span>\
+                               </button>\
+                            </div>\
+                        </div>'
                             }
                         ]
                     };
+
+
+                    /**
+                     * +Descripcion Metodo encargado de sincronizar en WS certicamara
+                     * @author German Galvis
+                     * @fecha 02/11/2018
+                     * @returns {undefined}
+                     */
+                    $scope.generarSincronizacionDianNota = function (datos) {
+
+                        var parametros = {
+                            session: $scope.session,
+                            data: {
+                                factura_fiscal: datos.factura_fiscal,
+                                prefijo: datos.prefijo,
+                                prefijo_nota: datos.prefijo_nota,
+                                numero_nota: datos.numero_nota,
+                                empresaId: datos.empresa_id,
+                                bodega: datos.bodega
+                            }
+                        };
+                        
+                        cajaGeneralService.generarSincronizacionDianNota(parametros, function (data) {
+
+                            if (data.status === 200) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                return;
+                            } else {
+                                if (data.obj.response.statusCode === 500) {
+                                    var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                                    var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                                    var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                    return;
+                                }
+                            }
+                        });
+
+                    };
+
+
+
                     /**
                      * +Descripcion 
                      * @author Andres Mauricio Gonzalez
@@ -754,10 +830,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Tercero', width: "350px", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
                             {field: 'Fecha', width: "140px", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
                             {field: 'Usuario', displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
-                            {field: 'Saldo', width: "140px", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSaldo())">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'SubTotal', width: "140px", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSubTotal())">{{row.entity.getSubTotal()| currency:"$ "}}</p></div>'},
                             {field: 'Gravamen', width: "120px", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.getGravamen())">{{row.entity.getGravamen()| currency:"$ "}}</p></div>'},
                             {field: 'Total', width: "140px", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
+                            {field: 'Saldo', width: "140px", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSaldo())">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'NC', width: "50px", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'ND', width: "50px", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'Imprimir2', width: "80px", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'},
@@ -1235,6 +1311,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                         });
                                     };
+
                                     $scope.onImpuesto = function () {
 
 

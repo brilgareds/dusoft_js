@@ -540,11 +540,11 @@ function __jsonFactura(obj, callback) {
                         tipo: "Texto"
                     }, {// OPCIONAL
                         nombreAtributo: "observacionesPedido", //String
-                        valor: obj.observacionesPedido, //String
+                        valor: obj.observacionesPedido.replace("\n"," "), //String
                         tipo: "Texto"
                     }, {// OPCIONAL
                         nombreAtributo: "observacionesDespacho", //String
-                        valor: obj.observacionesDespacho, //String
+                        valor: obj.observacionesDespacho.replace("\n"," "), //String
                         tipo: "Texto"
                     }, {// OPCIONAL
                         nombreAtributo: "elaboradoPor", //String

@@ -72,8 +72,8 @@ define(["angular"], function(angular) {
                     'ELIMINAR_COTIZACION' : BASE_URL + '/PedidosClientes/eliminarCotizacion',
                     'VALIDAR_ESTADO_TOTAL_PEDIDO' : BASE_URL + '/PedidosClientes/validarEstadoTotalValorPedido',
                     'INSERTAR_CANTIDAD_DETALLE_PRODUCTO_PEDIDO' : BASE_URL + '/PedidosClientes/insertarCantidadProductoDetallePedido',
-                    
                     'ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES' : BASE_URL + '/PedidosClientes/enviarNotificacionPedidosClientes',
+                    'CONSULTAR_AUTORIZACION_CARTERA' : BASE_URL + '/PedidosClientes/consultarAutorizacionCartera',
                     'PRODUCTOS_COTIZACION': BASE_URL + '/PedidosClientes/ProductosCotizacion',
                     'VALIDAR_DISPONIBILIDAD': BASE_URL + '/PedidosClientes/validarDisponibilidad',
                     'LISTAR_FORMULA_PEDIDO': BASE_URL +'/PedidosClientes/listarFacturasPedido',

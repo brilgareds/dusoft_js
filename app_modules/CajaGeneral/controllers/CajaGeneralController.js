@@ -606,6 +606,11 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
 
         }).then(function (result) {
 
+            return G.Q.ninvoke(that.m_caja_general, 'actualizarNumeracion', parametros, transaccion);
+
+        }).then(function (result) {
+
+
             transaccion.commit();
 
         }).fail(function (err) {
@@ -1349,19 +1354,19 @@ CajaGeneral.prototype.generarSincronizacionDianNota = function (req, res) {
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
             productos: [],
-            subtotalNotaDebitoElectronica:"" + resultado.valores.valorSubtotal ,//.replace(".", ""),
-            subtotalNotaCreditoElectronica:"" + resultado.valores.valorSubtotal,//.replace(".", ""),
-            ReteFuente:"" +  resultado.valores.retencionFuente,//.replace(".", ""),
+            subtotalNotaDebitoElectronica: "" + resultado.valores.valorSubtotal, //.replace(".", ""),
+            subtotalNotaCreditoElectronica: "" + resultado.valores.valorSubtotal, //.replace(".", ""),
+            ReteFuente: "" + resultado.valores.retencionFuente, //.replace(".", ""),
             baseGravableReteFuente: resultado.valores.base_rtf,
-            IVA:"" +  resultado.valores.iva,//.replace(".", ""),
-            baseGravableIVA:"" + resultado.valores.valorSubtotal,
-            ReteICA:"" +  resultado.valores.retencionIca,//.replace(".", ""),
+            IVA: "" + resultado.valores.iva, //.replace(".", ""),
+            baseGravableIVA: "" + resultado.valores.valorSubtotal,
+            ReteICA: "" + resultado.valores.retencionIca, //.replace(".", ""),
             baseGravableReteICA: resultado.valores.base_ica,
-            ReteIVA:"" + resultado.valores.retencionIva,//.replace(".", ""),
+            ReteIVA: "" + resultado.valores.retencionIva, //.replace(".", ""),
             baseGravableReteIVA: resultado.valores.base_reteiva,
             tipoFactura: "ELECTRONICA",
-            totalNotaDebitoElectronica:"" +  resultado.valores.totalGeneral,//.replace(".", ""),
-            totalNotaCreditoElectronica:"" +  resultado.valores.totalGeneral,//.replace(".", ""),
+            totalNotaDebitoElectronica: "" + resultado.valores.totalGeneral, //.replace(".", ""),
+            totalNotaCreditoElectronica: "" + resultado.valores.totalGeneral, //.replace(".", ""),
             conceptoNotaAdicional: "",
             TipoNota: resultado.parametros.tipo_nota,
             descuento: "",

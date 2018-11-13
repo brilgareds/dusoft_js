@@ -2202,7 +2202,7 @@ PedidosClienteModel.prototype.verificarPedidoMultiple= function (obj, callback) 
              this.andWhere("id_orden_pedido_destino", obj.numero_pedido);
             })
             .select(['id_orden_pedido_destino']);
-    console.log("verificarPedidoMultiple",G.sqlformatter.format(query.toString()));
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -3342,7 +3342,7 @@ function __consultarProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id,
             .from('solicitud_productos_a_bodega_principal_detalle') 
             .where('solicitud_prod_a_bod_ppal_id', solicitud_prod_a_bod_ppal_id)
             .andWhere('codigo_producto', producto.codigo_producto);
-     console.log(G.sqlformatter.format(query.toString()));
+
    query.then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
@@ -3359,8 +3359,7 @@ function __updateProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id,pro
                 .update({ cantidad_solic : G.knex.raw('cantidad_solic +' + parseInt(producto.cantidad)),
                           cantidad_pendiente : G.knex.raw('cantidad_pendiente +' + parseInt(producto.cantidad))}
                        );
-        
-         console.log(G.sqlformatter.format(query.toString()));
+
     query.then(function(rows) {
 
         callback(false, rows);
@@ -3388,9 +3387,7 @@ function __insertarProductosPedidoClienteFarmaciaA(solicitud_prod_a_bod_ppal_id,
         sw_pendiente : 0,
         cantidad_pendiente : parseInt(producto.cantidad)
     });
-
-    console.log(G.sqlformatter.format(query.toString()));
-
+    
     query.then(function(resultado) {
         callback(false,resultado);
     }). catch (function(err) {
@@ -3601,11 +3598,11 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
                     usuario_id,\
                     now(),\
                     valor_total_cotizacion,\
-                    pedido_multiple_farmacia\
+                    '0' as pedido_multiple_farmacia\
                     FROM ventas_ordenes_pedidos\
                   where pedido_cliente_id = :1\
                 ) returning pedido_cliente_id as numero_pedido ";
-
+//                                    pedido_multiple_farmacia
     var query = G.knex.raw(sql, {1: numero_pedido});
     console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado) {

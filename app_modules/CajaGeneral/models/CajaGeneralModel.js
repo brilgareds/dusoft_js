@@ -739,21 +739,69 @@ CajaGeneralModel.prototype.bloquearTablaDocumentos = function (transaccion, call
  */
 CajaGeneralModel.prototype.numeracionDocumento = function (obj, transaccion, callback) {
 
-    var query = G.knex('documentos')
-            .where('documento_id', obj.documentoId)
-            .returning(['numeracion', 'prefijo'])
-            .increment('numeracion', 1);
+//    var query = G.knex('documentos')
+//            .where('documento_id', obj.documentoId)
+//            .returning(['numeracion', 'prefijo'])
+//            .increment('numeracion', 1);
+//
+//console.log("Query resultado", G.sqlformatter.format(
+//               query.toString()));
+//
+//    if (transaccion)
+//        query.transacting(transaccion);
+//
+//    query.then(function (resultado) {
+//        callback(false, resultado);
+
+    G.knex.column([G.knex.raw('prefijo as id'),
+        G.knex.raw('prefijo as descripcion'),
+        "empresa_id",
+        "numeracion",
+        "documento_id"
+    ])
+    var query = G.knex.select()
+            .from('documentos')
+            .where(function () {
+                this.andWhere("tipo_doc_general_id", 'FV01');
+                this.andWhere("empresa_id", obj.empresaId);
+                this.andWhere("documento_id", obj.documentoId);
+            });
 
     if (transaccion)
         query.transacting(transaccion);
 
     query.then(function (resultado) {
-        callback(false, resultado);
+        callback(false, resultado)
+
+
     }).catch(function (err) {
         console.log("err (/catch) [numeracionDocumento]: ", err);
         callback("Error al actualizar el tipo de formula");
     });
 };
+
+/**
+ * +Descripcion Metodo encargado de actualizar la numeracion del documento
+ * @author German Galvis
+ * @fecha 2018-11-13
+ */
+CajaGeneralModel.prototype.actualizarNumeracion = function (obj, transaccion, callback) {
+
+    var parametros = {empresa_id: obj.empresaId,
+        documento_id: obj.documentoId,
+        tipo_doc_general_id: 'FV01'
+    };
+    var query = G.knex('documentos').where(parametros).increment('numeracion', '1');
+    if (transaccion)
+        query.transacting(transaccion);
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [actualizarNumeracion]: ", err);
+        callback({err: err, msj: "Error al actualizar la numeracion del documento"});
+    });
+};
+
 
 
 /**

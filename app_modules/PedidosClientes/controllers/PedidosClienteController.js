@@ -58,6 +58,51 @@ PedidosCliente.prototype.listarFacturasPedido = function (req, res) {
 
 };
 
+/**
+ * +Descripcion Controlador encargado de consultar el sw_autorizacion del 
+ *              contrato del cliente
+ *  @author German Galvis
+ *  @fecha 2018-11-06
+ */
+PedidosCliente.prototype.consultarAutorizacionCartera = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.contrato_id === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de contrato', 404, {sw_autorizacion: []}));
+        return;
+    }
+
+    if (args.empresa_id === undefined || args.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {sw_autorizacion: []}));
+        return;
+    }
+
+
+    var parametros = {
+        contrato_id: args.contrato_id,
+        empresa_id: args.empresa_id,
+        tercero_id: args.tercero_id,
+        tipo_id_tercero: args.tipo_id_tercero
+    };
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarAutorizacionCartera', parametros).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            res.send(G.utils.r(req.url, 'Consulta sw_autorizacion', 200, {sw_autorizacion: resultado[0].sw_autorizacion}));
+        } else {
+            throw 'Consulta sin resultados';
+        }
+
+
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+
+
+};
+
 function __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback) {
 
     var producto = productos[index];
@@ -4575,8 +4620,7 @@ PedidosCliente.prototype.validarDisponibilidad = function (req, res) {
     };
 
     var productos = args.pedidos_clientes.productos;
-    console.log("productos ", productos);
-    console.log("parametros ", parametros);
+
     G.Q.nfcall(__disponibilidadProductos, that, 0, productos, parametros).then(function (resultado) {
 
         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto: resultado}}));
@@ -4601,7 +4645,7 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
     var producto = productos[index];
     var def = G.Q.defer();
     var productoUnidadMedida = "";
-    
+
     if (!producto) {
 
         callback(false, productosSinDisponible);//rowCount  
@@ -5659,7 +5703,7 @@ function __pedidoClienteAPedidoFarmacia(req, that, callback) {
         farmacia_id = resultado[0].farmacia_id;
         centro_utilidad = resultado[0].centro_utilidad;
         bodega = resultado[0].bodega;
-        
+
         return G.Q.ninvoke(that.m_pedidos_clientes, 'consultar_pedido', args.numero_pedido);
 
     }).then(function (resultado) {

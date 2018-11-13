@@ -14,6 +14,11 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.listarPedidosClientes(req, res);
     });
 
+    // Consultar autorizacion de cartera
+    app.post('/api/PedidosClientes/consultarAutorizacionCartera', function(req, res) {
+        c_pedidos_clientes.consultarAutorizacionCartera(req, res);
+    });
+
     // Asignar o seleccionar responsables del pedido
     app.post('/api/PedidosClientes/asignarResponsable', function(req, res) {
         c_pedidos_clientes.asignarResponsablesPedido(req, res);

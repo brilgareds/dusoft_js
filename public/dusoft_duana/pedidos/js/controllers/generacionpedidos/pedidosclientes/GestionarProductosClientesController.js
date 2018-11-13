@@ -605,6 +605,7 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="ngCellText">\
                                         <span class="label label-primary"  ng-if="row.entity.getNombreBodega() == \'DUA\' "> {{row.entity.getNombreBodega()}}</span>\
                                         <span class="label label-success"  ng-if="row.entity.getNombreBodega() == \'COS\' "> {{row.entity.getNombreBodega()}}</span>\
+                                        <span class="label label-info"  ng-if="row.entity.getNombreBodega() == \'BAR\' "> {{row.entity.getNombreBodega()}}</span>\
                                       </div>'
                     },
                     {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},

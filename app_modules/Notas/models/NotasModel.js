@@ -612,7 +612,7 @@ NotasModel.prototype.ConsultarDetalleFacturaCreditoDevolucion = function (obj, c
             })
             .where('a.empresa_id', obj.empresa_id)
             .andWhere('a.factura_fiscal', obj.facturaFiscal);
-    
+
     query.then(function (resultado) {
 
         callback(false, resultado)
@@ -748,7 +748,7 @@ NotasModel.prototype.agregarCabeceraNotaCredito = function (parametros, transacc
             returning('nota_credito_despacho_cliente_id').
             insert({empresa_id: parametros.empresaId, prefijo: parametros.prefijo, factura_fiscal: parametros.factura_fiscal,
                 valor: parametros.valor, usuario_id: parametros.usuario_id, tipo: parametros.tipoNota, concepto_id: parametros.conceptoId,
-                descripcion:parametros.descripcionNota
+                descripcion: parametros.descripcionNota
             });
 
     if (transaccion)
@@ -981,7 +981,7 @@ NotasModel.prototype.consultarProductosNotasCredito = function (parametros, call
 
             })
             .where("dncdc.nota_credito_despacho_cliente_id", parametros.numeroNota);
-   
+
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -1248,11 +1248,37 @@ NotasModel.prototype.actualizarFacturaNotaCredito = function (parametros, transa
             .andWhere('factura_fiscal', parametros.factura_fiscal)
             .andWhere('prefijo', parametros.prefijo)
             .update({
-                valor_notacredito: G.knex.raw('valor_notacredito +' + parametros.total),
-                saldo: G.knex.raw('saldo -' + parametros.total)
+                valor_notacredito: G.knex.raw('valor_notacredito + ' + parametros.total),
+                saldo: G.knex.raw('saldo - ' + parametros.total)
             });
     if (transaccion)
         query.transacting(transaccion);
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de actualizar la factura deacuerdo a la nota credito
+ * @fecha 2018-08-13 YYYY-MM-DD
+ * @returns {callback}
+ */
+NotasModel.prototype.actualizarFacturaNotaCreditoDevolucion = function (parametros, transaccion, callback) {
+
+    var query = G.knex(G.knex.raw(parametros.tabla_3))
+            .where('empresa_id', parametros.empresaId)
+            .andWhere('factura_fiscal', parametros.factura_fiscal)
+            .andWhere('prefijo', parametros.prefijo)
+            .update({
+                valor_notacredito: G.knex.raw('valor_notacredito + ' + parametros.total)
+            });
+
+    if (transaccion)
+        query.transacting(transaccion);
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

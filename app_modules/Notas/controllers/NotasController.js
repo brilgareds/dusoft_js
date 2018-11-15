@@ -473,6 +473,10 @@ Notas.prototype.crearNotaCredito = function (req, res) {
                 return G.Q.nfcall(__recorreListadoCredito, that, args.listado, parametros, 0, transaccion);
 
             }).then(function () {
+                
+               return G.Q.ninvoke(that.m_notas, 'actualizarFacturaNotaCreditoDevolucion', parametros, transaccion);
+
+            }).then(function () {
                 transaccion.commit(numeroNota);
             }).fail(function (err) {
                 transaccion.rollback(err);

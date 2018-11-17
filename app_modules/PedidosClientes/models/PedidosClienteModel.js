@@ -2149,7 +2149,8 @@ PedidosClienteModel.prototype.actualizarPedidoMultipleCliente = function (obj, c
     }
     var query = G.knex('ventas_ordenes_pedido_multiple_clientes').
             where(where).
-            update(update);
+            update(update).
+            returning(['sw_tipo_pedido','id_orden_pedido_origen','id_orden_pedido_destino']);
     //console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
@@ -3499,6 +3500,22 @@ PedidosClienteModel.prototype.consultarAutorizacionCartera = function (obj, call
             .from('vnts_contratos_clientes')
             .where('contrato_cliente_id', obj.contrato_id)
             .andWhere('empresa_id', obj.empresa_id);
+
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [consultarAutorizacionCartera]:", err);
+        callback(err);
+    });
+};
+
+PedidosClienteModel.prototype.consultarResponsablePedido = function (obj, callback) {
+
+    var query = G.knex.select('responsable_id')
+            .from('ventas_ordenes_pedidos_estado')
+            .where('pedido_cliente_id', obj.pedido)
+            .andWhere('estado', obj.estado);
 
 
     query.then(function (resultado) {

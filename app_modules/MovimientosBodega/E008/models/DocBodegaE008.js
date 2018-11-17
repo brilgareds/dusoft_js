@@ -1015,6 +1015,20 @@ DocumentoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, num
     
 };
 
+DocumentoBodegaE008.prototype.consultar_rotulo_caja_tipo = function(numero_pedido,callback) {
+ 
+    var sql = " select * from inv_rotulo_caja a where a.solicitud_prod_a_bod_ppal_id = :1 limit 1; ";
+
+        
+   G.knex.raw(sql, {1:numero_pedido}).
+   then(function(resultado){  
+       callback(false, resultado.rows, resultado);
+   }).catch(function(err){
+       callback(err);
+   });
+    
+};
+
 // Inserta el rotulo de una caja
 DocumentoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numero_pedido, cliente, direccion, cantidad, ruta,
                                                              contenido, numero_caja, usuario_id, tipo, tipoPedido, callback) {

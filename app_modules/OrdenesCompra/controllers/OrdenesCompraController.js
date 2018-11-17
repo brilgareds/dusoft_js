@@ -2679,10 +2679,21 @@ function __ejecutarDocumento(parametros,callback){
                 cotizacion_destino: parametros.cotizacion.id_orden_cotizacion_destino
             };
         }
-    
+
         documentoI002.pedidoFinal=obj.id_orden_pedido_final;
        return G.Q.ninvoke(that.m_pedidos_clientes, "actualizarPedidoMultipleCliente", obj); 
          
+    }).then(function(result) { 
+        
+        console.log("result ",result[0].sw_tipo_pedido);
+        console.log("result ",result[0].id_orden_pedido_origen);
+        console.log("result ",result[0].id_orden_pedido_destino);
+        parametros.pedidos=result;
+        parametros.pedido=result[0].id_orden_pedido_destino;
+        parametros.pedidoFinal=documentoI002.pedidoFinal;
+        parametros.estado='1';
+       return G.Q.nfcall(__ejecutaAsignacionDePedido,that, parametros); 
+        
     }).then(function(result) { 
         
          callback(false,{status:200,respuesta: documentoI002});   
@@ -2691,6 +2702,135 @@ function __ejecutarDocumento(parametros,callback){
         callback(err);
     }).done();
 };
+
+function __ejecutaAsignacionDePedido(that,parametros,callback){
+    var responsamble;
+    var pedidos;
+    G.Q.ninvoke(that.m_pedidos_clientes, "consultarResponsablePedido", parametros).then(function(result) {
+        console.log("responsable_id------",result);
+        var pedidos=[];
+        pedidos.push(parametros.pedidoFinal);
+        var obj = {
+            session: parametros.session,
+            body: {
+                data: {
+                     asignacion_pedidos: {
+                     pedidos: pedidos,
+                     estado_pedido: "1",
+                     responsable: result[0].responsable_id
+                    }
+                }
+            }
+        };
+        responsamble=result[0].responsable_id;
+        if(parametros.pedidos[0].sw_tipo_pedido==='0'){//farmacia
+           
+            
+        }else{
+
+            return G.Q.ninvoke(that.c_pedidos_clientes,"asignarResponsablesPedidoAutomatico", obj); 
+        }
+        
+    }).then(function(result) {
+         var filtro = {numeroPedido:parametros.pedidoFinal};
+         return G.Q.ninvoke(that.m_pedidos_clientes,"listar_pedidos_del_operario", responsamble, parametros.pedidoFinal, filtro, 0, 1); 
+        
+    }).then(function(result) {
+        console.log("result listar_pedidos_del_operario ",result);
+        pedidos=result;
+        return G.Q.ninvoke(that.m_pedidos_clientes,"consultar_rotulo_caja_tipo",parametros.pedidos[0].id_orden_pedido_destino);
+        
+    }).then(function(result) {
+        console.log("result consultar_rotulo_caja_tipo ",result);
+        
+        var obj = {
+            session: parametros.session,
+            body: {
+                data: {
+                     documento_temporal:  {
+                        documento_temporal_id: 0,
+                        numero_caja: '1',
+                        numero_pedido: parametros.pedidoFinal,
+                        direccion_cliente: pedidos[0].direccion_cliente,
+                        nombre_cliente: pedidos[0].nombre_cliente,
+                        tipo: result[0].tipo,
+                        tipo_pedido:1
+                    }
+                }
+            }
+        };
+        
+        if(parametros.pedidos[0].sw_tipo_pedido==='0'){//farmacia
+           
+            
+        }else{
+
+            return G.Q.ninvoke(that.c_pedidos_clientes,"validarCajaProductoAutomatico", obj); 
+        }
+        
+    }).then(function(result) {
+         console.log("result validarCajaProductoAutomatico ",result);
+        
+        if(parametros.pedidos[0].sw_tipo_pedido==='0'){//farmacia
+           
+            
+        }else{
+
+            return G.Q.ninvoke(that.c_pedidos_clientes,"__enviarDocumentoTemporal", that,parametros,pedidos,0); 
+        }
+        
+        
+    }).then(function(result) {
+         console.log("result __enviarDocumentoTemporal ",result);
+        
+        callback(false,result);
+        
+    }).fail(function(err) {
+        console.log("__ejecutarDocumento ",err);
+        callback(err);
+    }).done();
+}
+
+function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
+
+    var producto = pedidos[0].lista_productos[index];
+    console.log("producto::: ",producto);
+    if(producto === undefined){
+        callback(false,true);
+        return;
+    }
+    
+    var obj = {
+        session: parametros.session,
+        data: {
+            documento_temporal: {
+                empresa_id: pedidos[0].empresa_destino,
+                centro_utilidad_id: pedidos[0].centro_destino,
+                bodega_id: pedidos[0].bodega_destino,
+                doc_tmp_id: 0,
+                codigo_producto: producto.codigo_producto,
+                lote: producto.lote,
+                fecha_vencimiento: producto.fecha_vencimiento,
+                cantidad_ingresada: producto.cantidad_ingresada,
+                valor_unitario: producto.valor_unitario,
+                iva: producto.porcentaje_iva,
+                total_costo: producto.cantidad_ingresada * producto.valor_unitario,
+                total_costo_pedido: producto.valor_unitario,
+                cantidad_solicitada: producto.cantidad_solicitada
+            }
+        }
+    };
+
+    G.Q.ninvoke(that.m_pedidos_clientes, "detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico", parametros).then(function (result) {
+       index++;
+      __enviarDocumentoTemporal(that,parametros, pedidos, index, callback);
+
+    }).fail(function (err) {
+        console.log("__enviarDocumentoTemporal ", err);
+        callback(err);
+    }).done();
+}
+
 /**
  * @author Cristian Manuel Ardila Troches
  * +Descripcion Metodo encargado de asignar el responsable del pedido, actualizar

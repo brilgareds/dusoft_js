@@ -406,7 +406,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
                         })
                         .where('evolucion_id',obj.evolucionId).andWhere("d.todo_pendiente","!=", 1);                 
                       
-           
+        console.log(G.sqlformatter.format(query.toString()));    
     query.then(function(resultado){ 
 
       callback(false, resultado);
@@ -832,7 +832,9 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
                
             
     query.limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){          
+    offset((obj.paginaActual - 1) * G.settings.limit);
+    console.log("ppp",G.sqlformatter.format(query.toString())); 
+    query.then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){    
         console.log("err [listarFormulasPendientes]: ", err)
@@ -982,7 +984,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                    
     
     var query = G.knex.select(colSubQuery).from(subQueryB);
-              
+   console.log(G.sqlformatter.format(query.toString()));            
         query.then(function(resultado){       
 
             callback(false, resultado);

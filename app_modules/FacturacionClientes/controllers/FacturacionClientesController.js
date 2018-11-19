@@ -2895,6 +2895,76 @@ function __productos(productos, index, productosDian, callback) {
     }, 0);
 }
 
+function __productosAdjunto(productos, index, productosDian, callback) {
+    var item = productos[index];
+    var formato = 'DD-MM-YYYY';
+
+
+    if (!item) {
+        callback(false, productosDian);
+        return;
+    }
+
+    var atrip5 = {
+        nombreAtributo: "valorTotalProd", //String
+        valor: item.subtotal//decimal
+    };
+    var atributoAdicionalProd = [];
+    atributoAdicionalProd.push(atrip5);
+
+    var prod = {//OPCIONAL
+        atributosAdicionalesProd: {
+            atributoAdicionalProd: atributoAdicionalProd
+        }
+        ,
+        cantidad: item.cantidad, //decimal OPCIONAL -
+        descripcion: item.descripcion, //String OPCIONAL -
+        identificador: item.codigo_producto, //String -
+        imprimible: true, //boolean -
+        pagable: true, //boolean -
+        valorUnitario: item.valor_unitario //decimal -
+    };
+    var impuesto;
+    var ivaPorcentaje = parseInt(item.porc_iva);
+    if (ivaPorcentaje === 0) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA0", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+
+        };
+    }
+    ;
+    if (ivaPorcentaje === 19) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA19", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        }
+
+    }
+    ;
+    if (ivaPorcentaje === 10) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA10", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        };
+    }
+    ;
+    prod.listaImpuestosDeducciones = impuesto;
+    productosDian.push(prod);
+
+    var timer = setTimeout(function () {
+        index++;
+        __productos(productos, index, productosDian, callback);
+        clearTimeout(timer);
+    }, 0);
+}
+
 FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
     that = this;
     var args = req.body.data.imprimir_reporte_factura;
@@ -2905,7 +2975,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
     G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
         resultado = data;
 
-        return G.Q.nfcall(__productos, resultado.detalle, 0, []);
+        return G.Q.nfcall(__productosAdjunto, resultado.detalle, 0, []);
 
     }).then(function (productos) {
         /*        var json = {

@@ -527,6 +527,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
 PedidosClienteModel.prototype.listarFacturasPedido = function (obj, callback) {
 
     var subColQuery = [G.knex.raw("distinct(invfa.factura_fiscal) as factura_fiscal"),
+        "invfa.prefijo",
         "invfa.valor_total",
         "invfad.pedido_cliente_id as pedido_cliente_id",
         "invfa.fecha_registro as fecha_registro"];
@@ -540,6 +541,7 @@ PedidosClienteModel.prototype.listarFacturasPedido = function (obj, callback) {
 
                     }).union(function () {
         this.select([G.knex.raw("distinct(factura_fiscal) as factura_fiscal"),
+            "b.prefijo",
             "b.valor_total",
             "b.pedido_cliente_id",
             "b.fecha_registro"])
@@ -547,7 +549,7 @@ PedidosClienteModel.prototype.listarFacturasPedido = function (obj, callback) {
 
     }).as("fac");
 
-    var query = G.knex.select(["fac.pedido_cliente_id", "fac.factura_fiscal", "fac.valor_total", G.knex.raw("to_char(fac.fecha_registro, 'YYYY-MM-DD HH12:MI:SS') as fecha_registro")])
+    var query = G.knex.select(["fac.pedido_cliente_id", "fac.factura_fiscal","fac.prefijo", "fac.valor_total", G.knex.raw("to_char(fac.fecha_registro, 'YYYY-MM-DD HH12:MI:SS') as fecha_registro")])
             .from(subQuery)
             .where('fac.pedido_cliente_id', obj.pedido);
 

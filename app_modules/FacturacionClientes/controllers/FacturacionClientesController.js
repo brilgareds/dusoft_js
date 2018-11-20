@@ -3012,7 +3012,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
          observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: " + resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
          observacionesDespacho: "", resultado.detalle[0].obs_despacho, 
          elaboradoPor: resultado.imprimio.usuario,
-         tipoFormato: '1',
+         tipoFormato: '1',  // diferencia el tipo de factura esperando definicion del campo por parte de certicamara
          condiciones: resultado.cabecera.observaciones,
          mensajeResolucion: resultado.cabecera.texto1,
          mensajeContribuyente: resultado.cabecera.texto2 + " " + resultado.cabecera.texto3
@@ -3763,23 +3763,22 @@ function __generarPdf2(datos, callback) {
             phantom: {
                 margin: "10px",
                 width: '700px',
-//                header: `<table width='100%' border='1' cellspacing='0'>
-//            <tr border='0'>
-//                <td width='10%' align='center' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:5.5pt">
-//                    <img  src="{{:serverUrl}}images/logo.png" align='left' border=0 width="100px" height="50px">
-//                        <h5> {{:cabecera.tipo_id_empresa}}: {{:cabecera.id}}- {{:cabecera.digito_verificacion}}</h5>   
-//                        <h5> {{:cabecera.direccion_empresa}} TELEFONO : {{:cabecera.telefono_empresa}}</h5>   
-//                        <h5> {{:cabecera.pais_empresa}} - {{:cabecera.departamento_empresa}} - {{:cabecera.municipio_empresa}}</h5>   
-//                </td>
-//                <td width='60%' align="center" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6pt">
-//                    <h2 class="label"><B>{{:cabecera.texto2}} </B><B>{{:cabecera.texto3}} </B></h3>
-//                        <h4 class="label" align="justify">{{:cabecera.texto1}}</h4>
-//
-//                </td>
-//                <td><img  src="{{:serverUrl}}images/iso2015.png" align='rigth' width="50px" height="100px"></td>
-//            </tr>
-//        </table>
-//        <br>`
+                headerHeight: "290px",
+                header: `<table width='100%' border='1' cellspacing='0'>
+            <tr border='0'>
+                <td width='10%' align='center' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:5.5pt">
+                    <img  src="` + datos.serverUrl+`images/logo.png" align='left' border=0 width="100px" height="50px">
+                        <h5>` + datos.cabecera.tipo_id_empresa +`: ` + datos.cabecera.id+` - ` + datos.cabecera.digito_verificacion+`</h5>   
+                        <h5> ` + datos.cabecera.direccion_empresa+` TELEFONO : ` + datos.cabecera.telefono_empresa+`</h5>   
+                        <h5> ` + datos.cabecera.pais_empresa+` - ` + datos.cabecera.departamento_empresa+` - ` + datos.cabecera.municipio_empresa+`</h5>   
+                </td>
+                <td width='60%' align="center" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6pt">
+                    <h2 class="label"><B>` + datos.cabecera.texto2+` </B><B>` + datos.cabecera.texto3+` </B></h3>
+                        <h4 class="label" align="justify">` + datos.cabecera.texto1+`</h4></td>
+                <td><img  src="` + datos.serverUrl+`images/avatar.png" align='rigth' width="50px" height="100px"></td>
+            </tr>
+        </table>
+        <br>`
             }
         },
         data: datos

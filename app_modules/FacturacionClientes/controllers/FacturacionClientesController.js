@@ -1832,7 +1832,7 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
         res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
 
-}
+};
 
 /**
  * @author German Galvis
@@ -1925,12 +1925,12 @@ FacturacionClientes.prototype.imprimirCsv = function (req, res) {
         paginaActual: '-1'};
 
     G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).then(function (resultado) {
-        
-                    return G.Q.nfcall(__generarCsvBarranquilla, resultado);
-        }).then(function (resultado) {
-            console.log("resultado",resultado);
-                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {imprimirCsv: resultado}));
-            }).
+
+        return G.Q.nfcall(__generarCsvBarranquilla, resultado);
+    }).then(function (resultado) {
+        console.log("resultado", resultado);
+        res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {imprimirCsv: resultado}));
+    }).
             fail(function (err) {
                 res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {imprimirCsv: {}}));
             }).
@@ -2895,6 +2895,65 @@ function __productos(productos, index, productosDian, callback) {
     }, 0);
 }
 
+function __productosAdjunto(productos, index, productosDian, callback) {
+    var item = productos[index];
+    var formato = 'DD-MM-YYYY';
+
+
+    if (!item) {
+        callback(false, productosDian);
+        return;
+    }
+
+    var prod = {
+        cantidad: item.cantidad, //decimal OPCIONAL -
+        descripcion: item.descripcion, //String OPCIONAL -
+        identificador: item.codigo_producto, //String -
+        imprimible: true, //boolean -
+        pagable: true, //boolean -
+        valorUnitario: item.valor_unitario //decimal -
+    };
+    var impuesto;
+    var ivaPorcentaje = parseInt(item.porc_iva);
+    if (ivaPorcentaje === 0) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA0", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+
+        };
+    }
+    ;
+    if (ivaPorcentaje === 19) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA19", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        }
+
+    }
+    ;
+    if (ivaPorcentaje === 10) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA10", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        };
+    }
+    ;
+    prod.listaImpuestosDeducciones = impuesto;
+    productosDian.push(prod);
+
+    var timer = setTimeout(function () {
+        index++;
+        __productosAdjunto(productos, index, productosDian, callback);
+        clearTimeout(timer);
+    }, 0);
+}
+
 FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
     that = this;
     var args = req.body.data.imprimir_reporte_factura;
@@ -2905,9 +2964,60 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
     G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
         resultado = data;
 
-        return G.Q.nfcall(__productos, resultado.detalle, 0, []);
+        return G.Q.nfcall(__productosAdjunto, resultado.detalle, 0, []);
 
     }).then(function (productos) {
+        /*        var json = {
+         codigoMoneda: "COP",
+         descripcion: "",
+         fechaExpedicion: resultado.cabecera.fecha_registro,
+         fechaVencimiento: resultado.cabecera.fecha_vencimiento_factura,
+         icoterms: '',
+         codigoDocumentoDian: resultado.cabecera.tipo_id_tercero,
+         numeroIdentificacion: resultado.cabecera.tercero_id,
+         identificadorConsecutivo: resultado.cabecera.factura_fiscal,
+         identificadorResolucion: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ,
+         mediosPago: resultado.cabecera.tipo_pago_id,
+         nombreSucursal: "",
+         desde: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ, //long -
+         hasta: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ, //long -
+         prefijo: resultado.cabecera.prefijo,
+         perfilEmision: "CLIENTE",
+         perfilUsuario: "CLIENTE",
+         productos: productos,
+         subtotalFactura: resultado.cabecera.subtotal, //decimal OPCIONAL -
+         
+         //            nombreReteFuente: "ReteFuente", //String -
+         ReteFuente: resultado.valores.retencionFuenteSf, //decimal -
+         baseGravableReteFuente: resultado.valores.baseRetencionFuente, //decimal -
+         
+         //            nombreIVA: "IVA", //String -
+         IVA: resultado.valores.Iva, //decimal -
+         baseGravableIVA: resultado.cabecera.subtotal, //decimal -
+         
+         //            nombreReteICA: "ReteICA", //String -
+         ReteICA: resultado.valores.retencionIcaSf, //decimal -
+         baseGravableReteICA: resultado.valores.baseRetencionIca, //decimal -
+         
+         //            nombreReteIVA: "ReteIVA", //String -
+         ReteIVA: resultado.valores.retencionIvaSf, //decimal -
+         baseGravableReteIVA: resultado.valores.baseRetencionIva, //decimal -
+         
+         tipoFactura: 1, //numeric -
+         totalFactura: resultado.valores.totalFactura, //decimal OPCIONAL -
+         nombreAdquirente: resultado.cabecera.nombre_tercero,
+         vendedor: resultado.cabecera.nombre,
+         numeroPedido: resultado.cabecera.pedido_cliente_id,
+         totalenLetras: resultado.valores.totalFacturaLetra,
+         observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: " + resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
+         observacionesDespacho: "", resultado.detalle[0].obs_despacho, 
+         elaboradoPor: resultado.imprimio.usuario,
+         tipoFormato: '1',
+         condiciones: resultado.cabecera.observaciones,
+         mensajeResolucion: resultado.cabecera.texto1,
+         mensajeContribuyente: resultado.cabecera.texto2 + " " + resultado.cabecera.texto3
+         };*/
+
         var json = {
             codigoMoneda: "COP",
             descripcion: "",
@@ -2926,39 +3036,24 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
             productos: productos,
-            subtotalFactura: resultado.cabecera.subtotal, //decimal OPCIONAL -
+            subtotalFactura: resultado.cabecera.subtotal,
+            ReteFuente: resultado.valores.retencionFuenteSf,
+            baseGravableReteFuente: resultado.valores.baseRetencionFuente,
+            IVA: resultado.valores.Iva,
+            baseGravableIVA: resultado.cabecera.subtotal,
+            ReteICA: resultado.valores.retencionIcaSf,
+            baseGravableReteICA: resultado.valores.baseRetencionIca,
+            ReteIVA: resultado.valores.retencionIvaSf,
+            baseGravableReteIVA: resultado.valores.baseRetencionIva,
+            tipoFactura: 1,
+            totalFactura: resultado.valores.totalFactura,
 
-//            nombreReteFuente: "ReteFuente", //String -
-            ReteFuente: resultado.valores.retencionFuenteSf, //decimal -
-            baseGravableReteFuente: resultado.valores.baseRetencionFuente, //decimal -
-
-//            nombreIVA: "IVA", //String -
-            IVA: resultado.valores.Iva, //decimal -
-            baseGravableIVA: resultado.cabecera.subtotal, //decimal -
-
-//            nombreReteICA: "ReteICA", //String -
-            ReteICA: resultado.valores.retencionIcaSf, //decimal -
-            baseGravableReteICA: resultado.valores.baseRetencionIca, //decimal -
-
-//            nombreReteIVA: "ReteIVA", //String -
-            ReteIVA: resultado.valores.retencionIvaSf, //decimal -
-            baseGravableReteIVA: resultado.valores.baseRetencionIva, //decimal -
-
-            tipoFactura: 1, //numeric -
-            totalFactura: resultado.valores.totalFactura, //decimal OPCIONAL -
-            nombreAdquirente: resultado.cabecera.nombre_tercero,
-            vendedor: resultado.cabecera.nombre,
-            numeroPedido: resultado.cabecera.pedido_cliente_id,
-            totalenLetras: resultado.valores.totalFacturaLetra,
-            observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: " + resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
-            observacionesDespacho: /*resultado.detalle[0].obs_despacho,*/   "",
-            elaboradoPor: resultado.imprimio.usuario,
-            tipoFormato: '1',
-            condiciones: resultado.cabecera.observaciones,
-            mensajeResolucion: resultado.cabecera.texto1,
-            mensajeContribuyente: resultado.cabecera.texto2 + " " + resultado.cabecera.texto3
+            coordXQr: 175,
+            coordYQr: 270,
+            coordXCufe: 114,
+            coordYCufe: 235,
+            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
-
 
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
 
@@ -2967,7 +3062,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
 
         data = respuesta;
         var parametros = {
-            empresa_id: args.empresaId, //obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+            empresa_id: args.empresaId,
             prefijo: resultado.cabecera.prefijo,
             factura_fiscal: resultado.cabecera.factura_fiscal,
             sw_factura_dian: respuesta.sw_factura_dian,
@@ -3037,7 +3132,7 @@ function __generarSincronizacionDian(that, req, callback) {
         valores: {},
         productos: {},
         imprimio: {usuario: '', fecha: fechaToday},
-        archivoHtml: 'facturaGeneradaDetalle.html',
+        archivoHtml: 'facturaGeneradaDetallePDF.html',
         reporte: "factura_generada_detalle_"
     };
 
@@ -3165,11 +3260,19 @@ function __generarSincronizacionDian(that, req, callback) {
             parametrosReporte.valores.totalFactura = totalFactura;
             parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
 
-            callback(false, parametrosReporte);
-
         } else {
             throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
         }
+
+
+        return G.Q.nfcall(__generarPdf2, parametrosReporte);
+
+    }).then(function (resultado) {
+
+        parametrosReporte.pdf = resultado;
+
+        callback(false, parametrosReporte);
+
 
     }).fail(function (err) {
         console.log("Error  ", err);
@@ -3228,7 +3331,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
         valores: {},
         productos: {},
         imprimio: {usuario: '', fecha: fechaToday},
-        archivoHtml: 'PreFacturaGeneradaDetalle.html',
+        archivoHtml: 'facturaGeneradaDetallePDF.html',
         reporte: "factura_generada_detalle_"
     };
 
@@ -3348,7 +3451,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
             parametrosReporte.valores.totalFactura = G.utils.numberFormat(parseFloat(totalFactura), 2);
             parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
 
-            return G.Q.nfcall(__generarPdf, parametrosReporte);
+            return G.Q.nfcall(__generarPdf2, parametrosReporte);
 
         } else {
             throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
@@ -3633,6 +3736,58 @@ function __generarPdf(datos, callback) {
         response.body(function (body) {
             var fecha = new Date();
             var nombreTmp = datos.reporte + fecha.getTime() + ".html";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                if (err) {
+                    console.log("err [__generarPdf]: ", err)
+                } else {
+                    callback(false, nombreTmp);
+                }
+            });
+        });
+    });
+}
+
+/**
+ * +Descripcion Funcion encargada de generar el reporte pdf procesando los datos enviados
+ */
+function __generarPdf2(datos, callback) {
+    datos.style = G.dirname + "/public/stylesheets/facturacion/style.css";
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/FacturacionClientes/reports/' + datos.archivoHtml, 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px',
+//                header: `<table width='100%' border='1' cellspacing='0'>
+//            <tr border='0'>
+//                <td width='10%' align='center' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:5.5pt">
+//                    <img  src="{{:serverUrl}}images/logo.png" align='left' border=0 width="100px" height="50px">
+//                        <h5> {{:cabecera.tipo_id_empresa}}: {{:cabecera.id}}- {{:cabecera.digito_verificacion}}</h5>   
+//                        <h5> {{:cabecera.direccion_empresa}} TELEFONO : {{:cabecera.telefono_empresa}}</h5>   
+//                        <h5> {{:cabecera.pais_empresa}} - {{:cabecera.departamento_empresa}} - {{:cabecera.municipio_empresa}}</h5>   
+//                </td>
+//                <td width='60%' align="center" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6pt">
+//                    <h2 class="label"><B>{{:cabecera.texto2}} </B><B>{{:cabecera.texto3}} </B></h3>
+//                        <h4 class="label" align="justify">{{:cabecera.texto1}}</h4>
+//
+//                </td>
+//                <td><img  src="{{:serverUrl}}images/iso2015.png" align='rigth' width="50px" height="100px"></td>
+//            </tr>
+//        </table>
+//        <br>`
+            }
+        },
+        data: datos
+    }, function (err, response) {
+
+        response.body(function (body) {
+            var fecha = new Date();
+            var nombreTmp = datos.reporte + fecha.getTime() + ".pdf";
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {

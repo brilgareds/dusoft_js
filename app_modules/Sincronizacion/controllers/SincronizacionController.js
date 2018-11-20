@@ -106,11 +106,13 @@ var Sincronizacion = function (m_sincronizacion, m_clientes) {
 Sincronizacion.prototype.facturacionElectronica = function (req, callback) {
     var that = this;
 
-    G.Q.nfcall(__jsonFactura, req).then(function (resultado) {
+//    G.Q.nfcall(__jsonFactura, req).then(function (resultado) { // facturacion anterior sin adjunto de pdf
+    G.Q.nfcall(__jsonFacturaAjdunto, req).then(function (resultado) {
 
         var obj = {};
         obj.x = '';
-        obj.funcion = "crearFacturaElectronica";
+//        obj.funcion = "crearFacturaElectronica";  // facturacion anterior sin adjunto de pdf
+        obj.funcion = "crearFacturaElectronicaConAdjuntos";
         obj.parametros = resultado;
         obj.url = G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
 
@@ -454,12 +456,7 @@ function __jsonFactura(obj, callback) {
             },
             codigoMoneda: obj.codigoMoneda, //String -
             descripcion: "", //String OPCIONAL-
-            descuentos: {//OPCIONAL
-//                prontoPago: { 
-//                    fecha:'' , //string -
-//                    valorPagar: ''//decimal -
-//                }
-            },
+            descuentos: {},//OPCIONAL
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String OPCIONAL  DD/MM/YYYY -
             fechaVencimiento: G.moment(obj.fechaVencimiento).format(formato), //String OPCIONAL DD/MM/YYYY -
             icoterms: '', //String OPCIONAL -
@@ -563,6 +560,102 @@ function __jsonFactura(obj, callback) {
         }
     };
     callback(false, crearFacturaElectronica);
+}
+
+function __jsonFacturaAjdunto(obj, callback) {
+
+    var formato = 'DD-MM-YYYY';
+    var crearFacturaElectronicaConAdjuntos = {
+        attributes: {
+            xmlns: 'http://contrato.factura.webservices.servicios.certifactura.certicamara.com/'
+        },
+        facturaElectronicaCanonica: {
+            attributes: {
+                xmlns: ''
+            },
+            codigoMoneda: obj.codigoMoneda, //String -
+            descripcion: "", //String OPCIONAL -
+            descuentos: {
+            },
+            fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String OPCIONAL  DD/MM/YYYY -
+            fechaVencimiento: G.moment(obj.fechaVencimiento).format(formato), //String OPCIONAL DD/MM/YYYY -
+            icoterms: '', //String OPCIONAL -
+            identificacionReceptor: {
+                codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int -
+                numeroIdentificacion: obj.numeroIdentificacion//String -
+            },
+            identificadorConsecutivo: obj.identificadorConsecutivo, //long -
+            identificadorResolucion: obj.identificadorResolucion, //String -
+            mediosPago: mediosPago(obj.mediosPago), //String OPCIONAL -
+            nombreSucursal: obj.nombreSucursal, //String -
+            numeracionResolucionWS: {
+                desde: obj.desde, //long -
+                hasta: obj.hasta, //long -
+                prefijo: obj.prefijo//String -
+            },
+            perfilEmision: "CLIENTE", //String -
+            perfilUsuario: "CLIENTE", //String -
+            productos: obj.productos, //OPCIONAL
+            subtotalFactura: obj.subtotalFactura, //decimal OPCIONAL -
+            subtotalesImpuestosDeduccion: [
+                {// OPCIONAL
+                    nombre: "ReteFuente", //String -
+                    valor: obj.ReteFuente, //decimal -
+                    baseGravable: obj.baseGravableReteFuente.replace(".", "") //decimal -
+                },
+                {// OPCIONAL
+                    nombre: "IVA", //String -
+                    valor: obj.IVA, //decimal -
+                    baseGravable: obj.baseGravableIVA //decimal -
+                },
+                {// OPCIONAL
+                    nombre: "ReteICA", //String -
+                    valor: obj.ReteICA, //decimal -
+                    baseGravable: obj.baseGravableReteICA.replace(".", "") //decimal -
+                },
+                {// OPCIONAL
+                    nombre: "ReteIVA", //String -
+                    valor: obj.ReteIVA, //decimal -
+                    baseGravable: obj.baseGravableReteIVA.replace(".", "") //decimal -
+                }
+            ],
+            tipoFactura: obj.tipoFactura, //numeric -
+            totalFactura: obj.totalFactura //decimal OPCIONAL -
+        },
+        facturaEspecializada: {
+            attributes: {
+                xmlns: ''
+            },
+            AtributosAdicionales: {
+                AtributoAdicional: [{
+                        nombreAtributo: "coordXQr",
+                        valor: obj.coordXQr,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "coordYQr",
+                        valor: obj.coordYQr,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "coordXCufe",
+                        valor: obj.coordXCufe,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "coordYCufe",
+                        valor: obj.coordYCufe,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "rotCufe",
+                        valor: 0,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "pdf",
+                        valor: obj.pdf,
+                        tipo: "Texto"
+                    }]
+            }
+        }
+    };
+    callback(false, crearFacturaElectronicaConAdjuntos);
 }
 
 

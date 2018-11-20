@@ -1179,7 +1179,7 @@ CajaGeneral.prototype.generarSincronizacionDian = function (req, res) {
             observacionesPedido: '',
             observacionesDespacho: /*resultado.detalle[0].obs_despacho,*/   "",
             elaboradoPor: resultado.usuario,
-            tipoFormato: '1',
+            tipoFormato: 'Servicio',
             condiciones: '',
             mensajeResolucion: resultado.documento[0].texto1,
             mensajeContribuyente: resultado.documento[0].texto2 + " " + resultado.documento[0].texto3

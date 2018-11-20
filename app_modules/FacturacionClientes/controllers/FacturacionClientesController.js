@@ -2953,7 +2953,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
             observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: " + resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
             observacionesDespacho: /*resultado.detalle[0].obs_despacho,*/   "",
             elaboradoPor: resultado.imprimio.usuario,
-            tipoFormato: '1',
+            tipoFormato: 'Producto',
             condiciones: resultado.cabecera.observaciones,
             mensajeResolucion: resultado.cabecera.texto1,
             mensajeContribuyente: resultado.cabecera.texto2 + " " + resultado.cabecera.texto3

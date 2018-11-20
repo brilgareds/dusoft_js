@@ -2905,18 +2905,7 @@ function __productosAdjunto(productos, index, productosDian, callback) {
         return;
     }
 
-    var atrip5 = {
-        nombreAtributo: "valorTotalProd", //String
-        valor: item.subtotal//decimal
-    };
-    var atributoAdicionalProd = [];
-    atributoAdicionalProd.push(atrip5);
-
-    var prod = {//OPCIONAL
-        atributosAdicionalesProd: {
-            atributoAdicionalProd: atributoAdicionalProd
-        }
-        ,
+    var prod = {
         cantidad: item.cantidad, //decimal OPCIONAL -
         descripcion: item.descripcion, //String OPCIONAL -
         identificador: item.codigo_producto, //String -
@@ -2960,7 +2949,7 @@ function __productosAdjunto(productos, index, productosDian, callback) {
 
     var timer = setTimeout(function () {
         index++;
-        __productos(productos, index, productosDian, callback);
+        __productosAdjunto(productos, index, productosDian, callback);
         clearTimeout(timer);
     }, 0);
 }
@@ -3058,12 +3047,12 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
             baseGravableReteIVA: resultado.valores.baseRetencionIva,
             tipoFactura: 1,
             totalFactura: resultado.valores.totalFactura,
-            
-            coordXQr:5,
-            coordYQr:10,
-            coordXCufe:65,
-            coordYCufe:20,
-            pdf:G.base64.base64Encode(G.dirname + "/public/reports/"+ resultado.pdf)
+
+            coordXQr: 175,
+            coordYQr: 270,
+            coordXCufe: 114,
+            coordYCufe: 235,
+            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
 
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
@@ -3763,7 +3752,7 @@ function __generarPdf(datos, callback) {
  * +Descripcion Funcion encargada de generar el reporte pdf procesando los datos enviados
  */
 function __generarPdf2(datos, callback) {
-datos.style = G.dirname + "/public/stylesheets/bootstrap.min.css";
+    datos.style = G.dirname + "/public/stylesheets/facturacion/style.css";
 
     G.jsreport.render({
         template: {
@@ -3773,7 +3762,24 @@ datos.style = G.dirname + "/public/stylesheets/bootstrap.min.css";
             engine: 'jsrender',
             phantom: {
                 margin: "10px",
-                width: '700px'
+                width: '700px',
+//                header: `<table width='100%' border='1' cellspacing='0'>
+//            <tr border='0'>
+//                <td width='10%' align='center' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:5.5pt">
+//                    <img  src="{{:serverUrl}}images/logo.png" align='left' border=0 width="100px" height="50px">
+//                        <h5> {{:cabecera.tipo_id_empresa}}: {{:cabecera.id}}- {{:cabecera.digito_verificacion}}</h5>   
+//                        <h5> {{:cabecera.direccion_empresa}} TELEFONO : {{:cabecera.telefono_empresa}}</h5>   
+//                        <h5> {{:cabecera.pais_empresa}} - {{:cabecera.departamento_empresa}} - {{:cabecera.municipio_empresa}}</h5>   
+//                </td>
+//                <td width='60%' align="center" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6pt">
+//                    <h2 class="label"><B>{{:cabecera.texto2}} </B><B>{{:cabecera.texto3}} </B></h3>
+//                        <h4 class="label" align="justify">{{:cabecera.texto1}}</h4>
+//
+//                </td>
+//                <td><img  src="{{:serverUrl}}images/iso2015.png" align='rigth' width="50px" height="100px"></td>
+//            </tr>
+//        </table>
+//        <br>`
             }
         },
         data: datos

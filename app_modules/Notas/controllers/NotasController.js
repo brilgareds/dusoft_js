@@ -1498,7 +1498,31 @@ function __generarPdf(datos, callback) {
                 margin: "10px",
                 width: '700px'
 //                headerHeight: "290px",
-//                header: `<table width='100%' border='1' cellspacing='0'>
+//                header:`<table width='100%' border=1 cellpadding='4' cellspacing='4'>
+//                            <tr>
+//                                <td width='20%' align='center' valign='center' rowspan='2'>
+//                                    <table width="20%" align="center"  style="font-size: 10px; line-height: 1;" rules="all">
+//                                        <tr align="center">
+//                                            <td ><img  src="{{:serverUrl}}images/DispensacionHc/logocliente1.png" align='left' border=0></td>
+//                                        </tr>
+//                                        <tr >
+//                                            <td align="center">`+ datos.empresa.tipo_id_tercero +" "+ datos.empresa.id +`</td> <!--falta digito de verificacion -->
+//                                        </tr>
+//                                        <tr class="label">
+//                                            <td align="center"> {{:empresa.direccion}} TELEFONO : {{:empresa.telefonos}}</td>
+//                                        </tr>
+//                                        <tr class="label">
+//                                            <td align="center"> {{:empresa.municipio}} {{:empresa.departamento}}</td>
+//                                        </tr>
+//                                    </table>
+//                                </td>
+//                                <td width='70%' align='center' valign='center'></td>
+//                                <td><img  src="{{:serverUrl}}images/DispensacionHc/ISO.png" align='center' border=0></td>
+//                            </tr>
+//                        </table>`
+                        
+                        
+//                        `<table width='100%' border='1' cellspacing='0'>
 //            <tr border='0'>
 //                <td width='10%' align='center' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:5.5pt">
 //                    <img  src="` + datos.serverUrl+`images/logo.png" align='left' border=0 width="100px" height="50px">
@@ -1520,13 +1544,16 @@ function __generarPdf(datos, callback) {
 
         response.body(function (body) {
             var fecha = new Date();
-            var nombreTmp = datos.reporte + fecha.getTime() + ".pdf";
+
+            var nombreTmp = "nota" + datos.parametros.numeroNota + "-" + fecha.getTime() + ".pdf";
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {
-                    console.log("err [__generarPdf]: ", err)
+                    callback(true, err);
+                    return;
                 } else {
                     callback(false, nombreTmp);
+                    return;
                 }
             });
         });

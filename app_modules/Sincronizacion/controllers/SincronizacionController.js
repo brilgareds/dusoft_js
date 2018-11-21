@@ -238,7 +238,6 @@ function __jsonNotaCredito(obj, callback) {
             codigoMoneda: obj.codigoMoneda, //String
             conceptoNota: obj.conceptoNota, //numeric
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String
-//            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
             identificacionReceptor: {
                 codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int
                 numeroIdentificacion: obj.numeroIdentificacion //String
@@ -282,28 +281,28 @@ function __jsonNotaCredito(obj, callback) {
             },
             AtributosAdicionales: {
                 AtributoAdicional: [{
-                        nombreAtributo: "conceptoNota", //String
-                        valor: obj.conceptoNotaAdicional, //String
+                        nombreAtributo: "coordXQr", //String
+                        valor: obj.coordXQr, //String
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "TipoNota", //String
-                        valor: obj.TipoNota, //String
+                        nombreAtributo: "coordYQr", //String
+                        valor: obj.coordYQr, //String
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "Descuento", //String
-                        valor: obj.descuento, //Decimal
+                        nombreAtributo: "coordXCufe", //String
+                        valor: obj.coordXCufe, //Decimal
                         tipo: "Texto" //String
                     }, {
-//                        nombreAtributo: "valorTotal", //String
-//                        valor: obj.valorTotal, //Decimal
-//                        tipo: "Texto" //String
-//                    }, {
-                        nombreAtributo: "elaboradoPor", //String
-                        valor: obj.elaboradoPor, //String
+                        nombreAtributo: "coordYCufe", //String
+                        valor: obj.coordYCufe, //Decimal
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "totalenLetras", //String
-                        valor: obj.totalenLetras, //String
+                        nombreAtributo: "rotCufe", //String
+                        valor: obj.rotCufe, //String
+                        tipo: "Texto" //String
+                    }, {
+                        nombreAtributo: "pdf", //String
+                        valor: obj.pdf, //String
                         tipo: "Texto" //String
                     }]
             }

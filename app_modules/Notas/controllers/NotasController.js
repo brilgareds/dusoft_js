@@ -473,8 +473,8 @@ Notas.prototype.crearNotaCredito = function (req, res) {
                 return G.Q.nfcall(__recorreListadoCredito, that, args.listado, parametros, 0, transaccion);
 
             }).then(function () {
-                
-               return G.Q.ninvoke(that.m_notas, 'actualizarFacturaNotaCreditoDevolucion', parametros, transaccion);
+
+                return G.Q.ninvoke(that.m_notas, 'actualizarFacturaNotaCreditoDevolucion', parametros, transaccion);
 
             }).then(function () {
                 transaccion.commit(numeroNota);
@@ -731,7 +731,7 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
     }).then(function (result) {
 
         productos = result;
-        
+
         if (productos.length > 0) {
             reporte = 'notaFacturaPdf.html'; //'notaFactura.html';
         } else {
@@ -1149,10 +1149,10 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         resultado = data;
         return G.Q.nfcall(__productos, resultado.productos, 0, []);
     }).then(function (productos) {
-        
+
         var json = {
             codigoMoneda: "COP",
-            conceptoNota:  resultado.nota.prefijo_devolucion === 'IDC' ? "1" :"6",
+            conceptoNota: resultado.nota.prefijo_devolucion === 'IDC' ? "1" : "6",
             fechaExpedicion: resultado.nota.fecha_registro_nota,
             fechaVencimiento: "", //falta
             codigoDocumentoDian: resultado.nota.tipo_id_tercero,
@@ -1175,49 +1175,49 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
             tipoFactura: "ELECTRONICA",
             totalNotaCreditoElectronica: resultado.valores.totalFactura.replace(".", ""),
-            conceptoNotaAdicional: resultado.nota.descripcion_concepto,
-            TipoNota: resultado.nota.tipo_nota,
-            descuento: "",
-            totalenLetras: resultado.valores.totalFacturaLetra,
-            valorTotal: resultado.valores.totalFactura,
-            elaboradoPor: resultado.usuario
+            coordXQr: "ELECTRONICA",
+            coordYQr: "ELECTRONICA",
+            coordXCufe: "ELECTRONICA",
+            coordYCufe: "ELECTRONICA",
+            rotCufe: "0",
+            pdf: "ELECTRONICA"
         };
-        
-        return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaCredito', json);
-
-    }).then(function (respuesta) {
-
-        data = respuesta;
-        var parametros = {
-            empresa_id: args.empresaId, //obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
-            prefijo: 'NC',
-            factura_fiscal: resultado.nota.numero,
-            sw_factura_dian: respuesta.sw_factura_dian,
-            json_envio: data.lastRequest,
-            respuesta_ws: data
-        };
-
-        if (respuesta.sw_factura_dian === '1') {
-
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-
-        } else if (respuesta.sw_factura_dian === '0') {
-
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-
-        }
-
-    }).then(function (resultado) {
-
-        if (data.sw_factura_dian === '1') {
-
-            res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
-
-        } else if (data.sw_factura_dian === '0') {
-
-            res.send(G.utils.r(req.url, data.msj, data.status, data));
-
-        }
+        console.log("json", json);
+//        return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaCredito', json);
+//
+//    }).then(function (respuesta) {
+//
+//        data = respuesta;
+//        var parametros = {
+//            empresa_id: args.empresaId, //obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+//            prefijo: 'NC',
+//            factura_fiscal: resultado.nota.numero,
+//            sw_factura_dian: respuesta.sw_factura_dian,
+//            json_envio: data.lastRequest,
+//            respuesta_ws: data
+//        };
+//
+//        if (respuesta.sw_factura_dian === '1') {
+//
+//            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+//
+//        } else if (respuesta.sw_factura_dian === '0') {
+//
+//            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+//
+//        }
+//
+//    }).then(function (resultado) {
+//
+//        if (data.sw_factura_dian === '1') {
+//
+//            res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+//
+//        } else if (data.sw_factura_dian === '0') {
+//
+//            res.send(G.utils.r(req.url, data.msj, data.status, data));
+//
+//        }
 
     }).fail(function (err) {
 
@@ -1363,13 +1363,27 @@ function __generarSincronizacionDianCredito(that, req, callback) {
     }).then(function (result) {
 
         empresa = result;
-        var informacion = {
+        var info = {
             empresa: empresa[0],
             nota: nota[0],
             parametros: parametros,
             productos: productos,
             usuario: req.session.user.nombre_usuario,
             valores: valores
+        };
+
+        return G.Q.nfcall(__generarPdf, info);
+
+    }).then(function (resultado) {
+
+        var informacion = {
+            empresa: empresa[0],
+            nota: nota[0],
+            parametros: parametros,
+            productos: productos,
+            usuario: req.session.user.nombre_usuario,
+            valores: valores,
+            pdf: resultado
         };
 
         callback(false, informacion);
@@ -1496,47 +1510,24 @@ function __generarPdf(datos, callback) {
             engine: 'jsrender',
             phantom: {
                 margin: "10px",
-                width: '700px'
-//                headerHeight: "290px",
-//                header:`<table width='100%' border=1 cellpadding='4' cellspacing='4'>
-//                            <tr>
-//                                <td width='20%' align='center' valign='center' rowspan='2'>
-//                                    <table width="20%" align="center"  style="font-size: 10px; line-height: 1;" rules="all">
-//                                        <tr align="center">
-//                                            <td ><img  src="{{:serverUrl}}images/DispensacionHc/logocliente1.png" align='left' border=0></td>
-//                                        </tr>
-//                                        <tr >
-//                                            <td align="center">`+ datos.empresa.tipo_id_tercero +" "+ datos.empresa.id +`</td> <!--falta digito de verificacion -->
-//                                        </tr>
-//                                        <tr class="label">
-//                                            <td align="center"> {{:empresa.direccion}} TELEFONO : {{:empresa.telefonos}}</td>
-//                                        </tr>
-//                                        <tr class="label">
-//                                            <td align="center"> {{:empresa.municipio}} {{:empresa.departamento}}</td>
-//                                        </tr>
-//                                    </table>
-//                                </td>
-//                                <td width='70%' align='center' valign='center'></td>
-//                                <td><img  src="{{:serverUrl}}images/DispensacionHc/ISO.png" align='center' border=0></td>
-//                            </tr>
-//                        </table>`
-                        
-                        
-//                        `<table width='100%' border='1' cellspacing='0'>
-//            <tr border='0'>
-//                <td width='10%' align='center' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:5.5pt">
-//                    <img  src="` + datos.serverUrl+`images/logo.png" align='left' border=0 width="100px" height="50px">
-//                        <h5>` + datos.cabecera.tipo_id_empresa +`: ` + datos.cabecera.id+` - ` + datos.cabecera.digito_verificacion+`</h5>   
-//                        <h5> ` + datos.cabecera.direccion_empresa+` TELEFONO : ` + datos.cabecera.telefono_empresa+`</h5>   
-//                        <h5> ` + datos.cabecera.pais_empresa+` - ` + datos.cabecera.departamento_empresa+` - ` + datos.cabecera.municipio_empresa+`</h5>   
-//                </td>
-//                <td width='60%' align="center" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6pt">
-//                    <h2 class="label"><B>` + datos.cabecera.texto2+` </B><B>` + datos.cabecera.texto3+` </B></h3>
-//                        <h4 class="label" align="justify">` + datos.cabecera.texto1+`</h4></td>
-//                <td><img  src="` + datos.serverUrl+`images/avatar.png" align='rigth' width="50px" height="100px"></td>
-//            </tr>
-//        </table>
-//        <br>`
+                width: '700px',
+//                orientation: 'landscape',
+                headerHeight: "250px",
+                header: `<table width='100%' border=1 cellpadding='4' cellspacing='0'>
+                            <tr>
+                                <td width='20%' align='center' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6pt">
+                                    <h5>` + datos.empresa.tipo_id_tercero + `  ` + datos.empresa.id + `</h5> 
+                                    <h5>` + datos.empresa.direccion + `</h5>
+                                    <h5> TELEFONO : ` + datos.empresa.telefonos + `</h5>
+                                    <h5>` + datos.empresa.municipio + ` ` + datos.empresa.departamento + `</h5>
+                                </td>
+                                <td width='60%' align='center' valign='center' rowspan='2'>
+                                   <img  src="` + datos.serverUrl + `images/logocliente.png" align='center' border=0 width="200px" height="80px">
+                                </td>
+                                <td></td>
+                            </tr>
+                        </table>       
+                        <br>`
             }
         },
         data: datos

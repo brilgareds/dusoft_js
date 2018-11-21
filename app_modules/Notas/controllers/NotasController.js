@@ -733,9 +733,9 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
         productos = result;
         
         if (productos.length > 0) {
-            reporte = 'notaFactura.html';
+            reporte = 'notaFacturaPdf.html'; //'notaFactura.html';
         } else {
-            reporte = 'notaFacturaSinProducto.html';
+            reporte = 'notaFacturaSinProductoPdf.html'; //'notaFacturaSinProducto.html';
         }
 
 
@@ -1444,8 +1444,10 @@ function __recorreListadoCredito(that, listado, parametros, index, transaccion, 
 }
 ;
 
-
-function __generarPdf(datos, callback) {
+/**
+ * +Descripcion Funcion encargada de generar el reporte hmtl procesando los datos enviados
+ */
+function __generarHtml(datos, callback) {
 
     G.jsreport.render({
         template: {
@@ -1474,6 +1476,57 @@ function __generarPdf(datos, callback) {
                 } else {
                     callback(false, nombreTmp);
                     return;
+                }
+            });
+        });
+    });
+}
+
+/**
+ * +Descripcion Funcion encargada de generar el reporte pdf procesando los datos enviados
+ */
+function __generarPdf(datos, callback) {
+//    datos.style = G.dirname + "/public/stylesheets/facturacion/style.css";
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/Notas/reports/' + datos.archivoHtml, 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+//                headerHeight: "290px",
+//                header: `<table width='100%' border='1' cellspacing='0'>
+//            <tr border='0'>
+//                <td width='10%' align='center' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:5.5pt">
+//                    <img  src="` + datos.serverUrl+`images/logo.png" align='left' border=0 width="100px" height="50px">
+//                        <h5>` + datos.cabecera.tipo_id_empresa +`: ` + datos.cabecera.id+` - ` + datos.cabecera.digito_verificacion+`</h5>   
+//                        <h5> ` + datos.cabecera.direccion_empresa+` TELEFONO : ` + datos.cabecera.telefono_empresa+`</h5>   
+//                        <h5> ` + datos.cabecera.pais_empresa+` - ` + datos.cabecera.departamento_empresa+` - ` + datos.cabecera.municipio_empresa+`</h5>   
+//                </td>
+//                <td width='60%' align="center" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6pt">
+//                    <h2 class="label"><B>` + datos.cabecera.texto2+` </B><B>` + datos.cabecera.texto3+` </B></h3>
+//                        <h4 class="label" align="justify">` + datos.cabecera.texto1+`</h4></td>
+//                <td><img  src="` + datos.serverUrl+`images/avatar.png" align='rigth' width="50px" height="100px"></td>
+//            </tr>
+//        </table>
+//        <br>`
+            }
+        },
+        data: datos
+    }, function (err, response) {
+
+        response.body(function (body) {
+            var fecha = new Date();
+            var nombreTmp = datos.reporte + fecha.getTime() + ".pdf";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                if (err) {
+                    console.log("err [__generarPdf]: ", err)
+                } else {
+                    callback(false, nombreTmp);
                 }
             });
         });

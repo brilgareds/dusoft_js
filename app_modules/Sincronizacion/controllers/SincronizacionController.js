@@ -245,12 +245,10 @@ function __jsonNotaCredito(obj, callback) {
                 numeroIdentificacion: obj.numeroIdentificacion //String
             },
             identificadorFactura: obj.identificadorFactura, //long
-//            nombreSucursal: obj.nombreSucursal, //String
             numeroNota: obj.numeroNota, //numeric
             observaciones: obj.observaciones, //String OPCIONAL
             perfilEmision: obj.perfilEmision, //String
             perfilUsuario: obj.perfilUsuario, //String
-//            productos: obj.productos,
             subtotalNotaCreditoElectronica: obj.subtotalNotaCreditoElectronica.replace(",", "."), //decimal OPCIONAL
             subtotalesImpuestosDeduccion: [
                 {// OPCIONAL
@@ -300,7 +298,7 @@ function __jsonNotaCredito(obj, callback) {
                         tipo: "Texto" //String
                     }, {
                         nombreAtributo: "rotCufe", //String
-                        valor: obj.rotCufe, //String
+                        valor: 0, //String
                         tipo: "Texto" //String
                     }, {
                         nombreAtributo: "pdf", //String
@@ -313,6 +311,8 @@ function __jsonNotaCredito(obj, callback) {
     
     if(obj.productos.length > 0){
         crearNotaCredito.notaCreditoElectronicaCanonica.productos = obj.productos;
+    }else{
+        crearNotaCredito.notaCreditoElectronicaCanonica.productos = {cantidad:0,descripcion:"no aplica",identificador:"0",valorUnitario:0};
     }
     
     callback(false, crearNotaCredito);
@@ -331,18 +331,15 @@ function __jsonNotaDebito(obj, callback) {
             codigoMoneda: obj.codigoMoneda, //String
             conceptoNota: obj.conceptoNota, //numeric
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String
-//            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
             identificacionReceptor: {
                 codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int
                 numeroIdentificacion: obj.numeroIdentificacion //String
             },
             identificadorFactura: obj.identificadorFactura, //long
-//            nombreSucursal: obj.nombreSucursal, //String
             numeroNota: obj.numeroNota, //numeric
             observaciones: obj.observaciones, //String OPCIONAL
             perfilEmision: obj.perfilEmision, //String
             perfilUsuario: obj.perfilUsuario, //String
-//            productos: obj.productos,
             subtotalNotaDebitoElectronica: obj.subtotalNotaDebitoElectronica.replace(",", "."), //decimal OPCIONAL
             subtotalesImpuestosDeduccion: [
                 {// OPCIONAL
@@ -375,28 +372,28 @@ function __jsonNotaDebito(obj, callback) {
             },
             AtributosAdicionales: {
                 AtributoAdicional: [{
-                        nombreAtributo: "conceptoNota", //String
-                        valor: obj.conceptoNotaAdicional, //String
+                        nombreAtributo: "coordXQr", //String
+                        valor: obj.coordXQr, //String
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "TipoNota", //String
-                        valor: obj.TipoNota, //String
+                        nombreAtributo: "coordYQr", //String
+                        valor: obj.coordYQr, //String
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "Descuento", //String
-                        valor: 0, //Decimal
+                        nombreAtributo: "coordXCufe", //String
+                        valor: obj.coordXCufe, //Decimal
                         tipo: "Texto" //String
                     }, {
-//                        nombreAtributo: "valorTotal", //String
-//                        valor: obj.valorTotal, //Decimal
-//                        tipo: "Texto" //String
-//                    }, {
-                        nombreAtributo: "elaboradoPor", //String
-                        valor: obj.elaboradoPor, //String
+                        nombreAtributo: "coordYCufe", //String
+                        valor: obj.coordYCufe, //Decimal
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "totalenLetras", //String
-                        valor: obj.totalenLetras, //String
+                        nombreAtributo: "rotCufe", //String
+                        valor: 0, //String
+                        tipo: "Texto" //String
+                    }, {
+                        nombreAtributo: "pdf", //String
+                        valor: obj.pdf, //String
                         tipo: "Texto" //String
                     }]
             }

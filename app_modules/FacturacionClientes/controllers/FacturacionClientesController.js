@@ -1609,7 +1609,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
         consultarParametrosRetencion = resultado;
 
         if (resultado.length > 0) {
-            
+
             if (ip.substr(0, 6) === '::ffff') {
                 return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDireccionIp', {direccionIp: ip.substr(7, ip.length)});
             } else {
@@ -2119,7 +2119,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
         consultarParametrosRetencion = resultado;
 
         if (resultado.length > 0) {
-            
+
             if (ip.substr(0, 6) === '::ffff') {
                 return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDireccionIp', {direccionIp: ip.substr(7, ip.length)});
             } else {

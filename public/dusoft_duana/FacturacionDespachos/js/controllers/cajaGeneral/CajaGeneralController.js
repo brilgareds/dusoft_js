@@ -588,7 +588,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Tercero', width: "22%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre_tercero}}</p></div>'},
                             {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
                             {field: 'Usuario', width: "12%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
-                            {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
+                            {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirNota(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
 //                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
 //                                cellTemplate: ' <div class="row">\
 //							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
@@ -1038,33 +1038,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                         });
                     };
-                    /**
-                     * +Descripcion metodo para imprimir las facturas
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha 18/05/2017
-                     * @returns {undefined}
-                     */
-                    $scope.onImprimirFacturaNotasDetalle = function (datos) {
-                        var parametros = {
-                            session: $scope.session,
-                            data: {
-                                prefijo: datos.prefijo,
-                                facturaFiscal: datos.factura_fiscal,
-                                empresaId: $scope.root.empresaSeleccionada.getCodigo()
-                            }
-                        };
-                        cajaGeneralService.imprimirFacturaNotasDetalle(parametros, function (data) {
-
-                            if (data.status === 200) {
-                                var nombre = data.obj.imprimirFacturaNotas;
-                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-
-                            } else {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                            }
-                        });
-                    };
-
+                    
                     /**
                      * +Descripcion scope del grid para mostrar los proveedores
                      * @author Andres Mauricio Gonzalez

@@ -531,7 +531,10 @@ CajaGeneralModel.prototype.listarFacturasNotas = function (obj, callback) {
         "d.fecha_registro",
         "c.descripcion as desconcepto",
         "c.concepto_id",
-        "c.grupo_concepto"
+        "c.grupo_concepto",
+        "doc.texto1",
+        "doc.texto2",
+        "doc.texto3"
     ];
 
     var query = G.knex.select(columna)
@@ -551,6 +554,11 @@ CajaGeneralModel.prototype.listarFacturasNotas = function (obj, callback) {
                         this.on("a.prefijo", "d.prefijo")
                                 .on("a.factura_fiscal", "d.factura_fiscal")
                                 .on("a.empresa_id", "d.empresa_id")
+                    })
+            .innerJoin('documentos as doc',
+                    function () {
+                        this.on("a.empresa_id", "doc.empresa_id")
+                                .on("d.documento_id", "doc.documento_id")
                     })
             .where(function () {
                 if (obj.conceptoId !== '') {

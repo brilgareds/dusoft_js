@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>NOTAS</title>        
+        <link rel="stylesheet" href="{{:style}}" />       
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css' />    
+        <style>            
+
+            body {
+                font-family: 'Open Sans', sans-serif;
+                font-size:10px;
+                line-height:15px;
+            }
+            .pad-top-botm {
+                padding-bottom:0px;
+                padding-top:10px;
+            }
+            h4 {
+                text-transform:uppercase;
+            }
+
+            .contact-info span {
+                /*font-size:10px;*/
+                padding:0px 50px 0px 50px;
+            }
+
+            .contact-info hr {
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }
+
+            .client-info {
+                /*font-size:10px;*/
+            }
+
+            .footer-info {
+                font-size:8px;
+            }
+
+            .ttl-amts {
+                text-align:right;
+                padding-right:50px;
+            }
+            .box {
+                float: left;
+                width: 300px;
+                height: 50px;
+                /*margin: 1em;*/
+            }
+            .destacado { font-size: 10px; border-collapse: collapse; border: 1px solid black; }
+            /*            table, th, td {
+                            border: 0px solid black;                
+                            border-collapse: collapse;                
+                        }*/
+            td {
+                /*font-size: 8px;*/
+            }
+        </style>
+    </head>
+    <body>
+            <table width="100%" align="center">
+                <tr>
+                    <td align='center' style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
+                            <tr>
+                                <td>CLIENTE: </td>
+                                <td>{{:cliente.nombre_tercero}} </td>
+                                <td>{{:cliente.tipo_id_tercero}} {{:cliente.tercero_id}} </td>
+                                <td>DIRECCIÓN: </td>
+                                <td>{{:cliente.direccion}} </td>
+                                <td>TELEFONO:  </td>
+                                <td>{{:cliente.telefono}} </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td  align='center' rowspan='2' style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
+                            <tr >
+                                <td align='center' height='10px'>
+                                    <b>NOTA {{:parametros.nombreNota}}</b>
+                                </td>
+                                <td  align='left' height='10px' >
+                                    <b>No:{{:parametros.numeroNota}}</b>			
+                                </td>
+                            </tr>
+                            <tr>
+                                <td  align='left' height='10px' >
+                                    <b>FACTURA No: {{:nota.prefijo}} - {{:nota.factura_fiscal}}</b>
+                                </td>
+                                <td  align='left' height='10px' >
+                                    <b>FECHA FACTURA {{:nota.fecha_registro}}</b>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td align='center' style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
+                            <tr>
+                                <td>FECHA NOTA: </td>
+                                <td>{{:nota.fecha_registro_nota}} </td>
+                                <td>CONCEPTO NOTA: </td>
+                                <td>{{:nota.descripcion_concepto}}</td>
+                                <td>TIPO NOTA:  </td>
+                                <td>{{:nota.tipo_nota}}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+            </table>
+            <br>	
+                <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" rules="all">
+                    <tr class="label">
+                        <td align="center" colspan="6">DETALLE</td>
+                    </tr>
+                    <tr class="label" align="center">
+                        <td>CODIGO</td>
+                        <td>PRODUCTO</td>
+                        <td>OBSERVACION</td>
+                        <td>CANTIDAD DEVUELTA</td>
+                        <td>VALOR UNITARIO</td>
+                        <td>VALOR</td>
+                    </tr>
+                    {{for productos }}
+                    <tr>
+                        <td width='12%'>{{:codigo_producto}}</td>
+                        <td width='30%'>{{:descripcion}}</td>
+                        <td width='30%'>{{:observacion}}</td>
+                        <td width='8%'>{{:cantidad_devuelta}}</td>
+                        <td width='10%'>{{:valor_unitario}}</td>
+                        <td width='10%'>${{:subtotal}}</td>
+                    </tr>
+                    {{/for}}
+                </table>
+                <br>
+                    <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
+
+                        <tr class="label" align="center">
+                            <td class="label" >
+                                <table width="100%" align="center" style="font-size:8px" >
+
+                                    <tr align="center">
+                                        <td><B>SUBTOTAL</B></td>
+                                        <td><B>IVA</B></td>
+                                        <td><B>RET-FTE</B></td>
+                                        <td><B>RETE-ICA</B></td>
+                                        <td><B>RETE-IVA</B></td>
+                                        <td><B>VALOR TOTAL</B></td>
+                                    </tr>
+                                    <tr align="center">
+                                        <td><B>${{:valores.subTotal}}</B></td>
+                                        <td><B>${{:valores.ivaTotal}}</B></td>
+                                        <td><B>${{:valores.retencionFuente}}</B></td>
+                                        <td><B>${{:valores.retencionIca}}</B></td>
+                                        <td><B>${{:valores.retencionIva}}</B></td>
+                                        <td><B>${{:valores.totalFactura}}</B></td>
+
+                                    </tr>
+                                    <tr align="left">
+                                        <td colspan="6"><B>SON: {{:valores.totalFacturaLetra}} pesos</B></td></tr> <!--valor en letras -->
+                                </table>			
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                    <br>	
+                        <table width="100%" align="center" style="border:0px solid #000000;font-size:7px" >
+
+                            <tr>
+                                <td WIDTH="31.3%"><table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px">
+                                        <tr>
+                                            <td align="left">ELABORADO : {{:usuario}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                <hr width="100%"></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td ></td>	
+                            </tr>
+                        </table>
+                        </body>
+                        </html>

@@ -34,7 +34,8 @@ define(["angular", "js/controllers",
                 columnDefs: [
                 
                     {field: 'pedido_cliente_id', displayName: 'No. Pedido', width: "20%"},
-                    {field: 'factura_fiscal', displayName: 'No. Factura', width: "25%"},
+                    {field: 'factura_fiscal', displayName: 'No. Factura', width: "25%",
+                    cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} - {{row.entity.factura_fiscal}}</p></div>'},
                     {field: 'fecha_registro', displayName: 'F. Factura', width: "30%"},
                     {field: 'valor_total', displayName: 'V. Total', width: "25%", cellFilter: 'currency : "$"'}
                    

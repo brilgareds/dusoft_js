@@ -106,11 +106,13 @@ var Sincronizacion = function (m_sincronizacion, m_clientes) {
 Sincronizacion.prototype.facturacionElectronica = function (req, callback) {
     var that = this;
 
-    G.Q.nfcall(__jsonFactura, req).then(function (resultado) {
+//    G.Q.nfcall(__jsonFactura, req).then(function (resultado) { // facturacion anterior sin adjunto de pdf
+    G.Q.nfcall(__jsonFacturaAjdunto, req).then(function (resultado) {
 
         var obj = {};
         obj.x = '';
-        obj.funcion = "crearFacturaElectronica";
+//        obj.funcion = "crearFacturaElectronica";  // facturacion anterior sin adjunto de pdf
+        obj.funcion = "crearFacturaElectronicaConAdjuntos";
         obj.parametros = resultado;
         obj.url = G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
 
@@ -238,18 +240,15 @@ function __jsonNotaCredito(obj, callback) {
             codigoMoneda: obj.codigoMoneda, //String
             conceptoNota: obj.conceptoNota, //numeric
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String
-//            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
             identificacionReceptor: {
                 codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int
                 numeroIdentificacion: obj.numeroIdentificacion //String
             },
             identificadorFactura: obj.identificadorFactura, //long
-//            nombreSucursal: obj.nombreSucursal, //String
             numeroNota: obj.numeroNota, //numeric
             observaciones: obj.observaciones, //String OPCIONAL
             perfilEmision: obj.perfilEmision, //String
             perfilUsuario: obj.perfilUsuario, //String
-//            productos: obj.productos,
             subtotalNotaCreditoElectronica: obj.subtotalNotaCreditoElectronica.replace(",", "."), //decimal OPCIONAL
             subtotalesImpuestosDeduccion: [
                 {// OPCIONAL
@@ -282,28 +281,28 @@ function __jsonNotaCredito(obj, callback) {
             },
             AtributosAdicionales: {
                 AtributoAdicional: [{
-                        nombreAtributo: "conceptoNota", //String
-                        valor: obj.conceptoNotaAdicional, //String
+                        nombreAtributo: "coordXQr", //String
+                        valor: obj.coordXQr, //String
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "TipoNota", //String
-                        valor: obj.TipoNota, //String
+                        nombreAtributo: "coordYQr", //String
+                        valor: obj.coordYQr, //String
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "Descuento", //String
-                        valor: obj.descuento, //Decimal
+                        nombreAtributo: "coordXCufe", //String
+                        valor: obj.coordXCufe, //Decimal
                         tipo: "Texto" //String
                     }, {
-//                        nombreAtributo: "valorTotal", //String
-//                        valor: obj.valorTotal, //Decimal
-//                        tipo: "Texto" //String
-//                    }, {
-                        nombreAtributo: "elaboradoPor", //String
-                        valor: obj.elaboradoPor, //String
+                        nombreAtributo: "coordYCufe", //String
+                        valor: obj.coordYCufe, //Decimal
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "totalenLetras", //String
-                        valor: obj.totalenLetras, //String
+                        nombreAtributo: "rotCufe", //String
+                        valor: 0, //String
+                        tipo: "Texto" //String
+                    }, {
+                        nombreAtributo: "pdf", //String
+                        valor: obj.pdf, //String
                         tipo: "Texto" //String
                     }]
             }
@@ -312,6 +311,8 @@ function __jsonNotaCredito(obj, callback) {
     
     if(obj.productos.length > 0){
         crearNotaCredito.notaCreditoElectronicaCanonica.productos = obj.productos;
+    }else{
+        crearNotaCredito.notaCreditoElectronicaCanonica.productos = {cantidad:0,descripcion:"no aplica",identificador:"0",valorUnitario:0};
     }
     
     callback(false, crearNotaCredito);
@@ -330,18 +331,15 @@ function __jsonNotaDebito(obj, callback) {
             codigoMoneda: obj.codigoMoneda, //String
             conceptoNota: obj.conceptoNota, //numeric
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String
-//            fechaVencimiento: obj.fechaVencimiento, //String OPCIONAL
             identificacionReceptor: {
                 codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int
                 numeroIdentificacion: obj.numeroIdentificacion //String
             },
             identificadorFactura: obj.identificadorFactura, //long
-//            nombreSucursal: obj.nombreSucursal, //String
             numeroNota: obj.numeroNota, //numeric
             observaciones: obj.observaciones, //String OPCIONAL
             perfilEmision: obj.perfilEmision, //String
             perfilUsuario: obj.perfilUsuario, //String
-//            productos: obj.productos,
             subtotalNotaDebitoElectronica: obj.subtotalNotaDebitoElectronica.replace(",", "."), //decimal OPCIONAL
             subtotalesImpuestosDeduccion: [
                 {// OPCIONAL
@@ -374,28 +372,28 @@ function __jsonNotaDebito(obj, callback) {
             },
             AtributosAdicionales: {
                 AtributoAdicional: [{
-                        nombreAtributo: "conceptoNota", //String
-                        valor: obj.conceptoNotaAdicional, //String
+                        nombreAtributo: "coordXQr", //String
+                        valor: obj.coordXQr, //String
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "TipoNota", //String
-                        valor: obj.TipoNota, //String
+                        nombreAtributo: "coordYQr", //String
+                        valor: obj.coordYQr, //String
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "Descuento", //String
-                        valor: 0, //Decimal
+                        nombreAtributo: "coordXCufe", //String
+                        valor: obj.coordXCufe, //Decimal
                         tipo: "Texto" //String
                     }, {
-//                        nombreAtributo: "valorTotal", //String
-//                        valor: obj.valorTotal, //Decimal
-//                        tipo: "Texto" //String
-//                    }, {
-                        nombreAtributo: "elaboradoPor", //String
-                        valor: obj.elaboradoPor, //String
+                        nombreAtributo: "coordYCufe", //String
+                        valor: obj.coordYCufe, //Decimal
                         tipo: "Texto" //String
                     }, {
-                        nombreAtributo: "totalenLetras", //String
-                        valor: obj.totalenLetras, //String
+                        nombreAtributo: "rotCufe", //String
+                        valor: 0, //String
+                        tipo: "Texto" //String
+                    }, {
+                        nombreAtributo: "pdf", //String
+                        valor: obj.pdf, //String
                         tipo: "Texto" //String
                     }]
             }
@@ -568,6 +566,102 @@ function __jsonFactura(obj, callback) {
     }
 
     callback(false, crearFacturaElectronica);
+}
+
+function __jsonFacturaAjdunto(obj, callback) {
+
+    var formato = 'DD-MM-YYYY';
+    var crearFacturaElectronicaConAdjuntos = {
+        attributes: {
+            xmlns: 'http://contrato.factura.webservices.servicios.certifactura.certicamara.com/'
+        },
+        facturaElectronicaCanonica: {
+            attributes: {
+                xmlns: ''
+            },
+            codigoMoneda: obj.codigoMoneda, //String -
+            descripcion: "", //String OPCIONAL -
+            descuentos: {
+            },
+            fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String OPCIONAL  DD/MM/YYYY -
+            fechaVencimiento: G.moment(obj.fechaVencimiento).format(formato), //String OPCIONAL DD/MM/YYYY -
+            icoterms: '', //String OPCIONAL -
+            identificacionReceptor: {
+                codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int -
+                numeroIdentificacion: obj.numeroIdentificacion//String -
+            },
+            identificadorConsecutivo: obj.identificadorConsecutivo, //long -
+            identificadorResolucion: obj.identificadorResolucion, //String -
+            mediosPago: mediosPago(obj.mediosPago), //String OPCIONAL -
+            nombreSucursal: obj.nombreSucursal, //String -
+            numeracionResolucionWS: {
+                desde: obj.desde, //long -
+                hasta: obj.hasta, //long -
+                prefijo: obj.prefijo//String -
+            },
+            perfilEmision: "CLIENTE", //String -
+            perfilUsuario: "CLIENTE", //String -
+            productos: obj.productos, //OPCIONAL
+            subtotalFactura: obj.subtotalFactura, //decimal OPCIONAL -
+            subtotalesImpuestosDeduccion: [
+                {// OPCIONAL
+                    nombre: "ReteFuente", //String -
+                    valor: obj.ReteFuente, //decimal -
+                    baseGravable: obj.baseGravableReteFuente.replace(".", "") //decimal -
+                },
+                {// OPCIONAL
+                    nombre: "IVA", //String -
+                    valor: obj.IVA, //decimal -
+                    baseGravable: obj.baseGravableIVA //decimal -
+                },
+                {// OPCIONAL
+                    nombre: "ReteICA", //String -
+                    valor: obj.ReteICA, //decimal -
+                    baseGravable: obj.baseGravableReteICA.replace(".", "") //decimal -
+                },
+                {// OPCIONAL
+                    nombre: "ReteIVA", //String -
+                    valor: obj.ReteIVA, //decimal -
+                    baseGravable: obj.baseGravableReteIVA.replace(".", "") //decimal -
+                }
+            ],
+            tipoFactura: obj.tipoFactura, //numeric -
+            totalFactura: obj.totalFactura //decimal OPCIONAL -
+        },
+        facturaEspecializada: {
+            attributes: {
+                xmlns: ''
+            },
+            AtributosAdicionales: {
+                AtributoAdicional: [{
+                        nombreAtributo: "coordXQr",
+                        valor: obj.coordXQr,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "coordYQr",
+                        valor: obj.coordYQr,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "coordXCufe",
+                        valor: obj.coordXCufe,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "coordYCufe",
+                        valor: obj.coordYCufe,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "rotCufe",
+                        valor: 0,
+                        tipo: "Texto"
+                    }, {
+                        nombreAtributo: "pdf",
+                        valor: obj.pdf,
+                        tipo: "Texto"
+                    }]
+            }
+        }
+    };
+    callback(false, crearFacturaElectronicaConAdjuntos);
 }
 
 

@@ -3048,10 +3048,10 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
             tipoFactura: 1,
             totalFactura: resultado.valores.totalFactura,
 
-            coordXQr: 175,
-            coordYQr: 270,
-            coordXCufe: 114,
-            coordYCufe: 235,
+            coordXQr: 164,
+            coordYQr: 260,
+            coordXCufe: 130,
+            coordYCufe: 256,
             pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
 
@@ -3258,7 +3258,7 @@ function __generarSincronizacionDian(that, req, callback) {
             parametrosReporte.valores.ivaTotal = G.utils.numberFormat(parseFloat(totalIva), 2);
             parametrosReporte.valores.subTotal = G.utils.numberFormat(parseFloat(subTotal), 2);
             parametrosReporte.valores.totalFactura = totalFactura;
-            parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
+            parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura).charAt(0).toUpperCase() + G.utils.numeroLetra(totalFactura).slice(1);
 
         } else {
             throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
@@ -3282,9 +3282,31 @@ function __generarSincronizacionDian(that, req, callback) {
 ;
 
 
-
-
-
+FacturacionClientes.prototype.generarReporteFacturaGeneradaDian = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var that = this;
+    var args = req.body.data;
+    var prefijo = args.imprimir_reporte_factura.prefijo;
+    var numero = args.imprimir_reporte_factura.numero;
+    var tipo_documento = args.imprimir_reporte_factura.tipo_documento;
+    
+    var json = {
+        tipoDocumento : tipo_documento,//factura
+        factura : prefijo+"_"+numero,//prefijo_nofactura
+        tipoRespuesta : 'PDF'//factura
+    };
+        
+    G.Q.ninvoke(that.c_sincronizacion, 'consultaFacturacionElectronica', json).then(function (resultado) {
+        
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}}));
+        
+    }).fail(function (err) {
+      
+        res.send(G.utils.r(req.url, err, 500, {}));
+        
+    }).done();
+}
 
 FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res) {
 
@@ -3449,7 +3471,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
             parametrosReporte.valores.ivaTotal = G.utils.numberFormat(parseFloat(totalIva), 2);
             parametrosReporte.valores.subTotal = G.utils.numberFormat(parseFloat(subTotal), 2);
             parametrosReporte.valores.totalFactura = G.utils.numberFormat(parseFloat(totalFactura), 2);
-            parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
+            parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura).charAt(0).toUpperCase() + G.utils.numeroLetra(totalFactura).slice(1);
 
             return G.Q.nfcall(__generarPdf2, parametrosReporte);
 
@@ -3753,6 +3775,7 @@ function __generarPdf(datos, callback) {
  */
 function __generarPdf2(datos, callback) {
     datos.style = G.dirname + "/public/stylesheets/facturacion/style.css";
+    var logo=G.base64Img.base64Sync("public/images/logocliente.png", function(err, data) {});
 
     G.jsreport.render({
         template: {
@@ -3762,23 +3785,53 @@ function __generarPdf2(datos, callback) {
             engine: 'jsrender',
             phantom: {
                 margin: "10px",
-                width: '700px',
-                headerHeight: "290px",
-                header: `<table width='100%' border='1' cellspacing='0'>
-            <tr border='0'>
-                <td width='10%' align='center' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:5.5pt">
-                    <img  src="` + datos.serverUrl+`images/logo.png" align='left' border=0 width="100px" height="50px">
-                        <h5>` + datos.cabecera.tipo_id_empresa +`: ` + datos.cabecera.id+` - ` + datos.cabecera.digito_verificacion+`</h5>   
-                        <h5> ` + datos.cabecera.direccion_empresa+` TELEFONO : ` + datos.cabecera.telefono_empresa+`</h5>   
-                        <h5> ` + datos.cabecera.pais_empresa+` - ` + datos.cabecera.departamento_empresa+` - ` + datos.cabecera.municipio_empresa+`</h5>   
-                </td>
-                <td width='60%' align="center" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6pt">
-                    <h2 class="label"><B>` + datos.cabecera.texto2+` </B><B>` + datos.cabecera.texto3+` </B></h3>
-                        <h4 class="label" align="justify">` + datos.cabecera.texto1+`</h4></td>
-                <td><img  src="` + datos.serverUrl+`images/avatar.png" align='rigth' width="50px" height="100px"></td>
-            </tr>
-        </table>
-        <br>`
+                width: '792px',
+                headerHeight: "290px",// .imagent{position: absolute;top: 10px;}
+                header: 
+                        `<style>
+                            p {margin-top:0; margin-bottom:0;line-height: 75%; }
+                            .letra_factura{font: 100% sans-serif;
+                                           display: flex;
+                                            justify-content: center;
+                                            align-content: center;
+                                            flex-direction: column;}
+                            .letra_factura2{font: 100% sans-serif;margin-top:8px;   position: absolute;
+                                           top: 13px;}
+                            .imgQr{
+//                                  position: absolute;
+                                    top: 20px;
+                                    margin:20px;
+//                                  display:block;
+                                    }
+                            .letra_factura_info{font: 50% sans-serif;text-align: center;}
+                            .letra_factura_info_ctr{font: 40% sans-serif; text-align: center;}
+                            .letra_factura_info_jst{font: 40% sans-serif; text-align: justify; text-justify: inter-word;}
+                            .letra_factura_info_40{font: 40% sans-serif;text-align: center;}
+                            .letra_factura_info_40_jt{font: 40% sans-serif;text-align: justify;}
+                           
+                         </style>
+                         <table border='0' width='100%' >
+                           <tr>
+                            <td align="center" width='30%'>
+                                <p ><img  src="` + logo+`"  border='0' width="300px" height="80px"></p>
+                                <p class="letra_factura_info">` + datos.cabecera.tipo_id_empresa +`: ` + datos.cabecera.id+` - ` + datos.cabecera.digito_verificacion+`</p>
+                                <p class="letra_factura_info">` + datos.cabecera.direccion_empresa+` TELEFONO : ` + datos.cabecera.telefono_empresa+`</p>
+                                <p class="letra_factura_info">` + datos.cabecera.pais_empresa+` - ` + datos.cabecera.departamento_empresa+` - ` + datos.cabecera.municipio_empresa+`</p>
+                                <p class="letra_factura_info">` + datos.cabecera.texto2+`</p>
+                            <td>
+                            <td width='30%'> 
+                                <br><br><br>
+                                <p class="letra_factura_info_ctr">` + datos.cabecera.texto3+`</p>                                 
+                                <p class="letra_factura_info_jst">` + datos.cabecera.texto1+`</p>                                 
+                            <td>
+                            <td width='40%' valign="top">
+                                 <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
+                                 <b><p align="center" valign="top" >FACTURA DE VENTA</p></b>  
+                                 <b><p align="center" valign="top" style="margin-top:3px;" >` + datos.cabecera.prefijo+` ` +datos.cabecera.factura_fiscal+`</p></b> 
+                            <td>
+                           </tr>
+                         </table>
+                            `
             }
         },
         data: datos

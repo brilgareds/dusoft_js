@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "accounting": "~0.4.1",
+    "base64-img": "^1.0.4",
     "base64topdf": "^1.1.8",
     "bson": "^3.0.2",
     "commander": "2.1.0",
@@ -47,6 +48,7 @@
     "sqlformatter": "^0.1.0",
     "uuid": "^3.3.2",
     "xls-to-json": "*",
-    "xml-formatter": "^1.0.1"
+    "xml-formatter": "^1.0.1",
+    "xml-js": "^1.6.8"
   }
 }

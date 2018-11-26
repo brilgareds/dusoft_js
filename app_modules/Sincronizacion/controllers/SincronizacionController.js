@@ -112,7 +112,7 @@ Sincronizacion.prototype.facturacionElectronica = function (req, callback) {
         var obj = {};
         obj.x = '';
 //        obj.funcion = "crearFacturaElectronica";  // facturacion anterior sin adjunto de pdf
-        obj.funcion = "crearFacturaElectronicaConAdjuntos";
+        obj.funcion = "crearFacturaElectronica";
         obj.parametros = resultado;
         obj.url = G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
 
@@ -179,6 +179,35 @@ Sincronizacion.prototype.facturacionElectronicaNotaCredito = function (req, call
 
 };
 
+
+Sincronizacion.prototype.consultaFacturacionElectronica = function (req, callback) {
+    
+    var obj = {};
+       
+    G.Q.nfcall(__jsonConsultaDocumento, req).then(function (resultado) {
+        
+        var obj = {};
+        obj.x = '';
+        obj.funcion = "consultaDocumentos";
+        obj.parametros = resultado;
+        obj.url = G.constants.WS().FACTURACION_ELECTRONICA.CONSULTA_FACTURA;
+
+        return G.Q.nfcall(__FacturacionDian, obj);
+
+    }).then(function (resultado) {
+        
+      var pdf =resultado.result.ConsultaResultadoValidacionDocumentosResponse.documento;
+      var y = G.base64.base64Decode(pdf, G.dirname + "/public/reports/doc_dian/"+req.factura+".pdf");
+      callback(false, req.factura+".pdf");
+
+    }).fail(function (err) {
+        
+        callback(err.root.Envelope.Body.Fault.faultstring.$value);
+
+    }).done();
+
+};
+
 /*
  * Andres Mauricio Gonzalez
  * obj  { parametros : (informacion que se envian al ws),funcion: (nombre de la funcion que ejecuta el ws)}
@@ -203,7 +232,7 @@ function __FacturacionDian(obj, callback) {
             hasNonce: true,
             mustUnderstand: 1,
             actor: ''
-        }
+        };
         client.setSecurity(new G.soap.WSSecurity(username, password, options));
 
         return G.Q.ninvoke(client, obj.funcion, obj.parametros);
@@ -212,7 +241,7 @@ function __FacturacionDian(obj, callback) {
         resultado.result = result;
         resultado.lastRequest = G.xmlformatter(tmp.lastRequest);
         G.logError(G.xmlformatter(tmp.lastRequest));
-    }).then(function () {
+    }).then(function () {  
         resultado.sw_factura_dian = '1';
         callback(false, resultado);
 
@@ -225,6 +254,19 @@ function __FacturacionDian(obj, callback) {
         callback(err);
 
     }).done();
+}
+
+function __jsonConsultaDocumento(obj, callback) {
+  
+    var crearFactura = {
+        ConsultaResultadoValidacionDocumentosPeticion:{
+            tipoDocumento : obj.tipoDocumento,//obj.tipoDocumento,//factura
+            numeroDocumento : obj.factura,//prefijo_nofactura
+            tipoRespuesta : obj.tipoRespuesta 
+       }
+    };
+        
+    callback(false, crearFactura);
 }
 
 function __jsonNotaCredito(obj, callback) {
@@ -571,7 +613,7 @@ function __jsonFactura(obj, callback) {
 function __jsonFacturaAjdunto(obj, callback) {
 
     var formato = 'DD-MM-YYYY';
-    var crearFacturaElectronicaConAdjuntos = {
+    var crearFacturaElectronica = {
         attributes: {
             xmlns: 'http://contrato.factura.webservices.servicios.certifactura.certicamara.com/'
         },
@@ -661,7 +703,7 @@ function __jsonFacturaAjdunto(obj, callback) {
             }
         }
     };
-    callback(false, crearFacturaElectronicaConAdjuntos);
+    callback(false, crearFacturaElectronica);
 }
 
 

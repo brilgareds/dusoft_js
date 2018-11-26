@@ -11,6 +11,10 @@ module.exports = function(app, di_container) {
         c_sincronizacion.facturacionElectronicaNotaDebito(req, res);
     });
     
+    app.post('/api/Sincronizacion/consultaFacturacionElectronica', function(req, res) {      
+        c_sincronizacion.consultaFacturacionElectronica(req, res);
+    });
+    
     app.post('/api/Notas/listarFacturas', function(req, res) {
         c_notas.listarFacturas(req, res);
     });

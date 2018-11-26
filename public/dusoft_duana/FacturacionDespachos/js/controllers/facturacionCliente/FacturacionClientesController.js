@@ -380,7 +380,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
 
 
-                {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
+                {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado FI', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
                 
                 {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
@@ -390,7 +390,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                    <a href="javascript:void(0);" ng-click="sincronizarFactura(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,0)" class = "glyphicon glyphicon-print"> factura </a>\
+                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,0)" class = "glyphicon glyphicon-print"> Factura </a>\
+                                </li>\
+                                <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                                   <a href="javascript:void(0);" ng-click="imprimirReporteFacturaDian(row.entity,0)" class = "glyphicon glyphicon-print"> Factura DIAN </a>\
                                 </li>\
                            </ul>\
                       </div>'
@@ -1280,6 +1283,31 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");          
                 }
+            });          
+        };
+        
+        $scope.imprimirReporteFacturaDian = function(entity, estado){
+            
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_factura:{
+                        prefijo:   (estado > 0) ? entity.prefijo        : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
+                        numero:    (estado > 0) ? entity.numero         : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
+                        tipo_documento: 1
+                    }
+                }
+            };
+                                   
+            facturacionClientesService.imprimirReporteFacturaDian(obj,function(data){
+             console.log("imprimirReporteFacturaDian:: ",data);
+                if (data.status === 200) {
+                    var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
+                    $scope.visualizarReporte("/reports/doc_dian/" + nombre, nombre, "_blank");          
+                }else if(data.status === 500){
+                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<p class='bg-danger'><h3 align='justify'>"+data.msj+"</h3></br></p>");
+		 return;
+                }               
             });          
         };
         

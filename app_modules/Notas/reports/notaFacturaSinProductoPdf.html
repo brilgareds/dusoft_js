@@ -62,29 +62,6 @@
         </style>
     </head>
     <body>
-<!--        <TABLE width='100%' border=1 cellpadding='4' cellspacing='4'>
-            <TR>
-                <TD width='20%' align='center' valign='center' rowspan='2'>
-                    <table width="20%" align="center"  style="font-size: 10px; line-height: 1;" rules="all">
-                        <tr align="center">
-                            <td ><img  src="{{:serverUrl}}images/DispensacionHc/logocliente1.png" align='left' border=0></td>
-                        </tr>
-                        <tr >
-                            <td align="center"> {{:empresa.tipo_id_tercero}} {{:empresa.id}}</td> falta digito de verificacion 
-                        </tr>
-                        <tr class="label">
-                            <td align="center"> {{:empresa.direccion}} TELEFONO : {{:empresa.telefonos}}</td>
-                        </tr>
-                        <tr class="label">
-                            <td align="center"> {{:empresa.municipio}} {{:empresa.departamento}}</td>
-                        </tr>
-                    </table>
-                </TD>
-                <TD width='70%' align='center' valign='center'></TD>
-                <TD><img  src="{{:serverUrl}}images/DispensacionHc/ISO.png" align='center' border=0></TD>
-            </TR>
-        </TABLE>
-        <br>-->
             <table width="100%" align="center">
                 <tr>
                     <td align='center' style="border:1px solid #000000;font-size:8px">
@@ -104,18 +81,12 @@
                         <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
                             <tr >
                                 <td align='center' height='10px'>
-                                    <b>NOTA {{:parametros.nombreNota}}</b>
-                                </td>
-                                <td  align='left' height='10px' >
-                                    <b>No:{{:parametros.numeroNota}}</b>			
+                                    <b>FACTURA: {{:nota.prefijo}} - {{:nota.factura_fiscal}}</b>
                                 </td>
                             </tr>
                             <tr>
-                                <td  align='left' height='10px' >
-                                    <b>FACTURA No: {{:nota.prefijo}} - {{:nota.factura_fiscal}}</b>
-                                </td>
-                                <td  align='left' height='10px' >
-                                    <b>FECHA FACTURA {{:nota.fecha_registro}}</b>
+                                <td  align='center' height='10px' >
+                                    <b>FECHA {{:nota.fecha_registro}}</b>
                                 </td>
                             </tr>
                         </table>

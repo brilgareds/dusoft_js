@@ -31,6 +31,17 @@ define(["angular", "js/services"], function (angular, services) {
 
                     /**
                      * @author German Galvis
+                     * @fecha  26/11/2018 DD/MM/YYYYY
+                     * +Descripcion descarga la factura desde certicamara 
+                     */
+                    self.imprimirReporteFacturaDian = function (obj, callback) {
+                        Request.realizarRequest(API.NOTAS.IMPRIMIR_REPORTE_FACTURA_DIAN, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
                      * @fecha  15/08/2018 DD/MM/YYYYY
                      * +Descripcion LISTAR PORCENTAJES 
                      */

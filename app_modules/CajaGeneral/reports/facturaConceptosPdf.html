@@ -119,9 +119,9 @@
 	    </tr>
 	    {{for conceptosDetalle}}
 	    <tr>
-		<td ><b>{{:desconcepto}}</b></td>
-		<td ><b>{{:descripcion}}</b></td>
-		<td ><b>{{:valorTotal}}</b></td>
+		<td >{{:desconcepto}}</td>
+		<td >{{:descripcion}}</td>
+		<td >{{:valorTotal}}</td>
 		 
 	    </tr>
 	    {{/for}}
@@ -138,50 +138,94 @@
 		<td  align="center"><b>TOTAL FACTURA</b></td>
 	    </tr>
 	    <tr>
-		<td align="center"><b>{{:~formatMoney(impuesto.valorSubtotal)}}</b></td>
-		<td align="center"><b>{{:~formatMoney(impuesto.iva)}}</b></td>
-		<td align="center"><b>{{:~formatMoney(impuesto.retencionFuente)}}</b></td>
-		<td align="center"><b>{{:~formatMoney(impuesto.retencionIca)}}</b></td>
-		<td align="center"><b>{{:~formatMoney(impuesto.totalGeneral)}}</b></td>
+		<td align="center">{{:~formatMoney(impuesto.valorSubtotal)}}</td>
+		<td align="center">{{:~formatMoney(impuesto.iva)}}</td>
+		<td align="center">{{:~formatMoney(impuesto.retencionFuente)}}</td>
+		<td align="center">{{:~formatMoney(impuesto.retencionIca)}}</td>
+		<td align="center">{{:~formatMoney(impuesto.totalGeneral)}}</td>
 	    </tr>
 	</table>
 	<br />
 	<br />
 	<table class="table table-striped" width='100%' style="font-size: 10px; line-height: 1;" align="center" >
 	    <tr>
-		<td ><b>{{:informacion.linea1}}</b></td>
+		<td >{{:informacion.linea1}}</td>
 	    </tr>
 	    <tr>
-		<td ><b>{{:informacion.linea2}}</b></td>
+		<td >{{:informacion.linea2}}</td>
 	    </tr>
 	    <tr>
-		<td ><b>{{:informacion.linea3}}</b></td>
+		<td >{{:informacion.linea3}}</b></td>
 	    </tr>
 	    <tr>
-		<td ><b>{{:informacion.consignacion}}</b></td>
+		<td >{{:informacion.consignacion}}</td>
 	    </tr>
 	    <tr>
-		<td ><b>{{:informacion.bancos}}</b></td>
+		<td >{{:informacion.bancos}}</td>
 	    </tr>
 	</table>
 	<br />
 	<br />
-	<table class="table table-striped" width='80%' border='0' style="font-size: 10px; line-height: 1;" align="center" >
-	    <tr>
-		<td width='40%' ><b><hr noshade="noshade" width='100%' align="bottom" /></b></td>
-		<td width='20%' align="middle,left"><b>Nombre Cliente</b></td>
-		<td width='40%' align="bottom,right"><b><hr noshade="noshade" width='80%' /></b></td>
-	    </tr>
-	    <tr>
-		<td align="middle" ><b>Elaborado Por: {{:usuario}}</b></td>
-		<td align="middle,left" ><b>Documento</b></td>
-		<td align="bottom,right" ><b><hr noshade="noshade" align="bottom"  width='80%' /></b></td>
-	    </tr>
-	    <tr>
-		<td><b></b></td>
-		<td  align="middle,left"><b>Fecha Recibido</b></td>
-		<td  align="bottom,right"><b> <hr noshade="noshade" align="bottom"  width='80%' /></b></td>
-	    </tr>
-	</table>
+<table width="100%" align="center" style="border:0px solid #000000;font-size:7px" >
+                    <tr>
+                        <td WIDTH="31.3%">
+                            <table align="center" width="100%" style="border:0px solid #000000;font-size:7px">
+                                <tr>
+                                    <td align="left">ATENTAMENTE : </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <hr width="100%"></hr>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td WIDTH="31.3%">
+                            <table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px">
+                                <tr>
+                                    <td align="left">FIRMA Y SELLO DEL CLIENTE :  </td> 
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <hr width="100%">
+                                    </td>
+                                </tr>
+                            </table>
+                            <td WIDTH="37.3%">
+                                <table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px">
+                                    <tr>
+
+                                        <td align="left">
+                                            <table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px"">
+                                                <tr><td>NOMBRE QUIEN RECIBE : </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="center">
+                                                        <hr width="100%"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>NUMERO IDENTIFICACION :</td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="center">
+                                                        <hr width="100%">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td> FECHA - RECIBIDO : </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="center">
+                                                        <hr width="100%">
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </td>		
+                    </tr>
+                </table>
     </body>
 </html>

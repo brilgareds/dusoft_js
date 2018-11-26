@@ -900,7 +900,7 @@ CajaGeneral.prototype.imprimirNota = function (req, res) {
             conceptosDetalle: conceptosDetalle[0],
             informacion: __infoFooter(parametros.prefijo),
             usuario: req.session.user.nombre_usuario,
-            archivoHtml: 'notaFacturaSinProducto.html',
+            archivoHtml: 'notaFacturaSinProductoPdf.html',
             valores: impuesto
         };
 
@@ -1762,18 +1762,7 @@ function __productos(productos, index, productosDian, callback) {
         return;
     }
 
-    var atrip1 = {
-        nombreAtributo: "valorTotalProd", //String
-        valor: item.valor_total//decimal
-    };
-    var atributoAdicionalProd = [];
-    atributoAdicionalProd.push(atrip1);
-
     var prod = {//OPCIONAL
-        atributosAdicionalesProd: {
-            atributoAdicionalProd: atributoAdicionalProd
-        }
-        ,
         cantidad: item.cantidad, //decimal OPCIONAL -
         descripcion: item.descripcion, //String OPCIONAL -
         identificador: 'SERVICIO', //String -

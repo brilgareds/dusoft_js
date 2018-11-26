@@ -26,7 +26,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 window.location = "../pages/401.html";
                 return;
             }
-
+            
             // setUsuarioActual(obj_session);
             
             self.redireccionarLogin = function(){

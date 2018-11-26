@@ -50,6 +50,7 @@ G.Excel = require('exceljs');
 G.fcmPush = require('fcm-push');
 G.sqlformatter = require('sqlformatter');
 G.xmlformatter = require('xml-formatter');
+G.base64Img = require('base64-img');
 var events = require('events');
 G.eventEmitter = new events.EventEmitter();
 G.logError =  function logError(texto) {  

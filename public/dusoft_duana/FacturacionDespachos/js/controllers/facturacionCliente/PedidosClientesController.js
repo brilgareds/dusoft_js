@@ -456,7 +456,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 2017-08-05
          */
         $scope.generarFacturasAgrupadas = function () {
-
+            
             var resultadoStorage = localStorageService.get("clientePedidoDespacho");
 
             if (resultadoStorage) {

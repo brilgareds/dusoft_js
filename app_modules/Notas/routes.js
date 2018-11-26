@@ -67,4 +67,8 @@ module.exports = function(app, di_container) {
         c_notas.generarSincronizacionDianCredito(req, res);
     });
     
+    app.post('/api/Notas/generarReporteFacturaGeneradaDian', function(req, res) {
+        c_notas.generarReporteFacturaGeneradaDian(req, res);
+    });
+    
 };

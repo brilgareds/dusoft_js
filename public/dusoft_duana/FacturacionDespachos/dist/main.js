@@ -45356,7 +45356,9 @@ define('url',["angular"], function(angular) {
                 "INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/insertarFacFacturasConceptosNotas",
                 "LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/listarFacConceptosNotas",
                 "LISTAR_IMPUESTOS_TERCERO": BASE_URL + "/CajaGeneral/consultarImpuestosTercero",
-                "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas"
+                "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas",
+                "GENERAR_SINCRONIZACION_DIAN_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDian",
+                "GENERAR_SINCRONIZACION_DIAN_NOTA_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDianNota"
             },
             'NOTAS': {
                 "CONSULTAR_NOTAS": BASE_URL + "/Notas/ConsultarNotas",
@@ -54322,15 +54324,15 @@ define('models/FacturaConsumoBarranquilla',["angular", "js/models", "includes/cl
 
 });
 
-define('models/FacturaProveedores',["angular", "js/models"], function(angular, models) {
+define('models/FacturaProveedores',["angular", "js/models"], function (angular, models) {
 
 
     //declare usermodel wrapper 'factory'
-    models.factory("FacturaProveedores",[function() {
+    models.factory("FacturaProveedores", [function () {
 
 
-            function FacturaProveedores(numeroFactura, codigoProveedor,fechaRegistro,observacion) {        
-                
+            function FacturaProveedores(numeroFactura, codigoProveedor, fechaRegistro, observacion) {
+
                 this.numeroFactura = numeroFactura;
                 this.codigoProveedor = codigoProveedor;
                 this.fechaRegistro = fechaRegistro;
@@ -54338,259 +54340,267 @@ define('models/FacturaProveedores',["angular", "js/models"], function(angular, m
             }
 
             // Factura
-            FacturaProveedores.prototype.setNumeroFactura = function(numeroFactura) {
+            FacturaProveedores.prototype.setNumeroFactura = function (numeroFactura) {
                 this.numeroFactura = numeroFactura;
             };
 
-            FacturaProveedores.prototype.getNumeroFactura = function() {
+            FacturaProveedores.prototype.getNumeroFactura = function () {
                 return this.numeroFactura;
             };
-            
-            FacturaProveedores.prototype.setCodigoProveedor = function(codigoProveedor) {
+
+            FacturaProveedores.prototype.setCodigoProveedor = function (codigoProveedor) {
                 this.codigoProveedor = codigoProveedor;
             };
 
-            FacturaProveedores.prototype.getCodigoProveedor = function() {
+            FacturaProveedores.prototype.getCodigoProveedor = function () {
                 return this.codigoProveedor;
             };
-            
-            FacturaProveedores.prototype.setFechaRegistro = function(fechaRegistro) {
+
+            FacturaProveedores.prototype.setFechaRegistro = function (fechaRegistro) {
                 this.fechaRegistro = fechaRegistro;
             };
 
-            FacturaProveedores.prototype.getFechaRegistro = function() {
+            FacturaProveedores.prototype.getFechaRegistro = function () {
                 return this.fechaRegistro;
             };
-            
-            FacturaProveedores.prototype.setObservacion = function(observacion) {
+
+            FacturaProveedores.prototype.setObservacion = function (observacion) {
                 this.observacion = observacion;
             };
 
-            FacturaProveedores.prototype.getObservacion= function() {
+            FacturaProveedores.prototype.getObservacion = function () {
                 return this.observacion;
             };
-            
-            FacturaProveedores.prototype.setEstado = function(estado) {
+
+            FacturaProveedores.prototype.setEstado = function (estado) {
                 this.estado = estado;
             };
 
-            FacturaProveedores.prototype.getEstado= function() {
+            FacturaProveedores.prototype.getEstado = function () {
                 return this.estado;
             };
-            
-            FacturaProveedores.prototype.setMensaje = function(mensaje) {
+
+            FacturaProveedores.prototype.setMensaje = function (mensaje) {
                 this.mensaje = mensaje;
             };
 
-            FacturaProveedores.prototype.getMensaje= function() {
+            FacturaProveedores.prototype.getMensaje = function () {
                 return this.mensaje;
             };
-            
-            FacturaProveedores.prototype.setNombreUsuario = function(nombreUsuario) {
+
+            FacturaProveedores.prototype.setNombreUsuario = function (nombreUsuario) {
                 this.nombreUsuario = nombreUsuario;
             };
 
-            FacturaProveedores.prototype.getNombreUsuario= function() {
+            FacturaProveedores.prototype.getNombreUsuario = function () {
                 return this.nombreUsuario;
             };
-            
-            FacturaProveedores.prototype.setNombreProveedor = function(nombreProveedor) {
+
+            FacturaProveedores.prototype.setNombreProveedor = function (nombreProveedor) {
                 this.nombreProveedor = nombreProveedor;
             };
 
-            FacturaProveedores.prototype.getNombreProveedor= function() {
+            FacturaProveedores.prototype.getNombreProveedor = function () {
                 return this.nombreProveedor;
             };
-            
-            FacturaProveedores.prototype.setEstado = function(estado) {
+
+            FacturaProveedores.prototype.setEstado = function (estado) {
                 this.estado = estado;
             };
 
-            FacturaProveedores.prototype.getEstado= function() {
+            FacturaProveedores.prototype.getEstado = function () {
                 return this.estado;
             };
-            
-            FacturaProveedores.prototype.setDescripcionEstado = function(descripcionEstado) {
+
+            FacturaProveedores.prototype.setDescripcionEstado = function (descripcionEstado) {
                 this.descripcionEstado = descripcionEstado;
             };
 
-            FacturaProveedores.prototype.getDescripcionEstado = function() {
+            FacturaProveedores.prototype.getDescripcionEstado = function () {
                 return this.descripcionEstado;
             };
-            
-                       
-            FacturaProveedores.prototype.setEmpresa = function(empresa) {
+
+
+            FacturaProveedores.prototype.setEmpresa = function (empresa) {
                 this.empresa = empresa;
             };
 
-            FacturaProveedores.prototype.getEmpresa= function() {
+            FacturaProveedores.prototype.getEmpresa = function () {
                 return this.empresa;
             };
-            
-            FacturaProveedores.prototype.setCentroUtilidad = function(centroUtilidad) {
+
+            FacturaProveedores.prototype.setCentroUtilidad = function (centroUtilidad) {
                 this.centroUtilidad = centroUtilidad;
             };
 
-            FacturaProveedores.prototype.getCentroUtilidad= function() {
+            FacturaProveedores.prototype.getCentroUtilidad = function () {
                 return this.centroUtilidad;
             };
-            
-            FacturaProveedores.prototype.setBodega = function(bodega) {
+
+            FacturaProveedores.prototype.setBodega = function (bodega) {
                 this.bodega = bodega;
             };
 
-            FacturaProveedores.prototype.getBodega= function() {
+            FacturaProveedores.prototype.getBodega = function () {
                 return this.bodega;
             };
-            
-            FacturaProveedores.prototype.setValorDescuento = function(valorDescuento) {
+
+            FacturaProveedores.prototype.setValorDescuento = function (valorDescuento) {
                 this.valorDescuento = valorDescuento;
             };
 
-            FacturaProveedores.prototype.getValorDescuento= function() {
+            FacturaProveedores.prototype.getValorDescuento = function () {
                 return this.valorDescuento;
             };
-            
-            FacturaProveedores.prototype.setValorFactura = function(valorFactura) {
+
+            FacturaProveedores.prototype.setValorFactura = function (valorFactura) {
                 this.valorFactura = valorFactura;
             };
 
-            FacturaProveedores.prototype.getValorFactura= function() {
+            FacturaProveedores.prototype.getValorFactura = function () {
                 return this.valorFactura;
             };
-            
-            FacturaProveedores.prototype.setUsuarioId = function(usuarioId) {
+
+            FacturaProveedores.prototype.setUsuarioId = function (usuarioId) {
                 this.usuarioId = usuarioId;
                 return this;
             };
 
-            FacturaProveedores.prototype.getUsuarioId = function() {
+            FacturaProveedores.prototype.getUsuarioId = function () {
                 return this.usuarioId;
             };
-            
-             FacturaProveedores.prototype.set_porcentaje_rtf = function(porcentaje_rtf) {
+
+            FacturaProveedores.prototype.set_porcentaje_rtf = function (porcentaje_rtf) {
                 this.porcentaje_rtf = porcentaje_rtf;
                 return this;
             };
 
-            FacturaProveedores.prototype.get_porcentaje_rtf = function() {
+            FacturaProveedores.prototype.get_porcentaje_rtf = function () {
                 return this.porcentaje_rtf;
             };
-            
-            FacturaProveedores.prototype.set_porcentaje_ica = function(porcentaje_ica) {
+
+            FacturaProveedores.prototype.set_porcentaje_ica = function (porcentaje_ica) {
                 this.porcentaje_ica = porcentaje_ica;
                 return this;
             };
 
-            FacturaProveedores.prototype.get_porcentaje_ica = function() {
+            FacturaProveedores.prototype.get_porcentaje_ica = function () {
                 return this.porcentaje_ica;
             };
-            
-            FacturaProveedores.prototype.set_porcentaje_reteiva = function(porcentaje_reteiva) {
+
+            FacturaProveedores.prototype.set_porcentaje_reteiva = function (porcentaje_reteiva) {
                 this.porcentaje_reteiva = porcentaje_reteiva;
                 return this;
             };
 
-            FacturaProveedores.prototype.get_porcentaje_reteiva = function() {
+            FacturaProveedores.prototype.get_porcentaje_reteiva = function () {
                 return this.porcentaje_reteiva;
             };
-            
-            FacturaProveedores.prototype.setObservacionSincronizacion = function(observacionSincronizacion) {
+
+            FacturaProveedores.prototype.setObservacionSincronizacion = function (observacionSincronizacion) {
                 this.observacionSincronizacion = observacionSincronizacion;
                 return this;
             };
 
-            FacturaProveedores.prototype.getObservacionSincronizacion = function() {
+            FacturaProveedores.prototype.getObservacionSincronizacion = function () {
                 return this.observacionSincronizacion;
             };
-            
-            FacturaProveedores.prototype.setSubTotal = function(subTotal) {
+
+            FacturaProveedores.prototype.setSubTotal = function (subTotal) {
                 this.subTotal = subTotal;
                 return this;
             };
 
-            FacturaProveedores.prototype.getSubTotal = function() {
+            FacturaProveedores.prototype.getSubTotal = function () {
                 return this.subTotal;
             };
-            
-            
-            FacturaProveedores.prototype.setSaldo = function(saldo) {
+
+
+            FacturaProveedores.prototype.setSaldo = function (saldo) {
                 this.saldo = saldo;
                 return this;
             };
 
-            FacturaProveedores.prototype.getSaldo = function() {
+            FacturaProveedores.prototype.getSaldo = function () {
                 return this.saldo;
             };
-            
-            FacturaProveedores.prototype.setGravamen = function(gravamen) {
+
+            FacturaProveedores.prototype.setGravamen = function (gravamen) {
                 this.gravamen = gravamen;
                 return this;
             };
 
-            FacturaProveedores.prototype.getGravamen = function() {
+            FacturaProveedores.prototype.getGravamen = function () {
                 return this.gravamen;
             };
-            
-            FacturaProveedores.prototype.setIdentificacion = function(identificacion) {
+
+            FacturaProveedores.prototype.setIdentificacion = function (identificacion) {
                 this.identificacion = identificacion;
                 return this;
             };
 
-            FacturaProveedores.prototype.getIdentificacion = function() {
+            FacturaProveedores.prototype.getIdentificacion = function () {
                 return this.identificacion;
             };
-            
-            FacturaProveedores.prototype.setSwClaseFactura = function(swClaseFactura) {
+
+            FacturaProveedores.prototype.setSwClaseFactura = function (swClaseFactura) {
                 this.swClaseFactura = swClaseFactura;
                 return this;
             };
 
-            FacturaProveedores.prototype.getSwClaseFactura = function() {
+            FacturaProveedores.prototype.getSwClaseFactura = function () {
                 return this.swClaseFactura;
             };
-            
-            FacturaProveedores.prototype.setTipoFactura = function(tipoFactura) {
+
+            FacturaProveedores.prototype.setTipoFactura = function (tipoFactura) {
                 this.tipoFactura = tipoFactura;
                 return this;
             };
 
-            FacturaProveedores.prototype.getTipoFactura = function() {
+            FacturaProveedores.prototype.getTipoFactura = function () {
                 return this.tipoFactura;
             };
-            
-            FacturaProveedores.prototype.setPrefijo = function(prefijo) {
+
+            FacturaProveedores.prototype.setPrefijo = function (prefijo) {
                 this.prefijo = prefijo;
                 return this;
             };
 
-            FacturaProveedores.prototype.getPrefijo = function() {
+            FacturaProveedores.prototype.getPrefijo = function () {
                 return this.prefijo;
             };
-            
-            
-            FacturaProveedores.prototype.setTipoTercero = function(tipoTercero) {
+
+
+            FacturaProveedores.prototype.setTipoTercero = function (tipoTercero) {
                 this.tipoTercero = tipoTercero;
                 return this;
             };
 
-            FacturaProveedores.prototype.getTipoTercero = function() {
+            FacturaProveedores.prototype.getTipoTercero = function () {
                 return this.tipoTercero;
             };
-	    
-            
-            FacturaProveedores.prototype.setTerceroId = function(terceroId) {
+
+
+            FacturaProveedores.prototype.setTerceroId = function (terceroId) {
                 this.terceroId = terceroId;
                 return this;
             };
 
-            FacturaProveedores.prototype.getTerceroId = function() {
+            FacturaProveedores.prototype.getTerceroId = function () {
                 return this.terceroId;
             };
-            
+
+            FacturaProveedores.prototype.setSincronizacionDian = function (sincronizacionDian) {
+                this.sincronizacionDian = sincronizacionDian;
+            };
+
+            FacturaProveedores.prototype.getSincronizacionDian = function () {
+                return this.sincronizacionDian;
+            };
+
             // Instancia
-            this.get = function(numeroFactura, codigoProveedor,fechaRegistro,observacion) {
-                return new FacturaProveedores(numeroFactura, codigoProveedor,fechaRegistro,observacion);
+            this.get = function (numeroFactura, codigoProveedor, fechaRegistro, observacion) {
+                return new FacturaProveedores(numeroFactura, codigoProveedor, fechaRegistro, observacion);
             };
 
             return this;
@@ -56809,15 +56819,13 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
             ]
         };
         
-        $scope.verificaFactuta=function(pref){
-            
+        $scope.verificaFactuta=function(pref){           
             var prefijo = false;
             if(pref==='FDC' || pref==='FDB'){
                 prefijo = true;
             }
-
             return prefijo;
-        }
+        };
         
         $scope.sincronizarFactura = function(entity){
             
@@ -62292,7 +62300,7 @@ define('controllers/facturacionProveedor/DetalleRecepcionParcialController',["an
                     var filtroPedido = localStorageService.get("verificacionDetalle");
                }]);
 });
-define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controllers"], function(angular, controllers) {
+define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controllers"], function (angular, controllers) {
 
     var fo = controllers.controller('CajaGeneralController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
@@ -62301,7 +62309,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                 "localStorageService",
                 "$state", "$modal", "socket", "facturacionClientesService", "facturacionProveedoresService",
                 "EmpresaDespacho", "Usuario", "cajaGeneralService", "CajaGeneral", "Tercero",
-                function($scope, $rootScope, Request, API, AlertService, Usuario,
+                function ($scope, $rootScope, Request, API, AlertService, Usuario,
                         $timeout, $filter, localStorageService, $state, $modal, socket,
                         facturacionClientesService, facturacionProveedoresService, EmpresaDespacho,
                         Sesion, cajaGeneralService, CajaGeneral, Tercero) {
@@ -62315,41 +62323,41 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                         efectivo: 'default',
                         credito: 'default'
                     };
-		    $scope.root.pagoEfectivo = 'default';
+                    $scope.root.pagoEfectivo = 'default';
                     $scope.root.pagoCredito = 'default';
                     $scope.root.grupo.gruposConcepto = '';
-		    $scope.root.gravamenesNotaCredito=0;
-		    $scope.root.gravamenesNotaDebito=0;
-		    $scope.root.totalesNotaCredito=0;
-		    $scope.root.totalesNotaDebito=0;
-		    
-		    $scope.root.termino_busqueda_tercero={};
-		    
+                    $scope.root.gravamenesNotaCredito = 0;
+                    $scope.root.gravamenesNotaDebito = 0;
+                    $scope.root.totalesNotaCredito = 0;
+                    $scope.root.totalesNotaDebito = 0;
+
+                    $scope.root.termino_busqueda_tercero = {};
+
                     $scope.root.filtros = [
                         {tipo: '', descripcion: "Nombre"}
                     ];
-		    
-		    $scope.root.prefijoBusquedaNota='seleccionar';
+
+                    $scope.root.prefijoBusquedaNota = 'seleccionar';
                     $scope.root.prefijosNotas = [
                         {prefijo: 'NCFC', descripcion: "NCFC"},
-                        {prefijo: 'NDFD', descripcion: "NDFD"}
+                        {prefijo: 'NDFC', descripcion: "NDFC"}
                     ];
-		    
-		    $scope.root.prefijo= 
-                        {prefijo: "seleccionar"}
+
+                    $scope.root.prefijo =
+                            {prefijo: "seleccionar"}
                     ;
                     $scope.root.filtro = $scope.root.filtros[0];
                     $scope.root.tipoTercero = $scope.root.filtros[0];
-		    $scope.root.tab=1;
-		    $scope.terceroSeleccionado=null;
+                    $scope.root.tab = 1;
+                    $scope.root.terceroSeleccionado = null;
                     /*
                      * Inicializacion de variables
                      * @param {type} empresa
                      * @param {type} callback
                      * @returns {void}
                      */
-                    that.init = function(empresa, callback) {
-			
+                    that.init = function (empresa, callback) {
+
                         // that.cargar_permisos();
                         $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
                         $scope.session = {
@@ -62364,18 +62372,18 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                         $scope.root.visibleBotonBuscador = true;
                         callback();
                     };
-		    
+
                     /**
                      * +Descripcion Metodo encargado de consultar la caja general
                      * @author Andres Mauricio Gonzalez
                      * @fecha 01/06/2017
                      * @returns {undefined}
                      */
-                    that.listarCajaGeneral = function(callback) {
-			    if(empresa.getCentroUtilidadSeleccionado()===undefined){
-				AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar la bodega");
-				return;
-			    }
+                    that.listarCajaGeneral = function (callback) {
+                        if (empresa.getCentroUtilidadSeleccionado() === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar la bodega");
+                            return;
+                        }
                         var obj = {
                             session: $scope.session,
                             data: {
@@ -62384,11 +62392,11 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                                 centro_utilidad: empresa.getCentroUtilidadSeleccionado().getCodigo()
                             }
                         };
-                        cajaGeneralService.listarCajaGeneral(obj, function(data) {
+                        cajaGeneralService.listarCajaGeneral(obj, function (data) {
 
                             if (data.status === 200) {
                                 $scope.root.caja = cajaGeneralService.renderCajaGeneral(data.obj.listarCajaGeneral);
-                                
+
                                 callback(true);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -62396,39 +62404,39 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             }
                         });
                     };
-		    
+
                     /**
                      * +Descripcion Metodo encargado de consultar grupos
                      * @author Andres Mauricio Gonzalez
                      * @fecha 01/06/2017
                      * @returns {undefined}
                      */
-                    that.listarGrupos = function(control, callback) {
-			$scope.root.grupos = null;
-			$scope.root.conceptos = null;
+                    that.listarGrupos = function (control, callback) {
+                        $scope.root.grupos = null;
+                        $scope.root.conceptos = null;
 
                         var obj = {
                             session: $scope.session,
                             data: {
                                 empresa_id: $scope.root.empresaSeleccionada.getCodigo(),
-                                credito: $scope.root.credito, 
+                                credito: $scope.root.credito,
                                 contado: $scope.root.contado,
                                 concepto_id: $scope.root.cajas.conceptoCaja,
                                 grupo_concepto: $scope.root.grupo.gruposConcepto
                             }
                         };
-                        cajaGeneralService.listarGrupos(obj, function(data) {
+                        cajaGeneralService.listarGrupos(obj, function (data) {
 
                             if (data.status === 200) {
                                 if (control) {
                                     $scope.root.grupos = cajaGeneralService.renderGrupos(data.obj.listarGrupos);
-				    $scope.root.grupo=$scope.root.grupos;
-				    $scope.root.concepto =null;
+                                    $scope.root.grupo = $scope.root.grupos;
+                                    $scope.root.concepto = null;
                                 } else {
                                     $scope.root.conceptos = cajaGeneralService.renderGrupos(data.obj.listarGrupos);
-				    $scope.root.concepto = $scope.root.conceptos;
+                                    $scope.root.concepto = $scope.root.conceptos;
                                 }
-                               
+
                                 callback(true);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -62436,8 +62444,8 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             }
                         });
                     };
-		    
-		    
+
+
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
                      *              los tipos de terceros
@@ -62445,132 +62453,127 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @fecha 02/05/2017 DD/MM/YYYY
                      * @returns {undefined}
                      */
-                    that.listarFacturasGeneradas = function(limit,callback) {
-			
+                    that.listarFacturasGeneradas = function (limit, callback) {
+
 
                         var obj = {
                             session: $scope.session,
                             data: {
                                 terminoBusqueda: $scope.root.termino_busqueda_tercero,
-				busquedaDocumento: $scope.root.tipoTercero.tipo,
-				empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-				prefijo: $scope.root.prefijo.prefijo!=='Prefijo'?$scope.root.prefijo.prefijo:'undefined',
-				facturaFiscal: $scope.root.factura?$scope.root.factura:'undefined',
-				limit:limit
+                                busquedaDocumento: $scope.root.tipoTercero.tipo,
+                                empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                prefijo: $scope.root.prefijo.prefijo !== 'Prefijo' ? $scope.root.prefijo.prefijo : 'undefined',
+                                facturaFiscal: $scope.root.factura ? $scope.root.factura : 'undefined',
+                                limit: limit
                             }
                         };
-                        cajaGeneralService.listarFacturasGeneradas(obj, function(data) {
+                        cajaGeneralService.listarFacturasGeneradas(obj, function (data) {
                             if (data.status === 200) {
-				
-//                                $scope.root.listarFacturasGeneradasNotas=data.obj.listarFacturasGeneradas;
-				$scope.root.listarFacturasGeneradasNotas=cajaGeneralService.renderFacturasProveedores(data.obj.listarFacturasGeneradas);
-				
-				callback(data.obj.listarFacturasGeneradas);
+
+                                $scope.root.listarFacturasGeneradasNotas = cajaGeneralService.renderFacturasProveedores(data.obj.listarFacturasGeneradas);
+
+                                callback(data.obj.listarFacturasGeneradas);
                             } else {
-				$scope.root.listarFacturasGeneradasNotas=null;
-                               //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-			       callback(false);
+                                $scope.root.listarFacturasGeneradasNotas = null;
+                                callback(false);
                             }
 
                         });
                     };
 
-		    /**
+                    /**
                      * +Descripcion Metodo encargado de listar los impuestos de un cliente
                      * @author Andres Mauricio Gonzalez
                      * @fecha 27/07/2017 DD/MM/YYYY
                      * @returns {undefined}
                      */
-		    that.listarImpuestosTercero = function() {
-			if($scope.root.listarFacturasGeneradasNotas===undefined){
-			    return;
-			}
-			var fecha = new Date($scope.root.listarFacturasGeneradasNotas[0].getFechaRegistro());
-			var anio = fecha.getFullYear();
-			var obj = {
-			    session: $scope.session,
-			    data: {
-				empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-				tipoIdTercero: $scope.root.listarFacturasGeneradasNotas[0].getTipoTercero(),
-				terceroId: $scope.root.listarFacturasGeneradasNotas[0].getTerceroId(),
-				anio: anio
-			    }
-			};
-			cajaGeneralService.listarImpuestosTercero(obj, function(data) {
-			    
-			    if (data.status === 200) {
-                              data.obj.factura=$scope.root.listarFacturasGeneradasNotas[0];
-			      $scope.root.listarImpuestos=data.obj;
-//			      that.traerPorcentajeImpuestosNotas(data.obj,function(datas){
-//				
-//			      });
-				
-			    } else {
-				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-			    }
+                    that.listarImpuestosTercero = function () {
+                        if ($scope.root.listarFacturasGeneradasNotas === undefined) {
+                            return;
+                        }
+                        var fecha = new Date($scope.root.listarFacturasGeneradasNotas[0].getFechaRegistro());
+                        var anio = fecha.getFullYear();
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                tipoIdTercero: $scope.root.listarFacturasGeneradasNotas[0].getTipoTercero(),
+                                terceroId: $scope.root.listarFacturasGeneradasNotas[0].getTerceroId(),
+                                anio: anio
+                            }
+                        };
+                        cajaGeneralService.listarImpuestosTercero(obj, function (data) {
 
-			});
-		    };
-		    
+                            if (data.status === 200) {
+                                data.obj.factura = $scope.root.listarFacturasGeneradasNotas[0];
+                                $scope.root.listarImpuestos = data.obj;
+
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+
+                        });
+                    };
+
                     /**
                      * +Descripcion Metodo encargado de calcular los impuestos de una nota
                      * @author Andres Mauricio Gonzalez
                      * @fecha 27/07/2017 DD/MM/YYYY
                      * @returns {undefined}
                      */
-		     that.traerPorcentajeImpuestosNotas = function(callback) {
-		        var objs=$scope.root.listarImpuestos; 
-			var parametros=objs.retencion;
-			var terceroImpuesto=objs.retencionTercero;
-			var obj=objs.factura;
-			
-			$scope.root.totalNota=$scope.root.precioNota;
-			$scope.root.totalGravamenNota=$scope.root.gravamenNota;
+                    that.traerPorcentajeImpuestosNotas = function (callback) {
+                        var objs = $scope.root.listarImpuestos;
+                        var parametros = objs.retencion;
+                        var terceroImpuesto = objs.retencionTercero;
+                        var obj = objs.factura;
 
-			    var impuestos = {
-				porcentajeRtf: '0',
-				porcentajeIca: '0',
-				porcentajeReteiva: '0',
-				porcentajeCree: '0',
-				swRtf: parametros.sw_rtf,
-				swIca: parametros.sw_ica,
-				swReteiva: parametros.sw_reteiva,
-				totalGeneral:0,
-				retencionFuente:0,
-				retencionIca:0,
-				valorSubtotal:0,
-				valorSubtotalFactura:0
-			    };
-			 
-			    impuestos.valorSubtotalFactura = obj.getSaldo();
-			//    impuestos.valorSubtotalFactura = obj.totalFactura - obj.totalGravamen;
+                        $scope.root.totalNota = $scope.root.precioNota;
+                        $scope.root.totalGravamenNota = $scope.root.gravamenNota;
 
-			    if (parametros.sw_rtf === '2' || parametros.sw_rtf === '3'){
-				
-				 if (parseInt(impuestos.valorSubtotalFactura) >= parseInt(parametros.base_rtf)) {
-				                                         
-				     impuestos.retencionFuente = $scope.root.totalNota * (terceroImpuesto.porcentaje_rtf / 100);				   
+                        var impuestos = {
+                            porcentajeRtf: '0',
+                            porcentajeIca: '0',
+                            porcentajeReteiva: '0',
+                            porcentajeCree: '0',
+                            swRtf: parametros.sw_rtf,
+                            swIca: parametros.sw_ica,
+                            swReteiva: parametros.sw_reteiva,
+                            totalGeneral: 0,
+                            retencionFuente: 0,
+                            retencionIca: 0,
+                            valorSubtotal: 0,
+                            valorSubtotalFactura: 0
+                        };
 
-				 }
-			    }
+                        impuestos.valorSubtotalFactura = obj.getSaldo();
+                        //    impuestos.valorSubtotalFactura = obj.totalFactura - obj.totalGravamen;
 
-			    if (parametros.sw_ica === '2' || parametros.sw_ica === '3'){
-				
-				 if (parseInt(impuestos.valorSubtotalFactura) >= parseInt(parametros.base_ica)) {
-				     
-				    impuestos.retencionIca = $scope.root.totalNota * (terceroImpuesto.porcentaje_ica / 1000);
-				 }
-			    }
+                        if (parametros.sw_rtf === '2' || parametros.sw_rtf === '3') {
 
-			    impuestos.valorSubtotal =$scope.root.totalNota;
-			    impuestos.iva = parseInt($scope.root.totalGravamenNota)+0;	    
-			    impuestos.totalGeneral = parseInt(impuestos.valorSubtotal) + parseInt(impuestos.iva) - (parseInt(impuestos.retencionFuente) + parseInt(impuestos.retencionIca));
-			    callback(impuestos);
-			    return;
-		    };
-		    
-		    
-		    
+                            if (parseInt(impuestos.valorSubtotalFactura) >= parseInt(parametros.base_rtf)) {
+
+                                impuestos.retencionFuente = $scope.root.totalNota * (terceroImpuesto.porcentaje_rtf / 100);
+
+                            }
+                        }
+
+                        if (parametros.sw_ica === '2' || parametros.sw_ica === '3') {
+
+                            if (parseInt(impuestos.valorSubtotalFactura) >= parseInt(parametros.base_ica)) {
+
+                                impuestos.retencionIca = $scope.root.totalNota * (terceroImpuesto.porcentaje_ica / 1000);
+                            }
+                        }
+
+                        impuestos.valorSubtotal = $scope.root.totalNota;
+                        impuestos.iva = parseInt($scope.root.totalGravamenNota) + 0;
+                        impuestos.totalGeneral = parseInt(impuestos.valorSubtotal) + parseInt(impuestos.iva) - (parseInt(impuestos.retencionFuente) + parseInt(impuestos.retencionIca));
+                        callback(impuestos);
+                        return;
+                    };
+
+
+
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
                      *              las Notas
@@ -62578,26 +62581,27 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @fecha 02/05/2017 DD/MM/YYYY
                      * @returns {undefined}
                      */
-		     that.listarNotas = function(parametros) {
-			 var obj = {
+                    that.listarNotas = function (parametros) {
+                        var obj = {
                             session: $scope.session,
                             data: {
-				prefijoNota: parametros.prefijo,
-				numeroNota: parametros.numero,
-				empresaId :parametros.empresaId
+                                prefijoNota: parametros.prefijo,
+                                numeroNota: parametros.numero,
+                                empresaId: parametros.empresaId
                             }
                         };
-			
-			cajaGeneralService.listarNotas(obj, function(data) {
-			     if (data.status === 200) {
-				$scope.root.listadoNota=cajaGeneralService.renderFacturasProveedores(data.obj.listadoNota);
-			     }else{
-				 $scope.root.listadoNota= {};
-			     }
-			    
-			 });
-		     };
-		    
+
+                        cajaGeneralService.listarNotas(obj, function (data) {
+                            if (data.status === 200) {
+//                                $scope.root.listadoNota = cajaGeneralService.renderFacturasProveedores(data.obj.listadoNota);
+                                $scope.root.listadoNota = data.obj.listadoNota;
+                            } else {
+                                $scope.root.listadoNota = {};
+                            }
+
+                        });
+                    };
+
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
                      *              las notas de una factura
@@ -62605,47 +62609,47 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @fecha 02/05/2017 DD/MM/YYYY
                      * @returns {undefined}
                      */
-                    that.listarFacConceptosNotasDetalle = function(parametros) {
-			
-			$scope.root.totalesNotaCredito=0;
-			$scope.root.totalesNotaDebito=0;
-			
-			if(parametros===undefined){
-			    return;
-			}
-			var facturaFiscal =parametros.factura_fiscal!==undefined?parametros.factura_fiscal:parametros.facturaFiscal;
+                    that.listarFacConceptosNotasDetalle = function (parametros) {
+
+                        $scope.root.totalesNotaCredito = 0;
+                        $scope.root.totalesNotaDebito = 0;
+
+                        if (parametros === undefined) {
+                            return;
+                        }
+                        var facturaFiscal = parametros.factura_fiscal !== undefined ? parametros.factura_fiscal : parametros.facturaFiscal;
                         var obj = {
                             session: $scope.session,
                             data: {
-				prefijo: parametros.prefijo,
-				facturaFiscal: facturaFiscal
+                                prefijo: parametros.prefijo,
+                                facturaFiscal: facturaFiscal
                             }
                         };
-                        cajaGeneralService.listarFacConceptosNotas(obj, function(data) {
+                        cajaGeneralService.listarFacConceptosNotas(obj, function (data) {
                             if (data.status === 200) {
-				
-                            $scope.root.listarFacConceptosNotasDetalle=data.obj.listarFacConceptosNotas;
-			    data.obj.listarFacConceptosNotas.forEach(function(value) {
 
-				if(value.nota_contable==='credito'){
-				    
-				 $scope.root.totalesNotaCredito+=parseInt(value.valor_nota_total);
-				 $scope.root.gravamenesNotaCredito+=parseInt(value.valor_gravamen);
-				 
-				}else{
-				    
-				 $scope.root.totalesNotaDebito+=parseInt(value.valor_nota_total);
-				 $scope.root.gravamenesNotaDebito+=parseInt(value.valor_gravamen);  
-				}
+                                $scope.root.listarFacConceptosNotasDetalle = data.obj.listarFacConceptosNotas;
+                                data.obj.listarFacConceptosNotas.forEach(function (value) {
 
-			    });
+                                    if (value.nota_contable === 'credito') {
+
+                                        $scope.root.totalesNotaCredito += parseInt(value.valor_nota_total);
+                                        $scope.root.gravamenesNotaCredito += parseInt(value.valor_gravamen);
+
+                                    } else {
+
+                                        $scope.root.totalesNotaDebito += parseInt(value.valor_nota_total);
+                                        $scope.root.gravamenesNotaDebito += parseInt(value.valor_gravamen);
+                                    }
+
+                                });
                             } else {
-				$scope.root.listarFacConceptosNotasDetalle={};
+                                $scope.root.listarFacConceptosNotasDetalle = {};
                             }
 
                         });
                     };
-		    
+
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara
                      *              los tipos de terceros
@@ -62653,7 +62657,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @fecha 02/05/2017 DD/MM/YYYY
                      * @returns {undefined}
                      */
-                    that.listarTiposTerceros = function() {
+                    that.listarTiposTerceros = function () {
 
                         var obj = {
                             session: $scope.session,
@@ -62662,7 +62666,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                                 }
                             }
                         };
-                        facturacionClientesService.listarTiposTerceros(obj, function(data) {
+                        facturacionClientesService.listarTiposTerceros(obj, function (data) {
 
                             if (data.status === 200) {
                                 $scope.root.tipoTerceros = facturacionClientesService.renderListarTipoTerceros(data.obj.listar_tipo_terceros);
@@ -62672,18 +62676,18 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
 
                         });
                     };
-		    
+
                     /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Permite realiar peticion al API para traer los terceros
                      * @params callback: {function}
                      * @fecha 2017-06-01
                      */
-                    that.listarTerceros = function(callback) {
-			
-                        if($scope.root.termino_busqueda_tercero===undefined){
-			    $scope.root.termino_busqueda_tercero='';
-			}
+                    that.listarTerceros = function (callback) {
+
+                        if ($scope.root.termino_busqueda_tercero === undefined) {
+                            $scope.root.termino_busqueda_tercero = '';
+                        }
                         var parametros = {
                             session: $scope.session,
                             data: {
@@ -62695,8 +62699,8 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                                 }
                             }
                         };
-                             
-                        cajaGeneralService.listarTerceros(parametros, function(respuesta) {
+
+                        cajaGeneralService.listarTerceros(parametros, function (respuesta) {
                             if (respuesta.status === 200) {
                                 $scope.root.terceros = [];
                                 var terceros = respuesta.obj.terceros;
@@ -62713,24 +62717,24 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             }
                         });
                     };
-		    
+
                     /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Permite realiar peticion al API para traer los terceros
                      * @params callback: {function}
                      * @fecha 2017-06-01
-                     */		    
-                    that.listarPrefijos = function() {
+                     */
+                    that.listarPrefijos = function () {
 
                         var parametros = {
                             session: $scope.session,
                             data: {
-                              
-                                    empresaId: $scope.root.empresaSeleccionada.getCodigo()
+
+                                empresaId: $scope.root.empresaSeleccionada.getCodigo()
                             }
                         };
 
-                        cajaGeneralService.listarPrefijos(parametros, function(respuesta) {
+                        cajaGeneralService.listarPrefijos(parametros, function (respuesta) {
                             if (respuesta.status === 200) {
                                 $scope.root.prefijos = respuesta.obj.listarPrefijos;
                             } else {
@@ -62738,16 +62742,16 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             }
                         });
                     };
-		    
+
                     /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Permite realiar peticion al API para traer los terceros
                      * @params callback: {function}
                      * @fecha 2017-06-01
                      */
-                    that.listarConceptosDetalle = function() {
+                    that.listarConceptosDetalle = function () {
                         $scope.root.conceptoTmp = "";
-                        if ($scope.root.terceros === undefined || $scope.root.terceros[0] === undefined) {
+                        if ($scope.root.terceroSeleccionado === undefined) {
                             return;
                         }
                         if ($scope.root.cajas === undefined) {
@@ -62760,76 +62764,76 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             data: {
                                 datos: {
                                     empresa_id: $scope.root.empresaSeleccionada.getCodigo(),
-                                    tipo_id_tercero: $scope.root.terceros[0].getTipoId(),
-                                    tercero_id: $scope.root.terceros[0].getId(),
+                                    tipo_id_tercero: $scope.root.terceroSeleccionado.tipo_id_tercero,
+                                    tercero_id: $scope.root.terceroSeleccionado.id,
                                     concepto_id: $scope.root.cajas.conceptoCaja
                                 }
                             }
                         };
 
-                        cajaGeneralService.listarConceptosDetalle(parametros, function(data) {
+                        cajaGeneralService.listarConceptosDetalle(parametros, function (data) {
 
                             if (data.status === 200) {
                                 $scope.root.conceptoTmp = cajaGeneralService.renderConcepto(data.obj.listarConceptosDetalle);
-                            }else if(data.msj.status===404){
-				
-			    }else {
-				if(data.obj.listarConceptosDetalle !== '0'){
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-				}
+                            } else if (data.msj.status === 404) {
+
+                            } else {
+                                if (data.obj.listarConceptosDetalle !== '0') {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                }
                             }
                         });
                     };
-		    
+
                     /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Permite realiar peticion al API para guardar la factura de caja general
                      * @params callback: {function}
                      * @fecha 2017-06-10
                      */
-                    $scope.guardarFacturaCajaGeneral = function() {
-			//sw_clase_factura 0=>contado 1=>credito
+                    $scope.guardarFacturaCajaGeneral = function () {
+                        //sw_clase_factura 0=>contado 1=>credito
                         //tipo_factura 5 porque es conceptos
-			var tipoPago=($scope.root.pagoCreditoModel === true)?1:0; 
-			var prefijo=($scope.root.pagoCreditoModel === true)?$scope.root.cajas.prefijoFacCredito:$scope.root.cajas.prefijoFacContado;
-			var claseFactura=($scope.root.cajas.prefijoFacCredito === undefined ? 0: 1);
-			var tipoFactura='5';
-			var estado='0';
+                        var tipoPago = ($scope.root.pagoCreditoModel === true) ? 1 : 0;
+                        var prefijo = ($scope.root.pagoCreditoModel === true) ? $scope.root.cajas.prefijoFacCredito : $scope.root.cajas.prefijoFacContado;
+                        var claseFactura = ($scope.root.cajas.prefijoFacCredito === undefined ? 0 : 1);
+                        var tipoFactura = '5';
+                        var estado = '0';
                         var parametros = {
                             session: $scope.session,
                             data: {
-			        prefijoFac:prefijo,
-				empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-				centroUtilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
-				tipoIdTercero: $scope.root.terceros[0].getTipoId(),
-				terceroId: $scope.root.terceros[0].getId(),
-				conceptoId: $scope.root.cajas.conceptoCaja,
-			        swClaseFactura: claseFactura,
-			        tipoFactura : tipoFactura,
-			        estado : estado,
-				cajaId :$scope.root.cajas.cajaId,
-				tipoPago: tipoPago
+                                prefijoFac: prefijo,
+                                empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                centroUtilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                                tipoIdTercero: $scope.root.terceroSeleccionado.tipo_id_tercero,
+                                terceroId: $scope.root.terceroSeleccionado.id,
+                                conceptoId: $scope.root.cajas.conceptoCaja,
+                                swClaseFactura: claseFactura,
+                                tipoFactura: tipoFactura,
+                                estado: estado,
+                                cajaId: $scope.root.cajas.cajaId,
+                                tipoPago: tipoPago
                             }
                         };
-                        cajaGeneralService.guardarFacturaCajaGeneral(parametros, function(data) {
+                        cajaGeneralService.guardarFacturaCajaGeneral(parametros, function (data) {
 
                             if (data.status === 200) {
-				var nombre = data.obj.guardarFacturaCajaGeneral;
-				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-				
-				that.listarTerceros(function(respuesta) {
-                                if (respuesta) {
-                                    that.listarConceptosDetalle();
+                                var nombre = data.obj.guardarFacturaCajaGeneral;
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+
+                                that.listarTerceros(function (respuesta) {
+                                    if (respuesta) {
+                                        that.listarConceptosDetalle();
+                                    }
+                                });
+
+                            } else if (data.msj.status === 409) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj.msj);
+                            } else {
+                                var mensaje = data.obj.guardarFacturaCajaGeneral;
+                                if (mensaje === "") {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                                 }
-				});
-				
-			    }else if(data.msj.status===409){ 
-				AlertService.mostrarVentanaAlerta("Mensaje del sistema",data.msj.msj);
-			    }else{
-				var mensaje = data.obj.guardarFacturaCajaGeneral;
-				if(mensaje===""){
-                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-				}
                             }
                         });
                     };
@@ -62839,30 +62843,31 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @params callback: {function}
                      * @fecha 2017-06-10
                      */
-                    that.guardarFacFacturasConceptosNotas = function(parametros,callback) {
-			
+                    that.guardarFacFacturasConceptosNotas = function (parametros, callback) {
+
                         var parametros = {
                             session: $scope.session,
                             data: {
-			        descripcion:parametros.descripcion,
-				empresaId:parametros.empresaId,
-				bodega:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada(),
-				facturaFiscal:parametros.facturaFiscal,
-				porcentajeGravamen:parametros.porcentajeGravamen,
-				prefijo:parametros.prefijo,
-				swContable:parametros.swContable,
-				valorNotaTotal:parametros.valorNotaTotal,
-			     valorNotaImpuestos:$scope.root.impuestos.totalGeneral
-			    }
+                                descripcion: parametros.descripcion,
+                                empresaId: parametros.empresaId,
+                                bodega: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada(),
+                                facturaFiscal: parametros.facturaFiscal,
+                                porcentajeGravamen: parametros.porcentajeGravamen,
+                                prefijo: parametros.prefijo,
+                                swContable: parametros.swContable,
+                                valorNotaTotal: parametros.valorNotaTotal,
+                                valorNotaImpuestos: $scope.root.impuestos.totalGeneral
+                            }
                         };
-                        cajaGeneralService.insertarFacFacturasConceptosNotas (parametros, function(data) {
-                          if (data.status === 200) {
-                               callback(true);
+
+                        cajaGeneralService.insertarFacFacturasConceptosNotas(parametros, function (data) {
+                            if (data.status === 200) {
+                                callback(true);
                             } else {
-				callback(false);
+                                callback(false);
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
-			  
+
                         });
                     };
 
@@ -62872,34 +62877,50 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @fecha 18/05/2017
                      * @returns {undefined}
                      */
-                    $scope.listaNotas= {
+                    $scope.listaNotas = {
                         data: 'root.listadoNota',
                         enableColumnResize: true,
                         enableRowSelection: false,
                         enableCellSelection: true,
                         enableHighlighting: true,
-			columnDefs: [
-                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
-                            {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
-                            {field: 'Tercero', width: "30%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
-                            {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
+                        columnDefs: [
+                            {field: 'No. Nota', width: "8%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo_nota}} {{row.entity.numero_nota}}</p></div>'}, //
+                            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
+                            {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.identificacion}}</p></div>'},
+                            {field: 'Tercero', width: "22%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre_tercero}}</p></div>'},
+                            {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
+                            {field: 'Usuario', width: "12%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
                             {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
-                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
-			     cellTemplate: ' <div class="row">\
-							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
-								<span class="glyphicon glyphicon-export"> Sincronizar</span>\
-							    </button>\
-							  </div>\
-							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-success btn-xs  disabled">\
-								<span class="glyphicon glyphicon-saved"> Sincronizar</span>\
-							    </button>\
-							  </div>\
-						       </div>'
-			    }  
-			 ]
+//                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
+//                                cellTemplate: ' <div class="row">\
+//							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
+//							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
+//								<span class="glyphicon glyphicon-export"> Sincronizar</span>\
+//							    </button>\
+//							  </div>\
+//							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
+//							    <button class="btn btn-success btn-xs  disabled">\
+//								<span class="glyphicon glyphicon-saved"> Sincronizar</span>\
+//							    </button>\
+//							  </div>\
+//						       </div>'
+//                            },
+                            {displayName: "DIAN", width: "8%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '\
+                        <div class="btn-group" >\
+                            <div ng-if="(row.entity.sincronizacion >= 1)" >\
+                               <button class="btn btn-success btn-xs" ng-disabled="{{!(row.entity.sincronizacion > 1)}}" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-saved"> Sincronizado</span>\
+                               </button>\
+                            </div>\
+                            <div ng-if="(row.entity.sincronizacion == 0 && verificaFactuta(row.entity.prefijo))" >\
+                               <button class="btn btn-danger btn-xs"  ng-click="generarSincronizacionDianNota(row.entity)" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-export"> Sincronizar</span>\
+                               </button>\
+                            </div>\
+                        </div>'
+                            }
+                        ]
                     };
                     /**
                      * +Descripcion 
@@ -62913,15 +62934,15 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                         enableRowSelection: false,
                         enableCellSelection: true,
                         enableHighlighting: true,
-			columnDefs: [
+                        columnDefs: [
                             {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
                             {field: 'Identificación', width: "10%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
-                            {field: 'Tercero', width: "30%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
+                            {field: 'Tercero', width: "25%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
                             {field: 'Fecha Registro', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'Usuario', width: "20%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
+                            {field: 'Usuario', width: "15%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
                             {field: 'Imprimir', width: "10%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
                             {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "10%",
-			     cellTemplate: ' <div class="row">\
+                                cellTemplate: ' <div class="row">\
 							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-danger btn-xs " ng-click="sincronizarFI(row.entity)">\
 								<span class="glyphicon glyphicon-export"> Sincronizar</span>\
@@ -62929,13 +62950,72 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
 							  </div>\
 							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-success btn-xs  disabled">\
-								<span class="glyphicon glyphicon-saved"> Sincronizar</span>\
+								<span class="glyphicon glyphicon-saved"> Sincronizado</span>\
 							    </button>\
 							  </div>\
 						       </div>'
-			    }  
-			 ]
+                            },
+                            {displayName: "DIAN", width: "10%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '\
+                        <div class="btn-group" >\
+                            <div ng-if="(row.entity.sincronizacionDian >= 1)" >\
+                               <button class="btn btn-success btn-xs" ng-disabled="{{!(row.entity.sincronizacionDian > 1)}}" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-saved"> Sincronizado</span>\
+                               </button>\
+                            </div>\
+                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.prefijo))" >\
+                               <button class="btn btn-danger btn-xs"  ng-click="generarSincronizacionDian(row.entity)" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-export"> Sincronizar</span>\
+                               </button>\
+                            </div>\
+                        </div>'
+                            }
+                        ]
                     };
+
+                    $scope.verificaFactuta = function (pref) {
+                        var prefijo = false;
+                        if (pref === 'FDC' || pref === 'FDB') {
+                            prefijo = true;
+                        }
+                        return prefijo;
+                    };
+
+                    /**
+                     * +Descripcion Metodo encargado de sincronizar en WS certicamara
+                     * @author German Galvis
+                     * @fecha 04/09/2018
+                     * @returns {undefined}
+                     */
+                    $scope.generarSincronizacionDian = function (datos) {
+                        var parametros = {
+                            session: $scope.session,
+                            data: {
+                                prefijo: datos.getPrefijo(),
+                                facturaFiscal: datos.getNumeroFactura(),
+                                empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                            }
+                        };
+                        cajaGeneralService.generarSincronizacionDian(parametros, function (data) {
+
+                            if (data.status === 200) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                return;
+                            } else {
+                                if (data.obj.response.statusCode === 500) {
+                                    var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                                    var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                                    var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                    return;
+                                }
+                            }
+                        });
+
+                    };
+
+
                     /**
                      * +Descripcion 
                      * @author Andres Mauricio Gonzalez
@@ -62949,18 +63029,18 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                         enableCellSelection: true,
                         enableHighlighting: true,
                         showFilter: true,
-			columnDefs: [
-		            {field: 'No. Nota', width: "10%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo_nota}} {{row.entity.numero_nota}}</p></div>'}, //
-		            {field: 'No. Factura', width: "10%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
-                            {field: 'Nota', width: "10%", displayName: 'Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nota_contable}}</p></div>'}, //
+                        columnDefs: [
+                            {field: 'No. Nota', width: "8%", displayName: 'No. Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo_nota}} {{row.entity.numero_nota}}</p></div>'}, //
+                            {field: 'No. Factura', width: "8%", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.prefijo}} {{row.entity.factura_fiscal}}</p></div>'}, //
+                            {field: 'Nota', width: "8%", displayName: 'Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nota_contable}}</p></div>'}, //
                             {field: 'SubTotal', width: "11%", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="right" >{{row.entity.valor_nota_total | currency:"$ " }}</p></div>'},
                             {field: 'Valor Gravamen', width: "11%", displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="right" >{{row.entity.valor_gravamen | currency:"$ " }}</p></div>'}, //
                             {field: 'Valor Total', width: "11%", displayName: 'Valor Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="right" >{{row.entity.total | currency:"$ "}}</p></div>'}, //
                             {field: 'Usuario', width: "13%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
                             {field: 'Fecha', width: "8%", displayName: 'Fecha', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="center">{{row.entity.fecha_registro | date:"dd/MM/yyyy hh:mm a"}}</p></div>'},
-                            {field: 'Imprimir', width: "8%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirNota(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
+                            {field: 'Imprimir', width: "6%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirNota(row.entity)"><span class="glyphicon glyphicon-print"></span> </button></div>'},
                             {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "8%",
-			     cellTemplate: ' <div class="row">\
+                                cellTemplate: ' <div class="row">\
 							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-danger btn-xs disabled">\
 								<span class="glyphicon glyphicon-export"> No Sincronizado</span>\
@@ -62972,37 +63052,95 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
 							    </button>\
 							  </div>\
 						       </div>'
-			    } 
-			 ]
+                            },
+                            {displayName: "DIAN", width: "8%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '\
+                        <div class="btn-group" >\
+                            <div ng-if="(row.entity.sincronizaciondian >= 1)" >\
+                               <button class="btn btn-success btn-xs" ng-disabled="{{!(row.entity.sincronizaciondian > 1)}}" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-saved"> Sincronizado</span>\
+                               </button>\
+                            </div>\
+                            <div ng-if="(row.entity.sincronizaciondian == 0 && verificaFactuta(row.entity.prefijo))" >\
+                               <button class="btn btn-danger btn-xs"  ng-click="generarSincronizacionDianNota(row.entity)" data-toggle="dropdown">\
+                                 <span class="glyphicon glyphicon-export"> Sincronizar</span>\
+                               </button>\
+                            </div>\
+                        </div>'
+                            }
+                        ]
                     };
+
+
+                    /**
+                     * +Descripcion Metodo encargado de sincronizar en WS certicamara
+                     * @author German Galvis
+                     * @fecha 02/11/2018
+                     * @returns {undefined}
+                     */
+                    $scope.generarSincronizacionDianNota = function (datos) {
+
+                        var parametros = {
+                            session: $scope.session,
+                            data: {
+                                factura_fiscal: datos.factura_fiscal,
+                                prefijo: datos.prefijo,
+                                prefijo_nota: datos.prefijo_nota,
+                                numero_nota: datos.numero_nota,
+                                empresaId: datos.empresa_id,
+                                bodega: datos.bodega
+                            }
+                        };
+                        
+                        cajaGeneralService.generarSincronizacionDianNota(parametros, function (data) {
+
+                            if (data.status === 200) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                return;
+                            } else {
+                                if (data.obj.response.statusCode === 500) {
+                                    var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                                    var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                                    var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + msj + "</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>" + codigo + ": " + valor);
+                                    return;
+                                }
+                            }
+                        });
+
+                    };
+
+
+
                     /**
                      * +Descripcion 
                      * @author Andres Mauricio Gonzalez
                      * @fecha 18/05/2017
                      * @returns {undefined}
                      */
-                    $scope.listaFacturasGeneradasNotas = { 
+                    $scope.listaFacturasGeneradasNotas = {
                         data: 'root.listarFacturasGeneradasNotas',
                         enableColumnResize: true,
                         enableRowSelection: false,
                         enableCellSelection: true,
                         enableHighlighting: true,
-                        showFilter: true,			
-			columnDefs: [
+                        showFilter: true,
+                        columnDefs: [
                             {field: 'No. Factura', width: "90px", displayName: 'No. Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getPrefijo()}} {{row.entity.getNumeroFactura()}}</p></div>'}, //
                             {field: 'Identificación', width: "120px", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
                             {field: 'Tercero', width: "350px", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
                             {field: 'Fecha', width: "140px", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
                             {field: 'Usuario', displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreUsuario()}}</p></div>'},
-                            {field: 'Saldo', width: "140px", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSaldo())">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'SubTotal', width: "140px", displayName: 'SubTotal', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSubTotal())">{{row.entity.getSubTotal()| currency:"$ "}}</p></div>'},
                             {field: 'Gravamen', width: "120px", displayName: 'Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarGravamen(row.entity.getGravamen())">{{row.entity.getGravamen()| currency:"$ "}}</p></div>'},
-			    {field: 'Total', width: "140px", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
+                            {field: 'Total', width: "140px", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
+                            {field: 'Saldo', width: "140px", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" ng-value="sumarTotal(row.entity.getSaldo())">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
                             {field: 'NC', width: "50px", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaCredito(row.entity)" ng-disabled="comparaValorNota(1)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'ND', width: "50px", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"  ng-disabled="comparaValorNota(0)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'Imprimir2', width: "80px", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirFacturaNotas(row.entity)"><span class="glyphicon glyphicon-print"></span></button></div>'},
                             {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "100px",
-			     cellTemplate: ' <div class="row">\
+                                cellTemplate: ' <div class="row">\
 							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
 							    <button class="btn btn-danger btn-xs disabled">\
 								<span class="glyphicon glyphicon-export"></span>\
@@ -63014,101 +63152,101 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
 							    </button>\
 							  </div>\
 						       </div>'
-			    }  
-			 ]
+                            }
+                        ]
                     };
-		    
-		    $scope.root.gravamenes=0;
-		    $scope.sumarGravamen=function(gravamen){//root.gravamenes
-			$scope.root.gravamenes2=gravamen;
-		    };
-		    
-		    $scope.root.totales=0;
-		    $scope.sumarTotal=function(total){
-			$scope.root.totales=total;
-		    };
-		    
-		   /*
-		    * 1-nota credito 0 - nota debito
-		    * @param {type} tipoNota
-		    * @returns {disabled}
-		    */
-		  $scope.comparaValorNota=function(tipoNota){
-		      var disabled=false;
-                   
-		      if(tipoNota===1){
-			if(parseInt($scope.root.listarFacturasGeneradasNotas[0].saldo) <= 0){
-			   disabled=true;
-			}
-		       
-		      }
-			return disabled;
-		  };
-    
-		    
-		    /**
-			* +Descripcion sincronizar FI
-			* @author Andres Mauricio Gonzalez
-			* @fecha 18/05/2017
-			* @returns {undefined}
-			*/
-		    $scope.sincronizarFI = function(data) {
-			that.sincronizarFI(data,function(resultado){
-			});
-		    };
-		    
-			/**
-			* +Descripcion Metodo encargado de sincronizar en WS FI
-			* @author Andres Mauricio Gonzalez
-			* @fecha 18/05/2017
-			* @returns {undefined}
-			*/
-		       that.sincronizarFI = function(data,callback) {
-                           
-			   var obj = {
-			       session: $scope.session,
-			       data: {
-				   sincronizarFI: {
-				       empresaId: data.getEmpresa(),
-				       prefijo: data.getPrefijo(),
-				       factura: data.getNumeroFactura()
-				   }
-			       }
-			   };
 
-			   cajaGeneralService.sincronizarFi(obj, function(data) {
+                    $scope.root.gravamenes = 0;
+                    $scope.sumarGravamen = function (gravamen) {//root.gravamenes
+                        $scope.root.gravamenes2 = gravamen;
+                    };
 
-			       if (data.status === 200) {
-				   that.listarFacturasGeneradas('',function(data){
-				       
-				   });
-				   that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd,data.obj.respuestaFI.resultado.mensaje_ws);
-				   callback(true);
-			       } else {
-				   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-				   callback(false);
-			       }
+                    $scope.root.totales = 0;
+                    $scope.sumarTotal = function (total) {
+                        $scope.root.totales = total;
+                    };
 
-			   });
+                    /*
+                     * 1-nota credito 0 - nota debito
+                     * @param {type} tipoNota
+                     * @returns {disabled}
+                     */
+                    $scope.comparaValorNota = function (tipoNota) {
+                        var disabled = false;
 
-		       };
-		       
-		  /**
-			* +Descripcion mensaje de respuesta de WS
-			* @author Andres Mauricio Gonzalez
-			* @fecha 18/05/2017
-			* @returns {undefined}
-			*/     
-		  that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+                        if (tipoNota === 1) {
+                            if (parseInt($scope.root.listarFacturasGeneradasNotas[0].saldo) <= 0) {
+                                disabled = true;
+                            }
 
-                       $scope.mensaje_bd = mensaje_bd;
-                       $scope.mensaje_ws = mensaje_ws;
-                       $scope.opts = {
-                           backdrop: true,
-                           backdropClick: true,
-                           dialogFade: false,
-                           keyboard: true,
-                           template: ' <div class="modal-header">\
+                        }
+                        return disabled;
+                    };
+
+
+                    /**
+                     * +Descripcion sincronizar FI
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+                    $scope.sincronizarFI = function (data) {
+                        that.sincronizarFI(data, function (resultado) {
+                        });
+                    };
+
+                    /**
+                     * +Descripcion Metodo encargado de sincronizar en WS FI
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+                    that.sincronizarFI = function (data, callback) {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                sincronizarFI: {
+                                    empresaId: data.getEmpresa(),
+                                    prefijo: data.getPrefijo(),
+                                    factura: data.getNumeroFactura()
+                                }
+                            }
+                        };
+
+                        cajaGeneralService.sincronizarFi(obj, function (data) {
+
+                            if (data.status === 200) {
+                                that.listarFacturasGeneradas('', function (data) {
+
+                                });
+                                that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd, data.obj.respuestaFI.resultado.mensaje_ws);
+                                callback(true);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                callback(false);
+                            }
+
+                        });
+
+                    };
+
+                    /**
+                     * +Descripcion mensaje de respuesta de WS
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha 18/05/2017
+                     * @returns {undefined}
+                     */
+                    that.mensajeSincronizacion = function (mensaje_bd, mensaje_ws) {
+
+                        $scope.mensaje_bd = mensaje_bd;
+                        $scope.mensaje_ws = mensaje_ws;
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
                                            <button type="button" class="close" ng-click="close()">&times;</button>\
                                            <h4 class="modal-title">Resultado sincronizacion</h4>\
                                        </div>\
@@ -63121,114 +63259,114 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                                        <div class="modal-footer">\
                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                        </div>',
-                           scope: $scope,
-                           controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                            scope: $scope,
+                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
 
-                                   $scope.close = function () {
-                                       $modalInstance.close();
-                                   };
-                               }]
-                       };
-                       var modalInstance = $modal.open($scope.opts);
-                   };
-		    
-		    /**
+                                    $scope.close = function () {
+                                        $modalInstance.close();
+                                    };
+                                }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    };
+
+                    /**
                      * +Descripcion metodo para validar sincronizacion
                      * @author Andres Mauricio Gonzalez
                      * @fecha 18/05/2017
                      * @returns {undefined}
                      */
-		    $scope.validarSincronizacion=function(estado){
-			var respuesta=false;
-			if(estado === '1' || estado === null){
-			    respuesta=true;
-			}
-			return respuesta;
-		    };
-		    
-		    /**
+                    $scope.validarSincronizacion = function (estado) {
+                        var respuesta = false;
+                        if (estado === '1' || estado === null) {
+                            respuesta = true;
+                        }
+                        return respuesta;
+                    };
+
+                    /**
                      * +Descripcion metodo para imprimir las facturas
                      * @author Andres Mauricio Gonzalez
                      * @fecha 18/05/2017
                      * @returns {undefined}
                      */
-		    $scope.onImprimirFacturaNotas=function(datos){
-			 var parametros = {
+                    $scope.onImprimirFacturaNotas = function (datos) {
+                        var parametros = {
                             session: $scope.session,
                             data: {
-			        prefijo:datos.getPrefijo(),
-			        facturaFiscal:datos.getNumeroFactura(),
-				empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                                prefijo: datos.getPrefijo(),
+                                facturaFiscal: datos.getNumeroFactura(),
+                                empresaId: $scope.root.empresaSeleccionada.getCodigo()
                             }
                         };
-                        cajaGeneralService.imprimirFacturaNotas(parametros, function(data) {
-				    
+                        cajaGeneralService.imprimirFacturaNotas(parametros, function (data) {
+
                             if (data.status === 200) {
-				var nombre = data.obj.imprimirFacturaNotas;
-				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-				
+                                var nombre = data.obj.imprimirFacturaNotas;
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+
                             } else {
-				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         });
-		    };
-		    
-		    /**
+                    };
+
+                    /**
                      * +Descripcion metodo para imprimir las facturas
                      * @author Andres Mauricio Gonzalez
                      * @fecha 18/05/2017
                      * @returns {undefined}
                      */
-		    $scope.onImprimirNota=function(datos){
-			 var parametros = {
+                    $scope.onImprimirNota = function (datos) {
+                        var parametros = {
                             session: $scope.session,
                             data: {
-			        prefijo:datos.prefijo,
-			        facturaFiscal:datos.factura_fiscal,
-			        prefijoNota:datos.prefijo_nota,
-			        numeroNota:datos.numero_nota,
-				empresaId: datos.empresa_id,
-				bodega: datos.bodega
+                                prefijo: datos.prefijo,
+                                facturaFiscal: datos.factura_fiscal,
+                                prefijoNota: datos.prefijo_nota,
+                                numeroNota: datos.numero_nota,
+                                empresaId: datos.empresa_id,
+                                bodega: datos.bodega
                             }
                         };
-                        cajaGeneralService.imprimirNota(parametros, function(data) {
-				    
+                        cajaGeneralService.imprimirNota(parametros, function (data) {
+
                             if (data.status === 200) {
-				var nombre = data.obj.imprimirNota;
-				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-				
+                                var nombre = data.obj.imprimirNota;
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+
                             } else {
-				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         });
-		    };
-		    /**
+                    };
+                    /**
                      * +Descripcion metodo para imprimir las facturas
                      * @author Andres Mauricio Gonzalez
                      * @fecha 18/05/2017
                      * @returns {undefined}
                      */
-		    $scope.onImprimirFacturaNotasDetalle=function(datos){
-			 var parametros = {
+                    $scope.onImprimirFacturaNotasDetalle = function (datos) {
+                        var parametros = {
                             session: $scope.session,
                             data: {
-			        prefijo:datos.prefijo,
-			        facturaFiscal:datos.factura_fiscal,
-				empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                                prefijo: datos.prefijo,
+                                facturaFiscal: datos.factura_fiscal,
+                                empresaId: $scope.root.empresaSeleccionada.getCodigo()
                             }
                         };
-                        cajaGeneralService.imprimirFacturaNotasDetalle(parametros, function(data) {
-				    
+                        cajaGeneralService.imprimirFacturaNotasDetalle(parametros, function (data) {
+
                             if (data.status === 200) {
-				var nombre = data.obj.imprimirFacturaNotas;
-				$scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-				
+                                var nombre = data.obj.imprimirFacturaNotas;
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+
                             } else {
-				AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         });
-		    };
-		    
+                    };
+
                     /**
                      * +Descripcion scope del grid para mostrar los proveedores
                      * @author Andres Mauricio Gonzalez
@@ -63242,7 +63380,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                         enableCellSelection: true,
                         enableHighlighting: true,
                         showFilter: true,
-			footerTemplate: '   <div class="row col-md-12">\
+                        footerTemplate: '   <div class="row col-md-12">\
                                         <div class="">\
                                             <table class="table table-clear text-center">\
                                                 <thead>\
@@ -63272,7 +63410,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             {field: 'Tipo Pago', width: "5%", displayName: 'Tipo Pago', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoPagoDescripcion()}}</p></div>'},
                             {field: 'Descripcion', width: "44%", displayName: 'Descripcion', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getDescripcion()}}</p></div>'},
                             {field: 'Valor Unitario', width: "8%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()| currency:"$ "}}</p></div>'},
-                            {field: 'Valor Gravamen',  displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getValorGravamen() | currency:"$ "}}</p></div>'},
+                            {field: 'Valor Gravamen', displayName: 'Valor Gravamen', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getValorGravamen() | currency:"$ "}}</p></div>'},
                             {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
                                 cellTemplate: ' <div class="row">\
                                                  <button class="btn btn-default btn-xs" ng-click="eliminarTmp(row.entity)">\
@@ -63290,8 +63428,8 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @fecha 01/06/2017
                      * @returns {undefined}
                      */
-                    $scope.onConcepto = function() {
-			that.limpiarVariablesConceptos();
+                    $scope.onConcepto = function () {
+                        that.limpiarVariablesConceptos();
                         that.ver_recepcion();
                     };
                     /**
@@ -63299,28 +63437,28 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @author Andres Mauricio Gonzalez
                      * @fecha 01/06/2017
                      * @returns {undefined}
-                     */		    
-		    
-                    $scope.onNotaCredito = function(datos) {
-			$scope.root.precioNota=0;
-			$scope.root.gravamenNota=0;
-			$scope.root.descripcionNota="";
-			$scope.root.tituloNota="Nota Credito";
-                        that.verNota(1,datos);		    
+                     */
+
+                    $scope.onNotaCredito = function (datos) {
+                        $scope.root.precioNota = 0;
+                        $scope.root.gravamenNota = 0;
+                        $scope.root.descripcionNota = "";
+                        $scope.root.tituloNota = "Nota Credito";
+                        that.verNota(1, datos);
                     };
-		    
+
                     /**
                      * +Descripcion scope del grid para mostrar el detalle de las recepciones
                      * @author Andres Mauricio Gonzalez
                      * @fecha 01/06/2017
                      * @returns {undefined}
                      */
-                    $scope.onNotaDebito = function(datos) {
-			$scope.root.precioNota=0;
-			$scope.root.gravamenNota=0;
-			$scope.root.descripcionNota="";
-			$scope.root.tituloNota="Nota Debito";
-                        that.verNota(0,datos);	
+                    $scope.onNotaDebito = function (datos) {
+                        $scope.root.precioNota = 0;
+                        $scope.root.gravamenNota = 0;
+                        $scope.root.descripcionNota = "";
+                        $scope.root.tituloNota = "Nota Debito";
+                        that.verNota(0, datos);
                     };
 
                     /**
@@ -63329,7 +63467,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @fecha 01/06/2017
                      * @returns {undefined}
                      */
-                    $scope.eliminarTmp = function(row) {
+                    $scope.eliminarTmp = function (row) {
 
                         var parametros = {
                             session: $scope.session,
@@ -63340,7 +63478,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             }
                         };
 
-                        cajaGeneralService.eliminarTmpDetalleConceptos(parametros, function(data) {
+                        cajaGeneralService.eliminarTmpDetalleConceptos(parametros, function (data) {
 
                             if (data.status === 200) {
                                 that.listarConceptosDetalle();
@@ -63357,7 +63495,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * @fecha 01/06/2017
                      * @returns {undefined}
                      */
-                    that.ver_recepcion = function() {
+                    that.ver_recepcion = function () {
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -63368,42 +63506,42 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             cellClass: "ngCellText",
                             templateUrl: 'views/cajaGeneral/vistaConceptos.html',
                             scope: $scope,
-                            controller: ['$scope','$modalInstance',function($scope, $modalInstance) {
+                            controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
-                                that.listarGrupos(true, function() {
+                                    that.listarGrupos(true, function () {
 
-                                });
-                                $scope.cerrar = function() {
-                                    $modalInstance.close();
-                                };
-                                $scope.guardarConcepto = function() {
-                                    that.guardarConcepto(function(respuesta, parametros) {
-                                        if (respuesta === true) {
-                                            that.insertarTmpDetalleConceptos(parametros, function(respuesta) {
-                                                that.listarConceptosDetalle();
-                                                $modalInstance.close();
-                                            });
-                                        }
                                     });
-                                };
-                            }]
+                                    $scope.cerrar = function () {
+                                        $modalInstance.close();
+                                    };
+                                    $scope.guardarConcepto = function () {
+                                        that.guardarConcepto(function (respuesta, parametros) {
+                                            if (respuesta === true) {
+                                                that.insertarTmpDetalleConceptos(parametros, function (respuesta) {
+                                                    that.listarConceptosDetalle();
+                                                    $modalInstance.close();
+                                                });
+                                            }
+                                        });
+                                    };
+                                }]
                         };
                         var modalInstance = $modal.open($scope.opts);
                     };
-		    
-		    $scope.root.precioNota=0;
-		    $scope.root.gravamenNota=0;
-		    $scope.root.descripcionNota="";
+
+                    $scope.root.precioNota = 0;
+                    $scope.root.gravamenNota = 0;
+                    $scope.root.descripcionNota = "";
                     /**
                      * +Descripcion scope del grid para mostrar el detalle de las recepciones
                      * @author Andres Mauricio Gonzalez
                      * @fecha 01/06/2017
                      * @returns {undefined}
-		     * nota : 0-debito 1-credito
+                     * nota : 0-debito 1-credito
                      */
-                    that.verNota = function(nota,datos) {
-			
-			$scope.root.impuestos="";
+                    that.verNota = function (nota, datos) {
+
+                        $scope.root.impuestos = "";
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -63414,79 +63552,80 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             cellClass: "ngCellText",
                             templateUrl: 'views/cajaGeneral/vistaNotaCredito.html',
                             scope: $scope,
-                            controller: ['$scope','$modalInstance',function($scope, $modalInstance) {
-						      
-                                $scope.cerrar = function() {
-                                    $modalInstance.close();
-                                };
-				
-                                $scope.guardarFacFacturasConceptosNotas = function() {				    
-				    var saldo=0;
-				    var valorIngresado=0;
-				    
-				    if($scope.root.descripcionNota===''){
-					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar la Descripcion");
-					 return;
-				    }
+                            controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
-				    if($scope.root.precioNota === '' ){
-					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar el Precio");
-					 return;
-				    }
-				    if($scope.root.gravamenNota === ''){
-					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe digitar la Descripcion");
-					 return;
-				    }
-				    
-				     if($scope.root.precioNota === 0){
-					 AlertService.mostrarVentanaAlerta("Mensaje del sistema","El valor de la Nota debe ser Mayor a cero");
-					 return;
-				    }
-				    
-				    if(nota === 1){
-					saldo=(parseInt($scope.root.listarFacturasGeneradasNotas[0].saldo) - parseInt($scope.root.precioNota));
-					valorIngresado = valorIngresado - parseInt($scope.root.precioNota);
-				    }else{
-					valorIngresado += parseInt($scope.root.precioNota);
-					$scope.root.totalesNotaCredito=parseInt($scope.root.totalesNotaCredito)-parseInt(datos.gravamen);
-				    }
-				     			
-				    
-				    if( saldo < 0 && nota === 1){
-					 AlertService.mostrarVentanaAlerta(" Mensaje del sistema","El valor de la Nota credito no debe ser Mayor al saldo de la Factura ");
-					 return;
-				    }
-				    				   
-				    var parametros={
-					prefijo : datos.getPrefijo(),
-					facturaFiscal : datos.getNumeroFactura(),
-					swContable : nota,
-					valorNotaTotal : $scope.root.precioNota,
-					porcentajeGravamen : $scope.root.gravamenNota,
-					descripcion : $scope.root.descripcionNota,
-					empresaId : $scope.root.empresaSeleccionada.getCodigo()
-				    };
-				
-                                    that.guardarFacFacturasConceptosNotas(parametros,function(respuesta){
-					$modalInstance.close();
+                                    $scope.cerrar = function () {
+                                        $modalInstance.close();
+                                    };
+
+                                    $scope.guardarFacFacturasConceptosNotas = function () {
+                                        var saldo = 0;
+                                        var valorIngresado = 0;
+
+                                        if ($scope.root.descripcionNota === '') {
+                                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Descripcion");
+                                            return;
+                                        }
+
+                                        if ($scope.root.precioNota === '') {
+                                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el Precio");
+                                            return;
+                                        }
+                                        if ($scope.root.gravamenNota === '') {
+                                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Descripcion");
+                                            return;
+                                        }
+
+                                        if ($scope.root.precioNota === 0) {
+                                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El valor de la Nota debe ser Mayor a cero");
+                                            return;
+                                        }
+
+                                        if (nota === 1) {
+                                            saldo = (parseInt($scope.root.listarFacturasGeneradasNotas[0].saldo) - parseInt($scope.root.precioNota));
+                                            valorIngresado = valorIngresado - parseInt($scope.root.precioNota);
+                                        } else {
+                                            valorIngresado += parseInt($scope.root.precioNota);
+                                            $scope.root.totalesNotaCredito = parseInt($scope.root.totalesNotaCredito) - parseInt(datos.gravamen);
+                                        }
+
+
+                                        if (saldo < 0 && nota === 1) {
+                                            AlertService.mostrarVentanaAlerta(" Mensaje del sistema", "El valor de la Nota credito no debe ser Mayor al saldo de la Factura ");
+                                            return;
+                                        }
+
+                                        var parametros = {
+                                            prefijo: datos.getPrefijo(),
+                                            facturaFiscal: datos.getNumeroFactura(),
+                                            swContable: nota,
+                                            valorNotaTotal: $scope.root.precioNota,
+                                            porcentajeGravamen: $scope.root.gravamenNota,
+                                            descripcion: $scope.root.descripcionNota,
+                                            empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                                        };
+
+                                        that.guardarFacFacturasConceptosNotas(parametros, function (respuesta) {
+                                            $modalInstance.close();
 //					that.listarImpuestosTercero();
-					that.listarFacturasGeneradas(1,function(){});
-					that.listarFacConceptosNotasDetalle(parametros);
-					
-				    });
-                                };
-					$scope.onImpuesto=function(){
-					    
-						   
-						   that.traerPorcentajeImpuestosNotas(function(datas){
-							 $scope.root.impuestos=datas;
-					             });			    
-					};
-                            }]
+                                            that.listarFacturasGeneradas(1, function () {});
+                                            that.listarFacConceptosNotasDetalle(parametros);
+
+                                        });
+                                    };
+
+                                    $scope.onImpuesto = function () {
+
+
+                                        that.traerPorcentajeImpuestosNotas(function (datas) {
+                                            $scope.root.impuestos = datas;
+                                        });
+                                    };
+                                }]
                         };
                         var modalInstance = $modal.open($scope.opts);
-			 
-			      
+
+
                     };
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -63494,8 +63633,8 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
-                    $scope.onSeleccionFiltro = function() {
-			
+                    $scope.onSeleccionFiltro = function () {
+
                     };
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -63503,8 +63642,8 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
-                    $scope.onSeleccionFiltroGrupo = function() {
-                        that.listarGrupos(false, function() {
+                    $scope.onSeleccionFiltroGrupo = function () {
+                        that.listarGrupos(false, function () {
 
                         });
                     };
@@ -63514,7 +63653,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
-                    $scope.validarCaja = function() {
+                    $scope.validarCaja = function () {
                         var validar = false;
                         if ($scope.root.cajas === undefined || $scope.root.terceros === undefined) {//|| (!($scope.root.pagoEfectivoModel) && !($scope.root.pagoEfectivoModel)
                             validar = true;
@@ -63527,12 +63666,12 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
-                    $scope.validarConcepto = function() { 
+                    $scope.validarConcepto = function () {
                         var validar = false;
-                        if ($scope.root.cajas === undefined || $scope.root.terceros === undefined || 
-			    $scope.root.conceptoTmp.length === 0 || ($scope.root.pagoEfectivoModel === $scope.root.pagoCreditoModel && 
-			    ($scope.root.pagoCreditoModel === undefined) && ($scope.root.pagoEfectivoModel === undefined))) {
-			
+                        if ($scope.root.cajas === undefined || $scope.root.terceros === undefined ||
+                                $scope.root.conceptoTmp.length === 0 || ($scope.root.pagoEfectivoModel === $scope.root.pagoCreditoModel &&
+                                        ($scope.root.pagoCreditoModel === undefined) && ($scope.root.pagoEfectivoModel === undefined))) {
+
                             validar = true;
                         }
                         return validar;
@@ -63543,7 +63682,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
-                    $scope.onSeleccionFiltroConcepto = function() {
+                    $scope.onSeleccionFiltroConcepto = function () {
                     };
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -63551,7 +63690,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope guarda los conceptos
                      * @param {type} $event
                      */
-                    that.guardarConcepto = function(callback) {
+                    that.guardarConcepto = function (callback) {
                         var mensaje = '';
                         if ($scope.root.grupo.gruposConcepto === "") {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Grupo');
@@ -63565,7 +63704,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Concepto');
                             return;
                         }
-			
+
                         if ($scope.root.pago === undefined) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'Debe Seleccionar Un Tipo de Pago');
                             return;
@@ -63594,46 +63733,46 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'La Descripcion debe Tener como Minimo 6 Caracteres');
                             return;
                         }
-			
-			if($scope.root.gravamen === undefined || $scope.root.gravamen === "") {
-			   $scope.root.gravamen=0; 
-			}
+
+                        if ($scope.root.gravamen === undefined || $scope.root.gravamen === "") {
+                            $scope.root.gravamen = 0;
+                        }
 
                         var parametros = {//$scope.root.caja
                             empresa_id: $scope.root.empresaSeleccionada.getCodigo(),
                             centro_utilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
                             concepto_id: $scope.root.concepto.getConceptoId(),
                             grupo_concepto: $scope.root.grupo.getGruposConcepto(),
-                            tipo_id_tercero: $scope.root.terceros[0].getTipoId(),
-                            tercero_id: $scope.root.terceros[0].getId(),
+                            tipo_id_tercero: $scope.root.terceroSeleccionado.tipo_id_tercero,
+                            tercero_id: $scope.root.terceroSeleccionado.id,
                             sw_tipo: '0',
                             cantidad: '1',
-                            precio: parseInt($scope.root.precio)+parseInt($scope.root.gravamen),
-                            valor_total: parseInt($scope.root.precio)+parseInt($scope.root.gravamen),
+                            precio: parseInt($scope.root.precio) + parseInt($scope.root.gravamen),
+                            valor_total: parseInt($scope.root.precio) + parseInt($scope.root.gravamen),
                             porcentaje_gravamen: $scope.root.gravamen,
                             valor_gravamen: $scope.root.gravamen,
                             descripcion: $scope.root.descripcion,
                             tipo_pago_id: $scope.root.pago
                         };
-			
-			that.limpiarVariablesConceptos();
+
+                        that.limpiarVariablesConceptos();
                         callback(true, parametros);
                     };
-		    
-		    that.limpiarVariablesConceptos=function(){
-			$scope.root.precio="";
-			$scope.root.pago="";
-			$scope.root.gravamen="";
-			$scope.root.descripcion="";
-			$scope.checkearEstadoPago();
-		    };
+
+                    that.limpiarVariablesConceptos = function () {
+                        $scope.root.precio = "";
+                        $scope.root.pago = "";
+                        $scope.root.gravamen = "";
+                        $scope.root.descripcion = "";
+                        $scope.checkearEstadoPago();
+                    };
                     /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Permite realiar peticion al API para traer los terceros
                      * @params callback: {function}
                      * @fecha 2017-06-01
                      */
-                    that.insertarTmpDetalleConceptos = function(parametros, callback) {
+                    that.insertarTmpDetalleConceptos = function (parametros, callback) {
 
                         var parametro = {
                             session: $scope.session,
@@ -63641,9 +63780,9 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                                 datos: parametros
                             }
                         };
-                        cajaGeneralService.insertarTmpDetalleConceptos(parametro, function(respuesta) {
+                        cajaGeneralService.insertarTmpDetalleConceptos(parametro, function (respuesta) {
                             if (respuesta.status === 200) {
-                               // AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.obj.insertarTmpDetalleConceptos);
+                                // AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.obj.insertarTmpDetalleConceptos);
                                 callback(true);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.msj);
@@ -63657,8 +63796,8 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope selector estado de pago
                      * @param {type} $event
                      */
-                    $scope.checkearEstadoPago = function(check) {
-			
+                    $scope.checkearEstadoPago = function (check) {
+
                         $scope.root.pago = check;
                         switch (check) {
                             case 1:
@@ -63682,30 +63821,30 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                                 $scope.root.credito = 'default';
                         }
                     };
-                    
-		      
+
+
                     /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 04/02/2016
                      * +Descripcion scope selector tipo factura
                      * @param {type} $event
                      */
-                    $scope.tipoFactura = function(tipo) {
-		
+                    $scope.tipoFactura = function (tipo) {
+
                         $scope.root.pagoCreditoModel = false;
                         $scope.root.pagoEfectivoModel = false;
-			
-			$scope.root.pago = tipo;
+
+                        $scope.root.pago = tipo;
                         switch (tipo) {
                             case 0:
                                 $scope.root.pagoEfectivo = 'primary';
                                 $scope.root.pagoCredito = 'default';
-				$scope.root.pagoEfectivoModel = true;
+                                $scope.root.pagoEfectivoModel = true;
                                 break;
                             case 1:
                                 $scope.root.pagoEfectivo = 'default';
                                 $scope.root.pagoCredito = 'success';
-				 $scope.root.pagoCreditoModel = true;
+                                $scope.root.pagoCreditoModel = true;
                                 break;
                             default:
                                 $scope.root.pagoEfectivo = 'default';
@@ -63718,7 +63857,7 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
-                    $scope.onSeleccionTipoTercero = function(filtro) {
+                    $scope.onSeleccionTipoTercero = function (filtro) {
                         $scope.root.filtro = filtro;
                         $scope.root.tipoTercero = filtro;
                     };
@@ -63728,8 +63867,8 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
-                    $scope.onSeleccionPrefijo = function(filtro) {
-			$scope.root.prefijo.prefijo=filtro.prefijo;
+                    $scope.onSeleccionPrefijo = function (filtro) {
+                        $scope.root.prefijo.prefijo = filtro.prefijo;
                     };
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -63737,99 +63876,104 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                      * +Descripcion scope selector del filtro
                      * @param {type} $event
                      */
-                    $scope.onSeleccionPrefijoNota = function(filtro) {
-			$scope.root.prefijoBusquedaNota=filtro.prefijo;
+                    $scope.onSeleccionPrefijoNota = function (filtro) {
+                        $scope.root.prefijoBusquedaNota = filtro.prefijo;
                     };
-		    
-		    /**
+
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 28/06/2017
                      * +Descripcion scope seleccionar tab
                      * @param {type} $event
                      */
-		      $scope.tipoTab = function (valor){
-			  $scope.root.tab=valor;
-		      };
-		      
-		      /**
+                    $scope.tipoTab = function (valor) {
+                        $scope.root.tab = valor;
+                    };
+
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 28/06/2017
                      * +Descripcion seleccionar busqueda
                      * @param {type} $event
                      */
-		    $scope.buscarNota=function(event){
-			 if (event.which === 13) {
-			
-			     if($scope.root.prefijoBusquedaNota!=='seleccionar' && $scope.root.numeroBusquedaNota!==''){
-			     var parametros = {
-				prefijo:$scope.root.prefijoBusquedaNota,
-				numero:$scope.root.numeroBusquedaNota,
-			        empresaId: $scope.root.empresaSeleccionada.getCodigo()
-			     };
-			     that.listarNotas(parametros);
-			     }else{
-				
-			     }
-			 }
-		    };
-		      /**
+                    $scope.buscarNota = function (event) {
+                        if (event.which === 13) {
+
+                            if ($scope.root.prefijoBusquedaNota !== 'seleccionar' && $scope.root.numeroBusquedaNota !== '') {
+                                var parametros = {
+                                    prefijo: $scope.root.prefijoBusquedaNota,
+                                    numero: $scope.root.numeroBusquedaNota,
+                                    empresaId: $scope.root.empresaSeleccionada.getCodigo()
+                                };
+                                that.listarNotas(parametros);
+                            } else {
+
+                            }
+                        }
+                    };
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 28/06/2017
                      * +Descripcion seleccionar busqueda
                      * @param {type} $event
                      */
-                    $scope.buscarTercero = function(event,estado,busqueda) {
-                           
-			   
+                    $scope.buscarTercero = function (event, estado, busqueda) {
+
+
 //                        if (event.which === 13) {
-			   switch ($scope.root.tab){ 
-			       case 1: $scope.root.termino_busqueda_tercero=busqueda;
-				        if($scope.root.termino_busqueda_tercero.length> 3){
-					that.listarTerceros(function(respuesta) {
-					    if (respuesta) {
-						that.listarConceptosDetalle();
-					    }
-					});
-					}
-					break;
-			       case 2:  
-				      if (event.which === 13) {
-					  if($scope.root.prefijo.prefijo==='Prefijo'){
-					     AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe seleccionar un prefijo");  
-					  }else{
-					    that.listarFacturasGeneradas(1,function(data){
-					       if(data!==false){
-						that.listarFacConceptosNotasDetalle(data[0]);
-						that.listarImpuestosTercero();
-					       }else{
-						$scope.root.listarFacConceptosNotasDetalle = null;  
-					       }
-					    });
-					  }
-					}
-					break;
-			       case 3:	
-				       if (event.which === 13) {
-					  if($scope.root.prefijo.prefijo==='Prefijo'){
-					     AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe seleccionar un prefijo");  
-					  }else{
-					    $scope.root.termino_busqueda_tercero=busqueda;		         
-					     that.listarFacturasGeneradas('',function(data){
-					    });
-					  }
-				       }
-					 break;
-			   } 
+                        switch ($scope.root.tab) {
+                            case 1:
+                                $scope.root.termino_busqueda_tercero = busqueda;
+                                if ($scope.root.termino_busqueda_tercero.length > 3) {
+                                    that.listarTerceros(function (respuesta) {
+//                                        if (respuesta) {
+//                                            that.listarConceptosDetalle();
+//                                        }
+                                    });
+                                }
+                                break;
+                            case 2:
+                                if (event.which === 13) {
+                                    if ($scope.root.prefijo.prefijo === 'Prefijo') {
+                                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar un prefijo");
+                                    } else {
+                                        that.listarFacturasGeneradas(1, function (data) {
+                                            if (data !== false) {
+                                                that.listarFacConceptosNotasDetalle(data[0]);
+                                                that.listarImpuestosTercero();
+                                            } else {
+                                                $scope.root.listarFacConceptosNotasDetalle = null;
+                                            }
+                                        });
+                                    }
+                                }
+                                break;
+                            case 3:
+                                if (event.which === 13) {
+                                    if ($scope.root.prefijo.prefijo === 'Prefijo') {
+                                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar un prefijo");
+                                    } else {
+                                        $scope.root.termino_busqueda_tercero = busqueda;
+                                        that.listarFacturasGeneradas('', function (data) {
+                                        });
+                                    }
+                                }
+                                break;
+                        }
 //                        }
                     };
-		    
-		     /**
+
+                    $scope.buscarConcepto = function () {
+                        that.listarConceptosDetalle();
+                    };
+
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 28/06/2017
                      * +Descripcion tamaño columna
                      * @param {type} $event
                      */
-                    $scope.onColumnaSize = function(tipo) {
+                    $scope.onColumnaSize = function (tipo) {
 
                         if (tipo === "AS" || tipo === "MS" || tipo === "CD") {
                             $scope.columnaSizeBusqueda = "col-md-4";
@@ -63838,13 +63982,13 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                         }
 
                     };
-		     /**
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 28/06/2017
                      * +Descripcion tamaño columna
                      * @param {type} $event
                      */
-                    $scope.onColumnaSizeNota = function(tipo) {
+                    $scope.onColumnaSizeNota = function (tipo) {
 
                         if (tipo === "NCFC" || tipo === "NCFC") {
                             $scope.columnaSizeBusqueda = "col-md-4";
@@ -63853,23 +63997,23 @@ define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controlle
                         }
 
                     };
-		    
-		     /**
+
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha 28/06/2017
                      * +Descripcion init
                      * @param {type} $event
                      */
-                    that.init(empresa, function() {
+                    that.init(empresa, function () {
                         that.listarTiposTerceros();
-			that.listarPrefijos();
+                        that.listarPrefijos();
                     });
-		    
-                    that.listarCajaGeneral(function(data) {
+
+                    that.listarCajaGeneral(function (data) {
 
                     });
-		    
-		    
+
+
                 }]);
 });
 
@@ -64074,7 +64218,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
 
                     $scope.verificaFactuta = function (pref) {
                         var prefijo = false;
-                        if (pref === 'FDC') {
+                        if (pref === 'FDC' || pref === 'FDB') {
                             prefijo = true;
                         }
                         return prefijo;
@@ -66076,12 +66220,12 @@ define('services/facturacionProveedoresService',["angular", "js/services"], func
                 }]);
 
 });
-define('services/cajaGeneralService',["angular", "js/services"], function(angular, services) {
+define('services/cajaGeneralService',["angular", "js/services"], function (angular, services) {
 
 
     services.factory('cajaGeneralService',
-            ['Request', 'API', 'CajaGeneral', 'Grupos', 'ConceptoCaja','Totales','FacturaProveedores',
-                function(Request, API, CajaGeneral, Grupos, ConceptoCaja,Totales,FacturaProveedores) {
+            ['Request', 'API', 'CajaGeneral', 'Grupos', 'ConceptoCaja', 'Totales', 'FacturaProveedores',
+                function (Request, API, CajaGeneral, Grupos, ConceptoCaja, Totales, FacturaProveedores) {
 
                     var self = this;
 
@@ -66090,9 +66234,9 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @author Andres Mauricio Gonzalez
                      * @fecha  23/06/2017 DD/MM/YYYYY
                      * +Descripcion LISTAR FACTURAS GENERADAS
-                     */ 
-                    self.listarFacturasGeneradas = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FACTURAS_GENERADAS_NOTAS, "POST", obj, function(data) {
+                     */
+                    self.listarFacturasGeneradas = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FACTURAS_GENERADAS_NOTAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66101,8 +66245,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarConceptosDetalle = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CONCEPTOS_DETALLE, "POST", obj, function(data) {
+                    self.listarConceptosDetalle = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CONCEPTOS_DETALLE, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66111,8 +66255,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarNotas = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_NOTAS, "POST", obj, function(data) {
+                    self.listarNotas = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_NOTAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66121,8 +66265,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarFacConceptosNotas = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", obj, function(data) {
+                    self.listarFacConceptosNotas = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66131,8 +66275,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion consulta los parametros para calcular los impuestos
                      */
-                    self.listarImpuestosTercero = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_IMPUESTOS_TERCERO, "POST", obj, function(data) {
+                    self.listarImpuestosTercero = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_IMPUESTOS_TERCERO, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66141,8 +66285,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarCajaGeneral = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CAJA_GENERAL, "POST", obj, function(data) {
+                    self.listarCajaGeneral = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CAJA_GENERAL, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66151,8 +66295,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.imprimirFacturaNotas = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_FACTURA_NOTAS, "POST", obj, function(data) {
+                    self.imprimirFacturaNotas = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_FACTURA_NOTAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66161,8 +66305,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.imprimirFacturaNotasDetalle = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_FACTURA_NOTAS_DETALLE, "POST", obj, function(data) {
+                    self.imprimirFacturaNotasDetalle = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_FACTURA_NOTAS_DETALLE, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66171,8 +66315,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.imprimirNota = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_NOTA, "POST", obj, function(data) {
+                    self.imprimirNota = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_NOTA, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66181,8 +66325,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.insertarTmpDetalleConceptos = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_TMP_DETALLE_CONCEPTOS, "POST", obj, function(data) {
+                    self.insertarTmpDetalleConceptos = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_TMP_DETALLE_CONCEPTOS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66191,8 +66335,8 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarGrupos = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_GRUPOS, "POST", obj, function(data) {
+                    self.listarGrupos = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_GRUPOS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -66202,10 +66346,10 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  08/06/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.eliminarTmpDetalleConceptos = function(parametros, callback) {
+                    self.eliminarTmpDetalleConceptos = function (parametros, callback) {
 
-                        Request.realizarRequest(API.CAJA_GENERAL.ELIMINAR_TMP_DETALLE_CONCEPTOS, "POST", parametros, function(data) {
-                     
+                        Request.realizarRequest(API.CAJA_GENERAL.ELIMINAR_TMP_DETALLE_CONCEPTOS, "POST", parametros, function (data) {
+
                             callback(data);
 
                         });
@@ -66215,9 +66359,9 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  10/06/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.guardarFacturaCajaGeneral = function(parametros, callback) {
+                    self.guardarFacturaCajaGeneral = function (parametros, callback) {
 
-                        Request.realizarRequest(API.CAJA_GENERAL.GUARDAR_FACTURA_CAJA_GENERAL, "POST", parametros, function(data) {
+                        Request.realizarRequest(API.CAJA_GENERAL.GUARDAR_FACTURA_CAJA_GENERAL, "POST", parametros, function (data) {
                             callback(data);
 
                         });
@@ -66228,9 +66372,9 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarTerceros = function(parametros, callback) {
+                    self.listarTerceros = function (parametros, callback) {
 
-                        Request.realizarRequest(API.TERCEROS.LISTAR_TERCEROS, "POST", parametros, function(data) {
+                        Request.realizarRequest(API.TERCEROS.LISTAR_TERCEROS, "POST", parametros, function (data) {
                             callback(data);
 
                         });
@@ -66240,9 +66384,9 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarPrefijos = function(parametros, callback) {
+                    self.listarPrefijos = function (parametros, callback) {
 
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_PREFIJOS, "POST", parametros, function(data) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_PREFIJOS, "POST", parametros, function (data) {
                             callback(data);
 
                         });
@@ -66252,9 +66396,9 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.insertarFacFacturasConceptosNotas = function(parametros, callback) {
+                    self.insertarFacFacturasConceptosNotas = function (parametros, callback) {
 
-                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", parametros, function(data) {
+                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", parametros, function (data) {
                             callback(data);
 
                         });
@@ -66266,11 +66410,11 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      *              consulta que obtiene las cajas
                      * @fecha 02/05/2017 DD/MM/YYYYY
                      */
-                    self.renderCajaGeneral = function(caja) {
+                    self.renderCajaGeneral = function (caja) {
 
                         var cajaGeneral = [];
 
-                        caja.forEach(function(dato) {
+                        caja.forEach(function (dato) {
                             var _cajaGeneral = CajaGeneral.get(dato.caja_id, dato.empresa_id, dato.centro_utilidad);
                             _cajaGeneral.setDescripcionCaja(dato.descripcion3);
                             _cajaGeneral.setNombreEmpresa(dato.descripcion1);
@@ -66289,18 +66433,18 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      *              consulta que obtiene las conceptos
                      * @fecha 08/06/2017 DD/MM/YYYYY
                      */
-                    self.renderConcepto = function(conceptos) {
+                    self.renderConcepto = function (conceptos) {
 
                         var concepto = [];
-			var total = [];
+                        var total = [];
 
                         var totales = Totales.get();
-			totales.setValorRetFte(conceptos.impuestos.retencionFuente);
-			totales.setValorRetIca(conceptos.impuestos.retencionIca);
-			totales.setIva(conceptos.impuestos.iva);
-			totales.setSubTotal(conceptos.impuestos.valorSubtotal);
-			totales.setTotal(conceptos.impuestos.totalGeneral);
-                        conceptos.detalle.forEach(function(dato) {
+                        totales.setValorRetFte(conceptos.impuestos.retencionFuente);
+                        totales.setValorRetIca(conceptos.impuestos.retencionIca);
+                        totales.setIva(conceptos.impuestos.iva);
+                        totales.setSubTotal(conceptos.impuestos.valorSubtotal);
+                        totales.setTotal(conceptos.impuestos.totalGeneral);
+                        conceptos.detalle.forEach(function (dato) {
                             var _concepto = ConceptoCaja.get(dato.concepto_id);
                             _concepto.setCantidad(dato.cantidad);
                             _concepto.setPrecio(dato.precio);
@@ -66320,7 +66464,7 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                             _concepto.agregarToltales(totales);
                             concepto.push(_concepto);
                         });
-                   
+
                         return concepto;
                     };
 
@@ -66331,11 +66475,11 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                      *              consulta que obtiene las cajas
                      * @fecha 02/05/2017 DD/MM/YYYYY
                      */
-                    self.renderGrupos = function(datos) {
+                    self.renderGrupos = function (datos) {
 
                         var grupos = [];
 
-                        datos.forEach(function(dato) {
+                        datos.forEach(function (dato) {
                             var _grupo = Grupos.get(dato.grupo_concepto, dato.descripcion);
                             _grupo.setPrecio(dato.precio);
                             _grupo.setPorcentajeGravamen(dato.porcentaje_gravamen);
@@ -66345,20 +66489,20 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                             _grupo.setDescripcionConcepto(dato.descripcion_concepto);
                             grupos.push(_grupo);
                         });
-                     
+
                         return grupos;
                     };
-		    
-		    /**
+
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Funcion encargada de serializar el resultado de la
                      *              consulta que obtiene las facturas de proveedores
                      * @fecha 10/05/2017 DD/MM/YYYYY
                      */
-                    self.renderFacturasProveedores = function(facturasProveedores) {
+                    self.renderFacturasProveedores = function (facturasProveedores) {
 
                         var facturas = [];
-                        facturasProveedores.forEach(function(data) {
+                        facturasProveedores.forEach(function (data) {
                             var factura = FacturaProveedores.get(data.factura_fiscal, data.codigo_proveedor_id, data.fecha_registro, data.observaciones);
                             factura.setMensaje(data.mensaje);
                             factura.setNombreUsuario(data.nombre);
@@ -66376,23 +66520,46 @@ define('services/cajaGeneralService',["angular", "js/services"], function(angula
                             factura.setSubTotal(data.subtotal);
                             factura.setTipoTercero(data.tipo_id_tercero);
                             factura.setTerceroId(data.tercero_id);
+                            factura.setSincronizacionDian(data.sincronizacion);
                             facturas.push(factura);
                         });
 
                         return facturas;
                     };
 
-		    /**
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha  15/05/2017 DD/MM/YYYYY
                      * +Descripcion sincronizar las facturas con FI 
                      */
-                    self.sincronizarFi = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.SINCRONIZAR_FACTURA_NOTAS, "POST", obj, function(data) {
+                    self.sincronizarFi = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.SINCRONIZAR_FACTURA_NOTAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
-		    
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  04/09/2018 DD/MM/YYYYY
+                     * +Descripcion envia la factura a la dian
+                     */
+                    self.generarSincronizacionDian = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.GENERAR_SINCRONIZACION_DIAN_SERVICIO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  02/11/2018 DD/MM/YYYYY
+                     * +Descripcion envia la nota a la dian
+                     */
+                    self.generarSincronizacionDianNota = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.GENERAR_SINCRONIZACION_DIAN_NOTA_SERVICIO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
                     return this;
                 }]);
 

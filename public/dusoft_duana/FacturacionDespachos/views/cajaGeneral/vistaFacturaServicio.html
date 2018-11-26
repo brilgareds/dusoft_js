@@ -61,13 +61,13 @@ and open the template in the editor.
             <div class="input-group">
 		<div class="input-group-btn">
                    <ui-select 
-		       ng-model="terceroSeleccionado"
+		       ng-model="root.terceroSeleccionado"
 		       theme="select2" 
-		       ng-change="buscarTercero($event,0,terceroSeleccionado.nombre_tercero)"
+		       ng-change="buscarConcepto()"
 		       class="form-control selectgeneral pull-left">
 			<ui-select-match  placeholder="Seleccionar tercero">{{ $select.selected.nombre_tercero}}</ui-select-match>
 			<ui-select-choices  refresh-delay="0" repeat="tercero in root.terceros | filter:$select.search"  refresh="buscarTercero($event,0,$select.search)">
-			{{ tercero.nombre_tercero }}
+			{{ tercero.nombre_tercero}} - ({{ tercero.tipo_id_tercero }})
 			</ui-select-choices>
 		    </ui-select>  
                 </div>
@@ -80,19 +80,19 @@ and open the template in the editor.
 <br />
 <div class="row">
     <div class="col-md-3">
-        Identificación:  <b> {{root.terceros[0].getTipoId()}} {{root.terceros[0].getId()}}</b>
+        Identificación:  <b> {{root.terceroSeleccionado.tipo_id_tercero}} {{root.terceroSeleccionado.id}}</b>
     </div>
     <div class="col-md-3">
-        Responsable :<b> {{root.terceros[0].getNombre()}}</b>
+        Responsable :<b> {{root.terceroSeleccionado.nombre_tercero}}</b>
     </div>
     <div class="col-md-2">
-        Dirección :<b> {{root.terceros[0].getDireccion()}}</b>
+        Dirección :<b> {{root.terceroSeleccionado.direccion}}</b>
     </div>
     <div class="col-md-2">
-        Telefono :<b> {{root.terceros[0].getTelefono()}}</b>
+        Telefono :<b> {{root.terceroSeleccionado.telefono}}</b>
     </div>
     <div class="col-md-2">
-        Email : <b>{{root.terceros[0].getCorreo()}}</b>
+        Email : <b>{{root.terceroSeleccionado.email}}</b>
     </div>
 </div>
 <br />

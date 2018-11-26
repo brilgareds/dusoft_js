@@ -45310,6 +45310,7 @@ define('url',["angular"], function(angular) {
                  "IMPRIMIR_REPORTE_PEDIDO": BASE_URL + "/FacturacionClientes/generarReportePedido",
                  "IMPRIMIR_REPORTE_DESPACHO": BASE_URL + "/FacturacionClientes/generarReporteDespacho",
                  "IMPRIMIR_REPORTE_FACTURA": BASE_URL + "/FacturacionClientes/generarReporteFacturaGenerada",
+                 "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/FacturacionClientes/generarReporteFacturaGeneradaDian",
                  "SINCRONIZAR_FI": BASE_URL + "/FacturacionClientes/sincronizarFactura",
                  "PROCESAR_DESPACHOS": BASE_URL + "/FacturacionClientes/procesarDespachos",
                  "FACTURAS_EN_PROCESO": BASE_URL + "/FacturacionClientes/procesosFacturacion",
@@ -56772,7 +56773,7 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
 
 
-                {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
+                {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado FI', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
                 
                 {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
@@ -56782,7 +56783,10 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                                    <a href="javascript:void(0);" ng-click="sincronizarFactura(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,0)" class = "glyphicon glyphicon-print"> factura </a>\
+                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,0)" class = "glyphicon glyphicon-print"> Factura </a>\
+                                </li>\
+                                <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                                   <a href="javascript:void(0);" ng-click="imprimirReporteFacturaDian(row.entity,0)" class = "glyphicon glyphicon-print"> Factura DIAN </a>\
                                 </li>\
                            </ul>\
                       </div>'
@@ -57675,6 +57679,31 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
             });          
         };
         
+        $scope.imprimirReporteFacturaDian = function(entity, estado){
+            
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_factura:{
+                        prefijo:   (estado > 0) ? entity.prefijo        : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
+                        numero:    (estado > 0) ? entity.numero         : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
+                        tipo_documento: 1
+                    }
+                }
+            };
+                                   
+            facturacionClientesService.imprimirReporteFacturaDian(obj,function(data){
+             console.log("imprimirReporteFacturaDian:: ",data);
+                if (data.status === 200) {
+                    var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
+                    $scope.visualizarReporte("/reports/doc_dian/" + nombre, nombre, "_blank");          
+                }else if(data.status === 500){
+                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<p class='bg-danger'><h3 align='justify'>"+data.msj+"</h3></br></p>");
+		 return;
+                }               
+            });          
+        };
+        
         $scope.generarSincronizacionDian = function(entity, estado){
             
             var obj = {                   
@@ -58307,7 +58336,7 @@ define('controllers/facturacionCliente/PedidosClientesController',["angular", "j
          * @fecha 2017-08-05
          */
         $scope.generarFacturasAgrupadas = function () {
-
+            
             var resultadoStorage = localStorageService.get("clientePedidoDespacho");
 
             if (resultadoStorage) {
@@ -65212,6 +65241,12 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                      */
                     self.imprimirReporteFactura = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.IMPRIMIR_REPORTE_FACTURA, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    self.imprimirReporteFacturaDian = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.IMPRIMIR_REPORTE_FACTURA_DIAN, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

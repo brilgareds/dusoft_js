@@ -3820,6 +3820,7 @@ function __generarPdf2(datos, callback) {
                                 <p class="letra_factura_info">` + datos.cabecera.texto2+`</p>
                             <td>
                             <td width='30%'> 
+                                <br><br><br>
                                 <p class="letra_factura_info_ctr">` + datos.cabecera.texto3+`</p>                                 
                                 <p class="letra_factura_info_jst">` + datos.cabecera.texto1+`</p>                                 
                             <td>

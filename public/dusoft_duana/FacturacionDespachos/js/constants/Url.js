@@ -83,7 +83,8 @@ define(["angular"], function(angular) {
                 "IMPRIMIR_NOTA_CREDITO": BASE_URL + "/Notas/imprimirNotaCredito",
                 "SINCRONIZAR_NOTAS": BASE_URL + "/Notas/sincronizarNotas",
                 "GENERAR_SINCRONIZACION_DIAN_DEBITO" : BASE_URL + "/Notas/generarSincronizacionDianDebito",
-                "GENERAR_SINCRONIZACION_DIAN_CREDITO" : BASE_URL + "/Notas/generarSincronizacionDianCredito"
+                "GENERAR_SINCRONIZACION_DIAN_CREDITO" : BASE_URL + "/Notas/generarSincronizacionDianCredito",
+                "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/Notas/generarReporteFacturaGeneradaDian",
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",

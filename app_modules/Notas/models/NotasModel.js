@@ -856,7 +856,9 @@ NotasModel.prototype.listarEmpresa = function (obj, callback) {
         "a.direccion",
         "a.telefonos",
         "a.tipo_id_tercero",
+        "a.digito_verificacion",
         "b.departamento	",
+        "tp.pais",
         "c.municipio"
     ];
 
@@ -865,13 +867,17 @@ NotasModel.prototype.listarEmpresa = function (obj, callback) {
             .innerJoin('tipo_dptos as b',
                     function () {
                         this.on("b.tipo_pais_id", "a.tipo_pais_id")
-                                .on("b.tipo_dpto_id", "a.tipo_dpto_id")
+                                .on("b.tipo_dpto_id", "a.tipo_dpto_id");
+                    })
+            .innerJoin('tipo_pais as tp',
+                    function () {
+                        this.on("tp.tipo_pais_id", "b.tipo_pais_id");
                     })
             .innerJoin('tipo_mpios as c',
                     function () {
                         this.on("c.tipo_pais_id", "a.tipo_pais_id")
                                 .on("c.tipo_dpto_id", "a.tipo_dpto_id")
-                                .on("c.tipo_mpio_id", "a.tipo_mpio_id")
+                                .on("c.tipo_mpio_id", "a.tipo_mpio_id");
                     }).where("empresa_id", obj.empresaId);
 
     query.limit(G.settings.limit).

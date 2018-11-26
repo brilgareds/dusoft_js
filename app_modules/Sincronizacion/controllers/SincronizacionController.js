@@ -112,7 +112,7 @@ Sincronizacion.prototype.facturacionElectronica = function (req, callback) {
         var obj = {};
         obj.x = '';
 //        obj.funcion = "crearFacturaElectronica";  // facturacion anterior sin adjunto de pdf
-        obj.funcion = "crearFacturaElectronicaConAdjuntos";
+        obj.funcion = "crearFacturaElectronica";
         obj.parametros = resultado;
         obj.url = G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
 
@@ -260,7 +260,7 @@ function __jsonConsultaDocumento(obj, callback) {
   
     var crearFactura = {
         ConsultaResultadoValidacionDocumentosPeticion:{
-            tipoDocumento : '1',//obj.tipoDocumento,//factura
+            tipoDocumento : obj.tipoDocumento,//obj.tipoDocumento,//factura
             numeroDocumento : obj.factura,//prefijo_nofactura
             tipoRespuesta : obj.tipoRespuesta 
        }
@@ -607,7 +607,7 @@ function __jsonFactura(obj, callback) {
 function __jsonFacturaAjdunto(obj, callback) {
 
     var formato = 'DD-MM-YYYY';
-    var crearFacturaElectronicaConAdjuntos = {
+    var crearFacturaElectronica = {
         attributes: {
             xmlns: 'http://contrato.factura.webservices.servicios.certifactura.certicamara.com/'
         },
@@ -697,7 +697,7 @@ function __jsonFacturaAjdunto(obj, callback) {
             }
         }
     };
-    callback(false, crearFacturaElectronicaConAdjuntos);
+    callback(false, crearFacturaElectronica);
 }
 
 

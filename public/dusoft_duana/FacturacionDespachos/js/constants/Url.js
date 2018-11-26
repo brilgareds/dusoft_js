@@ -68,7 +68,8 @@ define(["angular"], function(angular) {
                 "LISTAR_IMPUESTOS_TERCERO": BASE_URL + "/CajaGeneral/consultarImpuestosTercero",
                 "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas",
                 "GENERAR_SINCRONIZACION_DIAN_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDian",
-                "GENERAR_SINCRONIZACION_DIAN_NOTA_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDianNota"
+                "GENERAR_SINCRONIZACION_DIAN_NOTA_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDianNota",
+                "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/CajaGeneral/generarReporteFacturaGeneradaDian"
             },
             'NOTAS': {
                 "CONSULTAR_NOTAS": BASE_URL + "/Notas/ConsultarNotas",
@@ -84,7 +85,7 @@ define(["angular"], function(angular) {
                 "SINCRONIZAR_NOTAS": BASE_URL + "/Notas/sincronizarNotas",
                 "GENERAR_SINCRONIZACION_DIAN_DEBITO" : BASE_URL + "/Notas/generarSincronizacionDianDebito",
                 "GENERAR_SINCRONIZACION_DIAN_CREDITO" : BASE_URL + "/Notas/generarSincronizacionDianCredito",
-                "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/Notas/generarReporteFacturaGeneradaDian",
+                "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/Notas/generarReporteFacturaGeneradaDian"
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",

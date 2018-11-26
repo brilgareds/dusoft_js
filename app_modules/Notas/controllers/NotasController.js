@@ -534,6 +534,7 @@ Notas.prototype.generarReporteFacturaGeneradaDian = function (req, res) {
         
     }).done();
 }
+;
 
 /**
  * @author German Galvis
@@ -1224,10 +1225,10 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
             tipoFactura: "ELECTRONICA",
             totalNotaCreditoElectronica: resultado.valores.totalFactura.replace(".", ""),
 
-            coordXQr: 175,
-            coordYQr: 272,
-            coordXCufe: 114,
-            coordYCufe: 266,
+            coordXQr: 164,
+            coordYQr: 260,
+            coordXCufe: 130,
+            coordYCufe: 256,
             pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
 

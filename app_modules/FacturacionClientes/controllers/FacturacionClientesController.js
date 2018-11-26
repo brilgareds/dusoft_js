@@ -3307,6 +3307,7 @@ FacturacionClientes.prototype.generarReporteFacturaGeneradaDian = function (req,
         
     }).done();
 }
+;
 
 FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res) {
 

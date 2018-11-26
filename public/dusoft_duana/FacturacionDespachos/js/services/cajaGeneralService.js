@@ -39,6 +39,16 @@ define(["angular", "js/services"], function (angular, services) {
                         });
                     };
                     /**
+                     * @author German Galvis
+                     * @fecha  26/11/2018 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.imprimirReporteFacturaDian = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_REPORTE_FACTURA_DIAN, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion

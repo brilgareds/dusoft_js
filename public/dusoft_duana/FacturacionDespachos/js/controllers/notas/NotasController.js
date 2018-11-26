@@ -402,7 +402,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             data: {
                                 imprimir_reporte_factura: {
                                     numero: entity.numeroNota,
-                                    tipo_documento: entity.tipoImpresion === "C" ? 3 : 2,
+                                    tipo_documento: entity.tipoImpresion === "C" ? 3 : 2
                                 }
                             }
                         };

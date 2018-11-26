@@ -501,11 +501,11 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
         return;
     }
     console.log("guardarFacturaCajaGeneral");
-        //'::ffff:10.0.2.158';
-    var ip = req.headers['x-forwarded-for'] || 
-     req.connection.remoteAddress || 
-     req.socket.remoteAddress ||
-     req.connection.socket.remoteAddress;
+    //'::ffff:10.0.2.158';
+    var ip = req.headers['x-forwarded-for'] ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
 
     var parametros = {
         documentoId: args.prefijoFac,
@@ -530,6 +530,7 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
             if (resultado.length > 0) {
                 parametros.factura = resultado[0].numeracion;
                 parametros.prefijo = resultado[0].prefijo;
+                parametros.documento_id = resultado[0].documento_id;
 
                 return  G.Q.ninvoke(that.m_caja_general, 'insertarFacFacturas', parametros, transaccion);
 
@@ -821,7 +822,6 @@ CajaGeneral.prototype.listarNotas = function (req, res) {
  * @fecha 2017-06-13 (YYYY-MM-DD)
  */
 CajaGeneral.prototype.imprimirNota = function (req, res) {
-    console.log("*************ESTA IMPRIMIO OK imprimirNota*****************");
     var that = this;
     var args = req.body.data;
     var impuesto;
@@ -904,7 +904,7 @@ CajaGeneral.prototype.imprimirNota = function (req, res) {
             valores: impuesto
         };
 
-        return G.Q.nfcall(__generarPdf2, informacion);
+        return G.Q.nfcall(__generarPdf, informacion);
 
     }).then(function (result) {
 
@@ -915,7 +915,36 @@ CajaGeneral.prototype.imprimirNota = function (req, res) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+/**
+ * @author German Galvis
+ * +Descripcion  Metodo encargado de consultar las facturas desde certicamara
+ * @fecha 2018-11-26 (YYYY-MM-DD)
+ */
+CajaGeneral.prototype.generarReporteFacturaGeneradaDian = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var that = this;
+    var args = req.body.data;
+    var numero = args.imprimir_reporte_factura.numero;
+    var tipo_documento = args.imprimir_reporte_factura.tipo_documento;
 
+    var json = {
+        tipoDocumento: tipo_documento, //factura
+        factura: numero, //prefijo_nofactura
+        tipoRespuesta: 'PDF'//factura
+    };
+
+    G.Q.ninvoke(that.c_sincronizacion, 'consultaFacturacionElectronica', json).then(function (resultado) {
+
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, err, 500, {}));
+
+    }).done();
+}
+;
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -960,57 +989,58 @@ function __infoFooter(prefijo) {
  */
 function __generarPdf(datos, callback) {
 
+    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/CajaGeneral/reports/' + datos.archivoHtml, 'utf8'),
-            recipe: "html",
-            engine: 'jsrender',
-            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
             helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
-            phantom: {
-                margin: "10px",
-                width: '700px'
-            }
-        },
-        data: datos
-    }, function (err, response) {
-
-        response.body(function (body) {
-            var fecha = new Date();
-            //var nombreTmp = datos.reporte + fecha.getTime() + ".html";
-
-            var nombreTmp = "factura_conceptocredito" + datos.parametros.prefijo + "" + datos.parametros.factura + "-" + fecha.getTime() + ".html";
-
-            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
-                if (err) {
-                    callback(true, err);
-                    return;
-                } else {
-                    callback(false, nombreTmp);
-                    return;
-                }
-            });
-        });
-    });
-};
-
-/**
- * @author Andres Mauricio Gonzalez
- * +Descripcion  Metodo encargado de generar los pdf del modulo
- * @fecha 2017-07-13 (YYYY-MM-DD)
- */
-function __generarPdf2(datos, callback) {
-
-    G.jsreport.render({
-        template: {
-            content: G.fs.readFileSync('app_modules/CajaGeneral/reports/' + datos.archivoHtml, 'utf8'),
             recipe: "phantom-pdf",
             engine: 'jsrender',
-            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
-            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
             phantom: {
                 margin: "10px",
-                width: '700px'
+                width: '792px',
+                headerHeight: "260px", // .imagent{position: absolute;top: 10px;}
+                header:
+                        `<style>
+                            p {margin-top:0; margin-bottom:0;line-height: 75%; }
+                            .letra_factura{font: 100% sans-serif;
+                                           display: flex;
+                                            justify-content: center;
+                                            align-content: center;
+                                            flex-direction: column;}
+                            .letra_factura2{font: 100% sans-serif;margin-top:8px;   position: absolute;
+                                           top: 13px;}
+                            .imgQr{
+//                                  position: absolute;
+                                    top: 20px;
+                                    margin:20px;
+//                                  display:block;
+                                    }
+                            .letra_factura_info{font: 50% sans-serif;text-align: center;}
+                            .letra_factura_info_ctr{font: 40% sans-serif; text-align: center;}
+                            .letra_factura_info_jst{font: 40% sans-serif; text-align: justify; text-justify: inter-word;}
+                            .letra_factura_info_40{font: 40% sans-serif;text-align: center;}
+                            .letra_factura_info_40_jt{font: 40% sans-serif;text-align: justify;}
+                           
+                         </style>
+                         <table border='0' width='100%' >
+                           <tr>
+                            <td align="center" width='40%'>
+                                <p class="letra_factura_info">` + datos.empresa.tipo_id_tercero + `: ` + datos.empresa.id + ` - ` + datos.empresa.digito_verificacion + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.direccion + ` TELEFONO : ` + datos.empresa.telefonos + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>
+                            <td>
+                            <td width='30%'> 
+                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>                         
+                            <td>
+                            <td width='30%' valign="top">
+                                 <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
+                                 <b><p align="center" valign="top" >NOTA ` + datos.parametros.nombreNota + `</p></b>  
+                                 <b><p align="center" valign="top" style="margin-top:3px;" >` + datos.parametros.numeroNota + `</p></b> 
+                            <td>
+                           </tr>
+                         </table>
+                            `
             }
         },
         data: datos
@@ -1033,7 +1063,97 @@ function __generarPdf2(datos, callback) {
             });
         });
     });
-};
+}
+;
+
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion  Metodo encargado de generar los pdf del modulo
+ * @fecha 2017-07-13 (YYYY-MM-DD)
+ */
+function __generarPdf2(datos, callback) {
+
+    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/CajaGeneral/reports/' + datos.archivoHtml, 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender',
+            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
+            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
+            phantom: {
+                margin: "10px",
+                width: '792px',
+                headerHeight: "290px", // .imagent{position: absolute;top: 10px;}
+                header:
+                        `<style>
+                            p {margin-top:0; margin-bottom:0;line-height: 75%; }
+                            .letra_factura{font: 100% sans-serif;
+                                           display: flex;
+                                            justify-content: center;
+                                            align-content: center;
+                                            flex-direction: column;}
+                            .letra_factura2{font: 100% sans-serif;margin-top:8px;   position: absolute;
+                                           top: 13px;}
+                            .imgQr{
+//                                  position: absolute;
+                                    top: 20px;
+                                    margin:20px;
+//                                  display:block;
+                                    }
+                            .letra_factura_info{font: 50% sans-serif;text-align: center;}
+                            .letra_factura_info_ctr{font: 40% sans-serif; text-align: center;}
+                            .letra_factura_info_jst{font: 40% sans-serif; text-align: justify; text-justify: inter-word;}
+                            .letra_factura_info_40{font: 40% sans-serif;text-align: center;}
+                            .letra_factura_info_40_jt{font: 40% sans-serif;text-align: justify;}
+                           
+                         </style>
+                         <table border='0' width='100%' >
+                           <tr>
+                            <td align="center" width='30%'>
+                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>
+                                <p class="letra_factura_info">` + datos.empresa.tipo_id_tercero + `: ` + datos.empresa.id + ` - ` + datos.empresa.digito_verificacion + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.direccion + ` TELEFONO : ` + datos.empresa.telefonos + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>
+                                <p class="letra_factura_info">` + datos.conceptosDetalle[0].texto2 + `</p>
+                            <td>
+                            <td width='30%'> 
+                                <br><br><br>
+                                <p class="letra_factura_info_ctr">` + datos.conceptosDetalle[0].texto3 + `</p>                                 
+                                <p class="letra_factura_info_jst">` + datos.conceptosDetalle[0].texto1 + `</p>                                 
+                            <td>
+                            <td width='40%' valign="top">
+                                 <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
+                                 <b><p align="center" valign="top" >FACTURA DE SERVICIO</p></b>  
+                                 <b><p align="center" valign="top" style="margin-top:3px;" >` + datos.parametros.prefijo + ` ` + datos.parametros.factura + `</p></b> 
+                            <td>
+                           </tr>
+                         </table>
+                            `
+            }
+        },
+        data: datos
+    }, function (err, response) {
+
+        response.body(function (body) {
+            var fecha = new Date();
+            //var nombreTmp = datos.reporte + fecha.getTime() + ".html";
+
+            var nombreTmp = "factura_conceptocredito" + datos.parametros.prefijo + "" + datos.parametros.factura + "-" + fecha.getTime() + ".pdf";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                if (err) {
+                    callback(true, err);
+                    return;
+                } else {
+                    callback(false, nombreTmp);
+                    return;
+                }
+            });
+        });
+    });
+}
+;
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -1120,11 +1240,11 @@ CajaGeneral.prototype.generarSincronizacionDian = function (req, res) {
 
             tipoFactura: 1, //numeric -
             totalFactura: resultado.impuesto.totalGeneral, //decimal OPCIONAL -
-            
-            coordXQr: 175,
-            coordYQr: 270,
-            coordXCufe: 114,
-            coordYCufe: 235,
+
+            coordXQr: 164,
+            coordYQr: 260,
+            coordXCufe: 130,
+            coordYCufe: 256,
             pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
 
@@ -1271,7 +1391,7 @@ function __generarSincronizacionDian(that, req, callback) {
             usuario: req.session.user.nombre_usuario,
             impuesto: impuesto,
             documento: documento,
-            pdf:result
+            pdf: result
         };
 
         callback(false, informacion);

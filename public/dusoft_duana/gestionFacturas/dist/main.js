@@ -47885,7 +47885,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 window.location = "../pages/401.html";
                 return;
             }
-
+            
             // setUsuarioActual(obj_session);
             
             self.redireccionarLogin = function(){

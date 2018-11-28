@@ -3020,16 +3020,13 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
 
         var json = {
             codigoMoneda: "COP",
-            descripcion: "",
             fechaExpedicion: resultado.cabecera.fecha_registro,
             fechaVencimiento: resultado.cabecera.fecha_vencimiento_factura,
-            icoterms: '',
             codigoDocumentoDian: resultado.cabecera.tipo_id_tercero,
             numeroIdentificacion: resultado.cabecera.tercero_id,
             identificadorConsecutivo: resultado.cabecera.factura_fiscal,
             identificadorResolucion: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ,
             mediosPago: resultado.cabecera.tipo_pago_id,
-            nombreSucursal: "",
             desde: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ, //long -
             hasta: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ, //long -
             prefijo: resultado.cabecera.prefijo,

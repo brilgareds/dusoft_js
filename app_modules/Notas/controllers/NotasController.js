@@ -964,9 +964,9 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
             tipoFactura: "ELECTRONICA",
             totalNotaDebitoElectronica: resultado.valores.totalFactura.replace(".", ""),
 
-            coordXQr: 175,
-            coordYQr: 272,
-            coordXCufe: 114,
+            coordXQr: 172,
+            coordYQr: 263,
+            coordXCufe: 67,
             coordYCufe: 266,
             pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
@@ -1225,10 +1225,10 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
             tipoFactura: "ELECTRONICA",
             totalNotaCreditoElectronica: resultado.valores.totalFactura.replace(".", ""),
 
-            coordXQr: 164,
-            coordYQr: 260,
-            coordXCufe: 130,
-            coordYCufe: 256,
+            coordXQr: 172,
+            coordYQr: 263,
+            coordXCufe: 67,
+            coordYCufe: 266,
             pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
 

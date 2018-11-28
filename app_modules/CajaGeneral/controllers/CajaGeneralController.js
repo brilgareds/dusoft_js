@@ -1451,7 +1451,14 @@ CajaGeneral.prototype.generarSincronizacionDianNota = function (req, res) {
             descuento: "",
             totalenLetras: resultado.valores.totalFacturaLetra,
             valorTotal: resultado.valores.totalGeneral,
-            elaboradoPor: resultado.usuario
+            elaboradoPor: resultado.usuario,
+            
+            coordXQr: 172,
+            coordYQr: 263,
+            coordXCufe: 67,
+            coordYCufe: 266,
+            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
+            
         };
 
         if (resultado.conceptosDetalle.prefijo_nota === 'NDFC') {
@@ -1584,15 +1591,33 @@ function __generarSincronizacionDianNota(that, req, callback) {
 
         empresa = result;
         var informacion = {
+            serverUrl: req.protocol + '://' + req.get('host') + "/",
             empresa: empresa[0],
             cliente: cliente[0],
             parametros: parametros,
             conceptosDetalle: conceptosDetalle[0],
             informacion: __infoFooter(parametros.prefijo),
             usuario: req.session.user.nombre_usuario,
+            archivoHtml: 'notaFacturaSinProductoPdf.html',
             valores: impuesto
         };
 
+        return G.Q.nfcall(__generarPdf, informacion);
+
+
+    }).then(function (resultado) {
+
+        var informacion = {
+            empresa: empresa[0],
+            cliente: cliente[0],
+            parametros: parametros,
+            conceptosDetalle: conceptosDetalle[0],
+            informacion: __infoFooter(parametros.prefijo),
+            usuario: req.session.user.nombre_usuario,
+            valores: impuesto,
+            pdf:resultado
+        };
+        
         callback(false, informacion);
 
     }).fail(function (err) {

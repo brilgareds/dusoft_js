@@ -622,12 +622,10 @@ function __jsonFacturaAjdunto(obj, callback) {
                 xmlns: ''
             },
             codigoMoneda: obj.codigoMoneda, //String -
-            descripcion: "", //String OPCIONAL -
             descuentos: {
             },
             fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String OPCIONAL  DD/MM/YYYY -
             fechaVencimiento: G.moment(obj.fechaVencimiento).format(formato), //String OPCIONAL DD/MM/YYYY -
-            icoterms: '', //String OPCIONAL -
             identificacionReceptor: {
                 codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int -
                 numeroIdentificacion: obj.numeroIdentificacion//String -
@@ -635,7 +633,6 @@ function __jsonFacturaAjdunto(obj, callback) {
             identificadorConsecutivo: obj.identificadorConsecutivo, //long -
             identificadorResolucion: obj.identificadorResolucion, //String -
             mediosPago: mediosPago(obj.mediosPago), //String OPCIONAL -
-            nombreSucursal: obj.nombreSucursal, //String -
             numeracionResolucionWS: {
                 desde: obj.desde, //long -
                 hasta: obj.hasta, //long -

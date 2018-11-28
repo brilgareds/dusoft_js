@@ -818,20 +818,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Usuario', width: "13%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
                             {field: 'Fecha', width: "8%", displayName: 'Fecha', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="center">{{row.entity.fecha_registro | date:"dd/MM/yyyy hh:mm a"}}</p></div>'},
                             {field: 'Imprimir', width: "6%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirNota(row.entity)"><span class="glyphicon glyphicon-print"></span> </button></div>'},
-                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "8%",
-                                cellTemplate: ' <div class="row">\
-							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-danger btn-xs disabled">\
-								<span class="glyphicon glyphicon-export"> No Sincronizado</span>\
-							    </button>\
-							  </div>\
-							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
-							    <button class="btn btn-success btn-xs  disabled">\
-								<span class="glyphicon glyphicon-saved"> Sincronizado</span>\
-							    </button>\
-							  </div>\
-						       </div>'
-                            },
+//                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "8%",
+//                                cellTemplate: ' <div class="row">\
+//							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
+//							    <button class="btn btn-danger btn-xs disabled">\
+//								<span class="glyphicon glyphicon-export"> No Sincronizado</span>\
+//							    </button>\
+//							  </div>\
+//							  <div ng-if="!validarSincronizacion(row.entity.estado)" >\
+//							    <button class="btn btn-success btn-xs  disabled">\
+//								<span class="glyphicon glyphicon-saved"> Sincronizado</span>\
+//							    </button>\
+//							  </div>\
+//						       </div>'
+//                            },
                             {displayName: "DIAN", width: "8%", cellClass: "txt-center dropdown-button",
                                 cellTemplate: '\
                         <div class="btn-group" >\

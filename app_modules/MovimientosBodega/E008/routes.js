@@ -125,8 +125,20 @@ module.exports = function(app, di_container) {
         });
     });
     
-    app.post('/api/movBodegas/E008/detalleDocumentoTemporalConValidacionCantidadIngresada', function(req, callback) {
-        c_e008.detalleDocumentoTemporalConValidacionCantidadIngresada(req, function(respuesta){
+    app.post('/api/movBodegas/E008/detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico', function(req, callback) {
+        c_e008.detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
+    app.post('/api/movBodegas/E008/documentoTemporalClientesAutomatico', function(req, callback) {
+        c_e008.documentoTemporalClientesAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
+    app.post('/api/movBodegas/E008/documentoTemporalFarmaciasAutomatico', function(req, callback) {
+        c_e008.documentoTemporalFarmaciasAutomatico(req, function(respuesta){
             callback(respuesta);
         });
     });

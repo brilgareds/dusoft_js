@@ -18,20 +18,47 @@ var E008Controller = function (movimientos_bodegas, m_e008, e_e008, pedidos_clie
 };
 
 
-// Generar Cabecera del Documento Temporal de CLIENTES
 E008Controller.prototype.documentoTemporalClientes = function (req, res) {
-
     var that = this;
+    G.Q.nfcall(__documentoTemporalClientes,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("detalleDocumentoTemporalConValidacionCantidadIngresada ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();  
+}
+
+E008Controller.prototype.documentoTemporalClientesAutomatico = function (req, callback) {
+      var that = this;
+    G.Q.nfcall(__documentoTemporalClientes,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+}
+
+
+// Generar Cabecera del Documento Temporal de CLIENTES
+function __documentoTemporalClientes(req,that,callback){
 
     var args = req.body.data;
-
+    var send ={};
+    
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.tipo_tercero_id === undefined || args.documento_temporal.tercero_id === undefined || args.documento_temporal.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+//        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        send.msj='Algunos Datos Obligatorios Estan Vacíos';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
     if (args.documento_temporal.numero_pedido === '' || args.documento_temporal.tipo_tercero_id === '' || args.documento_temporal.tercero_id === '' || args.documento_temporal.observacion === '') {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacíos', 404, {}));
+//        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacíos', 404, {}));
+        send.msj='Algunos Datos Obligatorios Estan Vacíos';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
@@ -48,7 +75,11 @@ E008Controller.prototype.documentoTemporalClientes = function (req, res) {
         if (continuar) {
             that.m_e008.ingresar_despacho_clientes_temporal(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, function (err, doc_tmp_id) {
                 if (err) {
-                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
+//                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
+                    send.msj='Error Creando el Documento Temporal Clientes';
+                    send.status=500;
+                    send.respuesta={documento_temporal: {}};
+                    callback(false,send);
                     return;
                 } else {
                     /* ===============================================*/
@@ -57,12 +88,20 @@ E008Controller.prototype.documentoTemporalClientes = function (req, res) {
                     // - La reasignacion.
                     /* ===============================================*/
                     that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-                    res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+//                    res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+                    send.msj='Documento Temporal Cliente Creado Correctamente';
+                    send.status=200;
+                    send.respuesta={documento_temporal: {doc_tmp_id: doc_tmp_id}};
+                    callback(false,send);
                     return;
                 }
             });
         } else {
-            res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
+//            res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
+            send.msj='!Advertencia!, El pedido esta asignado a otro usuario';
+            send.status=403;
+            send.respuesta={documento_temporal: {}};
+            callback(false,send);
             return;
         }
     });
@@ -134,21 +173,47 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function (req, res
 
 };
 
-// Generar Cabecera del Documento Temporal de FARMACIAS
+
 E008Controller.prototype.documentoTemporalFarmacias = function (req, res) {
-
-
     var that = this;
+    G.Q.nfcall(__documentoTemporalFarmacias,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("detalleDocumentoTemporalConValidacionCantidadIngresada ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();  
+}
 
+E008Controller.prototype.documentoTemporalFarmaciasAutomatico = function (req, callback) {
+      var that = this;
+    G.Q.nfcall(__documentoTemporalFarmacias,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+}
+
+
+// Generar Cabecera del Documento Temporal de FARMACIAS
+function __documentoTemporalFarmacias(req,that,callback){
+    var send ={};
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.empresa_id === undefined || args.documento_temporal.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion no estan definidos.. ', 404, {}));
+//        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion no estan definidos.. ', 404, {}));
+        send.msj='El numero_pedido, empresa_id u observacion no estan definidos.. ';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
     if (args.documento_temporal.numero_pedido === '' || args.documento_temporal.empresa_id === '' || args.documento_temporal.observacion === '') {
-        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion estan vacios ', 404, {}));
+//        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion estan vacios ', 404, {}));
+        send.msj='El numero_pedido, empresa_id u observacion estan vacios ';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
@@ -166,7 +231,11 @@ E008Controller.prototype.documentoTemporalFarmacias = function (req, res) {
 
             that.m_e008.ingresar_despacho_farmacias_temporal(bodegas_doc_id, empresa_id, numero_pedido, observacion, usuario_id, function (err, doc_tmp_id, resultado) {
                 if (err) {
-                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+//                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+                    send.msj='Error Creando el Documento Temporal Farmacias';
+                    send.status=500;
+                    send.respuesta={documento_temporal: {}};
+                    callback(false,send);
                     return;
                 } else {
 
@@ -178,12 +247,20 @@ E008Controller.prototype.documentoTemporalFarmacias = function (req, res) {
 
                     that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
-                    res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+//                  res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+                    send.msj='Documento Temporal Farmacias Creado Correctamente';
+                    send.status=200;
+                    send.respuesta={documento_temporal: {doc_tmp_id: doc_tmp_id}};
+                    callback(false,send);
                     return;
                 }
             });
         } else {
-            res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
+         // res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
+            send.msj='!Advertencia!, El pedido esta asignado a otro usuario';
+            send.status=403;
+            send.respuesta={documento_temporal: {}};
+            callback(false,send);
             return;
         }
     });
@@ -2492,10 +2569,12 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
         if (!args.documento_despacho.background) {
             if (err.status) {
                 res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+                return;
 
             } else {
 
                 res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
+                return;
             }
         }
 
@@ -2916,7 +2995,7 @@ function __validarCajaProducto(req, that, callback) {
 
                 if (rotulo_caja) {
                     //res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
-                    send.msj='Validacion caja producto1';
+                    send.msj='Validacion caja producto';
                     send.status=200;
                     send.respuesta={movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}};
                     callback(false,send);
@@ -2927,15 +3006,15 @@ function __validarCajaProducto(req, that, callback) {
                             cantidad, ruta, contenido, numero_caja, usuario_id, tipo, tipoPedido, function (err, rotulo_caja) {
                                 if (err) {
 //                                    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                    send.msj='Se ha generado un error interno ';
+                                    send.msj='Se ha generado un error interno';
                                     send.status=500;
                                     send.respuesta={movimientos_bodegas: {}};
                                     callback(false,send);
                                     return;
                                 } else {
 //                                    res.send(G.utils.r(req.url, 'Rotulo generado correctamente', 200, {movimientos_bodegas: {caja_valida: true}}));
-                                    send.msj='Se ha generado un error interno ';
-                                    send.status=500;
+                                    send.msj='Rotulo generado correctamente ';
+                                    send.status=200;
                                     send.respuesta={movimientos_bodegas: {caja_valida: true}};
                                     callback(false,send);
                                     return;

@@ -30,6 +30,12 @@ module.exports = function(app, di_container) {
         });
     });
     
+    app.post('/api/PedidosClientes/pedidoClienteAPedidoFarmaciaAutomatico', function(req, callback) {
+        c_pedidos_clientes.pedidoClienteAPedidoFarmaciaAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
     // Asignar o seleccionar responsables del pedido
     app.post('/api/PedidosClientes/eliminarResponsablesPedido', function(req, res) {
         c_pedidos_clientes.eliminarResponsablesPedido(req, res);

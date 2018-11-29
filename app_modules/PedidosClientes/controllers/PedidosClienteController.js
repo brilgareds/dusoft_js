@@ -5706,8 +5706,10 @@ PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function (
 };
 
 PedidosCliente.prototype.pedidoClienteAPedidoFarmaciaAutomatico = function (req, callback) {
+    console.log("pedidoClienteAPedidoFarmaciaAutomatico");
     var that = this;
     G.Q.nfcall(__pedidoClienteAPedidoFarmacia, req, that).then(function (send) {
+        console.log("pedidoClienteAPedidoFarmaciaAutomatico",send);
         callback(false, send);
     }).fail(function (err) {
         callback(err);

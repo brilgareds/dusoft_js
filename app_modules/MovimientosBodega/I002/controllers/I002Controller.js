@@ -399,7 +399,7 @@ I002Controller.prototype.execCrearDocumento = function(req, res) {
 };
 
 function __execCrearDocumento(req,that,callback){
-    console.log("---- execCrearDocumento res-----");
+
     var that = that;
     var args = req.body.data;
     var usuarioId;

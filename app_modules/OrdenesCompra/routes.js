@@ -3,11 +3,25 @@ module.exports = function(app, di_container) {
 
     var c_ordenes_compra = di_container.get('c_ordenes_compra');
     var c_i002 = di_container.get('c_i002');
+    var c_e008 = di_container.get('c_e008');
     var c_pedidos_clientes = di_container.get("c_pedidos_clientes");
+//    var c_pedidos_farmacias = di_container.get("c_pedidos_farmacias");
     
     app.post('/api/movBodegas/I002/execCrearDocumentoAutomatico', function(req, callback) {
         c_i002.execCrearDocumentoAutomatico(req, function(respuesta){
             console.log("---------Respuesta: ",respuesta);
+            callback(respuesta);
+        });
+    });
+    
+    app.post('/api/movBodegas/E008/validarCajaProductoAutomatico', function(req, callback) {
+        c_e008.validarCajaProductoAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
+    app.post('/api/movBodegas/E008/detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico', function(req, callback) {
+        c_e008.detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico(req, function(respuesta){
             callback(respuesta);
         });
     });

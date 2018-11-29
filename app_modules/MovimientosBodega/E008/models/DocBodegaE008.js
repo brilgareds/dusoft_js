@@ -249,7 +249,7 @@ DocumentoBodegaE008.prototype.ingresarMovimientoTmpClientes = function(movimient
     
     var query = G.knex.raw(sql, {1:movimiento_temporal_id, 2:numero_pedido, 3:tipo_tercero_id, 4:tercero_id, 5:usuario_id});
     if(transaccion) query.transacting(transaccion);
-            
+ console.log(G.sqlformatter.format(query.toString()));      
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
@@ -1744,7 +1744,6 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespachoAutomatico = function(o
        
      var query = G.knex.raw(sql, parametros);
     
-    console.log(G.sqlformatter.format(query.toString())); 
      query.then(function(resultado){       
         callback(false, resultado.rows);   
     }).catch(function(err) { 

@@ -444,6 +444,8 @@ function __jsonNotaDebito(obj, callback) {
     
         if(obj.productos.length > 0){
         crearNotaDebito.notaDebitoElectronicaCanonica.productos = obj.productos;
+        }else{
+        crearNotaDebito.notaDebitoElectronicaCanonica.productos = {cantidad:0,descripcion:"no aplica",identificador:"0",valorUnitario:0};
     }
 
     callback(false, crearNotaDebito);

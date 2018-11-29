@@ -138,7 +138,7 @@ CajaGeneralModel.prototype.listarNotasGeneradas = function (obj, callback) {
         G.knex.raw("d.tipo_id_tercero ||' '|| d.tercero_id AS identificacion"),
         "d.tercero_id",
         "d.tipo_id_tercero",
-        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=a.factura_fiscal and prefijo= a.prefijo and sw_factura_dian ='1') as sincronizacion")
+        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=a.numero_nota and prefijo= a.prefijo_nota and sw_factura_dian ='1') as sincronizacion")
     ];
 
     var query = G.knex.select(columna_a)

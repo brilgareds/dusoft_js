@@ -721,6 +721,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             if (data.status === 200) {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                that.listarFacturasGeneradas(25, function (data) {});
                                 return;
                             } else {
                                 if (data.obj.response.statusCode === 500) {
@@ -887,6 +888,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             if (data.status === 200) {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                that.listarNotas({prefijo: datos.prefijo_nota, numero: datos.numero_nota, empresaId: datos.empresa_id});
+                                that.listarFacConceptosNotasDetalle({prefijo: datos.prefijo, factura_fiscal: datos.factura_fiscal});
                                 return;
                             } else {
                                 if (data.obj.response.statusCode === 500) {
@@ -1719,7 +1722,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar un prefijo");
                                     } else {
                                         $scope.root.termino_busqueda_tercero = busqueda;
-                                        that.listarFacturasGeneradas('', function (data) {
+                                        that.listarFacturasGeneradas(25, function (data) {
                                         });
                                     }
                                 }

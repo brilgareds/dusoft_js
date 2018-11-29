@@ -439,6 +439,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                 if (data.status === 200) {
                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                    that.listarNotas({empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo(), numero: datos.numeroNota, tipoConsulta: "ND"});
                                     return;
                                 } else {
                                     if (data.obj.response.statusCode === 500) {
@@ -457,6 +458,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                 if (data.status === 200) {
                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                    that.listarNotas({empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo(), numero: datos.numeroNota, tipoConsulta: "NC"});
                                     return;
                                 } else {
                                     if (data.obj.response.statusCode === 500) {

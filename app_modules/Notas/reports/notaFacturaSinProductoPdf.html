@@ -62,108 +62,118 @@
         </style>
     </head>
     <body>
-            <table width="100%" align="center">
-                <tr>
-                    <td align='center' style="border:1px solid #000000;font-size:8px">
-                        <table border='0' width='100%' style="font-size: 8px; height:10px;">
-                            <tr>
-                                <td>CLIENTE: </td>
-                                <td>{{:cliente.nombre_tercero}} </td>
-                                <td>{{:cliente.tipo_id_tercero}} {{:cliente.tercero_id}} </td>
-                                <td>DIRECCIÓN: </td>
-                                <td>{{:cliente.direccion}} </td>
-                                <td>TELEFONO:  </td>
-                                <td>{{:cliente.telefono}} </td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td  align='center' rowspan='2' style="border:1px solid #000000;font-size:8px">
-                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
-                            <tr >
-                                <td align='center' height='10px'>
-                                    <b>FACTURA: {{:nota.prefijo}} - {{:nota.factura_fiscal}}</b>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td  align='center' height='10px' >
-                                    <b>FECHA {{:nota.fecha_registro}}</b>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td align='center' style="border:1px solid #000000;font-size:8px">
-                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
-                            <tr>
-                                <td>FECHA NOTA: </td>
-                                <td>{{:nota.fecha_registro_nota}} </td>
-                                <td>CONCEPTO NOTA: </td>
-                                <td>{{:nota.descripcion_concepto}}</td>
-                                <td>TIPO NOTA:  </td>
-                                <td>{{:nota.tipo_nota}}</td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-
-            </table>
-            <br />	
-                <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" rules="all">
-                    <tr class="label">
-                        <td align="center" colspan="6">CONCEPTO</td>
-                    </tr>
-                    <tr class="label">
-                        <td align="center" colspan="6">{{:nota.descripcion}}</td>
-                    </tr>
-                </table>
-                <br />
-                    <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
-
-                        <tr class="label" align="center">
-                            <td class="label" >
-                                <table width="100%" align="center" style="font-size:8px" >
-
-                                    <tr align="center">
-                                        <td><b>SUBTOTAL</b></td>
-                                        <td><b>IVA</b></td>
-                                        <td><b>RET-FTE</b></td>
-                                        <td><b>RETE-ICA</b></td>
-                                        <td><b>RETE-IVA</b></td>
-                                        <td><b>VALOR TOTAL</b></td>
-                                    </tr>
-                                    <tr align="center">
-                                        <td><b>${{:valores.subTotal}}</b></td>
-                                        <td><b>${{:valores.ivaTotal}}</b></td>
-                                        <td><b>${{:valores.retencionFuente}}</b></td>
-                                        <td><b>${{:valores.retencionIca}}</b></td>
-                                        <td><b>${{:valores.retencionIva}}</b></td>
-                                        <td><b>${{:valores.totalFactura}}</b></td>
-
-                                    </tr>
-                                    <tr align="left">
-                                        <td colspan="6"><b>SON: {{:valores.totalFacturaLetra}} pesos</b></td></tr> <!--valor en letras -->
-                                </table>			
+        <table width="100%" align="center">
+            <tr>
+                <td align='center' width='85%' style="border:1px solid #000000;font-size:8px">
+                    <table border='0' width='100%' style="font-size: 8px; height:10px;">
+                        <tr>
+                            <td>CLIENTE: </td>
+                            <td>{{:cliente.nombre_tercero}} </td>
+                            <td>{{:cliente.tipo_id_tercero}} {{:cliente.tercero_id}} </td>
+                            <td>DIRECCIÓN: </td>
+                            <td>{{:cliente.direccion}} </td>
+                            <td>TELEFONO:  </td>
+                            <td>{{:cliente.telefono}} </td>
+                        </tr>
+                    </table>
+                </td>
+                <td  align='center' rowspan='2' width='15%' style="border:1px solid #000000;font-size:8px">
+                    <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
+                        <tr >
+                            <td align='center' height='10px'>
+                                <b>FACTURA No</b>
+                            </td>
+                        </tr>
+                        <tr >
+                            <td align='center' height='10px'>
+                                <b>{{:nota.prefijo}} - {{:nota.factura_fiscal}}</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  align='center' height='10px' >
+                                <b>FECHA FACTURA</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  align='center' height='10px' >
+                                <b>{{:nota.fecha_registro}}</b>
                             </td>
                         </tr>
                     </table>
-                    <br />
-                    <br />	
-                        <table width="100%" align="center" style="border:0px solid #000000;font-size:7px" >
+                </td>
+            </tr>
+            <tr>
+                <td align='center' width='85%' style="border:1px solid #000000;font-size:8px">
+                    <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
+                        <tr>
+                            <td>FECHA NOTA: </td>
+                            <td>{{:nota.fecha_registro_nota}} </td>
+                            <td>CONCEPTO NOTA: </td>
+                            <td>{{:nota.descripcion_concepto}}</td>
+                            <td>TIPO NOTA:  </td>
+                            <td>{{:nota.tipo_nota}}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
 
-                            <tr>
-                                <td width="31.3%"><table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px">
-                                        <tr>
-                                            <td align="left">ELABORADO : {{:usuario}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td align="center">
-                                                <hr width="100%"></td>
-                                        </tr>
-                                    </table>
-                                </td>
-                                <td ></td>	
-                            </tr>
-                        </table>
-                        </body>
-                        </html>
+        </table>
+        <br />	
+        <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" rules="all">
+            <tr class="label">
+                <td align="center" colspan="6">CONCEPTO</td>
+            </tr>
+            <tr class="label">
+                <td align="center" colspan="6">{{:nota.descripcion}}</td>
+            </tr>
+        </table>
+        <br />
+        <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
+
+            <tr class="label" align="center">
+                <td class="label" >
+                    <table width="100%" align="center" style="font-size:8px" >
+
+                        <tr align="center">
+                            <td><b>SUBTOTAL</b></td>
+                            <td><b>IVA</b></td>
+                            <td><b>RET-FTE</b></td>
+                            <td><b>RETE-ICA</b></td>
+                            <td><b>RETE-IVA</b></td>
+                            <td><b>VALOR TOTAL</b></td>
+                        </tr>
+                        <tr align="center">
+                            <td><b>${{:valores.subTotal}}</b></td>
+                            <td><b>${{:valores.ivaTotal}}</b></td>
+                            <td><b>${{:valores.retencionFuente}}</b></td>
+                            <td><b>${{:valores.retencionIca}}</b></td>
+                            <td><b>${{:valores.retencionIva}}</b></td>
+                            <td><b>${{:valores.totalFactura}}</b></td>
+
+                        </tr>
+                        <tr align="left">
+                            <td colspan="6"><b>SON: {{:valores.totalFacturaLetra}} pesos</b></td></tr> <!--valor en letras -->
+                    </table>			
+                </td>
+            </tr>
+        </table>
+        <br />
+        <br />	
+        <table width="100%" align="center" style="border:0px solid #000000;font-size:7px" >
+
+            <tr>
+                <td width="31.3%"><table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px">
+                        <tr>
+                            <td align="left">ELABORADO : {{:usuario}}</td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <hr width="100%"></td>
+                        </tr>
+                    </table>
+                </td>
+                <td ></td>	
+            </tr>
+        </table>
+    </body>
+</html>

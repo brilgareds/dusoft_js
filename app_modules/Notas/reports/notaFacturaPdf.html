@@ -64,8 +64,8 @@
     <body>
             <table width="100%" align="center">
                 <tr>
-                    <td align='center' style="border:1px solid #000000;font-size:8px">
-                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
+                    <td align='center' width="85%" style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; height:10px;">
                             <tr>
                                 <td>CLIENTE: </td>
                                 <td>{{:cliente.nombre_tercero}} </td>
@@ -77,23 +77,33 @@
                             </tr>
                         </table>
                     </td>
-                    <td  align='center' rowspan='2' style="border:1px solid #000000;font-size:8px">
+                    <td  align='center' rowspan='2' width="15%" style="border:1px solid #000000;font-size:8px">
                         <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
-                            <tr >
-                                <td align='center' height='10px'>
-                                    <b>FACTURA: {{:nota.prefijo}} - {{:nota.factura_fiscal}}</b>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td  align='center' height='10px' >
-                                    <b>FECHA {{:nota.fecha_registro}}</b>
-                                </td>
-                            </tr>
+                        <tr >
+                            <td align='center' height='10px'>
+                                <b>FACTURA No</b>
+                            </td>
+                        </tr>
+                        <tr >
+                            <td align='center' height='10px'>
+                                <b>{{:nota.prefijo}} - {{:nota.factura_fiscal}}</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  align='center' height='10px' >
+                                <b>FECHA FACTURA</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  align='center' height='10px' >
+                                <b>{{:nota.fecha_registro}}</b>
+                            </td>
+                        </tr>
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td align='center' style="border:1px solid #000000;font-size:8px">
+                    <td align='center' width="85%" style="border:1px solid #000000;font-size:8px">
                         <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
                             <tr>
                                 <td>FECHA NOTA: </td>

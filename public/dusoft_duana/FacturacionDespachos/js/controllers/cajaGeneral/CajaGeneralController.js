@@ -772,7 +772,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @returns {undefined}
                      */
                     $scope.imprimirReporteNotaDian = function (entity) {
-                        
+
                         var obj = {
                             session: $scope.session,
                             data: {
@@ -817,7 +817,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Valor Total', width: "11%", displayName: 'Valor Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="right" >{{row.entity.total | currency:"$ "}}</p></div>'}, //
                             {field: 'Usuario', width: "13%", displayName: 'Usuario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.nombre}}</p></div>'},
                             {field: 'Fecha', width: "8%", displayName: 'Fecha', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" align="center">{{row.entity.fecha_registro | date:"dd/MM/yyyy hh:mm a"}}</p></div>'},
-                            {field: 'Imprimir', width: "6%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirNota(row.entity)"><span class="glyphicon glyphicon-print"></span> </button></div>'},
+                            {displayName: "Opc", width: "10%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '<div class="btn-group">\
+                                                    <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                                                    <ul class="dropdown-menu dropdown-options">\
+                                                         <li>\
+                                                            <a href="javascript:void(0);" ng-click="onImprimirNota(row.entity)" class = "glyphicon glyphicon-print"> Imprimir </a>\
+                                                         </li>\
+                                                         <li ng-if="verificaFactuta(row.entity.prefijo)">\
+                                                            <a href="javascript:void(0);" ng-click="imprimirReporteNotaDian(row.entity)" class = "glyphicon glyphicon-print"> Factura DIAN </a>\
+                                                         </li>\
+                                                    </ul>\
+                                               </div>'
+                            },
 //                            {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "8%",
 //                                cellTemplate: ' <div class="row">\
 //							  <div ng-if="validarSincronizacion(row.entity.estado)" >\

@@ -667,7 +667,7 @@ function __jsonFacturaAjdunto(obj, callback) {
                 }
             ],
             tipoFactura: obj.tipoFactura, //numeric -
-            totalFactura: obj.totalFactura //decimal OPCIONAL -
+            totalFactura: obj.totalFactura.replace(".", "") //decimal OPCIONAL -
         },
         facturaEspecializada: {
             attributes: {

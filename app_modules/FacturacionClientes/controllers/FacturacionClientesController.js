@@ -3047,7 +3047,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
 
             coordXQr: 164,
             coordYQr: 260,
-            coordXCufe: 126,
+            coordXCufe: 120,
             coordYCufe: 256,
             pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
@@ -3254,7 +3254,7 @@ function __generarSincronizacionDian(that, req, callback) {
             parametrosReporte.valores.retencionIva = G.utils.numberFormat(retencionIva, 2);
             parametrosReporte.valores.ivaTotal = G.utils.numberFormat(parseFloat(totalIva), 2);
             parametrosReporte.valores.subTotal = G.utils.numberFormat(parseFloat(subTotal), 2);
-            parametrosReporte.valores.totalFactura = totalFactura;
+            parametrosReporte.valores.totalFactura = G.utils.numberFormat(parseFloat(totalFactura), 2);
             parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura).charAt(0).toUpperCase() + G.utils.numeroLetra(totalFactura).slice(1);
 
         } else {

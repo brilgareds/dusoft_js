@@ -3043,7 +3043,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
             ReteIVA: resultado.valores.retencionIvaSf,
             baseGravableReteIVA: resultado.valores.baseRetencionIva,
             tipoFactura: 1,
-            totalFactura: resultado.valores.totalFactura,
+            totalFactura: resultado.valores.totalFactura.replace(".", ""),
 
             coordXQr: 164,
             coordYQr: 260,

@@ -1091,7 +1091,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function (estado, o
     }
 
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);
-
+ console.log("ssssssss",G.sqlformatter.format(query.toString()));
     if (transaccion)
         query.transacting(transaccion);
     query.then(function (resultado) {

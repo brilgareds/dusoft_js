@@ -138,7 +138,7 @@ CajaGeneralModel.prototype.listarNotasGeneradas = function (obj, callback) {
         G.knex.raw("d.tipo_id_tercero ||' '|| d.tercero_id AS identificacion"),
         "d.tercero_id",
         "d.tipo_id_tercero",
-        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=a.factura_fiscal and prefijo= a.prefijo and sw_factura_dian ='1') as sincronizacion")
+        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=a.numero_nota and prefijo= a.prefijo_nota and sw_factura_dian ='1') as sincronizacion")
     ];
 
     var query = G.knex.select(columna_a)
@@ -531,7 +531,10 @@ CajaGeneralModel.prototype.listarFacturasNotas = function (obj, callback) {
         "d.fecha_registro",
         "c.descripcion as desconcepto",
         "c.concepto_id",
-        "c.grupo_concepto"
+        "c.grupo_concepto",
+        "doc.texto1",
+        "doc.texto2",
+        "doc.texto3"
     ];
 
     var query = G.knex.select(columna)
@@ -551,6 +554,11 @@ CajaGeneralModel.prototype.listarFacturasNotas = function (obj, callback) {
                         this.on("a.prefijo", "d.prefijo")
                                 .on("a.factura_fiscal", "d.factura_fiscal")
                                 .on("a.empresa_id", "d.empresa_id")
+                    })
+            .innerJoin('documentos as doc',
+                    function () {
+                        this.on("a.empresa_id", "doc.empresa_id")
+                                .on("d.documento_id", "doc.documento_id")
                     })
             .where(function () {
                 if (obj.conceptoId !== '') {
@@ -639,24 +647,39 @@ CajaGeneralModel.prototype.listarConceptosDetalle = function (obj, callback) {
         "a.valor_gravamen",
         "a.tipo_pago_id"
     ];
+    
+        if(obj.documento_id){
+                   columna.push("doc.texto1");
+                   columna.push("doc.texto2");
+                   columna.push("doc.texto3");
+    }
+    
 
     var query = G.knex.select(columna)
             .from('tmp_detalle_conceptos as a')
             .innerJoin('grupos_conceptos as  b ',
                     function () {
-                        this.on("a.grupo_concepto", "b.grupo_concepto")
+                        this.on("a.grupo_concepto", "b.grupo_concepto");
                     })
             .innerJoin('conceptos_caja_conceptos as  c',
                     function () {
                         this.on("c.grupo_concepto", "b.grupo_concepto")
-                                .on("a.concepto_id", "c.concepto_id")
+                                .on("a.concepto_id", "c.concepto_id");
                     }).where(function () {
         this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
                 .andWhere("a.tercero_id", obj.terceroId)
                 .andWhere("b.empresa_id", obj.empresaId)
                 .andWhere("a.concepto_id", obj.conceptoId);
     });
-
+    
+    if(obj.documento_id){
+                    query.innerJoin('documentos as doc',
+                    function () {
+                        this.on("a.empresa_id", "doc.empresa_id")
+                                .on("doc.documento_id",obj.documento_id);
+                        });
+    }
+    
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit);
 
@@ -1129,7 +1152,9 @@ CajaGeneralModel.prototype.listarEmpresa = function (obj, callback) {
         "a.direccion",
         "a.telefonos",
         "a.tipo_id_tercero",
+        "a.digito_verificacion",
         "b.departamento	",
+        "tp.pais",
         "c.municipio"
     ];
 
@@ -1138,13 +1163,17 @@ CajaGeneralModel.prototype.listarEmpresa = function (obj, callback) {
             .innerJoin('tipo_dptos as b',
                     function () {
                         this.on("b.tipo_pais_id", "a.tipo_pais_id")
-                                .on("b.tipo_dpto_id", "a.tipo_dpto_id")
+                                .on("b.tipo_dpto_id", "a.tipo_dpto_id");
+                    })
+            .innerJoin('tipo_pais as tp',
+                    function () {
+                        this.on("tp.tipo_pais_id", "b.tipo_pais_id");
                     })
             .innerJoin('tipo_mpios as c',
                     function () {
                         this.on("c.tipo_pais_id", "a.tipo_pais_id")
                                 .on("c.tipo_dpto_id", "a.tipo_dpto_id")
-                                .on("c.tipo_mpio_id", "a.tipo_mpio_id")
+                                .on("c.tipo_mpio_id", "a.tipo_mpio_id");
                     }).where("empresa_id", obj.empresaId);
 
     query.limit(G.settings.limit).

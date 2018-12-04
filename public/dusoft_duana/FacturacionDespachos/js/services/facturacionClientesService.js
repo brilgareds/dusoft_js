@@ -99,6 +99,12 @@ define(["angular", "js/services"], function (angular, services) {
                             callback(data);
                         });
                     };
+                    
+                    self.imprimirReporteFacturaDian = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.IMPRIMIR_REPORTE_FACTURA_DIAN, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
 
                     self.generarSincronizacionDian = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_SINCRONIZACION_DIAN, "POST", obj, function (data) {

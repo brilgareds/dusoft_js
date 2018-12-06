@@ -51,6 +51,12 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.asignarResponsablesPedido(req, res);
     });
     
+    app.post('/api/PedidosClientes/asignarResponsablesPedidoAutomatico', function(req, callback) {
+        c_pedidos_farmacias.asignarResponsablesPedidoAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    }); 
+    
     // Eliminar responsables del pedido
     app.post('/api/PedidosFarmacias/eliminarResponsablesPedido', function(req, res) {
         c_pedidos_farmacias.eliminarResponsablesPedido(req, res);

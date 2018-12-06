@@ -51681,18 +51681,34 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 $scope.Usuario.getEmpresa().setCentroUtilidadSeleccionado(centro);
             };
             
-            $scope.onBodegaSeleccionada = function(bodega){
+            $scope.onBodegaSeleccionada = function(bodega){ 
+              //  console.log("history.length ",history.length );
                 localStorageService.set("bodega_usuario", bodega.getCodigo());
                 $scope.Usuario.getEmpresa().getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega); 
+                self.limpiar();
+//                var moduloActual = $scope.Usuario.getModuloActual();
                 
-                var moduloActual = $scope.Usuario.getModuloActual();
-                
-                if(!moduloActual || moduloActual.nombre.toLowerCase() === 'dashboard'){
-                    return;
-                }
+//                if(!moduloActual || moduloActual.nombre.toLowerCase() === 'dashboard'){
+//                    return;
+//                }
                 
                 self.irAlHome();
                 
+            };
+            
+            self.limpiar = function () {
+                var session=localStorageService.get("session");
+               // console.log("session ",session);
+                var llavesMemoria = localStorageService.keys();
+                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat"];
+
+                for (var i in llavesMemoria) {
+                    var key = llavesMemoria[i];
+
+                    if (llavesPermanentes.indexOf(key) === -1) {
+                        localStorageService.remove(key);
+                    }
+                }
             };
             
             $scope.onIrAlHome = function(){
@@ -51738,6 +51754,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
             };
             
             self.irAlHome = function(mensaje){
+                console.log("ir al home");
                 var moduloActual = $scope.Usuario.getModuloActual();
                 localStorageService.set("mensajeDashboard", null);
                 
@@ -51753,8 +51770,10 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     localStorageService.set("mensajeDashboard", mensaje);
                 }
                                 
-                if(moduloActual.nombre.toLowerCase() === 'dashboard'){
-                    return;
+                if(moduloActual.nombre.toLowerCase() !== 'dashboard'){
+//                    console.log("dashboard");
+//                    localStorageService.clearAll(); 
+//                    return;
                 }
                 window.location = "/dusoft_duana/home";
             };
@@ -52108,7 +52127,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                    device:"web",
                    appId: "dusoft-web"
                 };
-                 console.log("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ",datos);
+                
                 //localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });

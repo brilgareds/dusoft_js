@@ -2130,7 +2130,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                 var formato = 'YYYY-MM-DD hh:mm:ss a';
                 var fechaToday = G.moment(resultado[0]).format(formato);
                 obj.parametro1.fecha_ultima_entrega = fechaToday;
-console.log("obj.parametro2 ",obj.parametro2);
+
             return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion); //obj.parametro2 producto a entregar
                                   
         }).then(function(){

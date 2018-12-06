@@ -9,7 +9,7 @@ module.exports = function(app, di_container) {
     
     app.post('/api/movBodegas/I002/execCrearDocumentoAutomatico', function(req, callback) {
         c_i002.execCrearDocumentoAutomatico(req, function(respuesta){
-            console.log("---------Respuesta: ",respuesta);
+           
             callback(respuesta);
         });
     });

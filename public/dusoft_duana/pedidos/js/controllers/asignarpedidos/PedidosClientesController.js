@@ -367,7 +367,7 @@ define(["angular",
                                 if (data.status === 200) {
 
                                     $scope.pedido_seleccionado = null;
-                                    $modalInstance.close();
+                                    $scope.close();
                                 }
                             });
                         };

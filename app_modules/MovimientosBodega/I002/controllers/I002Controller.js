@@ -42,7 +42,6 @@ I002Controller.prototype.newDocTemporal = function(req, res) {
         res.send(G.utils.r(req.url, 'La bodega NO esta definida', 404, {}));
         return;
     }
-console.log("llega del cliente bodegas_doc_id :: ",bodegas_doc_id);
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificador_movimiento_temporal_returning", usuarioId,bodegas_doc_id).then(function(doc_tmp_id) {
         
@@ -68,7 +67,7 @@ console.log("llega del cliente bodegas_doc_id :: ",bodegas_doc_id);
             }).done();
 
         }).then(function(movimiento_temporal_id) {
-            console.log("movimiento_temporal_id ",movimiento_temporal_id);
+      
             res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {movimiento_temporal_id: movimiento_temporal_id}));
         }). catch (function(err) {
 	    console.log("Error newDocTemporal ",err);
@@ -444,8 +443,6 @@ function __execCrearDocumento(req,that,callback){
     var impuesto = [];
     var comprasTemporal = [];
     
-    console.log("execCrearDocumento docTmpId ",docTmpId);
-    console.log("execCrearDocumento parametros ",parametros);
     
     G.knex.transaction(function(transaccion) {
   

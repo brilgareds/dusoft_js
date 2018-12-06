@@ -16,7 +16,7 @@ DocumentoBodegaI002.prototype.insertarBodegasMovimientoOrdenesCompraTmp = functi
 
     if (transaccion)
         query.transacting(transaccion);
-console.log("3 - insertarBodegasMovimientoOrdenesCompraTmp ",G.sqlformatter.format(query.toString()));
+
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
@@ -641,7 +641,6 @@ DocumentoBodegaI002.prototype.listarParametrosRetencion = function(parametros, c
         callback(false, resultado);
     }). catch (function(error) {
         console.log("error [parametrosRetencion]: ", error);
-        console.log("error [parametros.empresa_id]: ", parametros.empresa_id);
         callback(error);
     });
 };

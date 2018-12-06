@@ -196,8 +196,8 @@ MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = 
 
     auditado = auditado ? 1 : 0;
 
-    G.knex.raw(sql, {1: item_id, 2: auditado, 3: numero_caja}).
-            then(function (resultado) {
+   var query= G.knex.raw(sql, {1: item_id, 2: auditado, 3: numero_caja});
+       query.then(function (resultado) {
                 callback(false, resultado.rows, resultado);
             }).catch(function (err) {
         callback(err);
@@ -1212,7 +1212,7 @@ function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, u
                 where a.doc_tmp_id = :1 and a.usuario_id = :2 ";
 
     var query=G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id});
-    
+//    console.log("-->>",G.sqlformatter.format(query.toString()));
             query.then(function (resultado) {
                 callback(false, resultado.rows);
             }).catch(function (err) {

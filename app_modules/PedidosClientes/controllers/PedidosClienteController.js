@@ -427,6 +427,78 @@ function __asignarResponsablesPedido(req,that, callback) {
  * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
+PedidosCliente.prototype.eliminarResponsablesPedido1 = function (req, res) {
+   var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no esta definido.', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.numero_pedido === '' || args.pedidos_clientes.numero_pedido === 0) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacÃ­o', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.pedidos_clientes.numero_pedido;
+    var estado_pedido = ''; // 0 = No asignado
+    var responsables_pedido;
+    
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultar_pedido', numero_pedido).then(function (pedido_cliente) {
+        
+        var pedido = pedido_cliente[0];
+        
+        if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1') && pedido.estado_separacion === null) {
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'obtener_responsables_del_pedido', numero_pedido);
+        } else {
+            res.send(G.utils.r(req.url, 'El Pedido No puede cambiar de estado', 200, {}));
+            return;
+        }
+        
+    }).then(function (result) {
+        responsables_pedido=result;
+        console.log("result obtener_responsables_del_pedido----",result);
+        if (responsables_pedido === undefined || responsables_pedido.length < 2) {
+            res.send(G.utils.r(req.url, 'El Pedido no ha registrado responsables', 500, {}));
+            return;
+        }
+        
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'eliminar_responsables_pedidos', numero_pedido);
+        
+    }).then(function (result) {
+        console.log("result eliminar_responsables_pedidos----",result);
+        estado_pedido = responsables_pedido[0].estado;
+        
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizar_estado_actual_pedido', numero_pedido,estado_pedido);
+        
+    }).then(function (result) {
+         console.log("result actualizar_estado_actual_pedido----",result);
+        return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificarPedidosActualizados', {numero_pedido: numero_pedido});
+    
+    }).then(function (result) {
+        console.log("result onNotificarPedidosActualizados----",result);
+        if (responsables_pedido.length > 0) {
+
+           var responsable_estado_pedido = responsables_pedido[0];
+          return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificacionOperarioPedidosReasignados', {numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
+       
+        }else{
+          return true;
+        }
+        
+    }).then(function (result) {
+        
+        res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
+        
+    }).fail(function (err) {
+        console.log("Error eliminarResponsablesPedido ", err);
+        res.send(G.utils.r(req.url, "Se ha generado un error interno", 500, {}));
+    }).done();
+     
+}
+
 PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
 
     var that = this;
@@ -449,7 +521,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
     that.m_pedidos_clientes.consultar_pedido(numero_pedido, function (err, pedido_cliente) {
 
         if (err || pedido_cliente.length === 0) {
-
+             console.log("Error",err,pedido_cliente.length);
         } else {
             var pedido = pedido_cliente[0];
 
@@ -494,7 +566,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
                                             that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
                                         }
 
-                                        res.send(G.utils.r(req.url, 'El Pedido cambiÃ³ de estado correctamente', 200, {}));
+                                        res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
                                     }
                                 });
                             }
@@ -2611,12 +2683,7 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
         return;
 
     }).then(function (resultado) {
-        console.log("resultado::1 ", (resultado.length > 0 && resultado[0].valido === '1' && (producto.bodega !== obj.pedidos_clientes.cotizacion.bodega_id && producto.existe_producto_bodega_actual === 1)));
-        console.log("resultado::2 ", resultado.length);
-        console.log("resultado::3 ", resultado[0].valido);
-        console.log("resultado::4 ", producto.bodega);
-        console.log("resultado::5 ", obj.pedidos_clientes.cotizacion.bodega_id);
-        console.log("resultado::6 ", producto.existe_producto_bodega_actual);
+        
         if (!resultado) {
 
             setTimeout(function () {

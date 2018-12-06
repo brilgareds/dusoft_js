@@ -23,7 +23,7 @@ E008Controller.prototype.documentoTemporalClientes = function (req, res) {
     G.Q.nfcall(__documentoTemporalClientes,req,that).then(function(send) {
         res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
     }).fail(function(err) {
-	console.log("detalleDocumentoTemporalConValidacionCantidadIngresada ",err);
+	console.log("Error [documentoTemporalClientes] ",err);
         res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
     }).done();  
 }
@@ -33,6 +33,7 @@ E008Controller.prototype.documentoTemporalClientesAutomatico = function (req, ca
     G.Q.nfcall(__documentoTemporalClientes,req,that).then(function(send) {
         callback(false,send);
     }).fail(function(err) {
+        console.log("Error [documentoTemporalClientesAutomatico] ",err);
 	callback(err);
     }).done(); 
 }
@@ -164,13 +165,9 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function (req, res
                         return;
                     }
                 });
-
-
             });
-
         });
     });
-
 };
 
 
@@ -179,7 +176,7 @@ E008Controller.prototype.documentoTemporalFarmacias = function (req, res) {
     G.Q.nfcall(__documentoTemporalFarmacias,req,that).then(function(send) {
         res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
     }).fail(function(err) {
-	console.log("detalleDocumentoTemporalConValidacionCantidadIngresada ",err);
+	console.log("Error [documentoTemporalFarmacias] ",err);
         res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
     }).done();  
 }
@@ -441,11 +438,6 @@ function __detalleDocumentoTemporalConValidacionCantidadIngresada(req,that,callb
         return {valido: false, msj: 'El costo total y el costo total del pedido están vacíos'};
     }
 
-    /*validacion = __validarCantidadSolicitadaCantidadSeparada(args, that);
-     if (!validacion.valido) {
-     res.send(G.utils.r(req.url, validacion.msj, 404, {}));
-     }*/
-
 
     var empresa_id = args.documento_temporal.empresa_id;
     var centro_utilidad_id = args.documento_temporal.centro_utilidad_id;
@@ -468,7 +460,16 @@ function __detalleDocumentoTemporalConValidacionCantidadIngresada(req,that,callb
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_cantidad_total_ingresada", doc_tmp_id, empresa_id, centro_utilidad_id, bodega_id, codigo_producto).then(function (resultado) {
         cantidad_total = resultado[0].cantidad_total;
+        var condicion=false;
         if (cantidad_total + cantidad_ingresada > cantidad_solicitada) {
+            if(args.documento_temporal.valida!==undefined){
+             condicion=false;   
+            }else{
+             condicion=true;
+            }
+        }
+        
+        if (condicion) {
             //res.send(G.utils.r(req.url, 'Error la cantidad ingresada no puede ser mayor a la pendiente', 500, {documento_temporal: {item_id: 0}}));
             throw {msj: 'Error la cantidad ingresada no puede ser mayor a la pendiente', status: 500};
             //return;
@@ -565,8 +566,6 @@ function __validarParametrosDetalleTemporal(args) {
     if (args.documento_temporal.iva === undefined || args.documento_temporal.valor_unitario === undefined) {
         return {valido: false, msj: 'El IVA o El vlr Unitario no están definidas'};
     }
-
-
 
     if (args.documento_temporal.doc_tmp_id === '' || args.documento_temporal.empresa_id === '' || args.documento_temporal.centro_utilidad_id === '' || args.documento_temporal.bodega_id === '') {
         return {valido: false, msj: 'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id estan vacios'};
@@ -1267,10 +1266,6 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function (re
         }
 
     });
-
-
-
-
 };
 
 // Consultar productos Auditados
@@ -1361,17 +1356,13 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function (req, res) 
             return;
         }
 
-
-
         var validarPendientes = (args.documento_temporal.justificacion.validar_pendientes !== undefined && args.documento_temporal.justificacion.validar_pendientes !== null) ? Boolean(parseInt(args.documento_temporal.justificacion.validar_pendientes)) : true
 
         if (parseInt(args.documento_temporal.justificacion.cantidad_pendiente) <= 0 && validarPendientes) {
             res.send(G.utils.r(req.url, 'La cantidad_pendiente debe ser mayor a cero', 404, {}));
             return;
         }
-
     }
-
 
     var item_id = args.documento_temporal.item_id || 0;
     var auditado = args.documento_temporal.auditado;
@@ -1526,12 +1517,6 @@ E008Controller.prototype.auditoriaProductosClientes = function (req, res) {
         return;
     }
 
-    /*if (args.documento_temporal.filtro.termino_busqueda === '') {
-     res.send(G.utils.r(req.url, 'termino_busqueda esta vacio', 404, {}));
-     return;
-     }*/
-
-
     var numero_pedido = args.documento_temporal.numero_pedido;
     var filtro = args.documento_temporal.filtro;
     var termino_busqueda = args.documento_temporal.filtro.termino_busqueda;
@@ -1635,12 +1620,6 @@ E008Controller.prototype.auditoriaProductosFarmacias = function (req, res) {
         res.send(G.utils.r(req.url, 'numero_pedido esta vacios', 404, {}));
         return;
     }
-
-    /*if (args.documento_temporal.filtro.termino_busqueda === '') {
-     res.send(G.utils.r(req.url, 'termino_busqueda esta vacio', 404, {}));
-     return;
-     }*/
-
 
     var numero_pedido = args.documento_temporal.numero_pedido;
     var filtro = args.documento_temporal.filtro;
@@ -1780,7 +1759,6 @@ E008Controller.prototype.imprimirRotuloClientes = function (req, res) {
             if (!existe) {
                 detalleDepurado.push(rows[i]);
             }
-
         }
 
         var obj = {
@@ -1894,12 +1872,7 @@ function _generarDocumentoRotulo(obj, callback) {
                     callback(nombreTmp);
                 }
             });
-
-
         });
-
-
-
     });
 }
 
@@ -1907,10 +1880,6 @@ function _generarDocumentoRotulo(obj, callback) {
 
 // Generar Documento Despacho Clientes
 E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) {
-console.log("--------------------------");
-console.log("--------------------------");
-console.log("----------generarDocumentoDespachoClientes----------------");
-console.log("--------------------------");
 
     // Verificar Pendientes
     // Ingresar Justificacion
@@ -1924,8 +1893,7 @@ console.log("--------------------------");
         res.send(G.utils.r(req.url, 'No llega la bodega de session (Comunicarse con Sistemas)', 404, {}));
         return;
     }
-    console.log("req.session ->> ",req.session.user);
-        
+         
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined
             || args.documento_temporal.usuario_id === undefined) {
 
@@ -2068,11 +2036,7 @@ console.log("--------------------------");
      
      }).*/
     }).then(function (rows) {
-        
-        console.log("***********************  numero_pedido ************************* ");
-        console.log("***********************  numero_pedido ************************* ",numero_pedido);
-        
-        
+                
         var obj ={numero_pedido:numero_pedido};
         tmp.numero_pedido = numero_pedido;
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultarPedidoMultipleCliente",obj);
@@ -2093,8 +2057,7 @@ console.log("--------------------------");
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespachoAutomatico", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento, numeroDocumento: numero_documento});
         }
     }).then(function (detalleDocumento) {
-        console.log( "detalleDocumento ",detalleDocumento);
-        console.log( "detalleDocumento ",detalleDocumento && detalleDocumento.length > 0);
+        
         if (detalleDocumento && detalleDocumento.length > 0) {          
             var parametros = {
                 ordenes_compras: {
@@ -2300,9 +2263,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function (req, res)
                 }
             };
             G.eventEmitter.emit("onGenerarOrdenDeCompra", parametros);
-        }
-        ;
-
+        };
 
     }).fail(function (err) {
         console.log("se ha generado un error en el documento generarDocumentoDespachoClientes ", err);
@@ -2314,8 +2275,6 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function (req, res)
             res.send(G.utils.r(req.url, "Error interno", "500", {}));
         }
     }).done();
-
-
 };
 
 function __validarDumian(identificacion_cliente, tipo_id_cliente) {
@@ -2614,8 +2573,6 @@ function __sincronizarDocumentoDespacho(obj, callback) {
         console.log("Error __sincronizarDocumentoDespacho", err);
         callback(err);
     }).done();
-
-
 }
 ;
 
@@ -3194,14 +3151,9 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                         movimientos_bodegas: {nombre_pdf: nombre_pdf, datos_documento: datos_documento}
                     }));
                 });
-
             });
-
-
         });
-
     });
-
 };
 
 
@@ -3367,8 +3319,6 @@ E008Controller.prototype.detalleDocumentoAuditado = function (req, res) {
     var prefijo = args.despachos_auditados.prefijo;
     var numero = args.despachos_auditados.numero;
 
-
-
     var obj = {
         prefijo: prefijo.toUpperCase(),
         numero: numero,
@@ -3426,8 +3376,6 @@ E008Controller.prototype.detallePedidoClienteDocumento = function (req, res) {
     var prefijo = args.despachos_auditados.prefijo;
     var numero = args.despachos_auditados.numero;
 
-
-
     var obj = {
         prefijo: prefijo.toUpperCase(),
         numero: numero,
@@ -3451,9 +3399,6 @@ E008Controller.prototype.detallePedidoClienteDocumento = function (req, res) {
             def.resolve();
         }
         res.send(G.utils.r(req.url, status.mensaje, status.codigo, {despachos_auditados: resultado}));
-
-
-        //return res.send(G.utils.r(req.url, 'Detalle de pedidos cliente del documento auditados', 200, {despachos_auditados: resultado}));
 
     }).fail(function (err) {
 
@@ -3637,9 +3582,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                     }
                                 }
                             }
-
                         }
-
                     });
 
                     callback(err, productos_no_auditados, productos_pendientes, productosSinExistencias, productosPendientesInvalidos);

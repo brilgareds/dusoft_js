@@ -2307,10 +2307,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
          
     }).then(function(resultado){
         
-
-        
-        return G.Q.ninvoke(that.m_ordenes_compra, "finalizar_orden_compra",parametros.encabezado.ordenId, 1);
-         
+        return G.Q.ninvoke(that.m_ordenes_compra, "finalizar_orden_compra",parametros.encabezado.ordenId, 1);         
         
     }).then(function(resultado){
         
@@ -2363,9 +2360,6 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
             
     }).then(function(resultado){
         
-//        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta",respuesta);
-//
-//        that.e_ordenes_compra.onNotificarGenerarI002(args.ordenes_compras.usuario_id, respuesta);
         if (resultado.length > 0) {
             return G.Q.nfcall(__generacionAutomatica, respuesta);
         } else {
@@ -2439,14 +2433,11 @@ function __generacionAutomatica(datos,callback){
         callback(false,resultado);
     }).fail(function(err){
         
-        console.log("se ha generado un error", err);
+        console.log("[generarOrdenDeCompraAuditado]", err);
         callback(err);
         
     });
        
-//        that.generarIngresoI002(datos.parametros.data, function (asd) {                           
-//            that.ejecutarDocumento(datos.parametros.data.numero_orden, datos.parametros.data.numero_pedido, datos.parametros.data.sw_origen_destino, datos.parametros.data.productos,datos.parametros.data.sw_tipo_pedido,cotizacion);
-//        });
    }else{
        console.log("---------no valido-------------- ");
        console.log("---------no valido-------------- ",(datos.status === 200 && ejecutar && datos.data.sw_estado === '0' && ((bodega === '03' && datos.data.sw_origen_destino === 1) || (bodega === '06' && datos.data.sw_origen_destino === 0) || (bodega === '06' && datos.data.sw_origen_destino === 1) )));
@@ -2502,6 +2493,7 @@ function __newDocTemporalI002(req, callback) {
         }).done();
 
     }).fail(function(err) {
+        console.log("Error [__newDocTemporalI002]",err);
         callback(err);
     }).done();
 };
@@ -2551,7 +2543,7 @@ function __recursivaProductosTemporalI002(datos,index,callback){
         index++;
         __recursivaProductosTemporalI002(datos,index,callback);
     }).fail(function(err){
-        console.log("se ha generado un error", err);
+        console.log("Error [__recursivaProductosTemporalI002]",err);
         callback(err);        
     });
 }
@@ -2605,7 +2597,7 @@ function __addItemDocTemporalI002(req,callback){
     }).then(function(result) { 
          callback(false,{status:200,addItemDocTemporal: result});   
     }).fail(function(err) {
-        console.log("addItemDocTemporal ",err);
+        console.log("Error [__addItemDocTemporalI002]",err);
         callback(err);
     }).done();
 }
@@ -2628,6 +2620,7 @@ function __traslado(that,parametros,callback){
             callback(false);
         }
     }).fail(function(err) {
+        console.log("Error [__traslado]",err);
         callback(true,err);        
     }).done();
 }
@@ -2708,7 +2701,7 @@ function __ejecutarDocumento(parametros,callback){
         
          callback(false,{status:200,respuesta: documentoI002});   
     }).fail(function(err) {
-        console.log("__ejecutarDocumento ",err);
+        console.log("Error [__ejecutarDocumento]",err);
         callback(err);
     }).done();
 };
@@ -2786,6 +2779,7 @@ function __ejecutaAsignacionDePedido(that,parametros,callback){
         return G.Q.ninvoke(that.c_e008,"validarCajaProductoAutomatico", obj); 
         
     }).then(function(result) {
+       
         var obj = {
             numero_pedido: parametros.pedidoFinal,
             empresa_id: pedidos[0].empresa_destino,
@@ -2820,14 +2814,13 @@ function __ejecutaAsignacionDePedido(that,parametros,callback){
 
         parametros.productos=result;
         return G.Q.nfcall(__enviarDocumentoTemporal, that,parametros,pedidos,0); 
-
         
     }).then(function(result) {
         
         callback(false,result);
         
     }).fail(function(err) {
-        console.log("Error __ejecutarDocumento ",err);
+        console.log("Error [__ejecutarDocumento] ",err);
         callback(err);
     }).done();
 }
@@ -2857,7 +2850,8 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
                     iva: producto.iva,
                     total_costo: producto.total_costo,
                     total_costo_pedido: producto.total_costo_pedido,
-                    cantidad_solicitada: producto.cantidad
+                    cantidad_solicitada: producto.cantidad,
+                    valida : true
                 }
             }
         }
@@ -2865,11 +2859,15 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
 
 
     G.Q.ninvoke(that.c_e008, "detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico", obj).then(function (result) {
-       index++;
+   
+      return G.Q.ninvoke(that.m_e008,"actualizarCajaDeTemporal",result.respuesta.documento_temporal.item_id, producto.numero_caja, producto.tipo_caja);
+      
+    }).then(function(result) {
+        index++;  
       __enviarDocumentoTemporal(that,parametros, pedidos, index, callback);
 
     }).fail(function (err) {
-        console.log("__enviarDocumentoTemporal ", err);
+        console.log("Error [__enviarDocumentoTemporal]",err);
         callback(err);
         return;
     }).done();
@@ -2912,8 +2910,7 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
         
     }).then(function (resultado) {
          
-            callback(false, {status: 200, msj: 'Orden de compra registrada correctamente', data: {numero_orden: numero_orden}});
-        
+            callback(false, {status: 200, msj: 'Orden de compra registrada correctamente', data: {numero_orden: numero_orden}});        
 
     }).fail(function (err) {
         var msj = "Erro Interno";
@@ -2923,7 +2920,7 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
             msj = err.msj;
             status = err.status;
         }
-        
+        console.log("Error [__insertarOrdenCompra]",err);
         callback(err, {status: status, msj: msj});
 
     }).done();

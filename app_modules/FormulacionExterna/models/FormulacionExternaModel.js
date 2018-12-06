@@ -1687,7 +1687,7 @@ FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensarNoOcul
                                 .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").groupBy("ip.producto_id", "dc.codigo_medicamento").as("a");
                         })
                         .groupBy("producto_id", "codigo_medicamento");
-    console.log("listarMedicamentosPendientesPorDispensarNoOcultos",G.sqlformatter.format(query.toString())); 
+
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){   
@@ -1721,7 +1721,7 @@ FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensar = fun
                                 .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").groupBy("fem.fe_medicamento_id", "dc.codigo_medicamento", "fem.sw_autorizado", "med.cod_principio_activo", "dc.esm_pendiente_dispensacion_id").as("a");
                         })
                         .groupBy("fe_medicamento_id","codigo_medicamento", "sw_autorizado", "cod_principio_activo", "esm_pendiente_dispensacion_id");
-    console.log("listarMedicamentosPendientesPorDispensar",G.sqlformatter.format(query.toString())); 
+  
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){   
@@ -1932,7 +1932,7 @@ FormulacionExternaModel.prototype.obtenerPendientesEnt = function(formula_id, im
                     }
                 });
 
-    console.log("obtenerPendientesEnt",G.sqlformatter.format(query.toString())); 
+
      query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){   

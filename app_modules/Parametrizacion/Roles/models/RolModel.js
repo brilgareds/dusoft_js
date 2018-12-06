@@ -161,7 +161,6 @@ RolModel.prototype.habilitarModulosEnRoles = function(usuario_id, rolesModulos, 
     var that = this;
 
     __habilitarModulosEnRoles(that, usuario_id, rolesModulos, [], function(err, result, ids) {
-        console.log("ids creados 111 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", ids, result, err);
         callback(err, result, ids);
     });
 

@@ -542,10 +542,6 @@ DocumentoBodegaI011.prototype.creacion_documento = function (parametros, transac
     // Ingresar Cabecera Documento temporal
     __ingresar_documento_verificacion(parametros, transaccion, function (err, result) {
 
-        console.log('=============== __ingresar_documento_verificacion ========================');
-        console.log(err, result);
-        console.log('=====================================================================');
-
         if (err) {
             callback(err);
             return;

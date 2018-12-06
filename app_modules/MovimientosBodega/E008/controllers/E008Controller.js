@@ -18,20 +18,48 @@ var E008Controller = function (movimientos_bodegas, m_e008, e_e008, pedidos_clie
 };
 
 
-// Generar Cabecera del Documento Temporal de CLIENTES
 E008Controller.prototype.documentoTemporalClientes = function (req, res) {
-
     var that = this;
+    G.Q.nfcall(__documentoTemporalClientes,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("Error [documentoTemporalClientes] ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();  
+}
+
+E008Controller.prototype.documentoTemporalClientesAutomatico = function (req, callback) {
+      var that = this;
+    G.Q.nfcall(__documentoTemporalClientes,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+        console.log("Error [documentoTemporalClientesAutomatico] ",err);
+	callback(err);
+    }).done(); 
+}
+
+
+// Generar Cabecera del Documento Temporal de CLIENTES
+function __documentoTemporalClientes(req,that,callback){
 
     var args = req.body.data;
-
+    var send ={};
+    
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.tipo_tercero_id === undefined || args.documento_temporal.tercero_id === undefined || args.documento_temporal.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+//        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        send.msj='Algunos Datos Obligatorios Estan Vacíos';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
     if (args.documento_temporal.numero_pedido === '' || args.documento_temporal.tipo_tercero_id === '' || args.documento_temporal.tercero_id === '' || args.documento_temporal.observacion === '') {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacíos', 404, {}));
+//        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacíos', 404, {}));
+        send.msj='Algunos Datos Obligatorios Estan Vacíos';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
@@ -48,7 +76,11 @@ E008Controller.prototype.documentoTemporalClientes = function (req, res) {
         if (continuar) {
             that.m_e008.ingresar_despacho_clientes_temporal(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, function (err, doc_tmp_id) {
                 if (err) {
-                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
+//                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
+                    send.msj='Error Creando el Documento Temporal Clientes';
+                    send.status=500;
+                    send.respuesta={documento_temporal: {}};
+                    callback(false,send);
                     return;
                 } else {
                     /* ===============================================*/
@@ -57,12 +89,20 @@ E008Controller.prototype.documentoTemporalClientes = function (req, res) {
                     // - La reasignacion.
                     /* ===============================================*/
                     that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-                    res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+//                    res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+                    send.msj='Documento Temporal Cliente Creado Correctamente';
+                    send.status=200;
+                    send.respuesta={documento_temporal: {doc_tmp_id: doc_tmp_id}};
+                    callback(false,send);
                     return;
                 }
             });
         } else {
-            res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
+//            res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
+            send.msj='!Advertencia!, El pedido esta asignado a otro usuario';
+            send.status=403;
+            send.respuesta={documento_temporal: {}};
+            callback(false,send);
             return;
         }
     });
@@ -125,30 +165,52 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function (req, res
                         return;
                     }
                 });
-
-
             });
-
         });
     });
-
 };
 
-// Generar Cabecera del Documento Temporal de FARMACIAS
+
 E008Controller.prototype.documentoTemporalFarmacias = function (req, res) {
-
-
     var that = this;
+    G.Q.nfcall(__documentoTemporalFarmacias,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("Error [documentoTemporalFarmacias] ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();  
+}
 
+E008Controller.prototype.documentoTemporalFarmaciasAutomatico = function (req, callback) {
+      var that = this;
+    G.Q.nfcall(__documentoTemporalFarmacias,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+}
+
+
+// Generar Cabecera del Documento Temporal de FARMACIAS
+function __documentoTemporalFarmacias(req,that,callback){
+    var send ={};
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.empresa_id === undefined || args.documento_temporal.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion no estan definidos.. ', 404, {}));
+//        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion no estan definidos.. ', 404, {}));
+        send.msj='El numero_pedido, empresa_id u observacion no estan definidos.. ';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
     if (args.documento_temporal.numero_pedido === '' || args.documento_temporal.empresa_id === '' || args.documento_temporal.observacion === '') {
-        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion estan vacios ', 404, {}));
+//        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion estan vacios ', 404, {}));
+        send.msj='El numero_pedido, empresa_id u observacion estan vacios ';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
@@ -166,7 +228,11 @@ E008Controller.prototype.documentoTemporalFarmacias = function (req, res) {
 
             that.m_e008.ingresar_despacho_farmacias_temporal(bodegas_doc_id, empresa_id, numero_pedido, observacion, usuario_id, function (err, doc_tmp_id, resultado) {
                 if (err) {
-                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+//                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+                    send.msj='Error Creando el Documento Temporal Farmacias';
+                    send.status=500;
+                    send.respuesta={documento_temporal: {}};
+                    callback(false,send);
                     return;
                 } else {
 
@@ -178,12 +244,20 @@ E008Controller.prototype.documentoTemporalFarmacias = function (req, res) {
 
                     that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
-                    res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+//                  res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+                    send.msj='Documento Temporal Farmacias Creado Correctamente';
+                    send.status=200;
+                    send.respuesta={documento_temporal: {doc_tmp_id: doc_tmp_id}};
+                    callback(false,send);
                     return;
                 }
             });
         } else {
-            res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
+         // res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
+            send.msj='!Advertencia!, El pedido esta asignado a otro usuario';
+            send.status=403;
+            send.respuesta={documento_temporal: {}};
+            callback(false,send);
             return;
         }
     });
@@ -320,15 +394,40 @@ E008Controller.prototype.detalleDocumentoTemporal = function (req, res) {
 
 // Ingresar el detalle del documento temporal CLIENTES / FARMACIAS 
 E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresada = function (req, res) {
-
     var that = this;
+    G.Q.nfcall(__detalleDocumentoTemporalConValidacionCantidadIngresada,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("detalleDocumentoTemporalConValidacionCantidadIngresada ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();  
+}
 
+E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico = function (req, callback) {
+      var that = this;
+    G.Q.nfcall(__detalleDocumentoTemporalConValidacionCantidadIngresada,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+}
+
+
+function __detalleDocumentoTemporalConValidacionCantidadIngresada(req,that,callback) {
+
+//    var that = this;
+    var send ={};
     var args = req.body.data;
 
 
     var validacion = __validarParametrosDetalleTemporal(args);
     if (!validacion.valido) {
-        res.send(G.utils.r(req.url, validacion.msj, 404, {}));
+//        res.send(G.utils.r(req.url, validacion.msj, 404, {}));
+        send.msj=validacion.msj;
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
+        return;
     }
 
     if (args.documento_temporal.total_costo === undefined || args.documento_temporal.total_costo_pedido === undefined) {
@@ -338,11 +437,6 @@ E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresada 
     if (args.documento_temporal.total_costo === '' || args.documento_temporal.total_costo_pedido === '') {
         return {valido: false, msj: 'El costo total y el costo total del pedido están vacíos'};
     }
-
-    /*validacion = __validarCantidadSolicitadaCantidadSeparada(args, that);
-     if (!validacion.valido) {
-     res.send(G.utils.r(req.url, validacion.msj, 404, {}));
-     }*/
 
 
     var empresa_id = args.documento_temporal.empresa_id;
@@ -366,7 +460,16 @@ E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresada 
 
     G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_cantidad_total_ingresada", doc_tmp_id, empresa_id, centro_utilidad_id, bodega_id, codigo_producto).then(function (resultado) {
         cantidad_total = resultado[0].cantidad_total;
+        var condicion=false;
         if (cantidad_total + cantidad_ingresada > cantidad_solicitada) {
+            if(args.documento_temporal.valida!==undefined){
+             condicion=false;   
+            }else{
+             condicion=true;
+            }
+        }
+        
+        if (condicion) {
             //res.send(G.utils.r(req.url, 'Error la cantidad ingresada no puede ser mayor a la pendiente', 500, {documento_temporal: {item_id: 0}}));
             throw {msj: 'Error la cantidad ingresada no puede ser mayor a la pendiente', status: 500};
             //return;
@@ -377,14 +480,26 @@ E008Controller.prototype.detalleDocumentoTemporalConValidacionCantidadIngresada 
 
         var item_id = (rows.length > 0) ? rows[0].item_id : 0;
 
-        res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
+//        res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
+        send.msj='Producto registrado correctamente en el documento temporal';
+        send.status=200;
+        send.respuesta={documento_temporal: {item_id: item_id}};
+        callback(false,send);
         return;
     }).fail(function (err) {
         if (err.status) {
-            res.send(G.utils.r(req.url, err.msj, 500, {documento_temporal: {item_id: 0}}));
+//            res.send(G.utils.r(req.url, err.msj, 500, {documento_temporal: {item_id: 0}}));
+            send.msj=err.msj;
+            send.status=500;
+            send.respuesta={documento_temporal: {item_id: 0}};
+            callback(send);
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Error interno.', 500, {documento_temporal: {item_id: 0}}));
+//            res.send(G.utils.r(req.url, 'Error interno.', 500, {documento_temporal: {item_id: 0}}));
+            send.msj='Error interno.';
+            send.status=500;
+            send.respuesta={documento_temporal: {item_id: 0}};
+            callback(send);
         }
     }).done();
 
@@ -451,8 +566,6 @@ function __validarParametrosDetalleTemporal(args) {
     if (args.documento_temporal.iva === undefined || args.documento_temporal.valor_unitario === undefined) {
         return {valido: false, msj: 'El IVA o El vlr Unitario no están definidas'};
     }
-
-
 
     if (args.documento_temporal.doc_tmp_id === '' || args.documento_temporal.empresa_id === '' || args.documento_temporal.centro_utilidad_id === '' || args.documento_temporal.bodega_id === '') {
         return {valido: false, msj: 'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id estan vacios'};
@@ -1153,10 +1266,6 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function (re
         }
 
     });
-
-
-
-
 };
 
 // Consultar productos Auditados
@@ -1247,17 +1356,13 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function (req, res) 
             return;
         }
 
-
-
         var validarPendientes = (args.documento_temporal.justificacion.validar_pendientes !== undefined && args.documento_temporal.justificacion.validar_pendientes !== null) ? Boolean(parseInt(args.documento_temporal.justificacion.validar_pendientes)) : true
 
         if (parseInt(args.documento_temporal.justificacion.cantidad_pendiente) <= 0 && validarPendientes) {
             res.send(G.utils.r(req.url, 'La cantidad_pendiente debe ser mayor a cero', 404, {}));
             return;
         }
-
     }
-
 
     var item_id = args.documento_temporal.item_id || 0;
     var auditado = args.documento_temporal.auditado;
@@ -1412,12 +1517,6 @@ E008Controller.prototype.auditoriaProductosClientes = function (req, res) {
         return;
     }
 
-    /*if (args.documento_temporal.filtro.termino_busqueda === '') {
-     res.send(G.utils.r(req.url, 'termino_busqueda esta vacio', 404, {}));
-     return;
-     }*/
-
-
     var numero_pedido = args.documento_temporal.numero_pedido;
     var filtro = args.documento_temporal.filtro;
     var termino_busqueda = args.documento_temporal.filtro.termino_busqueda;
@@ -1521,12 +1620,6 @@ E008Controller.prototype.auditoriaProductosFarmacias = function (req, res) {
         res.send(G.utils.r(req.url, 'numero_pedido esta vacios', 404, {}));
         return;
     }
-
-    /*if (args.documento_temporal.filtro.termino_busqueda === '') {
-     res.send(G.utils.r(req.url, 'termino_busqueda esta vacio', 404, {}));
-     return;
-     }*/
-
 
     var numero_pedido = args.documento_temporal.numero_pedido;
     var filtro = args.documento_temporal.filtro;
@@ -1666,7 +1759,6 @@ E008Controller.prototype.imprimirRotuloClientes = function (req, res) {
             if (!existe) {
                 detalleDepurado.push(rows[i]);
             }
-
         }
 
         var obj = {
@@ -1780,12 +1872,7 @@ function _generarDocumentoRotulo(obj, callback) {
                     callback(nombreTmp);
                 }
             });
-
-
         });
-
-
-
     });
 }
 
@@ -1793,10 +1880,6 @@ function _generarDocumentoRotulo(obj, callback) {
 
 // Generar Documento Despacho Clientes
 E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) {
-console.log("--------------------------");
-console.log("--------------------------");
-console.log("----------generarDocumentoDespachoClientes----------------");
-console.log("--------------------------");
 
     // Verificar Pendientes
     // Ingresar Justificacion
@@ -1810,8 +1893,7 @@ console.log("--------------------------");
         res.send(G.utils.r(req.url, 'No llega la bodega de session (Comunicarse con Sistemas)', 404, {}));
         return;
     }
-    console.log("req.session ->> ",req.session.user);
-        
+         
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined
             || args.documento_temporal.usuario_id === undefined) {
 
@@ -1833,7 +1915,7 @@ console.log("--------------------------");
 
     G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function (resultado) {
         pedido = resultado[0];
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'obtener_responsables_del_pedido', numero_pedido);
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'obtener_responsables_del_pedido', numero_pedido); //responsable del pedido
     }).then(function (responsables) {
         var existe_estado_auditoria = false;
         var _responsables = [];
@@ -1954,11 +2036,7 @@ console.log("--------------------------");
      
      }).*/
     }).then(function (rows) {
-        
-        console.log("***********************  numero_pedido ************************* ");
-        console.log("***********************  numero_pedido ************************* ",numero_pedido);
-        
-        
+                
         var obj ={numero_pedido:numero_pedido};
         tmp.numero_pedido = numero_pedido;
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultarPedidoMultipleCliente",obj);
@@ -1979,8 +2057,7 @@ console.log("--------------------------");
             return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespachoAutomatico", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento, numeroDocumento: numero_documento});
         }
     }).then(function (detalleDocumento) {
-        console.log( "detalleDocumento ",detalleDocumento);
-        console.log( "detalleDocumento ",detalleDocumento && detalleDocumento.length > 0);
+        
         if (detalleDocumento && detalleDocumento.length > 0) {          
             var parametros = {
                 ordenes_compras: {
@@ -2186,9 +2263,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function (req, res)
                 }
             };
             G.eventEmitter.emit("onGenerarOrdenDeCompra", parametros);
-        }
-        ;
-
+        };
 
     }).fail(function (err) {
         console.log("se ha generado un error en el documento generarDocumentoDespachoClientes ", err);
@@ -2200,8 +2275,6 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function (req, res)
             res.send(G.utils.r(req.url, "Error interno", "500", {}));
         }
     }).done();
-
-
 };
 
 function __validarDumian(identificacion_cliente, tipo_id_cliente) {
@@ -2455,10 +2528,12 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
         if (!args.documento_despacho.background) {
             if (err.status) {
                 res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+                return;
 
             } else {
 
                 res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
+                return;
             }
         }
 
@@ -2498,8 +2573,6 @@ function __sincronizarDocumentoDespacho(obj, callback) {
         console.log("Error __sincronizarDocumentoDespacho", err);
         callback(err);
     }).done();
-
-
 }
 ;
 
@@ -2749,6 +2822,24 @@ E008Controller.prototype.consultarNumeroMayorRotulo = function (req, res) {
 
 };
 
+E008Controller.prototype.validarCajaProductoAutomatico = function (req, callback) {
+    var that = this;
+    G.Q.nfcall(__validarCajaProducto,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+}
+
+E008Controller.prototype.validarCajaProducto = function (req, res) {
+  var that = this;
+    G.Q.nfcall(__validarCajaProducto,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("validarCajaProducto ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();    
+}
 
 /**
  * +Descripcion: Metodo encargado de validar Validar que la caja este abierta
@@ -2756,31 +2847,45 @@ E008Controller.prototype.consultarNumeroMayorRotulo = function (req, res) {
  * @param {type} res
  * @returns {unresolved}
  */
-E008Controller.prototype.validarCajaProducto = function (req, res) {
+function __validarCajaProducto(req, that, callback) {
 
-    var that = this;
-
+    var send = {};
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
             args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined || !args.documento_temporal.tipo_pedido) {
-        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja, tipo de pedido o tipo no estan definidos', 404, {}));
+//        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja, tipo de pedido o tipo no estan definidos', 404, {}));
+        send.msj='documento_temporal_id, numero_caja, tipo de pedido o tipo no estan definidos';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
     if (args.documento_temporal.numero_pedido === undefined || args.documento_temporal.nombre_cliente === undefined || args.documento_temporal.direccion_cliente === undefined) {
-        res.send(G.utils.r(req.url, 'numero_pedido,cliente o direccion no estan definidos', 404, {}));
+       // res.send(G.utils.r(req.url, 'numero_pedido,cliente o direccion no estan definidos', 404, {}));
+        send.msj='numero_pedido,cliente o direccion no estan definidos';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
     if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.numero_caja === '' || args.documento_temporal.numero_caja === '0') {
-
-        res.send(G.utils.r(req.url, 'documento_temporal_id o numero_caja estan vacios', 404, {}));
+//        res.send(G.utils.r(req.url, 'documento_temporal_id o numero_caja estan vacios', 404, {}));
+        send.msj='documento_temporal_id o numero_caja estan vacios';
+        send.status=404;
+        send.respuesta={};
+       callback(false,send);
         return;
     }
 
     if (args.documento_temporal.numero_pedido === '' || args.documento_temporal.nombre_cliente === '' || args.documento_temporal.direccion_cliente === '') {
-        res.send(G.utils.r(req.url, 'documento_temporal_id o numero_caja estan vacios', 404, {}));
+//        res.send(G.utils.r(req.url, 'documento_temporal_id o numero_caja estan vacios', 404, {}));
+        send.msj='documento_temporal_id o numero_caja estan vacios';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);
         return;
     }
 
@@ -2798,14 +2903,22 @@ E008Controller.prototype.validarCajaProducto = function (req, res) {
 
     that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, tipoPedido, function (err, rotuloMayor) {
         if (err) {
-            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+//            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+            send.msj='Se ha generado un error interno1';
+            send.status=500;
+            send.respuesta={movimientos_bodegas: {}};
+            callback(false,send);
             return;
         }
 
         var numeroSiguiente = parseInt(rotuloMayor[0].numero_caja) + 1;
 
         if (numeroSiguiente < numero_caja) {
-            res.send(G.utils.r(req.url, 'El número debe ser consecutivo, el número siguiente debe ser ' + numeroSiguiente, 403, {movimientos_bodegas: {caja_valida: false}}));
+//            res.send(G.utils.r(req.url, 'El número debe ser consecutivo, el número siguiente debe ser ' + numeroSiguiente, 403, {movimientos_bodegas: {caja_valida: false}}));
+            send.msj='El número debe ser consecutivo, el número siguiente debe ser ' + numeroSiguiente;
+            send.status=403;
+            send.respuesta={movimientos_bodegas: {caja_valida: false}};
+            callback(false,send);
             return;
         }
 
@@ -2818,7 +2931,11 @@ E008Controller.prototype.validarCajaProducto = function (req, res) {
          */
         that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, tipoPedido, function (err, rotulos_cajas) {
             if (err) {
-                res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+//                res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                send.msj='Se ha generado un error interno 3';
+                send.status=500;
+                send.respuesta={movimientos_bodegas: {}};
+                callback(false,send);
                 return;
             } else {
                 var rotulo_caja;
@@ -2834,18 +2951,29 @@ E008Controller.prototype.validarCajaProducto = function (req, res) {
                 }
 
                 if (rotulo_caja) {
-
-                    res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
+                    //res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
+                    send.msj='Validacion caja producto';
+                    send.status=200;
+                    send.respuesta={movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}};
+                    callback(false,send);
                     return;
                 } else {
                     // Crear
                     that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente,
                             cantidad, ruta, contenido, numero_caja, usuario_id, tipo, tipoPedido, function (err, rotulo_caja) {
                                 if (err) {
-                                    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+//                                    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                                    send.msj='Se ha generado un error interno';
+                                    send.status=500;
+                                    send.respuesta={movimientos_bodegas: {}};
+                                    callback(false,send);
                                     return;
                                 } else {
-                                    res.send(G.utils.r(req.url, 'Rotulo generado correctamente', 200, {movimientos_bodegas: {caja_valida: true}}));
+//                                    res.send(G.utils.r(req.url, 'Rotulo generado correctamente', 200, {movimientos_bodegas: {caja_valida: true}}));
+                                    send.msj='Rotulo generado correctamente ';
+                                    send.status=200;
+                                    send.respuesta={movimientos_bodegas: {caja_valida: true}};
+                                    callback(false,send);
                                     return;
                                 }
                             });
@@ -2853,9 +2981,6 @@ E008Controller.prototype.validarCajaProducto = function (req, res) {
             }
         });
     });
-    // });
-
-
 };
 
 // Generar rotulos caja
@@ -3026,14 +3151,9 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                         movimientos_bodegas: {nombre_pdf: nombre_pdf, datos_documento: datos_documento}
                     }));
                 });
-
             });
-
-
         });
-
     });
-
 };
 
 
@@ -3199,8 +3319,6 @@ E008Controller.prototype.detalleDocumentoAuditado = function (req, res) {
     var prefijo = args.despachos_auditados.prefijo;
     var numero = args.despachos_auditados.numero;
 
-
-
     var obj = {
         prefijo: prefijo.toUpperCase(),
         numero: numero,
@@ -3258,8 +3376,6 @@ E008Controller.prototype.detallePedidoClienteDocumento = function (req, res) {
     var prefijo = args.despachos_auditados.prefijo;
     var numero = args.despachos_auditados.numero;
 
-
-
     var obj = {
         prefijo: prefijo.toUpperCase(),
         numero: numero,
@@ -3283,9 +3399,6 @@ E008Controller.prototype.detallePedidoClienteDocumento = function (req, res) {
             def.resolve();
         }
         res.send(G.utils.r(req.url, status.mensaje, status.codigo, {despachos_auditados: resultado}));
-
-
-        //return res.send(G.utils.r(req.url, 'Detalle de pedidos cliente del documento auditados', 200, {despachos_auditados: resultado}));
 
     }).fail(function (err) {
 
@@ -3469,9 +3582,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                     }
                                 }
                             }
-
                         }
-
                     });
 
                     callback(err, productos_no_auditados, productos_pendientes, productosSinExistencias, productosPendientesInvalidos);

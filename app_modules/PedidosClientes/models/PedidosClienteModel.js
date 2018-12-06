@@ -15,7 +15,7 @@ PedidosClienteModel.prototype.actualizarEstadoPedidoMultipleFarmacia = function 
 
         callback(false, resultado);
     }).catch(function (err) {
-        console.log("err [actualizar_estado_actual_pedido]: ", err);
+        console.log("err [actualizarEstadoPedidoMultipleFarmacia]: ", err);
         callback(err);
     });
 
@@ -593,45 +593,6 @@ PedidosClienteModel.prototype.insertarEncabezadoFarmaciaRelacionadoNumeroPedido 
                     '" + farmacia_id + "' , '" + centro_utilidad + "' , '" + bodega + "', '" + observacion + "', " + usuario_id + ", now(), '03', 0, 0, 1, 1, '06', " + numero_pedido + "\
                 ) returning solicitud_prod_a_bod_ppal_id as solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega";
 
-    /*var sql = " INSERT INTO solicitud_productos_a_bodega_principal(\
-     farmacia_id,\
-     centro_utilidad,\
-     bodega,\
-     observacion,\
-     usuario_id,\
-     fecha_registro,\
-     empresa_destino,\
-     sw_despachado,\
-     sw_despacho,\
-     estado,\
-     tipo_pedido,\
-     centro_destino,\
-     bodega_destino,\
-     descripcion_tipo_pedido,\
-     pedido_cliente,\
-     numero_pedido\
-     ) (\
-     select\
-     farmacia_id,\
-     centro_utilidad,\
-     bodega,\
-     observacion || ' - Generado automatico pedido multiple, ingreso desde DUANA' as observacion,\
-     usuario_id,\
-     fecha_registro,\
-     empresa_destino,\
-     sw_despachado,\
-     sw_despacho,\
-     '0' as estado,\
-     tipo_pedido,\
-     centro_destino,\
-     bodega_destino,\
-     descripcion_tipo_pedido,\
-     pedido_cliente,\
-     numero_pedido\
-     from solicitud_productos_a_bodega_principal\
-     where pedido_cliente = :1\
-     ) returning solicitud_prod_a_bod_ppal_id as solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega";*/
-
     var query = G.knex.raw(sql);
     query.then(function (resultado) {
         callback(false, resultado);
@@ -819,7 +780,6 @@ PedidosClienteModel.prototype.consultar_pedido = function (numero_pedido, callba
  */
 
 PedidosClienteModel.prototype.consultar_detalle_pedido = function (numero_pedido, callback) {
-    console.log('=======================================================================================================>');
     var sql = " select c.estado,\
                     a.pedido_cliente_id as numero_pedido,\
                     a.codigo_producto,\
@@ -1205,7 +1165,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function (responsabl
         return registros;
 
     });
-    //console.log(G.sqlformatter.format(query.toString())); 
+//    console.log("listar_pedidos_del_operario",G.sqlformatter.format(query.toString())); 
     query.then(function (rows) {
         callback(false, rows, query.totalRegistros);
     }).catch(function (err) {
@@ -1408,13 +1368,14 @@ PedidosClienteModel.prototype.eliminar_responsables_pedidos = function (numero_p
 
 PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function (numero_pedido, estado_pedido, callback) {
 
-    G.knex("ventas_ordenes_pedidos").
-            where("pedido_cliente_id", numero_pedido).
-            update({estado_pedido: estado_pedido}).then(function (resultado) {
-
+    var query=G.knex("ventas_ordenes_pedidos").
+               where("pedido_cliente_id", numero_pedido).
+               update({estado_pedido: estado_pedido});
+    
+    query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
-        console.log("err [actualizar_estado_actual_pedido]: ", err);
+        console.log("err [actualizar_estado_actual_pedido222]: ", err);
         callback(err);
     });
 
@@ -2151,7 +2112,8 @@ PedidosClienteModel.prototype.actualizarPedidoMultipleCliente = function (obj, c
     }
     var query = G.knex('ventas_ordenes_pedido_multiple_clientes').
             where(where).
-            update(update);
+            update(update).
+            returning(['sw_tipo_pedido','id_orden_pedido_origen','id_orden_pedido_destino']);
     //console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
@@ -2187,7 +2149,7 @@ PedidosClienteModel.prototype.consultarPedidoMultipleCliente = function (obj, ca
                 'centro_utilidad',
                 'bodega'
             ]);
-//    console.log(G.sqlformatter.format(query.toString()));
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -2200,7 +2162,7 @@ PedidosClienteModel.prototype.verificarPedidoMultiple = function (obj, callback)
 
     var query = G.knex('ventas_ordenes_pedido_multiple_clientes')
             .where(function () {
-                //   this.whereNull("id_orden_pedido_destino");
+             
                 this.andWhere("id_orden_pedido_destino", obj.numero_pedido);
             })
             .select(['id_orden_pedido_destino']);
@@ -2277,8 +2239,6 @@ PedidosClienteModel.prototype.eliminaNumeroProductosMultiple = function (obj, ca
         pedido_cliente_id_tmp: obj.cotizacion,
         codigo_producto: obj.codigo_producto
     }).andWhere(G.knex.raw("bodega_origen_producto != '" + obj.bodega + "'")).del();
-
-
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -2515,13 +2475,6 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
      where a.empresa_id= :1 and a.bodega_id = :4 and a.fecha_registro between :2 and :3 \
      " + filtroCotizacion + " " + filtroEstadoCotizacion;
 
-
-    /* G.knex('vnts_contratos_clientes').where({
-     tipo_id_tercero: obj.tipo_id_tercero,
-     tercero_id: obj.tercero_id
-     }).select(['contrato_cliente_id','sw_autorizacion','sw_facturacion_agrupada']).then(function(rows) {*/
-
-
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).orderBy("a.fecha_registro", "desc").as("a");
@@ -2610,11 +2563,9 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
                 this.on("a.tipo_id_tercero", "j.tipo_id_tercero").
                         on("a.tercero_id", "j.tercero_id").on("a.empresa_id", "j.empresa_id").
                         on(G.knex.raw("j.estado = '1'"));
-            });//where("j.empresa_id", empresa_id).
-    //where("j.estado", "1").
+            });
     queryPrincipal.then(function (resultado) {
 
-//console.log("AAAAAA " ,G.sqlformatter.format( queryPrincipal.toString()));
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [listar_cotizaciones]: ", err);
@@ -2743,7 +2694,7 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function (cotizac
                 estado: sql_aux
 
             });
-    //console.log("observacion_cartera_cotizacion",G.sqlformatter.format(query.toString()));
+            
     query.then(function (resultado) {
 
         callback(false, resultado.rows, resultado);
@@ -2809,14 +2760,12 @@ PedidosClienteModel.prototype.generadoEnCosmitet = function (numero_cotizacion, 
             .from('ventas_ordenes_pedido_multiple_clientes')
             .where('id_orden_cotizacion_origen', numero_cotizacion);
 
-
     query.then(function (rows) {
         callback(false, rows);
     }).catch(function (error) {
         console.log("err [generadoEnCosmitet]: ", error);
         callback(error);
     });
-
 };
 
 
@@ -3239,7 +3188,7 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function (pedido, produ
         };
 
         return G.Q.ninvoke(that.m_pedidos_logs, "guardarLog", obj);
-        //callback(false, resultado.rows);
+       
     }).then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -3373,8 +3322,7 @@ function __updateProductosPedidoClienteFarmacia(solicitud_prod_a_bod_ppal_id,pro
 
 function __insertarProductosPedidoClienteFarmaciaA(solicitud_prod_a_bod_ppal_id, farmacia, centro_utilidad, bodega, usuario_id, producto, callback) {
 
-    var query = G.knex("solicitud_productos_a_bodega_principal_detalle").
-    returning("solicitud_prod_a_bod_ppal_det_id").
+    var query = G.knex("solicitud_productos_a_bodega_principal_detalle").returning("solicitud_prod_a_bod_ppal_det_id").
     insert({
         solicitud_prod_a_bod_ppal_id : solicitud_prod_a_bod_ppal_id,
         farmacia_id : farmacia,
@@ -3424,7 +3372,7 @@ PedidosClienteModel.prototype.consultarTotalProductosCotizacion = function (pedi
 };
 
 PedidosClienteModel.prototype.duplicarPedido = function (numero_pedido, sw_origen_destino, callback) {
-    //consultarTerceroPedidoOrigen
+
     var pedido;
     var tercero;
     G.Q.nfcall(__consultarTerceroPedidoOrigen, numero_pedido).then(function (resultado) {
@@ -3469,7 +3417,6 @@ PedidosClienteModel.prototype.cantidad_pedidos_operario = function (responsable,
 
                 this.whereRaw(" d.doc_tmp_id IS NULL and  c.usuario_id = ? ", [responsable]);
 
-
                 this.where("a.estado_pedido", estado_pedido);
 
             });
@@ -3478,7 +3425,6 @@ PedidosClienteModel.prototype.cantidad_pedidos_operario = function (responsable,
         this.where(G.knex.raw("a.fecha_registro >= ?", [(new Date().getFullYear() - 1) + "-01-12 00:00:00"]));
     });
 
-//    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -3499,6 +3445,20 @@ PedidosClienteModel.prototype.consultarAutorizacionCartera = function (obj, call
             .where('contrato_cliente_id', obj.contrato_id)
             .andWhere('empresa_id', obj.empresa_id);
 
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [consultarAutorizacionCartera]:", err);
+        callback(err);
+    });
+};
+
+PedidosClienteModel.prototype.consultarResponsablePedido = function (obj, callback) {
+
+    var query = G.knex.select('responsable_id')
+            .from('ventas_ordenes_pedidos_estado')
+            .where('pedido_cliente_id', obj.pedido)
+            .andWhere('estado', obj.estado);
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -3522,7 +3482,6 @@ PedidosClienteModel.prototype.consultarAutorizacionCartera = function (obj, call
  * @fecha: 04/12/2015 2:43 pm
  */
 function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback) {
-
 
     var sql = " INSERT INTO ventas_ordenes_pedidos(\
                     empresa_id,\
@@ -3571,7 +3530,7 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
 
 
     var query = G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 2: cotizacion.total});
-//console.log(G.sqlformatter.format(query.toString()));
+
     if (transaccion)
         query.transacting(transaccion);
 
@@ -3629,7 +3588,7 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
                 ) returning pedido_cliente_id as numero_pedido ";
 //                                    pedido_multiple_farmacia
     var query = G.knex.raw(sql, {1: numero_pedido});
-    console.log(G.sqlformatter.format(query.toString()));
+   
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -3669,36 +3628,7 @@ function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callb
                     and c.bodega_origen_producto = a.bodega_origen_producto and a.codigo_producto = c.codigo_producto\
                     WHERE pedido_cliente_id = :2 \
                 ) ;";
-
-    /*     var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
-     pedido_cliente_id, \
-     codigo_producto, \
-     porc_iva, \
-     numero_unidades, \
-     valor_unitario, \
-     usuario_id,    \
-     fecha_registro,\
-     empresa_origen_producto,\
-     centro_utilidad_origen_producto,\
-     bodega_origen_producto\
-     )(\
-     SELECT \
-     :1 as numero_pedido, \
-     codigo_producto, \
-     porc_iva, \
-     numero_unidades, \
-     valor_unitario, \
-     usuario_id,    \
-     fecha_registro,\
-     empresa_origen_producto,\
-     centro_utilidad_origen_producto,\
-     bodega_origen_producto\
-     FROM ventas_ordenes_pedidos_d \
-     WHERE pedido_cliente_id = :2 \
-     ) ;";  
-     */
-
-
+    
     var query = G.knex.raw(sql, parametros);
 
     G.logError(G.sqlformatter.format(query.toString()));
@@ -3729,32 +3659,13 @@ function __consultarTerceroPedidoOrigen(numero_pedido, callback) {
             })
             .where('vopmc.id_orden_pedido_destino', numero_pedido);
 
-    /*
-     select vop.tipo_id_tercero, vop.tercero_id, vopmc.sw_tipo_pedido, vopmc.sw_estado, vopmc.id_orden_cotizacion_origen, vopmc.id_orden_cotizacion_destino
-     from ventas_ordenes_pedidos_tmp as vop 
-     inner join  ventas_ordenes_pedido_multiple_clientes as vopmc on  (vopmc.id_orden_cotizacion_origen = vop.pedido_cliente_id_tmp)
-     where vopmc.id_orden_pedido_destino = 94568
-     */
-
-    //console.log('consulta en bodega multiple -->' + G.sqlformatter.format(query.toString()));
-
     query.then(function (rows) {
         callback(false, rows);
     }).catch(function (error) {
         console.log("err [__consultarTerceroPedidoOrigen]: ", error);
         callback(error);
     });
-}
-;
-
-
-/*             select vop.tipo_id_tercero, vop.tercero_id 
- from ventas_ordenes_pedidos vop 
- join ventas_ordenes_pedido_multiple_clientes vopmc on (vopmc.id_orden_pedido_origen = vop.pedido_cliente_id)    
- where vopmc.id_orden_pedido_destino = 94353
- 
- */
-
+};
 
 /*
  * Autor : Camilo Orozco
@@ -3801,7 +3712,6 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
                 ) ;";
 
     var query = G.knex.raw(sql, parametros);
-    //G.logError(G.sqlformatter.format(query.toString()));
 
     if (transaccion)
         query.transacting(transaccion);
@@ -3826,7 +3736,6 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
  */
 function __CambioEstadoCotizacionCreacionProducto(cotizacion, transaccion, callback)
 {
-
     var sql = " UPDATE ventas_ordenes_pedidos_tmp SET sw_aprobado_cartera = '1', estado = '5' WHERE pedido_cliente_id_tmp = :1";
 
     var query = G.knex.raw(sql, {1: cotizacion.numero_cotizacion});
@@ -3841,9 +3750,7 @@ function __CambioEstadoCotizacionCreacionProducto(cotizacion, transaccion, callb
 
         callback(err);
     });
-
-}
-;
+};
 /*
  * Autor : Camilo Orozco
  * Descripcion : SQL para actualizar estados de la cotizacion
@@ -3867,14 +3774,10 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
         callback(error);
 
     });
-
-}
-;
-
+};
 
 
 PedidosClienteModel.$inject = ["m_productos", "m_pedidos_logs"];
-
 
 module.exports = PedidosClienteModel;
 

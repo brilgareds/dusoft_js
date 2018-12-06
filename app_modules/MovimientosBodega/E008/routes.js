@@ -119,6 +119,30 @@ module.exports = function(app, di_container) {
         c_e008.validarCajaProducto(req, res);
     });
     
+    app.post('/api/movBodegas/E008/validarCajaProductoAutomatico', function(req, callback) {
+        c_e008.validarCajaProductoAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
+    app.post('/api/movBodegas/E008/detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico', function(req, callback) {
+        c_e008.detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
+    app.post('/api/movBodegas/E008/documentoTemporalClientesAutomatico', function(req, callback) {
+        c_e008.documentoTemporalClientesAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
+    app.post('/api/movBodegas/E008/documentoTemporalFarmaciasAutomatico', function(req, callback) {
+        c_e008.documentoTemporalFarmaciasAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
     // Generar Rotulo 
     app.post('/api/movBodegas/E008/generarRotuloCaja', function(req, res) {
         c_e008.generarRotuloCaja(req, res);

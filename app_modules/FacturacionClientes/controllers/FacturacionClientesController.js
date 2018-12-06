@@ -3999,8 +3999,7 @@ function __insertarProductosConsumo(that, index, parametros, _productos_validos,
  */
 function __creaExcel(data, callback) {
 
-    console.log("__creaExcel");
-
+  
     var workbook = new G.Excel.Workbook();
     var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
 

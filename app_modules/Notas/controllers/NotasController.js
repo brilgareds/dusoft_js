@@ -937,7 +937,9 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
 
         return G.Q.nfcall(__productos, resultado.productos, 0, []);
     }).then(function (productos) {
-
+        
+var subTotal = resultado.valores.subTotal.replace(".", "");
+var total = resultado.valores.totalFactura.replace(".", "");
         var json = {
             codigoMoneda: "COP",
             conceptoNota: "3", // falta validar
@@ -952,17 +954,17 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
             productos: productos,
-            subtotalNotaDebitoElectronica: resultado.valores.subTotal.replace(".", ""),
+            subtotalNotaDebitoElectronica: subTotal.replace(".", ""),
             ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
             baseGravableReteFuente: resultado.valores.bases.base_rtf,
             IVA: resultado.valores.ivaTotal.replace(".", ""),
-            baseGravableIVA: resultado.valores.subTotal,
+            baseGravableIVA: subTotal.replace(".", ""),
             ReteICA: resultado.valores.retencionIca.replace(".", ""),
             baseGravableReteICA: resultado.valores.bases.base_ica,
             ReteIVA: resultado.valores.retencionIva.replace(".", ""),
             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
             tipoFactura: "ELECTRONICA",
-            totalNotaDebitoElectronica: resultado.valores.totalFactura.replace(".", ""),
+            totalNotaDebitoElectronica: total.replace(".", ""),
 
             coordXQr: 172,
             coordYQr: 263,
@@ -1199,6 +1201,8 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         return G.Q.nfcall(__productos, resultado.productos, 0, []);
     }).then(function (productos) {
 
+var subTotal = resultado.valores.subTotal.replace(".", "");
+var total = resultado.valores.totalFactura.replace(".", "");
         var json = {
             codigoMoneda: "COP",
             conceptoNota: resultado.nota.prefijo_devolucion === 'IDC' ? "1" : "6",
@@ -1213,17 +1217,17 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
             productos: productos,
-            subtotalNotaCreditoElectronica: resultado.valores.subTotal.replace(".", ""),
+            subtotalNotaCreditoElectronica: subTotal.replace(".", ""),
             ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
             baseGravableReteFuente: resultado.valores.bases.base_rtf,
             IVA: resultado.valores.ivaTotal.replace(".", ""),
-            baseGravableIVA: resultado.valores.subTotal,
+            baseGravableIVA: subTotal.replace(".", ""),
             ReteICA: resultado.valores.retencionIca.replace(".", ""),
             baseGravableReteICA: resultado.valores.bases.base_ica,
             ReteIVA: resultado.valores.retencionIva.replace(".", ""),
             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
             tipoFactura: "ELECTRONICA",
-            totalNotaCreditoElectronica: resultado.valores.totalFactura.replace(".", ""),
+            totalNotaCreditoElectronica: total.replace(".", ""),
 
             coordXQr: 172,
             coordYQr: 263,

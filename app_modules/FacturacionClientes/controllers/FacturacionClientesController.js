@@ -3785,6 +3785,7 @@ function __generarPdf2(datos, callback) {
                 margin: "10px",
                 width: '792px',
                 headerHeight: "290px",// .imagent{position: absolute;top: 10px;}
+                footer:`<div style='text-align:right'>{#pageNum}/{#numPages}</div>`,
                 header: 
                         `<style>
                             p {margin-top:0; margin-bottom:0;line-height: 75%; }

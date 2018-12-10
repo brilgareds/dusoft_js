@@ -473,7 +473,7 @@ function __detalleDocumentoTemporalConValidacionCantidadIngresada(req,that,callb
             //res.send(G.utils.r(req.url, 'Error la cantidad ingresada no puede ser mayor a la pendiente', 500, {documento_temporal: {item_id: 0}}));
             throw {msj: 'Error la cantidad ingresada no puede ser mayor a la pendiente', status: 500};
             //return;
-        } else {
+        } else {console.log("->>>>>>>>>>", valor_unitario, total_costo, total_costo_pedido);
             return G.Q.ninvoke(that.m_movimientos_bodegas, 'ingresar_detalle_movimiento_bodega_temporal', empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad_ingresada, lote, fecha_vencimiento, iva, valor_unitario, total_costo, total_costo_pedido, usuario_id);
         }
     }).then(function (rows) {

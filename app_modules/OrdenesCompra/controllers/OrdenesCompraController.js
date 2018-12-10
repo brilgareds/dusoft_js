@@ -2832,8 +2832,28 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
         callback(false,true);
         return;
     }
+        console.log("producto",producto);
+    
+//parametros.cotizacion.id_orden_cotizacion_origen
+    var param = { 
+                  cotizacion : parametros.cotizacion.id_orden_cotizacion_origen,
+                  codigo_producto:producto.codigo_producto
+                };
+
+    G.Q.ninvoke(that.m_pedidos_clientes, "consultarValorUnitarioCotizacionProducto",param).then(function (result) {    
+       
+        var valor_unitario;
+        var total_costo;        
         
-    var obj = {
+        if(parametros.pedidos[0].sw_tipo_pedido==='0'){//farmacia
+          valor_unitario=producto.valor_unitario;
+          total_costo=producto.total_costo;
+        }else{
+          valor_unitario=result[0].valor_unitario; 
+          total_costo=result[0].valor_unitario*producto.cantidad;
+        }
+        
+        var obj = {
         session: parametros.session,
         body: {
             data: {
@@ -2846,9 +2866,9 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
                     lote: producto.lote,
                     fecha_vencimiento: producto.fecha_vencimiento,
                     cantidad_ingresada: producto.cantidad,
-                    valor_unitario: producto.valor_unitario,
+                    valor_unitario: valor_unitario,
                     iva: producto.iva,
-                    total_costo: producto.total_costo,
+                    total_costo: total_costo,
                     total_costo_pedido: producto.total_costo_pedido,
                     cantidad_solicitada: producto.cantidad,
                     valida : true
@@ -2856,10 +2876,12 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
             }
         }
     };
-
-
-    G.Q.ninvoke(that.c_e008, "detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico", obj).then(function (result) {
-   
+    console.log("Envio",obj.body.data.documento_temporal);
+    return G.Q.ninvoke(that.c_e008, "detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico", obj);
+        
+        
+   }).then(function(result) {
+       
       return G.Q.ninvoke(that.m_e008,"actualizarCajaDeTemporal",result.respuesta.documento_temporal.item_id, producto.numero_caja, producto.tipo_caja);
       
     }).then(function(result) {

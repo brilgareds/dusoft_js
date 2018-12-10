@@ -86,7 +86,9 @@ MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
                 VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14) RETURNING item_id; ";
 
            var query= G.knex.raw(sql, {1: doc_tmp_id, 2: empresa_id, 3: centro_utilidad_id, 4: bodega_id, 5: codigo_producto, 6: cantidad, 7: iva, 8: total_costo, 9: fecha_vencimiento, 10: lote, 11: '', 12: total_costo_pedido, 13: valor_unitario, 14: usuario_id});
-                   
+              console.log("Query resultado", G.sqlformatter.format(
+               query.toString()));
+  
             query.then(function (resultado) {
                 callback(false, resultado.rows);
             }).catch(function (err) {

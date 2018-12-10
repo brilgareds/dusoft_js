@@ -3597,6 +3597,23 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
 }
 ;
 
+PedidosClienteModel.prototype.consultarValorUnitarioCotizacionProducto = function (param, callback) {
+
+    var obj = {
+        pedido_cliente_id_tmp: param.cotizacion,
+        codigo_producto: param.codigo_producto,
+    };
+
+    G.knex('ventas_ordenes_pedidos_d_tmp')
+            .where(obj)
+            .select("valor_unitario")
+            .then(function (rows) {
+                callback(false, rows);
+            }).catch(function (error) {
+        callback(error);
+    });
+};
+
 function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callback) {
     var parametros = {1: pedido, 2: numero_pedido};
     var sql = " INSERT INTO ventas_ordenes_pedidos_d(\

@@ -107,7 +107,7 @@ MovBodegasController.prototype.eliminar_producto_movimiento_bodega_temporal= fun
     * @return integer numero de item_id del documento creado.
     * @access public
     */
-MovBodegasController.prototype.addItemDocTemporal=function(req,res){
+MovBodegasController.prototype.addItemDocTemporal=function(req,res){    
    var that = this;
    var args = req.body.data;
 
@@ -457,7 +457,7 @@ MovBodegasController.prototype.execCrearDocumento=function(req,res){
             
                  return G.Q.nfcall(__eliminar_documento_temporal_farmacias,documento_temporal_id, usuario_id, transaccion);
            }).fail(function(err){
-               console.log("error generado >>>>>>>>>>>>", err);
+               console.log("execCrearDocumento error generado >", err);
                transaccion.rollback(err);
            }).
            done();

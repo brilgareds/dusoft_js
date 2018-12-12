@@ -2370,7 +2370,6 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         
           
     }).fail(function (err) {
-        console.log('error al generar la orden de compra ', err);
         console.log("err [generarOrdenDeCompraAuditado]: ", err);
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:err.msj, status: err.status, data: err});
         //res.send(G.utils.r(req.url, err.msj, err.status, {ordenes_compras: err}));
@@ -2520,7 +2519,7 @@ function __recursivaProductosTemporalI002(datos,index,callback){
        codigo_producto: productos.codigo_producto,
        cantidad: productos.cantidad,
        porcentaje_gravamen: productos.porcentaje_gravamen,
-       total_costo: productos.valor_unitario*productos.cantidad,
+       total_costo: (productos.valor_unitario*(1+(productos.porcentaje_gravamen/100)))*productos.cantidad,
        fecha_vencimiento: productos.fecha_vencimiento,
        lote: productos.lote,
        localizacion: 'NA',
@@ -2549,7 +2548,7 @@ function __recursivaProductosTemporalI002(datos,index,callback){
 }
 
 function __addItemDocTemporalI002(req,callback){
-  
+
    var that = req.that;
    var args = req.data;
     
@@ -2625,6 +2624,12 @@ function __traslado(that,parametros,callback){
     }).done();
 }
 
+/*
+ * 
+ * @param {type} parametros
+ * @param {type} callback
+ * @returns ejecuta documento y crea pedido automatico
+ */
 function __ejecutarDocumento(parametros,callback){
     var that = parametros.that;    
     var documentoI002;
@@ -2658,7 +2663,7 @@ function __ejecutarDocumento(parametros,callback){
             }
         };
 
-          return G.Q.ninvoke(that.c_pedidos_clientes, "pedidoClienteAPedidoFarmaciaAutomatico", obj);
+          return G.Q.ninvoke(that.c_pedidos_clientes, "pedidoClienteAPedidoFarmaciaAutomatico", obj);//
            
         }else if(parametros.swTipoPedido === '1'){
            return G.Q.ninvoke(that.m_pedidos_clientes, "duplicarPedido",parametros.pedido, parametros.sw_origen_destino);            
@@ -2706,6 +2711,13 @@ function __ejecutarDocumento(parametros,callback){
     }).done();
 };
 
+/*
+ * 
+ * @param {type} that
+ * @param {type} parametros
+ * @param {type} callback
+ * @returns asigna pedido automatico al separador, asigna caja o nevera e invoca la separacion
+ */
 function __ejecutaAsignacionDePedido(that,parametros,callback){
 
     var responsable;
@@ -2825,6 +2837,15 @@ function __ejecutaAsignacionDePedido(that,parametros,callback){
     }).done();
 }
 
+/*
+ * 
+ * @param {type} that
+ * @param {type} parametros
+ * @param {type} pedidos
+ * @param {type} index
+ * @param {type} callback
+ * @returns asigna los productos al temporal de separacion
+ */
 function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
 
     var producto = parametros.productos[index];
@@ -2832,8 +2853,28 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
         callback(false,true);
         return;
     }
+      
+    
+//parametros.cotizacion.id_orden_cotizacion_origen
+    var param = { 
+                  cotizacion : parametros.cotizacion.id_orden_cotizacion_origen,
+                  codigo_producto:producto.codigo_producto
+                };
+
+    G.Q.ninvoke(that.m_pedidos_clientes, "consultarValorUnitarioCotizacionProducto",param).then(function (result) {    
+       
+        var valor_unitario;
+        var total_costo;        
         
-    var obj = {
+        if(parametros.pedidos[0].sw_tipo_pedido==='0'){//farmacia
+          valor_unitario=producto.valor_unitario;
+          total_costo=producto.total_costo;
+        }else{
+          valor_unitario=result[0].valor_unitario; 
+          total_costo=result[0].valor_unitario*producto.cantidad;
+        }
+        
+        var obj = {
         session: parametros.session,
         body: {
             data: {
@@ -2846,9 +2887,9 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
                     lote: producto.lote,
                     fecha_vencimiento: producto.fecha_vencimiento,
                     cantidad_ingresada: producto.cantidad,
-                    valor_unitario: producto.valor_unitario,
-                    iva: producto.iva,
-                    total_costo: producto.total_costo,
+                    valor_unitario: valor_unitario,
+                    iva: producto.porcentaje_gravamen,
+                    total_costo: total_costo,
                     total_costo_pedido: producto.total_costo_pedido,
                     cantidad_solicitada: producto.cantidad,
                     valida : true
@@ -2856,10 +2897,11 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
             }
         }
     };
-
-
-    G.Q.ninvoke(that.c_e008, "detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico", obj).then(function (result) {
-   
+    return G.Q.ninvoke(that.c_e008, "detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico", obj);
+        
+        
+   }).then(function(result) {
+       
       return G.Q.ninvoke(that.m_e008,"actualizarCajaDeTemporal",result.respuesta.documento_temporal.item_id, producto.numero_caja, producto.tipo_caja);
       
     }).then(function(result) {

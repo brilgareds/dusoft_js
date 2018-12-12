@@ -147,7 +147,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function (cotizacio
                 ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total,\
                 c.costo_ultima_compra,\
                 (a.numero_unidades * (c.costo_ultima_compra * (a.porc_iva/100))) as iva_costo,\
-                ((c.costo_ultima_compra+(c.costo_ultima_compra*(a.porc_iva/100))) * a.numero_unidades) as total_costo,\
+                (c.costo_ultima_compra* a.numero_unidades) as total_costo,\
                 a.empresa_origen_producto,\
                 a.centro_utilidad_origen_producto,\
                 a.bodega_origen_producto,\
@@ -855,15 +855,15 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function (numero_pedido
                     LEFT JOIN param_torreproducto i ON i.codigo_producto = a.codigo_producto AND i.empresa_id = h.empresa_id\
                     where a.pedido_cliente_id = ?  order by e.descripcion ;";
 
-    G.knex.raw(sql, [numero_pedido]).
-            then(function (resultado) {
+    var query=G.knex.raw(sql, [numero_pedido]);
+//    console.log(G.sqlformatter.format(query.toString())); 
+            query.then(function (resultado) {
                 callback(false, resultado.rows);
             }).catch(function (err) {
 
         console.log("err [consultar_detalle_pedido]: ", err);
         callback(err);
     });
-
 };
 
 /**
@@ -2026,7 +2026,7 @@ PedidosClienteModel.prototype.insertar_detalle_pedido_cliente = function (cotiza
                    a.codigo_producto, \
                    a.porc_iva, \
                    a.numero_unidades, \
-                   c.costo_ultima_compra, \
+                   (c.costo_ultima_compra / (1+(a.porc_iva/100))) as valor_unit_sin_iva,  \
                    a.fecha_registro, \
                    a.usuario_id, \
                    a.empresa_origen_producto, \
@@ -2039,8 +2039,9 @@ PedidosClienteModel.prototype.insertar_detalle_pedido_cliente = function (cotiza
                    inner join inventarios c on a.codigo_producto = c.codigo_producto and b.empresa_id = c.empresa_id\
                    WHERE a.pedido_cliente_id_tmp = :1 \
                    AND a.bodega_origen_producto = :2 \
-               ) ;";
-
+               ) ;";//(c.costo_ultima_compra - (c.costo_ultima_compra*(a.porc_iva/100))) as valor_unit_sin_iva,  \
+                   //c.costo_ultima_compra, \\n\
+//console.log("insertar_detalle_pedido_cliente sql:: ",sql);
     var query = G.knex.raw(sql, parametros);
 
     query.then(function (resultado) {
@@ -3066,10 +3067,11 @@ PedidosClienteModel.prototype.insertarDetallePedido = function (pedido, producto
     var sql = "INSERT INTO ventas_ordenes_pedidos_d (pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario,fecha_registro,usuario_id) \
                  VALUES ( :1, :2, :3, :4, :5,NOW(), :6);";
 
-    G.knex.raw(sql, {1: pedido.numero_pedido, 2: producto.codigo_producto, 3: producto.iva, 4: producto.cantidad_solicitada, 5: producto.precio_venta, 6: pedido.usuario_id}).
-            then(function (resultado) {
-                callback(false, resultado);
-            }).catch(function (err) {
+    var query=G.knex.raw(sql, {1: pedido.numero_pedido, 2: producto.codigo_producto, 3: producto.iva, 4: producto.cantidad_solicitada, 5: producto.precio_venta, 6: pedido.usuario_id});
+     
+        query.then(function (resultado) {
+         callback(false, resultado);
+        }).catch(function (err) {
 
         callback(err);
     });
@@ -3371,6 +3373,13 @@ PedidosClienteModel.prototype.consultarTotalProductosCotizacion = function (pedi
     });
 };
 
+/*
+ * 
+ * @param {type} numero_pedido
+ * @param {type} sw_origen_destino
+ * @param {type} callback
+ * @returns duplica pedido automatico
+ */
 PedidosClienteModel.prototype.duplicarPedido = function (numero_pedido, sw_origen_destino, callback) {
 
     var pedido;
@@ -3588,7 +3597,7 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
                 ) returning pedido_cliente_id as numero_pedido ";
 //                                    pedido_multiple_farmacia
     var query = G.knex.raw(sql, {1: numero_pedido});
-   
+ 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -3596,6 +3605,23 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
     });
 }
 ;
+
+PedidosClienteModel.prototype.consultarValorUnitarioCotizacionProducto = function (param, callback) {
+
+    var obj = {
+        pedido_cliente_id_tmp: param.cotizacion,
+        codigo_producto: param.codigo_producto,
+    };
+
+    G.knex('ventas_ordenes_pedidos_d_tmp')
+            .where(obj)
+            .select("valor_unitario")
+            .then(function (rows) {
+                callback(false, rows);
+            }).catch(function (error) {
+        callback(error);
+    });
+};
 
 function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callback) {
     var parametros = {1: pedido, 2: numero_pedido};
@@ -3615,7 +3641,7 @@ function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callb
                     :1 as numero_pedido, \
                     a.codigo_producto, \
                     a.porc_iva, \
-                    a.numero_unidades, \
+                    a.cantidad_despachada, \
                     c.valor_unitario, \
                     a.usuario_id,    \
                     a.fecha_registro,\
@@ -3626,7 +3652,7 @@ function __generar_detalle_pedido_cliente_duplicado(numero_pedido, pedido, callb
                     inner join ventas_ordenes_pedido_multiple_clientes b on b.id_orden_pedido_destino = a.pedido_cliente_id\
                     inner join ventas_ordenes_pedidos_d_tmp c on c.pedido_cliente_id_tmp = b.id_orden_cotizacion_origen \
                     and c.bodega_origen_producto = a.bodega_origen_producto and a.codigo_producto = c.codigo_producto\
-                    WHERE pedido_cliente_id = :2 \
+                    WHERE pedido_cliente_id = :2 and a.cantidad_despachada > 0\
                 ) ;";
     
     var query = G.knex.raw(sql, parametros);
@@ -3660,6 +3686,7 @@ function __consultarTerceroPedidoOrigen(numero_pedido, callback) {
             .where('vopmc.id_orden_pedido_destino', numero_pedido);
 
     query.then(function (rows) {
+ 
         callback(false, rows);
     }).catch(function (error) {
         console.log("err [__consultarTerceroPedidoOrigen]: ", error);

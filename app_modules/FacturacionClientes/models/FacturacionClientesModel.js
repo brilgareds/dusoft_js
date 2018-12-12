@@ -619,7 +619,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
 
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit);
-//    console.log(G.sqlformatter.format(query.toString()));
+    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
 
         callback(false, resultado)
@@ -2493,7 +2493,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumoBarranquilla =
                         this.andWhere(G.knex.raw("nombre_producto_consumo " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"));
                     }
                 }
-            });
+            }).andWhere("empresa_id", obj.empresa_id);
 
     query.then(function (resultado) {
         callback(false, resultado);

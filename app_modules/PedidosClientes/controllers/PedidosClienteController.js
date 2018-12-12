@@ -459,7 +459,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido1 = function (req, res) {
         
     }).then(function (result) {
         responsables_pedido=result;
-        console.log("result obtener_responsables_del_pedido----",result);
+       
         if (responsables_pedido === undefined || responsables_pedido.length < 2) {
             res.send(G.utils.r(req.url, 'El Pedido no ha registrado responsables', 500, {}));
             return;
@@ -468,17 +468,17 @@ PedidosCliente.prototype.eliminarResponsablesPedido1 = function (req, res) {
         return G.Q.ninvoke(that.m_pedidos_clientes, 'eliminar_responsables_pedidos', numero_pedido);
         
     }).then(function (result) {
-        console.log("result eliminar_responsables_pedidos----",result);
+       
         estado_pedido = responsables_pedido[0].estado;
         
         return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizar_estado_actual_pedido', numero_pedido,estado_pedido);
         
     }).then(function (result) {
-         console.log("result actualizar_estado_actual_pedido----",result);
+      
         return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificarPedidosActualizados', {numero_pedido: numero_pedido});
     
     }).then(function (result) {
-        console.log("result onNotificarPedidosActualizados----",result);
+       
         if (responsables_pedido.length > 0) {
 
            var responsable_estado_pedido = responsables_pedido[0];
@@ -4778,19 +4778,19 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
                     productoUnidadMedida = resultado[0];
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productosSinDisponible.push(resultado[0]);
-                    console.log("entro ");
+                  
                     def.resolve();
                 } else {
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productoUnidadMedida = resultado[0];
-                    console.log("else ");
+                   
                     return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
 
                 }
 
 
             }).then(function (resultado) {
-        console.log("resultado ", resultado);
+       
         index++;
 
         if (!resultado) {
@@ -5357,7 +5357,7 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
         return;
     }
 
-    console.log("__insertarProductosFarmaciaCotizacion", producto);
+   
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion_multiple', cotizacion, producto).then(function (resultado) {
 
@@ -5773,10 +5773,10 @@ PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function (
 };
 
 PedidosCliente.prototype.pedidoClienteAPedidoFarmaciaAutomatico = function (req, callback) {
-    console.log("pedidoClienteAPedidoFarmaciaAutomatico");
+    
     var that = this;
     G.Q.nfcall(__pedidoClienteAPedidoFarmacia, req, that).then(function (send) {
-        console.log("pedidoClienteAPedidoFarmaciaAutomatico",send);
+      
         callback(false, send);
     }).fail(function (err) {
         callback(err);

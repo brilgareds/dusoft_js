@@ -1588,7 +1588,7 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
 * @returns {datos de consulta}
 */
 OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(datos, callback) {
-   
+
     var sql = " insert into \
                 inv_bodegas_movimiento_tmp_d ( \
                         usuario_id,\

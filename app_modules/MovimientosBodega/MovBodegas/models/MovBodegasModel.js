@@ -80,15 +80,13 @@ MovimientosBodegasModel.prototype.ingresar_movimiento_bodega_temporal = function
 MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
         function (empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad, lote, fecha_vencimiento, iva, valor_unitario, total_costo, total_costo_pedido, usuario_id, callback) {
 
-           
+   
             var sql = " INSERT INTO inv_bodegas_movimiento_tmp_d (doc_tmp_id, empresa_id, centro_utilidad, bodega, codigo_producto, cantidad, \
                 porcentaje_gravamen, total_costo, fecha_vencimiento, lote, local_prod, total_costo_pedido, valor_unitario, usuario_id) \
                 VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14) RETURNING item_id; ";
 
            var query= G.knex.raw(sql, {1: doc_tmp_id, 2: empresa_id, 3: centro_utilidad_id, 4: bodega_id, 5: codigo_producto, 6: cantidad, 7: iva, 8: total_costo, 9: fecha_vencimiento, 10: lote, 11: '', 12: total_costo_pedido, 13: valor_unitario, 14: usuario_id});
-              console.log("Query resultado", G.sqlformatter.format(
-               query.toString()));
-  
+           
             query.then(function (resultado) {
                 callback(false, resultado.rows);
             }).catch(function (err) {
@@ -511,8 +509,9 @@ MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = functio
                 AND c.unidad_id = b.unidad_id\
                 ORDER BY a.codigo_producto";
 
-    G.knex.raw(sql, {1: numero, 2: prefijo, 3: empresa}).
-            then(function (resultado) {
+    var query=G.knex.raw(sql, {1: numero, 2: prefijo, 3: empresa});
+ 
+        query.then(function (resultado) {
                 callback(false, resultado.rows, resultado);
             }).catch(function (err) {
         callback(err);
@@ -1131,11 +1130,10 @@ function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id,
                     inner join unidades c on b.unidad_id = c.unidad_id \
                     WHERE a.doc_tmp_id = :1  AND a.usuario_id = :2; ";
 
-
     var query = G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id, 3: empresa_id, 4: prefijo_documento, 5: numeracion_documento});
     if (transaccion)
         query.transacting(transaccion);
- 
+    
     query.then(function (resultado) {
         callback(false, resultado.rows, resultado);
     }).catch(function (err) {
@@ -1214,7 +1212,7 @@ function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, u
                 where a.doc_tmp_id = :1 and a.usuario_id = :2 ";
 
     var query=G.knex.raw(sql, {1: documento_temporal_id, 2: usuario_id});
-//    console.log("-->>",G.sqlformatter.format(query.toString()));
+
             query.then(function (resultado) {
                 callback(false, resultado.rows);
             }).catch(function (err) {

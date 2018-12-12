@@ -2370,7 +2370,6 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         
           
     }).fail(function (err) {
-        console.log('error al generar la orden de compra ', err);
         console.log("err [generarOrdenDeCompraAuditado]: ", err);
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:err.msj, status: err.status, data: err});
         //res.send(G.utils.r(req.url, err.msj, err.status, {ordenes_compras: err}));
@@ -2520,7 +2519,7 @@ function __recursivaProductosTemporalI002(datos,index,callback){
        codigo_producto: productos.codigo_producto,
        cantidad: productos.cantidad,
        porcentaje_gravamen: productos.porcentaje_gravamen,
-       total_costo: productos.valor_unitario*productos.cantidad,
+       total_costo: (productos.valor_unitario*(1+(productos.porcentaje_gravamen/100)))*productos.cantidad,
        fecha_vencimiento: productos.fecha_vencimiento,
        lote: productos.lote,
        localizacion: 'NA',
@@ -2549,7 +2548,7 @@ function __recursivaProductosTemporalI002(datos,index,callback){
 }
 
 function __addItemDocTemporalI002(req,callback){
-  
+
    var that = req.that;
    var args = req.data;
     
@@ -2625,6 +2624,12 @@ function __traslado(that,parametros,callback){
     }).done();
 }
 
+/*
+ * 
+ * @param {type} parametros
+ * @param {type} callback
+ * @returns ejecuta documento y crea pedido automatico
+ */
 function __ejecutarDocumento(parametros,callback){
     var that = parametros.that;    
     var documentoI002;
@@ -2658,7 +2663,7 @@ function __ejecutarDocumento(parametros,callback){
             }
         };
 
-          return G.Q.ninvoke(that.c_pedidos_clientes, "pedidoClienteAPedidoFarmaciaAutomatico", obj);
+          return G.Q.ninvoke(that.c_pedidos_clientes, "pedidoClienteAPedidoFarmaciaAutomatico", obj);//
            
         }else if(parametros.swTipoPedido === '1'){
            return G.Q.ninvoke(that.m_pedidos_clientes, "duplicarPedido",parametros.pedido, parametros.sw_origen_destino);            
@@ -2706,6 +2711,13 @@ function __ejecutarDocumento(parametros,callback){
     }).done();
 };
 
+/*
+ * 
+ * @param {type} that
+ * @param {type} parametros
+ * @param {type} callback
+ * @returns asigna pedido automatico al separador, asigna caja o nevera e invoca la separacion
+ */
 function __ejecutaAsignacionDePedido(that,parametros,callback){
 
     var responsable;
@@ -2825,6 +2837,15 @@ function __ejecutaAsignacionDePedido(that,parametros,callback){
     }).done();
 }
 
+/*
+ * 
+ * @param {type} that
+ * @param {type} parametros
+ * @param {type} pedidos
+ * @param {type} index
+ * @param {type} callback
+ * @returns asigna los productos al temporal de separacion
+ */
 function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
 
     var producto = parametros.productos[index];
@@ -2832,7 +2853,7 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
         callback(false,true);
         return;
     }
-        console.log("producto",producto);
+      
     
 //parametros.cotizacion.id_orden_cotizacion_origen
     var param = { 
@@ -2867,7 +2888,7 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
                     fecha_vencimiento: producto.fecha_vencimiento,
                     cantidad_ingresada: producto.cantidad,
                     valor_unitario: valor_unitario,
-                    iva: producto.iva,
+                    iva: producto.porcentaje_gravamen,
                     total_costo: total_costo,
                     total_costo_pedido: producto.total_costo_pedido,
                     cantidad_solicitada: producto.cantidad,
@@ -2876,7 +2897,6 @@ function __enviarDocumentoTemporal(that,parametros, pedidos, index, callback) {
             }
         }
     };
-    console.log("Envio",obj.body.data.documento_temporal);
     return G.Q.ninvoke(that.c_e008, "detalleDocumentoTemporalConValidacionCantidadIngresadaAutomatico", obj);
         
         

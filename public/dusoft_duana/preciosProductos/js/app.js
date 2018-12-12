@@ -14,7 +14,7 @@ define(["angular",
     "httpinterceptor",
     "dragndropfile",
     "js/directive",
-    "controllers/gestionFacturas/RadicacionController",
+    "controllers/preciosProductosController",
     "includes/validation/ValidacionNumeroDecimal",
     "includes/menu/menucontroller",
     "url",
@@ -33,7 +33,7 @@ define(["angular",
     "chart",
 ], function(angular, Agencia) {
     /* App Module and its dependencies */
-    var gestionFacturas = angular.module('gestionFacturas', [
+    var preciosProductos = angular.module('preciosProductos', [
         'ui.router',
         'controllers',
         'models',
@@ -49,35 +49,35 @@ define(["angular",
         'angular-web-notification'
     ]);
 
-    gestionFacturas.urlRouterProvider;
-    gestionFacturas.stateProvider;
+    preciosProductos.urlRouterProvider;
+    preciosProductos.stateProvider;
 
-    gestionFacturas.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
+    preciosProductos.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
 
             // For any unmatched url, send to /route1
             //intercepta los http para validar el usuario
             $httpProvider.interceptors.push('HttpInterceptor');
 
-            gestionFacturas.urlRouterProvider = $urlRouterProvider;
-            gestionFacturas.stateProvider = $stateProvider;
+            preciosProductos.urlRouterProvider = $urlRouterProvider;
+            preciosProductos.stateProvider = $stateProvider;
 
 
         }]).run(["$rootScope", "localStorageService", "$location", "$state", function($rootScope, localStorageService, $location, $state) {
             //se inicializa el usuario y la empresa para el modulo
-            $rootScope.name = "gestionFacturas";
-            var vistaDefecto = "gestionFacturas";
+            $rootScope.name = "preciosProductos";
+            var vistaDefecto = "preciosProductos";
 
             $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion) {
 
 
-                gestionFacturas.urlRouterProvider.otherwise(vistaDefecto);
+                preciosProductos.urlRouterProvider.otherwise(vistaDefecto);
 
-                gestionFacturas.stateProvider
-                .state('Gestionfacturas', {
-                    url: "/Gestionfacturas",
-                    text: "Gestion Facturas",
+                preciosProductos.stateProvider
+                .state('PreciosProductos', {
+                    url: "/preciosProductos",
+                    text: "Precios Productos",
                     templateUrl: "views/preciosProductos/radicacion.html",
-                    controller: "RadicacionController"
+                    controller: "preciosProductosController"
                 });
 
                 if ($location.path() === "") {
@@ -91,6 +91,6 @@ define(["angular",
 
         }]);
 
-    angular.bootstrap(document, ['gestionFacturas']);
-    return gestionFacturas;
+    angular.bootstrap(document, ['preciosProductos']);
+    return preciosProductos;
 });

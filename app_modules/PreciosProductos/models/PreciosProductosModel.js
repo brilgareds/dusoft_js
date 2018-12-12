@@ -1,10 +1,10 @@
 /* global G, archivo, query */
 
-var RadicacionModel = function () {
+var PreciosProductosModel = function () {
 
 };
 
-RadicacionModel.prototype.listarConcepto = function (callback) {
+PreciosProductosModel.prototype.listarConcepto = function (callback) {
     var query = G.knex.column('concepto_radicacion_id', 'observacion', 'estado')
             .select()
             .from('conceptos_radicacion')
@@ -19,7 +19,7 @@ RadicacionModel.prototype.listarConcepto = function (callback) {
 
 };
 
-RadicacionModel.prototype.listarFactura = function (callback) {
+PreciosProductosModel.prototype.listarFactura = function (callback) {
     var query = G.knex.column(
             'a.factura_id',
             'a.numero_factura',
@@ -57,7 +57,7 @@ RadicacionModel.prototype.listarFactura = function (callback) {
     });
 
 };
-RadicacionModel.prototype.listarAgrupar = function (obj, callback) {
+PreciosProductosModel.prototype.listarAgrupar = function (obj, callback) {
 
     var query = G.knex.column(
              'a.codigo_producto',
@@ -85,7 +85,7 @@ RadicacionModel.prototype.listarAgrupar = function (obj, callback) {
 };
 
 
-RadicacionModel.prototype.guardarConcepto = function (obj, callback) {
+PreciosProductosModel.prototype.guardarConcepto = function (obj, callback) {
 
     var query = G.knex('conceptos_radicacion')
             .insert({observacion: obj.nombre
@@ -100,7 +100,7 @@ RadicacionModel.prototype.guardarConcepto = function (obj, callback) {
 
 };
 
-RadicacionModel.prototype.subirArchivo = function (obj, callback) {
+PreciosProductosModel.prototype.subirArchivo = function (obj, callback) {
 
 
     if (!obj.req.files.file) {
@@ -120,7 +120,7 @@ RadicacionModel.prototype.subirArchivo = function (obj, callback) {
 
 
 
-RadicacionModel.prototype.factura = function (obj, callback) {
+PreciosProductosModel.prototype.factura = function (obj, callback) {
 
     var query = G.knex('factura')
             .insert({numero_factura: obj.numeroFactura,
@@ -146,7 +146,7 @@ RadicacionModel.prototype.factura = function (obj, callback) {
 
 };
 
-RadicacionModel.prototype.modificarFactura = function (obj, callback) {
+PreciosProductosModel.prototype.modificarFactura = function (obj, callback) {
     console.log("modificarFactura....", obj)
     var update = {};
     
@@ -186,7 +186,7 @@ RadicacionModel.prototype.modificarFactura = function (obj, callback) {
 
 };
 
-RadicacionModel.prototype.modificarEntregado = function (obj, callback) {
+PreciosProductosModel.prototype.modificarEntregado = function (obj, callback) {
 
     var query = G.knex('factura')
             .where("factura_id", obj.factura_id)
@@ -204,7 +204,7 @@ RadicacionModel.prototype.modificarEntregado = function (obj, callback) {
 
 };
 
-RadicacionModel.prototype.modificarNombreArchivo = function (obj, callback) {
+PreciosProductosModel.prototype.modificarNombreArchivo = function (obj, callback) {
 
     var query = G.knex('agrupar_factura')
             .where("relacion_id", obj.relacion_id)
@@ -221,7 +221,7 @@ RadicacionModel.prototype.modificarNombreArchivo = function (obj, callback) {
     });
 
 };
-RadicacionModel.prototype.eliminarGrupoFactura = function (obj, callback) {
+PreciosProductosModel.prototype.eliminarGrupoFactura = function (obj, callback) {
 console.log("obj.agrupar_factura_id",obj)
     var query = G.knex('agrupar_factura')
             .where('factura_id', obj.factura_id)
@@ -237,7 +237,7 @@ console.log("obj.agrupar_factura_id",obj)
     });
 };
 
-RadicacionModel.prototype.agruparFacturaSecuencia = function (callback) {
+PreciosProductosModel.prototype.agruparFacturaSecuencia = function (callback) {
     var query = G.knex.column(G.knex.raw("nextval('agrupar_factura_agrupar_factura_id_seq') as secuencia"))
             ;
     query.then(function (resultado) {
@@ -250,7 +250,7 @@ RadicacionModel.prototype.agruparFacturaSecuencia = function (callback) {
 
 };
 
-RadicacionModel.prototype.insertAgruparFactura = function (obj, callback) {
+PreciosProductosModel.prototype.insertAgruparFactura = function (obj, callback) {
 
     var query = G.knex('agrupar_factura')
             .insert({relacion_id: obj.secuencia,
@@ -269,7 +269,7 @@ RadicacionModel.prototype.insertAgruparFactura = function (obj, callback) {
 
 };
 
-RadicacionModel.prototype.listarFacturaEntregado = function (callback) {
+PreciosProductosModel.prototype.listarFacturaEntregado = function (callback) {
     var query = G.knex.column('	numero_factura', 'relacion_id')
             .select()
             .from('numero_factura')
@@ -284,7 +284,7 @@ RadicacionModel.prototype.listarFacturaEntregado = function (callback) {
 
 };
 
-RadicacionModel.prototype.agregarFacturaEntregado = function (obj, callback) {
+PreciosProductosModel.prototype.agregarFacturaEntregado = function (obj, callback) {
     var query = G.knex('agrupar_factura')
             .insert({relacion_id: obj.numeroRadicacion,
                 fecha_registro: 'now()',
@@ -303,7 +303,7 @@ RadicacionModel.prototype.agregarFacturaEntregado = function (obj, callback) {
 
 };
 
-RadicacionModel.prototype.planillaRadicacion = function (obj, callback) {
+PreciosProductosModel.prototype.planillaRadicacion = function (obj, callback) {
 
     var query = G.knex('agrupar_factura')
             .insert({relacion_id: obj.relacion_id
@@ -319,7 +319,7 @@ RadicacionModel.prototype.planillaRadicacion = function (obj, callback) {
 
 };
 
-RadicacionModel.prototype.modificarDescarga = function (obj, callback) {
+PreciosProductosModel.prototype.modificarDescarga = function (obj, callback) {
 
     var query = G.knex('agrupar_factura')
             .where("relacion_id", obj.relacion_id)
@@ -337,7 +337,7 @@ RadicacionModel.prototype.modificarDescarga = function (obj, callback) {
 
 };
 
-RadicacionModel.prototype.listarItemReporte = function (obj, callback) {
+PreciosProductosModel.prototype.listarItemReporte = function (obj, callback) {
     var query = G.knex.column('	b.numero_factura',
     G.knex.raw("to_char(b.fecha_entrega,'DD/MM/YYYY') as fecha_entrega"),
     G.knex.raw("to_char(b.fecha_vencimiento,'DD/MM/YYYY') as fecha_vencimiento"),
@@ -360,7 +360,7 @@ RadicacionModel.prototype.listarItemReporte = function (obj, callback) {
 };
 
 
-RadicacionModel.prototype.listarMunicipio = function(termino_busqueda, pais_id, callback) {
+PreciosProductosModel.prototype.listarMunicipio = function(termino_busqueda, pais_id, callback) {
 
 
     var sql = " select \
@@ -383,6 +383,6 @@ RadicacionModel.prototype.listarMunicipio = function(termino_busqueda, pais_id, 
     });
 };
 
-RadicacionModel.$inject = [];
+PreciosProductosModel.$inject = [];
 
-module.exports = RadicacionModel;
+module.exports = PreciosProductosModel;

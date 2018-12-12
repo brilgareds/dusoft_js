@@ -1,0 +1,26 @@
+{
+    "module": "PreciosProductos",
+    "dependency": {
+        "controllers": [{
+                "precios_productos_controller": {
+                    "module": "PreciosProductos",
+                    "controller": "PreciosProductosController",
+                    "alias": "c_precios_productos"
+                }
+            }],
+        "models": [{
+                "precios_productos_model": {
+                    "module": "PreciosProductos",
+                    "model": "PreciosProductosModel",
+                    "alias": "m_precios_productos"
+                },               
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

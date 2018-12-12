@@ -43746,46 +43746,22 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
                 showFilter: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'relacion_id', displayName: 'Grupo', width: "5%"},
-                    {field: 'municipio', displayName: "Ciudad", width: "14%"}, //
-                    {field: 'numero_factura', displayName: 'No. Factura', width: "8%"},
-                    {field: 'descripcion', displayName: 'Descripcion', width: "30%"},
-                    {displayName: "Img", cellClass: "txt-center dropdown-button", width: "4%",
+                    {field: 'codigo_producto', displayName: 'Codigo', width: "5%"},
+                    {field: 'descripcion', displayName: 'Producto', width: "14%"}, //
+                    {field: 'costo', displayName: 'Costo', width: "8%"},
+                    {field: 'costo_ultima_compra', displayName: 'Ultima Compra', width: "28%"},
+                    {field: 'existencia', displayName: 'Stock', width: "10%"},
+                    {field: 'nuevo_costo', displayName: 'Nuevo costo', width: "10%"},
+                    {field: 'diferencia', displayName: 'Diferencia', width: "10%"},
+                    {field: 'total_diferencia', displayName: 'Total diferencia', width: "10%"},
+
+                    {displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "5%",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
-                                        <button ng-click="onDescargarArchivo(row.entity)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-download-alt"></span></button>\
-                                     </div>'
-                    },
-                    {field: 'fecha_entrega', displayName: 'Fecha de Radicacion', width: "13%"},
-                    {displayName: 'Formato Cargado', cellClass: "txt-center dropdown-button", width: "10%",
-                        cellTemplate: ' <div class="row">\
-                                          <div class="txt-center dropdown-button" "checkbox" ng-if="row.entity.archivo==null">\
-                                            <label> \
-                                              <span class="glyphicon glyphicon-cloud-upload"></span>\
-                                            </label>\
-                                         </div>\
-                                          <div class="txt-center dropdown-button" "checkbox" ng-if="row.entity.archivo!=null">\
-                                            <label> \
-                                              <span class="glyphicon glyphicon-cloud-download"></span>\
-                                            </label>\
-                                         </div>\
+                                        <button ng-click="onModificarAgrupacion(row.entity)" class="btn btn-default btn-xs">\
+                                            <span class="glyphicon glyphicon-edit"></span>\
+                                        </button>\
                                        </div>'
-
-
-                    },
-
-                    {displayName: "Descargas", cellClass: "txt-center dropdown-button", width: "8%",
-                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
-                                        <button ng-click="onDescargarArchivoFormato(row.entity)"  class="btn btn-default btn-xs"><span class="glyphicon glyphicon-download-alt"></span></button>\
-                                     </div>'
-                    },
-                    {displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "8%",
-                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
-                                        <button ng-click="onModificarAgrupacion(row.entity)"  class="btn btn-default btn-xs"><span class="glyphicon glyphicon-edit"></span></button>\
-                                     </div>'
                     }
-
-
-
                 ]
             };
 

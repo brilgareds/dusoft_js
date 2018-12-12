@@ -1,17 +1,17 @@
 
 /* global G, $scope */
 
-var Radicacion = function (radicacion, m_usuarios) {
-    this.m_radicacion = radicacion;
+var Precios_productos = function (m_precios_productos, m_usuarios) {
+    this.m_precios_productos = m_precios_productos;
     this.m_usuarios = m_usuarios;
 };
 
-Radicacion.prototype.listarConcepto = function (req, res) {
+Precios_productos.prototype.listarConcepto = function (req, res) {
 
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_radicacion, "listarConcepto").
+    G.Q.ninvoke(that.m_precios_productos, "listarConcepto").
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'lista de concepto ok!!!!', 200, {listarConcepto: resultado}));
             }).
@@ -23,7 +23,7 @@ Radicacion.prototype.listarConcepto = function (req, res) {
 };
 
 
-Radicacion.prototype.subirArchivo = function (req, res) {
+Precios_productos.prototype.subirArchivo = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -47,11 +47,11 @@ if (args.data.ruta.name !== ""){
 };
 
 
-Radicacion.prototype.listarFactura = function (req, res) {
+Precios_productos.prototype.listarFactura = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_radicacion, "listarFactura").
+    G.Q.ninvoke(that.m_precios_productos, "listarFactura").
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'lista de factura ok!!!!', 200, {listarFactura: resultado}));
             }).
@@ -61,12 +61,12 @@ Radicacion.prototype.listarFactura = function (req, res) {
             done();
 
 };
-Radicacion.prototype.listarAgrupar = function (req, res) {
+Precios_productos.prototype.listarAgrupar = function (req, res) {
     var that = this;
     var args = req.body.data;
     var parametros = args;
 
-    G.Q.ninvoke(that.m_radicacion, "listarAgrupar", parametros).
+    G.Q.ninvoke(that.m_precios_productos, "listarAgrupar", parametros).
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'lista de agrupar ok!!!!', 200, {listarAgrupar: resultado}));
             }).
@@ -77,14 +77,14 @@ Radicacion.prototype.listarAgrupar = function (req, res) {
             done();
 };
 
-Radicacion.prototype.eliminarGrupoFactura = function (req, res) {
+Precios_productos.prototype.eliminarGrupoFactura = function (req, res) {
     var that = this;
     var args = req.body.data;
     var parametros = args;
     console.log(parametros);
-    G.Q.ninvoke(that.m_radicacion, "eliminarGrupoFactura", parametros).then(function (resultado) {
+    G.Q.ninvoke(that.m_precios_productos, "eliminarGrupoFactura", parametros).then(function (resultado) {
 
-        return G.Q.ninvoke(that.m_radicacion, "modificarEntregado", {sw_entregado: 0, factura_id: parametros.factura_id});
+        return G.Q.ninvoke(that.m_precios_productos, "modificarEntregado", {sw_entregado: 0, factura_id: parametros.factura_id});
 
     }).then(function (resultado) {
         res.send(G.utils.r(req.url, 'se elimino correctamente ok!!!!', 200, {eliminarGrupoFactura: resultado}));
@@ -97,7 +97,7 @@ Radicacion.prototype.eliminarGrupoFactura = function (req, res) {
 
 };
 
-Radicacion.prototype.guardarConcepto = function (req, res) {
+Precios_productos.prototype.guardarConcepto = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -110,7 +110,7 @@ Radicacion.prototype.guardarConcepto = function (req, res) {
 
     var obj = {nombre: args.nombre};
 
-    G.Q.ninvoke(that.m_radicacion, "guardarConcepto", obj).
+    G.Q.ninvoke(that.m_precios_productos, "guardarConcepto", obj).
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'guardar concepto ok!!!!', 200, {guardarConcepto: resultado}));
             }).
@@ -122,7 +122,7 @@ Radicacion.prototype.guardarConcepto = function (req, res) {
 /*
  * radicacion de factura
  */
-Radicacion.prototype.guardarFactura = function (req, res) {
+Precios_productos.prototype.guardarFactura = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -132,7 +132,7 @@ Radicacion.prototype.guardarFactura = function (req, res) {
         return;
     }
 
-    if (args.conceptoRadicacionId === undefined || args.conceptoRadicacionId === "") {
+    if (args.conceptoPrecios_productosId === undefined || args.conceptoPrecios_productosId === "") {
         res.send(G.utils.r(req.url, 'Debe seleccionar el proveedor', 404, {}));
         return;
     }
@@ -168,7 +168,7 @@ Radicacion.prototype.guardarFactura = function (req, res) {
     var tipo_dpto_id = args.tipo_dpto_id;
     var obj = {
         numeroFactura: args.numeroFactura,
-        concepto_radicacion_id: args.conceptoRadicacionId,
+        concepto_radicacion_id: args.conceptoPrecios_productosId,
         sw_entregado: args.swEntregado,
         nombre_ciudad: args.municipio,
         tipo_pais_id: tipo_pais_id,
@@ -182,7 +182,7 @@ Radicacion.prototype.guardarFactura = function (req, res) {
         ruta : args.ruta
     };
     
-    G.Q.ninvoke(that.m_radicacion, "factura", obj).then(function (resultado) {
+    G.Q.ninvoke(that.m_precios_productos, "factura", obj).then(function (resultado) {
         res.send(G.utils.r(req.url, 'factura ok!!!!', 200, {factura: resultado}));
     }).fail(function (err) {
         console.log("error", err);
@@ -191,7 +191,7 @@ Radicacion.prototype.guardarFactura = function (req, res) {
 };
 
 
-Radicacion.prototype.modificarFactura = function (req, res) {
+Precios_productos.prototype.modificarFactura = function (req, res) {
     var that = this;
     var args = req.body.data;
 
@@ -230,7 +230,7 @@ Radicacion.prototype.modificarFactura = function (req, res) {
     }
 
 
-    G.Q.ninvoke(that.m_radicacion, "modificarFactura", args).then(function (resultado) {
+    G.Q.ninvoke(that.m_precios_productos, "modificarFactura", args).then(function (resultado) {
        
         res.send(G.utils.r(req.url, 'modificacion factura ok!!!!', 200, {factura: resultado}));
     }).fail(function (err) {
@@ -240,7 +240,7 @@ Radicacion.prototype.modificarFactura = function (req, res) {
 
 };
 
-Radicacion.prototype.modificarEntregado = function (req, res) {
+Precios_productos.prototype.modificarEntregado = function (req, res) {
     var that = this;
     var args = req.body.data;
 
@@ -256,7 +256,7 @@ Radicacion.prototype.modificarEntregado = function (req, res) {
         return;
     }
 
-    G.Q.ninvoke(that.m_radicacion, "modificarEntregado", args).then(function (resultado) {
+    G.Q.ninvoke(that.m_precios_productos, "modificarEntregado", args).then(function (resultado) {
 
         res.send(G.utils.r(req.url, 'modificacion factura entregada ok!!!!', 200, {factura: resultado}));
     }).fail(function (err) {
@@ -265,7 +265,7 @@ Radicacion.prototype.modificarEntregado = function (req, res) {
     }).done();
 
 };
-Radicacion.prototype.modificarNombreArchivo = function (req, res) {
+Precios_productos.prototype.modificarNombreArchivo = function (req, res) {
     var that = this;
     var args = req.body.data;
 
@@ -281,7 +281,7 @@ Radicacion.prototype.modificarNombreArchivo = function (req, res) {
         return;
     }
 
-    G.Q.ninvoke(that.m_radicacion, "modificarNombreArchivo", args).then(function (resultado) {
+    G.Q.ninvoke(that.m_precios_productos, "modificarNombreArchivo", args).then(function (resultado) {
 
         res.send(G.utils.r(req.url, 'modificacion factura entregada ok!!!!', 200, {factura: resultado}));
     }).fail(function (err) {
@@ -292,7 +292,7 @@ Radicacion.prototype.modificarNombreArchivo = function (req, res) {
 };
 
 
-Radicacion.prototype.insertAgruparFactura = function (req, res) {
+Precios_productos.prototype.insertAgruparFactura = function (req, res) {
     var that = this;
     var args = req.body.data;
     var parametros = args.facturas;
@@ -304,7 +304,7 @@ Radicacion.prototype.insertAgruparFactura = function (req, res) {
     }
 
 
-    G.Q.ninvoke(that.m_radicacion, "agruparFacturaSecuencia").then(function (resultado) {
+    G.Q.ninvoke(that.m_precios_productos, "agruparFacturaSecuencia").then(function (resultado) {
 
         parametros.secuencia = resultado;
         parametros.usuario_id = req.session.user.usuario_id;
@@ -332,9 +332,9 @@ function __guardarFacturaAgrupada(that, parametros, index, callback) {
     parametro.secuencia = parametros.secuencia;
     parametro.usuario_id = parametros.usuario_id;
     parametro.sw_entregado = '1';
-    G.Q.ninvoke(that.m_radicacion, "insertAgruparFactura", parametro).then(function (resultado) {
+    G.Q.ninvoke(that.m_precios_productos, "insertAgruparFactura", parametro).then(function (resultado) {
 
-        G.Q.nfcall(that.m_radicacion.modificarEntregado, parametro).then(function (result) {
+        G.Q.nfcall(that.m_precios_productos.modificarEntregado, parametro).then(function (result) {
 
             var timer = setTimeout(function () {
                 clearTimeout(timer);
@@ -357,11 +357,11 @@ function __guardarFacturaAgrupada(that, parametros, index, callback) {
 }
 ;
 
-Radicacion.prototype.listarFacturaEntregado = function (req, res) {
+Precios_productos.prototype.listarFacturaEntregado = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_radicacion, "listarFacturaEntregado").
+    G.Q.ninvoke(that.m_precios_productos, "listarFacturaEntregado").
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'lista de factura ok!!!!', 200, {listarFacturaEntregado: resultado}));
             }).
@@ -371,21 +371,21 @@ Radicacion.prototype.listarFacturaEntregado = function (req, res) {
             done();
 
 };
-Radicacion.prototype.agregarFacturaEntregado = function (req, res) {
+Precios_productos.prototype.agregarFacturaEntregado = function (req, res) {
     var that = this;
     var args = req.body.data;
     var parametros = {
-        numeroRadicacion: args.numeroRadicacion,
+        numeroPrecios_productos: args.numeroPrecios_productos,
         numeroFactura: args.numeroFactura,
         factura_id: args.numeroFactura,
         sw_entregado: '1',
         usuario_id: req.session.user.usuario_id
     };
 
-    G.Q.ninvoke(that.m_radicacion, "agregarFacturaEntregado", parametros).
+    G.Q.ninvoke(that.m_precios_productos, "agregarFacturaEntregado", parametros).
             then(function (resultado) {
 
-                return G.Q.nfcall(that.m_radicacion.modificarEntregado, parametros);
+                return G.Q.nfcall(that.m_precios_productos.modificarEntregado, parametros);
 
             }).
             then(function (resultado) {
@@ -398,7 +398,7 @@ Radicacion.prototype.agregarFacturaEntregado = function (req, res) {
 
 };
 
-Radicacion.prototype.planillaRadicacion = function (req, res) {
+Precios_productos.prototype.planillaPrecios_productos = function (req, res) {
     var that = this;
     var fecha = new Date();
 
@@ -409,10 +409,10 @@ Radicacion.prototype.planillaRadicacion = function (req, res) {
         relacion_id: args.relacion_id
 
     };
-    G.Q.ninvoke(that.m_radicacion, "modificarDescarga", parametros).
+    G.Q.ninvoke(that.m_precios_productos, "modificarDescarga", parametros).
             then(function (result) {
                 
-                return G.Q.ninvoke(that.m_radicacion, "listarItemReporte", parametros);
+                return G.Q.ninvoke(that.m_precios_productos, "listarItemReporte", parametros);
                 
             }).then(function (resultado) {
         while (resultado.length < 14) {
@@ -436,14 +436,14 @@ Radicacion.prototype.planillaRadicacion = function (req, res) {
 
 
 
-//    G.Q.ninvoke(that.m_radicacion, "planillaRadicacion", parametros).
+//    G.Q.ninvoke(that.m_precios_productos, "planillaPrecios_productos", parametros).
 //            then(function (resultado) {
 //              }).
 //                    then(function (resultado) {
-//                         res.send(G.utils.r(req.url, 'Plantilla ok!!!!', 200, {planillaRadicacion: resultado}));
+//                         res.send(G.utils.r(req.url, 'Plantilla ok!!!!', 200, {planillaPrecios_productos: resultado}));
     }).
             fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error al consultar factura', 500, {planillaRadicacion: {}}));
+                res.send(G.utils.r(req.url, 'Error al consultar factura', 500, {planillaPrecios_productos: {}}));
             }).
             done();
 
@@ -454,8 +454,8 @@ function __generarPdf(datos, callback) {
 
     G.jsreport.render({
         template: {
-            content: G.fs.readFileSync('app_modules/Radicacion/reports/planilla.html', 'utf8'),
-            helpers: G.fs.readFileSync('app_modules/Radicacion/reports/javascripts/rotulos.js', 'utf8'),
+            content: G.fs.readFileSync('app_modules/Precios_productos/reports/planilla.html', 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/Precios_productos/reports/javascripts/rotulos.js', 'utf8'),
             recipe: "html",
             engine: 'jsrender',
             phantom: {
@@ -488,9 +488,9 @@ function __generarPdf(datos, callback) {
 
 
 
-Radicacion.$inject = [
-    "m_radicacion",
+Precios_productos.$inject = [
+    "m_precios_productos",
     "m_usuarios"
 ];
 
-module.exports = Radicacion;
+module.exports = Precios_productos;

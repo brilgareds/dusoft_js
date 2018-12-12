@@ -1,4 +1,6 @@
 
+/* global G */
+
 var E008Controller = function (movimientos_bodegas, m_e008, e_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos, log_e008) {
 
     this.m_movimientos_bodegas = movimientos_bodegas;
@@ -2282,6 +2284,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                 (tipoPedido === 1 && pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
                 (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS") ||
                 (tipoPedido === 1 && pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS") ||
+                (tipoPedido === 1 && pedido.identificacion_cliente === '900228989' && pedido.tipo_id_cliente === "NIT") ||
                 (tipoPedido === 1 && pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS") ||
                 (tipoPedido === 1 && pedido.identificacion_cliente === '259' && pedido.tipo_id_cliente === "AS") ||
                 (tipoPedido === 1 && __validarDumian(pedido.identificacion_cliente, pedido.tipo_id_cliente))) {
@@ -2294,7 +2297,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                 } else if ((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")) {//Clinica las peñitas
                     bodega = "BC";
                     documentoId = 418;
-                } else if ((pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")) {//santasofia
+                } else if ((pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS") ||
+                        (pedido.identificacion_cliente === '900228989' && pedido.tipo_id_cliente === "NIT")) {//santasofia
                     bodega = "1";
                     documentoId = 431;
                 } else if ((pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS")) {//santasofia
@@ -2488,10 +2492,11 @@ function __sincronizarDocumentoDespacho(obj, callback) {
         return G.Q.nfcall(__sincronizarEncabezadoDocumento, obj);
 
     }).then(function (resultado) {
-
+console.log("ENCABEZADO",resultado);
         return G.Q.nfcall(__sincronizarDetalleDocumento, obj);
 
-    }).then(function () {
+    }).then(function (resul) {
+        console.log("ENCABEZADO",resul);
         callback(false);
 
     }).fail(function (err) {
@@ -2523,6 +2528,7 @@ function __sincronizarEncabezadoDocumento(obj, callback) {
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
         } else if ((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS") ||
                 (obj.pedido.identificacion_cliente === '258' && obj.pedido.tipo_id_cliente === "AS") ||
+                (obj.pedido.identificacion_cliente === '900228989' && obj.pedido.tipo_id_cliente === "NIT") ||
                 (obj.pedido.identificacion_cliente === '259' && obj.pedido.tipo_id_cliente === "AS")) {//Santa Soafia
             // usuarioId="4769";
             url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;
@@ -2650,6 +2656,7 @@ function __sincronizarDetalleDocumento(obj, callback) {
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
         } else if ((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS") ||
                 (obj.pedido.identificacion_cliente === '258' && obj.pedido.tipo_id_cliente === "AS") ||
+                (obj.pedido.identificacion_cliente === '900228989' && obj.pedido.tipo_id_cliente === "NIT") ||
                 (obj.pedido.identificacion_cliente === '259' && obj.pedido.tipo_id_cliente === "AS")) {//Santa Soafia
 
             url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;

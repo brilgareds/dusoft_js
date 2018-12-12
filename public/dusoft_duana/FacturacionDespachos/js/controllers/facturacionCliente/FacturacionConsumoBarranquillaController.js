@@ -567,7 +567,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             facturaEspecial: facturaEspecial.id,
                             pedidos: [
                                 {
-                                    numero_cotizacion: 0,
+                                    numero_cotizacion: $scope.root.empresaSeleccionada.codigo === 'BQ'? 0 : -1,
                                     vendedor: [
                                         {
                                             tipo_id_tercero: "NIT",

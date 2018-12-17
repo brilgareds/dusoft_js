@@ -560,7 +560,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
         "b.estado",
         G.knex.raw("case when b.estado=0 then 'Sincronizado' else 'NO sincronizado' end as descripcion_estado"),
         "b.mensaje",
-        G.knex.raw("(a.subtotal_efc = a.subtotal) as valor_igual"),
+        G.knex.raw("(to_char(a.subtotal_efc, 'FM999999999.00') = to_char(a.subtotal, 'FM999999999.00')) as valor_igual"),
         "a.subtotal_efc"
     ];
 
@@ -664,7 +664,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
 
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit);
-
+//console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
 
         callback(false, resultado)

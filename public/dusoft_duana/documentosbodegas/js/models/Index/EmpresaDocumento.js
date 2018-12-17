@@ -2,7 +2,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function (angular, 
 
     models.factory('EmpresaDocumento', ["Empresa", "$filter", function (Empresa, $filter) {
 
-            var EmpresaDocumento = Object.create(Empresa.getClass().prototype)
+            var EmpresaDocumento = Object.create(Empresa.getClass().prototype);
 
             EmpresaDocumento.documentos = [];
 
@@ -33,7 +33,6 @@ define(["angular", "js/models", "includes/classes/Empresa"], function (angular, 
                 });
 
                 return documentos_salida;
-
             };
 
             // Filtrar documentos de entrada
@@ -59,7 +58,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function (angular, 
 
                 this.get_documentos().forEach(function (documento) {
 
-                    if (documento.get_tipo() === 'E003' || documento.get_tipo() === 'I003') {
+                    if (documento.get_tipo() === 'E003' || documento.get_tipo() === 'I003' || documento.get_tipo() === 'ABC1') {
                         documentos_ajuste.push(documento);
                     }
                 });

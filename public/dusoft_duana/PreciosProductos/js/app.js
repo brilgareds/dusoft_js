@@ -14,7 +14,7 @@ define(["angular",
     "httpinterceptor",
     "dragndropfile",
     "js/directive",
-    "controllers/preciosProductosController",
+    "controllers/PreciosProductosController",
     "includes/validation/ValidacionNumeroDecimal",
     "includes/menu/menucontroller",
     "url",
@@ -74,10 +74,10 @@ define(["angular",
 
                 preciosProductos.stateProvider
                 .state('PreciosProductos', {
-                    url: "/preciosProductos",
+                    url: "/PreciosProductos",
                     text: "Precios Productos",
                     templateUrl: "views/preciosProductos/radicacion.html",
-                    controller: "preciosProductosController"
+                    controller: "PreciosProductosController"
                 });
 
                 if ($location.path() === "") {

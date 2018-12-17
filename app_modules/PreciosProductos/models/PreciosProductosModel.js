@@ -64,17 +64,14 @@ PreciosProductosModel.prototype.listarAgrupar = function (obj, callback) {
              'b.descripcion',
              'a.costo',
              'a.costo_ultima_compra',
-             'a.existencia',
-             'a.archivo',
-             'a.factura_id',
-             'b.sw_entregado',
-             'b.ruta')
+             'a.existencia')
             .select()
             .from("inventarios AS a")
             .innerJoin("inventarios_productos as b", "a.codigo_producto", "b.codigo_producto")
-            .orderBy('a.codigo_producto');
+            .orderBy('a.codigo_producto').limit(20);
     // .orderBy('fecha_entrega', 'asc');
     //  console.log(G.sqlformatter.format(query.toString()));
+    //console.log('query -->',query);
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

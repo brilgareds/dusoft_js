@@ -72,7 +72,7 @@ Precios_productos.prototype.listarAgrupar = function (req, res) {
             }).
             fail(function (err) {
                 console.log("error", err);
-                res.send(G.utils.r(req.url, 'Error al listar ', 500, {listarAgrupar: {}}));
+                res.send(G.utils.r(req.url, 'Error al listar', 500, {listarAgrupar: {}}));
             }).
             done();
 };

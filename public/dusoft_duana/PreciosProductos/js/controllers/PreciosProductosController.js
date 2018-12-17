@@ -5,7 +5,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
     "includes/classes/Empresa",
 ], function (angular, controllers) {
 
-    controllers.controller('preciosProductosController', [
+    controllers.controller('reciosProductosController', [
         '$scope', '$rootScope', "Request",
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
@@ -249,7 +249,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     windowClass: 'app-modal-window-ls-xlg-ls',
                     keyboard: false,
                     showFilter: true,
-                    templateUrl: 'views/preciosProductos/modificarEntregado.html',
+                    templateUrl: 'views/PreciosProductos/modificarEntregado.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                             $scope.modificar = {};
@@ -541,7 +541,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
-                    templateUrl: 'views/preciosProductos/vistaConceptos.html',
+                    templateUrl: 'views/PreciosProductos/vistaConceptos.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
@@ -594,7 +594,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
-                    templateUrl: 'views/preciosProductos/agrupaFactura.html',
+                    templateUrl: 'views/PreciosProductos/agrupaFactura.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                             $scope.agrupar = {};
@@ -687,7 +687,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
-                    templateUrl: 'views/preciosProductos/vistaModificarFactura.html',
+                    templateUrl: 'views/PreciosProductos/vistaModificarFactura.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                             $scope.editar = {};
@@ -796,6 +796,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 ]
             };
+
+            $scope.listarProductos = function(data){
+                console.log('input -->',data);
+            }
 //2            
             $scope.listar_agrupar = {
                 data: 'root.listarAgrupar',

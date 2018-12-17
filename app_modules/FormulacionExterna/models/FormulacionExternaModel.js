@@ -259,6 +259,7 @@ FormulacionExternaModel.prototype.insertarFormulaTmp = function(formula_papel, e
         tipo_dpto_id: tipo_dpto_id,
         tipo_mpio_id: tipo_mpio_id
     }).returning('tmp_formula_id');
+    console.log('Eyyyy -->');
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){    
         callback(false, resultado[0]);

@@ -143,6 +143,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
                             tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
                     }
+                    if (documento.tipo_doc_bodega_id === 'ABC1') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
+                            tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
+                    }
                     if (documento.tipo_doc_bodega_id === 'E009') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, empresa_destino: documento.empresa_destino};
                     }
@@ -399,6 +403,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             callback(false);
                         }
                     });
+                } else if (documentos.tipo_movimiento === "ABC1") {
+                    obj.data.tipoTercero = documentos.tipoTercero;
+                    obj.data.terceroId = documentos.terceroId;
+                    obj.data.egreso_id = documentos.numeroFactura;
+                    Request.realizarRequest(API.ABC1.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
                 } else if (documentos.tipo_movimiento === "E009") {
 
                     Request.realizarRequest(API.E009.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
@@ -540,6 +557,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.tipo_doc_bodega_id === "E007") {
                                 that.eliminarGetDocTemporalE007(data);
                             }
+                            if (data.tipo_doc_bodega_id === "ABC1") {
+                                that.eliminarGetDocTemporalABC1(data);
+                            }
                             if (data.tipo_doc_bodega_id === "E009") {
                                 that.eliminarGetDocTemporalE009(data);
                             }
@@ -602,6 +622,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 };
                 E007Service.eliminarGetDocTemporal(obj, function (data) {
+                    if (data.status === 200) {
+                        that.listarDocumetosTemporales(true);
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+            };
+
+            that.eliminarGetDocTemporalABC1 = function (datos) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        doc_tmp_id: datos.doc_tmp_id
+                    }
+                };
+                ABC1Service.eliminarGetDocTemporal(obj, function (data) {
                     if (data.status === 200) {
                         that.listarDocumetosTemporales(true);
                         AlertService.mostrarMensaje("warning", data.msj);

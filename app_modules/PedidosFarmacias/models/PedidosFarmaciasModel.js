@@ -1894,7 +1894,7 @@ PedidosFarmaciasModel.prototype.consulta_solicitud_productos_a_bodega_principal 
     var query = G.knex("solicitud_productos_a_bodega_principal as a").
                 select('*').
                 where(function () {
-                    this.where("solicitud_prod_a_bod_ppal_id",obj.id_orden_pedido_origen);
+                    this.where("solicitud_prod_a_bod_ppal_id",obj.orden_id_ct);
                 });
 
     query.then(function (resultado) {

@@ -3773,7 +3773,7 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
     that.m_pedidos_farmacias.obtener_responsables_del_pedido(numero_pedido, function (err, responsables) {
 
         if (err) {
-            console.log("Error __validar_responsable_pedidos_farmacias ",err);
+            console.log("Error __validar_responsable_pedidos_farmacias 1",err);
             callback(err, continuar);
         } else {
 
@@ -3788,7 +3788,7 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
                 callback(err, continuar);
 
             } else {
-                console.log("Error __validar_responsable_pedidos_farmacias ",err);
+                console.log("Error __validar_responsable_pedidos_farmacias 2",err);
                 callback(err, continuar);
             }
         }

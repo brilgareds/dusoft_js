@@ -5796,7 +5796,14 @@ PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
 function __pedidoClienteAPedidoFarmacia(req, that, callback) {
     var that = that;
     var args = req.body.data;
-    var usuario_id = req.session.user.usuario_id;
+    var usuario_id;
+
+    if(args.usuario_id!==undefined && args.usuario_id!==''){
+       usuario_id = args.usuario_id;
+    }else{
+       usuario_id = req.session.user.usuario_id;
+    }
+    
     var obj = {pedidoDestino: args.numero_pedido};
     var send = {};
     var farmacia_id;

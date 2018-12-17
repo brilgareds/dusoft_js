@@ -1867,7 +1867,7 @@ PedidosClienteModel.prototype.listar_productos = function (empresa, centro_utili
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit);
-
+//console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -2166,7 +2166,7 @@ PedidosClienteModel.prototype.verificarPedidoMultiple = function (obj, callback)
              
                 this.andWhere("id_orden_pedido_destino", obj.numero_pedido);
             })
-            .select(['id_orden_pedido_destino']);
+            .select('*');
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -3597,7 +3597,7 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
                 ) returning pedido_cliente_id as numero_pedido ";
 //                                    pedido_multiple_farmacia
     var query = G.knex.raw(sql, {1: numero_pedido});
- 
+ console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

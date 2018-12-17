@@ -373,6 +373,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 */
                 //{field: 'Valor/saldo',  cellClass: "ngCellText",width: "12%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} / {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
                 
+                {field: 'Valor EFC', width: "7%", cellClass: "ngCellText txt-center", displayName: 'Subtotal EFC', 
+                    cellTemplate: '<div class="col-xs-16 ">\
+                                    <p class="text-uppercase" ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()"><span class="glyphicon glyphicon-ok"></span></p>\
+                                    <p class="text-uppercase" ng-if="!row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()"><span class="glyphicon glyphicon-remove"></span> SubTotal EFC {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()}} </p></div>\
+                                   '},
+                
                 {field: 'Valor', width: "7%", cellClass: "ngCellText", displayName: 'Valor', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} </p></div>'},
                 
@@ -386,7 +392,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     cellTemplate: '<div class="btn-group">\
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
-                                <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getEstadoSincronizacion() != 0">\n\
+                                <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getEstadoSincronizacion() != 0 && row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()">\n\
                                    <a href="javascript:void(0);" ng-click="sincronizarFactura(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
@@ -407,7 +413,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                </button>\
                             </div>\
                             <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
-                               <button class="btn btn-success btn-xs"  ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">\
+                               <button ng-disabled="!row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()" class="btn btn-success btn-xs"  ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">\
                                   SINCRONIZAR\
                                </button>\
                             </div>\

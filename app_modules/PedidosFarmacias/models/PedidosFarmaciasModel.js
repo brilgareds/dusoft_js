@@ -1889,6 +1889,23 @@ PedidosFarmaciasModel.prototype.cantidad_pedidos_operario = function (responsabl
 
 };
 
+PedidosFarmaciasModel.prototype.consulta_solicitud_productos_a_bodega_principal = function (obj, callback) {
+   
+    var query = G.knex("solicitud_productos_a_bodega_principal as a").
+                select('*').
+                where(function () {
+                    this.where("solicitud_prod_a_bod_ppal_id",obj.id_orden_pedido_origen);
+                });
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [consulta_solicitud_productos_a_bodega_principal]:", err);
+        callback(err);
+    });
+
+};
+
 function __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, empresaId, that, transaccion, callback) {
 
     G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: cantidad_solicitada, codigo_producto: codigo_producto}).then(function (resultado) {

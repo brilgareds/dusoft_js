@@ -2359,7 +2359,9 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         return G.Q.ninvoke(that.m_pedidos_clientes, "verificarPedidoMultiple",respuesta.data);            
             
     }).then(function(resultado){
-        
+        console.log("resultadoresultadoresultado",resultado);
+        console.log("resultadoresultadoresultado",resultado[0].id_orden_pedido_origen);
+        respuesta.data.id_orden_pedido_origen=resultado[0].id_orden_pedido_origen;
         if (resultado.length > 0) {
             return G.Q.nfcall(__generacionAutomatica, respuesta);
         } else {
@@ -2409,6 +2411,7 @@ function __generacionAutomatica(datos,callback){
     }).then(function(resultado){
         
        var parametros ={ 
+        usuario_id: datos.data.parametros.encabezado.usuario_id,  
         orden:datos.data.numero_orden, 
         pedido:datos.data.numero_pedido, 
         sw_origen_destino:datos.data.sw_origen_destino, 
@@ -2418,6 +2421,7 @@ function __generacionAutomatica(datos,callback){
         session: datos.data.session,
         doc_tmp_id:movimiento_temporal_id,
         that:that,
+        id_orden_pedido_origen:datos.data.id_orden_pedido_origen,
         protocolo:datos.data.protocolo,
         req:datos.data.req,
         empresa:datos.data.empresa,
@@ -2633,14 +2637,15 @@ function __traslado(that,parametros,callback){
 function __ejecutarDocumento(parametros,callback){
     var that = parametros.that;    
     var documentoI002;
-  
+
     var body = {
             session: parametros.session,
             data: {
                 movimientos_bodegas: {
                     orden_pedido_id: parametros.orden,
                     doc_tmp_id: parametros.doc_tmp_id,
-                    usuario_id: parametros.session.user.usuario_id,
+//                    usuario_id: parametros.session.user.usuario_id,
+                    usuario_id: parametros.usuario_id,
                     automatico: true
                 }
             }
@@ -2651,14 +2656,23 @@ function __ejecutarDocumento(parametros,callback){
     G.Q.ninvoke(that.c_i002, "execCrearDocumentoAutomatico", parametros.req).then(function(result) {
 
        documentoI002=result.respuesta;
+       if(parametros.swTipoPedido === '0'){
+     
+           return G.Q.ninvoke(that.m_pedidos_farmacias, "consulta_solicitud_productos_a_bodega_principal", parametros);
+       }else{
+           return  true;
+       }
+       
+    }).then(function(result) { 
+        
         if(parametros.swTipoPedido === '0'){
-           
           var obj = {
             session: parametros.session,
             body: {
                 data: {
                     numero_pedido: parametros.pedido,
-                    productos :parametros.productos
+                    productos : parametros.productos,
+                    usuario_id: result[0].usuario_id
                 }
             }
         };
@@ -2672,7 +2686,7 @@ function __ejecutarDocumento(parametros,callback){
         }
 
     }).then(function(result) { 
-
+      
         if(parametros.swTipoPedido === '0'){
             
             var obj = {

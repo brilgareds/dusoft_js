@@ -628,6 +628,19 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
                         })
                       .groupBy("a.empresa_id", "a.prefijo", "a.factura_fiscal","subtotal_efc")
                       .as("m");
+              
+    var colSubQuery223 = ["empresa_id",
+        "prefijo",
+        "factura_fiscal",
+        G.knex.raw("SUM(subtotal) as subtotal"),
+        G.knex.raw("iva_total"),
+        G.knex.raw("SUM(subtotal_efc) as subtotal_efc")
+    ];          
+    var subSubQuery = G.knex.column(colSubQuery223)
+                      .select()
+                      .from(subQuery1B) 
+                      .groupBy("empresa_id", "prefijo", "factura_fiscal","iva_total")
+                      .as("m");
 
     var subQuery2 = __consultaAgrupada("inv_facturas_despacho as a",
             0,
@@ -637,7 +650,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
             .union(__consultaAgrupada("inv_facturas_agrupadas_despacho as a",
                     1,
                     colSubQuery2B,
-                    subQuery1B,
+                    subSubQuery,
                     filtro)
                     );
 

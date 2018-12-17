@@ -2409,7 +2409,8 @@ function __generacionAutomatica(datos,callback){
      return G.Q.nfcall(__recursivaProductosTemporalI002,datos,0);
         
     }).then(function(resultado){
-        
+     console.log("datos.data.id_orden_pedido_origen",datos.data.id_orden_pedido_origen);   
+     console.log("datos.data.id_orden_pedido_origen data",datos.data);   
        var parametros ={ 
         usuario_id: datos.data.parametros.encabezado.usuario_id,  
         orden:datos.data.numero_orden, 
@@ -2657,8 +2658,15 @@ function __ejecutarDocumento(parametros,callback){
 
        documentoI002=result.respuesta;
        if(parametros.swTipoPedido === '0'){
-     
-           return G.Q.ninvoke(that.m_pedidos_farmacias, "consulta_solicitud_productos_a_bodega_principal", parametros);
+          
+           if(parametros.id_orden_pedido_origen===null && parametros.cotizacion.id_orden_cotizacion_origen===null){
+           
+             return G.Q.ninvoke(that.m_pedidos_clientes, "consultarEstadoCotizacion", parametros.cotizacion.id_orden_cotizacion_destino);
+         }else{
+             parametros.orden_id_ct=parametros.id_orden_pedido_origen;
+             return G.Q.ninvoke(that.m_pedidos_farmacias, "consulta_solicitud_productos_a_bodega_principal", parametros);
+         }
+           
        }else{
            return  true;
        }

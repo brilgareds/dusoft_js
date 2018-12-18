@@ -1,0 +1,63 @@
+
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12"> 
+                <h4 class="h4MarginTopBottom"><span>Modificar Entregado</span></h4>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12 col-sm-4 col-md-6">   
+                <label class="col-md-12 control-label">Cargar Archivo</label>
+                <legend class="col-sm-12 col-md-12"></legend>        
+                <div>
+                    <div class="input-group form-group">
+                        <input title="Adjuntar archivo" type="file" ng-model="cargarFormato" class="uploadChat" onchange="angular.element(this).scope().onArchivoSeleccionado(this.files)" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3">
+                <label class="col-md-4  control-label" >Factura</label>
+                <legend class="col-sm-12 col-md-12"></legend>
+                <ui-select ng-model="root.listarFacturaEntregado"
+                           theme="select2"
+                           class="form-control selectgeneral pull-left col-md-8"
+                           >
+                    <!--ng-change="onSeleccionFactura()"-->
+                    <ui-select-match  placeholder="Seleccionar Factura">{{ $select.selected.numero_factura}}</ui-select-match>
+                    <ui-select-choices repeat="factura in root.listarFactura | filter:$select.search">
+                        {{ factura.numero_factura}}
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3">
+                <label class="col-md-4  control-label" >&nbsp;</label>
+                <legend class="col-sm-4 col-md-12"></legend>
+                <p class="text-central">
+                    <button type="button" class="btn btn-success btn-md right" 
+                            aria-haspopup="true" aria-expanded="false" ng-disabled="root.botonAgregar" ng-click="onAgregarFactura()" > Agregar</button>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="table-responsive" >
+                    <div class="defaultGrid" style="height: 150px" ng-grid="listarFacturaAgrupada">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-md" ng-click="cerrar()"> Cerrar</button>
+        <button type="button" class="btn btn-success btn-md" ng-disabled="root.activarBoton" ng-click="onVisualizarAgrupar(root.listarAgrupar)"> Subir Archivo</button>
+    </div>
+</div>
+<visualizar-reporte></visualizar-reporte>
+
+
+
+

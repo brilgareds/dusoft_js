@@ -381,10 +381,12 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function (usuar
                 where a.usuario_id = :1 and a.centro_utilidad = :2 and a.bodega= :3 " + sql_aux + " order by tipo_movimiento, tipo_doc_bodega_id ";
 
     G.knex.raw(sql, {1: usuario_id, 2: centro_utilidad_id, 3: bodega_id}).
-            then(function (resultado) {
-                callback(false, resultado.rows);
-            }).catch(function (err) {
-        callback(err);
+        then(function (resultado) {
+            //alert("-->"+sql);
+            callback(false, resultado.rows);
+        }).catch(function (err) {
+            //alert("-->"+sql);
+            callback(err);
     });
 };
 

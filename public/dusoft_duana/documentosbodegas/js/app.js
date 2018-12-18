@@ -31,6 +31,12 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/helpersdirectives/selectOnClick",
     "includes/validation/NgValidateEvents",
+    "models/ABC1/DocumentoABC1",
+    "models/ABC1/ClientesABC1",
+    "models/ABC1/ProductoABC1",
+    "models/AAC1/DocumentoAAC1",
+    "models/AAC1/ClientesAAC1",
+    "models/AAC1/ProductoAAC1",
     "models/E007/DocumentoE007",
     "models/E007/ClientesE007",
     "models/E007/ProductoE007",
@@ -59,6 +65,12 @@ define([
     "models/Index/EmpresaDocumento",
     "models/Index/DocumentoBodega",
     "controllers/indexController",
+    "controllers/ABC1/ABC1Controller",
+    "controllers/ABC1/ABC1GestionarClientesController",
+    "controllers/ABC1/ABC1GestionarProductosController",
+    "controllers/AAC1/AAC1Controller",
+    "controllers/AAC1/AAC1GestionarClientesController",
+    "controllers/AAC1/AAC1GestionarProductosController",
     "controllers/E007/E007Controller",
     "controllers/E007/E007GestionarClientesController",
     "controllers/E007/E007GestionarProductosController",
@@ -136,6 +148,24 @@ define([
                     templateUrl: "views/E007/index.html",
                     parent_name: "DocumentosBodegas",
                     controller: 'E007Controller'
+                });
+
+                // ABC1
+                documentos_bodegas.stateProvider.state('ABC1', {
+                    url: "/ABC1",
+                    text: "Ajuste Bajo Costo",
+                    templateUrl: "views/ABC1/radicacion.html",
+                    parent_name: "DocumentosBodegas",
+                    controller: 'ABC1Controller'
+                });
+
+                // AAC1
+                documentos_bodegas.stateProvider.state('AAC1', {
+                    url: "/AAC1",
+                    text: "Ajuste Alto Costo",
+                    templateUrl: "views/AAC1/radicacion.html",
+                    parent_name: "DocumentosBodegas",
+                    controller: 'AAC1Controller'
                 });
 
                 // I002 

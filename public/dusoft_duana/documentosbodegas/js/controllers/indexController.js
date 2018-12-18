@@ -112,13 +112,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             that.render_documentos = function (documentos) {
 
                 $scope.Empresa.limpiar_documentos();
-
+                //console.log(documentos);
                 documentos.forEach(function (data) {
 
                     var documento = Documento.get(data.bodegas_doc_id, data.prefijo);
                     documento.set_empresa(data.empresa_id).set_centro_utilidad(data.centro_utilidad).set_bodega(data.bodega);
                     documento.set_tipo_movimiento(data.tipo_movimiento).set_tipo(data.tipo_doc_bodega_id).set_tipo_clase_documento(data.tipo_clase_documento);
                     documento.set_descripcion(data.descripcion);
+
 
                     $scope.Empresa.set_documentos(documento);
                 });
@@ -144,6 +145,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
                     }
                     if (documento.tipo_doc_bodega_id === 'ABC1') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
+                            tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
+                    }
+                    if (documento.tipo_doc_bodega_id === 'AAC1') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
                             tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
                     }
@@ -416,6 +421,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             callback(false);
                         }
                     });
+                } else if (documentos.tipo_movimiento === "AAC1") {
+                    obj.data.tipoTercero = documentos.tipoTercero;
+                    obj.data.terceroId = documentos.terceroId;
+                    obj.data.egreso_id = documentos.numeroFactura;
+                    Request.realizarRequest(API.AAC1.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
                 } else if (documentos.tipo_movimiento === "E009") {
 
                     Request.realizarRequest(API.E009.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
@@ -560,6 +578,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.tipo_doc_bodega_id === "ABC1") {
                                 that.eliminarGetDocTemporalABC1(data);
                             }
+                            if (data.tipo_doc_bodega_id === "AAC1") {
+                                that.eliminarGetDocTemporalAAC1(data);
+                            }
                             if (data.tipo_doc_bodega_id === "E009") {
                                 that.eliminarGetDocTemporalE009(data);
                             }
@@ -640,6 +661,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 };
                 ABC1Service.eliminarGetDocTemporal(obj, function (data) {
+                    if (data.status === 200) {
+                        that.listarDocumetosTemporales(true);
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+            };
+
+            that.eliminarGetDocTemporalAAC1 = function (datos) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        doc_tmp_id: datos.doc_tmp_id
+                    }
+                };
+                AAC1Service.eliminarGetDocTemporal(obj, function (data) {
                     if (data.status === 200) {
                         that.listarDocumetosTemporales(true);
                         AlertService.mostrarMensaje("warning", data.msj);

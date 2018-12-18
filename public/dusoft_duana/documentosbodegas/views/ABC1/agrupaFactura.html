@@ -1,0 +1,38 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <h4 class="h4MarginTopBottom"><span>Agrupar Factura</span></h4>
+            </div>
+            <br>
+<!--            <div class="col-sm-4 col-md-4">   
+                <label class="col-md-12 control-label">Cargar Archivo</label>
+                <legend></legend>        
+                <div>
+                    <div class="input-group form-group">
+                        <input title="Adjuntar archivo" type="file" ng-model="cargarFormato" class="uploadChat" onchange="angular.element(this).scope().onArchivoSeleccionadoFormato(this.files)" />
+                    </div>
+                </div>
+            </div>-->
+
+            <div class="col-sm-12">
+                <div class="table-responsive" >
+                    <div class="defaultGrid grid-responsive" ng-grid="listarFactura">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+    </div>
+
+</div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary btn-md" ng-click="cerrar()">Cerrar</button>
+    <button type="button" class="btn btn-success btn-md" ng-click="guardarAgruparFactura()">Guardar</button>
+</div>
+</div>
+</div> 
+
+

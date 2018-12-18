@@ -1206,7 +1206,7 @@ CajaGeneral.prototype.generarSincronizacionDian = function (req, res) {
         return G.Q.nfcall(__productos, resultado.conceptosDetalle, 0, []);
 
     }).then(function (productos) {
-
+        var totalFactura = "" +resultado.impuesto.totalGeneral;
         var json = {
             codigoMoneda: "COP",
             descripcion: "",
@@ -1239,7 +1239,7 @@ CajaGeneral.prototype.generarSincronizacionDian = function (req, res) {
             baseGravableReteIVA: resultado.impuesto.base_reteiva, //decimal -
 
             tipoFactura: 1, //numeric -
-            totalFactura: resultado.impuesto.totalGeneral, //decimal OPCIONAL -
+            totalFactura: totalFactura.replace(".", ""), //decimal OPCIONAL -
 
             coordXQr: 164,
             coordYQr: 260,

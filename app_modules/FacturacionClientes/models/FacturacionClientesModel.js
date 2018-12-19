@@ -459,7 +459,7 @@ function __camposListaFacturasGeneradas() {
  */
 function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
 
-    var consulta = G.knex.select(columna)
+ var consulta = G.knex.select(columna)
             .from(tabla1)
             .join('terceros as c', function () {
                 this.on("a.tipo_id_tercero", "c.tipo_id_tercero")
@@ -530,18 +530,10 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
 
         consulta.join('ventas_ordenes_pedidos as pedi', function () {
             this.on("pedi.empresa_id", "a.empresa_id")
-                 .on("pedi.pedido_cliente_id", "a.pedido_cliente_id")
-        });
-       
-        consulta.join('inv_bodegas_movimiento_despachos_clientes as n', function () {
-            this.on("pedi.empresa_id", "n.empresa_id")
-                 .on("pedi.pedido_cliente_id", "n.pedido_cliente_id")
-        });
- 
-        consulta.join('inv_bodegas_movimiento as o', function () {
-            this.on("o.prefijo", "n.prefijo")
-                 .on("o.numero", "n.numero")
-                 .on("o.empresa_id", "n.empresa_id")
+                    .on("pedi.pedido_cliente_id", "a.pedido_cliente_id")
+            //.on("pedi.tercero_id", "a.tercero_id")
+            //.on("pedi.tipo_id_tercero", "a.tipo_id_tercero")
+
         }).as("a");
 
     }
@@ -556,16 +548,13 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
  */
 FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, callback) {
 
-    var colQuery = [G.knex.raw("a.*"),
+ var colQuery = [G.knex.raw("a.*"),
         "b.estado",
         G.knex.raw("case when b.estado=0 then 'Sincronizado' else 'NO sincronizado' end as descripcion_estado"),
-        "b.mensaje",
-        G.knex.raw("(to_char(a.subtotal_efc, 'FM999999999.00') = to_char(a.subtotal, 'FM999999999.00')) as valor_igual"),
-        "a.subtotal_efc"
+        "b.mensaje"
     ];
 
     var colSubQuery2 = __camposListaFacturasGeneradas();
-    colSubQuery2.push(G.knex.raw("(select sum(cantidad*valor_unitario) from inv_bodegas_movimiento_d where numero=o.numero and prefijo=o.prefijo) as subtotal_efc"));
     colSubQuery2.push(G.knex.raw("'0' as factura_agrupada"));
     colSubQuery2.push("a.tipo_id_vendedor");
     colSubQuery2.push("a.vendedor_id");
@@ -579,7 +568,6 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     colSubQuery2.push("a.tipo_pago_id");
 
     var colSubQuery2B = __camposListaFacturasGeneradas();
-    colSubQuery2B.push("subtotal_efc");
     colSubQuery2B.push(G.knex.raw("'1' as factura_agrupada"));
     colSubQuery2B.push(G.knex.raw("(SELECT bb.tipo_id_vendedor\
         FROM inv_facturas_agrupadas_despacho_d bb \
@@ -598,49 +586,16 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     colSubQuery2B.push(G.knex.raw("0 as pedido_cliente_id"));
     colSubQuery2B.push("a.tipo_pago_id");
 
-    var colSubQuery11 = ["a.empresa_id",
+    var colSubQuery1 = ["a.empresa_id",
         "a.prefijo",
         "a.factura_fiscal",
         G.knex.raw("SUM((valor_unitario*cantidad)) as subtotal"),
         G.knex.raw("SUM(((valor_unitario*cantidad)*(porc_iva/100))) as iva_total")
     ];
-    var colSubQuery22 = ["a.empresa_id",
-        "a.prefijo",
-        "a.factura_fiscal",
-        G.knex.raw("SUM((valor_unitario*cantidad)) as subtotal"),
-        G.knex.raw("SUM(((valor_unitario*cantidad)*(porc_iva/100))) as iva_total"),
-        G.knex.raw("(select sum(e.cantidad*e.valor_unitario) as subtotal_efc  from inv_bodegas_movimiento_d as e where numero=o.numero and prefijo=o.prefijo) as subtotal_efc")
-    ];
-    
-    var subQuery1 = G.knex.column(colSubQuery11).select().from("inv_facturas_despacho_d as a").groupBy("a.empresa_id", "a.prefijo", "a.factura_fiscal").as("m");
 
-    var subQuery1B = G.knex.column(colSubQuery22)
-                      .select()
-                      .from("inv_facturas_agrupadas_despacho_d as a")
-                      .join("inv_bodegas_movimiento_despachos_clientes as n", function () {
-                        this.on("a.empresa_id", "n.empresa_id")
-                             .on("a.pedido_cliente_id", "n.pedido_cliente_id")
-                        })
-                        .join("inv_bodegas_movimiento as o", function () {
-                        this.on("o.prefijo", "n.prefijo")
-                             .on("o.numero", "n.numero")
-                            .on("o.empresa_id", "n.empresa_id");
-                        })
-                      .groupBy("a.empresa_id", "a.prefijo", "a.factura_fiscal","subtotal_efc")
-                      .as("m");
-              
-    var colSubQuery223 = ["empresa_id",
-        "prefijo",
-        "factura_fiscal",
-        G.knex.raw("SUM(subtotal) as subtotal"),
-        G.knex.raw("iva_total"),
-        G.knex.raw("SUM(subtotal_efc) as subtotal_efc")
-    ];          
-    var subSubQuery = G.knex.column(colSubQuery223)
-                      .select()
-                      .from(subQuery1B) 
-                      .groupBy("empresa_id", "prefijo", "factura_fiscal","iva_total")
-                      .as("m");
+    var subQuery1 = G.knex.column(colSubQuery1).select().from("inv_facturas_despacho_d as a").groupBy("a.empresa_id", "a.prefijo", "a.factura_fiscal").as("m");
+
+    var subQuery1B = G.knex.column(colSubQuery1).select().from("inv_facturas_agrupadas_despacho_d as a").groupBy("a.empresa_id", "a.prefijo", "a.factura_fiscal").as("m");
 
     var subQuery2 = __consultaAgrupada("inv_facturas_despacho as a",
             0,
@@ -650,7 +605,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
             .union(__consultaAgrupada("inv_facturas_agrupadas_despacho as a",
                     1,
                     colSubQuery2B,
-                    subSubQuery,
+                    subQuery1B,
                     filtro)
                     );
 
@@ -664,7 +619,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
 
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit);
-//console.log(G.sqlformatter.format(query.toString())); 
+//    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
 
         callback(false, resultado)

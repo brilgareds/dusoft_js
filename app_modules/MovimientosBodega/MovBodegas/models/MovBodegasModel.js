@@ -510,7 +510,7 @@ MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = functio
                 ORDER BY a.codigo_producto";
 
     var query=G.knex.raw(sql, {1: numero, 2: prefijo, 3: empresa});
- 
+// console.log(G.sqlformatter.format(query.toString()));
         query.then(function (resultado) {
                 callback(false, resultado.rows, resultado);
             }).catch(function (err) {

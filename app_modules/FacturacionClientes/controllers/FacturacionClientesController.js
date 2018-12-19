@@ -3178,7 +3178,7 @@ function __generarSincronizacionDian(that, req, callback) {
 
         if (resultado) {
             if (resultado.length > 0) {
-                var coma = ",";
+                var coma = ", ";
                 var length = resultado.length - 1;
                 resultado.forEach(function (row, index) {
                     if (index === length) {

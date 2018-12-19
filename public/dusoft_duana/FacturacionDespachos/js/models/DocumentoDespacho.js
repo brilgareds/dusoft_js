@@ -223,20 +223,20 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.tieneIva = tieneIva;
             };
             
-            DocumentoDespacho.prototype.getSubTotalEFC = function () {
-                return this.subTotalEFC;
-            };
-
-            DocumentoDespacho.prototype.setSubTotalEFC = function (subTotalEFC) {
-                this.subTotalEFC = subTotalEFC;
-            };
-            DocumentoDespacho.prototype.getSwSubtotalFacEfc = function () {
-                return this.sw_subtotal_fac_efc;
-            };
-
-            DocumentoDespacho.prototype.setSwSubtotalFacEfc = function (sw_subtotal_fac_efc) {
-                this.sw_subtotal_fac_efc = sw_subtotal_fac_efc;
-            };
+//            DocumentoDespacho.prototype.getSubTotalEFC = function () {
+//                return this.subTotalEFC;
+//            };
+//
+//            DocumentoDespacho.prototype.setSubTotalEFC = function (subTotalEFC) {
+//                this.subTotalEFC = subTotalEFC;
+//            };
+//            DocumentoDespacho.prototype.getSwSubtotalFacEfc = function () {
+//                return this.sw_subtotal_fac_efc;
+//            };
+//
+//            DocumentoDespacho.prototype.setSwSubtotalFacEfc = function (sw_subtotal_fac_efc) {
+//                this.sw_subtotal_fac_efc = sw_subtotal_fac_efc;
+//            };
 
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {
                 return new DocumentoDespacho(bodegas_doc_id, prefijo, numero, fecha_registro);

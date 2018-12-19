@@ -411,8 +411,8 @@ define(["angular", "js/services"], function (angular, services) {
                                 _documento.setPorcentajeReteIva(datos[i].porcentaje_reteiva);
                                 _documento.setPorcentajeIca(datos[i].porcentaje_ica);
                                 
-                                _documento.setSwSubtotalFacEfc(datos[i].valor_igual);
-                                _documento.setSubTotalEFC(datos[i].subtotal_efc);
+//                                _documento.setSwSubtotalFacEfc(datos[i].valor_igual);
+//                                _documento.setSubTotalEFC(datos[i].subtotal_efc);
                                 // _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
                                 _terceroDespacho.setMunicipio(datos[i].municipio_empresa);
                                 _terceroDespacho.setDepartamento(datos[i].departamento_empresa);

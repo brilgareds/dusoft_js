@@ -55388,20 +55388,20 @@ define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Doc
                 this.tieneIva = tieneIva;
             };
             
-            DocumentoDespacho.prototype.getSubTotalEFC = function () {
-                return this.subTotalEFC;
-            };
-
-            DocumentoDespacho.prototype.setSubTotalEFC = function (subTotalEFC) {
-                this.subTotalEFC = subTotalEFC;
-            };
-            DocumentoDespacho.prototype.getSwSubtotalFacEfc = function () {
-                return this.sw_subtotal_fac_efc;
-            };
-
-            DocumentoDespacho.prototype.setSwSubtotalFacEfc = function (sw_subtotal_fac_efc) {
-                this.sw_subtotal_fac_efc = sw_subtotal_fac_efc;
-            };
+//            DocumentoDespacho.prototype.getSubTotalEFC = function () {
+//                return this.subTotalEFC;
+//            };
+//
+//            DocumentoDespacho.prototype.setSubTotalEFC = function (subTotalEFC) {
+//                this.subTotalEFC = subTotalEFC;
+//            };
+//            DocumentoDespacho.prototype.getSwSubtotalFacEfc = function () {
+//                return this.sw_subtotal_fac_efc;
+//            };
+//
+//            DocumentoDespacho.prototype.setSwSubtotalFacEfc = function (sw_subtotal_fac_efc) {
+//                this.sw_subtotal_fac_efc = sw_subtotal_fac_efc;
+//            };
 
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {
                 return new DocumentoDespacho(bodegas_doc_id, prefijo, numero, fecha_registro);
@@ -56813,11 +56813,11 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                 */
                 //{field: 'Valor/saldo',  cellClass: "ngCellText",width: "12%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} / {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
                 
-                {field: 'Valor EFC', width: "7%", cellClass: "ngCellText txt-center", displayName: 'Subtotal EFC', 
-                    cellTemplate: '<div class="col-xs-16 ">\
-                                    <p class="text-uppercase" ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()"><span class="glyphicon glyphicon-ok"></span></p>\
-                                    <p class="text-uppercase" ng-if="!row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()"><span class="glyphicon glyphicon-remove"></span> SubTotal EFC {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()}} </p></div>\
-                                   '},
+//                {field: 'Valor EFC', width: "7%", cellClass: "ngCellText txt-center", displayName: 'Subtotal EFC', 
+//                    cellTemplate: '<div class="col-xs-16 ">\
+//                                    <p class="text-uppercase" ><span class="glyphicon glyphicon-ok"></span></p>\
+//                                    <p class="text-uppercase" ng-if="!row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()"><span class="glyphicon glyphicon-remove"></span> SubTotal EFC {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()}} </p></div>\
+//                                   '},
                 
                 {field: 'Valor', width: "7%", cellClass: "ngCellText", displayName: 'Valor', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} </p></div>'},
@@ -56832,7 +56832,7 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                     cellTemplate: '<div class="btn-group">\
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
-                                <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getEstadoSincronizacion() != 0 && row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()">\n\
+                                <li >\n\
                                    <a href="javascript:void(0);" ng-click="sincronizarFactura(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
@@ -56853,7 +56853,7 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                                </button>\
                             </div>\
                             <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
-                               <button ng-disabled="!row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()" class="btn btn-success btn-xs"  ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">\
+                               <button  class="btn btn-success btn-xs"  ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">\
                                   SINCRONIZAR\
                                </button>\
                             </div>\
@@ -65783,8 +65783,8 @@ define('services/facturacionClientesService',["angular", "js/services"], functio
                                 _documento.setPorcentajeReteIva(datos[i].porcentaje_reteiva);
                                 _documento.setPorcentajeIca(datos[i].porcentaje_ica);
                                 
-                                _documento.setSwSubtotalFacEfc(datos[i].valor_igual);
-                                _documento.setSubTotalEFC(datos[i].subtotal_efc);
+//                                _documento.setSwSubtotalFacEfc(datos[i].valor_igual);
+//                                _documento.setSubTotalEFC(datos[i].subtotal_efc);
                                 // _documento.setDescripcionEstadoFacturacion(datos[i].descripcion_estado_facturacion);
                                 _terceroDespacho.setMunicipio(datos[i].municipio_empresa);
                                 _terceroDespacho.setDepartamento(datos[i].departamento_empresa);

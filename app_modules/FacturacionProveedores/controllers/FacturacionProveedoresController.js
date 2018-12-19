@@ -325,9 +325,7 @@ FacturacionProveedores.prototype.ingresarFactura = function(req, res) {
         return  G.Q.ninvoke(that.m_sincronizacion,"sincronizarCuentasXpagarFi", param);
 	
     }).then(function(resultado) {
-//        console.log(resultado.resultado);
-//        console.log(resultado.resultado.encabezadofactura);
-//        console.log(resultado.resultado.asientoscontables[0]);
+        
         respuestaFI = resultado;
         return G.Q.nfcall(__reporteFactura, parametros);
 

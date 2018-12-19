@@ -1243,7 +1243,7 @@ CajaGeneral.prototype.generarSincronizacionDian = function (req, res) {
 
             coordXQr: 164,
             coordYQr: 260,
-            coordXCufe: 130,
+            coordXCufe: 110,
             coordYCufe: 256,
             pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };

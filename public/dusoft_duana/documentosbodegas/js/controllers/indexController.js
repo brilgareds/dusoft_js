@@ -261,6 +261,31 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 ]
             };
 
+
+
+            that.listarAgrupar = function (parametro, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        relacion_id: parametro.relacion_id
+                    }
+                };
+
+                Request.realizarRequest(
+                    API.RADICACION.LISTAR_AGRUPAR,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            // $scope.root.listarAgrupar = data.obj.listarAgrupar;
+                            parametro = {};
+                            callback(data.obj.listarAgrupar);
+                        }
+                    }
+                );
+            };
+
             $scope.listaDocumentos = {
                 data: 'Documento',
                 enableColumnResize: true,

@@ -162,7 +162,7 @@ define([
                 // AAC1
                 documentos_bodegas.stateProvider.state('AAC1', {
                     url: "/AAC1",
-                    text: "Ajuste Alto Costo",
+                    text: "Ajuste Sube Costo",
                     templateUrl: "views/AAC1/radicacion.html",
                     parent_name: "DocumentosBodegas",
                     controller: 'AAC1Controller'

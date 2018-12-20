@@ -1,542 +1,1276 @@
-define([
-    "angular",
-    "js/controllers",
+
+/* global entregado, si, $flow, that, $http, echo, subirArchivo, flow, data, modalInstancesy, form, backdrop, parametros, parametros, parametros, archivo */
+
+define(["angular", "js/controllers", 'includes/slide/slideContent',
+    "includes/classes/Empresa",
 ], function (angular, controllers) {
 
     controllers.controller('ABC1Controller', [
-        '$scope', '$rootScope', 'Request',
-        '$modal', 'API', "socket", "$timeout",
-        "AlertService", "localStorageService", "$state", "$filter",
-        'Usuario',
-        'ProductoABC1',
-        "DocumentoABC1",
-        "ABC1Service",
-        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Usuario, Producto, Documento, ABC1Service) {
-
+        '$scope', '$rootScope', "Request",
+        "$filter", '$state', '$modal',
+        "API", "AlertService", 'localStorageService',
+        "Usuario", "socket", "$timeout",
+        "Empresa",
+        function ($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa) {
             var that = this;
-            var datos_documento = localStorageService.get("documento_bodega_ABC1");
-            $scope.doc_tmp_id = "00000";
-            $scope.cliente_seleccionado = [];
-            $scope.validarDesdeLink = false;
-            $scope.documento_ingreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
-            $scope.session = {
-                usuario_id: Usuario.getUsuarioActual().getId(),
-                auth_token: Usuario.getUsuarioActual().getToken()
+            $scope.radicacion = '';
+            $scope.desactivar = '0';
+            var fecha_actual = new Date();
+            $scope.abrir_fecha = false;
+            $scope.fecha_vencimiento = $filter('date')(fecha_actual, "yyyy-MM-dd"),
+                $scope.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
+            $scope.root = {
+                farmaciaSeleccionada: "",
+                conceptoSeleccionado: "",
+                numeroFactura: "",
+                precioSeleccionado: "",
+                fecha_vencimiento: "",
+                progresoArchivo: "",
+                descripcion: ""
+            };
+            $scope.root.concepto = [];
+
+            $scope.abrir_fecha_inicial = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.abrir_fecha = $scope.abrir_fecha ? false : true;
             };
 
 
-            $scope.datos_view = {
-                listado_productos_validados: []
+
+
+            $scope.consultarMunicipio = function (termino) {
+                if (termino.length <3){
+                    return;
+                }
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ciudades : {
+                            termino_busqueda : termino
+                        }
+                    }
+
+                };
+
+                Request.realizarRequest(
+                    API.PARAMETRIZACION.LISTAR_MUNICIPIO,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200){
+                            $scope.root.farmaciaSeleccionada = [];
+                            //that.render(data.obj.farmaciaSeleccionada);
+                            $scope.root.municipio = data.obj.ciudades;
+                        }
+
+                    });
             };
 
-            that.init = function () {
-                $scope.documento_ingreso.set_observacion('');
-                that.listarEgresos();
-                that.listarTiposTerceros();
-            };
 
-            /**
-             * +Descripcion Metodo encargado de invocar el servicio que listara 
-             *              los tipos de egreso
-             * @author German Andres Galvis
-             * @fecha 17/05/2018 DD/MM/YYYY
-             */
-            that.listarEgresos = function () {
+            that.consultarConcepto = function () {
                 var obj = {
                     session: $scope.session,
                     data: {}
                 };
 
-                ABC1Service.buscarEgresos(obj, function (data) {
-
-                    if (data.status === 200) {
-                        $scope.egresos = data.obj.listarEgresos;
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                Request.realizarRequest(
+                    API.RADICACION.LISTAR_CONCEPTO,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            $scope.root.concepto = [];
+//                                $scope.root.conceptoSeleccionado = [];
+                            that.render(data.obj.listarConcepto);
+                        }
                     }
+                );
+            };
+
+            that.render = function (lista) {
+                lista.forEach(function (data) {
+                    var concepto = {concepto_radicacion_id: data.concepto_radicacion_id, observacion: data.observacion};
+                    $scope.root.concepto.push(concepto);
                 });
             };
 
-            /**
-             * +Descripcion Metodo encargado de invocar el servicio que listara 
-             *              el egreso seleccionado
-             * @author German Andres Galvis
-             * @fecha 24/05/2018 DD/MM/YYYY
-             */
-            that.buscarEgresoId = function (egreso_id) {
+            that.listarFactura = function () {
+                var obj = {
+                    session: $scope.session,
+                    data: {}
+                };
+
+                Request.realizarRequest(
+                    API.RADICACION.LISTAR_FACTURA,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            $scope.root.listarFactura = data.obj.listarFactura;
+                        }
+                    }
+                );
+
+            };
+
+
+            that.listarAgrupar = function (parametro, callback) {
                 var obj = {
                     session: $scope.session,
                     data: {
-                        egreso_id: egreso_id
+                        relacion_id: parametro.relacion_id
                     }
                 };
-                ABC1Service.buscarEgresoId(obj, function (data) {
-                    if (data.status === 200) {
-                        $scope.documento_ingreso.egreso = data.obj.listarEgreso[0];
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                    }
-                });
-            };
 
-            /**
-             * +Descripcion Metodo encargado de invocar el servicio que listara 
-             *              los tipos de terceros
-             * @author German Andres Galvis
-             * @fecha 18/05/2018 DD/MM/YYYY
-             */
-            that.listarTiposTerceros = function () {
-                var obj = {
-                    session: $scope.session,
-                    data: {listar_tipo_terceros: {}}
-                };
-
-                ABC1Service.listarTiposTerceros(obj, function (data) {
-
-                    if (data.status === 200) {
-                        $scope.tiposTercero = data.obj.listar_tipo_terceros;
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                    }
-                });
-            };
-
-
-            //  Abre slider para seleccionar el cliente
-            $scope.btn_seleccionar_cliente = function () {
-                $scope.opts = {
-                    size: 'lg',
-                    backdrop: 'static',
-                    dialogClass: "buscador_clientes",
-                    templateUrl: 'views/ABC1/buscadorClientes.html',
-                    scope: $scope,
-                    controller: "ABC1GestionarClientesController",
-                    resolve: {
-                        tipoTerceros: function () {
-                            return  $scope.tiposTercero;
+                Request.realizarRequest(
+                    API.RADICACION.LISTAR_AGRUPAR,
+                    "POST",
+                    obj,
+                    function (data) {
+                        console.log("data",data);
+                        if (data.status === 200) {
+                            // $scope.root.listarAgrupar = data.obj.listarAgrupar;
+                            console.log("data.obj.listarAgrupar",data.obj.listarAgrupar);
+                            parametro = {};
+                            callback(data.obj.listarAgrupar);
                         }
                     }
+                );
+            };
+
+            that.guardarConcepto = function (nombreConcepto, callback) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        nombre: nombreConcepto.toUpperCase()
+                    }
+                };
+                Request.realizarRequest(
+                    API.RADICACION.GUARDAR_CONCEPTO,
+                    "POST",
+                    obj,
+                    function (data) {
+
+                        if (data.status === 200) {
+                            that.consultarConcepto();
+                            $scope.root.nombreConcepto = "";
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Proveedor guardado correctamente");
+                            callback(true);
+                            return;
+                        } else {
+                            callback(false);
+                            return;
+                        }
+                    }
+                );
+            };
+            that.guardarArchivo = function (nombreConcepto, callback) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        nombre: nombreConcepto.toUpperCase()
+                    }
+                };
+                Request.realizarRequest(
+                    API.RADICACION.GUARDAR_CONCEPTO,
+                    "POST",
+                    obj,
+                    function (data) {
+
+                        if (data.status === 200) {
+                            that.consultarConcepto();
+                            $scope.root.nombreConcepto = "";
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Concepto guardado correctamente");
+                            callback(true);
+                            return;
+                        } else {
+                            callback(false);
+                            return;
+                        }
+                    }
+                );
+            };
+
+
+
+
+
+
+
+
+            that.modificarFactura = function (parametros) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        factura_id: parametros.factura_id,
+                        sw_entregado: '1',
+
+                        concepto_radicacion_id: parametros.concepto_radicacion_id,
+                        numero_factura: parametros.numeroFactura,
+                        fecha_entrega: 'now()',
+                        precio: parametros.precio,
+                        tipo_mpio_id: parametros.tipo_mpio_id,
+                        municipio: parametros.nombre_ciudad,
+                        ruta: parametros.ruta
+                    }
+                };
+
+
+                Request.realizarRequest(
+                    API.RADICACION.MODIFICAR_FACTURA, //Radicacion/guardarFactura
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            that.listarFactura();
+
+
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "factura modificada correctamente");
+                            return;
+                        }
+
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al modificar la Factura");
+                    }
+                );
+            };
+
+
+            that.agrupar = function (form) {
+                $scope.opts = {
+                    backdrop: 'static',
+                    backdropClick: true,
+                    dialogFade: false,
+                    windowClass: 'app-modal-window-ls-xlg-ls',
+                    keyboard: false,
+                    showFilter: true,
+                    templateUrl: 'views/PreciosProductos/modificarEntregado.html',
+                    scope: $scope,
+                    controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+                        $scope.modificar = {};
+                        $scope.modificar.sw_entregado = form.sw_entregado;
+                        $scope.modificar.factura_id = form.factura_id;
+                        $scope.modificar.facturaSeleccionada = form.factura_id;
+                        $scope.modificar.archivo = form.archivo;
+
+
+
+
+                        $scope.onVisualizarAgrupar = function (listado) {
+
+                            that.subirArchivoEntregado(listado, $modalInstance);
+
+                        };
+
+                        that.limpiarGuardar=function(){
+                            $scope.root.cargarFormato='';
+
+                        }
+
+                        $scope.guardarEntregado = function () {
+
+                            that.guardarEntregado($scope.modificar.facturaSeleccionada, function (data) {
+
+                            });
+                        };
+                        $scope.cerrar = function () {
+                            $scope.root.activarBoton=true;
+                            $modalInstance.close();
+                            console.log("222");
+                        };
+
+
+                    }]
+                };
+                //var modalInstance = $modal.open($scope.opts);
+                var modalInstance = $modal.open($scope.opts);
+                modalInstance.result.then(function () {
+                    that.listarAgrupar({radicacion_id: ""}, function (dato) {
+                        $scope.root.listarAgrupar = dato;
+                    });
+                }, function () {});
+
+            };
+
+
+
+
+
+            that.modificarEntregado = function (parametros) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        factura_id: parametros.factura_id,
+                        sw_entregado: '1',
+
+                    }
+                };
+
+
+                Request.realizarRequest(
+                    API.RADICACION.MODIFICAR_ENTREGADO, //Radicacion/guardarFactura
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            that.listarFactura();
+
+
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "factura modificada entregada correctamente");
+                            return;
+                        }
+
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al modificar la Factura entregada");
+                    }
+                );
+            };
+
+
+            that.listarFacturaEntregado = function () {
+                var obj = {
+                    session: $scope.session,
+                    data: {}
+
+                };
+
+                Request.realizarRequest(
+                    API.RADICACION.LISTAR_FACTURA_ENTREGADO,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            $scope.root.listarFacturaEntregado = data.obj.listarFacturaEntregado;
+                        }
+                    }
+                );
+
+            };
+
+            that.agregarFacturaEntregado = function () {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numeroFactura: $scope.root.listarFacturaEntregado.factura_id,
+                        numeroRadicacion: $scope.radicacion,
+                        sw_entregado: '1'
+                    }
+
+                };
+                Request.realizarRequest(
+                    API.RADICACION.AGREGAR_FACTURA_ENTREGADO,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            that.listarFacturaEntregado();
+                            // $scope.root.agregarFacturaEntregado = data.obj.listarFacturaEntregado;
+
+                        }
+                    }
+                );
+
+            };
+
+
+
+            that.planillaRadicacion = function (parametro) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+
+                        relacion_id: parametro.relacion_id,
+                    }
+
+                };
+
+                Request.realizarRequest(
+                    API.RADICACION.PLANILLA_RADICACION,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            setTimeout(function () {
+                                that.listarAgrupar({radicacion_id: ""}, function (dato) {
+                                    $scope.root.listarAgrupar = dato;
+                                });
+                            }, 500);
+                            $scope.visualizarReporte("/reports/" + data.obj.nomb_pdf, data.obj.nomb_pdf, "_blank");
+                        }
+                    }
+                );
+            };
+
+
+
+            that.guardarFactura = function (ruta) {
+                // return;
+//                var fecha = new Date($scope.root.fecha_vencimiento);
+//
+//                var fecha_vencimiento = (fecha.getMonth() + 1) + '-' + fecha.getDate() + '-' + fecha.getFullYear() + ' 00:00:00';
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numeroFactura: $scope.root.numeroFactura,
+                        conceptoRadicacionId: $scope.root.conceptoSeleccionado.concepto_radicacion_id,
+                        swEntregado: '1',
+                        precio: $scope.root.precioSeleccionado,
+                        fechaVencimiento: $scope.root.fecha_vencimiento,
+                        descripcion: $scope.root.descripcion,
+                        ruta: ruta,
+                        municipio: $scope.root.farmaciaSeleccionada.nombre_ciudad,
+                        tipo_mpio_id: $scope.root.farmaciaSeleccionada.id,
+                        tipo_pais_id: $scope.root.farmaciaSeleccionada.pais_id,
+                        tipo_dpto_id:$scope.root.farmaciaSeleccionada.departamento_id
+                    }
+
+
+                };
+
+
+                //aqui
+
+                Request.realizarRequest(
+                    API.RADICACION.GUARDAR_FACTURA,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            that.listarFactura();
+                            $scope.root.numeroFactura = '';
+                            // $scope.root.conceptoSeleccionado = [];
+                            //$scope.root.farmaciaSeleccionada = [];
+                            $scope.root.farmaciaSeleccionada = "";
+                            $scope.root.conceptoSeleccionado = "";
+                            $scope.root.precioSeleccionado = '';
+                            $scope.root.descripcion = '';
+                            $scope.root.fecha_vencimiento = [];
+                            $scope.root.farmaciaSeleccionada.id="";
+                            $scope.root.farmaciaSeleccionada.pais_id="";
+                            $scope.root.farmaciaSeleccionada.departamento_id="";
+                            $scope.root.progresoArchivo = 0;
+                            $scope.root.files = [];
+                            $scope.files = [];
+                            var fd = new FormData();
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Factura guardada correctamente");
+                            return;
+                        }
+
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al guardar la Factura");
+                    }
+                );
+            };
+
+            that.agruparFactura = function () {
+//                var fecha = new Date($scope.root.fecha_vencimiento);
+//                var fecha_vencimiento = (fecha.getMonth() + 1) + '-' + fecha.getDate() + '-' + fecha.getFullYear() + ' 00:00:00';
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        facturas: $scope.listaFacturaPendiente
+                    }
+                };
+
+
+                Request.realizarRequest(
+                    API.RADICACION.AGRUPAR_FACTURA,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Factura agrupada correctamente");
+                            return;
+                        }
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al guardar la Factura");
+                    }
+                );
+            };
+
+            that.eliminarGrupoFactura = function (parametro, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        agrupar_factura_id: parametro.relacion_id,
+                        factura_id: parametro.factura_id
+                    }
+                };
+
+                Request.realizarRequest(
+                    API.RADICACION.ELIMINAR_GRUPO_FACTURA,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            that.listarAgrupar(parametro, function (listado) {
+                                $scope.listaFacturaPendienteModificar = [];
+
+                                listado.forEach(function (element) {
+
+                                    $scope.listaFacturaPendienteModificar.push(element);
+
+                                });
+                                that.listarAgrupar({radicacion_id: ""}, function (dato) {
+                                    $scope.root.listarAgrupar = dato;
+                                    that.listarFactura();
+                                });
+                            });
+                            callback(true);
+                            return;
+                        } else {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al guardar la Factura");
+                            callback(false);
+                        }
+                    }
+                );
+            };
+
+
+
+            that.verConcepto = function () {
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    windowClass: 'app-modal-window-smlg',
+                    keyboard: true,
+                    showFilter: true,
+                    cellClass: "ngCellText",
+                    templateUrl: 'views/PreciosProductos/vistaConceptos.html',
+                    scope: $scope,
+                    controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+
+                        $scope.guardarConcepto = function () {
+                            that.guardarConcepto($scope.root.nombreConcepto, function (data) {
+                                if (data) {
+
+                                    $scope.cerrar();
+                                }
+                            });
+                        };
+
+                        $scope.cerrar = function () {
+                            console.log("11");
+                            $modalInstance.close();
+                        };
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
-                modalInstance.result.then(function (result) {
-                    if (result !== undefined && result !== null) {
-                        $scope.cliente_seleccionado = result;
-                    }
-                });
             };
 
-            /**
-             * +Descripcion Metodo encargado de invocar el servicio que traera 
-             *              el cliente seleccionado
-             * @author German Andres Galvis
-             * @fecha 24/05/2018 DD/MM/YYYY
-             */
-            that.buscarClientePorId = function (tipo, id) {
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        id: id,
-                        tipoId: tipo
-                    }
-                };
+            $scope.onVistaAgrupar = function () {
+                $scope.listaFacturaPendiente = [];
 
-                ABC1Service.buscarClienteId(obj, function (data) {
-                    if (data.status === 200) {
-                        $scope.cliente_seleccionado = data.obj.listarCliente[0];
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                $scope.root.listarFactura.forEach(function (element) {
+                    if (element.sw_entregado === '0') {
+                        $scope.listaFacturaPendiente.push(element);
                     }
+
                 });
+                that.verAgruparFactura();
             };
-
-            //  Abre slider para seleccionar el cliente
-            $scope.btn_seleccionar_productos = function () {
+//mañana 
+            that.factura = function (form) {
                 $scope.opts = {
-                    windowClass: 'app-modal-window-ls-xlg-ls',
-                    backdrop: 'static',
-                    dialogClass: "buscador_productos",
-                    templateUrl: 'views/ABC1/buscadorProductos.html',
+                    backdrop
+
+                }
+            }
+
+
+
+
+            that.verAgruparFactura = function (form) {
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    windowClass: 'app-modal-window-xlg',
+                    keyboard: true,
+                    showFilter: true,
+                    cellClass: "ngCellText",
+                    templateUrl: 'views/PreciosProductos/agrupaFactura.html',
                     scope: $scope,
-                    controller: "ABC1GestionarProductosController",
-                    resolve: {
-                        Empresa: function () {
-                            return  Usuario.getUsuarioActual().getEmpresa();
-                        },
-                        DocTmp: function () {
-                            return  $scope.doc_tmp_id;
-                        }
-                    }
+                    controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+                        $scope.agrupar = {};
+                        // $scope.agrupar.relacion_id = form.relacion_id;
+                        /// $scope.agrupar.archivo= form.archivo;
+                        //$scope.agrupar.agrupar_factura_id=form.agrupar_factura_id;
+                        // $scope.agrupar.fecha_registro=form.fecha_registro;
+                        // $scope.agrupar.usuario_id=form.usuario_id;
+                        // $scope.agrupar.factura_id = form.factura_id;
+
+
+                        $scope.guardarAgruparFactura = function () {
+
+                            if (listaAgrupados.length > 0) {
+                                var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        facturas: listaAgrupados
+                                    }
+                                };
+
+                                Request.realizarRequest(
+                                    API.RADICACION.AGRUPAR_FACTURA,
+                                    "POST",
+                                    obj,
+                                    function (data) {
+                                        if (data.status === 200) {
+                                            that.listarFactura();
+                                            that.listarAgrupar({radicacion_id: ""}, function (dato) {
+                                                $scope.root.listarAgrupar = dato;
+                                            });
+
+                                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Factura agrupada correctamente");
+                                            $scope.cerrar();
+                                            return;
+                                        }
+                                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al agrupar la Factura");
+                                    }
+                                );
+                            } else {
+                                var mensaje = "";
+                                if (listaAgrupados.length === 0) {
+                                    mensaje = "Debe seleccionar una factura";
+                                }
+
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+                                return;
+                            }
+
+                        };
+
+
+                        $scope.onArchivoSeleccionadoFormato = function (files) {
+                            $scope.files = files;
+
+                        };
+
+                        $scope.selected = [];
+                        var listaAgrupados = [];
+                        $scope.onAgruparFactura = function (item, list) {
+                            var idx = list.indexOf(item);
+                            if (idx > -1) {
+                                list.splice(idx, 1);
+                            } else {
+                                list.push(item);
+                            }
+                            listaAgrupados = list;
+
+                        };
+                        $scope.exists = function (item, list) {
+                            return list.indexOf(item) > -1;
+                        };
+
+                        $scope.cerrar = function () {
+                            console.log("11eee");
+                            $modalInstance.close();
+                        };
+
+                    }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
+            that.verModificar = function (form) {
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    windowClass: 'app-modal-window-ls-xlg-ls',
+                    keyboard: true,
+                    showFilter: true,
+                    cellClass: "ngCellText",
+                    templateUrl: 'views/PreciosProductos/vistaModificarFactura.html',
+                    scope: $scope,
+                    controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+                        $scope.editar = {};
+                        $scope.editar.sw_entregado = form.sw_entregado;
+                        $scope.editar.factura_id = form.factura_id;
+                        $scope.editar.numeroFactura = form.numero_factura;
+                        $scope.editar.precioSeleccionado = form.precio;
+                        $scope.editar.conceptooSeleccionado = form.descripcion;
+                        $scope.editar.fecha_entrega = form.fecha_vencimiento;
+                        $scope.editar.cargarArchivo = form.ruta;
+                        $scope.editar.farmacias = form.farmacias;
+                        $scope.editar.concepto = form.concepto;
+                        $scope.editar.conceptoSeleccionado = {concepto_radicacion_id: form.concepto_radicacion_id, observacion: form.proveedor};
+                        $scope.editar.farmaciaSeleccionada = {tipo_mpio_id: form.tipo_mpio_id, nombre_ciudad: form.municipio};
+                        $scope.abrir_fecha_editar = false;
+
+                        $scope.onEditarFactura = function () {
+                            if ($scope.editar.numeroFactura === '') {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el numero de la Factura");
+                                return;
+                            }
+                            editarFactura();
+                        };
+
+                        $scope.cancelar = function () {
+                            console.log("11sss");
+                            $modalInstance.close();
+                        };
+
+                        function editarFactura() {
+                            //formateo de fecha
+                            var data = {
+                                fechaEntrega: $filter('date')($scope.editar.fecha_entrega, "yyyy-MM-dd"),
+                                factura_id: $scope.editar.factura_id,
+                                sw_entregado: '1',
+                                conceptoSeleccionado: $scope.editar.conceptoSeleccionado.concepto_radicacion_id,
+                                numeroFactura: $scope.editar.numeroFactura,
+                                precio: $scope.editar.precioSeleccionado,
+                                conceptooSeleccionado: $scope.editar.conceptooSeleccionado,
+                                tipo_mpio_id: $scope.editar.farmaciaSeleccionada.id,
+                                tipo_dpto_id:  $scope.editar.farmaciaSeleccionada.departamento_id,
+                                ruta: $scope.editar.cargarArchivo,
+                                nombre_ciudad: $scope.editar.farmaciaSeleccionada.nombre_ciudad
+                            }
+                            that.subirArchivo(2, data, $modalInstance);
+                        };
+
+                        $scope.abrir_fecha_inicial_editar = function ($event) {
+                            $event.preventDefault();
+                            $event.stopPropagation();
+                            $scope.abrir_fecha_editar = $scope.abrir_fecha_editar ? false : true;
+                        };
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
                 modalInstance.result.then(function () {
-
-                    that.listarProductosTraslado();
-
-                });
+                    that.listarFactura();
+                }, function () {});
             };
 
-            /**
-             * +Descripcion Metodo encargado de invocar el servicio que listara 
-             *              los productos de la factura seleccionada
-             * @author German Andres Galvis
-             * @fecha 23/05/2018 DD/MM/YYYY
-             * @returns {undefined}
-             */
-            that.listarProductosTraslado = function () {
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        docTmpId: $scope.doc_tmp_id
-                    }
-                };
 
-                Request.realizarRequest(API.ABC1.CONSULTAR_PRODUCTOS_TRASLADO, "POST", obj, function (data) {
-                    if (data.status === 200) {
-                        that.renderProductosTraslado(data.obj.lista_productos);
-                    }
-
-                });
-            };
-
-            function sumarDias(fecha, dias) {
-//                fecha.setDate(fecha.getDate() + dias);
-                fecha.setDate(fecha.getDate());
-                return fecha;
-            }
-
-            that.renderProductosTraslado = function (productos) {
-                $scope.datos_view.listado_productos_validados = [];
-                productos.forEach(function (data) {
-                    var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
-                    var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
-                            parseFloat(data.cantidad_disponible).toFixed(), data.tipo_producto_id, data.item_id, parseFloat(data.cantidad).toFixed());
-                    producto.setFechaVencimiento($filter('date')(fecha, "dd/MM/yyyy"));
-                    producto.setLote(data.lote);
-                    $scope.datos_view.listado_productos_validados.push(producto);
-                });
-            };
-
-            $scope.lista_productos_traslado = {
-                data: 'datos_view.listado_productos_validados',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                enableCellSelection: true,
+//1
+            $scope.listar_factura = {
+                data: 'root.listarFactura',
+                multiSelect: false,
                 enableHighlighting: true,
                 showFilter: true,
+                enableRowSelection: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo ', width: "11%", enableCellEdit: false,
-                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                                <span title="Normales" class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
-                                                <span title="Alto Costo" class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
-                                                <span title="Controlados" class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
-                                                <span title="Insumos" class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
-                                                <span title="Nevera" class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
-                                                <span title="Nevera Alto Costo" class="label label-info" ng-show="row.entity.getTipoProductoId() == 6">NeA</span>\
-                                                <span title="Monopol_Estado" class="label label-info" ng-show="row.entity.getTipoProductoId() == 7">MoE</span>\
-                                                <span title="Nutricion" class="label label-default" ng-show="row.entity.getTipoProductoId() == 8">Nut</span>\
-                                                <span title="Gerencia" class="label label-warning" ng-show="row.entity.getTipoProductoId() == 9">Ger</span>\
-                                                <span ng-cell-text >{{COL_FIELD}} </span>\
-                                                <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
-                                            </div>'
+                    {field: 'municipio', displayName: "Ciudad", width: "25%"},
+                    {field: 'numero_factura', displayName: 'No. Factura', width: "7%"},
+                    {field: 'proveedor', displayName: 'Proveedor', width: "10%"},
+                    {field: 'descripcion', displayName: 'Descripcion', width: "16%"},
+                    {field: 'precio', displayName: 'Precio', width: "8%"},
+                    {field: 'fecha_entrega', displayName: 'Radicacion', width: "8%"},
+                    {field: 'fecha_vencimiento', displayName: 'Vencimiento', width: "8%"},
+                    {displayName: 'Entregado', cellClass: "txt-center dropdown-button", width: "7%",
+                        cellTemplate: ' <div class="row">\
+                                          <div class= "txt-center dropdown-button" "checkbox" ng-if="row.entity.sw_entregado==0">\
+                                            <label> \
+                                              <span class="glyphicon glyphicon-remove"></span>\
+                                            </label>\
+                                         </div>\
+                                          <div class=  "txt-center dropdown-button" "checkbox" ng-if="row.entity.sw_entregado==1">\
+                                            <label> \
+                                              <span class="glyphicon glyphicon-ok"></span>\
+                                            </label>\
+                                         </div>\
+                                       </div>'
+
+
                     },
-                    {field: 'descripcion', displayName: 'Descripcion', width: "40%", enableCellEdit: false},
-                    {field: 'lote', displayName: 'Lote', width: "10%", enableCellEdit: false},
-                    {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento', width: "10%", enableCellEdit: false},
-                    {field: 'cantidad', displayName: 'Cantidad', width: "10%", enableCellEdit: false},
-                    {field: 'disponible', displayName: 'Disponibilidad', width: "10%", enableCellEdit: false},
-                    {width: "9%", displayName: "Opcion", cellClass: "txt-center",
-                        cellTemplate: '<div class="btn-group">\
-                                        <button  class="btn btn-danger btn-xs btnClick" ng-click="btn_eliminar_producto(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>\
-                                       </div>'}
+
+                    {displayName: "Descargas", cellClass: "txt-center dropdown-button", width: "7%",
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
+                                        <button ng-click="onDescargarArchivo(row.entity)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-download-alt"></span></button>\
+                                     </div>'
+                    },
+                    {displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "6%",
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
+                                        <button ng-click="onModificar(row.entity)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-edit"></span></button>\
+                                     </div>'
+                    }
+
+
+
                 ]
             };
 
-            $scope.grabar_documento_tmp = function (callback) {
-                that.guardarNewDocTmp(callback);
+            $scope.listarProductos = function(data){
+                console.log('input -->',data);
+            }
+//2
+            $scope.listar_agrupar = {
+                data: 'root.listarAgrupar',
+                multiSelect: false,
+                enableHighlighting: true,
+                showFilter: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Codigo', width: "5%"},
+                    {field: 'descripcion', displayName: 'Producto', width: "14%"}, //
+                    {field: 'costo', displayName: 'Costo', width: "8%"},
+                    {field: 'costo_ultima_compra', displayName: 'Ultima Compra', width: "28%"},
+                    {field: 'existencia', displayName: 'Stock', width: "10%"},
+                    {field: 'nuevo_costo', displayName: 'Nuevo costo', width: "10%"},
+                    {field: 'diferencia', displayName: 'Diferencia', width: "10%"},
+                    {field: 'total_diferencia', displayName: 'Total diferencia', width: "10%"},
+
+                    {displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "5%",
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
+                                        <button ng-click="onModificarAgrupacion(row.entity)" class="btn btn-default btn-xs">\
+                                            <span class="glyphicon glyphicon-edit"></span>\
+                                        </button>\
+                                       </div>'
+                    }
+                ]
             };
+            // agrupar  hoy
 
-            /**
-             * @author German Galvis
-             * +Descripcion Metodo encargado de guardar NewDocTmp
-             * @fecha 2018-05-19
-             */
-            that.guardarNewDocTmp = function (callback) {
-                var usuario = Usuario.getUsuarioActual();
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        bodega_doc_id: $scope.documento_ingreso.get_bodegas_doc_id(),
-                        observacion: $scope.documento_ingreso.get_observacion(),
-                        concepto_egreso_id: $scope.documento_ingreso.egreso.concepto_egreso_id,
-                        empresaId: usuario.getEmpresa().getCodigo(),
-                        tipo_id_tercero: $scope.cliente_seleccionado.tipo_id_tercero,
-                        tercero_id: $scope.cliente_seleccionado.id
-                    }
-                };
-                ABC1Service.crearGetDocTemporal(obj, function (data) {
-                    if (data.status === 200) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                        $scope.doc_tmp_id = data.obj.movimiento_temporal_id;
-                        $scope.validarDesdeLink = true;
-                        $scope.isTmp();
-                        callback(true);
-                    }
-                    if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                        callback(false);
-                    }
-                    if (data.status === 404) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                        callback(false);
-                    }
-                });
-            };
+            $scope.listarFactura = {
+                data: 'listaFacturaPendiente',
+                multiSelect: false,
+                enableHighlighting: true,
+                showFilter: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'numero_factura', displayName: 'No. Factura', width: "30%"},
+                    {field: 'descripcion', displayName: 'bodega', width: "30%"},
+                    {displayName: 'Entregado', cellClass: "txt-center dropdown-button", width: "40%",
+                        cellTemplate: ' <div class="row">\
+                                        <div class= "txt-center dropdown-button" "checkbox" ng-if="row.entity.sw_entregado==0">\
+                                          <label> \
+                                             <input type="checkbox" ng-checked="exists(row.entity, selected)" ng-click="onAgruparFactura(row.entity, selected)" value="">\
+                                             </label>\
+                                         </div>\
+                                       </div>'
 
-            $scope.btn_eliminar_producto = function (fila) {
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="cerrar()">&times;</button>\
-                                    <h4 class="modal-title">MENSAJE DEL SISTEMA</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                    <h4>Desea eliminar el siguiente producto?</h4>\
-                                    <h5>' + fila.descripcion + '</h5>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-warning" ng-click="cerrar()">No</button>\
-                                    <button class="btn btn-primary" ng-click="confirmar_eliminar_producto()" >Si</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
-
-                            $scope.confirmar_eliminar_producto = function () {
-                                $scope.eliminar_producto(fila);
-                                $modalInstance.close();
-                            };
-
-                            $scope.cerrar = function () {
-                                $modalInstance.close();
-                            };
-
-                        }]
-                };
-                var modalInstance = $modal.open($scope.opts);
-            };
-
-            /**
-             * @author German Galvis
-             * @fecha 2018-05-24
-             * +Descripcion Metodo encargado de eliminar el producto seleccionado
-             * parametros: variables
-             */
-            $scope.eliminar_producto = function (parametro) {
-
-                var obj = {
-                    session: $scope.session,
-                    item_id: parametro.item_id,
-                    docTmpId: $scope.doc_tmp_id
-                };
-
-                ABC1Service.eliminarProductoTraslado(obj, function (data) {
-
-                    if (data.status === 200) {
-                        that.refrescarVista();
-                        AlertService.mostrarMensaje("warning", "El Producto fue Eliminado Correctamente!!");
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema Eliminacion fallida: ", data.msj);
 
                     }
-                });
+                ]
             };
 
-            $scope.btn_eliminar_documento = function () {
-
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                    <h4>Desea eliminar el documento?</h4>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-warning" ng-click="close()">No</button>\
-                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
-
-                            $scope.confirmar = function () {
-                                $scope.eliminar_documento();
-                                $modalInstance.close();
-                            };
-                            $scope.close = function () {
-                                $modalInstance.close();
-                            };
-                        }]
-                };
-                var modalInstance = $modal.open($scope.opts);
-            };
-
-            $scope.eliminar_documento = function () {
-                that.eliminarGetDocTemporal();
-            };
-
-            /**
-             * @author German Galvis
-             * @fecha 2018-05-21
-             * +Descripcion Metodo encargado de invocar el servicio que
-             *              borra los DocTemporal
-             */
-            that.eliminarGetDocTemporal = function () {
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        doc_tmp_id: $scope.doc_tmp_id
+            //modificar entregado        
+            $scope.listarFacturaAgrupada = {
+                data: 'listaFacturaPendienteModificar',
+                multiSelect: false,
+                enableHighlighting: true,
+                showFilter: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'numero_factura', displayName: 'No. Factura', width: "40%"},
+                    {field: 'descripcion', displayName: 'bodega', width: "40%"},
+                    {displayName: 'Entregado', cellClass: "txt-center dropdown-button", width: "20%",
+                        cellTemplate: ' <div class="row">\
+                                          <label> \
+                                           <button ng-click="onEliminarFacturaAgrupada(row.entity)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove"></span></button>\
+                                             </label>\
+                                         </div>\
+                                       </div>'
                     }
-                };
-
-                ABC1Service.eliminarGetDocTemporal(obj, function (data) {
-                    if (data.status === 200) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                        that.borrarVariables();
-                    }
-
-                    if (data.status === 404) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }
-
-                    if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }
-                });
+                ]
             };
 
-            $scope.generar_documento = function () {
-                that.crearDocumento();
+            $scope.onModificar = function (modificar) {
+                modificar.concepto = $scope.root.concepto;
+                modificar.farmacias = $scope.root.farmacias;
+
+                that.verModificar(modificar);
             };
 
-            /**
-             * @author German Galvis
-             * @fecha 2018-05-24
-             * +Descripcion Metodo encargado de Generar el documento definitivo
-             */
-            that.crearDocumento = function () {
-                var usuario = Usuario.getUsuarioActual();
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        empresaId: usuario.getEmpresa().getCodigo(),
-                        concepto_egreso_id: $scope.documento_ingreso.egreso.concepto_egreso_id,
-                        concepto_egreso: $scope.documento_ingreso.egreso.descripcion,
-                        tipo_id_tercero: $scope.cliente_seleccionado.tipo_id_tercero,
-                        tercero_id: $scope.cliente_seleccionado.tercero_id,
-                        nombreTercero: $scope.cliente_seleccionado.nombre_tercero,
-                        doc_tmp_id: $scope.doc_tmp_id,
-                        usuario_id: Usuario.getUsuarioActual().getId()
 
-                    }
-                };
+            $scope.onDeshabilitar = function (impresion) {
 
-                ABC1Service.crearDocumento(obj, function (data) {
-                    if (data.status === 200) {
+                var disabled = true;
+                if (impresion.archivo === undefined || impresion.archivo === null) {
+                    disabled = false;
 
-                        AlertService.mostrarMensaje("warning", data.msj);
-
-                        that.borrarVariables();
-
-                        var nombre = data.obj.nomb_pdf;
-                        setTimeout(function () {
-                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                        }, 0);
-                    }
-
-                    if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-
-                    }
-                });
-            };
-
-            /*==================================================================================================================================================================
-             * 
-             *                                                          VALIDACIONES(habilitar o desabilitar botones)
-             * 
-             * ==================================================================================================================================================================*/
-
-            that.init(function () {
-            });
-
-            $scope.cancelar_documento = function () {
-                $state.go('DocumentosBodegas');
-            };
-
-            $scope.isNoTmp = function () {
-                var disabled = false;
-                if ($scope.doc_tmp_id === "00000" && ($scope.documento_ingreso.getEgreso() === undefined || $scope.documento_ingreso.getEgreso() === null ||
-                        $scope.cliente_seleccionado.tercero_id === undefined || $scope.cliente_seleccionado.tercero_id === null)) {
-                    disabled = true;
-                }
-                return disabled;
-            };
-
-            $scope.isTmp = function () {
-                var disabled = false;
-
-                if ($scope.doc_tmp_id === "00000" || $scope.doc_tmp_id === "") {
-                    disabled = true;
-                }
-                return disabled;
-            };
-
-            $scope.habilitar_btn_productos = function () {
-
-                var disabled = false;
-
-                if ($scope.documento_ingreso.getEgreso() === undefined || $scope.documento_ingreso.getEgreso() === null ||
-                        $scope.cliente_seleccionado.tercero_id === undefined || $scope.cliente_seleccionado.tercero_id === null) {
-                    disabled = true;
                 }
 
                 return disabled;
             };
 
-            that.borrarVariables = function () {
-                $scope.doc_tmp_id = "00000";
-                $scope.documento_ingreso.set_observacion('');
-                $scope.documento_ingreso.setEgreso(null);
-                $scope.cliente_seleccionado = [];
-                $scope.datos_view.listado_productos_validados = [];
-                $scope.validarDesdeLink = false;
+            $scope.onDesactivar = function () {
+                var disabled = false;
+                if ($scope.desactivar === '1') {
+                    disabled = true;
+                }
+                return disabled;
+
             };
 
-            that.refrescarVista = function () {
-                that.listarProductosTraslado();
+            $scope.onEliminarFacturaAgrupada = function (parametro) {
+                that.eliminarGrupoFactura(parametro, function () {
+                    that.listarAgrupar(parametro, function () {
+
+                    });
+                });
+
+            };
+
+            $scope.onModificarAgrupacion = function (parametro) {
+
+                $scope.radicacion = parametro.relacion_id;
+                $scope.desactivar = parametro.imprimir;
+
+
+                that.listarAgrupar(parametro, function (dato) {
+                    // $scope.root.listarAgrupar = dato;
+                    dato.relacion_id = parametro.relacion_id;
+
+
+
+                    $scope.listaFacturaPendienteModificar = [];
+
+                    dato.forEach(function (element) {
+
+                        $scope.listaFacturaPendienteModificar.push(element);
+
+
+                    });
+                    $scope.root.botonAgregar = true;
+                    if (parametro.archivo===null){
+                        console.log("parametro",parametro.archivo)
+                        $scope.root.botonAgregar = false;
+                    }
+
+
+                    that.agrupar(dato);
+                });
+            };
+
+            $scope.onModificarFactura = function (factura) {
+
+                that.modificarFactura(factura);
+
+            };
+
+            $scope.onDescargarArchivo = function (archivo) {
+                $scope.visualizarReporte("/Facturas/Sistemas/" + archivo.ruta, archivo.ruta, "blank");
+            };
+
+//            $scope.onDescargarArchivoFactura = function (archivo) {
+//                $scope.visualizarReporte("/Facturas/Sistemas/" + archivo.ruta, archivo.ruta, "blank");
+//            };
+
+            $scope.onDescargarArchivoFormato = function (formato) {
+
+                if (formato.archivo === null || formato.archivo === "") {
+                    that.planillaRadicacion(formato);
+                } else {
+                    $scope.visualizarReporte("/Facturas/Sistemas/" + formato.archivo, formato.archivo, "blank");
+                    that.listarAgrupar({radicacion_id: ""}, function (dato) {
+
+                        $scope.root.listarAgrupar = dato;
+                    });
+                }
+
             };
 
 
-            if (datos_documento.datosAdicionales !== undefined) {
-                $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
-                $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
-                that.buscarClientePorId(datos_documento.datosAdicionales.tipoTerceroId, datos_documento.datosAdicionales.terceroId);
-                that.buscarEgresoId(datos_documento.datosAdicionales.tipo_egreso);
-                $scope.validarDesdeLink = true;
-                that.refrescarVista();
+            $scope.modalConcepto = function () {
+                that.verConcepto();
+            };
 
-            } else {
-                $scope.validarDesdeLink = false;
+
+
+            $scope.onSeleccionMunicipio = function () {
+            };
+
+            $scope.onSeleccionFacturaEntregado = function () {
+                that.listarFacturaEntregado();
+            };
+
+            $scope.onAgregarFactura = function () {
+
+                that.agregarFacturaEntregado();
+                var time = setTimeout(function () {
+                    that.listarAgrupar({relacion_id: $scope.radicacion}, function (listado) {
+                        $scope.listaFacturaPendienteModificar = [];
+
+                        listado.forEach(function (element) {
+
+                            $scope.listaFacturaPendienteModificar.push(element);
+
+                        });
+                        that.listarAgrupar({radicacion_id: ""}, function (dato) {
+                            $scope.root.listarAgrupar = dato;
+                            that.listarFactura();
+                        });
+                    });
+                    clearTimeout(time);
+                }, 500);
+
+                that.limpiarAgregar();
+
+            };
+
+            that.limpiarAgregar = function () {
+                $scope.root.listarFacturaEntregado = '';
+                $scope.root.cargarFormato = '';
+            };
+
+
+
+            $scope.onSeleccionConcepto = function () {
+                $scope.root.concepto = [];
+                that.consultarConcepto();
+            };
+
+//            $scope.onSeleccionFarmacia = function (){
+//                $scope.root.municipio = [];
+//                that.consultarMunicipio();
+//                
+//            };
+
+            $scope.onSeleccionFactura = function () {
+
+            };
+
+            $scope.onGuardarFactura = function () {
+
+                if ($scope.root.numeroFactura === '') {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el numero de la Factura");
+                    return;
+                }
+
+                if ($scope.root.conceptoSeleccionado === '') {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el proveedor de la Factura");
+                    return;
+                }
+                if ($scope.root.farmaciaSeleccionada === '') {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar la ciudad de la Factura");
+                    return;
+                }
+                if ($scope.root.precioSeleccionado === '') {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el precio de la Factura");
+                    return;
+                }
+//                if ($scope.root.fecha_vencimiento === '') {
+//                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar la fecha de la Factura");
+//                    return;
+//                }
+                if ($scope.root.descripcion === '') {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el concepto de la Factura");
+                    return;
+                }
+
+                that.subirArchivo(1, {}, {});
+            };
+
+            $scope.respuestaSubirArchivo = function (file, message) {
+                var data = (message !== undefined) ? JSON.parse(message) : {};
+                $scope.root.flow.cancel();
+                if (data.status === 200) {
+                    that.subirArchivo();
+                    $scope.visualizarReporte("/reports/" + data.obj.pdf, data.obj.pdf, "download");
+
+                } else {
+                    var msj = data.msj;
+                    if (msj.msj) {
+                        msj = msj.msj;
+                    }
+                    AlertService.mostrarVentanaAlerta(String.CONSTANTS.ALERTA_TITULO, msj);
+                }
+            };
+
+            $scope.close = function () {
+                // $modalInstance.close();
+            };
+            //////////////////////////////       
+            $scope.root.activarBoton=true;
+            $scope.onArchivoSeleccionado = function (files) {
+
+                if(files[0].name===''){
+                    console.log("fileee333333",files)
+                    $scope.root.activarBoton=true;
+                    return;
+                }else{console.log("fileee22222",files)
+                    $scope.root.activarBoton=false;
+                    $scope.root.files = files;
+                    that.limpiarArchivoo();
+                }
+            };
+
+            that.limpiarArchivoo = function () {
+                $scope.root.archivo = '';
             }
 
+//            $scope.onArchivoSeleccionadoFactura = function (files) {
+//                $scope.root.files = files;
+//            };
 
 
-        }]);
+            that.subirArchivoEntregado = function (data, modalInstance) {
+                var fd = new FormData();
+                var ruta;
+
+//                if (!$scope.root.files) {
+//                    $scope.root.files = [{lastModified: '', lastModifiedDate: '', name: "", size: '', type: '', webkitRelativePath: ''}];
+//                }
+
+                fd.append("file", $scope.root.files[0]);
+                fd.append("session", JSON.stringify($scope.root.session));
+                fd.append("data", JSON.stringify({
+                    data: {
+                        empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        ruta: $scope.root.files[0]
+                    }
+                }));
+
+                Request.subirArchivo(API.RADICACION.SUBIR_ARCHIVO, fd, function (respuesta) {
+                    if (respuesta) {
+                        ruta = respuesta.obj.data.split('/');
+                        ruta = ruta[ruta.length - 1];
+                    } else {
+                        ruta = respuesta;
+
+                    }
+
+                    var obj = {
+                        session: $scope.session,
+                        data: {
+                            relacion_id: $scope.radicacion,
+                            archivo: ruta
+
+                        }
+                    };
+
+
+                    Request.realizarRequest(
+                        API.RADICACION.MODIFICAR_NOMBRE_ARCHIVO, //Radicacion/guardarFactura
+                        "POST",
+                        obj,
+                        function (data) {
+                            if (data.status === 200) {
+
+                                modalInstance.close();
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "factura modificada correctamente");
+                                return;
+                            }
+
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al modificar la Factura");
+                        }
+                    );
+                });
+            };
+
+
+
+            that.subirArchivo = function (modo, data, modalInstance) {
+                var fd = new FormData();
+                var ruta;
+
+                if (!$scope.root.files) {
+                    $scope.root.files = [{lastModified: '', lastModifiedDate: '', name: "", size: '', type: '', webkitRelativePath: ''}];
+                }
+
+                fd.append("file", $scope.root.files[0]);
+                fd.append("session", JSON.stringify($scope.root.session));
+                fd.append("data", JSON.stringify({
+                    data: {
+                        empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        ruta: $scope.root.files[0]
+                    }
+                }));
+                Request.subirArchivo(API.RADICACION.SUBIR_ARCHIVO, fd, function (respuesta) {
+                    if (respuesta) {
+                        ruta = respuesta.obj.data.split('/');
+                        ruta = ruta[ruta.length - 1];
+                    } else {
+                        ruta = respuesta;
+                    }
+
+                    if (modo == 1) {
+                        that.guardarFactura(ruta);
+                    } else {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                factura_id: data.factura_id,
+                                sw_entregado: '1',
+                                conceptoSeleccionado: data.conceptoSeleccionado,
+                                numeroFactura: data.numeroFactura,
+                                precio: data.precio,
+                                conceptooSeleccionado: data.conceptooSeleccionado,
+                                tipo_mpio_id: data.tipo_mpio_id,
+                                ruta: ruta,
+                                fecha_entrega: data.fechaEntrega,
+                                tipo_dpto_id: data.tipo_dpto_id
+                            }
+                        };
+
+                        Request.realizarRequest(
+                            API.RADICACION.MODIFICAR_FACTURA, //Radicacion/guardarFactura
+                            "POST",
+                            obj,
+                            function (data) {
+                                if (data.status === 200) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Factura modificada correctamente");
+                                    modalInstance.close();
+                                    return;
+                                }
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error al modificar la Factura");
+                            }
+                        );
+                    }
+
+                    //$scope.close();
+                });
+            };
+
+            that.subirArchivoFactura = function () {
+                var fd = new FormData();
+                fd.append("file", $scope.root.files[0]);
+                fd.append("session", JSON.stringify($scope.root.session));
+                fd.append("data", JSON.stringify(
+                    {
+                        data: {
+                            empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo()
+                        }
+                    }
+                ));
+
+                Request.subirArchivo(API.RADICACION.SUBIR_ARCHIVO_FACTURA, fd, function (respuesta) {
+                    $scope.close();
+                });
+            };
+///////////////////
+            $scope.cargarArchivo = function ($flow) {
+                $scope.root.flow = $flow;
+            };
+
+            $scope.onDescagarArchivo = function ($flow) {
+                $scope.root.flow = $flow;
+            };
+
+            that.init = function () {
+//                that.consultarFarmacia(); 
+                //that.consultarMunicipio();
+                that.consultarConcepto();
+                that.listarFactura();
+
+                that.listarAgrupar({radicacion_id: ""}, function (dato) {
+                    $scope.root.listarAgrupar = dato;
+                });
+
+                $scope.root.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
+                $scope.root.flow = new Flow();
+                $scope.root.flow.target = API.RADICACION.SUBIR_ARCHIVO;
+                $scope.root.flow.testChunks = false;
+                $scope.root.flow.singleFile = true;
+
+                $scope.root.flow.query = {
+                    session: JSON.stringify($scope.root.session)
+                };
+            };
+
+            that.init();
+        }])
 });
+
+     

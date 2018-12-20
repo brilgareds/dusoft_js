@@ -5,7 +5,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
     "includes/classes/Empresa",
 ], function (angular, controllers) {
 
-    controllers.controller('reciosProductosController', [
+    controllers.controller('PreciosProductosController', [
         '$scope', '$rootScope', "Request",
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
@@ -120,7 +120,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             that.listarAgrupar = function (parametro, callback) {
-
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -800,7 +799,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.listarProductos = function(data){
                 console.log('input -->',data);
             }
-//2            
+//2
             $scope.listar_agrupar = {
                 data: 'root.listarAgrupar',
                 multiSelect: false,

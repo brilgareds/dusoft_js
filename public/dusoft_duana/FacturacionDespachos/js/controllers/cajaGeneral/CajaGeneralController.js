@@ -517,8 +517,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             if (data.status === 200) {
                                 var nombre = data.obj.guardarFacturaCajaGeneral;
+//                                $scope.root.prefijo.prefijo = data.obj.prefijo;
+//                                $scope.root.factura = data.obj.factura_fiscal;
+//                                that.listarFacturasGeneradas(25, function (data) {
                                 $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-
+//                                    $("#home").removeClass("active");  // this deactivates the home tab
+//                                    $("#profile").addClass("active"); 
+//                                $state.go('CajaGeneral');
+//                                });
+                                    
                                 that.listarTerceros(function (respuesta) {
                                     if (respuesta) {
                                         that.listarConceptosDetalle();

@@ -655,6 +655,7 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
     }).then(function (result) {
 
         res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {guardarFacturaCajaGeneral: result}));
+//        res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {guardarFacturaCajaGeneral: result, prefijo:parametros.prefijo, factura_fiscal:parametros.factura}));
 
     }).catch(function (err) {
         console.log("error transaccion ", err);
@@ -1833,6 +1834,7 @@ function __insertarFacFacturasConceptos(that, index, conceptosDetalle, parametro
     conceptos.facturaFiscal = parametros.factura;
     conceptos.porcentajeGravamen = conceptos.porcentaje_gravamen;
     conceptos.valorTotal = conceptos.valor_total;
+    conceptos.valortotal = conceptos.valor_total;
     conceptos.swTipo = conceptos.sw_tipo;
     conceptos.valorGravamen = conceptos.valor_gravamen;
     conceptos.grupoConceptoId = conceptos.grupo_concepto;

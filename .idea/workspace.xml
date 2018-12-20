@@ -1,20 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas/models/MovBodegasModel.js" afterPath="$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas/models/MovBodegasModel.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js" afterPath="$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/PreciosProductos/js/controllers/PreciosProductosController.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/PreciosProductos/js/controllers/PreciosProductosController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/app.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/indexController.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/indexController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/js/controllers/PreciosProductosController.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/js/controllers/PreciosProductosController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/radicacion.html" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/radicacion.html" />
-    </list>
+    <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -827,12 +814,12 @@
       <workItem from="1545053415386" duration="24829000" />
       <workItem from="1545137725106" duration="23996000" />
       <workItem from="1545222931365" duration="25772000" />
-      <workItem from="1545310511315" duration="14067000" />
+      <workItem from="1545310511315" duration="14212000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="88664000" />
+    <option name="totallyTimeSpent" value="88809000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="-2" width="1926" height="1060" extended-state="6" />

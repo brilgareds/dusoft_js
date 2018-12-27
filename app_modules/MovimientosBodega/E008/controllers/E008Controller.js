@@ -2308,6 +2308,7 @@ function __validarDumian(identificacion_cliente, tipo_id_cliente) {
                     (identificacion_cliente === '900112820' && tipo_id_cliente === "AS") || //LABORATORIO CLINICA AMAN CMS +
                     (identificacion_cliente === '800088098' && tipo_id_cliente === "NIT") || //LABORATORIO CLINICA AMAN CMS +
                     (identificacion_cliente === '900470642' && tipo_id_cliente === "NIT") || //MEDICAL DUARTE Z.F SAS +
+                    (identificacion_cliente === '900228989' && tipo_id_cliente === "NIT") || //CLINICA SANTA SOFIA +
                     (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")) { //HOSPITAL SAN ANDRES DE TUMACO+
 
         return true;

@@ -1217,7 +1217,7 @@ CajaGeneral.prototype.generarSincronizacionDian = function (req, res) {
         var json = {
             codigoMoneda: "COP",
             descripcion: "",
-            fechaExpedicion: resultado.cliente.fecha_registro,
+            fechaExpedicion: resultado.parametros.fecha_registro,
             icoterms: '',
             codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
             numeroIdentificacion: resultado.cliente.tercero_id,

@@ -1,4 +1,6 @@
 
+/* global G */
+
 var E008Controller = function (movimientos_bodegas, m_e008, e_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos, log_e008) {
 
     this.m_movimientos_bodegas = movimientos_bodegas;
@@ -2478,6 +2480,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
             } else if (pedido.identificacion_cliente === '900470642') {
                 
                 $tercero = '900470642';
+                
+            } else if (pedido.identificacion_cliente === '900228989') {
+                
+                $tercero = '900228989';
                 
             } else {
 

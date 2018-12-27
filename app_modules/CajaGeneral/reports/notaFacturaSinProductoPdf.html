@@ -143,12 +143,12 @@
                             <td><b>VALOR TOTAL</b></td>
                         </tr>
                         <tr align="center">
-                            <td><b>${{:valores.valorSubtotal}}</b></td>
-                            <td><b>${{:valores.iva}}</b></td>
-                            <td><b>${{:valores.retencionFuente}}</b></td>
-                            <td><b>${{:valores.retencionIca}}</b></td>
-                            <td><b>${{:valores.retencionIva}}</b></td>
-                            <td><b>${{:valores.totalGeneral}}</b></td>
+                            <td><b>{{:~formatMoney(valores.valorSubtotal)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.iva)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.retencionFuente)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.retencionIca)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.retencionIva)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.totalGeneral)}}</b></td>
 
                         </tr>
                         <tr align="left">

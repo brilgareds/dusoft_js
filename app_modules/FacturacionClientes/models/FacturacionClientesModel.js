@@ -357,7 +357,7 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
                 .on("a.tercero_id", "cntrtos.tercero_id")
                 .on('cntrtos.empresa_id', "b.empresa_id")
 
-    }).join('inv_bodegas_movimiento_despachos_clientes as d', function () {
+    }).leftJoin('inv_bodegas_movimiento_despachos_clientes as d', function () {
         this.on("a.tipo_id_tercero", "b.tipo_id_tercero")
                 .on("a.tercero_id", "d.tercero_id")
     }).leftJoin('tipo_mpios as e', function () {

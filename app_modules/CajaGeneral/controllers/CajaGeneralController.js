@@ -495,6 +495,8 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
     var cliente = [];
     var conceptosDetalle = [];
     var impuesto;
+    var formato = 'YYYY-MM-DD hh:mm';
+    var today = new Date();
 
     if (args.prefijoFac === undefined) {
         res.send(G.utils.r(req.url, 'No Estan Definido rc_concepto_id', 404, {}));
@@ -639,6 +641,8 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
     }).then(function (result) {
 
         empresa = result;
+        parametros.fecha_registro = G.moment(today).format(formato);
+        
         var informacion = {
             serverUrl: req.protocol + '://' + req.get('host') + "/",
             empresa: empresa[0],
@@ -717,6 +721,7 @@ CajaGeneral.prototype.imprimirFacturaNotas = function (req, res) {
     var cliente = [];
     var conceptosDetalle = [];
     var impuesto;
+    var formato = 'YYYY-MM-DD hh:mm';
 
     var parametros = {
         empresaId: args.empresaId,
@@ -731,6 +736,7 @@ CajaGeneral.prototype.imprimirFacturaNotas = function (req, res) {
         conceptosDetalle = result;
         parametros.terceroId = conceptosDetalle[0].tercero_id;
         parametros.tipoIdTercero = conceptosDetalle[0].tipo_id_tercero;
+        parametros.fecha_registro = G.moment(conceptosDetalle[0].fecha_registro).format(formato);
         var totales = {totalFactura: 0, totalGravamen: 0};
         return G.Q.nfcall(__valorTotalGravamen, 0, result, totales);
 
@@ -1119,7 +1125,7 @@ function __generarPdf2(datos, callback) {
                                 <p class="letra_factura_info">` + datos.conceptosDetalle[0].texto2 + `</p>
                             <td>
                             <td width='30%'> 
-                                <br><br><br>
+                                <br><p class="letra_factura_info">Fecha Factura: ` + datos.parametros.fecha_registro + `</p><br>
                                 <p class="letra_factura_info_ctr">` + datos.conceptosDetalle[0].texto3 + `</p>                                 
                                 <p class="letra_factura_info_jst">` + datos.conceptosDetalle[0].texto1 + `</p>                                 
                             <td>
@@ -1308,6 +1314,7 @@ function __generarSincronizacionDian(that, req, callback) {
     var conceptosDetalle = [];
     var impuesto;
     var documento;
+    var formato = 'YYYY-MM-DD hh:mm';
 
 
     var parametros = {
@@ -1323,6 +1330,7 @@ function __generarSincronizacionDian(that, req, callback) {
         conceptosDetalle = result;
         parametros.terceroId = conceptosDetalle[0].tercero_id;
         parametros.tipoIdTercero = conceptosDetalle[0].tipo_id_tercero;
+        parametros.fecha_registro = G.moment(conceptosDetalle[0].fecha_registro).format(formato);
         var totales = {totalFactura: 0, totalGravamen: 0};
         return G.Q.nfcall(__valorTotalGravamen, 0, result, totales);
 

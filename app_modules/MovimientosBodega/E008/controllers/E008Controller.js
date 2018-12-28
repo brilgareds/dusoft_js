@@ -2446,8 +2446,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                     codigo_invima: item.codigo_invima,
                     fecha_vencimiento: fechaVencimiento,
                     cantidad: item.cantidad,
-                    valor_unitario: item.valor_unitario_iva,
-                    valor_total: item.valor_total_iva,
+                    valor_unitario: item.valor_unitario_iva/(1+(item.porcentaje_gravamen/100)),
+                    valor_total: item.valor_total_iva/(1+(item.porcentaje_gravamen/100)),
                     porcentaje_gravamen: item.porcentaje_gravamen,
                     costo: item.costo
                 };

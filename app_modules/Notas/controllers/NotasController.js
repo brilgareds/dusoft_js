@@ -1203,6 +1203,7 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
 
 var subTotal = resultado.valores.subTotal.replace(".", "");
 var total = resultado.valores.totalFactura.replace(".", "");
+var retef = resultado.valores.retencionFuente.replace(".", "");
         var json = {
             codigoMoneda: "COP",
             conceptoNota: resultado.nota.prefijo_devolucion === 'IDC' ? "1" : "6",
@@ -1218,7 +1219,7 @@ var total = resultado.valores.totalFactura.replace(".", "");
             perfilUsuario: "CLIENTE",
             productos: productos,
             subtotalNotaCreditoElectronica: subTotal.replace(".", ""),
-            ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
+            ReteFuente: retef.replace(".", ""),
             baseGravableReteFuente: resultado.valores.bases.base_rtf,
             IVA: resultado.valores.ivaTotal.replace(".", ""),
             baseGravableIVA: subTotal.replace(".", ""),

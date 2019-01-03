@@ -2601,6 +2601,31 @@ FacturacionClientesModel.prototype.consultarUltimoGrupo = function (callback) {
 };
 
 /**
+ * @fecha 2019-01-03
+ * +Descripcion Metodo encargado de consultar los productos del archivo plano si ya fueron 
+ * agregados a la tabla productos_consumo
+ * @author German Galvis
+ */
+FacturacionClientesModel.prototype.consultarProductosRepetido = function (obj, callback) {
+
+    var query = G.knex.column("*")
+            .from('productos_consumo as a')
+            .where(function () {
+                this.andWhere(G.knex.raw("a.grupo_id = " + obj.grupo));
+                this.andWhere(G.knex.raw("a.codigo_producto = '" + obj.codigo_producto + "'"));
+                this.andWhere(G.knex.raw("a.lote = '" + obj.lote + "'"));
+                this.andWhere(G.knex.raw("a.fecha_vencimiento = '" + obj.fecha_vencimiento + "'"));
+            });
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [consultarProductosRepetido]: ", err);
+        callback({err: err, msj: "Error al consultarProductosRepetido]"});
+    });
+};
+
+/**
  * @fecha 22/10/2018
  * +Descripcion Metodo encargado de insertar los productos del archivo plano a 
  * la tabla productos_consumo
@@ -2631,6 +2656,36 @@ FacturacionClientesModel.prototype.insertar_productos_consumo = function (obj, c
     }).catch(function (err) {
         console.log("err (/catch) [insertar_productos_consumo]: ", err);
         callback({err: err, msj: "Error al guardar la insertar_productos_consumo"});
+    });
+};
+
+/**
+ * +Descripcion Funcion encargada de actualizar en la tabla donde se almacenan
+ *	        los productos de las facturas de consumo
+ * @author German Galvis
+ * @fecha 2019-01-03
+ */
+FacturacionClientesModel.prototype.actualizar_productos_consumo = function (obj, callback) {
+
+    var parametros = {
+        empresa_id: obj.empresa_id,
+        centro_utilidad: obj.centro_id,
+        bodega: obj.bodega_id,
+        codigo_producto: obj.codigo_producto,
+        lote: obj.lote,
+        fecha_vencimiento: obj.fecha_vencimiento,
+        grupo_id: obj.grupo
+    };
+
+    var query = G.knex("productos_consumo")
+            .where(parametros)
+            .update({ cantidad: G.knex.raw('cantidad +' + obj.cantidad)});
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [actualizar_productos_consumo]: ", err);
+        callback({err: err, msj: "Error al actualizar la cantidad del producto"});
     });
 };
 

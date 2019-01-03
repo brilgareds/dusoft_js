@@ -616,7 +616,7 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
 
         if (resultado.length > 0) {
             parametros.idProceso = resultado[0].id;
-            G.Q.nfcall(__insertarFacturaEnProcesoDetalle, that, 0, pedidosCosmitet, parametros.idProceso)
+            G.Q.nfcall(__insertarFacturaEnProcesoDetalle, that, 0, pedidosCosmitet, parametros.idProceso);
         } else {
             throw {msj: '[insertarFacturaEnProceso]: No se creo la cabecera para el proceso de facturacion', status: 404};
         }
@@ -3287,21 +3287,21 @@ FacturacionClientes.prototype.generarReporteFacturaGeneradaDian = function (req,
     var prefijo = args.imprimir_reporte_factura.prefijo;
     var numero = args.imprimir_reporte_factura.numero;
     var tipo_documento = args.imprimir_reporte_factura.tipo_documento;
-    
+
     var json = {
-        tipoDocumento : tipo_documento,//factura
-        factura : prefijo+"_"+numero,//prefijo_nofactura
-        tipoRespuesta : 'PDF'//factura
+        tipoDocumento: tipo_documento, //factura
+        factura: prefijo + "_" + numero, //prefijo_nofactura
+        tipoRespuesta: 'PDF'//factura
     };
-        
+
     G.Q.ninvoke(that.c_sincronizacion, 'consultaFacturacionElectronica', json).then(function (resultado) {
-        
+
         return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}}));
-        
+
     }).fail(function (err) {
-      
+
         res.send(G.utils.r(req.url, err, 500, {}));
-        
+
     }).done();
 }
 ;
@@ -3773,7 +3773,7 @@ function __generarPdf(datos, callback) {
  */
 function __generarPdf2(datos, callback) {
     datos.style = G.dirname + "/public/stylesheets/facturacion/style.css";
-    var logo=G.base64Img.base64Sync("public/images/logocliente.png", function(err, data) {});
+    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
 
     G.jsreport.render({
         template: {
@@ -3784,9 +3784,9 @@ function __generarPdf2(datos, callback) {
             phantom: {
                 margin: "10px",
                 width: '792px',
-                headerHeight: "290px",// .imagent{position: absolute;top: 10px;}
-                footer:`<div style='text-align:right'>{#pageNum}/{#numPages}</div>`,
-                header: 
+                headerHeight: "290px", // .imagent{position: absolute;top: 10px;}
+                footer: `<div style='text-align:right'>{#pageNum}/{#numPages}</div>`,
+                header:
                         `<style>
                             p {margin-top:0; margin-bottom:0;line-height: 75%; }
                             .letra_factura{font: 100% sans-serif;
@@ -3812,21 +3812,21 @@ function __generarPdf2(datos, callback) {
                          <table border='0' width='100%' >
                            <tr>
                             <td align="center" width='30%'>
-                                <p ><img  src="` + logo+`"  border='0' width="300px" height="80px"></p>
-                                <p class="letra_factura_info">` + datos.cabecera.tipo_id_empresa +`: ` + datos.cabecera.id+` - ` + datos.cabecera.digito_verificacion+`</p>
-                                <p class="letra_factura_info">` + datos.cabecera.direccion_empresa+` TELEFONO : ` + datos.cabecera.telefono_empresa+`</p>
-                                <p class="letra_factura_info">` + datos.cabecera.pais_empresa+` - ` + datos.cabecera.departamento_empresa+` - ` + datos.cabecera.municipio_empresa+`</p>
-                                <p class="letra_factura_info">` + datos.cabecera.texto2+`</p>
+                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>
+                                <p class="letra_factura_info">` + datos.cabecera.tipo_id_empresa + `: ` + datos.cabecera.id + ` - ` + datos.cabecera.digito_verificacion + `</p>
+                                <p class="letra_factura_info">` + datos.cabecera.direccion_empresa + ` TELEFONO : ` + datos.cabecera.telefono_empresa + `</p>
+                                <p class="letra_factura_info">` + datos.cabecera.pais_empresa + ` - ` + datos.cabecera.departamento_empresa + ` - ` + datos.cabecera.municipio_empresa + `</p>
+                                <p class="letra_factura_info">` + datos.cabecera.texto2 + `</p>
                             <td>
                             <td width='30%'> 
                                 <br><br><br>
-                                <p class="letra_factura_info_ctr">` + datos.cabecera.texto3+`</p>                                 
-                                <p class="letra_factura_info_jst">` + datos.cabecera.texto1+`</p>                                 
+                                <p class="letra_factura_info_ctr">` + datos.cabecera.texto3 + `</p>                                 
+                                <p class="letra_factura_info_jst">` + datos.cabecera.texto1 + `</p>                                 
                             <td>
                             <td width='40%' valign="top">
                                  <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
                                  <b><p align="center" valign="top" >FACTURA DE VENTA</p></b>  
-                                 <b><p align="center" valign="top" style="margin-top:3px;" >` + datos.cabecera.prefijo+` ` +datos.cabecera.factura_fiscal+`</p></b> 
+                                 <b><p align="center" valign="top" style="margin-top:3px;" >` + datos.cabecera.prefijo + ` ` + datos.cabecera.factura_fiscal + `</p></b> 
                             <td>
                            </tr>
                          </table>
@@ -3894,7 +3894,7 @@ function __subir_archivo_plano(files, callback) {
 
 
 /*
- * Autor : Eduar Garcia
+ * Autor : German Galvis
  * Descripcion : Validar que los codigos de los productos del archivo plano sean validos.
  *
  */
@@ -3962,7 +3962,7 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
  * 
  */
 function __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback) {
-
+    var formato = 'YYYY-MM-DD';
     var producto = _productos_validos[index];
     if (!producto) {
         callback(false, _productos_invalidos);
@@ -3977,18 +3977,29 @@ function __insertarProductosConsumo(that, index, parametros, _productos_validos,
     producto.grupo = parametros.grupo;
     producto.tipo_id_tercero = parametros.tipo_id_tercero;
     producto.tercero_id = parametros.tercero_id;
+    producto.fecha_vencimiento = G.moment(producto.fecha_vencimiento).format(formato);
 
-    that.m_facturacion_clientes.insertar_productos_consumo(producto, function (err, rows) {
-        if (err) {
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarProductosRepetido', producto).then(function (resultado) {
 
-            _productos_invalidos.push(producto);
+        if (resultado.length > 0) {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizar_productos_consumo', producto);
+
+        } else {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertar_productos_consumo', producto);
+
         }
 
+    }).then(function (resultado) {
         index++;
         setTimeout(function () {
             __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback);
         }, 0);
 
+    }).fail(function (error) {
+        _productos_invalidos.push(producto);
+        callback(error, _productos_invalidos);
     });
 }
 
@@ -4000,7 +4011,7 @@ function __insertarProductosConsumo(that, index, parametros, _productos_validos,
  */
 function __creaExcel(data, callback) {
 
-  
+
     var workbook = new G.Excel.Workbook();
     var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
 

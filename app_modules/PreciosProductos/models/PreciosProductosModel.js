@@ -58,17 +58,63 @@ PreciosProductosModel.prototype.listarFactura = function (callback) {
 
 };
 PreciosProductosModel.prototype.listarAgrupar = function (obj, callback) {
+    var codigoBuscar = obj.relacion_id;
+    var empresa_id = obj.empresa_id;
 
-    var query = G.knex.column(
-             'a.codigo_producto',
-             'b.descripcion',
-             'a.costo',
-             'a.costo_ultima_compra',
-             'a.existencia')
+    if(codigoBuscar != undefined && codigoBuscar != ''){
+        codigoBuscar = codigoBuscar.toUpperCase();
+        
+        var query = G.knex.column(
+            'a.codigo_producto',
+            'b.descripcion',
+            'a.costo',
+            'a.costo_ultima_compra',
+            'a.existencia')
             .select()
             .from("inventarios AS a")
             .innerJoin("inventarios_productos as b", "a.codigo_producto", "b.codigo_producto")
-            .orderBy('a.codigo_producto').limit(5);
+            .where('a.empresa_id', '=', empresa_id)
+            .andWhere(function() {
+                //if(codigoBuscar != undefined && codigoBuscar != ''){
+                this.where('a.codigo_producto', 'like', '%'+codigoBuscar+'%')
+                //}
+            })
+            .orderBy('a.codigo_producto')
+            .limit(15);
+        // .orderBy('fecha_entrega', 'asc');
+        //  console.log(G.sqlformatter.format(query.toString()));
+        query.then(function (resultado) {
+            // resultado.push(codigoBuscar);
+            for(var i = resultado.length; i<7; i++){
+                resultado.push('');
+            }
+            callback(false, resultado);
+        }).catch(function (err) {
+            console.log("err [listarAgrupar]:", err);
+            callback(err);
+        });
+    }else{
+        var resultado = [];
+        for(var i = resultado.length; i<7; i++){
+            resultado.push('');
+        }
+        callback(false, resultado);
+    }
+};
+
+
+PreciosProductosModel.prototype.listarProductos = function (obj, callback) {
+
+    var query = G.knex.column(
+        'a.codigo_producto',
+        'b.descripcion',
+        'a.costo',
+        'a.costo_ultima_compra',
+        'a.existencia')
+        .select()
+        .from("inventarios AS a")
+        .innerJoin("inventarios_productos as b", "a.codigo_producto", "b.codigo_producto")
+        .orderBy('a.codigo_producto').limit(15);
     // .orderBy('fecha_entrega', 'asc');
     //  console.log(G.sqlformatter.format(query.toString()));
 

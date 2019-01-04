@@ -44,8 +44,9 @@ define(["angular"], function (angular) {
 
                 'PLANILLA_RADICACION' :BASE_URL + "/Radicacion/planillaRadicacion",
 
-                'MODIFICAR_NOMBRE_ARCHIVO' :BASE_URL + "/Radicacion/modificarNombreArchivo"
+                'MODIFICAR_NOMBRE_ARCHIVO' :BASE_URL + "/Radicacion/modificarNombreArchivo",
 
+                'LISTAR_PRODUCTOS' :BASE_URL + "/Radicacion/listarProducto"
 
             },
             'I002': {
@@ -184,6 +185,10 @@ define(["angular"], function (angular) {
             },
             'FACTURACIONPROVEEDOR': {
                 'INSERTAR_FACTURA': BASE_URL + "/FacturacionProveedores/ingresarFactura"
+            },
+            'PRODUCTOS': {
+                'SUBE_COSTO': BASE_URL + '/Productos/subeCosto',
+                'BAJE_COSTO': BASE_URL + '/Productos/bajeCosto'
             }
         }
     };

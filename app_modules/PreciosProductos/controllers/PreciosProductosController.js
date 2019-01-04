@@ -68,11 +68,10 @@ Precios_productos.prototype.listarAgrupar = function (req, res) {
 
     G.Q.ninvoke(that.m_precios_productos, "listarAgrupar", parametros).
             then(function (resultado) {
-                res.send(G.utils.r(req.url, 'lista de agrupar ok!!!!', 200, {listarAgrupar: resultado}));
+                res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: resultado}));
             }).
             fail(function (err) {
-                console.log("error", err);
-                res.send(G.utils.r(req.url, 'Error al listar', 500, {listarAgrupar: {}}));
+                res.send(G.utils.r(req.url, 'Error!! '+err, 500, {listarAgrupar: {}}));
             }).
             done();
 };

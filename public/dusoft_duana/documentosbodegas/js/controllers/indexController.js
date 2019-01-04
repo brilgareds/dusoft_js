@@ -264,7 +264,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
             that.listarAgrupar = function (parametro, callback) {
-
+                console.log('Parametro en controlador : '+parametro);
                 var obj = {
                     session: $scope.session,
                     data: {

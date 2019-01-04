@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="" />
+    <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dump.rdb" afterPath="$PROJECT_DIR$/dump.rdb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js" afterPath="$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js" afterPath="$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js" afterPath="$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js" afterPath="$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/Productos/routes.js" afterPath="$PROJECT_DIR$/app_modules/Productos/routes.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/Radicacion/controllers/RadicacionController.js" afterPath="$PROJECT_DIR$/app_modules/Radicacion/controllers/RadicacionController.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/indexController.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/indexController.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/css/style.css" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/css/style.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/modificarEntregado.html" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/modificarEntregado.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/modificarEntregado.html" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/modificarEntregado.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/radicacion.html" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/radicacion.html" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,40 +30,12 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="radicacion.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html">
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="313">
-              <caret line="93" column="66" lean-forward="false" selection-start-line="93" selection-start-column="66" selection-end-line="93" selection-end-column="66" />
-              <folding>
-                <element signature="n#style#0;n#span#0;n#legend#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AAC1Controller.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="1254" column="22" lean-forward="false" selection-start-line="1254" selection-start-column="22" selection-end-line="1254" selection-end-column="22" />
-              <folding>
-                <marker date="1545333997861" expanded="true" signature="30654:31038" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="30838:30989" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="31223:31370" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="31692:31710" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="31711:31942" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="32165:32183" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="32184:32400" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="33729:33747" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="33748:34064" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="33874:34017" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="34748:35204" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="34928:35155" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="35968:36314" ph="..." />
-                <marker date="1545333997861" expanded="true" signature="36019:36265" ph="..." />
-              </folding>
+            <state relative-caret-position="5668">
+              <caret line="218" column="19" lean-forward="false" selection-start-line="218" selection-start-column="19" selection-end-line="218" selection-end-column="19" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -53,29 +43,116 @@
       <file leaf-file-name="Url.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js">
           <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="4888">
+              <caret line="188" column="26" lean-forward="false" selection-start-line="188" selection-start-column="26" selection-end-line="188" selection-end-column="26" />
+              <folding>
+                <marker date="1546525756178" expanded="true" signature="2321:2335" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="routes.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app_modules/Productos/routes.js">
+          <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="494">
-              <caret line="34" column="80" lean-forward="true" selection-start-line="34" selection-start-column="80" selection-end-line="34" selection-end-column="80" />
+              <caret line="19" column="26" lean-forward="false" selection-start-line="19" selection-start-column="26" selection-end-line="19" selection-end-column="26" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="indexController.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/indexController.js">
+      <file leaf-file-name="ProductosController.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="104">
-              <caret line="265" column="65" lean-forward="false" selection-start-line="265" selection-start-column="65" selection-end-line="265" selection-end-column="65" />
+            <state relative-caret-position="234">
+              <caret line="9" column="26" lean-forward="false" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ProductosModel.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="650">
+              <caret line="61" column="27" lean-forward="false" selection-start-line="61" selection-start-column="27" selection-end-line="61" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AAC1Controller.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="26338">
+              <caret line="1013" column="56" lean-forward="false" selection-start-line="1013" selection-start-column="56" selection-end-line="1013" selection-end-column="56" />
               <folding>
-                <marker date="1545257335050" expanded="true" signature="12750:13309" ph="..." />
-                <marker date="1545257335050" expanded="true" signature="12845:13261" ph="..." />
-                <marker date="1545257335050" expanded="true" signature="15203:15492" ph="..." />
-                <marker date="1545257335050" expanded="true" signature="15710:16229" ph="..." />
-                <marker date="1545257335050" expanded="true" signature="15954:16200" ph="..." />
-                <marker date="1545257335050" expanded="true" signature="16020:16172" ph="..." />
-                <marker date="1545257335050" expanded="true" signature="27993:28237" ph="..." />
-                <marker date="1545257335050" expanded="false" signature="28087:28094" ph="×" />
-                <marker date="1545257335050" expanded="true" signature="28295:28410" ph="..." />
-                <marker date="1545257335050" expanded="true" signature="28470:28730" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="32001:32385" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="32185:32336" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="32570:32717" ph="..." />
+                <marker date="1546548772607" expanded="false" signature="33039:33057" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="33058:33289" ph="..." />
+                <marker date="1546548772607" expanded="false" signature="33512:33530" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="33531:33747" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="35210:35228" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="35229:35545" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="35355:35498" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="36230:36686" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="36410:36637" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="37754:38100" ph="..." />
+                <marker date="1546548772607" expanded="true" signature="37805:38051" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="modificarEntregado.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/modificarEntregado.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="468">
+              <caret line="18" column="26" lean-forward="false" selection-start-line="18" selection-start-column="26" selection-end-line="18" selection-end-column="26" />
+              <folding>
+                <element signature="n#style#0;n#legend#0;n#div#0;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#legend#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#2;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#legend#0;n#div#2;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#3;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#legend#0;n#div#3;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#legend#0;n#div#0;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#legend#0;n#div#1;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#2;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#legend#0;n#div#2;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#3;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#label#0;n#span#0;n#div#3;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#legend#0;n#div#3;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#4;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#label#0;n#span#0;n#div#4;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#legend#0;n#div#4;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="E017Controller.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/E017/E017Controller.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="10348">
+              <caret line="398" column="14" lean-forward="false" selection-start-line="368" selection-start-column="12" selection-end-line="398" selection-end-column="14" />
+              <folding>
+                <marker date="1543263012567" expanded="true" signature="6600:8131" ph="..." />
+                <marker date="1543263012567" expanded="true" signature="8831:9070" ph="..." />
+                <marker date="1543263012567" expanded="true" signature="10989:11225" ph="..." />
+                <marker date="1543263012567" expanded="false" signature="11084:11091" ph="×" />
+                <marker date="1543263012567" expanded="true" signature="11283:11478" ph="..." />
+                <marker date="1543263012567" expanded="true" signature="11538:11802" ph="..." />
+                <marker date="1543263012567" expanded="true" signature="13695:13930" ph="..." />
+                <marker date="1543263012567" expanded="false" signature="13789:13796" ph="×" />
+                <marker date="1543263012567" expanded="true" signature="13988:14103" ph="..." />
+                <marker date="1543263012567" expanded="true" signature="14163:14423" ph="..." />
               </folding>
             </state>
           </provider>
@@ -84,8 +161,8 @@
       <file leaf-file-name="PreciosProductosController.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="69" column="39" lean-forward="true" selection-start-line="69" selection-start-column="39" selection-end-line="69" selection-end-column="39" />
+            <state relative-caret-position="1638">
+              <caret line="63" column="62" lean-forward="false" selection-start-line="63" selection-start-column="54" selection-end-line="63" selection-end-column="62" />
               <folding />
             </state>
           </provider>
@@ -94,8 +171,8 @@
       <file leaf-file-name="PreciosProductosModel.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="581">
-              <caret line="75" column="8" lean-forward="true" selection-start-line="75" selection-start-column="8" selection-end-line="75" selection-end-column="8" />
+            <state relative-caret-position="2626">
+              <caret line="101" column="5" lean-forward="false" selection-start-line="63" selection-start-column="4" selection-end-line="101" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -105,49 +182,50 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>API.RADICACION.listarAgrupar</find>
-      <find>API.RADICACION.listarAgrupa</find>
-      <find>API.RADICACION.listara</find>
-      <find>API.RADICACION.listar</find>
-      <find>API.RADICACION.listar_</find>
-      <find>listar_agrupar</find>
       <find>AAC1</find>
-      <find>PreciosProductos</find>
-      <find>API.RADICACION.listar_a</find>
-      <find>L</find>
-      <find>LI</find>
-      <find>LIMI</find>
-      <find>LIMIT</find>
-      <find>listar_a</find>
-      <find>listarAgrupar = fun</find>
-      <find>.init</find>
-      <find>l</find>
-      <find>limit</find>
-      <find>limit(</find>
-      <find>limit(3</find>
-      <find>limit(30</find>
-      <find>limit(30)</find>
-      <find>that.listarAgrupar</find>
-      <find>lista de agrupa</find>
+      <find>$scope.productoSelec = {</find>
+      <find>total diferen</find>
+      <find>listarFacturaAgrupada</find>
+      <find>init</find>
+      <find>$scope.newPrice</find>
+      <find>productoSelec.costo</find>
+      <find>productoSelec.</find>
+      <find>productoSelec.newPrice</find>
+      <find>onModificarAgrupacion</find>
+      <find>newPrice</find>
+      <find>newUpdate</find>
+      <find>step</find>
+      <find>$modalInstance</find>
+      <find>form</find>
+      <find>&lt;form</find>
+      <find>Submit!!!</find>
+      <find>listarAgrupar =</find>
+      <find>ingresar</find>
       <find>listarAgrupar</find>
-      <find>listarAgrupar({relacion_id:</find>
-      <find>listarAgrupar({</find>
-      <find>.limit(30)</find>
-      <find>parsedNgModel</find>
-      <find>root.listarAgrupar</find>
+      <find>listar_productos</find>
+      <find>generar_documento</find>
+      <find>generar_documento</find>
+      <find>generar_documento =</find>
+      <find>generar_documento =</find>
+      <find>generar_documento = f</find>
+      <find>generar_documento = func</find>
+      <find>validar_producto</find>
+      <find>crearD</find>
+      <find>subeCosto</find>
     </findStrings>
     <replaceStrings>
       <replace>AAC1</replace>
-      <replace>ABC1</replace>
       <replace>ABC1Controller</replace>
+      <replace>ABC1</replace>
     </replaceStrings>
     <dirStrings>
-      <dir>$PROJECT_DIR$/app_modules/MovimientosBodega</dir>
-      <dir>$PROJECT_DIR$</dir>
       <dir>$PROJECT_DIR$/public/dusoft_duana/PreciosProductos</dir>
       <dir>$PROJECT_DIR$/app_modules/PreciosProductos</dir>
       <dir>$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas</dir>
       <dir>$PROJECT_DIR$/public/dusoft_duana/documentosbodegas</dir>
+      <dir>$PROJECT_DIR$/app_modules/MovimientosBodega</dir>
+      <dir>$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1</dir>
+      <dir>$PROJECT_DIR$</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -165,18 +243,25 @@
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/models/AAC1/DocumentoAAC1.js" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/models/AAC1/ProductoAAC1.js" />
         <option value="$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas/controllers/MovBodegasController.js" />
-        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/app.js" />
-        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/radicacion.html" />
         <option value="$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas/models/MovBodegasModel.js" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/PreciosProductos/js/controllers/PreciosProductosController.js" />
-        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/indexController.js" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/js/controllers/PreciosProductosController.js" />
-        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" />
-        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js" />
+        <option value="$PROJECT_DIR$/app_modules/Radicacion/controllers/RadicacionController.js" />
+        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/indexController.js" />
+        <option value="$PROJECT_DIR$/../Dusoft/ws_crear_tercero.php" />
         <option value="$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js" />
-        <option value="$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js" />
+        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/app.js" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html" />
+        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" />
+        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/radicacion.html" />
+        <option value="$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js" />
+        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/css/style.css" />
+        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js" />
+        <option value="$PROJECT_DIR$/app_modules/Productos/routes.js" />
+        <option value="$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js" />
+        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/modificarEntregado.html" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js" />
+        <option value="$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js" />
       </list>
     </option>
   </component>
@@ -193,10 +278,9 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="-3" />
-    <option name="y" value="-2" />
-    <option name="width" value="1926" />
-    <option name="height" value="1060" />
+    <option name="y" value="1" />
+    <option name="width" value="1918" />
+    <option name="height" value="1055" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -275,123 +359,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="services" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="constants" />
+              <option name="myItemId" value="documentosbodegas" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -414,6 +382,104 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dusoft_duana" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ABC1" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dusoft_duana" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AAC1" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dusoft_duana" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AAC1" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -533,6 +599,40 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AAC1" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dusoft_duana" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="constants" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
@@ -566,6 +666,68 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="app_modules" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app_modules" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Productos" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app_modules" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Productos" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="models" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app_modules" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Productos" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -631,76 +793,10 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MovimientosBodega" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MovimientosBodega" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MovBodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MovimientosBodega" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MovBodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="models" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -709,15 +805,15 @@
     <property name="nodejs_interpreter_path" value="/usr/bin/node" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1" />
       <recent name="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views" />
       <recent name="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/models" />
       <recent name="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers" />
-      <recent name="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1" />
       <recent name="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -815,33 +911,45 @@
       <workItem from="1545137725106" duration="23996000" />
       <workItem from="1545222931365" duration="25772000" />
       <workItem from="1545310511315" duration="14212000" />
+      <workItem from="1545397200679" duration="1322000" />
+      <workItem from="1545403770449" duration="4173000" />
+      <workItem from="1545485355616" duration="11829000" />
+      <workItem from="1545830130972" duration="7461000" />
+      <workItem from="1545839431676" duration="295000" />
+      <workItem from="1545842948484" duration="10217000" />
+      <workItem from="1545915449004" duration="21064000" />
+      <workItem from="1546002067218" duration="15161000" />
+      <workItem from="1546098608941" duration="9934000" />
+      <workItem from="1546433016894" duration="1934000" />
+      <workItem from="1546436777859" duration="25570000" />
+      <workItem from="1546521398182" duration="26859000" />
+      <workItem from="1546605847702" duration="5800000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="88809000" />
+    <option name="totallyTimeSpent" value="232473000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-3" y="-2" width="1926" height="1060" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="1" width="1918" height="1055" extended-state="0" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15495208" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17593583" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.08396125" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32972974" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32972974" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -856,124 +964,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1560">
-          <caret line="60" column="0" lean-forward="true" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/indexController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11102">
-          <caret line="427" column="73" lean-forward="false" selection-start-line="427" selection-start-column="73" selection-end-line="427" selection-end-column="73" />
-          <folding>
-            <marker date="1545257335050" expanded="true" signature="12750:13309" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="12845:13261" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="15203:15492" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="15710:16229" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="15954:16200" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="16020:16172" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="27993:28237" ph="..." />
-            <marker date="1545257335050" expanded="false" signature="28087:28094" ph="×" />
-            <marker date="1545257335050" expanded="true" signature="28295:28410" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="28470:28730" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/js/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2314">
-          <caret line="89" column="47" lean-forward="false" selection-start-line="89" selection-start-column="47" selection-end-line="89" selection-end-column="76" />
-          <folding>
-            <element signature="n#style#0;n#span#0;n#legend#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas/controllers/MovBodegasController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="780">
-          <caret line="30" column="59" lean-forward="false" selection-start-line="30" selection-start-column="31" selection-end-line="30" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas/models/MovBodegasModel.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9906">
-          <caret line="381" column="0" lean-forward="false" selection-start-line="381" selection-start-column="0" selection-end-line="381" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="8" column="67" lean-forward="false" selection-start-line="8" selection-start-column="67" selection-end-line="8" selection-end-column="67" />
-          <folding>
-            <marker date="1545333997861" expanded="true" signature="30654:31038" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="30838:30989" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="31223:31370" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="31692:31710" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="31711:31942" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="32165:32183" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="32184:32400" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="33729:33747" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="33748:34064" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="33874:34017" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="34748:35204" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="34928:35155" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="35968:36314" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="36019:36265" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/models/ABC1/ClientesABC1.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="29" column="14" lean-forward="true" selection-start-line="29" selection-start-column="14" selection-end-line="29" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/models/ABC1/DocumentoABC1.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1560">
-          <caret line="60" column="12" lean-forward="true" selection-start-line="60" selection-start-column="12" selection-end-line="60" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/models/ABC1/ProductoABC1.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="19" column="58" lean-forward="true" selection-start-line="19" selection-start-column="58" selection-end-line="19" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/E007/E007Controller.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-494">
-          <caret line="131" column="43" lean-forward="true" selection-start-line="131" selection-start-column="43" selection-end-line="131" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/models/Index/TipoDocumentos.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="546">
@@ -992,7 +982,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2106">
           <caret line="18" column="21" lean-forward="true" selection-start-line="18" selection-start-column="21" selection-end-line="18" selection-end-column="21" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1000,7 +989,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="234">
           <caret line="9" column="52" lean-forward="true" selection-start-line="9" selection-start-column="52" selection-end-line="9" selection-end-column="52" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1127,7 +1115,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1145,25 +1132,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/modificarEntregado.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="55" column="141" lean-forward="false" selection-start-line="55" selection-start-column="123" selection-end-line="55" selection-end-column="141" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/radicacion.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="93" column="84" lean-forward="false" selection-start-line="93" selection-start-column="84" selection-end-line="93" selection-end-column="84" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas/models/MovBodegasModel.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="26">
           <caret line="388" column="0" lean-forward="true" selection-start-line="388" selection-start-column="0" selection-end-line="388" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1174,26 +1146,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="130">
-          <caret line="5" column="36" lean-forward="true" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas/routes.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="156">
           <caret line="6" column="55" lean-forward="false" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="55" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="158" column="48" lean-forward="true" selection-start-line="158" selection-start-column="48" selection-end-line="158" selection-end-column="48" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1201,22 +1157,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="26">
           <caret line="73" column="65" lean-forward="false" selection-start-line="73" selection-start-column="65" selection-end-line="73" selection-end-column="65" />
-          <folding>
-            <marker date="1545257334844" expanded="true" signature="33282:33666" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="33466:33617" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="33851:33998" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="34320:34338" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="34339:34570" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="34793:34811" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="34812:35028" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="36369:36387" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="36388:36704" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="36514:36657" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="37388:37844" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="37568:37795" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="38608:38954" ph="..." />
-            <marker date="1545257334844" expanded="true" signature="38659:38905" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1224,99 +1164,218 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="416">
           <caret line="130" column="54" lean-forward="false" selection-start-line="130" selection-start-column="54" selection-end-line="130" selection-end-column="54" />
-          <folding>
-            <marker date="1545251410003" expanded="true" signature="32368:32752" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="32552:32703" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="32937:33084" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="33406:33424" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="33425:33656" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="33879:33897" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="33898:34114" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="35443:35461" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="35462:35778" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="35588:35731" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="36462:36918" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="36642:36869" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="37682:38028" ph="..." />
-            <marker date="1545251410003" expanded="true" signature="37733:37979" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js">
+    <entry file="file://$PROJECT_DIR$/../Dusoft/ws_terceros.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="34" column="80" lean-forward="true" selection-start-line="34" selection-start-column="80" selection-end-line="34" selection-end-column="80" />
-          <folding />
+        <state relative-caret-position="182">
+          <caret line="7" column="62" lean-forward="true" selection-start-line="7" selection-start-column="62" selection-end-line="7" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../Dusoft/ws_crear_tercero.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="416">
+          <caret line="849" column="4" lean-forward="false" selection-start-line="849" selection-start-column="4" selection-end-line="849" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/indexController.js">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6916">
+          <caret line="266" column="67" lean-forward="false" selection-start-line="266" selection-start-column="67" selection-end-line="266" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/modificarEntregado.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="477">
+          <caret line="55" column="97" lean-forward="true" selection-start-line="55" selection-start-column="97" selection-end-line="55" selection-end-column="97" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/radicacion.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="92" column="87" lean-forward="true" selection-start-line="92" selection-start-column="87" selection-end-line="92" selection-end-column="87" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="8" column="42" lean-forward="false" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2418">
+          <caret line="93" column="99" lean-forward="false" selection-start-line="93" selection-start-column="99" selection-end-line="93" selection-end-column="99" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/css/style.css">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="104">
-          <caret line="265" column="65" lean-forward="false" selection-start-line="265" selection-start-column="65" selection-end-line="265" selection-end-column="65" />
+          <caret line="4" column="19" lean-forward="false" selection-start-line="4" selection-start-column="19" selection-end-line="4" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/FacturacionProveedores/controllers/FacturacionProveedoresController.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="219" column="41" lean-forward="false" selection-start-line="219" selection-start-column="33" selection-end-line="219" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/Radicacion/controllers/RadicacionController.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="26">
+          <caret line="68" column="22" lean-forward="false" selection-start-line="68" selection-start-column="22" selection-end-line="68" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="9" column="52" lean-forward="false" selection-start-line="9" selection-start-column="52" selection-end-line="9" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5668">
+          <caret line="218" column="19" lean-forward="false" selection-start-line="218" selection-start-column="19" selection-end-line="218" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4888">
+          <caret line="188" column="26" lean-forward="false" selection-start-line="188" selection-start-column="26" selection-end-line="188" selection-end-column="26" />
           <folding>
-            <marker date="1545257335050" expanded="true" signature="12750:13309" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="12845:13261" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="15203:15492" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="15710:16229" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="15954:16200" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="16020:16172" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="27993:28237" ph="..." />
-            <marker date="1545257335050" expanded="false" signature="28087:28094" ph="×" />
-            <marker date="1545257335050" expanded="true" signature="28295:28410" ph="..." />
-            <marker date="1545257335050" expanded="true" signature="28470:28730" ph="..." />
+            <marker date="1546525756178" expanded="true" signature="2321:2335" ph="{...}" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/Productos/config.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/Productos/routes.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="494">
+          <caret line="19" column="26" lean-forward="false" selection-start-line="19" selection-start-column="26" selection-end-line="19" selection-end-column="26" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="69" column="39" lean-forward="true" selection-start-line="69" selection-start-column="39" selection-end-line="69" selection-end-column="39" />
+        <state relative-caret-position="1638">
+          <caret line="63" column="62" lean-forward="false" selection-start-line="63" selection-start-column="54" selection-end-line="63" selection-end-column="62" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="581">
-          <caret line="75" column="8" lean-forward="true" selection-start-line="75" selection-start-column="8" selection-end-line="75" selection-end-column="8" />
+        <state relative-caret-position="2626">
+          <caret line="101" column="5" lean-forward="false" selection-start-line="63" selection-start-column="4" selection-end-line="101" selection-end-column="5" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/modificarEntregado.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="18" column="26" lean-forward="false" selection-start-line="18" selection-start-column="26" selection-end-line="18" selection-end-column="26" />
+          <folding>
+            <element signature="n#style#0;n#legend#0;n#div#0;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#legend#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#2;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#legend#0;n#div#2;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#3;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#legend#0;n#div#3;n#div#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#legend#0;n#div#0;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#legend#0;n#div#1;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#2;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#legend#0;n#div#2;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#3;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#label#0;n#span#0;n#div#3;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#legend#0;n#div#3;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#4;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#label#0;n#span#0;n#div#4;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#legend#0;n#div#4;n#div#0;n#div#1;n#div#1;n#div#0;n#form#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/E017/E017Controller.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10348">
+          <caret line="398" column="14" lean-forward="false" selection-start-line="368" selection-start-column="12" selection-end-line="398" selection-end-column="14" />
+          <folding>
+            <marker date="1543263012567" expanded="true" signature="6600:8131" ph="..." />
+            <marker date="1543263012567" expanded="true" signature="8831:9070" ph="..." />
+            <marker date="1543263012567" expanded="true" signature="10989:11225" ph="..." />
+            <marker date="1543263012567" expanded="false" signature="11084:11091" ph="×" />
+            <marker date="1543263012567" expanded="true" signature="11283:11478" ph="..." />
+            <marker date="1543263012567" expanded="true" signature="11538:11802" ph="..." />
+            <marker date="1543263012567" expanded="true" signature="13695:13930" ph="..." />
+            <marker date="1543263012567" expanded="false" signature="13789:13796" ph="×" />
+            <marker date="1543263012567" expanded="true" signature="13988:14103" ph="..." />
+            <marker date="1543263012567" expanded="true" signature="14163:14423" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="1254" column="22" lean-forward="false" selection-start-line="1254" selection-start-column="22" selection-end-line="1254" selection-end-column="22" />
+        <state relative-caret-position="26338">
+          <caret line="1013" column="56" lean-forward="false" selection-start-line="1013" selection-start-column="56" selection-end-line="1013" selection-end-column="56" />
           <folding>
-            <marker date="1545333997861" expanded="true" signature="30654:31038" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="30838:30989" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="31223:31370" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="31692:31710" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="31711:31942" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="32165:32183" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="32184:32400" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="33729:33747" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="33748:34064" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="33874:34017" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="34748:35204" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="34928:35155" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="35968:36314" ph="..." />
-            <marker date="1545333997861" expanded="true" signature="36019:36265" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="32001:32385" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="32185:32336" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="32570:32717" ph="..." />
+            <marker date="1546548772607" expanded="false" signature="33039:33057" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="33058:33289" ph="..." />
+            <marker date="1546548772607" expanded="false" signature="33512:33530" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="33531:33747" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="35210:35228" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="35229:35545" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="35355:35498" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="36230:36686" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="36410:36637" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="37754:38100" ph="..." />
+            <marker date="1546548772607" expanded="true" signature="37805:38051" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html">
+    <entry file="file://$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="93" column="66" lean-forward="false" selection-start-line="93" selection-start-column="66" selection-end-line="93" selection-end-column="66" />
-          <folding>
-            <element signature="n#style#0;n#span#0;n#legend#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
+        <state relative-caret-position="234">
+          <caret line="9" column="26" lean-forward="false" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="650">
+          <caret line="61" column="27" lean-forward="false" selection-start-line="61" selection-start-column="27" selection-end-line="61" selection-end-column="27" />
+          <folding />
         </state>
       </provider>
     </entry>

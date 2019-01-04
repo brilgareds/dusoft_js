@@ -14,6 +14,12 @@ module.exports = function(app, di_container) {
         c_productos.listar_productos(req, res);
     });
 
+    // Sube el costo de un producto
+    app.post('/api/Productos/subeCosto', function(req, res) {
+        console.log("En el enrutador!!!");
+        c_productos.subeCosto(req, res);
+    });
+
     // Consulta la existencias de un producto
     app.post('/api/Productos/consultarExistencias', function(req, res) {
         c_productos.consultarExistenciasProducto(req, res);

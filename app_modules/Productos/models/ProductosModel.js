@@ -6,10 +6,94 @@ var ProductosModel = function() {
 // Autor:      : Camilo Orozco 
 // Descripcion : Validar si un producto existe o no en la base de datos
 // Calls       : OrdenesCompra -> OrdenesCompraController -> ordenCompraArchivoPlano();
-// 
-ProductosModel.prototype.validar_producto = function(codigo_producto, callback) {
+//
+ProductosModel.prototype.subeCosto = function(obj, callback) {
+    var empresa_id = obj.empresa_id;
+    var centro_id = obj.centro_id;
+    var bodega_id = obj.bodega_id;
+    var codigoBuscar = obj.producto_id;
+    var nuevo_precio = obj.nuevo_precio;
 
-    var sql = " select a. *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios_productos a where a.codigo_producto = :1 ";
+    if(codigoBuscar != undefined && codigoBuscar != ''){
+        codigoBuscar = codigoBuscar.toUpperCase();
+
+        var queryUpdateCosto = G.knex('inventarios')
+            .where('codigo_producto', '=', codigoBuscar)
+            .andWhere('empresa_id', '=', empresa_id)
+            .update({
+                costo: nuevo_precio,
+                costo_ultima_compra: nuevo_precio
+            });
+        // .orderBy('fecha_entrega', 'asc');
+        //  console.log(G.sqlformatter.format(query.toString()));
+        queryUpdateCosto.then(function (resultado) {
+            var queryNumeracionDocumento = G.knex.column("numeracion")
+                .from("bodegas_doc_numeraciones")
+                .where('empresa_id', '=', empresa_id)
+                .andWhere('centro_utilidad', '=', centro_id)
+                .andWhere('bodega', '=', bodega_id)
+                .andWhere('tipo_doc_bodega_id', '=', 'AAC1');
+
+            queryNumeracionDocumento.then(function (resultado) {
+                if(resultado.numeracion != undefined && resultado.numeracion != ''){
+                    var nueva_numeracion = parseInt(resultado.numeracion)+1;
+
+                    var queryUpdateNumeracion = G.knex('bodegas_doc_numeraciones')
+                        .where('empresa_id', '=', empresa_id)
+                        .andWhere('centro_utilidad', '=', centro_id)
+                        .andWhere('bodega', '=', bodega_id)
+                        .andWhere('tipo_doc_bodega_id', '=', 'AAC1')
+                        .update({
+                            numeracion: nueva_numeracion
+                        });
+
+                    queryUpdateNumeracion.then(function (resultado) {
+                        var queryUpdateNumeracion = G.knex('bodegas_doc_numeraciones')
+                            .where('empresa_id', '=', empresa_id)
+                            .andWhere('centro_utilidad', '=', centro_id)
+                            .andWhere('bodega', '=', bodega_id)
+                            .andWhere('tipo_doc_bodega_id', '=', 'AAC1')
+                            .update({
+                                numeracion: nueva_numeracion
+                            });
+
+                        queryUpdateNumeracion.then(function (resultado) {
+
+                        });
+                    });
+
+                    var queryNumeracionDocumento = G.knex.column("numeracion")
+                        .from("bodegas_doc_numeraciones")
+                        .where('empresa_id', '=', empresa_id)
+                        .andWhere('centro_utilidad', '=', centro_id)
+                        .andWhere('bodega', '=', bodega_id);
+
+                    queryNumeracionDocumento.then(function (resultado) {
+
+                    });
+                }
+            });
+
+            var query3 = G.knex('inventarios')
+                .insert({
+                    empresa_id: empresa_id,
+                    tipo_doc_general_id: 'AAC1',
+                    prefijo: 'AAC',
+                    sw_estado: 1,
+
+                });
+
+            // resultado.push(codigoBuscar);
+            callback(false, resultado);
+        }).catch(function (err) {
+            console.log("err [listarAgrupar]:", err);
+            callback(err);
+        });
+    }
+};
+
+ProductosModel.prototype.validar_producto = function(codigo_producto, callback) {
+   var sql = " select a. *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios_productos a where a.codigo_producto = :1 ";
     
    G.knex.raw(sql, {1:codigo_producto}).
    then(function(resultado){
@@ -377,7 +461,6 @@ ProductosModel.prototype.actualizarExistenciasProducto = function(params, callba
            console.log("error al actualizar existencias ", err);
            transaccion.rollback(err);
         });
-
     }).
     then(function(){
         callback(false);

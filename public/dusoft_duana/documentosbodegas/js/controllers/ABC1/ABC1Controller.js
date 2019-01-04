@@ -17,6 +17,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.desactivar = '0';
             var fecha_actual = new Date();
             $scope.abrir_fecha = false;
+            $scope.buscar_radicacion_id = '';
             $scope.fecha_vencimiento = $filter('date')(fecha_actual, "yyyy-MM-dd"),
                 $scope.session = {
                     usuario_id: Usuario.getUsuarioActual().getId(),
@@ -29,7 +30,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 precioSeleccionado: "",
                 fecha_vencimiento: "",
                 progresoArchivo: "",
-                descripcion: ""
+                descripcion: "",
+                buscar_radicacion_id: ''
             };
             $scope.root.concepto = [];
 
@@ -118,29 +120,40 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
 
-
             that.listarAgrupar = function (parametro, callback) {
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        relacion_id: parametro.relacion_id
-                    }
-                };
+                var empresa_id = $scope.session.empresaId;
 
-                Request.realizarRequest(
-                    API.RADICACION.LISTAR_AGRUPAR,
-                    "POST",
-                    obj,
-                    function (data) {
-                        console.log("data",data);
-                        if (data.status === 200) {
-                            // $scope.root.listarAgrupar = data.obj.listarAgrupar;
-                            console.log("data.obj.listarAgrupar",data.obj.listarAgrupar);
-                            parametro = {};
-                            callback(data.obj.listarAgrupar);
-                        }
+                if($scope.root.buscar_radicacion_id !== parametro.radicacion_id){
+                    if(parametro.radicacion_id != ''){
+                        $scope.root.buscar_radicacion_id = parametro.radicacion_id;
+                    }else{
+                        $scope.root.buscar_radicacion_id = '';
                     }
-                );
+
+                    var obj = {
+                        session: $scope.session,
+                        data: {
+                            relacion_id: $scope.root.buscar_radicacion_id,
+                            empresa_id: empresa_id
+                        }
+                    };
+                    // console.log('Objeto --> ',obj);
+
+                    Request.realizarRequest(
+                        API.RADICACION.LISTAR_AGRUPAR,
+                        "POST",
+                        obj,
+                        function (data) {
+                            //console.log("data",data);
+                            if (data.status === 200) {
+                                // $scope.root.listarAgrupar = data.obj.listarAgrupar;
+                                // console.log("data.obj.listarAgrupar",data.obj.listarAgrupar);
+                                parametro = {};
+                                callback(data.obj.listarAgrupar);
+                            }
+                        }
+                    );
+                }
             };
 
             that.guardarConcepto = function (nombreConcepto, callback) {
@@ -239,6 +252,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 );
             };
 
+            $scope.buscarProductos = function(){
+                var codigoProductosBuscar = {radicacion_id: $scope.producto};
+
+                that.listarAgrupar(codigoProductosBuscar, function (dato) {
+                    //console.log("Eyyy -->",dato);
+                    $scope.root.listarAgrupar = dato;
+                    console.log('Nueva lista -->',$scope.root.listarAgrupar);
+                });
+            };
 
             that.agrupar = function (form) {
                 $scope.opts = {
@@ -248,7 +270,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     windowClass: 'app-modal-window-ls-xlg-ls',
                     keyboard: false,
                     showFilter: true,
-                    templateUrl: 'views/PreciosProductos/modificarEntregado.html',
+                    templateUrl: 'views/ABC1/modificarEntregado.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                         $scope.modificar = {};
@@ -280,10 +302,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.cerrar = function () {
                             $scope.root.activarBoton=true;
                             $modalInstance.close();
-                            console.log("222");
+                            $scope.producto = '';
+                            $scope.listar_agrupar = '';
+                            $scope.root.buscar_radicacion_id = '';
+                            $scope.buscarProductos();
+                            console.log("227");
                         };
-
-
                     }]
                 };
                 //var modalInstance = $modal.open($scope.opts);
@@ -573,7 +597,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
                 that.verAgruparFactura();
             };
-//mañana 
+            //mañana
             that.factura = function (form) {
                 $scope.opts = {
                     backdrop
@@ -757,13 +781,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'municipio', displayName: "Ciudad", width: "25%"},
-                    {field: 'numero_factura', displayName: 'No. Factura', width: "7%"},
+                    {field: 'numero_factura', displayName: 'No. Producto', width: "7%"},
                     {field: 'proveedor', displayName: 'Proveedor', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripcion', width: "16%"},
                     {field: 'precio', displayName: 'Precio', width: "8%"},
                     {field: 'fecha_entrega', displayName: 'Radicacion', width: "8%"},
                     {field: 'fecha_vencimiento', displayName: 'Vencimiento', width: "8%"},
-                    {displayName: 'Entregado', cellClass: "txt-center dropdown-button", width: "7%",
+                    {displayName: 'Accion', cellClass: "txt-center dropdown-button", width: "7%",
                         cellTemplate: ' <div class="row">\
                                           <div class= "txt-center dropdown-button" "checkbox" ng-if="row.entity.sw_entregado==0">\
                                             <label> \
@@ -798,7 +822,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.listarProductos = function(data){
                 console.log('input -->',data);
-            }
+            };
+
+            /*
+             $scope.aqui = function(){
+             console.log("Eyyyyy caliche!!");
+             }
+             */
 //2
             $scope.listar_agrupar = {
                 data: 'root.listarAgrupar',
@@ -807,10 +837,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 showFilter: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo', width: "5%"},
-                    {field: 'descripcion', displayName: 'Producto', width: "14%"}, //
+                    {field: 'codigo_producto', displayName: 'Codigo', width: "7%"},
+                    {field: 'descripcion', displayName: 'Producto', width: "28%"}, //
                     {field: 'costo', displayName: 'Costo', width: "8%"},
-                    {field: 'costo_ultima_compra', displayName: 'Ultima Compra', width: "28%"},
+                    {field: 'costo_ultima_compra', displayName: 'Ultima Compra', width: "12%"},
                     {field: 'existencia', displayName: 'Stock', width: "10%"},
                     {field: 'nuevo_costo', displayName: 'Nuevo costo', width: "10%"},
                     {field: 'diferencia', displayName: 'Diferencia', width: "10%"},
@@ -834,7 +864,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 showFilter: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'numero_factura', displayName: 'No. Factura', width: "30%"},
+                    {field: 'numero_factura', displayName: 'No. Producto', width: "30%"},
                     {field: 'descripcion', displayName: 'bodega', width: "30%"},
                     {displayName: 'Entregado', cellClass: "txt-center dropdown-button", width: "40%",
                         cellTemplate: ' <div class="row">\
@@ -858,16 +888,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 showFilter: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'numero_factura', displayName: 'No. Factura', width: "40%"},
-                    {field: 'descripcion', displayName: 'bodega', width: "40%"},
-                    {displayName: 'Entregado', cellClass: "txt-center dropdown-button", width: "20%",
-                        cellTemplate: ' <div class="row">\
-                                          <label> \
-                                           <button ng-click="onEliminarFacturaAgrupada(row.entity)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove"></span></button>\
-                                             </label>\
-                                         </div>\
-                                       </div>'
-                    }
+                    {field: 'numero_factura', displayName: 'Stock', width: "20%"},
+                    {field: 'numero_factura1', displayName: 'Precio Anterior', width: "20%"},
+                    {field: 'numero_factura2', displayName: 'Precio Nuevo', width: "20%"},
+                    {field: 'numero_factura3', displayName: 'Diferencia', width: "20%"},
+                    {field: 'numero_factura4', displayName: 'Total Diferencia', width: "40%"}
+                    /*
+                     {displayName: 'Entregado', cellClass: "txt-center dropdown-button", width: "20%",
+                     cellTemplate: ' <div class="row">\
+                     <label> \
+                     <button ng-click="onEliminarFacturaAgrupada(row.entity)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove"></span></button>\
+                     </label>\
+                     </div>\
+                     </div>'
+                     }
+                     */
                 ]
             };
 
@@ -1251,7 +1286,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 that.consultarConcepto();
                 that.listarFactura();
 
-                that.listarAgrupar({radicacion_id: ""}, function (dato) {
+                that.listarAgrupar({relacion_id: ""}, function (dato) {
+                    //console.log("Eyyy -->",dato);
                     $scope.root.listarAgrupar = dato;
                 });
 

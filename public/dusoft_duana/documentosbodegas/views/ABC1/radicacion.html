@@ -86,12 +86,12 @@
 </div>
 -->
 <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-12"> 
-        <legend> Actualización Precio Producto <span style="color: #8b0000">(Bajo Costo)</span><br></legend>
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <legend> Actualización Precio Producto <span style="color: #8b0000">(Baje Costo)</span><br></legend>
         <div class="row">
             <div class="col-xs-4 col-sm-4 col-md-3">
                 <!-- <label class="col-md-12  control-label" >Cod. Producto</label> -->
-                <input type="text" class="form-control" ng-model="root.listarAgrupar" id="colFmLabelSm" placeholder="Digite el codigo del producto">
+                <input type="text" class="form-control" ng-model="producto" ng-change="buscarProductos()" ng-keyup="buscarProductos()" id="colFmLabelSm" placeholder="Digite el codigo del producto">
             </div>
         </div>
         <div class="table-responsive" >
@@ -103,3 +103,5 @@
     </div>
 </div>
 <visualizar-reporte></visualizar-reporte>
+    <!-- DIV QUE APARENTEMENTE FALTABA -->
+</div>

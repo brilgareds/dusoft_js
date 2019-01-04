@@ -91,7 +91,8 @@
         <div class="row">
             <div class="col-xs-4 col-sm-4 col-md-3">
                 <!-- <label class="col-md-12  control-label" >Cod. Producto</label> -->
-                <input type="text" class="form-control" ng-model="" id="colFmLabelSm" placeholder="Digite el codigo del producto">
+                <input type="text" class="form-control" ng-model="producto" ng-change="buscarProductos()" ng-keyup="buscarProductos()" id="colFmLabelSm" placeholder="Digite el codigo del producto">
+                <!--<br><br><button ng-click="aqui()">Este es un boton!</button> -->
             </div>
         </div>
         <div class="table-responsive" >
@@ -103,6 +104,5 @@
     </div>
 </div>
 <visualizar-reporte></visualizar-reporte>
-
 <!-- DIV QUE APARENTEMENTE FALTABA -->
 </div>

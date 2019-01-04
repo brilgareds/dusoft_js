@@ -4,11 +4,28 @@ var Productos = function(productos) {
     this.m_productos = productos;
 };
 
+Productos.prototype.subeCosto = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = args;
+
+    G.Q.ninvoke(that.m_productos, "subeCosto", parametros).
+    then(function (resultado) {
+        res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: resultado}));
+    }).
+    fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error!! '+err, 500, {listarAgrupar: {}}));
+    }).
+    done();
+};
+
+Productos.prototype.bajeCosto = function(req, res) {
+
+};
+
 
 Productos.prototype.listar_productos = function(req, res) {
-    
     var that = this;
-
     var args = req.body.data;
 
     if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined || args.productos.termino_busqueda === undefined || args.productos.pagina_actual === undefined) {

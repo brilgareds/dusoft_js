@@ -755,7 +755,7 @@ function _generar_reporte_planilla_despacho(rows, callback) {
             G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
 
                 if (err) {
-                    console.log('=== Se ha generado un error generando el reporte ====');
+                    console.log('=== Se ha generado un error generando el reporte ====',err);
                 } else {
                     callback(nombre_reporte);
                 }

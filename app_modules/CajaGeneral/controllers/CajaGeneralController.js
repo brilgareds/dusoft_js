@@ -495,17 +495,19 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
     var cliente = [];
     var conceptosDetalle = [];
     var impuesto;
+    var formato = 'YYYY-MM-DD hh:mm';
+    var today = new Date();
 
     if (args.prefijoFac === undefined) {
         res.send(G.utils.r(req.url, 'No Estan Definido rc_concepto_id', 404, {}));
         return;
     }
-
-    var ip = '::ffff:10.0.2.158';
-//     req.headers['x-forwarded-for'] || 
-//     req.connection.remoteAddress || 
-//     req.socket.remoteAddress ||
-//     req.connection.socket.remoteAddress;
+    console.log("guardarFacturaCajaGeneral");
+    //'::ffff:10.0.2.158';
+    var ip = req.headers['x-forwarded-for'] ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
 
     var parametros = {
         documentoId: args.prefijoFac,
@@ -530,6 +532,7 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
             if (resultado.length > 0) {
                 parametros.factura = resultado[0].numeracion;
                 parametros.prefijo = resultado[0].prefijo;
+                parametros.documento_id = resultado[0].documento_id;
 
                 return  G.Q.ninvoke(that.m_caja_general, 'insertarFacFacturas', parametros, transaccion);
 
@@ -638,6 +641,8 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
     }).then(function (result) {
 
         empresa = result;
+        parametros.fecha_registro = G.moment(today).format(formato);
+        
         var informacion = {
             serverUrl: req.protocol + '://' + req.get('host') + "/",
             empresa: empresa[0],
@@ -646,14 +651,15 @@ CajaGeneral.prototype.guardarFacturaCajaGeneral = function (req, res) {
             conceptosDetalle: conceptosDetalle,
             informacion: __infoFooter(parametros.prefijo),
             usuario: req.session.user.nombre_usuario,
-            archivoHtml: 'facturaConceptos.html',
+            archivoHtml: 'facturaConceptosPdf.html',
             impuesto: impuesto
         };
-        return G.Q.nfcall(__generarPdf, informacion);
+        return G.Q.nfcall(__generarPdf2, informacion);
 
     }).then(function (result) {
 
         res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {guardarFacturaCajaGeneral: result}));
+//        res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {guardarFacturaCajaGeneral: result, prefijo:parametros.prefijo, factura_fiscal:parametros.factura}));
 
     }).catch(function (err) {
         console.log("error transaccion ", err);
@@ -715,8 +721,7 @@ CajaGeneral.prototype.imprimirFacturaNotas = function (req, res) {
     var cliente = [];
     var conceptosDetalle = [];
     var impuesto;
-    var nombre_pdf = "";
-
+    var formato = 'YYYY-MM-DD hh:mm';
 
     var parametros = {
         empresaId: args.empresaId,
@@ -731,6 +736,7 @@ CajaGeneral.prototype.imprimirFacturaNotas = function (req, res) {
         conceptosDetalle = result;
         parametros.terceroId = conceptosDetalle[0].tercero_id;
         parametros.tipoIdTercero = conceptosDetalle[0].tipo_id_tercero;
+        parametros.fecha_registro = G.moment(conceptosDetalle[0].fecha_registro).format(formato);
         var totales = {totalFactura: 0, totalGravamen: 0};
         return G.Q.nfcall(__valorTotalGravamen, 0, result, totales);
 
@@ -777,101 +783,10 @@ CajaGeneral.prototype.imprimirFacturaNotas = function (req, res) {
             conceptosDetalle: conceptosDetalle,
             informacion: __infoFooter(parametros.prefijo),
             usuario: req.session.user.nombre_usuario,
-            archivoHtml: 'facturaConceptos.html',
+            archivoHtml: 'facturaConceptosPdf.html',
             impuesto: impuesto
         };
-        return G.Q.nfcall(__generarPdf, informacion);
-
-    }).then(function (result) {
-
-        res.send(G.utils.r(req.url, 'Guardado Correctamente', 200, {imprimirFacturaNotas: result}));
-
-    }).catch(function (err) {
-        console.log("error transaccion ", err);
-        res.send(G.utils.r(req.url, err, 500, {}));
-    }).done();
-};
-
-/**
- * @author Andres Mauricio Gonzalez
- * +Descripcion  Metodo encargado de generar las consultas de los detalles de las notas para su impresion
- * @fecha 2017-06-13 (YYYY-MM-DD)
- */
-CajaGeneral.prototype.imprimirFacturaNotasDetalle = function (req, res) {
-
-    var that = this;
-    var args = req.body.data;
-    var total = {totalFactura: 0, totalGravamen: 0};
-    var empresa = [];
-    var cliente = [];
-    var conceptosDetalle = [];
-    var impuesto;
-    var nombre_pdf = "";
-
-
-    var parametros = {
-        empresaId: args.empresaId,
-        empresa_id: args.empresaId,
-        facturaFiscal: args.facturaFiscal,
-        factura: args.facturaFiscal,
-        prefijo: args.prefijo
-    };
-
-    G.Q.ninvoke(that.m_caja_general, 'listarFacturasNotas', parametros).then(function (result) {
-
-        conceptosDetalle = result;
-        parametros.terceroId = conceptosDetalle[0].tercero_id;
-        parametros.tipoIdTercero = conceptosDetalle[0].tipo_id_tercero;
-        var totales = {totalFactura: 0, totalGravamen: 0};
-        return G.Q.nfcall(__valorTotalGravamen, 0, result, totales);
-
-    }).then(function (result) {
-
-        parametros.totalFactura = result.totalFactura;
-        parametros.totalGravamen = result.totalGravamen;
-        return G.Q.nfcall(__traerPorcentajeImpuestos, that, parametros);
-
-    }).then(function (result) {
-
-        impuesto = result;
-        impuesto.empresaId = parametros.empresaId;
-        impuesto.prefijo = parametros.prefijo;
-        impuesto.factura = parametros.facturaFiscal;
-        parametros.totalAbono = impuesto.totalGeneral;
-        parametros.totalEfectivo = impuesto.totalGeneral;
-        parametros.totalCheque = 0;
-        parametros.totalTarjeta = 0;
-        parametros.totalAbonos = 0;
-
-        var parametrosEmpresa = {
-            tercero: {
-                id: parametros.terceroId,
-                tipoDocumento: {id: parametros.tipoIdTercero},
-                empresa_id: parametros.empresaId
-            }
-        };
-
-        return G.Q.ninvoke(that.m_gestion_terceros, 'obtenerTercero', parametrosEmpresa);
-
-    }).then(function (result) {
-
-        cliente = result;
-        return G.Q.ninvoke(that.m_caja_general, 'listarEmpresa', parametros);
-
-    }).then(function (result) {
-        empresa = result;
-        var informacion = {
-            serverUrl: req.protocol + '://' + req.get('host') + "/",
-            empresa: empresa[0],
-            cliente: cliente[0],
-            parametros: parametros,
-            conceptosDetalle: conceptosDetalle,
-            informacion: __infoFooter(parametros.prefijo),
-            usuario: req.session.user.nombre_usuario,
-            archivoHtml: 'facturaConceptos.html',
-            impuesto: impuesto
-        };
-        return G.Q.nfcall(__generarPdf, informacion);
+        return G.Q.nfcall(__generarPdf2, informacion);
 
     }).then(function (result) {
 
@@ -914,7 +829,6 @@ CajaGeneral.prototype.listarNotas = function (req, res) {
  * @fecha 2017-06-13 (YYYY-MM-DD)
  */
 CajaGeneral.prototype.imprimirNota = function (req, res) {
-    console.log("*************ESTA IMPRIMIO OK imprimirNota*****************");
     var that = this;
     var args = req.body.data;
     var impuesto;
@@ -993,7 +907,7 @@ CajaGeneral.prototype.imprimirNota = function (req, res) {
             conceptosDetalle: conceptosDetalle[0],
             informacion: __infoFooter(parametros.prefijo),
             usuario: req.session.user.nombre_usuario,
-            archivoHtml: 'notaFacturaSinProducto.html',
+            archivoHtml: 'notaFacturaSinProductoPdf.html',
             valores: impuesto
         };
 
@@ -1008,7 +922,36 @@ CajaGeneral.prototype.imprimirNota = function (req, res) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+/**
+ * @author German Galvis
+ * +Descripcion  Metodo encargado de consultar las facturas desde certicamara
+ * @fecha 2018-11-26 (YYYY-MM-DD)
+ */
+CajaGeneral.prototype.generarReporteFacturaGeneradaDian = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var that = this;
+    var args = req.body.data;
+    var numero = args.imprimir_reporte_factura.numero;
+    var tipo_documento = args.imprimir_reporte_factura.tipo_documento;
 
+    var json = {
+        tipoDocumento: tipo_documento, //factura
+        factura: numero, //prefijo_nofactura
+        tipoRespuesta: 'PDF'//factura
+    };
+
+    G.Q.ninvoke(that.c_sincronizacion, 'consultaFacturacionElectronica', json).then(function (resultado) {
+
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, err, 500, {}));
+
+    }).done();
+}
+;
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -1053,16 +996,58 @@ function __infoFooter(prefijo) {
  */
 function __generarPdf(datos, callback) {
 
+    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/CajaGeneral/reports/' + datos.archivoHtml, 'utf8'),
-            recipe: "html",
-            engine: 'jsrender',
-            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
             helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender',
             phantom: {
                 margin: "10px",
-                width: '700px'
+                width: '792px',
+                headerHeight: "260px", // .imagent{position: absolute;top: 10px;}
+                header:
+                        `<style>
+                            p {margin-top:0; margin-bottom:0;line-height: 75%; }
+                            .letra_factura{font: 100% sans-serif;
+                                           display: flex;
+                                            justify-content: center;
+                                            align-content: center;
+                                            flex-direction: column;}
+                            .letra_factura2{font: 100% sans-serif;margin-top:8px;   position: absolute;
+                                           top: 13px;}
+                            .imgQr{
+//                                  position: absolute;
+                                    top: 20px;
+                                    margin:20px;
+//                                  display:block;
+                                    }
+                            .letra_factura_info{font: 50% sans-serif;text-align: center;}
+                            .letra_factura_info_ctr{font: 40% sans-serif; text-align: center;}
+                            .letra_factura_info_jst{font: 40% sans-serif; text-align: justify; text-justify: inter-word;}
+                            .letra_factura_info_40{font: 40% sans-serif;text-align: center;}
+                            .letra_factura_info_40_jt{font: 40% sans-serif;text-align: justify;}
+                           
+                         </style>
+                         <table border='0' width='100%' >
+                           <tr>
+                            <td align="center" width='40%'>
+                                <p class="letra_factura_info">` + datos.empresa.tipo_id_tercero + `: ` + datos.empresa.id + ` - ` + datos.empresa.digito_verificacion + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.direccion + ` TELEFONO : ` + datos.empresa.telefonos + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>
+                            <td>
+                            <td width='30%'> 
+                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>                         
+                            <td>
+                            <td width='30%' valign="top">
+                                 <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
+                                 <b><p align="center" valign="top" >NOTA ` + datos.parametros.nombreNota + `</p></b>  
+                                 <b><p align="center" valign="top" style="margin-top:3px;" >` + datos.parametros.numeroNota + `</p></b> 
+                            <td>
+                           </tr>
+                         </table>
+                            `
             }
         },
         data: datos
@@ -1072,7 +1057,7 @@ function __generarPdf(datos, callback) {
             var fecha = new Date();
             //var nombreTmp = datos.reporte + fecha.getTime() + ".html";
 
-            var nombreTmp = "factura_conceptocredito" + datos.parametros.prefijo + "" + datos.parametros.factura + "-" + fecha.getTime() + ".html";
+            var nombreTmp = "factura_conceptocredito" + datos.parametros.prefijo + "" + datos.parametros.factura + "-" + fecha.getTime() + ".pdf";
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {
@@ -1086,6 +1071,96 @@ function __generarPdf(datos, callback) {
         });
     });
 }
+;
+
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion  Metodo encargado de generar los pdf del modulo
+ * @fecha 2017-07-13 (YYYY-MM-DD)
+ */
+function __generarPdf2(datos, callback) {
+
+    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/CajaGeneral/reports/' + datos.archivoHtml, 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender',
+            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
+            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
+            phantom: {
+                margin: "10px",
+                width: '792px',
+                headerHeight: "290px", // .imagent{position: absolute;top: 10px;}
+                header:
+                        `<style>
+                            p {margin-top:0; margin-bottom:0;line-height: 75%; }
+                            .letra_factura{font: 100% sans-serif;
+                                           display: flex;
+                                            justify-content: center;
+                                            align-content: center;
+                                            flex-direction: column;}
+                            .letra_factura2{font: 100% sans-serif;margin-top:8px;   position: absolute;
+                                           top: 13px;}
+                            .imgQr{
+//                                  position: absolute;
+                                    top: 20px;
+                                    margin:20px;
+//                                  display:block;
+                                    }
+                            .letra_factura_info{font: 50% sans-serif;text-align: center;}
+                            .letra_factura_info_ctr{font: 40% sans-serif; text-align: center;}
+                            .letra_factura_info_jst{font: 40% sans-serif; text-align: justify; text-justify: inter-word;}
+                            .letra_factura_info_40{font: 40% sans-serif;text-align: center;}
+                            .letra_factura_info_40_jt{font: 40% sans-serif;text-align: justify;}
+                           
+                         </style>
+                         <table border='0' width='100%' >
+                           <tr>
+                            <td align="center" width='30%'>
+                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>
+                                <p class="letra_factura_info">` + datos.empresa.tipo_id_tercero + `: ` + datos.empresa.id + ` - ` + datos.empresa.digito_verificacion + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.direccion + ` TELEFONO : ` + datos.empresa.telefonos + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>
+                                <p class="letra_factura_info">` + datos.conceptosDetalle[0].texto2 + `</p>
+                            <td>
+                            <td width='30%'> 
+                                <br><p class="letra_factura_info">Fecha Factura: ` + datos.parametros.fecha_registro + `</p><br>
+                                <p class="letra_factura_info_ctr">` + datos.conceptosDetalle[0].texto3 + `</p>                                 
+                                <p class="letra_factura_info_jst">` + datos.conceptosDetalle[0].texto1 + `</p>                                 
+                            <td>
+                            <td width='40%' valign="top">
+                                 <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
+                                 <b><p align="center" valign="top" >FACTURA DE SERVICIO</p></b>  
+                                 <b><p align="center" valign="top" style="margin-top:3px;" >` + datos.parametros.prefijo + ` ` + datos.parametros.factura + `</p></b> 
+                            <td>
+                           </tr>
+                         </table>
+                            `
+            }
+        },
+        data: datos
+    }, function (err, response) {
+
+        response.body(function (body) {
+            var fecha = new Date();
+            //var nombreTmp = datos.reporte + fecha.getTime() + ".html";
+
+            var nombreTmp = "factura_conceptocredito" + datos.parametros.prefijo + "" + datos.parametros.factura + "-" + fecha.getTime() + ".pdf";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                if (err) {
+                    callback(true, err);
+                    return;
+                } else {
+                    callback(false, nombreTmp);
+                    return;
+                }
+            });
+        });
+    });
+}
+;
 
 /**
  * @author Andres Mauricio Gonzalez
@@ -1138,11 +1213,11 @@ CajaGeneral.prototype.generarSincronizacionDian = function (req, res) {
         return G.Q.nfcall(__productos, resultado.conceptosDetalle, 0, []);
 
     }).then(function (productos) {
-
+        var totalFactura = "" +resultado.impuesto.totalGeneral;
         var json = {
             codigoMoneda: "COP",
             descripcion: "",
-            fechaExpedicion: resultado.cliente.fecha_registro,
+            fechaExpedicion: resultado.parametros.fecha_registro,
             icoterms: '',
             codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
             numeroIdentificacion: resultado.cliente.tercero_id,
@@ -1171,18 +1246,13 @@ CajaGeneral.prototype.generarSincronizacionDian = function (req, res) {
             baseGravableReteIVA: resultado.impuesto.base_reteiva, //decimal -
 
             tipoFactura: 1, //numeric -
-            totalFactura: resultado.impuesto.totalGeneral, //decimal OPCIONAL -
-            nombreAdquirente: resultado.cliente.nombre_tercero,
-            vendedor: '',
-            numeroPedido: '',
-            totalenLetras: resultado.impuesto.totalFacturaLetra,
-            observacionesPedido: '',
-            observacionesDespacho: /*resultado.detalle[0].obs_despacho,*/   "",
-            elaboradoPor: resultado.usuario,
-            tipoFormato: '1',
-            condiciones: '',
-            mensajeResolucion: resultado.documento[0].texto1,
-            mensajeContribuyente: resultado.documento[0].texto2 + " " + resultado.documento[0].texto3
+            totalFactura: totalFactura.replace(".", ""), //decimal OPCIONAL -
+
+            coordXQr: 164,
+            coordYQr: 260,
+            coordXCufe: 110,
+            coordYCufe: 256,
+            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
 
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
@@ -1244,6 +1314,7 @@ function __generarSincronizacionDian(that, req, callback) {
     var conceptosDetalle = [];
     var impuesto;
     var documento;
+    var formato = 'YYYY-MM-DD hh:mm';
 
 
     var parametros = {
@@ -1259,6 +1330,7 @@ function __generarSincronizacionDian(that, req, callback) {
         conceptosDetalle = result;
         parametros.terceroId = conceptosDetalle[0].tercero_id;
         parametros.tipoIdTercero = conceptosDetalle[0].tipo_id_tercero;
+        parametros.fecha_registro = G.moment(conceptosDetalle[0].fecha_registro).format(formato);
         var totales = {totalFactura: 0, totalGravamen: 0};
         return G.Q.nfcall(__valorTotalGravamen, 0, result, totales);
 
@@ -1305,6 +1377,21 @@ function __generarSincronizacionDian(that, req, callback) {
         documento = result;
 
         var informacion = {
+            serverUrl: req.protocol + '://' + req.get('host') + "/",
+            empresa: empresa[0],
+            cliente: cliente[0],
+            parametros: parametros,
+            conceptosDetalle: conceptosDetalle,
+            informacion: __infoFooter(parametros.prefijo),
+            usuario: req.session.user.nombre_usuario,
+            archivoHtml: 'facturaConceptosPdf.html',
+            impuesto: impuesto
+        };
+        return G.Q.nfcall(__generarPdf2, informacion);
+
+    }).then(function (result) {
+
+        var informacion = {
             empresa: empresa[0],
             cliente: cliente[0],
             parametros: parametros,
@@ -1312,7 +1399,8 @@ function __generarSincronizacionDian(that, req, callback) {
             informacion: __infoFooter(parametros.prefijo),
             usuario: req.session.user.nombre_usuario,
             impuesto: impuesto,
-            documento: documento
+            documento: documento,
+            pdf: result
         };
 
         callback(false, informacion);
@@ -1372,7 +1460,14 @@ CajaGeneral.prototype.generarSincronizacionDianNota = function (req, res) {
             descuento: "",
             totalenLetras: resultado.valores.totalFacturaLetra,
             valorTotal: resultado.valores.totalGeneral,
-            elaboradoPor: resultado.usuario
+            elaboradoPor: resultado.usuario,
+            
+            coordXQr: 172,
+            coordYQr: 263,
+            coordXCufe: 67,
+            coordYCufe: 266,
+            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
+            
         };
 
         if (resultado.conceptosDetalle.prefijo_nota === 'NDFC') {
@@ -1505,15 +1600,33 @@ function __generarSincronizacionDianNota(that, req, callback) {
 
         empresa = result;
         var informacion = {
+            serverUrl: req.protocol + '://' + req.get('host') + "/",
             empresa: empresa[0],
             cliente: cliente[0],
             parametros: parametros,
             conceptosDetalle: conceptosDetalle[0],
             informacion: __infoFooter(parametros.prefijo),
             usuario: req.session.user.nombre_usuario,
+            archivoHtml: 'notaFacturaSinProductoPdf.html',
             valores: impuesto
         };
 
+        return G.Q.nfcall(__generarPdf, informacion);
+
+
+    }).then(function (resultado) {
+
+        var informacion = {
+            empresa: empresa[0],
+            cliente: cliente[0],
+            parametros: parametros,
+            conceptosDetalle: conceptosDetalle[0],
+            informacion: __infoFooter(parametros.prefijo),
+            usuario: req.session.user.nombre_usuario,
+            valores: impuesto,
+            pdf:resultado
+        };
+        
         callback(false, informacion);
 
     }).fail(function (err) {
@@ -1729,6 +1842,7 @@ function __insertarFacFacturasConceptos(that, index, conceptosDetalle, parametro
     conceptos.facturaFiscal = parametros.factura;
     conceptos.porcentajeGravamen = conceptos.porcentaje_gravamen;
     conceptos.valorTotal = conceptos.valor_total;
+    conceptos.valortotal = conceptos.valor_total;
     conceptos.swTipo = conceptos.sw_tipo;
     conceptos.valorGravamen = conceptos.valor_gravamen;
     conceptos.grupoConceptoId = conceptos.grupo_concepto;
@@ -1803,18 +1917,7 @@ function __productos(productos, index, productosDian, callback) {
         return;
     }
 
-    var atrip1 = {
-        nombreAtributo: "valorTotalProd", //String
-        valor: item.valor_total//decimal
-    };
-    var atributoAdicionalProd = [];
-    atributoAdicionalProd.push(atrip1);
-
     var prod = {//OPCIONAL
-        atributosAdicionalesProd: {
-            atributoAdicionalProd: atributoAdicionalProd
-        }
-        ,
         cantidad: item.cantidad, //decimal OPCIONAL -
         descripcion: item.descripcion, //String OPCIONAL -
         identificador: 'SERVICIO', //String -

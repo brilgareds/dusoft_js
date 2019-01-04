@@ -473,8 +473,8 @@ Notas.prototype.crearNotaCredito = function (req, res) {
                 return G.Q.nfcall(__recorreListadoCredito, that, args.listado, parametros, 0, transaccion);
 
             }).then(function () {
-                
-               return G.Q.ninvoke(that.m_notas, 'actualizarFacturaNotaCreditoDevolucion', parametros, transaccion);
+
+                return G.Q.ninvoke(that.m_notas, 'actualizarFacturaNotaCreditoDevolucion', parametros, transaccion);
 
             }).then(function () {
                 transaccion.commit(numeroNota);
@@ -510,8 +510,39 @@ Notas.prototype.crearNotaCredito = function (req, res) {
  * +Descripcion  Metodo encargado de crear las consultas para generar la impresion de las notas
  * @fecha 2018-08-10 (YYYY-MM-DD)
  */
+Notas.prototype.generarReporteFacturaGeneradaDian = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var that = this;
+    var args = req.body.data;
+    var numero = args.imprimir_reporte_factura.numero;
+    var tipo_documento = args.imprimir_reporte_factura.tipo_documento;
+    
+    var json = {
+        tipoDocumento : tipo_documento,//factura
+        factura : numero,//prefijo_nofactura
+        tipoRespuesta : 'PDF'//factura
+    };
+        
+    G.Q.ninvoke(that.c_sincronizacion, 'consultaFacturacionElectronica', json).then(function (resultado) {
+        
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}}));
+        
+    }).fail(function (err) {
+      
+        res.send(G.utils.r(req.url, err, 500, {}));
+        
+    }).done();
+}
+;
+
+/**
+ * @author German Galvis
+ * +Descripcion  Metodo encargado de crear las consultas para generar la impresion de las notas
+ * @fecha 2018-08-10 (YYYY-MM-DD)
+ */
 Notas.prototype.imprimirNota = function (req, res) {
-    console.log("*************ESTA IMPRIMIO OK imprimirNota*****************");
+
     var that = this;
     var args = req.body.data;
     var valores = {};
@@ -642,7 +673,7 @@ Notas.prototype.imprimirNota = function (req, res) {
             parametros: parametros,
             productos: productos,
             usuario: req.session.user.nombre_usuario,
-            archivoHtml: 'notaFactura.html',
+            archivoHtml: 'notaFacturaPdf.html', //'notaFactura.html',
             valores: valores
         };
 
@@ -731,11 +762,11 @@ Notas.prototype.imprimirNotaCredito = function (req, res) {
     }).then(function (result) {
 
         productos = result;
-        
+
         if (productos.length > 0) {
-            reporte = 'notaFactura.html';
+            reporte = 'notaFacturaPdf.html'; //'notaFactura.html';
         } else {
-            reporte = 'notaFacturaSinProducto.html';
+            reporte = 'notaFacturaSinProductoPdf.html'; //'notaFacturaSinProducto.html';
         }
 
 
@@ -906,7 +937,9 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
 
         return G.Q.nfcall(__productos, resultado.productos, 0, []);
     }).then(function (productos) {
-
+        
+var subTotal = resultado.valores.subTotal.replace(".", "");
+var total = resultado.valores.totalFactura.replace(".", "");
         var json = {
             codigoMoneda: "COP",
             conceptoNota: "3", // falta validar
@@ -921,23 +954,23 @@ Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
             productos: productos,
-            subtotalNotaDebitoElectronica: resultado.valores.subTotal.replace(".", ""),
+            subtotalNotaDebitoElectronica: subTotal.replace(".", ""),
             ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
             baseGravableReteFuente: resultado.valores.bases.base_rtf,
             IVA: resultado.valores.ivaTotal.replace(".", ""),
-            baseGravableIVA: resultado.valores.subTotal,
+            baseGravableIVA: subTotal.replace(".", ""),
             ReteICA: resultado.valores.retencionIca.replace(".", ""),
             baseGravableReteICA: resultado.valores.bases.base_ica,
             ReteIVA: resultado.valores.retencionIva.replace(".", ""),
             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
             tipoFactura: "ELECTRONICA",
-            totalNotaDebitoElectronica: resultado.valores.totalFactura.replace(".", ""),
-            conceptoNotaAdicional: "",
-            TipoNota: resultado.nota.tipo_nota,
-            descuento: "",
-            totalenLetras: resultado.valores.totalFacturaLetra,
-            valorTotal: resultado.valores.totalFactura,
-            elaboradoPor: resultado.usuario
+            totalNotaDebitoElectronica: total.replace(".", ""),
+
+            coordXQr: 172,
+            coordYQr: 263,
+            coordXCufe: 67,
+            coordYCufe: 266,
+            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
 
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaDebito', json);
@@ -1114,6 +1147,23 @@ function __generarSincronizacionDianDebito(that, req, callback) {
     }).then(function (result) {
 
         empresa = result;
+
+        var info = {
+            serverUrl: req.protocol + '://' + req.get('host') + "/",
+            empresa: empresa[0],
+            cliente: cliente[0],
+            nota: nota[0],
+            parametros: parametros,
+            productos: productos,
+            usuario: req.session.user.nombre_usuario,
+            archivoHtml: 'notaFacturaPdf.html',
+            valores: valores
+        };
+
+        return G.Q.nfcall(__generarPdf, info);
+
+    }).then(function (result) {
+
         var informacion = {
             empresa: empresa[0],
             cliente: cliente[0],
@@ -1121,7 +1171,8 @@ function __generarSincronizacionDianDebito(that, req, callback) {
             parametros: parametros,
             productos: productos,
             usuario: req.session.user.nombre_usuario,
-            valores: valores
+            valores: valores,
+            pdf: result
         };
 
         callback(false, informacion);
@@ -1149,10 +1200,13 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         resultado = data;
         return G.Q.nfcall(__productos, resultado.productos, 0, []);
     }).then(function (productos) {
-        
+
+var subTotal = resultado.valores.subTotal.replace(".", "");
+var total = resultado.valores.totalFactura.replace(".", "");
+var retef = resultado.valores.retencionFuente.replace(".", "");
         var json = {
             codigoMoneda: "COP",
-            conceptoNota:  resultado.nota.prefijo_devolucion === 'IDC' ? "1" :"6",
+            conceptoNota: resultado.nota.prefijo_devolucion === 'IDC' ? "1" : "6",
             fechaExpedicion: resultado.nota.fecha_registro_nota,
             fechaVencimiento: "", //falta
             codigoDocumentoDian: resultado.nota.tipo_id_tercero,
@@ -1164,32 +1218,32 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
             perfilEmision: "CLIENTE",
             perfilUsuario: "CLIENTE",
             productos: productos,
-            subtotalNotaCreditoElectronica: resultado.valores.subTotal.replace(".", ""),
-            ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
+            subtotalNotaCreditoElectronica: subTotal.replace(".", ""),
+            ReteFuente: retef.replace(".", ""),
             baseGravableReteFuente: resultado.valores.bases.base_rtf,
             IVA: resultado.valores.ivaTotal.replace(".", ""),
-            baseGravableIVA: resultado.valores.subTotal,
+            baseGravableIVA: subTotal.replace(".", ""),
             ReteICA: resultado.valores.retencionIca.replace(".", ""),
             baseGravableReteICA: resultado.valores.bases.base_ica,
             ReteIVA: resultado.valores.retencionIva.replace(".", ""),
             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
             tipoFactura: "ELECTRONICA",
-            totalNotaCreditoElectronica: resultado.valores.totalFactura.replace(".", ""),
-            conceptoNotaAdicional: resultado.nota.descripcion_concepto,
-            TipoNota: resultado.nota.tipo_nota,
-            descuento: "",
-            totalenLetras: resultado.valores.totalFacturaLetra,
-            valorTotal: resultado.valores.totalFactura,
-            elaboradoPor: resultado.usuario
+            totalNotaCreditoElectronica: total.replace(".", ""),
+
+            coordXQr: 172,
+            coordYQr: 263,
+            coordXCufe: 67,
+            coordYCufe: 266,
+            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         };
-        
+
         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaCredito', json);
 
     }).then(function (respuesta) {
 
         data = respuesta;
         var parametros = {
-            empresa_id: args.empresaId, //obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+            empresa_id: args.empresaId,
             prefijo: 'NC',
             factura_fiscal: resultado.nota.numero,
             sw_factura_dian: respuesta.sw_factura_dian,
@@ -1240,6 +1294,7 @@ function __generarSincronizacionDianCredito(that, req, callback) {
     var tabla_2;
     var tabla_3;
     var tabla_4;
+    var reporte;
     var cliente = [];
     var empresa = [];
     var nota = [];
@@ -1298,6 +1353,12 @@ function __generarSincronizacionDianCredito(that, req, callback) {
     }).then(function (result) {
 
         productos = result;
+
+        if (productos.length > 0) {
+            reporte = 'notaFacturaPdf.html'; //'notaFactura.html';
+        } else {
+            reporte = 'notaFacturaSinProductoPdf.html'; //'notaFacturaSinProducto.html';
+        }
 
         parametros.prefijo = nota[0].prefijo;
         parametros.factura_fiscal = nota[0].factura_fiscal;
@@ -1363,13 +1424,30 @@ function __generarSincronizacionDianCredito(that, req, callback) {
     }).then(function (result) {
 
         empresa = result;
+        var info = {
+            serverUrl: req.protocol + '://' + req.get('host') + "/",
+            cliente: cliente[0],
+            empresa: empresa[0],
+            nota: nota[0],
+            parametros: parametros,
+            productos: productos,
+            usuario: req.session.user.nombre_usuario,
+            archivoHtml: reporte,
+            valores: valores
+        };
+
+        return G.Q.nfcall(__generarPdf, info);
+
+    }).then(function (resultado) {
+
         var informacion = {
             empresa: empresa[0],
             nota: nota[0],
             parametros: parametros,
             productos: productos,
             usuario: req.session.user.nombre_usuario,
-            valores: valores
+            valores: valores,
+            pdf: resultado
         };
 
         callback(false, informacion);
@@ -1444,8 +1522,10 @@ function __recorreListadoCredito(that, listado, parametros, index, transaccion, 
 }
 ;
 
-
-function __generarPdf(datos, callback) {
+/**
+ * +Descripcion Funcion encargada de generar el reporte hmtl procesando los datos enviados
+ */
+function __generarHtml(datos, callback) {
 
     G.jsreport.render({
         template: {
@@ -1480,6 +1560,87 @@ function __generarPdf(datos, callback) {
     });
 }
 
+/**
+ * +Descripcion Funcion encargada de generar el reporte pdf procesando los datos enviados
+ */
+function __generarPdf(datos, callback) {
+//    datos.style = G.dirname + "/public/stylesheets/facturacion/style.css";
+//console.log("datos",datos);
+    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/Notas/reports/' + datos.archivoHtml, 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '792px',
+                headerHeight: "260px", // .imagent{position: absolute;top: 10px;}
+                header:
+                        `<style>
+                            p {margin-top:0; margin-bottom:0;line-height: 75%; }
+                            .letra_factura{font: 100% sans-serif;
+                                           display: flex;
+                                            justify-content: center;
+                                            align-content: center;
+                                            flex-direction: column;}
+                            .letra_factura2{font: 100% sans-serif;margin-top:8px;   position: absolute;
+                                           top: 13px;}
+                            .imgQr{
+//                                  position: absolute;
+                                    top: 20px;
+                                    margin:20px;
+//                                  display:block;
+                                    }
+                            .letra_factura_info{font: 50% sans-serif;text-align: center;}
+                            .letra_factura_info_ctr{font: 40% sans-serif; text-align: center;}
+                            .letra_factura_info_jst{font: 40% sans-serif; text-align: justify; text-justify: inter-word;}
+                            .letra_factura_info_40{font: 40% sans-serif;text-align: center;}
+                            .letra_factura_info_40_jt{font: 40% sans-serif;text-align: justify;}
+                           
+                         </style>
+                         <table border='0' width='100%' >
+                           <tr>
+                            <td align="center" width='40%'>
+                                <p class="letra_factura_info">` + datos.empresa.tipo_id_tercero + `: ` + datos.empresa.id + ` - ` + datos.empresa.digito_verificacion + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.direccion + ` TELEFONO : ` + datos.empresa.telefonos + `</p>
+                                <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>
+                            <td>
+                            <td width='30%'> 
+                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>                         
+                            <td>
+                            <td width='30%' valign="top">
+                                 <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
+                                 <b><p align="center" valign="top" >NOTA ` + datos.parametros.nombreNota+ `</p></b>  
+                                 <b><p align="center" valign="top" style="margin-top:3px;" >` + datos.parametros.numeroNota + `</p></b> 
+                            <td>
+                           </tr>
+                         </table>
+                            `
+            }
+        },
+        data: datos
+    }, function (err, response) {
+
+        response.body(function (body) {
+            var fecha = new Date();
+
+            var nombreTmp = "nota" + datos.parametros.numeroNota + "-" + fecha.getTime() + ".pdf";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                if (err) {
+                    callback(true, err);
+                    return;
+                } else {
+                    callback(false, nombreTmp);
+                    return;
+                }
+            });
+        });
+    });
+}
+
 function __productos(productos, index, productosDian, callback) {
     var item = productos[index];
 
@@ -1488,37 +1649,13 @@ function __productos(productos, index, productosDian, callback) {
         return;
     }
 
-    var atrip1 = {
-        nombreAtributo: "observacionProd", //String 
-        valor: item.observacion
-    };
-
-    var atributoAdicionalProd = [];
-    atributoAdicionalProd.push(atrip1);
-
     var prod = {//OPCIONAL
-        atributosAdicionalesProd: {
-            atributoAdicionalProd: atributoAdicionalProd
-        }
-        ,
         cantidad: parseFloat(item.cantidad).toFixed(0),
         descripcion: item.descripcion, //String OPCIONAL -
         identificador: item.codigo_producto, //String -
         imprimible: true, //boolean -
         pagable: true, //boolean -
-        valorUnitario: parseFloat(item.valor_unitario).toFixed(2), // falta
-//        impuestoAlConsumo: {
-//            nombre: "",
-//            porcentual: "",
-//            valor: ""},
-//        impuestoICA: {
-//            nombre: "",
-////            porcentual: "",
-//            valor: ""},
-//        impuestoIVA: {
-//            nombre: "",
-//            porcentual: "",
-//            valor: ""}
+        valorUnitario: parseFloat(item.valor_unitario).toFixed(2)
     };
     var impuesto;
     var ivaPorcentaje = parseInt(item.porc_iva);

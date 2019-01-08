@@ -1,0 +1,100 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-primary ">
+            <div class="panel-heading">
+                <button type="button" class="close" ng-click="cancelar()">&times;</button>
+                <h4 class="h4MarginTopBottom"><span>AÑADIR INFORMACIÓN</span></h4>
+            </div>
+            <br>
+            <div class="panel-body">
+                <div class="row">
+                <div class="col-xs-4 col-md-8 col-md-6">
+                    <label class="col-md-12 control-label">*EMPRESA</label>
+                    <ui-select ng_model="root.empresaSeleccionada" theme="select2" class="form-control selectgeneral pull-left col-md-8"
+                               >
+                        <ui-select-match  placeholder="Seleccionar Empresa">{{ $select.selected.razon_social}}</ui-select-match>
+                        <ui-select-choices refresh="consultar($select.search)" refresh-delay="0" repeat="filtro in root.empresa | filter:$select.search">
+                            {{filtro.razon_social}}
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+
+                <div class="col-xs-4 col-md-8 col-md-6">
+                    <label class="col-md-12 control-label">*FARMACIA</label>
+
+                    <ui-select   ng_model="root.farmaciaSeleccionada" theme="select2" class="form-control selectgeneral pull-left col-md-8"
+                               >
+                        <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.descripcion}}</ui-select-match>
+                        <ui-select-choices refresh="consultar($select.search)" refresh-delay="0" repeat="filtro in root.farmacia | filter:$select.search">
+                            {{filtro.descripcion}}
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+                </div>
+                <div class="row">
+                <div class="col-xs-4 col-md-8 col-md-6">
+                    <label class="col-md-12 control-label">*ZONA</label>
+
+                    <ui-select  ng_model="root.zonaSeleccionada" theme="select2" class="form-control selectgeneral pull-left col-md-8"
+                               >
+                        <ui-select-match  placeholder="Seleccionar Zona">{{ $select.selected.descripcion}}</ui-select-match>
+                        <ui-select-choices refresh="consultar($select.search)" refresh-delay="0" repeat="filtro in root.zona | filter:$select.search">
+                            {{filtro.descripcion}}
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+          
+            <div class="col-xs-4 col-sm-8 col-md-6">
+                    <label class="col-md-12  control-label">*FECHA ROTACIÓN</label>
+                    <p class="input-group">
+                        <input type="text" class="form-control readonlyinput" 
+                               datepicker-popup="{{format}}" 
+                               ng-model="root.fecha_rotacion" 
+                               is-open="abrir_fecha_rotacion" 
+                               max-date="maxDate"   
+                               readonly  close-text="Cerrar" 
+                               ng-change="" 
+                               clear-text="Borrar" 
+                               current-text="Hoy" 
+                               show-weeks="false" 
+                               toggle-weeks-text="#"  />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="abrir_fecha_rotacionN($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>            
+                    </p>
+                </div> 
+                </div>
+            <div class="row">
+                <div class="col-xs-4 col-sm-8 col-md-6">
+                    <label class="col-md-12  control-label">FECHA DIGITACIÓN</label>
+                    <p class="input-group">
+                        <input type="text" class="form-control readonlyinput" 
+                               datepicker-popup="{{format}}" 
+                               ng-model="root.fecha_digitacion" 
+                               is-open="abrir_fecha_digitacion" 
+                               max-date="maxDate"   
+                               readonly  close-text="Cerrar" 
+                               ng-change="" 
+                               clear-text="Borrar" 
+                               current-text="Hoy" 
+                               show-weeks="false" 
+                               toggle-weeks-text="#"/>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="abrir_fecha_digitacionN($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>            
+                    </p>
+                </div> 
+</div>
+            </div>
+
+            <br>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-basic btn-md" ng-click="cancelar()">CANCELAR</button>
+                <button type="button" class="btn btn-primary btn-md" ng-click="onGuardarRotacion()">GUARDAR INFORMACIÓN</button>
+            </div>
+</div>
+        
+    </div>
+</div>
+    

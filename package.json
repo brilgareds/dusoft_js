@@ -33,6 +33,7 @@
     "measured": "^1.1.0",
     "moment": "^2.13.0",
     "mongodb": "^3.1.1",
+    "nginx": "0.0.0",
     "node-xlsx": "~0.5.1",
     "nodemailer": "^0.6.5",
     "pdf-to-base64": "^1.0.1",

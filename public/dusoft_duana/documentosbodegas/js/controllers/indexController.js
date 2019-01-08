@@ -154,6 +154,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
                             tipoTerceroId: documento.tipo_id_tercero, tipo_prestamo: documento.bodegatf};
                     }
+                    if (documento.tipo_doc_bodega_id === 'I008') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id
+//                            , observacion: documento.observacion, terceroId: documento.tercero_id,
+//                            tipoTerceroId: documento.tipo_id_tercero, tipo_prestamo: documento.bodegatf
+                        };
+                    }
                     if (documento.tipo_doc_bodega_id === 'I011') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero: documento.numero_edb,
                             prefijo_edb: documento.prefijo_edb, farmacia_id: documento.farmacia_id, bodega_seleccionada: documento.bodega};

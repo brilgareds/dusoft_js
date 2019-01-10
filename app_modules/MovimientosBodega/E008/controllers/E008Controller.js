@@ -2458,7 +2458,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                var ss=total.toString().split('.');
                var ss1=ss[1]+'';               
                if(ss1.length > 2){
-                   ss[1] = myRound(total, 2);
+                   ss[1] = myRound(redondeo(total,2), 2);
                }else{
                    ss[1] = total;
                }
@@ -2572,6 +2572,14 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
 
     }).done();
 };
+
+
+function redondeo(numero, decimales)
+{
+var flotante = parseFloat(numero);
+var resultado = Math.round(flotante*Math.pow(10,decimales))/Math.pow(10,decimales);
+return resultado;
+}
 
 function isInt(n) {
     return n % 1 === 0;

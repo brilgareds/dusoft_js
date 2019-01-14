@@ -59,7 +59,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             function sumarDias(fecha, dias) {
-                fecha.setDate(fecha.getDate() + dias);
+//                fecha.setDate(fecha.getDate() + dias);
+                fecha.setDate(fecha.getDate());
                 return fecha;
             }
 

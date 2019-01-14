@@ -58,6 +58,65 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
     
 };
 
+ClientesModel.prototype.listar_adquirientes = function(callback) {
+
+    var sql = "select \
+        CASE  WHEN a.sw_persona_juridica = '1' THEN 'JURIDICA' ELSE 'NATURAL' END AS naturaleza, \
+        CASE	WHEN a.tipo_id_tercero = 'RC' THEN '11' \
+	WHEN a.tipo_id_tercero = 'TI' THEN '12' \
+	WHEN a.tipo_id_tercero = 'CC' THEN '13'\
+	WHEN a.tipo_id_tercero = 'CE' THEN '22'\
+	WHEN a.tipo_id_tercero = 'NIT' THEN '31'\
+	WHEN a.tipo_id_tercero = 'PA' THEN '41' \
+        ELSE '' end as codigo_dian,\
+        a.tercero_id as numeroIdentificacion,\
+        a.dv as digitoVerificacion, \
+        case when a.sw_persona_juridica = '1' then '' else a.nombre_tercero end as  nombre,\
+        case when a.sw_persona_juridica = '1' then '' else a.nombre_tercero end as apellido,\
+        case when a.sw_persona_juridica = '1' then a.nombre_tercero else '' end as razonSocial,\
+        '' as codigoSucursal,\
+        '' as nombreSucursal,\
+        a.tipo_pais_id as codigoPais,\
+        a.tipo_dpto_id as codigoDepartamento,	\
+        a.tipo_mpio_id as codigoCiudad,\
+        '' as nombreCiudadExtranjera,\
+        a.direccion as direccion,\
+        a.telefono as telefono,	\
+        '' as codigoCentroCosto,\
+        '' as nombreCentroCosto,\
+        'desarrollo1@duanaltda.com' as emailPrincipal,\
+        '' as emailSecundario,\
+        '' as usuario,\
+        '' as clave,\
+        'true' as generarClave,\
+        '' as observaciones,\
+        'true' as adjuntarPDF,\
+        'true' as adjuntarXML,\
+        '10' as cantidadDiasAceptacionTacita,\
+        'true' as registradoCatalogoParticipantes,\
+        'true' as entregaMail,\
+        'true' as entregaFisica,\
+        'true' as entregaPlataforma,\
+        'true' as correoCertificado,\
+        '' as tipoRepresentacion,\
+        '' as tipoObligacion,\
+        '' as tipoUsuarioAduanero,\
+        '' as tipoEstablecimiento\
+        from\
+        terceros as a \
+        WHERE\
+        a.tipo_id_tercero IS NOT NULL\
+        and  a.tercero_id = '1150938714' ";
+   
+    var query = G.knex.raw(sql);
+    query.then(function(resultado){
+        
+       callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
+    });    
+};
+
 
 ClientesModel.prototype.obtenterClientePorId = function(parametros, callback) {
 

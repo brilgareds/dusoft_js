@@ -22,7 +22,7 @@ requirejs.config({
         loader:"../includes/loader/loader",
         url:"js/constants/Url",
         socket:"../includes/socket/socket.io/socket.io",
-        socketservice:"../includes/socket/socket",
+        socketservice:"../includes/socket/socket",        
         uiselect2: "../../javascripts/select",
         //uiselect2:"../../javascripts/uiselect2",
         storage:"../../javascripts/angular/storage",
@@ -57,7 +57,7 @@ requirejs.config({
         },
         "treemenu":{
             deps:["tree"]
-        },
+        },        
         "select":{
             deps:["jquery"]
         },

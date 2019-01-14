@@ -1,9 +1,9 @@
-define(["angular", "js/services"], function(angular, services) {
+define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('cajaGeneralService',
-            ['Request', 'API', 'CajaGeneral', 'Grupos', 'ConceptoCaja','Totales','FacturaProveedores',
-                function(Request, API, CajaGeneral, Grupos, ConceptoCaja,Totales,FacturaProveedores) {
+            ['Request', 'API', 'CajaGeneral', 'Grupos', 'ConceptoCaja', 'Totales', 'FacturaProveedores',
+                function (Request, API, CajaGeneral, Grupos, ConceptoCaja, Totales, FacturaProveedores) {
 
                     var self = this;
 
@@ -12,9 +12,9 @@ define(["angular", "js/services"], function(angular, services) {
                      * @author Andres Mauricio Gonzalez
                      * @fecha  23/06/2017 DD/MM/YYYYY
                      * +Descripcion LISTAR FACTURAS GENERADAS
-                     */ 
-                    self.listarFacturasGeneradas = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FACTURAS_GENERADAS_NOTAS, "POST", obj, function(data) {
+                     */
+                    self.listarFacturasGeneradas = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FACTURAS_GENERADAS_NOTAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -23,8 +23,8 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarConceptosDetalle = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CONCEPTOS_DETALLE, "POST", obj, function(data) {
+                    self.listarConceptosDetalle = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CONCEPTOS_DETALLE, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -33,8 +33,18 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarNotas = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_NOTAS, "POST", obj, function(data) {
+                    self.listarNotas = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_NOTAS, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    /**
+                     * @author German Galvis
+                     * @fecha  26/11/2018 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.imprimirReporteFacturaDian = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_REPORTE_FACTURA_DIAN, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -43,8 +53,8 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarFacConceptosNotas = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", obj, function(data) {
+                    self.listarFacConceptosNotas = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -53,8 +63,8 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion consulta los parametros para calcular los impuestos
                      */
-                    self.listarImpuestosTercero = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_IMPUESTOS_TERCERO, "POST", obj, function(data) {
+                    self.listarImpuestosTercero = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_IMPUESTOS_TERCERO, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -63,8 +73,8 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarCajaGeneral = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CAJA_GENERAL, "POST", obj, function(data) {
+                    self.listarCajaGeneral = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_CAJA_GENERAL, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -73,8 +83,19 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.imprimirFacturaNotas = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_FACTURA_NOTAS, "POST", obj, function(data) {
+                    self.imprimirFacturaNotas = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_FACTURA_NOTAS, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  31/05/2017 DD/MM/YYYYY
+                     * +Descripcion
+                     */
+                    self.imprimirNota = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_NOTA, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -83,8 +104,8 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.imprimirFacturaNotasDetalle = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_FACTURA_NOTAS_DETALLE, "POST", obj, function(data) {
+                    self.insertarTmpDetalleConceptos = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_TMP_DETALLE_CONCEPTOS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -93,28 +114,8 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.imprimirNota = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.IMPRIMIR_NOTA, "POST", obj, function(data) {
-                            callback(data);
-                        });
-                    };
-                    /**
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha  31/05/2017 DD/MM/YYYYY
-                     * +Descripcion
-                     */
-                    self.insertarTmpDetalleConceptos = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_TMP_DETALLE_CONCEPTOS, "POST", obj, function(data) {
-                            callback(data);
-                        });
-                    };
-                    /**
-                     * @author Andres Mauricio Gonzalez
-                     * @fecha  31/05/2017 DD/MM/YYYYY
-                     * +Descripcion
-                     */
-                    self.listarGrupos = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_GRUPOS, "POST", obj, function(data) {
+                    self.listarGrupos = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_GRUPOS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -124,10 +125,10 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  08/06/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.eliminarTmpDetalleConceptos = function(parametros, callback) {
+                    self.eliminarTmpDetalleConceptos = function (parametros, callback) {
 
-                        Request.realizarRequest(API.CAJA_GENERAL.ELIMINAR_TMP_DETALLE_CONCEPTOS, "POST", parametros, function(data) {
-                     
+                        Request.realizarRequest(API.CAJA_GENERAL.ELIMINAR_TMP_DETALLE_CONCEPTOS, "POST", parametros, function (data) {
+
                             callback(data);
 
                         });
@@ -137,9 +138,9 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  10/06/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.guardarFacturaCajaGeneral = function(parametros, callback) {
+                    self.guardarFacturaCajaGeneral = function (parametros, callback) {
 
-                        Request.realizarRequest(API.CAJA_GENERAL.GUARDAR_FACTURA_CAJA_GENERAL, "POST", parametros, function(data) {
+                        Request.realizarRequest(API.CAJA_GENERAL.GUARDAR_FACTURA_CAJA_GENERAL, "POST", parametros, function (data) {
                             callback(data);
 
                         });
@@ -150,9 +151,9 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarTerceros = function(parametros, callback) {
+                    self.listarTerceros = function (parametros, callback) {
 
-                        Request.realizarRequest(API.TERCEROS.LISTAR_TERCEROS, "POST", parametros, function(data) {
+                        Request.realizarRequest(API.TERCEROS.LISTAR_TERCEROS, "POST", parametros, function (data) {
                             callback(data);
 
                         });
@@ -162,9 +163,9 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.listarPrefijos = function(parametros, callback) {
+                    self.listarPrefijos = function (parametros, callback) {
 
-                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_PREFIJOS, "POST", parametros, function(data) {
+                        Request.realizarRequest(API.CAJA_GENERAL.LISTAR_PREFIJOS, "POST", parametros, function (data) {
                             callback(data);
 
                         });
@@ -174,9 +175,9 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha  31/05/2017 DD/MM/YYYYY
                      * +Descripcion
                      */
-                    self.insertarFacFacturasConceptosNotas = function(parametros, callback) {
+                    self.insertarFacFacturasConceptosNotas = function (parametros, callback) {
 
-                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", parametros, function(data) {
+                        Request.realizarRequest(API.CAJA_GENERAL.INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS, "POST", parametros, function (data) {
                             callback(data);
 
                         });
@@ -188,11 +189,11 @@ define(["angular", "js/services"], function(angular, services) {
                      *              consulta que obtiene las cajas
                      * @fecha 02/05/2017 DD/MM/YYYYY
                      */
-                    self.renderCajaGeneral = function(caja) {
+                    self.renderCajaGeneral = function (caja) {
 
                         var cajaGeneral = [];
 
-                        caja.forEach(function(dato) {
+                        caja.forEach(function (dato) {
                             var _cajaGeneral = CajaGeneral.get(dato.caja_id, dato.empresa_id, dato.centro_utilidad);
                             _cajaGeneral.setDescripcionCaja(dato.descripcion3);
                             _cajaGeneral.setNombreEmpresa(dato.descripcion1);
@@ -211,18 +212,18 @@ define(["angular", "js/services"], function(angular, services) {
                      *              consulta que obtiene las conceptos
                      * @fecha 08/06/2017 DD/MM/YYYYY
                      */
-                    self.renderConcepto = function(conceptos) {
+                    self.renderConcepto = function (conceptos) {
 
                         var concepto = [];
-			var total = [];
+                        var total = [];
 
                         var totales = Totales.get();
-			totales.setValorRetFte(conceptos.impuestos.retencionFuente);
-			totales.setValorRetIca(conceptos.impuestos.retencionIca);
-			totales.setIva(conceptos.impuestos.iva);
-			totales.setSubTotal(conceptos.impuestos.valorSubtotal);
-			totales.setTotal(conceptos.impuestos.totalGeneral);
-                        conceptos.detalle.forEach(function(dato) {
+                        totales.setValorRetFte(conceptos.impuestos.retencionFuente);
+                        totales.setValorRetIca(conceptos.impuestos.retencionIca);
+                        totales.setIva(conceptos.impuestos.iva);
+                        totales.setSubTotal(conceptos.impuestos.valorSubtotal);
+                        totales.setTotal(conceptos.impuestos.totalGeneral);
+                        conceptos.detalle.forEach(function (dato) {
                             var _concepto = ConceptoCaja.get(dato.concepto_id);
                             _concepto.setCantidad(dato.cantidad);
                             _concepto.setPrecio(dato.precio);
@@ -242,7 +243,7 @@ define(["angular", "js/services"], function(angular, services) {
                             _concepto.agregarToltales(totales);
                             concepto.push(_concepto);
                         });
-                   
+
                         return concepto;
                     };
 
@@ -253,11 +254,11 @@ define(["angular", "js/services"], function(angular, services) {
                      *              consulta que obtiene las cajas
                      * @fecha 02/05/2017 DD/MM/YYYYY
                      */
-                    self.renderGrupos = function(datos) {
+                    self.renderGrupos = function (datos) {
 
                         var grupos = [];
 
-                        datos.forEach(function(dato) {
+                        datos.forEach(function (dato) {
                             var _grupo = Grupos.get(dato.grupo_concepto, dato.descripcion);
                             _grupo.setPrecio(dato.precio);
                             _grupo.setPorcentajeGravamen(dato.porcentaje_gravamen);
@@ -267,20 +268,20 @@ define(["angular", "js/services"], function(angular, services) {
                             _grupo.setDescripcionConcepto(dato.descripcion_concepto);
                             grupos.push(_grupo);
                         });
-                     
+
                         return grupos;
                     };
-		    
-		    /**
+
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * +Descripcion Funcion encargada de serializar el resultado de la
                      *              consulta que obtiene las facturas de proveedores
                      * @fecha 10/05/2017 DD/MM/YYYYY
                      */
-                    self.renderFacturasProveedores = function(facturasProveedores) {
+                    self.renderFacturasProveedores = function (facturasProveedores) {
 
                         var facturas = [];
-                        facturasProveedores.forEach(function(data) {
+                        facturasProveedores.forEach(function (data) {
                             var factura = FacturaProveedores.get(data.factura_fiscal, data.codigo_proveedor_id, data.fecha_registro, data.observaciones);
                             factura.setMensaje(data.mensaje);
                             factura.setNombreUsuario(data.nombre);
@@ -298,23 +299,46 @@ define(["angular", "js/services"], function(angular, services) {
                             factura.setSubTotal(data.subtotal);
                             factura.setTipoTercero(data.tipo_id_tercero);
                             factura.setTerceroId(data.tercero_id);
+                            factura.setSincronizacionDian(data.sincronizacion);
                             facturas.push(factura);
                         });
 
                         return facturas;
                     };
 
-		    /**
+                    /**
                      * @author Andres Mauricio Gonzalez
                      * @fecha  15/05/2017 DD/MM/YYYYY
                      * +Descripcion sincronizar las facturas con FI 
                      */
-                    self.sincronizarFi = function(obj, callback) {
-                        Request.realizarRequest(API.CAJA_GENERAL.SINCRONIZAR_FACTURA_NOTAS, "POST", obj, function(data) {
+                    self.sincronizarFi = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.SINCRONIZAR_FACTURA_NOTAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
-		    
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  04/09/2018 DD/MM/YYYYY
+                     * +Descripcion envia la factura a la dian
+                     */
+                    self.generarSincronizacionDian = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.GENERAR_SINCRONIZACION_DIAN_SERVICIO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
+                    /**
+                     * @author German Galvis
+                     * @fecha  02/11/2018 DD/MM/YYYYY
+                     * +Descripcion envia la nota a la dian
+                     */
+                    self.generarSincronizacionDianNota = function (obj, callback) {
+                        Request.realizarRequest(API.CAJA_GENERAL.GENERAR_SINCRONIZACION_DIAN_NOTA_SERVICIO, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+
                     return this;
                 }]);
 

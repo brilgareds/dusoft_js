@@ -34,6 +34,11 @@
                     "model": "SincronizacionModel",
                     "alias": "m_sincronizacion"
                 },
+                "productos_model": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
+                },
                 "pedidos_clientes_model": {
                     "module": "PedidosClientes",
                     "model": "PedidosClienteModel",
@@ -48,11 +53,11 @@
                 }
             }],
         "cronJobs": [{
-            "facturacion_cliente_crontab": {
-                "module": "FacturacionClientes",
-                "cronjob": "FacturacionClientesJobs",
-                "alias": "j_facturacion_clientes"
-            }
-        }]
+                "facturacion_cliente_crontab": {
+                    "module": "FacturacionClientes",
+                    "cronjob": "FacturacionClientesJobs",
+                    "alias": "j_facturacion_clientes"
+                }
+            }]
     }
 }

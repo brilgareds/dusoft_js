@@ -27,7 +27,7 @@ define(["angular",
             $scope.paginaactual = 1;
             $scope.permisosEstadoAsignacion=Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_cambiar_estado_asignacion;
             var fecha_actual = new Date();
-            
+      
             $scope.rootSeleccionPedido = {
                 fecha_inicial_pedidos: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
                 fecha_final_pedidos: $filter('date')(fecha_actual, "yyyy-MM-dd")
@@ -367,7 +367,7 @@ define(["angular",
                                 if (data.status === 200) {
 
                                     $scope.pedido_seleccionado = null;
-                                    $modalInstance.close();
+                                    $scope.close();
                                 }
                             });
                         };
@@ -480,7 +480,7 @@ define(["angular",
 
             };
 
-
+      
 
             //fin de eventos
 

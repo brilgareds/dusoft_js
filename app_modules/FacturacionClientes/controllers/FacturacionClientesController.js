@@ -1,12 +1,16 @@
 
-var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion, e_facturacion_clientes, m_pedidos_clientes) {
+/* global G */
+
+var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion, e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
     this.m_usuarios = m_usuarios;
+    this.m_productos = m_productos;
     this.m_sincronizacion = m_sincronizacion;
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
+    this.c_sincronizacion = c_sincronizacion;
 
     G.log.configure({
         appenders: [
@@ -363,7 +367,7 @@ FacturacionClientes.prototype.listarPedidosClientes = function (req, res) {
     var terceroId = args.listar_pedidos_clientes.terceroId;
     var paginaActual = args.listar_pedidos_clientes.paginaActual;
     var usuario = req.session.user.usuario_id;
-
+    var bodega = req.session.user.bodega;
     var parametros = {
         empresaId: args.listar_pedidos_clientes.empresaId,
         tipoIdTercero: tipoIdTercero,
@@ -372,7 +376,8 @@ FacturacionClientes.prototype.listarPedidosClientes = function (req, res) {
         paginaActual: paginaActual,
         pedidoMultipleFarmacia: pedidoMultipleFarmacia,
         estadoProcesoPedido: estadoProcesoPedido,
-        procesoFacturacion: 1
+        procesoFacturacion: 1,
+        bodega: bodega
     };
 
     if (pedidoMultipleFarmacia === '1') {
@@ -558,6 +563,7 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
     }
 
     var usuario = req.session.user.usuario_id;
+    var bodega = req.session.user.bodega;
     var parametros = {
         empresaId: args.procesar_factura_cosmitet.empresaId,
         tipoIdTercero: '',
@@ -573,6 +579,7 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
         pedidoMultipleFarmacia: args.procesar_factura_cosmitet.pedidoMultipleFarmacia,
         paginaActual: 1,
         pedidoClienteId: '',
+        bodega: bodega,
         idProceso: ''
     };
 
@@ -609,7 +616,7 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
 
         if (resultado.length > 0) {
             parametros.idProceso = resultado[0].id;
-            G.Q.nfcall(__insertarFacturaEnProcesoDetalle, that, 0, pedidosCosmitet, parametros.idProceso)
+            G.Q.nfcall(__insertarFacturaEnProcesoDetalle, that, 0, pedidosCosmitet, parametros.idProceso);
         } else {
             throw {msj: '[insertarFacturaEnProceso]: No se creo la cabecera para el proceso de facturacion', status: 404};
         }
@@ -776,6 +783,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function (req, res) {
      * +Descripcion Variable encargada de capturar la ip del cliente que se conecta
      * @example '::ffff:10.0.2.158'
      */
+//    var ip ='::ffff:10.0.2.158';
     var ip = req.headers['x-forwarded-for'] ||
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
@@ -917,22 +925,22 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
 
     }).then(function (resultado) {
 
-        var parametros = [];
-        parametros[0] = resultado.empresa_id;
-        parametros[1] = resultado.id;
-        parametros[2] = resultado.numeracion;
-
-        var param = {param: parametros, funcion: 'facturas_venta_fi'};
-
-        return G.Q.ninvoke(that.m_sincronizacion, "sincronizarCuentasXpagarFi", param);
-
-    }).then(function (resultado) {
+//        var parametros = [];
+//        parametros[0] = resultado.empresa_id;
+//        parametros[1] = resultado.id;
+//        parametros[2] = resultado.numeracion;
+//
+//        var param = {param: parametros, funcion: 'facturas_venta_fi'};
+//
+//        return G.Q.ninvoke(that.m_sincronizacion, "sincronizarCuentasXpagarFi", param);
+//
+//    }).then(function (resultado) {
 
         callback(false, {
             status: 200,
             msj: 'Se genera la factura satisfactoriamente',
             data: {generar_factura_agrupada: documentoFacturacion,
-                resultado_sincronizacion_ws: resultado
+                resultado_sincronizacion_ws: {resultado: {mensaje_ws: 'No sincronizado', mensaje_bd: "Log Registrado Correctamente "}}// resultado
             }
         }
         );
@@ -1177,6 +1185,134 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function 
 
 /**
  * @author German Galvis
+ * +Descripcion Metodo encargado de cargar el archivo plano
+ * @fecha 2018-10-22 YYYY-MM-DD
+ */
+FacturacionClientes.prototype.subirArchivo = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    // data
+    if (args.data === undefined) {
+        res.send(G.utils.r(req.url, 'la data  No Esta Definida', 404, {}));
+        return;
+    }
+    // nombre
+    if (args.data.nombre === '') {
+        res.send(G.utils.r(req.url, 'nombre esta vacio', 404, {}));
+        return;
+    }
+
+    // Empresa, Centro Utilidad,  Bodega
+    if (args.data.empresa_id === '' || args.data.centro_id === '' || args.data.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacios', 404, {}));
+        return;
+    }
+    // Validar Cliente
+    if (args.data.tipo_id_tercero === '' || args.data.tercero_id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id o tercero_id estan vacios', 404, {}));
+        return;
+    }
+
+    // Observaciones
+    if (args.data.observacion === '') {
+        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        nombre: args.data.nombre,
+        observacion: args.data.observacion,
+        tipo_id_tercero: args.data.tipo_id_tercero,
+        tercero_id: args.data.tercero_id,
+        empresa_id: args.data.empresa_id,
+        centro_id: args.data.centro_id,
+        bodega_id: args.data.bodega_id
+    };
+    var _productosInvalidosNoExistentes = "";
+    var _productosValidosExistentes = "";
+
+    /**
+     * +Descripcion Se obtienen los productos del archivo plano
+     */
+    G.Q.nfcall(__subir_archivo_plano, req.files).then(function (contenido) {
+
+        if (contenido.length > 0) {
+            /*
+             * +Descripcion Se valida si cada uno de los productos existe en el inventario
+             */
+            return G.Q.nfcall(__validar_productos_archivo_plano, that, 0, contenido, [], [], parametros);
+
+        } else {
+            throw {msj: "El archivo esta vacio", status: 500, data: {pedidos_clientes: {}}};
+        }
+
+    }).then(function (productosPlano) {
+        /*
+         * +Descripcion Productos que no se encuentran en el inventario
+         */
+        _productosInvalidosNoExistentes = productosPlano[1];
+        _productosValidosExistentes = productosPlano[0];
+
+        if (_productosValidosExistentes.length === 0) {
+
+            throw {msj: 'Lista de Productos',
+                status: 200,
+                data: {pedidos_clientes: {
+                        productos_validos: _productosValidosExistentes,
+                        productos_invalidos: _productosInvalidosNoExistentes
+                    }}};
+            return;
+        }
+
+        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarUltimoGrupo');
+
+    }).then(function (grupo) {
+
+        parametros.grupo = grupo[0].nextval;
+
+        if (_productosValidosExistentes.length > 0) {
+            return G.Q.nfcall(__insertarProductosConsumo, that, 0, parametros, _productosValidosExistentes, []);
+        } else {
+
+            return true;
+
+        }
+
+    }).then(function (resultado) {
+
+        productosDuplicadosInvalidos = resultado;
+
+        if (productosDuplicadosInvalidos.length > 0) {
+            productosInvalidosTodos = productosDuplicadosInvalidos.concat(_productosInvalidosNoExistentes);
+        } else {
+            productosInvalidosTodos = _productosInvalidosNoExistentes;
+        }
+
+        throw {msj: 'Productos cargados correctamente', status: 200, data: {cargue_archivo: {
+                    productos_validos: _productosValidosExistentes,
+                    productos_invalidos: productosInvalidosTodos
+
+                }}};
+        return;
+
+    }).fail(function (err) {
+
+        console.log("err [subirArchivo]:", err);
+        var msj = "Erro Interno";
+        var status = 500;
+
+        if (err.status) {
+            msj = err.msj;
+            status = err.status;
+        }
+        res.send(G.utils.r(req.url, msj, status, err.data));
+    }).done();
+
+};
+
+/**
+ * @author German Galvis
  * +Descripcion Metodo encargado de eliminar la factura temporal
  * @fecha 2018-07-05 YYYY-MM-DD
  */
@@ -1266,7 +1402,7 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function 
     if (args.facturas_consumo.estado === 0) {
         estado = 6;
     }
-  
+
     var parametros = {
         empresaId: args.facturas_consumo.empresa_id,
         tipoIdTercero: args.facturas_consumo.tipoTerceroId,
@@ -1473,7 +1609,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
         consultarParametrosRetencion = resultado;
 
         if (resultado.length > 0) {
-            ip = '::ffff:10.0.2.158';
+
             if (ip.substr(0, 6) === '::ffff') {
                 return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDireccionIp', {direccionIp: ip.substr(7, ip.length)});
             } else {
@@ -1485,17 +1621,17 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
             throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
 
         }
-         
-    }).then(function(resultado){
-       
-        if(resultado !== undefined ){ 
-            if(resultado.length > 0){
-                
-            parametros.direccion_ip = ip;    
-     
-            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',
-            {tipo_id_tercero:parametros.tipoIdTercero, 
-            tercero_id: parametros.terceroId, 
+
+    }).then(function (resultado) {
+
+        if (resultado !== undefined) {
+            if (resultado.length > 0) {
+
+                parametros.direccion_ip = ip;
+
+                return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumo',
+                        {tipo_id_tercero: parametros.tipoIdTercero,
+                            tercero_id: parametros.terceroId,
 
                             paginaActual: 1, terminoBusqueda: '', filtro: '', empresa_id: args.facturas_consumo.documentos.empresa
                         });
@@ -1508,6 +1644,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
             throw {msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
         }
 
+
     }).then(function (resultado) {
 
         if (resultado.length > 0 && (parametros.id_factura_xconsumo !== undefined && parametros.id_factura_xconsumo !== "")) {
@@ -1516,6 +1653,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
             //if(parametros.id_factura_xconsumo===undefined || parametros.id_factura_xconsumo===""){
             //parametros.id_factura_xconsumo = resultado[0].id_factura_xconsumo;
             //}  
+
             def.resolve();
         } else {
 
@@ -1557,20 +1695,22 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarDetalleFacturaConsumo', parametrosDetalleFactura);
 
 
-     
-    }).then(function(resultado){
-         
-        if(resultado.rowCount > 0){
- 
-            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDetalleTemporalFacturaConsumo',
-            {estado:5, id_factura_xconsumo:parametros.id_factura_xconsumo,prefijo: parametros.pedidos.prefijo,factura_fiscal: parametros.pedidos.numero});
-        }else{
-            throw {msj:'No se registro ninguna unidad', status: 404}; 
+
+    }).then(function (resultado) {
+
+
+        if (resultado.rowCount > 0) {
+
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo',
+                    {estado: 5, id_factura_xconsumo: parametros.id_factura_xconsumo, prefijo: parametros.pedidos.prefijo, factura_fiscal: parametros.pedidos.numero});
+        } else {
+            throw {msj: 'No se registro ninguna unidad', status: 404};
             return;
         }
 
     }).then(function (resultado) {
-     
+
         if (resultado.length > 0) {
 
             resultado.forEach(function (row) {
@@ -1667,14 +1807,14 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
         paginaActual: paginaActual,
         terminoBusqueda: terminoBusqueda,
         filtro: filtro};
-    
-    G.Q.ninvoke(that.m_facturacion_clientes,'consultarTemporalFacturaConsumo',parametros).then(function(resultado){
-        
-        if(resultado.length >0){
 
-            return res.send(G.utils.r(req.url, 'Lista de facturas temporales', 200,{listar_facturas_temporal:resultado}));
-        }else{
-            throw {msj:'[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404}; 
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumo', parametros).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            return res.send(G.utils.r(req.url, 'Lista de facturas temporales', 200, {listar_facturas_temporal: resultado}));
+        } else {
+            throw {msj: '[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404};
         }
 
     }).fail(function (err) {
@@ -1692,7 +1832,160 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
         res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
 
-}
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar las farmacias
+ * @fecha 2018-10-19
+ */
+FacturacionClientes.prototype.buscarFarmacias = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        empresa_id: args.empresa_id,
+        centro: args.centro,
+        bodega: args.bodega};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'buscarFarmacias', parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listado farmacias ok!!!!', 200, {listarBodegas: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de farmacias', 500, {listarBodegas: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos consumidos
+ * @fecha 2018-10-18
+ */
+FacturacionClientes.prototype.listarFacturasConsumoBarranquillaTemporales = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var empresa_id = req.session.user.empresa;
+
+    var terminoBusqueda = args.listar_facturas_consumo_temporal.terminoBusqueda;
+    var filtro = args.listar_facturas_consumo_temporal.filtro;
+    var paginaActual = args.listar_facturas_consumo_temporal.paginaActual;
+
+    var parametros = {
+        empresa_id: empresa_id,
+        paginaActual: paginaActual,
+        terminoBusqueda: terminoBusqueda,
+        filtro: filtro};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumoBarranquilla', parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listar_facturas_consumo_temporal: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listar_facturas_consumo_temporal: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos detallados
+ * @fecha 2018-10-19
+ */
+FacturacionClientes.prototype.listarProductos = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        empresa_id: args.empresa_id,
+        grupo_id: args.grupo_id,
+        paginaActual: args.paginaActual};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listarProductos: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listarProductos: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de listar los productos detallados
+ * @fecha 2018-10-19
+ */
+FacturacionClientes.prototype.imprimirCsv = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var parametros = {
+        empresa_id: args.empresa_id,
+        grupo_id: args.grupo_id,
+        paginaActual: '-1'};
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).then(function (resultado) {
+
+        return G.Q.nfcall(__generarCsvBarranquilla, resultado);
+    }).then(function (resultado) {
+        console.log("resultado", resultado);
+        res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {imprimirCsv: resultado}));
+    }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {imprimirCsv: {}}));
+            }).
+            done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de eliminar la factura barranquilla temporal
+ * @fecha 2018-10-19 YYYY-MM-DD
+ */
+FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.empresaId === undefined || args.empresaId === '') {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {eliminar_tmp: []}));
+        return;
+    }
+
+    if (args.grupo_id === undefined || args.grupo_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el id', 404, {eliminar_tmp: []}));
+        return;
+    }
+
+    var parametros = {
+        grupo_id: args.grupo_id,
+        empresa_id: args.empresaId
+    };
+    var usuario = req.session.user.usuario_id;
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'eliminarProductosTemporalBarranquilla', parametros)
+
+            .then(function () {
+
+                return res.send(G.utils.r(req.url, "Se elimina el temporal satisfactoriamente", 200, {eliminar_tmp: ''}));
+
+            }).catch(function (err) {
+        logger.error("-----------------------------------");
+        logger.error({"metodo": "FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla",
+            "usuario_id": usuario,
+            "parametros: ": parametros,
+            "resultado: ": err});
+        logger.error("-----------------------------------");
+        if (!err.status) {
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+        res.send(G.utils.r(req.url, err.msj, err.status, {}));
+
+    }).done();
+};
+
 
 /*
  * @author Cristian Ardila
@@ -1826,7 +2119,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
         consultarParametrosRetencion = resultado;
 
         if (resultado.length > 0) {
-            ip = '::ffff:10.0.2.158';
+
             if (ip.substr(0, 6) === '::ffff') {
                 return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDireccionIp', {direccionIp: ip.substr(7, ip.length)});
             } else {
@@ -1875,6 +2168,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         //CAMBIAR LA CONSULTA PARA QUE VAYA A LA TEMPORAL
+
         return G.Q.nfcall(__consultarCantidadesFacturadasXConsumo, that, 0, datosDocumentosXConsumo, []);
 
     }).then(function (resultado) {
@@ -1889,13 +2183,15 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         if (resultado.length > 0) {
+//            console.log("Aresultado resultadoFacturasXConsumo ",resultadoFacturasXConsumo );
+//            console.log("Aresultado resultado ",resultado );
             return G.Q.nfcall(__distribuirUnidadesFacturadas, that, 0, 0, resultadoFacturasXConsumo, resultado, []);
         } else {
             throw {msj: '[Detalle de productos por facturar]: Consulta sin resultados', status: 404};
         }
 
     }).then(function (resultado) {
-
+//console.log("Aresultado ",resultado );
         productosActualizados = [];
         //Se sugiere insertar desde esta parte en una transaccion mejor
         if (resultado.length > 0) {
@@ -2291,10 +2587,6 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
         return;
     }
 
-    if (args.generar_factura_individual.tipoPago === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {generar_factura_individual: []}));
-        return;
-    }
 
     var usuario = req.session.user.usuario_id;
     var parametros = {
@@ -2380,18 +2672,18 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
 
     }).then(function (resultado) {
 
-        var parametros = [];
-        parametros[0] = resultado.empresa_id;
-        parametros[1] = resultado.prefijo;
-        parametros[2] = resultado.numeracion;
-
-        var param = {param: parametros, funcion: 'facturas_venta_fi'};
-        return G.Q.ninvoke(that.m_sincronizacion, "sincronizarCuentasXpagarFi", param);
-
-    }).then(function (resultado) {
+//        var parametros = [];
+//        parametros[0] = resultado.empresa_id;
+//        parametros[1] = resultado.prefijo;
+//        parametros[2] = resultado.numeracion;
+//
+//        var param = {param: parametros, funcion: 'facturas_venta_fi'};
+//        return G.Q.ninvoke(that.m_sincronizacion, "sincronizarCuentasXpagarFi", param);
+//
+//    }).then(function (resultado) {
 
         return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_individual: documentoFacturacion,
-            resultado_sincronizacion_ws: resultado
+            resultado_sincronizacion_ws: {resultado: {mensaje_ws: 'No sincronizado', mensaje_bd: "Log Registrado Correctamente "}}// resultado
         }));
 
     }).fail(function (err) {
@@ -2491,29 +2783,331 @@ FacturacionClientes.prototype.sincronizarFactura = function (req, res) {
 
 }
 
-FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res) {
+function __productos(productos, index, productosDian, callback) {
+    var item = productos[index];
+    var formato = 'DD-MM-YYYY';
 
-    var that = this;
-    var args = req.body.data;
+
+    if (!item) {
+        callback(false, productosDian);
+        return;
+    }
+
+    var atrip1 = {
+        nombreAtributo: "FechaVencimientoProd", //String 
+        valor: G.moment(item.fecha_vencimiento).format(formato) //Fecha dd-MM-yyyy HH24:mm:ss  *****corregir formato
+    };
+    var atrip2 = {
+        nombreAtributo: "loteProd", //String
+        valor: item.lote //String
+    };
+    var atrip3 = {
+        nombreAtributo: "codigoCumProd", //String
+        valor: item.codigo_cum//String
+    };
+    var atrip4 = {
+        nombreAtributo: "codigoInvimaProd", //String
+        valor: item.codigo_invima //String
+    };
+    var atrip5 = {
+        nombreAtributo: "valorTotalProd", //String
+        valor: item.subtotal//decimal
+    };
+    var atributoAdicionalProd = [];
+    atributoAdicionalProd.push(atrip1);
+    atributoAdicionalProd.push(atrip2);
+    atributoAdicionalProd.push(atrip3);
+    atributoAdicionalProd.push(atrip4);
+    atributoAdicionalProd.push(atrip5);
+
+    var prod = {//OPCIONAL
+        atributosAdicionalesProd: {
+            atributoAdicionalProd: atributoAdicionalProd
+        }
+        ,
+        cantidad: item.cantidad, //decimal OPCIONAL -
+        descripcion: item.descripcion, //String OPCIONAL -
+        identificador: item.codigo_producto, //String -
+        imprimible: true, //boolean -
+        /*               impuestoAlConsumo: { //-
+         nombre: obj.x, //String -
+         porcentual: obj.x, //decimal -
+         valor: obj.x //decimal -
+         },
+         impuestoICA: { // -
+         nombre: obj.x, //String -
+         // porcentual: obj.x, //decimal *
+         valor: obj.x //decimal -
+         },
+         impuestoIVA: {
+         nombre: obj.x, //String -
+         porcentual: obj.x, //decimal -
+         valor: obj.x //decimal -
+         },*/
+
+//                listaImpuestosDeducciones: {// OPCIONAL -
+//                    nombre: "IVA19", //String -
+//                    //porcentual: obj.x, //decimal 
+//                    baseGravable: item.porc_iva, //decimal  -
+//                    valor: item.iva_total.replace(",", ".") //decimal -
+//                },
+        pagable: true, //boolean -
+        valorUnitario: item.valor_unitario //decimal -
+    };
+    var impuesto;
+    var ivaPorcentaje = parseInt(item.porc_iva);
+    if (ivaPorcentaje === 0) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA0", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+
+        };
+    }
+    ;
+    if (ivaPorcentaje === 19) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA19", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        }
+
+    }
+    ;
+    if (ivaPorcentaje === 10) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA10", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        };
+    }
+    ;
+    prod.listaImpuestosDeducciones = impuesto;
+    productosDian.push(prod);
+
+    var timer = setTimeout(function () {
+        index++;
+        __productos(productos, index, productosDian, callback);
+        clearTimeout(timer);
+    }, 0);
+}
+
+function __productosAdjunto(productos, index, productosDian, callback) {
+    var item = productos[index];
+    var formato = 'DD-MM-YYYY';
+
+
+    if (!item) {
+        callback(false, productosDian);
+        return;
+    }
+
+    var prod = {
+        cantidad: item.cantidad, //decimal OPCIONAL -
+        descripcion: item.descripcion, //String OPCIONAL -
+        identificador: item.codigo_producto, //String -
+        imprimible: true, //boolean -
+        pagable: true, //boolean -
+        valorUnitario: item.valor_unitario //decimal -
+    };
+    var impuesto;
+    var ivaPorcentaje = parseInt(item.porc_iva);
+    if (ivaPorcentaje === 0) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA0", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+
+        };
+    }
+    ;
+    if (ivaPorcentaje === 19) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA19", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        }
+
+    }
+    ;
+    if (ivaPorcentaje === 10) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA10", //String -
+            //porcentual: obj.x, //decimal 
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        };
+    }
+    ;
+    prod.listaImpuestosDeducciones = impuesto;
+    productosDian.push(prod);
+
+    var timer = setTimeout(function () {
+        index++;
+        __productosAdjunto(productos, index, productosDian, callback);
+        clearTimeout(timer);
+    }, 0);
+}
+
+FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
+    that = this;
+    var args = req.body.data.imprimir_reporte_factura;
+    var productos;
+    var resultado;
+    var data;
+
+    G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
+        resultado = data;
+
+        return G.Q.nfcall(__productosAdjunto, resultado.detalle, 0, []);
+
+    }).then(function (productos) {
+        /*        var json = {
+         codigoMoneda: "COP",
+         descripcion: "",
+         fechaExpedicion: resultado.cabecera.fecha_registro,
+         fechaVencimiento: resultado.cabecera.fecha_vencimiento_factura,
+         icoterms: '',
+         codigoDocumentoDian: resultado.cabecera.tipo_id_tercero,
+         numeroIdentificacion: resultado.cabecera.tercero_id,
+         identificadorConsecutivo: resultado.cabecera.factura_fiscal,
+         identificadorResolucion: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ,
+         mediosPago: resultado.cabecera.tipo_pago_id,
+         nombreSucursal: "",
+         desde: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ, //long -
+         hasta: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ, //long -
+         prefijo: resultado.cabecera.prefijo,
+         perfilEmision: "CLIENTE",
+         perfilUsuario: "CLIENTE",
+         productos: productos,
+         subtotalFactura: resultado.cabecera.subtotal, //decimal OPCIONAL -
+         
+         //            nombreReteFuente: "ReteFuente", //String -
+         ReteFuente: resultado.valores.retencionFuenteSf, //decimal -
+         baseGravableReteFuente: resultado.valores.baseRetencionFuente, //decimal -
+         
+         //            nombreIVA: "IVA", //String -
+         IVA: resultado.valores.Iva, //decimal -
+         baseGravableIVA: resultado.cabecera.subtotal, //decimal -
+         
+         //            nombreReteICA: "ReteICA", //String -
+         ReteICA: resultado.valores.retencionIcaSf, //decimal -
+         baseGravableReteICA: resultado.valores.baseRetencionIca, //decimal -
+         
+         //            nombreReteIVA: "ReteIVA", //String -
+         ReteIVA: resultado.valores.retencionIvaSf, //decimal -
+         baseGravableReteIVA: resultado.valores.baseRetencionIva, //decimal -
+         
+         tipoFactura: 1, //numeric -
+         totalFactura: resultado.valores.totalFactura, //decimal OPCIONAL -
+         nombreAdquirente: resultado.cabecera.nombre_tercero,
+         vendedor: resultado.cabecera.nombre,
+         numeroPedido: resultado.cabecera.pedido_cliente_id,
+         totalenLetras: resultado.valores.totalFacturaLetra,
+         observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: " + resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
+         observacionesDespacho: "", resultado.detalle[0].obs_despacho, 
+         elaboradoPor: resultado.imprimio.usuario,
+         tipoFormato: '1',  // diferencia el tipo de factura esperando definicion del campo por parte de certicamara
+         condiciones: resultado.cabecera.observaciones,
+         mensajeResolucion: resultado.cabecera.texto1,
+         mensajeContribuyente: resultado.cabecera.texto2 + " " + resultado.cabecera.texto3
+         };*/
+var subTotal = resultado.valores.subTotal.replace(".", "");
+var total = resultado.valores.totalFactura.replace(".", "");
+        var json = {
+            codigoMoneda: "COP",
+            fechaExpedicion: resultado.cabecera.fecha_registro,
+            fechaVencimiento: resultado.cabecera.fecha_vencimiento_factura,
+            codigoDocumentoDian: resultado.cabecera.tipo_id_tercero,
+            numeroIdentificacion: resultado.cabecera.tercero_id,
+            identificadorConsecutivo: resultado.cabecera.factura_fiscal,
+            identificadorResolucion: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ,
+            mediosPago: resultado.cabecera.tipo_pago_id,
+            desde: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ, //long -
+            hasta: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ, //long -
+            prefijo: resultado.cabecera.prefijo,
+            perfilEmision: "CLIENTE",
+            perfilUsuario: "CLIENTE",
+            productos: productos,
+            subtotalFactura: resultado.cabecera.subtotal,
+            ReteFuente: resultado.valores.retencionFuenteSf,
+            baseGravableReteFuente: resultado.valores.baseRetencionFuente,
+            IVA: resultado.valores.Iva,
+            baseGravableIVA: resultado.cabecera.subtotal,
+            ReteICA: resultado.valores.retencionIcaSf,
+            baseGravableReteICA: resultado.valores.baseRetencionIca,
+            ReteIVA: resultado.valores.retencionIvaSf,
+            baseGravableReteIVA: resultado.valores.baseRetencionIva,
+            tipoFactura: 1,
+            totalFactura: total.replace(".", ""),
+
+            coordXQr: 164,
+            coordYQr: 260,
+            coordXCufe: 110,
+            coordYCufe: 256,
+            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
+        };
+
+        return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
+
+
+    }).then(function (respuesta) {
+
+        data = respuesta;
+        var parametros = {
+            empresa_id: args.empresaId,
+            prefijo: resultado.cabecera.prefijo,
+            factura_fiscal: resultado.cabecera.factura_fiscal,
+            sw_factura_dian: respuesta.sw_factura_dian,
+            json_envio: data.lastRequest,
+            respuesta_ws: data
+        };
+
+        if (respuesta.sw_factura_dian === '1') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        } else if (respuesta.sw_factura_dian === '0') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        }
+
+    }).then(function (resultado) {
+
+        if (data.sw_factura_dian === '1') {
+
+            res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+
+        } else if (data.sw_factura_dian === '0') {
+
+            res.send(G.utils.r(req.url, data.msj, data.status, data));
+
+        }
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, err.msj, err.status, err));
+
+    }).done();
+
+};
+
+/**
+ * @author AMGT (duplica de generarReporteDespacho)
+ * +Descripcion Metodo encargado de generar el informe detallado de la factura  
+ *              generada
+ * @fecha 18/05/2017
+ */
+function __generarSincronizacionDian(that, req, callback) {
+
     var def = G.Q.defer();
-
-    var that = this;
     var args = req.body.data;
-
-    if (args.imprimir_reporte_factura === undefined || args.imprimir_reporte_factura.paginaActual === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {imprimir_reporte_factura: []}));
-        return;
-    }
-
-    if (args.imprimir_reporte_factura.empresaId === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {imprimir_reporte_factura: []}));
-        return;
-    }
-
-    if (args.imprimir_reporte_factura.paginaActual === '') {
-        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {imprimir_reporte_factura: []}));
-        return;
-    }
 
     var empresaId = args.imprimir_reporte_factura.empresaId;
     var paginaActual = args.imprimir_reporte_factura.paginaActual;
@@ -2536,7 +3130,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
         valores: {},
         productos: {},
         imprimio: {usuario: '', fecha: fechaToday},
-        archivoHtml: 'facturaGeneradaDetalle.html',
+        archivoHtml: 'facturaGeneradaDetallePDF.html',
         reporte: "factura_generada_detalle_"
     };
 
@@ -2585,7 +3179,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
 
         if (resultado) {
             if (resultado.length > 0) {
-                var coma = ",";
+                var coma = ", ";
                 var length = resultado.length - 1;
                 resultado.forEach(function (row, index) {
                     if (index === length) {
@@ -2629,7 +3223,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
 
             parametrosReporte.detalle.forEach(function (row) {
                 subTotal += parseFloat(row.subtotal_factura);
-                totalIva += parseFloat(row.iva_total);             
+                totalIva += parseFloat(row.iva_total);
             });
 
             if (subTotal >= resultado[0].base_rtf) {
@@ -2640,7 +3234,229 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
             if (subTotal >= resultado[0].base_ica) {
                 retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
             }
-                
+            if (subTotal >= resultado[0].base_reteiva) {
+                retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
+            }
+
+            totalFactura = ((((parseFloat(totalIva) + parseFloat(subTotal)) - parseFloat(retencionFuente)) - parseFloat(retencionIca)) - parseFloat(retencionIva));
+
+
+            parametrosReporte.valores.baseRetencionFuente = resultado[0].base_rtf;
+            parametrosReporte.valores.baseRetencionIca = resultado[0].base_ica;
+            parametrosReporte.valores.baseRetencionIva = resultado[0].base_reteiva;
+            parametrosReporte.valores.Iva = totalIva;
+            parametrosReporte.valores.retencionFuenteSf = retencionFuente;
+            parametrosReporte.valores.retencionIcaSf = retencionIca;
+            parametrosReporte.valores.retencionIvaSf = retencionIva;
+
+
+            parametrosReporte.valores.retencionFuente = G.utils.numberFormat(retencionFuente, 2);
+            parametrosReporte.valores.retencionIca = G.utils.numberFormat(retencionIca, 2);
+            parametrosReporte.valores.retencionIva = G.utils.numberFormat(retencionIva, 2);
+            parametrosReporte.valores.ivaTotal = G.utils.numberFormat(parseFloat(totalIva), 2);
+            parametrosReporte.valores.subTotal = G.utils.numberFormat(parseFloat(subTotal), 2);
+            parametrosReporte.valores.totalFactura = G.utils.numberFormat(parseFloat(totalFactura), 2);
+            parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura).charAt(0).toUpperCase() + G.utils.numeroLetra(totalFactura).slice(1);
+
+        } else {
+            throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
+        }
+
+
+        return G.Q.nfcall(__generarPdf2, parametrosReporte);
+
+    }).then(function (resultado) {
+
+        parametrosReporte.pdf = resultado;
+
+        callback(false, parametrosReporte);
+
+
+    }).fail(function (err) {
+        console.log("Error  ", err);
+        callback(err);
+    }).done();
+}
+;
+
+
+FacturacionClientes.prototype.generarReporteFacturaGeneradaDian = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    var that = this;
+    var args = req.body.data;
+    var prefijo = args.imprimir_reporte_factura.prefijo;
+    var numero = args.imprimir_reporte_factura.numero;
+    var tipo_documento = args.imprimir_reporte_factura.tipo_documento;
+
+    var json = {
+        tipoDocumento: tipo_documento, //factura
+        factura: prefijo + "_" + numero, //prefijo_nofactura
+        tipoRespuesta: 'PDF'//factura
+    };
+
+    G.Q.ninvoke(that.c_sincronizacion, 'consultaFacturacionElectronica', json).then(function (resultado) {
+
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, err, 500, {}));
+
+    }).done();
+}
+;
+
+FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    var def = G.Q.defer();
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.imprimir_reporte_factura === undefined || args.imprimir_reporte_factura.paginaActual === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {imprimir_reporte_factura: []}));
+        return;
+    }
+
+    if (args.imprimir_reporte_factura.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {imprimir_reporte_factura: []}));
+        return;
+    }
+
+    if (args.imprimir_reporte_factura.paginaActual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {imprimir_reporte_factura: []}));
+        return;
+    }
+
+    var empresaId = args.imprimir_reporte_factura.empresaId;
+    var paginaActual = args.imprimir_reporte_factura.paginaActual;
+    var prefijo = args.imprimir_reporte_factura.prefijo;
+    var numero = args.imprimir_reporte_factura.numero;
+    var usuario = req.session.user.usuario_id;
+
+    var parametros = {empresa_id: empresaId, factura_fiscal: numero, prefijo: prefijo, tipoIdTercero: '',
+        pedidoClienteId: '', terceroId: '', nombreTercero: '', paginaActual: paginaActual
+    };
+    var parametrosFacturaGenerada = {empresa_id: empresaId, factura_fiscal: numero, prefijo: prefijo};
+    var usuario_id = req.session.user.usuario_id;
+    var today = new Date();
+    var formato = 'YYYY-MM-DD hh:mm';
+    var fechaToday = G.moment(today).format(formato);
+    var parametrosReporte = {
+        cabecera: '',
+        serverUrl: req.protocol + '://' + req.get('host') + "/",
+        detalle: {},
+        valores: {},
+        productos: {},
+        imprimio: {usuario: '', fecha: fechaToday},
+        archivoHtml: 'facturaGeneradaDetallePDF.html',
+        reporte: "factura_generada_detalle_"
+    };
+
+    var retencionFuente = 0;
+    var retencionIca = 0;
+    var retencionIva = 0;
+    var totalFactura = 0;
+    var subTotal = 0;
+    var totalIva = 0;
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'listarFacturasGeneradas', parametros).then(function (resultado) {
+
+        if (resultado) {
+            parametrosReporte.cabecera = resultado[0];
+
+            return G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id)
+        } else {
+            throw {msj: '[listarFacturasGeneradas]: Consulta sin resultados', status: 404};
+        }
+
+    }).then(function (resultado) {
+
+        if (resultado) {
+            parametrosReporte.imprimio.usuario = resultado.nombre;
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultaDetalleFacturaGenerada', parametros, 0);
+        } else {
+            throw {msj: '[obtenerUsuarioPorId]: Consulta sin resultados', status: 404};
+        }
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            parametrosReporte.detalle = resultado;
+            parametrosReporte.productos = resultado;
+            if (parametrosReporte.cabecera.factura_agrupada === '1') {
+                parametrosReporte.cabecera.pedido_cliente_id = '';
+                return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarPedidosFacturaAgrupada', parametrosFacturaGenerada);
+            } else {
+                def.resolve();
+            }
+        } else {
+            throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
+        }
+
+    }).then(function (resultado) {
+
+        if (resultado) {
+            if (resultado.length > 0) {
+                var coma = ", ";
+                var length = resultado.length - 1;
+                resultado.forEach(function (row, index) {
+                    if (index === length) {
+                        coma = "";
+                    }
+                    parametrosReporte.cabecera.pedido_cliente_id += row.pedido_cliente_id + coma;
+                });
+
+            } else {
+                throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
+            }
+        } else {
+            def.resolve();
+        }
+
+    }).then(function (resultado) {
+
+        return G.Q.ninvoke(that.m_facturacion_clientes, 'procesosFacturacion', {filtro: '1',
+            factura_fiscal: parametros.factura_fiscal,
+            prefijo: parametros.prefijo
+        });
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultaDetalleFacturaGenerada', parametros, 1);
+        } else {
+            def.resolve();
+        }
+
+    }).then(function (resultado) {
+
+        if (resultado) {
+            parametrosReporte.productos = resultado;
+        }
+        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarParametrosRetencion', {empresaId: parametros.empresa_id});
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            parametrosReporte.detalle.forEach(function (row) {
+                subTotal += parseFloat(row.subtotal_factura);
+                totalIva += parseFloat(row.iva_total);
+            });
+
+            if (subTotal >= resultado[0].base_rtf) {
+
+                retencionFuente = (subTotal * (parseFloat(parametrosReporte.cabecera.porcentaje_rtf) / 100));
+            }
+
+            if (subTotal >= resultado[0].base_ica) {
+                retencionIca = (subTotal) * (parseFloat(parametrosReporte.cabecera.porcentaje_ica) / 1000);
+            }
+
             if (subTotal >= resultado[0].base_reteiva) {
                 retencionIva = (totalIva) * (parseFloat(parametrosReporte.cabecera.porcentaje_reteiva) / 100);
             }
@@ -2654,9 +3470,9 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
             parametrosReporte.valores.ivaTotal = G.utils.numberFormat(parseFloat(totalIva), 2);
             parametrosReporte.valores.subTotal = G.utils.numberFormat(parseFloat(subTotal), 2);
             parametrosReporte.valores.totalFactura = G.utils.numberFormat(parseFloat(totalFactura), 2);
-            parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura);
+            parametrosReporte.valores.totalFacturaLetra = G.utils.numeroLetra(totalFactura).charAt(0).toUpperCase() + G.utils.numeroLetra(totalFactura).slice(1);
 
-            return G.Q.nfcall(__generarPdf, parametrosReporte);
+            return G.Q.nfcall(__generarPdf2, parametrosReporte);
 
         } else {
             throw {msj: '[consultarParametrosRetencion]: Consulta sin resultados', status: 404};
@@ -2953,7 +3769,372 @@ function __generarPdf(datos, callback) {
     });
 }
 
+/**
+ * +Descripcion Funcion encargada de generar el reporte pdf procesando los datos enviados
+ */
+function __generarPdf2(datos, callback) {
+    datos.style = G.dirname + "/public/stylesheets/facturacion/style.css";
+    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
 
-FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes"];
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/FacturacionClientes/reports/' + datos.archivoHtml, 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/CajaGeneral/reports/javascripts/helpers.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '792px',
+                headerHeight: "290px", // .imagent{position: absolute;top: 10px;}
+                footer: `<div style='text-align:right'>{#pageNum}/{#numPages}</div>`,
+                header:
+                        `<style>
+                            p {margin-top:0; margin-bottom:0;line-height: 75%; }
+                            .letra_factura{font: 100% sans-serif;
+                                           display: flex;
+                                            justify-content: center;
+                                            align-content: center;
+                                            flex-direction: column;}
+                            .letra_factura2{font: 100% sans-serif;margin-top:8px;   position: absolute;
+                                           top: 13px;}
+                            .imgQr{
+//                                  position: absolute;
+                                    top: 20px;
+                                    margin:20px;
+//                                  display:block;
+                                    }
+                            .letra_factura_info{font: 50% sans-serif;text-align: center;}
+                            .letra_factura_info_ctr{font: 40% sans-serif; text-align: center;}
+                            .letra_factura_info_jst{font: 40% sans-serif; text-align: justify; text-justify: inter-word;}
+                            .letra_factura_info_40{font: 40% sans-serif;text-align: center;}
+                            .letra_factura_info_40_jt{font: 40% sans-serif;text-align: justify;}
+                           
+                         </style>
+                         <table border='0' width='100%' >
+                           <tr>
+                            <td align="center" width='30%'>
+                                <p ><img  src='{#image logocliente}'  border='0' width="300px" height="80px"></p>
+                                <p class="letra_factura_info">` + datos.cabecera.tipo_id_empresa + `: ` + datos.cabecera.id + ` - ` + datos.cabecera.digito_verificacion + `</p>
+                                <p class="letra_factura_info">` + datos.cabecera.direccion_empresa + ` TELEFONO : ` + datos.cabecera.telefono_empresa + `</p>
+                                <p class="letra_factura_info">` + datos.cabecera.pais_empresa + ` - ` + datos.cabecera.departamento_empresa + ` - ` + datos.cabecera.municipio_empresa + `</p>
+                                <p class="letra_factura_info">` + datos.cabecera.texto2 + `</p>
+                            <td>
+                            <td width='30%'> 
+                                <br><br><br>
+                                <p class="letra_factura_info_ctr">` + datos.cabecera.texto3 + `</p>                                 
+                                <p class="letra_factura_info_jst">` + datos.cabecera.texto1 + `</p>                                 
+                            <td>
+                            <td width='40%' valign="top">
+                                 <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
+                                 <b><p align="center" valign="top" >FACTURA DE VENTA</p></b>  
+                                 <b><p align="center" valign="top" style="margin-top:3px;" >` + datos.cabecera.prefijo + ` ` + datos.cabecera.factura_fiscal + `</p></b> 
+                            <td>
+                           </tr>
+                         </table>
+                            `
+            }
+        },
+        data: datos
+    }, function (err, response) {
+
+        response.body(function (body) {
+            var fecha = new Date();
+            var nombreTmp = datos.reporte + fecha.getTime() + ".pdf";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                if (err) {
+                    console.log("err [__generarPdf]: ", err)
+                } else {
+                    callback(false, nombreTmp);
+                }
+            });
+        });
+    });
+}
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Cargar Archivo Plano
+ */
+function __subir_archivo_plano(files, callback) {
+
+    var ruta_tmp = files.file.path;
+    var ext = G.path.extname(ruta_tmp);
+    var nombre_archivo = G.random.randomKey(3, 3) + ext;
+    var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
+
+    if (G.fs.existsSync(ruta_tmp)) {
+        // Copiar Archivo
+        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
+                then(function () {
+                    return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
+                }).then(function () {
+            var parser = G.XlsParser;
+            var workbook = parser.readFile(ruta_nueva);
+            var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad', 'lote', 'fecha_vencimiento', 'valor_unitario', 'iva']);
+
+            if (!filas) {
+                callback(true);
+                return;
+            } else {
+                G.fs.unlinkSync(ruta_nueva);
+                callback(false, filas);
+            }
+        }).
+                fail(function (err) {
+                    G.fs.unlinkSync(ruta_nueva);
+                    callback(true);
+                }).
+                done();
+
+    } else {
+        callback(true);
+    }
+}
+;
+
+
+/*
+ * Autor : German Galvis
+ * Descripcion : Validar que los codigos de los productos del archivo plano sean validos.
+ *
+ */
+function __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, parametros, callback) {
+
+    var producto = filas[index];
+    if (!producto) {
+
+        callback(false, productosValidos, productosInvalidos);
+        return;
+    }
+    var obj = {
+        codigo_producto: producto.codigo,
+        empresa_id: parametros.empresa_id
+    };
+    /**
+     * +Descripcion Funcion encargada de modificar el detalle del pedido
+     */
+    var _producto = {codigo_producto: producto.codigo, cantidad: producto.cantidad, lote: producto.lote};
+
+    G.Q.ninvoke(that.m_productos, 'validar_producto_inventario', obj).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_productos, 'validar_producto', producto.codigo);
+        } else {
+
+            return false;
+
+        }
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            _producto.tipoProductoId = resultado[0].tipo_producto_id;
+            _producto.descripcion = resultado[0].descripcion_producto;
+            _producto.fecha_vencimiento = new Date((producto.fecha_vencimiento - (25567 + 1)) * 86400 * 1000); //producto.fecha_vencimiento;
+            _producto.valor_unitario = parseFloat(producto.valor_unitario);
+            _producto.iva = producto.iva;
+            productosValidos.push(_producto);
+
+        } else {
+            _producto.mensajeError = "No existe en inventario";
+            _producto.existeInventario = false;
+            productosInvalidos.push(_producto);
+
+        }
+
+        index++;
+        setTimeout(function () {
+            __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, parametros, callback);
+        }, 0);
+
+    }).fail(function (error) {
+
+        callback(error);
+    });
+}
+;
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de insertar un arreglo de productos en la tabla
+ *              productos_consumo
+ * 
+ */
+function __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback) {
+    var formato = 'YYYY-MM-DD';
+    var producto = _productos_validos[index];
+    if (!producto) {
+        callback(false, _productos_invalidos);
+        return;
+    }
+
+    producto.empresa_id = parametros.empresa_id;
+    producto.bodega_id = parametros.bodega_id;
+    producto.centro_id = parametros.centro_id;
+    producto.observacion = parametros.observacion;
+    producto.nombre = parametros.nombre;
+    producto.grupo = parametros.grupo;
+    producto.tipo_id_tercero = parametros.tipo_id_tercero;
+    producto.tercero_id = parametros.tercero_id;
+    producto.fecha_vencimiento = G.moment(producto.fecha_vencimiento).format(formato);
+
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarProductosRepetido', producto).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizar_productos_consumo', producto);
+
+        } else {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertar_productos_consumo', producto);
+
+        }
+
+    }).then(function (resultado) {
+        index++;
+        setTimeout(function () {
+            __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback);
+        }, 0);
+
+    }).fail(function (error) {
+        _productos_invalidos.push(producto);
+        callback(error, _productos_invalidos);
+    });
+}
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado generar un archivo xls
+ *              productos_consumo
+ * 
+ */
+function __creaExcel(data, callback) {
+
+
+    var workbook = new G.Excel.Workbook();
+    var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
+
+    var alignment = {vertical: 'middle', horizontal: 'center'};
+    var border = {
+        top: {style: 'thin'},
+        left: {style: 'thin'},
+        bottom: {style: 'thin'},
+        right: {style: 'thin'}};
+
+    var font = {name: 'Calibri', size: 9};
+
+    var style = {font: font, border: border};
+
+    worksheet.columns = [
+        {header: 'CODIGO', key: 'a', style: style},
+        {header: 'PRODUCTO - ' + data.name, key: 'b', width: 50, style: style},
+        {header: 'MOLECULA', key: 'c', width: 25, style: style},
+        {header: 'LABORATORIO', key: 'd', style: style},
+        {header: 'TIPO PRODUCTO', key: 'e', style: style},
+        {header: 'NIVEL', key: 'f', style: style},
+        {header: 'Promedio Mes', key: 'g', width: 9, style: style},
+        {header: 'Stock Farmacia', key: 'h', width: 8.5, style: style},
+        {header: 'Pedido 60 Dias', key: 'i', width: 7.5, style: style},
+        {header: '', key: 'j', width: 10, style: style},
+        {header: 'Stock Bodega', key: 'k', width: 7.5, style: style}
+    ];
+
+    worksheet.views = [
+        {zoomScale: 160, state: 'frozen', xSplit: 1, ySplit: 1, activeCell: 'A1'}
+    ];
+    var i = 1;
+    data.forEach(function (element) {
+
+        if (element.color === 'ROJO') {
+            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+                element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
+                color: {argb: 'C42807'}, name: 'Calibri', size: 9
+            };
+        } else {
+            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+                element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]);
+        }
+
+        worksheet.getColumn('A').hidden = true;
+        worksheet.getColumn('D').hidden = true;
+        worksheet.getColumn('E').hidden = true;
+        worksheet.getColumn('F').hidden = true;
+
+        i++;
+    });
+
+    var font = {
+        name: 'SansSerif',
+        size: 9,
+        bold: true
+    };
+
+    var alignment = {vertical: 'center', horizontal: 'distributed'};
+
+    var border = {
+        top: {style: 'double'},
+        left: {style: 'double'},
+        bottom: {style: 'double'},
+        right: {style: 'double'}
+    };
+
+    var style = {font: font, border: border, alignment: alignment};
+
+    worksheet.getCell('A1').style = style;
+    worksheet.getCell('B1').style = style;
+    worksheet.getCell('C1').style = style;
+    worksheet.getCell('D1').style = style;
+    worksheet.getCell('E1').style = style;
+    worksheet.getCell('F1').style = style;
+    worksheet.getCell('G1').style = style;
+    worksheet.getCell('H1').style = style;
+    worksheet.getCell('I1').style = style;
+    worksheet.getCell('J1').style = style;
+    worksheet.getCell('K1').style = style;
+
+// save workbook to disk
+    workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
+        console.log("saved");
+        callback(false, data.nameArchivo);
+    });
+}
+;
+
+/**
+ * @author German Galvis
+ * +Descripcion controlador que genera csv
+ */
+function __generarCsvBarranquilla(datos, callback) {
+
+    var fields = ["codigo_producto", "cantidad", "lote", "fecha_vencimiento", "valor_unitario", "iva"];
+
+    var fieldNames = ["CODIGO", "CANTIDAD", "LOTE", "FECHA VENCIMIENTO", "VALOR UNITARIO", "IVA"];
+
+    var opts = {
+        data: datos,
+        fields: fields,
+        fieldNames: fieldNames,
+        del: ';',
+        hasCSVColumnTitle: 'Productos Consumo'
+    };
+
+    G.json2csv(opts, function (err, csv) {
+        if (err)
+            console.log("Eror de Archivo: ", err);
+        var nombreReporte = "CSV_" + datos[0].grupo_id + ".csv";
+        G.fs.writeFile(G.dirname + "/public/reports/" + nombreReporte, csv, function (err) {
+            if (err) {
+                console.log('Error __generarCsvBarranquilla', err);
+                throw err;
+            }
+            callback(false, nombreReporte);
+
+        });
+    });
+}
+
+FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion", "m_productos"];
 
 module.exports = FacturacionClientes;

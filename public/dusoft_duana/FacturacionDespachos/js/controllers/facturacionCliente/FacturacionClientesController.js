@@ -330,6 +330,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             ]
         };
 
+ 
+      
 
         /**
          * @author Cristian Ardila
@@ -363,13 +365,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 {field: 'Vendedor', width: "18%", cellClass: "ngCellText", displayName: 'Vendedor', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 
-                {field: 'F.Factura', width: "10%", cellClass: "ngCellText", displayName: 'F.Factura', 
+                {field: 'F.Factura', width: "8%", cellClass: "ngCellText", displayName: 'F.Factura', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaFactura()}} </p></div>'},
 
                /* {field: 'F.Ven', width: "5%", cellClass: "ngCellText", displayName: 'F.Ven', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaVencimientoFactura()}} </p></div>'},
                 */
                 //{field: 'Valor/saldo',  cellClass: "ngCellText",width: "12%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} / {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
+                
+//                {field: 'Valor EFC', width: "7%", cellClass: "ngCellText txt-center", displayName: 'Subtotal EFC', 
+//                    cellTemplate: '<div class="col-xs-16 ">\
+//                                    <p class="text-uppercase" ><span class="glyphicon glyphicon-ok"></span></p>\
+//                                    <p class="text-uppercase" ng-if="!row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()"><span class="glyphicon glyphicon-remove"></span> SubTotal EFC {{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSwSubtotalFacEfc()}} </p></div>\
+//                                   '},
                 
                 {field: 'Valor', width: "7%", cellClass: "ngCellText", displayName: 'Valor', 
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} </p></div>'},
@@ -378,7 +386,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
 
 
-                {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
+                {field: 'Estado', width: "8%", cellClass: "ngCellText", displayName: 'Estado FI', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
                 
                 {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
@@ -388,12 +396,38 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                    <a href="javascript:void(0);" ng-click="sincronizarFactura(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,0)" class = "glyphicon glyphicon-print"> factura </a>\
+                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,0)" class = "glyphicon glyphicon-print"> Factura </a>\
+                                </li>\
+                                <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                                   <a href="javascript:void(0);" ng-click="imprimirReporteFacturaDian(row.entity,0)" class = "glyphicon glyphicon-print"> Factura DIAN </a>\
                                 </li>\
                            </ul>\
                       </div>'
                 },
+                {displayName: "DIAN", width: "10%", cellClass: "txt-center dropdown-button",
+                    cellTemplate: '\
+                        <div class="btn-group" >\
+                            <div ng-if="(row.entity.sincronizacionDian >= 1)" >\
+                               <button class="btn btn-primary btn-xs" ng-disabled="{{!(row.entity.sincronizacionDian > 1)}}" data-toggle="dropdown">\
+                                 SINCRONIZADO\
+                               </button>\
+                            </div>\
+                            <div ng-if="(row.entity.sincronizacionDian == 0 && verificaFactuta(row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()))" >\
+                               <button class="btn btn-success btn-xs"  ng-click="generarSincronizacionDian(row.entity,0)" data-toggle="dropdown">\
+                                  SINCRONIZAR\
+                               </button>\
+                            </div>\
+                        </div>'
+                }
             ]
+        };
+        
+        $scope.verificaFactuta=function(pref){           
+            var prefijo = false;
+            if(pref==='FDC' || pref==='FDB'){
+                prefijo = true;
+            }
+            return prefijo;
         };
         
         $scope.sincronizarFactura = function(entity){
@@ -416,7 +450,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.status === 200) {
                                 that.mensajeSincronizacion(data.obj.resultado_sincronizacion_ws.resultado.mensaje_bd,
                                         data.obj.resultado_sincronizacion_ws.resultado.mensaje_ws);
-                                that.listarFacturasGeneradas(entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(), {tipo: 'ME', descripcion: "ME"});
+                                        var tipo;
+                                        var descripcion;
+                                        if(empresa.codigo === '03'){
+                                           tipo = 'FDC';
+                                           descripcion = "FDC" ;
+                                        }else{
+                                           tipo = 'FDB';
+                                           descripcion = "FDB" ;
+                                        }
+                                that.listarFacturasGeneradas(entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(), {tipo: tipo, descripcion: descripcion});
                             }
                             ;
                         });
@@ -426,82 +469,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             );
             
         };
-        /*
-        * @author Cristian Manuel Ardila
-        * +Descripcion Metodo encargado generar el reporte
-        * para consultar los medicamentos pendientes           
-        * @fecha  2016-10-12
-        */
-        /*that.consultaFacturaGeneradaDetalle = function(parametro){
-          
-            var obj = {                   
-                session: $scope.session,
-                data: {
-                   consulta_factura_generada_detalle: {
-                       cabecera:{
-                            empresa_id: parametro.getCodigo(),
-                            pais_empresa: parametro.pais,
-                            departamento_empresa: parametro.departamento,
-                            municipio_empresa: parametro.municipio,
-                            razon_social: parametro.nombre,
-                            direccion_empresa: parametro.direccionEmpresa,
-                            telefono_empresa: parametro.telefonoEmpresa,
-                            tipo_id_empresa: parametro.tipoIdEmpresa,
-                            id: parametro.id,
-                            digito_verificacion: parametro.digitoVerificacion,
-                            texto2: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje2,
-                            texto3: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje3, 
-                            texto1: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje1, 
-                            mensaje: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].mensaje4, 
-                            prefijo: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
-                            factura_fiscal: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
-                            tipo_id_tercero: parametro.mostrarFacturasDespachadas()[0].getTipoId(),
-                            tercero_id: parametro.mostrarFacturasDespachadas()[0].getId() , 
-                            nombre_tercero:parametro.mostrarFacturasDespachadas()[0].getNombre(),
-                            nombre:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarVendedor()[0].getNombre(),
-                            telefono : parametro.mostrarFacturasDespachadas()[0].getTelefono(),
-                            direccion : parametro.mostrarFacturasDespachadas()[0].getDireccion(),
-                            ubicacion: parametro.mostrarFacturasDespachadas()[0].getUbicacion(),
-                            fecha_registro: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaFactura(),
-                            fecha_vencimiento_factura: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getFechaVencimientoFactura(),
-                            observaciones: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getObservacion(),
-                            pedido_cliente_id: parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].get_numero_cotizacion(),
-                            factura_agrupada:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getTipoFactura(),
-                            porcentaje_rtf:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getPorcentajeRtf(),
-                            porcentaje_ica:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getPorcentajeIca(),
-                            porcentaje_reteiva:parametro.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].getPorcentajeReteIva(),
-                        }
-                    }
-                }    
-            };    
-
-            facturacionClientesService.consultaFacturaGeneradaDetalle(obj,function(data){
-
-                if (data.status === 200) {
-                    var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
-                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                }
-            });  
-        };*/
-        
-        /**
-         * +Descripcion Metodo encargado de generar el reporte con la factura
-         *              generada
-         * @author Cristian Ardila
-         * @fecha 18/05/2017
-         */
-        /*$scope.imprimirFacturaGenerada = function(entity){
-            console.log("imprimirFacturaGenerada [entity]:: ", entity);
-            that.imprimirFacturaGeneradaLocalStorage(entity);
-        };
-        
-        that.imprimirFacturaGeneradaLocalStorage = function(parametro){     
-            console.log("imprimirFacturaGeneradaLocalStorage");
-            that.consultaFacturaGeneradaDetalle(parametro);
-        };*/
-        
-        
-        
+ 
         /**
          * +Descripcion Metodo encargado de limpiar el localstorage con los parametros
          *              para filtrar la ultima factura generada
@@ -520,7 +488,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @author Cristian Ardila
          * @fecha 2017/22/05
          */
-        that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws) {
+        that.mensajeSincronizacion = function (mensaje_bd,mensaje_ws,parametros="") {
+
+      
+            if(parametros.datos !== undefined && parametros.datos !== "" ){
+             var prefijo=parametros.datos.descripcion;
+             var numero=parametros.datos.numeracion;
+            }
                      
             $scope.opts = {
                 backdrop: true,
@@ -532,7 +506,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 controller: "VentanaMensajeSincronizacionController",
                 resolve: {
                     mensaje: function() {
-                        return {mensaje_bd:mensaje_bd, mensaje_ws:mensaje_ws};
+                        return {mensaje_bd : mensaje_bd, mensaje_ws : mensaje_ws, prefijo : prefijo, numero : numero};
                     }
                 }
 
@@ -558,8 +532,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             if(storageListaFacturaDespachoGenerada){
                 
                 $scope.root.activarTabFacturasGeneradas = storageListaFacturaDespachoGenerada.active;                
-                that.listarFacturasGeneradas(storageListaFacturaDespachoGenerada.datos.numeracion,{tipo: 'ME', descripcion: "ME"});              
-                that.mensajeSincronizacion(storageListaFacturaDespachoGenerada.mensaje.mensaje_bd,storageListaFacturaDespachoGenerada.mensaje.mensaje_ws);
+                that.listarFacturasGeneradas(storageListaFacturaDespachoGenerada.datos.numeracion,{tipo: 'FDC', descripcion: "FDC"});              
+                that.mensajeSincronizacion(storageListaFacturaDespachoGenerada.mensaje.mensaje_bd,storageListaFacturaDespachoGenerada.mensaje.mensaje_ws,storageListaFacturaDespachoGenerada);
             }
             
                         
@@ -1246,6 +1220,64 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 if (data.status === 200) {
                     var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");          
+                }
+            });          
+        };
+        
+        $scope.imprimirReporteFacturaDian = function(entity, estado){
+            
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_factura:{
+                        prefijo:   (estado > 0) ? entity.prefijo        : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
+                        numero:    (estado > 0) ? entity.numero         : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
+                        tipo_documento: 1
+                    }
+                }
+            };
+                                   
+            facturacionClientesService.imprimirReporteFacturaDian(obj,function(data){
+             console.log("imprimirReporteFacturaDian:: ",data);
+                if (data.status === 200) {
+                    var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;                    
+                    $scope.visualizarReporte("/reports/doc_dian/" + nombre, nombre, "_blank");          
+                }else if(data.status === 500){
+                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<p class='bg-danger'><h3 align='justify'>"+data.msj+"</h3></br></p>");
+		 return;
+                }               
+            });          
+        };
+        
+        $scope.generarSincronizacionDian = function(entity, estado){
+            
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    imprimir_reporte_factura:{
+                        empresaId: (estado > 0) ? entity.bodegas_doc_id : entity.codigo,
+                        prefijo:   (estado > 0) ? entity.prefijo        : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo(),
+                        numero:    (estado > 0) ? entity.numero         : entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),
+                        paginaActual: 1
+                    }
+                }
+            };
+                                   
+            facturacionClientesService.generarSincronizacionDian(obj,function(data){
+             
+                if (data.status === 200) {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>"+data.msj+"</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                    that.listarFacturasGeneradas(entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(),{tipo: 'FDC', descripcion: "FDC"});
+		    return;         
+                }else{
+                    if(data.obj.response.statusCode===500){
+                       var msj = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.mensaje;
+                       var codigo = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.codigo;
+                       var valor = data.obj.root.Envelope.Body.Fault.detail.ExcepcionServiciosNegocio.valor;
+
+                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>"+msj+"</h3></br><p class='bg-danger'><b>Certicamara dice:</b></p></br>"+codigo+": "+valor);
+		      return;
+                    }
                 }
             });          
         };

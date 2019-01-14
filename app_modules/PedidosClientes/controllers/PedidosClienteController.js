@@ -1,4 +1,6 @@
 
+/* global G */
+
 var PedidosCliente = function (pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos,
         m_terceros, emails, pedidos_farmacias, m_pedidos_clientes_log, terceros_clientes_model, m_pedidos_logs) {
 
@@ -44,6 +46,51 @@ PedidosCliente.prototype.listarFacturasPedido = function (req, res) {
         if (resultado.length > 0) {
 
             res.send(G.utils.r(req.url, 'Consulta facturas', 200, {listar_tipo_documento: resultado}));
+        } else {
+            throw 'Consulta sin resultados';
+        }
+
+
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+
+
+};
+
+/**
+ * +Descripcion Controlador encargado de consultar el sw_autorizacion del 
+ *              contrato del cliente
+ *  @author German Galvis
+ *  @fecha 2018-11-06
+ */
+PedidosCliente.prototype.consultarAutorizacionCartera = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.contrato_id === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de contrato', 404, {sw_autorizacion: []}));
+        return;
+    }
+
+    if (args.empresa_id === undefined || args.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {sw_autorizacion: []}));
+        return;
+    }
+
+
+    var parametros = {
+        contrato_id: args.contrato_id,
+        empresa_id: args.empresa_id,
+        tercero_id: args.tercero_id,
+        tipo_id_tercero: args.tipo_id_tercero
+    };
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarAutorizacionCartera', parametros).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            res.send(G.utils.r(req.url, 'Consulta sw_autorizacion', 200, {sw_autorizacion: resultado[0].sw_autorizacion}));
         } else {
             throw 'Consulta sin resultados';
         }
@@ -257,21 +304,48 @@ PedidosCliente.prototype.listarPedidosClientes = function (req, res) {
  * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
-PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
-
+PedidosCliente.prototype.asignarResponsablesPedidoAutomatico = function(req, callback) {
     var that = this;
+    G.Q.nfcall(__asignarResponsablesPedido,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+};
+
+PedidosCliente.prototype.asignarResponsablesPedido= function(req, res) {
+    var that = this;
+    G.Q.nfcall(__asignarResponsablesPedido,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("listarGetDocTemporal ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();    
+};
+
+function __asignarResponsablesPedido(req,that, callback) {
+  
+    var send = {};
 
     var args = req.body.data;
 
     if (args.asignacion_pedidos === undefined || args.asignacion_pedidos.pedidos === undefined || args.asignacion_pedidos.estado_pedido === undefined || args.asignacion_pedidos.responsable === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+       // res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        send.msj='Algunos Datos Obligatorios No Estan Definidos';
+        send.status=404;
+        send.respuesta="";
+        callback(false,send);;
         return;
     }
 
     var params = args.asignacion_pedidos;
 
     if (params.pedidos.length === 0 || params.estado_pedido === "" || params.responsable === "") {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
+//        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
+        send.msj='Algunos Datos Obligatorios No Estan Definidos';
+        send.status=404;
+        send.respuesta="";
+        callback(false,send);;
         return;
     }
 
@@ -311,7 +385,12 @@ PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
 
                 // Notificacion al operario de los pedidos que le fueron asignados
                 that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
-                res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
+//                res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
+                send.msj='Asignacion de Resposables';
+                send.status=200;
+                send.respuesta={};
+                callback(false,send);;
+                return;
             }
 
         }).fail(function (err) {
@@ -321,7 +400,11 @@ PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
                 err.msj = "Se ha generado un error..";
             }
 
-            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+//            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+            send.msj=err.msj;
+            send.status=err.status;
+            send.respuesta={};
+            callback(send);
         }).done();
 
     });
@@ -343,6 +426,78 @@ PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
  * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
  * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
+
+PedidosCliente.prototype.eliminarResponsablesPedido1 = function (req, res) {
+   var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no esta definido.', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.numero_pedido === '' || args.pedidos_clientes.numero_pedido === 0) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacÃ­o', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.pedidos_clientes.numero_pedido;
+    var estado_pedido = ''; // 0 = No asignado
+    var responsables_pedido;
+    
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultar_pedido', numero_pedido).then(function (pedido_cliente) {
+        
+        var pedido = pedido_cliente[0];
+        
+        if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1') && pedido.estado_separacion === null) {
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'obtener_responsables_del_pedido', numero_pedido);
+        } else {
+            res.send(G.utils.r(req.url, 'El Pedido No puede cambiar de estado', 200, {}));
+            return;
+        }
+        
+    }).then(function (result) {
+        responsables_pedido=result;
+       
+        if (responsables_pedido === undefined || responsables_pedido.length < 2) {
+            res.send(G.utils.r(req.url, 'El Pedido no ha registrado responsables', 500, {}));
+            return;
+        }
+        
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'eliminar_responsables_pedidos', numero_pedido);
+        
+    }).then(function (result) {
+       
+        estado_pedido = responsables_pedido[0].estado;
+        
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizar_estado_actual_pedido', numero_pedido,estado_pedido);
+        
+    }).then(function (result) {
+      
+        return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificarPedidosActualizados', {numero_pedido: numero_pedido});
+    
+    }).then(function (result) {
+       
+        if (responsables_pedido.length > 0) {
+
+           var responsable_estado_pedido = responsables_pedido[0];
+          return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificacionOperarioPedidosReasignados', {numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
+       
+        }else{
+          return true;
+        }
+        
+    }).then(function (result) {
+        
+        res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
+        
+    }).fail(function (err) {
+        console.log("Error eliminarResponsablesPedido ", err);
+        res.send(G.utils.r(req.url, "Se ha generado un error interno", 500, {}));
+    }).done();
+     
+}
 
 PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
 
@@ -366,7 +521,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
     that.m_pedidos_clientes.consultar_pedido(numero_pedido, function (err, pedido_cliente) {
 
         if (err || pedido_cliente.length === 0) {
-
+             console.log("Error",err,pedido_cliente.length);
         } else {
             var pedido = pedido_cliente[0];
 
@@ -411,7 +566,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
                                             that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
                                         }
 
-                                        res.send(G.utils.r(req.url, 'El Pedido cambiÃ³ de estado correctamente', 200, {}));
+                                        res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
                                     }
                                 });
                             }
@@ -1258,6 +1413,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         bodegaActual: args.pedidos_clientes.bodega,
         bodegaDestino: args.pedidos_clientes.bodega,
         that: that,
+        sw_aprobado_cartera: args.pedidos_clientes.sw_aprobado_cartera,
         clienteMultiple: args.pedidos_clientes.clienteMultiple
     };
 
@@ -2527,14 +2683,14 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
         return;
 
     }).then(function (resultado) {
-
+        
         if (!resultado) {
 
             setTimeout(function () {
                 __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
             }, 0);
 
-        } else if (resultado.length > 0 && resultado[0].valido === '1' && (producto.bodega !== obj.pedidos_clientes.cotizacion.bodega_id && producto.existe_producto_bodega_actual === 1)) {
+        } else if (resultado.length > 0 && resultado[0].valido === '1' && (producto.existe_producto_bodega_actual === 1)) {
 
             productosValidos.push(productoUnidadMedida);
 
@@ -3817,7 +3973,7 @@ PedidosCliente.prototype.modificarDetallePedido = function (req, res) {
     }
 
     if (!producto.cantidadPendienteDespachar || producto.cantidadPendienteDespachar.length === 0) {
-        res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacÃ­a', 404, {}));
+        res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacia', 404, {}));
         return;
     }
 
@@ -4572,10 +4728,10 @@ PedidosCliente.prototype.validarDisponibilidad = function (req, res) {
 
         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto: resultado}}));
 
-
     }).fail(function (err) {
 
         res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
+
     }).done();
 
 };
@@ -4592,6 +4748,7 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
     var producto = productos[index];
     var def = G.Q.defer();
     var productoUnidadMedida = "";
+
     if (!producto) {
 
         callback(false, productosSinDisponible);//rowCount  
@@ -4602,7 +4759,7 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
 
     //se asigna la bodega del producto para que valide la existencia en la bodega de origen
     //y no en la bodega donde se genera el pedido
-    if (producto.bodegaProducto !== undefined) {
+    if (producto.bodegaProducto !== undefined && producto.bodegaProducto !== '') {
         parametros.bodega = producto.bodegaProducto;
     }
 
@@ -4617,23 +4774,23 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
             parametros.filtroAvanzado)
             .then(function (resultado) {
 
-
                 if (producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0) {
                     productoUnidadMedida = resultado[0];
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productosSinDisponible.push(resultado[0]);
+                  
                     def.resolve();
                 } else {
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productoUnidadMedida = resultado[0];
-
+                   
                     return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
 
                 }
 
 
             }).then(function (resultado) {
-
+       
         index++;
 
         if (!resultado) {
@@ -4659,6 +4816,8 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
         }
 
     }).fail(function (err) {
+        console.log("Error ", err);
+        callback(err);
     }).done();
 
 }
@@ -4792,6 +4951,85 @@ function __validarPrecioVenta(producto, resultado, tipo) {
     }
 
     var valido = true;
+    // var contrato = resultado[0].contrato_cliente_id;
+    var precioRegulado = Number(resultado[0].precio_regulado);
+    var precioPactado = Number(resultado[0].precio_pactado);
+    var costoCompra = Number(resultado[0].costo_ultima_compra);
+    var msj = "";
+//    console.log("resultado[0]", resultado[0]);
+    /**
+     * +Descripcion: Valida si el producto es regulado
+     */
+    if (resultado[0].sw_regulado === '1') {
+
+        /**
+         * +Descripcion: Si precio de venta es mayor al precio regulado
+         *             cancele la accion
+         */
+        if (precioVenta > precioRegulado) {
+            valido = false;
+            msj = 'El precio venta esta por encima del regulado';
+        }
+        /**
+         * +Descripcion: Si el precio pactado es mayor al regulado
+         *              cancele la accion
+         */
+        if (precioPactado > precioRegulado) {
+            valido = false;
+            msj = 'El precio pactado esta por encima del regulado';
+        }
+    }
+    /**
+     * +Descripcion: Valida si el producto no es regulado y su precio pctado
+     *               esta en 0
+     */
+    // if (resultado[0].sw_regulado !== '1' && precioPactado === 0) {
+
+//    else {
+//
+//        if (precioVenta < costoCompra && contrato === 987) {
+//
+//            valor = costoCompra;
+//
+//        } else
+//    }
+    if (precioVenta < costoCompra) {
+
+        valido = false;
+        msj = "El precio de venta esta por debajo del costo";
+    }
+
+    if (costoCompra <= 0) {
+        valido = false;
+        msj = "El costo ultima compra debe ser mayor a cero (0)";
+    }
+
+    if (precioVenta === 0) {
+        valido = false;
+        msj = "El precio de venta debe ser mayor a cero (0)";
+    }
+
+    return {valido: valido, msj: msj}
+}
+
+/**
+ * @author German Galvis
+ * @fecha  28/09/2018
+ * +Descripcion Metodo encargado de validar si un producto es regulado,
+ *              regulado = 1 (regulado), 2(no regulado)
+ * @param {type} producto
+ * @param {type} resultado
+ */
+function __validarPrecioVentaFarmacia(producto, resultado, tipo) {
+
+    var precioVenta;
+    if (tipo === 0) {
+        precioVenta = Number(producto.precioVentaIva);
+    } else {
+        precioVenta = Number(resultado[0].precio_producto);
+    }
+
+    var valido = true;
     var contrato = resultado[0].contrato_cliente_id;
     var precioRegulado = Number(resultado[0].precio_regulado);
     var precioPactado = Number(resultado[0].precio_pactado);
@@ -4827,13 +5065,13 @@ function __validarPrecioVenta(producto, resultado, tipo) {
     if (resultado[0].sw_regulado !== '1' && precioPactado === 0) {
 
         if (costoCompra > 0) {
-            
+
             if (precioVenta < costoCompra && contrato === 987) {
-                
+
                 valor = costoCompra;
-                
-            }else if (precioVenta < costoCompra) {
-                
+
+            } else if (precioVenta < costoCompra) {
+
                 valido = false;
                 msj = "El precio de venta esta por debajo del costo";
             }
@@ -4852,7 +5090,6 @@ function __validarPrecioVenta(producto, resultado, tipo) {
 
     return {valido: valido, msj: msj, valor: valor}
 }
-
 
 /*
  * @author Camilo Orozco
@@ -5076,7 +5313,7 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
          **/
-        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
+        var precioVenta = __validarPrecioVentaFarmacia(producto, resultado, 0);
 
         if (precioVenta.valido) {
 
@@ -5120,7 +5357,7 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
         return;
     }
 
-console.log("__insertarProductosFarmaciaCotizacion",producto);
+   
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion_multiple', cotizacion, producto).then(function (resultado) {
 
@@ -5535,38 +5772,57 @@ PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function (
 
 };
 
-PedidosCliente.prototype.pedidoClienteAPedidoFarmaciaAutomatico = function(req, callback) {
+PedidosCliente.prototype.pedidoClienteAPedidoFarmaciaAutomatico = function (req, callback) {
+    
     var that = this;
-    G.Q.nfcall(__pedidoClienteAPedidoFarmacia,req,that).then(function(send) {
-        callback(false,send);
-    }).fail(function(err) {
-	callback(err);
-    }).done(); 
+    G.Q.nfcall(__pedidoClienteAPedidoFarmacia, req, that).then(function (send) {
+      
+        callback(false, send);
+    }).fail(function (err) {
+        callback(err);
+    }).done();
 };
 
-PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function(req, res) {
+PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
     var that = this;
-    G.Q.nfcall(__pedidoClienteAPedidoFarmacia,req,that).then(function(send) {
-        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
-    }).fail(function(err) {
-	console.log("listarGetDocTemporal ",err);
-        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
-    }).done();    
+    G.Q.nfcall(__pedidoClienteAPedidoFarmacia, req, that).then(function (send) {
+        res.send(G.utils.r(req.url, send.msj, send.status, send.respuesta));
+    }).fail(function (err) {
+        console.log("listarGetDocTemporal ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {err: err.respuesta}));
+    }).done();
 };
 
-function __pedidoClienteAPedidoFarmacia(req,that,callback) {
+function __pedidoClienteAPedidoFarmacia(req, that, callback) {
     var that = that;
     var args = req.body.data;
-    var usuario_id = req.session.user.usuario_id;
+    var usuario_id;
+
+    if(args.usuario_id!==undefined && args.usuario_id!==''){
+       usuario_id = args.usuario_id;
+    }else{
+       usuario_id = req.session.user.usuario_id;
+    }
+    
     var obj = {pedidoDestino: args.numero_pedido};
     var send = {};
+    var farmacia_id;
+    var centro_utilidad;
+    var bodega;
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultarPedidoMultipleCliente', {numero_pedido: args.numero_pedido}).then(function (resultado) {
         //farmacia_id, centro_utilidad, bodega, usuario_id, numero_pedido ,
-        var farmacia_id = resultado[0].farmacia_id;
-        var centro_utilidad = resultado[0].centro_utilidad;
-        var bodega = resultado[0].bodega;
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarEncabezadoFarmaciaRelacionadoNumeroPedido', farmacia_id, centro_utilidad, bodega, usuario_id, args.numero_pedido);
+        farmacia_id = resultado[0].farmacia_id;
+        centro_utilidad = resultado[0].centro_utilidad;
+        bodega = resultado[0].bodega;
+
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'consultar_pedido', args.numero_pedido);
+
+    }).then(function (resultado) {
+
+        var observacion = resultado[0].observacion.substr(30);
+
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarEncabezadoFarmaciaRelacionadoNumeroPedido', farmacia_id, centro_utilidad, bodega, usuario_id, args.numero_pedido, observacion);
 
     }).then(function (resultado) {
         //if (resultado.rows.length > 0) {
@@ -5583,19 +5839,20 @@ function __pedidoClienteAPedidoFarmacia(req,that,callback) {
         return G.Q.ninvoke(that.m_pedidos_clientes, "actualizar_pedido_multiple_final_farmacia", {pedidoDestino: obj.pedidoDestino, pedidoFinal: obj.pedidoFinal});
     }).then(function (resultado) {
 //        res.send(G.utils.r(req.url, 'actualizar_pedido_multiple_final_farmacia satisfactoriamente', 200, {pedido: resultado}));
-        send.msj="actualizar_pedido_multiple_final_farmacia satisfactoriamente";
-        send.status=200;
-        send.respuesta={pedido: obj.pedidoFinal};
-        callback(false,send);
+        send.msj = "actualizar_pedido_multiple_final_farmacia satisfactoriamente";
+        send.status = 200;
+        send.respuesta = {pedido: obj.pedidoFinal};
+        callback(false, send);
     }).fail(function (err) {
         console.log("err [pedidoClienteAPedidoFarmacia]: ", err);
 //        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
-        send.msj=err.msj;
-        send.status=err.status;
-        send.respuesta={pedidos_clientes: err.pedidos_clientes};
+        send.msj = err.msj;
+        send.status = err.status;
+        send.respuesta = {pedidos_clientes: err.pedidos_clientes};
         callback(send);
     });
-};
+}
+;
 //Duplica un pedido en la bodega Duana
 PedidosCliente.prototype.duplicarPedido = function (req, res) {
     var that = this;

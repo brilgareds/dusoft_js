@@ -1,0 +1,28 @@
+<div class="panel-heading clearfix">
+    <div class="pull-left col-md-11">
+        <h4 class="text-center"><strong>{{ datos_form.titulo}}</strong></h4>
+    </div>
+    <div class="pull-right">
+        <div> 
+            <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+        </div> 
+    </div>
+</div>
+<br>        
+<div class="table-responsive" style="clear:both; ">
+    <div class="defaultGrid grid-responsive" ng-grid="listaProductos" ></div>
+</div>  
+
+<br>
+
+<div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaDetalle == 1" ng-click="paginaAnteriorDetalle()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="root.items_pedidos_clientes < 25" ng-click="paginaSiguienteDetalle()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div>
+<visualizar-reporte></visualizar-reporte>
+
+

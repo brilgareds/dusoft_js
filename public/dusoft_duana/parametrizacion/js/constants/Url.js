@@ -21,7 +21,8 @@
                 'GUARDAR_FORMULARIO_TERCERO' : BASE_URL + "/Terceros/GestionTerceros/guardarFormularioTerceros",
                 'OBTENER_TERCERO' : BASE_URL + "/Terceros/GestionTerceros/obtenerTercero",
                 'LISTAR_TERCEROS' : BASE_URL + "/Terceros/GestionTerceros/listarTerceros",
-                'LISTAR_TIPOS_DOCUMENTOS' : BASE_URL + "/Terceros/GestionTerceros/obtenerTiposDocumentos"
+                'LISTAR_TIPOS_DOCUMENTOS' : BASE_URL + "/Terceros/GestionTerceros/obtenerTiposDocumentos",
+                "ADQUIRIENTE": BASE_URL + "/Sincronizacion/adquirientesMasivo",///api/Sincronizacion/adquirientesMasivo'
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar",

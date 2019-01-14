@@ -1,0 +1,102 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <h4 class="h4MarginTopBottom"><span >{{root.tituloNota}}</span></h4>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-3" ng-if="root.mostrarConcepto">
+                    <div class="row">
+                        <div class="col-md-7">                                          
+                            <h4 class="text-center">Concepto Nota</h4>
+                            <ui-select ng-model="root.concepto" ng-change="cambioConcepto()" theme="select2" class="form-control selectgeneral pull-left">
+                                <ui-select-match  placeholder="Seleccionar">{{ $select.selected.descripcion}}</ui-select-match>
+                                <ui-select-choices repeat="concepto in conceptos | filter:$select.search">
+                                    {{ concepto.descripcion}}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" ng-if="root.mostrarConcepto">
+
+                    <div class="row" ng-if="!habilitarValorNota()">  
+                        <div class="" >
+                            <div class="col-md-7">
+                                <h4 class="text">Valor Nota</h4>
+                                <input type="text" class="form-control" ng-model="root.impuestosnota.valorSubtotal" ng-keyup ="cambioValorNota()" name="" id="" validacion-numero-entero/>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-4" ng-if="root.mostrarConcepto">
+
+                    <div class="row" ng-if="!habilitarValorNota()"> 
+                        <div class="col-md-12">
+                            <h4 class="text">Observación</h4>
+                            <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='root.descripcionNota' name="" placeholder="Ingresar Observación" ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <br />
+
+            <div class="table-responsive" style="clear:both; height: 5%" ng-if="habilitarValorNota()">
+                <div class="defaultGrid grid-responsive" ng-grid="listaNotas2" ></div>
+            </div>
+
+            <br />
+            <br />
+            <div class="row">
+                <div class="col-md-1">
+                    <label class="control-label text-center" for="IsSmallBusiness"></label>
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label text-center" for="IsSmallBusiness">Subtotal</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label text-center" for="IsSmallBusiness" >Iva</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label text-center" for="IsSmallBusiness">Retefuente</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label text-center" for="IsSmallBusiness">Reteica</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="control-label text-center" for="IsSmallBusiness" >Total Nota</label>
+                </div>
+            </div>
+            <div class="row" style="font-size: 10px;">
+                <div class="col-md-1">
+                    <!--<label class="control-label text-center" for="IsSmallBusiness"></label>-->
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label text-center" for="IsSmallBusiness">{{root.impuestosnota.valorSubtotal| currency:"$"}}</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label text-center" for="IsSmallBusiness" >{{root.impuestosnota.iva| currency:"$"}}</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label text-center" for="IsSmallBusiness">{{root.impuestosnota.retencionFuente| currency:"$"}}</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label text-center" for="IsSmallBusiness">{{root.impuestosnota.retencionIca| currency:"$"}}</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="control-label text-center" for="IsSmallBusiness" >{{root.impuestosnota.totalGeneral| currency:"$"}}</label>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="modal-footer">
+            <button type="button" class="btn btn-warning" ng-click="cerrar()">Cerrar</button>
+            <button type="button" class="btn btn-primary" ng-click="guardarNotas()" ng-disabled="habilitarCrear()">Crear</button>
+        </div>
+    </div>
+</div> 
+
+

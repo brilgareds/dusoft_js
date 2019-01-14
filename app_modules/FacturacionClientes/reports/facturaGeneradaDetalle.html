@@ -12,25 +12,38 @@
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css' /> 
     </head>
     <body>
-        <TABLE width='100%' border=0 cellpadding='4' cellspacing='4'>
+        <TABLE width='100%' border=1 cellpadding='4' cellspacing='4'>
             <TR>
-                <TD rowspan='2'><img  src="{{:serverUrl}}images/DispensacionHc/logocliente.png" align='left' border=0></TD>
-                <TD width='100%' align='center' valign='center'>
-                    <table width="70%" align="center"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-weight:bold;font-size:20pt" rules="all">
+                <TD width='20%' align='center' valign='center' rowspan='2'>
+                    <table width="20%" align="center"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-weight:bold;font-size:20pt" rules="all">
+                <tr align="center">
+                    <TD ><img  src="{{:serverUrl}}images/DispensacionHc/logocliente1.png" align='left' border=0></TD>
+                <tr class="label">
+                    <td align="center"> {{:cabecera.tipo_id_empresa}}: {{:cabecera.id}}- {{:cabecera.digito_verificacion}}</td>
+                </tr>
+                <tr class="label">
+                    <td align="center"> {{:cabecera.direccion_empresa}} TELEFONO : {{:cabecera.telefono_empresa}}</td>
+                </tr>
+                <tr class="label">
+                    <td align="center"> {{:cabecera.pais_empresa}} - {{:cabecera.departamento_empresa}} - {{:cabecera.municipio_empresa}}</td>
+                </tr>
+                </table>
+                </TD>
+                <TD width='100%' align='center' valign='center' rowspan='2'>
+                    <table width="90%" align="center"  style="font-family: sans_serif, Verdana, helvetica, Arial; font-weight:bold;font-size:20pt" rules="all">
+                        
                         <tr class="label">
-                            <td align="center">{{:cabecera.razon_social}}  {{:cabecera.tipo_id_empresa}}: {{:cabecera.id}}- {{:cabecera.digito_verificacion}}</td>
+                            <td align="center"> <B>{{:cabecera.texto2}} </B></td>
                         </tr>
                         <tr class="label">
-                            <td align="center">{{:cabecera.texto2}} </td>
+                            <td align="center"> <b>{{:cabecera.texto3}}</b> </td>
                         </tr>
                         <tr class="label">
-                            <td align="center">{{:cabecera.municipio_empresa}} </td>
+                            <td align="justify"> {{:cabecera.texto1}}</td>
                         </tr>
                     </table>
                 </TD>
-            </TR>
-            <TR>
-                <TD align='center' valign='top'> </TD>
+                <TD rowspan='2'><img  src="{{:serverUrl}}images/ICONTEC.jpg" align='rigth' border=0></TD>
             </TR>
         </TABLE>
         <BR>
@@ -38,20 +51,6 @@
             <tr class="label" align="right">
                 <td class="label" >
                     <h2>FACTURA DE VENTA  {{:cabecera.prefijo}} {{:cabecera.factura_fiscal}}</h2>
-                </td>
-            </tr>
-            <tr class="label" align="center">
-                <td class="label" >
-                    <table width="100%" align="center" style="border:1px solid #000000;font-size:8.5px" >
-                        <tr  align="center">
-                            <td> <b>DIRECCION:</b> {{:cabecera.direccion_empresa}} </td>
-                            <td> <b>TELEFONOS:</b> {{:cabecera.telefono_empresa}} </td>
-                            <td> <b>UBICACION:</b> {{:cabecera.pais_empresa}} - {{:cabecera.departamento_empresa}} - {{:cabecera.municipio_empresa}}</td>
-                        </tr>
-                        <tr align="center">
-                            <td colspan="3"> <b>{{:cabecera.texto3}}</b> </td>
-                        </tr>
-                    </table>
                 </td>
             </tr>
             <tr  align="center">
@@ -63,8 +62,8 @@
                             <td ></td>
                         </tr>
                         <tr align="center">
-                            <td ><b>VENDIDO A:</b> {{:cabecera.tipo_id_tercero}} {{:cabecera.tercero_id}} {{:cabecera.nombre_tercero}}</td>
-                            <td ><b>DIRECCION:</b> {{:cabecera.direccion}}  TELEFONO: {{:cabecera.telefono}}</td>
+                            <td ><b>CLIENTE:</b> {{:cabecera.tipo_id_tercero}} {{:cabecera.tercero_id}} {{:cabecera.nombre_tercero}}</td>
+                            <td ><b>DIRECCION:</b> {{:cabecera.direccion}}</td>  <td >TELEFONO: {{:cabecera.telefono}}</td>
                             <td ><b>UBICACION:</b> {{:cabecera.ubicacion}} </td>
                         </tr>
                     </table>
@@ -92,38 +91,40 @@
         <br>  <br>	
         <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" rules="all">
             <tr class="label">
-                <td align="center" colspan="7">PRODUCTOS</td>
+                <td align="center" colspan="11">PRODUCTOS</td>
             </tr>
             <tr class="label" align="center">
                 <td>CODIGO</td>
                 <td>PRODUCTO</td>
-                <td>LOTE</td>
                 <td>F.VTO</td>
+                <td>LOTE</td>
                 <td>CUM</td>
-                <td>CODIGO INVIMA</td>
+                <td>INVIMA</td>
                 <td>CANTIDAD</td>
                 <td>VALOR UNIT</td>
-                <td>VALOR TOTAL</td>
+                <td>VALOR IVA</td>
                 <td>%IVA</td>
+                <td>VALOR TOTAL</td>
             </tr>
             {{for productos }}
             <tr>
                 <td>{{:codigo_producto}}</td>
                 <td>{{:descripcion}}</td>
-                <td>{{:lote}}</td>
                 <td>{{:fecha_vencimiento}}</td>
+                <td>{{:lote}}</td>
                 <td>{{:codigo_cum}}</td>
                 <td>{{:codigo_invima}}</td>
                 <td>{{:cantidad}}</td>
                 <td>{{:valor_unitario}}</td>
-                <td>{{:subtotal}}</td>
+                <td>{{:iva_total}}</td>
                 <td>%{{:porc_iva}}</td>
+                <td>{{:subtotal}}</td>
             </tr>
             {{/for}}
          </table>
         <br>
         <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
-            <tr align="left"> <td > <B>{{:cabecera.texto1}}</B></td></tr>
+            
             <tr class="label" align="center">
                 <td class="label" ><table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
 

@@ -14,11 +14,28 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.listarPedidosClientes(req, res);
     });
 
+    // Consultar autorizacion de cartera
+    app.post('/api/PedidosClientes/consultarAutorizacionCartera', function(req, res) {
+        c_pedidos_clientes.consultarAutorizacionCartera(req, res);
+    });
+
     // Asignar o seleccionar responsables del pedido
     app.post('/api/PedidosClientes/asignarResponsable', function(req, res) {
         c_pedidos_clientes.asignarResponsablesPedido(req, res);
     });
-
+    
+    app.post('/api/PedidosClientes/asignarResponsablesPedidoAutomatico', function(req, callback) {
+        c_pedidos_clientes.asignarResponsablesPedidoAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
+    app.post('/api/PedidosClientes/pedidoClienteAPedidoFarmaciaAutomatico', function(req, callback) {
+        c_pedidos_clientes.pedidoClienteAPedidoFarmaciaAutomatico(req, function(respuesta){
+            callback(respuesta);
+        });
+    });
+    
     // Asignar o seleccionar responsables del pedido
     app.post('/api/PedidosClientes/eliminarResponsablesPedido', function(req, res) {
         c_pedidos_clientes.eliminarResponsablesPedido(req, res);

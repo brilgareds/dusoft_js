@@ -37,6 +37,8 @@ G.random = require('./lib/Random');
 G.auth = require('./lib/Authentication');
 G.fs = require('fs-extra');
 //G.Excel = require('exceljs');;
+//G.pdfBase64 = require('pdf-to-base64');
+G.base64 = require('base64topdf');
 G.path = path;
 G.Q = require('q');
 G.accounting = accounting;
@@ -44,8 +46,11 @@ G.XlsParser =  require("./lib/XlsParser");
 G.moment = require("moment");
 G.jsonQuery = require('jinq');
 G.json2csv = require('json2csv');
+G.Excel = require('exceljs');
 G.fcmPush = require('fcm-push');
 G.sqlformatter = require('sqlformatter');
+G.xmlformatter = require('xml-formatter');
+G.base64Img = require('base64-img');
 var events = require('events');
 G.eventEmitter = new events.EventEmitter();
 G.logError =  function logError(texto) {  
@@ -185,13 +190,13 @@ if (cluster.isMaster) {
 } else {
 
     //Carga de Certificados autogenerados para funcionamiento con https
-    var key = G.fs.readFileSync('key.pem');
-    var cert = G.fs.readFileSync( 'localhost.crt' );
-
-    var options = {
-      key: key,
-      cert: cert
-    };
+//    var key = G.fs.readFileSync('key.pem');
+//    var cert = G.fs.readFileSync( 'localhost.crt' );
+//
+//    var options = {
+//      key: key,
+//      cert: cert
+//    };
 
 /*
    //crea servidor http
@@ -297,6 +302,17 @@ if (cluster.isMaster) {
     } else {
         app.use(express.static(path.join(__dirname, 'public')));
     }
+    
+    
+    app.use(express.static(path.join(__dirname, 'public'), { maxAge: '30 days' }));
+    
+    app.get('/*', function (req, res, next) {
+        if (req.url.indexOf("/images/") === 0 || req.url.indexOf("/stylesheets/") === 0) {
+            res.setHeader("Cache-Control", "public, max-age=2592000");
+            res.setHeader("Expires", new Date(Date.now() + 2592000000).toUTCString());
+        }
+        next();
+    });
     
     app.use(express.static(path.join(__dirname, 'files')));
     

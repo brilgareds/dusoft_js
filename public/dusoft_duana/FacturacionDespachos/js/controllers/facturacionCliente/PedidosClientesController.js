@@ -154,7 +154,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         resultado.prefijo,
                                         resultado.numero,
                                         row.pedidos[0].fechaRegistro,
-                                        resultado.empresa_id))
+                                        resultado.empresa_id,
+                                        resultado.tiene_iva));
                                 }                                             
                             });                                        
                         });
@@ -266,7 +267,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()" >\
                             <span class="label" style="color:black;"><a href="javascript:void(0);" ng-click="imprimirReporteDocumento(row.entity, item)" class = "glyphicon glyphicon-print"></a>\
                             <input type="checkbox" class="checkpedido" ng-checked="buscarDocumentoSeleccion(item)"\n\
-                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}} </span> <br> \
+                            ng-click="onDocumentoSeleccionado($event.currentTarget.checked,this)"> {{item.prefijo}} - {{item.numero}}<p style="color:red;">({{item.tieneIva}})</p></span> <br> \
                         </li>\
                       </ul>'},
                 {displayName: "Opc", cellClass: "txt-center dropdown-button",
@@ -455,7 +456,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 2017-08-05
          */
         $scope.generarFacturasAgrupadas = function () {
-
+            
             var resultadoStorage = localStorageService.get("clientePedidoDespacho");
 
             if (resultadoStorage) {
@@ -546,7 +547,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         localStorageService.add("listaFacturaDespachoGenerada",
                             {active:true, 
                             datos:data.obj.generar_factura_individual[0],
-                            mensaje:data.obj.resultado_sincronizacion_ws.resultado}
+                            mensaje:data.obj.resultado_sincronizacion_ws.resultado,
+                            mensaje_factura:data.obj.resultado_sincronizacion_ws.parametros                            
+                           }
                         );
                         $state.go('Despacho');                                          
                         AlertService.mostrarMensaje("warning", data.msj);

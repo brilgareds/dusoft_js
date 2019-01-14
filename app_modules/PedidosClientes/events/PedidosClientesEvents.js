@@ -250,7 +250,9 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = funct
 
     // Seleccionar el Socket del Operario, si esta conectado en la Tablet.    
     this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
-
+     if (err) {
+        console.log("Error [onNotificacionOperarioPedidosReasignados]",err);
+     }else{
         operarios_bodega.forEach(function(operario) {
 
 
@@ -266,6 +268,7 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = funct
 
             });
         });
+      }
     });
 };
 

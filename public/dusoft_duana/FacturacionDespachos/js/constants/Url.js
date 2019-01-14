@@ -21,6 +21,7 @@ define(["angular"], function(angular) {
                  "IMPRIMIR_REPORTE_PEDIDO": BASE_URL + "/FacturacionClientes/generarReportePedido",
                  "IMPRIMIR_REPORTE_DESPACHO": BASE_URL + "/FacturacionClientes/generarReporteDespacho",
                  "IMPRIMIR_REPORTE_FACTURA": BASE_URL + "/FacturacionClientes/generarReporteFacturaGenerada",
+                 "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/FacturacionClientes/generarReporteFacturaGeneradaDian",
                  "SINCRONIZAR_FI": BASE_URL + "/FacturacionClientes/sincronizarFactura",
                  "PROCESAR_DESPACHOS": BASE_URL + "/FacturacionClientes/procesarDespachos",
                  "FACTURAS_EN_PROCESO": BASE_URL + "/FacturacionClientes/procesosFacturacion",
@@ -32,7 +33,14 @@ define(["angular"], function(angular) {
                  "ELIMINAR_TOTAL_TEMPORAL_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/eliminarTotalTemporalFacturaConsumo",
                  "ELIMINAR_CABECERA_TEMPORAL_FACTURA_CONSUMO" : BASE_URL + "/FacturacionClientes/eliminarCabeceraTemporalFacturaConsumo",
                  "GENERAR_FACTURA_POR_CONSUMO" : BASE_URL + "/FacturacionClientes/generarFacturaXConsumo",
-                 "LISTAR_FACTURAS_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasTemporales"
+                 "LISTAR_FACTURAS_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasTemporales",
+                 "BUSCAR_FARMACIAS" : BASE_URL + "/FacturacionClientes/buscarFarmacias",
+                 "LISTAR_FACTURAS_BARRANQUILLA_TEMPORALES" : BASE_URL + "/FacturacionClientes/listarFacturasConsumoBarranquillaTemporales",
+                 "ELIMINAR_TEMPORAL_FACTURA_CONSUMO_BARRANQUILLA" : BASE_URL + "/FacturacionClientes/eliminarTemporalFacturaConsumoBarranquilla",
+                 "LISTAR_PRODUCTOS" : BASE_URL + "/FacturacionClientes/listarProductos",
+                 "IMPRIMIRCSV" : BASE_URL + "/FacturacionClientes/imprimirCsv",
+                 "SUBIR_ARCHIVO" : BASE_URL + "/FacturacionClientes/subirArchivo",
+                 "GENERAR_SINCRONIZACION_DIAN" : BASE_URL + "/FacturacionClientes/generarSincronizacionDian"
             },   
             'FACTURACIONPROVEEDOR': {
                 "LISTAR_ORDENES_COMPRA_PROVEEDORES": BASE_URL + "/FacturacionProveedores/listarOrdenesCompraProveedor",
@@ -52,14 +60,32 @@ define(["angular"], function(angular) {
                 "GUARDAR_FACTURA_CAJA_GENERAL": BASE_URL + "/CajaGeneral/guardarFacturaCajaGenral",
                 "LISTAR_FACTURAS_GENERADAS_NOTAS": BASE_URL + "/CajaGeneral/listarFacturasGeneradasNotas",
                 "IMPRIMIR_FACTURA_NOTAS": BASE_URL + "/CajaGeneral/imprimirFacturaNotas",
-                "IMPRIMIR_FACTURA_NOTAS_DETALLE": BASE_URL + "/CajaGeneral/imprimirFacturaNotasDetalle",
                 "IMPRIMIR_NOTA": BASE_URL + "/CajaGeneral/imprimirNota",
                 "SINCRONIZAR_FACTURA_NOTAS": BASE_URL + "/CajaGeneral/sincronizarFacturaNotas",
                 "LISTAR_PREFIJOS": BASE_URL + "/CajaGeneral/listarPrefijos",
                 "INSERTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/insertarFacFacturasConceptosNotas",
                 "LISTAR_FAC_FACTURAS_CONCEPTOS_NOTAS": BASE_URL + "/CajaGeneral/listarFacConceptosNotas",
                 "LISTAR_IMPUESTOS_TERCERO": BASE_URL + "/CajaGeneral/consultarImpuestosTercero",
-                "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas"
+                "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas",
+                "GENERAR_SINCRONIZACION_DIAN_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDian",
+                "GENERAR_SINCRONIZACION_DIAN_NOTA_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDianNota",
+                "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/CajaGeneral/generarReporteFacturaGeneradaDian"
+            },
+            'NOTAS': {
+                "CONSULTAR_NOTAS": BASE_URL + "/Notas/ConsultarNotas",
+                "LISTAR_FACTURAS": BASE_URL + "/Notas/listarFacturas",
+                "LISTAR_PORCENTAJES": BASE_URL + "/Notas/listarPorcentajes",
+                "LISTAR_PORCENTAJES_ANIO": BASE_URL + "/Notas/listarPorcentajesAnio",
+                "DETALLE_FACTURA": BASE_URL + "/Notas/ConsultarDetalleFactura",
+                "CREAR_NOTA": BASE_URL + "/Notas/crearNota",
+                "CREAR_NOTA_CREDITO": BASE_URL + "/Notas/crearNotaCredito",
+                "LISTAR_CONCEPTOS": BASE_URL + "/Notas/listarConceptos",
+                "IMPRIMIR_NOTA": BASE_URL + "/Notas/imprimirNota",
+                "IMPRIMIR_NOTA_CREDITO": BASE_URL + "/Notas/imprimirNotaCredito",
+                "SINCRONIZAR_NOTAS": BASE_URL + "/Notas/sincronizarNotas",
+                "GENERAR_SINCRONIZACION_DIAN_DEBITO" : BASE_URL + "/Notas/generarSincronizacionDianDebito",
+                "GENERAR_SINCRONIZACION_DIAN_CREDITO" : BASE_URL + "/Notas/generarSincronizacionDianCredito",
+                "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/Notas/generarReporteFacturaGeneradaDian"
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",

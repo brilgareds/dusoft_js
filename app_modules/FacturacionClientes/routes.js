@@ -2,10 +2,16 @@ module.exports = function(app, di_container) {
  
     var c_facturacion_clientes = di_container.get("c_facturacion_clientes");
     var j_facturacion_clientes = di_container.get("j_facturacion_clientes");
+    var c_sincronizacion = di_container.get("c_sincronizacion");
   
   
     //j_facturacion_clientes.ejecutarJobProcesarDespachos();
   
+    //
+    app.post('/api/Sincronizacion/facturacionElectronica', function(req, res) {      
+        c_sincronizacion.facturacionElectronica(req, res);
+    });
+    
     // Listar los tipos terceros
     app.post('/api/FacturacionClientes/listarTiposTerceros', function(req, res) {      
         c_facturacion_clientes.listarTiposTerceros(req, res);
@@ -43,6 +49,11 @@ module.exports = function(app, di_container) {
     app.post('/api/FacturacionClientes/consultaFacturaGeneradaDetalle', function(req, res) {     
         c_facturacion_clientes.consultaFacturaGeneradaDetalle(req, res);
     });
+    
+     app.post('/api/FacturacionClientes/generarReporteFacturaGeneradaDian', function(req, res) {     
+        c_facturacion_clientes.generarReporteFacturaGeneradaDian(req, res);
+    });
+ 
      
     app.post('/api/FacturacionClientes/generarReporteFacturaGenerada', function(req, res) {     
         c_facturacion_clientes.generarReporteFacturaGenerada(req, res);
@@ -101,7 +112,35 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.listarFacturasTemporales(req, res);
     });
     
+    app.post('/api/FacturacionClientes/buscarFarmacias', function(req, res) {       
+        c_facturacion_clientes.buscarFarmacias(req, res);
+    });
+    
     app.post('/api/FacturacionClientes/eliminarCabeceraTemporalFacturaConsumo', function(req, res) {       
         c_facturacion_clientes.eliminarCabeceraTemporalFacturaConsumo(req, res);
+    });
+    
+    app.post('/api/FacturacionClientes/listarFacturasConsumoBarranquillaTemporales', function(req, res) {       
+        c_facturacion_clientes.listarFacturasConsumoBarranquillaTemporales(req, res);
+    });
+     
+    app.post('/api/FacturacionClientes/eliminarTemporalFacturaConsumoBarranquilla', function(req, res) {       
+        c_facturacion_clientes.eliminarTemporalFacturaConsumoBarranquilla(req, res);
+    });
+     
+    app.post('/api/FacturacionClientes/listarProductos', function(req, res) {       
+        c_facturacion_clientes.listarProductos(req, res);
+    });
+     
+    app.post('/api/FacturacionClientes/imprimirCsv', function(req, res) {       
+        c_facturacion_clientes.imprimirCsv(req, res);
+    });
+     
+    app.post('/api/FacturacionClientes/subirArchivo', function(req, res) {       
+        c_facturacion_clientes.subirArchivo(req, res);
+    });
+    
+    app.post('/api/FacturacionClientes/generarSincronizacionDian', function(req, res) {       
+        c_facturacion_clientes.generarSincronizacionDian(req, res);
     });
 };

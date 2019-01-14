@@ -588,7 +588,7 @@ define(["angular", "js/controllers",
             };
            
             
-            $scope.generarDocumento = function(documento) { 
+            $scope.generarDocumento = function(documento) {
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
@@ -686,7 +686,13 @@ define(["angular", "js/controllers",
                         });
 
 
-                    } else if(parseInt(data.status) !== 500 ) {
+
+                    }  else if(parseInt(data.status) !== 500 ) { 
+                        
+                     if(parseInt(data.status) === 404 ) {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                     }
+
                        
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];
@@ -702,7 +708,6 @@ define(["angular", "js/controllers",
                             return;
                         }
                         
-                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                         if (documento, movimientos_bodegas.productos_no_auditados !== undefined) {
                             that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);

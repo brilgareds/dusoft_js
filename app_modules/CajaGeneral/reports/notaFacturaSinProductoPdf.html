@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>NOTAS</title>        
+        <link rel="stylesheet" href="{{:style}}" />       
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css' />    
+        <style>            
+
+            body {
+                font-family: 'Open Sans', sans-serif;
+                font-size:10px;
+                line-height:15px;
+            }
+            .pad-top-botm {
+                padding-bottom:0px;
+                padding-top:10px;
+            }
+            h4 {
+                text-transform:uppercase;
+            }
+
+            .contact-info span {
+                /*font-size:10px;*/
+                padding:0px 50px 0px 50px;
+            }
+
+            .contact-info hr {
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }
+
+            .client-info {
+                /*font-size:10px;*/
+            }
+
+            .footer-info {
+                font-size:8px;
+            }
+
+            .ttl-amts {
+                text-align:right;
+                padding-right:50px;
+            }
+            .box {
+                float: left;
+                width: 300px;
+                height: 50px;
+                /*margin: 1em;*/
+            }
+            .destacado { font-size: 10px; border-collapse: collapse; border: 1px solid black; }
+            /*            table, th, td {
+                            border: 0px solid black;                
+                            border-collapse: collapse;                
+                        }*/
+            td {
+                /*font-size: 8px;*/
+            }
+        </style>
+    </head>
+    <body>
+        <table width="100%" align="center">
+            <tr>
+                <td align='center' width='85%' style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; height:10px;">
+                        <tr>
+                            <td>CLIENTE: </td>
+                            <td>{{:cliente.nombre_tercero}} </td>
+                            <td>{{:cliente.tipo_id_tercero}} {{:cliente.tercero_id}} </td>
+                            <td>DIRECCIÓN: </td>
+                            <td>{{:cliente.direccion}} </td>
+                            <td>TELEFONO:  </td>
+                            <td>{{:cliente.telefono}} </td>
+                        </tr>
+                    </table>
+                </td>
+                <td  align='center' rowspan='2' width='15%' style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
+                        <tr >
+                            <td  align='center' height='10px' >
+                                <b>FACTURA No</b>
+                            </td>
+                        </tr>
+                        <tr >
+                            <td  align='center' height='10px' >
+                                <b>{{:parametros.prefijo}} - {{:parametros.facturaFiscal}}</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  align='center' height='10px' >
+                                <b>FECHA FACTURA </b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  align='center' height='10px' >
+                                <b>{{:conceptosDetalle.fecha_registro_factura}}</b>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td align='center' width='85%' style="border:1px solid #000000;font-size:8px">
+                        <table border='0' width='100%' style="font-size: 8px; line-height: 0; height:10px;">
+                        <tr>
+                            <td>FECHA NOTA: </td>
+                            <td>{{:conceptosDetalle.fecha_registro}} </td>
+                            <td>CONCEPTO NOTA: </td>
+                            <td>{{:parametros.descripcion_concepto}}</td>
+                            <td>TIPO NOTA:  </td>
+                            <td>{{:parametros.tipo_nota}}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+        </table>
+        <br/>	
+        <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" rules="all">
+            <tr class="label">
+                <td align="center" colspan="6">CONCEPTO</td>
+            </tr>
+            <tr class="label">
+                <td align="center" colspan="6">{{:conceptosDetalle.descripcion}}</td>
+            </tr>
+        </table>
+        <br />
+        <table width="100%" align="center" style="border:1px solid #000000;font-size:8px" >
+
+            <tr class="label" align="center">
+                <td class="label" >
+                    <table width="100%" align="center" style="font-size:8px" >
+
+                        <tr align="center">
+                            <td><b>SUBTOTAL</b></td>
+                            <td><b>IVA</b></td>
+                            <td><b>RET-FTE</b></td>
+                            <td><b>RETE-ICA</b></td>
+                            <td><b>RETE-IVA</b></td>
+                            <td><b>VALOR TOTAL</b></td>
+                        </tr>
+                        <tr align="center">
+                            <td><b>{{:~formatMoney(valores.valorSubtotal)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.iva)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.retencionFuente)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.retencionIca)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.retencionIva)}}</b></td>
+                            <td><b>{{:~formatMoney(valores.totalGeneral)}}</b></td>
+
+                        </tr>
+                        <tr align="left">
+                            <td colspan="6"><b>SON: {{:valores.totalFacturaLetra}} pesos</b></td></tr> <!--valor en letras -->
+                    </table>			
+                </td>
+            </tr>
+        </table>
+        <br />
+        <br />	
+        <table width="100%" align="center" style="border:0px solid #000000;font-size:7px" >
+
+            <tr>
+                <td width="31.3%"><table align="center" width="100%" class="modulo_list_claro" style="border:0px solid #000000;font-size:7px">
+                        <tr>
+                            <td align="left">ELABORADO : {{:usuario}}</td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <hr width="100%"></td>
+                        </tr>
+                    </table>
+                </td>
+                <td ></td>	
+            </tr>
+        </table>
+    </body>
+</html>

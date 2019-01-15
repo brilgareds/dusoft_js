@@ -32,38 +32,6 @@ define([
 
             that.init = function () {
                 $scope.documento_ingreso.set_observacion('');
-                that.listarFarmacias();
-            };
-
-            /**
-             * +Descripcion Metodo encargado de invocar el servicio que listara 
-             *              las farmacias
-             * @author German Andres Galvis
-             * @fecha 07/05/2018 DD/MM/YYYY
-             */
-            that.listarFarmacias = function () {
-
-                var usuario = Usuario.getUsuarioActual();
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        bodega: usuario.empresa.centroUtilidad.bodega.codigo,
-                        centro: usuario.empresa.centroUtilidad.codigo,
-                        empresa: usuario.empresa.codigo
-                    }
-                };
-
-                I008Service.buscarBodega(obj, function (data) {
-
-                    if (data.status === 200) {
-                        $scope.bodegas = data.obj.listarBodegas;
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                    }
-                });
-            };
-
-            $scope.onBuscarDocumentosTraslado = function () {
                 that.listarDocumentosTraslado();
             };
 
@@ -71,7 +39,7 @@ define([
              * +Descripcion Metodo encargado de invocar el servicio que listara 
              *              los documentos
              * @author German Andres Galvis
-             * @fecha 07/05/2018 DD/MM/YYYY
+             * @fecha 12/01/2019 DD/MM/YYYY
              */
             that.listarDocumentosTraslado = function () {
 
@@ -79,8 +47,9 @@ define([
                 var obj = {
                     session: $scope.session,
                     data: {
-                        bodega_origen: $scope.documento_ingreso.get_bodega_origen(),
-                        bodega_destino: usuario.getEmpresa()
+                        empresaId: usuario.getEmpresa().getCodigo(),
+                        centroUtilidad: usuario.getEmpresa().centroUtilidad.codigo,
+                        bodega: usuario.getEmpresa().centroUtilidad.bodega.codigo,
                     }
                 };
                 I008Service.buscarTraslados(obj, function (data) {
@@ -95,42 +64,17 @@ define([
 
             /**
              * +Descripcion Metodo encargado de invocar el servicio que lista
-             *              la farmacia origen
-             * @author German Andres Galvis
-             * @fecha 10/05/2018 DD/MM/YYYY
-             */
-            that.buscarFarmaciaOrigenPorId = function (prefijo, numero) {
-
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        numero: numero,
-                        prefijo: prefijo
-                    }
-                };
-
-                I008Service.buscarFarmaciaOrigenId(obj, function (data) {
-                    if (data.status === 200) {
-                        $scope.documento_ingreso.set_bodega_origen(data.obj.listarFarmaciaOrigen[0]);
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                    }
-                });
-            };
-
-            /**
-             * +Descripcion Metodo encargado de invocar el servicio que lista
              *              el documento seleccionado
              * @author German Andres Galvis
-             * @fecha 10/05/2018 DD/MM/YYYY
+             * @fecha 15/01/2019 DD/MM/YYYY
              */
-            that.buscarDocumentoPorId = function (prefijo, numero) {
+            that.buscarDocumentoPorId = function (tmp_id, empresa_id) {
 
                 var obj = {
                     session: $scope.session,
                     data: {
-                        numero: numero,
-                        prefijo: prefijo
+                        tmp_id: tmp_id,
+                        empresa_id: empresa_id
                     }
                 };
 
@@ -152,7 +96,7 @@ define([
              * +Descripcion Metodo encargado de invocar el servicio que listara 
              *              los productos del traslado seleccionado
              * @author German Andres Galvis
-             * @fecha 08/05/2018 DD/MM/YYYY
+             * @fecha 14/01/2019 DD/MM/YYYY
              */
             that.listarProductosTraslado = function () {
                 var obj = {
@@ -235,9 +179,9 @@ define([
 
             /**
              * +Descripcion Metodo encargado de invocar el servicio que inserta 
-             *              los productos del traslado seleccionado al tmp
+             *              los productos del despacho seleccionado al tmp
              * @author German Andres Galvis
-             * @fecha 09/05/2018 DD/MM/YYYY
+             * @fecha 14/01/2019 DD/MM/YYYY
              */
             that.guardarProductoTmp = function (producto) {
 
@@ -257,7 +201,7 @@ define([
                         docTmpId: $scope.doc_tmp_id
                     }
                 };
-
+                
                 I008Service.agregarProductoTmp(obj, function (data) {
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -270,7 +214,7 @@ define([
 
             /**
              * @author German Galvis
-             * @fecha 2018-05-09
+             * @fecha 14/01/2019 DD/MM/YYYY
              * +Descripcion Metodo encargado listar los productos asociados al docTmp
              * parametros: variables
              */
@@ -283,7 +227,6 @@ define([
 
                     }
                 };
-
 
                 Request.realizarRequest(API.I008.CONSULTAR_PRODUCTOS_VALIDADOS, "POST", obj, function (data) {
 
@@ -377,7 +320,7 @@ define([
 
             /**
              * @author German Galvis
-             * @fecha 2018-05-09
+             * @fecha 14/01/2019 DD/MM/YYYY
              * +Descripcion Metodo encargado de eliminar el producto seleccionado
              * parametros: variables
              */
@@ -408,7 +351,7 @@ define([
             /**
              * @author German Galvis
              * +Descripcion Metodo encargado de guardar NewDocTmp
-             * @fecha 08/05/2018 DD/MM/YYYY
+             * @fecha 14/01/2019 DD/MM/YYYY
              */
             that.guardarNewDocTmp = function (fila) {
                 var usuario = Usuario.getUsuarioActual();
@@ -418,6 +361,7 @@ define([
                         bodega_doc_id: $scope.documento_ingreso.get_bodegas_doc_id(),
                         observacion: $scope.documento_ingreso.get_observacion(),
                         empresaId: usuario.getEmpresa().getCodigo(),
+                        empresaEnvia: $scope.documento_ingreso.get_documento_traslado().empresa_id,
                         numero_documento_seleccionado: $scope.documento_ingreso.get_documento_traslado().numero,
                         prefijo_documento_seleccionado: $scope.documento_ingreso.get_documento_traslado().prefijo
                     }
@@ -478,16 +422,18 @@ define([
 
             /**
              * @author German Galvis
-             * @fecha 2018-05-09
+             * @fecha 14/01/2019 DD/MM/YYYY
              * +Descripcion Metodo encargado de invocar el servicio que
              *              borra los DocTemporal
              */
             that.eliminarGetDocTemporal = function () {
+                var usuario = Usuario.getUsuarioActual();
                 var obj = {
                     session: $scope.session,
                     data: {
                         listado: $scope.datos_view.listado_productos_validados,
-                        doc_tmp_id: $scope.doc_tmp_id
+                        doc_tmp_id: $scope.doc_tmp_id,
+                        empresa_id:usuario.getEmpresa().getCodigo()
                     }
                 };
 
@@ -517,14 +463,14 @@ define([
 
                         if (data.itemIdCompra === productos[i].item_id) {
                             condicion = false;
-                            AlertService.mostrarMensaje("warning", "la cantidad ingresada para el producto " + data.descripcion + " tiene que coincidir con la cantidad devuelta");
+                            AlertService.mostrarMensaje("warning", "la cantidad ingresada para el producto " + data.descripcion + " tiene que coincidir con la cantidad enviada");
                         }
                     }
                 });
 
                 if (productos.length > 0) {
                     condicion = false;
-                    AlertService.mostrarMensaje("warning", "Se debe dar ingreso a todos los productos trasladados");
+                    AlertService.mostrarMensaje("warning", "Se debe dar ingreso a todos los productos despachados");
                 }
 
                 if (condicion) {
@@ -548,10 +494,10 @@ define([
                 var obj = {
                     session: $scope.session,
                     data: {
-                        prefijo_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().prefijo,
-                        numero_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().numero,
-                        bodega_origen: $scope.documento_ingreso.get_bodega_origen(),
-                        bodega_destino: usuario.getEmpresa().getCodigo(),
+                        prefijo_despacho: $scope.documento_ingreso.get_documento_traslado().prefijo,
+                        numero_despacho: $scope.documento_ingreso.get_documento_traslado().numero,
+                        empresa_origen: $scope.documento_ingreso.get_documento_traslado().empresa_id,
+                        empresa_id: usuario.getEmpresa().getCodigo(),
                         doc_tmp_id: $scope.doc_tmp_id,
                         sw_estado: estado,
                         usuario_id: usuario.getId()
@@ -589,7 +535,6 @@ define([
             that.borrarVariables = function () {
                 $scope.doc_tmp_id = "00000";
                 $scope.documento_ingreso.set_observacion('');
-                $scope.documento_ingreso.set_bodega_origen(null);
                 $scope.documento_ingreso.set_documento_traslado(null);
                 $scope.datos_view.listado_productos = [];
                 $scope.datos_view.listado_productos_validados = [];
@@ -603,15 +548,6 @@ define([
 
             $scope.cancelar_documento = function () {
                 $state.go('DocumentosBodegas');
-            };
-
-            $scope.isNoTmp = function () {
-                var disabled = false;
-                if ($scope.doc_tmp_id === "00000" && ($scope.documento_ingreso.get_bodega_origen() === undefined || $scope.documento_ingreso.get_bodega_origen() === null ||
-                        $scope.documento_ingreso.get_documento_traslado() === undefined || $scope.documento_ingreso.get_documento_traslado() === null)) {
-                    disabled = true;
-                }
-                return disabled;
             };
 
             $scope.isTmp = function () {
@@ -645,8 +581,7 @@ define([
             if (datos_documento.datosAdicionales !== undefined) {
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
                 $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
-                that.buscarFarmaciaOrigenPorId(datos_documento.datosAdicionales.prefijo, datos_documento.datosAdicionales.numero);
-                that.buscarDocumentoPorId(datos_documento.datosAdicionales.prefijo, datos_documento.datosAdicionales.numero);
+                that.buscarDocumentoPorId(datos_documento.datosAdicionales.doc_tmp, datos_documento.datosAdicionales.empresa_id);
                 $scope.validarDesdeLink = true;
 
             } else {

@@ -155,10 +155,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             tipoTerceroId: documento.tipo_id_tercero, tipo_prestamo: documento.bodegatf};
                     }
                     if (documento.tipo_doc_bodega_id === 'I008') {
-                        datosAdicionales = {doc_tmp: documento.doc_tmp_id
-//                            , observacion: documento.observacion, terceroId: documento.tercero_id,
-//                            tipoTerceroId: documento.tipo_id_tercero, tipo_prestamo: documento.bodegatf
-                        };
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero: documento.numero_factura,
+                            prefijo: documento.prefijo_idc, empresa_id: documento.empresa_id};
                     }
                     if (documento.tipo_doc_bodega_id === 'I011') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero: documento.numero_edb,
@@ -299,7 +297,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var disabled = false;
 
                 if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012" || documento.tipo_movimiento === "E017"
-                        || documento.tipo_movimiento === "I015" || documento.tipo_movimiento === "E007" || documento.tipo_movimiento === "I007") {
+                        || documento.tipo_movimiento === "I015" || documento.tipo_movimiento === "E007" || documento.tipo_movimiento === "I007" || documento.tipo_movimiento === "I008") {
                     disabled = true;
                 }
                 return disabled;
@@ -340,6 +338,17 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     obj.data.terceroId = documentos.terceroId;
                     obj.data.tipo_prestamo_id = documentos.numeroFactura;
                     Request.realizarRequest(API.I007.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "I008") {
+                    
+                    Request.realizarRequest(API.I008.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
                         }

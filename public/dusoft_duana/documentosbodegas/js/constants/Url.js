@@ -55,6 +55,19 @@ define(["angular"], function (angular) {
                 'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I007/crearHtmlDocumento'
 
             },
+            'I008': {
+                'LISTAR_DOCUMENTOS': BASE_URL + '/movBodegas/I008/listarTraslados',
+                'LISTAR_PRODUCTOS_TRASLADO': BASE_URL + '/movBodegas/I008/listarProductosTraslados',
+                'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/I008/newDocTemporal',
+                'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I008/eliminarGetDocTemporal',
+                'AGREGAR_ITEM': BASE_URL + '/movBodegas/I008/agregarItem',
+                'CONSULTAR_PRODUCTOS_VALIDADOS': BASE_URL + '/movBodegas/I008/listarProductosValidados',
+                'ELIMINAR_PRODUCTO': BASE_URL + '/movBodegas/I008/eliminarItem',
+                'LISTAR_DOCUMENTO_SELECCIONADO': BASE_URL + '/movBodegas/I008/listarDocumentoId',
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/I008/crearDocumento',
+                'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I008/crearHtmlDocumento'
+
+            },
             'I011': {
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/I011/listarBodegas',
                 'LISTAR_BODEGA_ID': BASE_URL + '/movBodegas/I011/listarBodegaId',

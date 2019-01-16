@@ -450,7 +450,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.status === 200) {
                                 that.mensajeSincronizacion(data.obj.resultado_sincronizacion_ws.resultado.mensaje_bd,
                                         data.obj.resultado_sincronizacion_ws.resultado.mensaje_ws);
-                                that.listarFacturasGeneradas(entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(), {tipo: 'FDC', descripcion: "FDC"});
+                                        var tipo;
+                                        var descripcion;
+                                        if(empresa.codigo === '03'){
+                                           tipo = 'FDC';
+                                           descripcion = "FDC" ;
+                                        }else{
+                                           tipo = 'FDB';
+                                           descripcion = "FDB" ;
+                                        }
+                                that.listarFacturasGeneradas(entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero(), {tipo: tipo, descripcion: descripcion});
                             }
                             ;
                         });

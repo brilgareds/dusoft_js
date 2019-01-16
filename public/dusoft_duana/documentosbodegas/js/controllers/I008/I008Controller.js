@@ -4,14 +4,14 @@ define([
 ], function (angular, controllers) {
 
     controllers.controller('I008Controller', [
-        '$scope', '$rootScope', 'Request',
+        '$scope', 'Request',
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state", "$filter",
         'Usuario',
         'ProductoI008',
         "DocumentoI008",
         "I008Service",
-        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
+        function ($scope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
                 Usuario, Producto, Documento, I008Service) {
 
             var that = this;

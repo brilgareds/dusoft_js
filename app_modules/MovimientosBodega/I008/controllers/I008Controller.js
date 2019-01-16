@@ -489,8 +489,7 @@ I008Controller.prototype.crearDocumento = function (req, res) {
 
     }).then(function (resultado) {
 
-        bodega_o = resultado[0];
-        console.log("bodega_o", bodega_o);
+        bodega_o = resultado[0];       
         return G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros);
 
     }).then(function (resultado) {
@@ -584,7 +583,7 @@ I008Controller.prototype.crearHtmlDocumento = function (req, res) {
 
         detallea = resultado;
 
-        if (args.empresa_id === '17') {
+        if (parametros.empresa_id === '17') {
             tabla_1 = 'inv_bodegas_movimiento_ingresosdespachos_clientes';
 
         } else {
@@ -603,6 +602,7 @@ I008Controller.prototype.crearHtmlDocumento = function (req, res) {
     }).then(function (resultado) {
 
         var bodega_origen = resultado[0];
+        console.log("bodega_origen",bodega_origen);
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
@@ -612,6 +612,7 @@ I008Controller.prototype.crearHtmlDocumento = function (req, res) {
 
             cabecera[0].fecha_registro = cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
             cabecera[0].bodega_origen = bodega_origen.descripcion;
+            cabecera[0].pedido = bodega_origen.pedido;
             cabecera[0].numeroEfc = efc.prefijo_despacho + " - " + efc.numero_despacho;
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],

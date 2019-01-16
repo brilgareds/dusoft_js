@@ -21,12 +21,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "E009Service",
         "E017Service",
         "I007Service",
+        "I008Service",
         "I011Service",
         "I012Service",
         "I015Service",
         "TipoDocumentos",
         function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion, GeneralService,
-                E007Service, E009Service, E017Service, I007Service, I011Service, I012Service, I015Service, TipoDocumentos) {
+                E007Service, E009Service, E017Service, I007Service, I008Service, I011Service, I012Service, I015Service, TipoDocumentos) {
 
             var that = this;
             $scope.claseDoc;
@@ -347,7 +348,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
                     });
                 } else if (documentos.tipo_movimiento === "I008") {
-                    
+
                     Request.realizarRequest(API.I008.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
@@ -564,6 +565,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.tipo_doc_bodega_id === "I007") {
                                 that.eliminarGetDocTemporalI007(data);
                             }
+                            if (data.tipo_doc_bodega_id === "I008") {
+                                that.eliminarGetDocTemporalI008(data);
+                            }
                             if (data.tipo_doc_bodega_id === "I011") {
                                 that.eliminarGetDocTemporalI011(data);
                             }
@@ -691,6 +695,73 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 });
             };
 
+            that.eliminarGetDocTemporalI008 = function (datos) {
+
+                that.listarProductosValidadosI008(datos.doc_tmp_id, function (condicional) {
+
+                    if (condicional) {
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listado: $scope.listado_productos,
+                                doc_tmp_id: datos.doc_tmp_id,
+                                empresa_id: datos.empresa_id
+                            }
+                        };
+
+                        I008Service.eliminarGetDocTemporal(obj, function (data) {
+                            if (data.status === 200) {
+                                that.listarDocumetosTemporales(true);
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 404) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                        });
+                    }
+                });
+            };
+
+            that.listarProductosValidadosI008 = function (doc_id, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numero_doc: doc_id
+
+                    }
+                };
+
+
+                Request.realizarRequest(API.I008.CONSULTAR_PRODUCTOS_VALIDADOS, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        that.renderProductosValidadosI008(data.obj.listarProductos);
+                        callback(true);
+                    } else {
+                        callback(false);
+
+                    }
+
+                });
+            };
+
+            that.renderProductosValidadosI008 = function (productos) {
+                $scope.listado_productos = [];
+                productos.forEach(function (data) {
+
+                    var producto = {};
+                    producto.itemIdCompra = data.item_id_compras;
+                    producto.cantidad = data.cantidad;
+                    $scope.listado_productos.push(producto);
+                });
+            };
+            
             that.eliminarGetDocTemporalI011 = function (datos) {
 
                 that.listarProductosEliminar(datos.doc_tmp_id, function (condicional) {

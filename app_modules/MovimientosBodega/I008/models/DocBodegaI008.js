@@ -464,13 +464,29 @@ DocumentoBodegaI008.prototype.consultar_detalle_documento = function (parametro,
  * @fecha 2019-01-15 YYYY/MM/DD
  */
 DocumentoBodegaI008.prototype.consultarBodegaOrigen = function (parametro, callback) {
+    var columnas = ["b.descripcion"];
+    var join;
+
+    if (parametro.empresa_id === '17') {
+        columnas.push("c.pedido_cliente_id as pedido");
+        join = "inv_bodegas_movimiento_despachos_clientes";
+    } else {
+        columnas.push("c.solicitud_prod_a_bod_ppal_id as pedido");
+        join = "inv_bodegas_movimiento_despachos_farmacias";
+    }
+
     var query = G.knex
-            .select('b.*')
+            .select(columnas)
             .from('inv_bodegas_movimiento as a')
             .innerJoin("bodegas as b", function () {
                 this.on("b.empresa_id", "a.empresa_id")
                         .on("b.centro_utilidad", "a.centro_utilidad")
                         .on("b.bodega", "a.bodega");
+            })
+            .innerJoin(G.knex.raw(join + " as c"), function () {
+                this.on("c.prefijo", "a.prefijo")
+                        .on("c.numero", "a.numero");
+
             })
             .where('a.prefijo', parametro.prefijo_despacho)
             .andWhere('a.numero', parametro.numero_despacho);

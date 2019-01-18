@@ -2454,7 +2454,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                  * Se crea este codigo pq los decimales que se van por el ws no son aceptados en cosmitet
                  * si el valor es 7.69 debe enviar 7.7 y si es 7.600001 debe enviar 7.6 no acepta 7.60
                  */
-           
+
                 var detalle = {
                     //nombre:item.nombre,
                     codigo_producto: item.codigo_producto,
@@ -2524,7 +2524,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
             };
 
             var envio = {cabecera: objCabecera, detalle: detalleProductos};
-           
+
             objRemision.parametros = {json_remision: envio};
 
             return G.Q.nfcall(__sincronizarRemisionProductos, objRemision);
@@ -2563,7 +2563,6 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
 
     }).done();
 };
-
 
 
 function __sincronizarDocumentoDespacho(obj, callback) {

@@ -3813,7 +3813,7 @@ function __generarPdf2(datos, callback) {
                          <table border='0' width='100%' >
                            <tr>
                             <td align="center" width='30%'>
-                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>
+                                <p ><img  src='{#image logocliente}'  border='0' width="300px" height="80px"></p>
                                 <p class="letra_factura_info">` + datos.cabecera.tipo_id_empresa + `: ` + datos.cabecera.id + ` - ` + datos.cabecera.digito_verificacion + `</p>
                                 <p class="letra_factura_info">` + datos.cabecera.direccion_empresa + ` TELEFONO : ` + datos.cabecera.telefono_empresa + `</p>
                                 <p class="letra_factura_info">` + datos.cabecera.pais_empresa + ` - ` + datos.cabecera.departamento_empresa + ` - ` + datos.cabecera.municipio_empresa + `</p>

@@ -2454,17 +2454,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                  * Se crea este codigo pq los decimales que se van por el ws no son aceptados en cosmitet
                  * si el valor es 7.69 debe enviar 7.7 y si es 7.600001 debe enviar 7.6 no acepta 7.60
                  */
-               var total=valor_unitario*item.cantidad;               
-               var ss=total.toString().split('.');
-               var ss1=ss[1]+'';               
-               if(ss1.length > 2){
-//                   ss[1] = myRound(total, 2);
-                     ss[1] = myRound(redondeo(total,2), 2);
-               }else{
-                   ss[1] = total;
-               }
-               
-          
+
                 var detalle = {
                     //nombre:item.nombre,
                     codigo_producto: item.codigo_producto,
@@ -2474,7 +2464,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                     fecha_vencimiento: fechaVencimiento,
                     cantidad: item.cantidad,
                     valor_unitario: valor_unitario,
-                    valor_total: ss[1],
+                    valor_total: item.valor_total_iva,
                     porcentaje_gravamen: item.porcentaje_gravamen,
                     costo: item.costo
                 };
@@ -2534,7 +2524,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
             };
 
             var envio = {cabecera: objCabecera, detalle: detalleProductos};
-//            console.log("Envio",envio);
+
             objRemision.parametros = {json_remision: envio};
 
             return G.Q.nfcall(__sincronizarRemisionProductos, objRemision);
@@ -2574,21 +2564,6 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
     }).done();
 };
 
-function redondeo(numero, decimales)
-{
-var flotante = parseFloat(numero);
-var resultado = Math.round(flotante*Math.pow(10,decimales))/Math.pow(10,decimales);
-return resultado;
-}
-
-function isInt(n) {
-    return n % 1 === 0;
-}
-
-function myRound(num, dec) {
-    var exp = Math.pow(10, dec || 2); // 2 decimales por defecto
-    return parseInt(num * exp, 10) / exp;
-}
 
 function __sincronizarDocumentoDespacho(obj, callback) {
     var def = G.Q.defer();

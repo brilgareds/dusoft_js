@@ -3017,7 +3017,8 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
          mensajeResolucion: resultado.cabecera.texto1,
          mensajeContribuyente: resultado.cabecera.texto2 + " " + resultado.cabecera.texto3
          };*/
-
+var subTotal = resultado.valores.subTotal.replace(".", "");
+var total = resultado.valores.totalFactura.replace(".", "");
         var json = {
             codigoMoneda: "COP",
             fechaExpedicion: resultado.cabecera.fecha_registro,
@@ -3043,7 +3044,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
             ReteIVA: resultado.valores.retencionIvaSf,
             baseGravableReteIVA: resultado.valores.baseRetencionIva,
             tipoFactura: 1,
-            totalFactura: resultado.valores.totalFactura.replace(".", ""),
+            totalFactura: total.replace(".", ""),
 
             coordXQr: 164,
             coordYQr: 260,
@@ -3812,7 +3813,7 @@ function __generarPdf2(datos, callback) {
                          <table border='0' width='100%' >
                            <tr>
                             <td align="center" width='30%'>
-                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>
+                                <p ><img  src='{#image logocliente}'  border='0' width="300px" height="80px"></p>
                                 <p class="letra_factura_info">` + datos.cabecera.tipo_id_empresa + `: ` + datos.cabecera.id + ` - ` + datos.cabecera.digito_verificacion + `</p>
                                 <p class="letra_factura_info">` + datos.cabecera.direccion_empresa + ` TELEFONO : ` + datos.cabecera.telefono_empresa + `</p>
                                 <p class="letra_factura_info">` + datos.cabecera.pais_empresa + ` - ` + datos.cabecera.departamento_empresa + ` - ` + datos.cabecera.municipio_empresa + `</p>

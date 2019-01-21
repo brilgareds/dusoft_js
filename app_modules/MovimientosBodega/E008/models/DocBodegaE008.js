@@ -1695,6 +1695,8 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
                     fc_descripcion_producto(b.codigo_producto) as nombre,\
                     (a.porcentaje_gravamen) as porcentaje_gravamen,\
                     (a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
+                    (a.valor_unitario) as valor_unitario_sin_iva,\
+                    (a.valor_unitario*a.cantidad) as valor_total_sin_iva,\
                     (a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
                     ((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
                     (((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit_1,\

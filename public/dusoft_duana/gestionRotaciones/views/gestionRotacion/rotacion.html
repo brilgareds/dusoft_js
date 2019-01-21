@@ -1,0 +1,35 @@
+<div class="panel panel-defaul">
+    <div class="row">
+        <div class="col-xs-4 col-sm-4 col-md-3">
+            <label class="col-md-12  control-label" >BUSCAR</label>
+            <input type="text" class="form-control" ng-keyup="onBuscar()" style=”text-transform:uppercase;”  ng-model="root.buscar"  placeholder="Buscar farmacia empresa zona">
+        </div>
+        <br>
+        
+<!--        <div class="col-xs-6 col-sm-4 col-md-3">
+            <p class="text-left">
+                <button type="button"  class="glyphicon glyphicon-search btn btn btn-primary" ng-click="onBuscar()"> Buscar</button>
+            </p>
+        </div>-->
+        </div>
+    <br>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-md-3">
+            <p class="text-left">
+                <button type="button" class="glyphicon glyphicon-plus btn btn btn-warning" ng-click="onAnadirInformacion()">AÑADIR INFORMACIÓN</button>
+            </p>
+        </div>
+    </div>
+</div> 
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <p class="text-left">
+        <div class="panel panel-info">
+            <div class="table-responsive" >
+                <div class="defaultGrid  grid-responsive" style="height: 900px;" ng-grid="lista_rotacion" id="my_table">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

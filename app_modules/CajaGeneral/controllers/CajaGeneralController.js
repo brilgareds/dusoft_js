@@ -1038,7 +1038,7 @@ function __generarPdf(datos, callback) {
                                 <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>
                             <td>
                             <td width='30%'> 
-                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>                         
+                                <p ><img  src='{#image logocliente}'  border='0' width="300px" height="80px"></p>                         
                             <td>
                             <td width='30%' valign="top">
                                  <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
@@ -1118,7 +1118,7 @@ function __generarPdf2(datos, callback) {
                          <table border='0' width='100%' >
                            <tr>
                             <td align="center" width='30%'>
-                                <p ><img  src="` + logo + `"  border='0' width="300px" height="80px"></p>
+                                <p ><img  src='{#image logocliente}'  border='0' width="300px" height="80px"></p>
                                 <p class="letra_factura_info">` + datos.empresa.tipo_id_tercero + `: ` + datos.empresa.id + ` - ` + datos.empresa.digito_verificacion + `</p>
                                 <p class="letra_factura_info">` + datos.empresa.direccion + ` TELEFONO : ` + datos.empresa.telefonos + `</p>
                                 <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>

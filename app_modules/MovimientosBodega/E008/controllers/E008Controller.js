@@ -2377,7 +2377,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                 } else if ((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")) {//Clinica las peñitas
                     bodega = "BC";
                     documentoId = 418;
-                } else if ((pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")) {//santasofia
+                } else if ((pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS") ||
+                        (pedido.identificacion_cliente === '900228989' && pedido.tipo_id_cliente === "NIT")) {//santasofia
                     bodega = "1";
                     documentoId = 431;
                 } else if ((pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS")) {//santasofia
@@ -2448,27 +2449,6 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
 
                 var fechaVencimiento = G.moment(item.fecha_vencimiento).format(formato);
 
-                var valor_unitario=item.valor_unitario_iva / (1 + (item.porcentaje_gravamen / 100))
-                 if (isInt(valor_unitario.toFixed(2))) {
-                    valor_unitario = valor_unitario.toFixed(0);
-                } else {
-                    valor_unitario = myRound(valor_unitario, 2);
-                }
-                /*
-                 * Se crea este codigo pq los decimales que se van por el ws no son aceptados en cosmitet
-                 * si el valor es 7.69 debe enviar 7.7 y si es 7.600001 debe enviar 7.6 no acepta 7.60
-                 */
-               var total=valor_unitario*item.cantidad;               
-               var ss=total.toString().split('.');
-               var ss1=ss[1]+'';               
-               if(ss1.length > 2){
-//                   ss[1] = myRound(total, 2);
-                     ss[1] = myRound(redondeo(total,2), 2);
-               }else{
-                   ss[1] = total;
-               }
-               
-          
                 var detalle = {
                     //nombre:item.nombre,
                     codigo_producto: item.codigo_producto,
@@ -2477,8 +2457,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                     codigo_invima: item.codigo_invima,
                     fecha_vencimiento: fechaVencimiento,
                     cantidad: item.cantidad,
-                    valor_unitario: valor_unitario,
-                    valor_total: ss[1],
+                    valor_unitario: item.valor_unitario_sin_iva,
+                    valor_total: item.valor_total_sin_iva,
                     porcentaje_gravamen: item.porcentaje_gravamen,
                     costo: item.costo
                 };
@@ -2538,7 +2518,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
             };
 
             var envio = {cabecera: objCabecera, detalle: detalleProductos};
-//            console.log("Envio",envio);
+
             objRemision.parametros = {json_remision: envio};
 
             return G.Q.nfcall(__sincronizarRemisionProductos, objRemision);
@@ -2578,20 +2558,9 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
     }).done();
 };
 
-function redondeo(numero, decimales)
-{
-var flotante = parseFloat(numero);
-var resultado = Math.round(flotante*Math.pow(10,decimales))/Math.pow(10,decimales);
-return resultado;
-}
 
 function isInt(n) {
     return n % 1 === 0;
-}
-
-function myRound(num, dec) {
-    var exp = Math.pow(10, dec || 2); // 2 decimales por defecto
-    return parseInt(num * exp, 10) / exp;
 }
 
 function __sincronizarDocumentoDespacho(obj, callback) {
@@ -2617,10 +2586,11 @@ function __sincronizarDocumentoDespacho(obj, callback) {
         return G.Q.nfcall(__sincronizarEncabezadoDocumento, obj);
 
     }).then(function (resultado) {
-
+console.log("ENCABEZADO",resultado);
         return G.Q.nfcall(__sincronizarDetalleDocumento, obj);
 
-    }).then(function () {
+    }).then(function (resul) {
+        console.log("ENCABEZADO",resul);
         callback(false);
 
     }).fail(function (err) {
@@ -2652,6 +2622,7 @@ function __sincronizarEncabezadoDocumento(obj, callback) {
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
         } else if ((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS") ||
                 (obj.pedido.identificacion_cliente === '258' && obj.pedido.tipo_id_cliente === "AS") ||
+                (obj.pedido.identificacion_cliente === '900228989' && obj.pedido.tipo_id_cliente === "NIT") ||
                 (obj.pedido.identificacion_cliente === '259' && obj.pedido.tipo_id_cliente === "AS")) {//Santa Soafia
             // usuarioId="4769";
             url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;
@@ -2781,6 +2752,7 @@ function __sincronizarDetalleDocumento(obj, callback) {
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
         } else if ((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS") ||
                 (obj.pedido.identificacion_cliente === '258' && obj.pedido.tipo_id_cliente === "AS") ||
+                (obj.pedido.identificacion_cliente === '900228989' && obj.pedido.tipo_id_cliente === "NIT") ||
                 (obj.pedido.identificacion_cliente === '259' && obj.pedido.tipo_id_cliente === "AS")) {//Santa Soafia
 
             url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;

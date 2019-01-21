@@ -133,7 +133,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var result = $state.get().filter(function (obj) {
                     return obj.name === documento.tipo_doc_bodega_id;
                 });
-
                 if (result.length > 0) {
                     var numero = documento.numero || '';
                     var datosAdicionales;
@@ -148,7 +147,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
                             tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
                     }
-                    if (documento.tipo_doc_bodega_id === 'AAC1') {
+                    if (documento.tipo_doc_bodega_id === 'ASC1') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
                             tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
                     }
@@ -446,7 +445,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             callback(false);
                         }
                     });
-                } else if (documentos.tipo_movimiento === "AAC1") {
+                } else if (documentos.tipo_movimiento === "ASC1") {
                     obj.data.tipoTercero = documentos.tipoTercero;
                     obj.data.terceroId = documentos.terceroId;
                     obj.data.egreso_id = documentos.numeroFactura;
@@ -603,7 +602,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.tipo_doc_bodega_id === "ABC1") {
                                 that.eliminarGetDocTemporalABC1(data);
                             }
-                            if (data.tipo_doc_bodega_id === "AAC1") {
+                            if (data.tipo_doc_bodega_id === "ASC1") {
                                 that.eliminarGetDocTemporalAAC1(data);
                             }
                             if (data.tipo_doc_bodega_id === "E009") {

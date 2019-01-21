@@ -1,0 +1,64 @@
+
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12"> 
+                <h4 class="h4MarginTopBottom"><span>Modificar Producto</span></h4>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12 col-sm-4 col-md-3">
+                <label class="col-md-12 control-label">PRODUCTO</label>
+                <legend class="col-sm-12 col-md-12" style="margin-bottom: 10px;"></legend>
+                <div>
+                    <div class="input-group form-group">
+                        <label title="Adjuntar archivo" type="file" onchange="angular.element(this).scope().onArchivoSeleccionado(this.files)">Este es el producto!!</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-2">
+                <label class="col-md-12 control-label">NUEVO COSTO</label>
+                <legend class="col-sm-12 col-md-12" style="margin-bottom: 10px;"></legend>
+                <div>
+                    <div class="input-group form-group col-md-12">
+                        <input type="number" style="padding: 10px;" class="form-control pull-left col-md-12" placeholder="Ingrese Nuevo Costo">
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-4" style="margin-bottom: 6px;">
+                <label class="col-md-12 control-label">JUSTIFICACIÓN</label>
+                <legend class="col-sm-12 col-md-12" style="margin-bottom: 7px;"></legend>
+                <textarea class="form-control pull-left col-md-12" placeholder="Redacte la Justificación"></textarea>
+            </div>
+            <div class="col-xs-12 col-sm-4 col-md-3" style="margin-bottom: 6px;">
+                <label class="col-md-12 control-label">APROBADO POR</label>
+                <legend class="col-sm-12 col-md-12" style="margin-bottom: 7px;"></legend>
+                <select class="form-control pull-left col-md-12" name="multipleSelect" id="multipleSelect" ng-model="data.multipleSelect">
+                    <option value="option-1" selected="selected">Persona 1</option>
+                    <option value="option-2">Persona 2</option>
+                    <option value="option-3">Persona 3</option>
+                </select><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="table-responsive">
+                    <div class="defaultGrid" style="height: 150px" ng-grid="listarFacturaAgrupada">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-md" ng-click="cerrar()"> Cerrar</button>
+        <button type="button" class="btn btn-success btn-md" ng-disabled="root.activarBoton" ng-click="onVisualizarAgrupar(root.listarAgrupar)"> Guardar </button>
+    </div>
+</div>
+<visualizar-reporte></visualizar-reporte>
+
+
+
+

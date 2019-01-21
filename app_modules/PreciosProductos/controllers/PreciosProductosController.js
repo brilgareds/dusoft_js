@@ -65,15 +65,38 @@ Precios_productos.prototype.listarAgrupar = function (req, res) {
     var that = this;
     var args = req.body.data;
     var parametros = args;
+    var session = req.body.session;
+    parametros.empresa_id = session.empresaId;
+    parametros.centro_id = session.centroUtilidad;
+    parametros.bodega_id = session.bodega;
+
+    if(parametros.fecha_ini != undefined && parametros.fecha_fin != undefined){
+        parametros.fecha_ini = parametros.fecha_ini.substring(0, 10);
+        parametros.fecha_fin = parametros.fecha_fin.substring(0, 10);
+    }else{
+        parametros.fecha_ini = '01-01-1800';
+        parametros.fecha_fin = '01-01-2100';
+    }
+    //parametros.fecha_fin = '2019-01-14';
 
     G.Q.ninvoke(that.m_precios_productos, "listarAgrupar", parametros).
-            then(function (resultado) {
-                res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: resultado}));
+        then(function (resultado) {
+            //console.log('Primer Resultado: ',resultado[0]);
+            if(resultado == undefined){ var resultado = ' '; }
+            G.Q.ninvoke(that.m_precios_productos, "listarDocumentosAjustes", parametros).
+            then(function (resultado2) {
+                if(resultado2 == undefined){ var resultado2 = ' '; }
+                //console.log('Segundo Resultado: ',resultado2[0]);
+                res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: resultado, documentosAjustes: resultado2}));
             }).
             fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error!! '+err, 500, {listarAgrupar: {}}));
-            }).
-            done();
+                res.send(G.utils.r(req.url, 'Error1!! '+err, 500, {listarAgrupar: {}}));
+            });
+        }).
+        fail(function (err) {
+            res.send(G.utils.r(req.url, 'Error2!! '+err, 500, {listarAgrupar: {}}));
+        }).
+        done();
 };
 
 Precios_productos.prototype.eliminarGrupoFactura = function (req, res) {

@@ -173,16 +173,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
                                 <li ng-if="row.entity.getEstadoFacturacion() == 0">\
-                                   <a href="javascript:void(0);" ng-click="onBtnGenearFacturaPrueba(row.entity)" class= "glyphicon glyphicon-edit"> Facturar </a>\
+                                   <a href="javascripts:void(0);" ng-click="onBtnGenearFacturaPrueba(row.entity)" class= "glyphicon glyphicon-edit"> Facturar </a>\
                                 </li>\
                                 <li ng-if="row.entity.getEstadoFacturacion() == 0">\
-                                   <a href="javascript:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
+                                   <a href="javascripts:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
                                 </li>\
                                 <li>\
-                                   <a href="javascript:void(0);" ng-click="verProductos(row.entity)" class = "glyphicon glyphicon-send"> ver </a>\
+                                   <a href="javascripts:void(0);" ng-click="verProductos(row.entity)" class = "glyphicon glyphicon-send"> ver </a>\
                                 </li>\
                                 <li ng-if="row.entity.getEstadoFacturacion() == 0">\
-                                   <a href="javascript:void(0);" ng-click="onDescagarArchivo(row.entity)" class= "glyphicon glyphicon-print"> Imprimir </a>\
+                                   <a href="javascripts:void(0);" ng-click="onDescagarArchivo(row.entity)" class= "glyphicon glyphicon-print"> Imprimir </a>\
                                 </li>\
                            </ul>\
                       </div>'

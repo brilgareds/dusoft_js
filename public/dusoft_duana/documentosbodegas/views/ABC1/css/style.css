@@ -1,3 +1,7 @@
 .contenedorfiltrocombobox{
     width: 100%;
 }
+
+.container-resume *{
+    font-size: 16px !important;
+}

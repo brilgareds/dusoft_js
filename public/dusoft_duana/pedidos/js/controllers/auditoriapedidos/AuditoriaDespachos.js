@@ -293,10 +293,10 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                            <li ng-if="row.entity.get_estado_cotizacion() == \'0\' || row.entity.get_estado_cotizacion() == \'2\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_estado }}" ng-click="activarCotizacion(row.entity)" >Activar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)" >Reporte</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="detalleDespachoAprobado(row.entity)" >Detalle</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="sincronizarDocumento(row.entity)" >Sincronizar</a></li>\
+                                            <li ng-if="row.entity.get_estado_cotizacion() == \'0\' || row.entity.get_estado_cotizacion() == \'2\' " ><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_estado }}" ng-click="activarCotizacion(row.entity)" >Activar</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-click="imprimirDespacho(row.entity)" >Reporte</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-click="detalleDespachoAprobado(row.entity)" >Detalle</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-click="sincronizarDocumento(row.entity)" >Sincronizar</a></li>\
                                              </ul>\
                                        </div>'
                     }

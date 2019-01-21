@@ -16,8 +16,11 @@ module.exports = function(app, di_container) {
 
     // Sube el costo de un producto
     app.post('/api/Productos/subeCosto', function(req, res) {
-        console.log("En el enrutador!!!");
         c_productos.subeCosto(req, res);
+    });
+    // Baje el costo de un producto
+    app.post('/api/Productos/bajeCosto', function(req, res) {
+        c_productos.bajeCosto(req, res);
     });
 
     // Consulta la existencias de un producto
@@ -34,7 +37,6 @@ module.exports = function(app, di_container) {
     app.post('/api/Productos/listarProductosClientes', function(req, res) {
         c_productos.listarProductosClientes(req, res);
     });
-    
     
     app.post('/api/Productos/guardarExistenciaBodega', function(req, res) {
         c_productos.guardarExistenciaBodega(req, res);

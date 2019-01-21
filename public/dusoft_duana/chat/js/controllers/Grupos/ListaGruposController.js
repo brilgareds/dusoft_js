@@ -41,9 +41,9 @@ define(["angular", "js/controllers", "includes/classes/Chat/GrupoChat"], functio
                      cellTemplate: '<div class="btn-group">\
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
-                                            <li ng-click="onGuardarGrupo(row.entity)"><a href="javascript:void(0);" >Ver</a></li>\
+                                            <li ng-click="onGuardarGrupo(row.entity)"><a href="javascripts:void(0);" >Ver</a></li>\
                                             <li>\
-                                                <a href="javascript:void(0);" ng-click="onCambiarEstado(row.entity)">\
+                                                <a href="javascripts:void(0);" ng-click="onCambiarEstado(row.entity)">\
                                                     <span ng-if="row.entity.getEstado() == \'0\'">Activar</span>\
                                                     <span ng-if="row.entity.getEstado() == \'1\'">Inactivar</span>\
                                                 </a>\

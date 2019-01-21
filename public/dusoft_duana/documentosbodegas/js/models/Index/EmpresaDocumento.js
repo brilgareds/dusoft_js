@@ -59,7 +59,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function (angular, 
                 this.get_documentos().forEach(function (documento) {
 
                     //console.log("-->",documento);
-                    if (documento.get_tipo() === 'E003' || documento.get_tipo() === 'I003' || documento.get_tipo() === 'ABC1' || documento.get_tipo() === 'AAC1') {
+                    if (documento.get_tipo() === 'E003' || documento.get_tipo() === 'I003' || documento.get_tipo() === 'ABC1' || documento.get_tipo() === 'ASC1') {
                         documentos_ajuste.push(documento);
                     }
                 });

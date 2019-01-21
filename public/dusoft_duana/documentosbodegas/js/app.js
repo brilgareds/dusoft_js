@@ -68,9 +68,9 @@ define([
     "controllers/ABC1/ABC1Controller",
     "controllers/ABC1/ABC1GestionarClientesController",
     "controllers/ABC1/ABC1GestionarProductosController",
-    "controllers/AAC1/AAC1Controller",
-    "controllers/AAC1/AAC1GestionarClientesController",
-    "controllers/AAC1/AAC1GestionarProductosController",
+    "controllers/ASC1/ASC1Controller",
+    "controllers/ASC1/ASC1GestionarClientesController",
+    "controllers/ASC1/ASC1GestionarProductosController",
     "controllers/E007/E007Controller",
     "controllers/E007/E007GestionarClientesController",
     "controllers/E007/E007GestionarProductosController",
@@ -153,19 +153,19 @@ define([
                 // ABC1
                 documentos_bodegas.stateProvider.state('ABC1', {
                     url: "/ABC1",
-                    text: "Ajuste Bajo Costo",
+                    text: "Ajuste Baje Costo",
                     templateUrl: "views/ABC1/radicacion.html",
                     parent_name: "DocumentosBodegas",
                     controller: 'ABC1Controller'
                 });
 
-                // AAC1
-                documentos_bodegas.stateProvider.state('AAC1', {
-                    url: "/AAC1",
+                // ASC1
+                documentos_bodegas.stateProvider.state('ASC1', {
+                    url: "/ASC1",
                     text: "Ajuste Sube Costo",
-                    templateUrl: "views/AAC1/radicacion.html",
+                    templateUrl: "views/ASC1/radicacion.html",
                     parent_name: "DocumentosBodegas",
-                    controller: 'AAC1Controller'
+                    controller: 'ASC1Controller'
                 });
 
                 // I002 

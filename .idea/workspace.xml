@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/FacturacionClientes/controllers/FacturacionClientesController.js" afterPath="$PROJECT_DIR$/app_modules/FacturacionClientes/controllers/FacturacionClientesController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/FacturacionClientes/reports/facturaGeneradaDetallePDF.html" afterPath="$PROJECT_DIR$/app_modules/FacturacionClientes/reports/facturaGeneradaDetallePDF.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Settings.js" afterPath="$PROJECT_DIR$/lib/Settings.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dump.rdb" afterPath="$PROJECT_DIR$/dump.rdb" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -777,12 +773,12 @@
       <workItem from="1546436777859" duration="25570000" />
       <workItem from="1546521398182" duration="26859000" />
       <workItem from="1546605847702" duration="6287000" />
-      <workItem from="1548101253425" duration="456000" />
+      <workItem from="1548101253425" duration="1709000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="233416000" />
+    <option name="totallyTimeSpent" value="234669000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="-2" width="1926" height="1060" extended-state="6" />

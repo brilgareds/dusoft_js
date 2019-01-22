@@ -272,11 +272,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 var session=localStorageService.get("session");
                // console.log("session ",session);
                 var llavesMemoria = localStorageService.keys();
-                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat"];
+                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat","validacionEgresosDetalle"];
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
-
+console.log("key",key);
                     if (llavesPermanentes.indexOf(key) === -1) {
                         localStorageService.remove(key);
                     }

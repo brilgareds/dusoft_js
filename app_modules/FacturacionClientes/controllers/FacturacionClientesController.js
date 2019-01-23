@@ -3774,7 +3774,7 @@ function __generarPdf(datos, callback) {
  */
 function __generarPdf2(datos, callback) {
     datos.style = G.dirname + "/public/stylesheets/facturacion/style.css";
-    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
+//    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
 
     G.jsreport.render({
         template: {

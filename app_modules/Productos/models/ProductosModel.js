@@ -132,6 +132,26 @@ ProductosModel.prototype.subeCosto_UpdateDocumentos = function(obj, callback) {
     });
 };
 
+ProductosModel.prototype.subeCosto_UpdateUrlDocumento = function(obj, callback) {
+    console.log('Entro en funcion "subeCosto_UpdateUrlDocumento"');
+    var ajuste_precio_id = obj.ajuste_precio_id;
+    var url_documento = obj.url_documento;
+
+    var UpdateUrlDocumento = G.knex('inv_bodegas_ajuste_precio')
+        .where('ajuste_precio_id', '=', ajuste_precio_id)
+        .update({
+            url_documento: url_documento
+        });
+    // .orderBy('fecha_entrega', 'asc');
+    // console.log(G.sqlformatter.format(UpdateUrlDocumento.toString()));
+    UpdateUrlDocumento.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarAgrupar]:", err);
+        callback(err);
+    });
+};
+
 ProductosModel.prototype.subeCosto_InsertInvBodAjusPrice = function(obj, callback) {
     var insertAjustePrecio = G.knex('inv_bodegas_ajuste_precio')
         .insert({
@@ -144,12 +164,11 @@ ProductosModel.prototype.subeCosto_InsertInvBodAjusPrice = function(obj, callbac
             total_diferencia: obj.total_diferencia,
             justificacion: obj.justificacion,
             aprobacion: obj.aprobacion
-        });
+        }).returning('ajuste_precio_id');
     //console.log(G.sqlformatter.format(insertAjustePrecio.toString()));
     insertAjustePrecio.then(function (resultado) {
         callback(false, resultado);
-    })
-    .catch(function (err) {
+    }).catch(function (err) {
         console.log("err [listarAgrupar]:", err);
         callback(err);
     });

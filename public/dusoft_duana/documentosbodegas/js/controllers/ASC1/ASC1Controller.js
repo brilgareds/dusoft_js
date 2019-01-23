@@ -9,8 +9,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
         "Usuario", "socket", "$timeout",
-        "Empresa", "CentroUtilidad", "Bodega",
-        function ($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, CentroUtilidad, Bodega) {
+        "Empresa", "CentroUtilidad", "Bodega", "$location",
+        function ($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa, CentroUtilidad, Bodega, $location) {
             var that = this;
             $scope.radicacion = '';
             $scope.desactivar = '0';
@@ -164,16 +164,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                     };
                     //console.log('Objeto --> ',obj);
+                    //console.log('Antes del Ajax');
 
                     Request.realizarRequest(
                         API.RADICACION.LISTAR_AGRUPAR,
                         "POST",
                         obj,
                         function (data) {
+                            //console.log('Ajax realizado!!');
+                            //console.log("data",data);
                             if (data.status === 200) {
                                 // $scope.root.listarAgrupar = data.obj.listarAgrupar;
                                 // console.log("data.obj.listarAgrupar",data.obj.listarAgrupar);
-                                //console.log('Listar agrupar final con data: ',data);
+                                // console.log('Listar agrupar final con data: ',data);
                                 parametro = {};
                                 callback(data.obj);
                             }else{
@@ -336,7 +339,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                     $scope.root.listarAgrupar = dato.listarAgrupar;
                     $scope.root.listarDocumentosProductos = dato.documentosAjustes;
-                    console.log('Nueva lista -->',$scope.root.listarAgrupar);
+                    console.log('Nueva lista documentos ajustes-->',$scope.root.listarDocumentosProductos);
+                    console.log('Nueva lista listarAgrupar-->',$scope.root.listarAgrupar);
                 });
             };
 
@@ -916,6 +920,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                        $scope.dateShow = true;
                    }
             };
+
+            $scope.isReal = function(url){
+                var isRealResponse = false;
+                if(url != undefined && url.length > 5){
+                    isRealResponse = true;
+                }
+                return isRealResponse;
+            };
 //2
             $scope.listar_documentos_ajuste = {
                 data: 'root.listarDocumentosProductos',
@@ -925,7 +937,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableRowSelection: false,
                 enableColumnResizing: true,
                 columnDefs: [
-                    {field: 'fecha', displayName: 'Fecha del Ajuste', width: "8.33333333%"},
+                    {field: 'fecha', displayName: "Fecha del Ajuste", cellClass: "txt-center", width: "8.33333333%",
+                        cellTemplate: '<a ng-if="isReal(row.entity.url_documento)" href={{row.entity.url_documento}} target="_blank">\
+                                         {{row.entity.fecha}}\
+                                       </a>\
+                                       <a style="color: inherit; text-decoration: none;" ng-if="!isReal(row.entity.url_documento)">\
+                                         {{row.entity.fecha}}\
+                                       </a>\
+                                       '
+                    },
+                    //{field: 'fecha', displayName: 'Fecha del Ajuste', width: "8.33333333%"},
                     {field: 'producto_id', displayName: 'Codigo Producto', width: "8.33333333%"}, //
                     {field: 'descripcion', displayName: 'Descripción Completa', width: "25%"},
                     {field: 'costo_anterior', displayName: 'Costo Anterior', width: "8%"},
@@ -1283,6 +1304,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 parametro.bodega_id = $scope.session.bodega;
                 parametro.usuario_id = $scope.session.usuario_id;
 
+                var host = $location.protocol() + '://' + $location.host() + ':' + $location.port();
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -1299,10 +1322,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         justificacion: parametro.justificacion,
                         aprobacion: parametro.aprobacion,
                         tipo_doc_general_id: 'ASC1',
-                        titulo: 'AJUSTE SUBE COSTO'
+                        titulo: 'AJUSTE SUBE COSTO',
+                        host: host
                     }
                 };
-                // console.log('Objeto --> ',obj);
+                //console.log('Objeto --> ',obj);
                 Request.realizarRequest(
                     API.PRODUCTOS.SUBE_COSTO,
                     "POST",
@@ -1326,7 +1350,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             }else{
                                 console.log('No imprimiste el PDF');
                             }
-
                             //callback(data.obj.listarAgrupar);
                         }
                     }

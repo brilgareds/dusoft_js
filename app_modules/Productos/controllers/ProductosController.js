@@ -18,9 +18,23 @@ function __enviarNotificacion(that,usuario,response,socket){
     });
 }
 
+Productos.prototype.actualizarUrlDocumento = function(parametros) {
+    //var that = this;
+    var that = parametros.that;
+    var res = parametros.res;
+    var req = parametros.req;
+    //that.m_productos = productos;
+
+
+};
+
 function __generarReporteFactura(rows, callback) {
-    console.log('session en __generarReporteFactura es:', rows['session']);
-    var usuario = rows['usuario_id'];
+    var host = rows.host;
+    var ajuste_precio_id = rows.ajuste_precio_id;
+    var res = rows.res;
+    var req = rows.req;
+    //console.log('session en __generarReporteFactura es:', rows.session);
+    var usuario = rows.usuario_id;
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/Productos/reports/ajuste_sube_costo.html', 'utf8'),
@@ -30,29 +44,29 @@ function __generarReporteFactura(rows, callback) {
         },
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",
-            cabecera: rows['cabecera'],
-            detalle: rows['detalle'],
-            valores: rows['valores'],
-            justificacion: rows['justificacion'],
+            cabecera: rows.cabecera,
+            detalle: rows.detalle,
+            valores: rows.valores,
+            justificacion: rows.justificacion,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
-            usuario_id: rows['usuario_id'],
-            usuario_nombre: rows['usuario_nombre'],
-            serverUrl: rows['serverUrl'],
-            valores: rows['valores'],
-            fechaActual: rows['fechaActual'],
-            producto_id: rows['producto_id'],
-            empresa_id: rows['empresa_id'],
-            empresa_nombre: rows['empresa_nombre'],
-            documento_id: rows['documento_id'],
-            producto_cantidad: rows['producto_cantidad'],
-            producto_costo_anterior: rows['costo_anterior'],
-            producto_costo_nuevo: rows['costo_nuevo'],
-            producto_descripcion: rows['descripcion'],
-            total_diferencia: rows['total_diferencia'],
-            aprobacion: rows['aprobacion'],
-            nueva_numeracion: rows['nueva_numeracion'],
-            prefijo: rows['prefijo'],
-            titulo: rows['titulo']
+            usuario_id: rows.usuario_id,
+            usuario_nombre: rows.usuario_nombre,
+            serverUrl: rows.serverUrl,
+            valores: rows.valores,
+            fechaActual: rows.fechaActual,
+            producto_id: rows.producto_id,
+            empresa_id: rows.empresa_id,
+            empresa_nombre: rows.empresa_nombre,
+            documento_id: rows.documento_id,
+            producto_cantidad: rows.producto_cantidad,
+            producto_costo_anterior: rows.costo_anterior,
+            producto_costo_nuevo: rows.costo_nuevo,
+            producto_descripcion: rows.descripcion,
+            total_diferencia: rows.total_diferencia,
+            aprobacion: rows.aprobacion,
+            nueva_numeracion: rows.nueva_numeracion,
+            prefijo: rows.prefijo,
+            titulo: rows.titulo
         }
     }, function(err, response) {
         //console.log('Entro en funcion PDF2');
@@ -66,23 +80,22 @@ function __generarReporteFactura(rows, callback) {
                 var fecha_actual = new Date();
                 var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
                 var reporte = "/public/reports/" + nombre_reporte;
-                var reporte_imprimir = "http://docs.google.com/gview?url="+ $location.protocol() +"//"+ $location.host() + "/public/reports/" + nombre_reporte + "&embedded=true";
+                var reporte_imprimir = host + "/reports/" + nombre_reporte;
                 G.fs.writeFile(G.dirname + reporte, body, "binary", function(err) {
                     //console.log('fine3 en funcion PDF',err);
                     if (err) {
                         console.log('error2 en funcion PDF',err);
                         callback(true, err);
                     } else {
-                        //console.log('fine4 en funcion PDF');
                         var that = this;
-                        var msj = 'All fine!';
-                        var status = 200;
-                        var result = reporte;
-                        usuario = 1350;
-                        var response = G.utils.r('onNotificarTodoPendienteFormula', msj, status, result);
-                        console.log('response es: ',response);
-                        __enviarNotificacion(that,usuario,response,"onNotificarTodoPendienteFormula");
-
+                        //console.log('fine4 en funcion PDF');
+                        //var msj = 'All fine!';
+                        //var status = 200;
+                        //var result = reporte;
+                        //usuario = 1350;
+                        //var response = G.utils.r('onNotificarTodoPendienteFormula', msj, status, result);
+                        //console.log('response es: ',response);
+                        //__enviarNotificacion(that,usuario,response,"onNotificarTodoPendienteFormula");
                         //that.io.to(session.socket_id).emit(socket,response);
                         console.log('URL desde controlador: ',reporte_imprimir);
                         callback(false, reporte_imprimir);
@@ -98,6 +111,9 @@ Productos.prototype.subeCosto = function(req, res) {
     var args = req.body.data;
     var session = req.body.session;
     var parametros = args;
+    var ajuste_precio_id = 0;
+    var url_documento = '';
+    //console.log('Parametros en controlador son: ',parametros);
     parametros.usuario_id = session.usuario_id;
     parametros.empresa_id = session.empresaId;
     parametros.centro_id = session.centroUtilidad;
@@ -125,48 +141,51 @@ Productos.prototype.subeCosto = function(req, res) {
         //console.log('funcion 4');
         return G.Q.ninvoke(that.m_productos, "subeCosto_InsertInvBodAjusPrice", parametros);
     }).then(function(resultado5){
-        //console.log('funcion 5');
+        ajuste_precio_id = resultado5[0];
+        console.log('resultado 5, ajuste_precio_id: ', ajuste_precio_id);
         // return res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: true}));
-        if(parametros.prefijo == 'ABC'){
-
-        }else if(parametros.prefijo == 'ASC'){
-
-        }
-        var datos = [];
-        datos['cabecera'] = '';
-        datos['impuestos'] = '';
-        datos['detalle'] = '';
-        datos['serverUrl'] = '';
-        datos['justificacion'] = parametros.justificacion;
+        var datos = {
+            cabecera: '',
+            impuestos: '',
+            detalle: '',
+            serverUrl: '',
+            justificacion: parametros.justificacion,
+            usuario_id: parametros.usuario_id,
+            usuario_nombre: parametros.usuario_nombre,
+            fechaActual: parametros.fechaActual,
+            producto_id: parametros.producto_id,
+            empresa_id: parametros.empresa_id,
+            empresa_nombre: parametros.empresa_nombre,
+            documento_id: parametros.documento_id,
+            producto_cantidad: parametros.producto_cantidad,
+            costo_anterior: parametros.anterior_precio,
+            costo_nuevo: parametros.nuevo_precio,
+            total_diferencia: parametros.total_diferencia,
+            aprobacion: parametros.aprobacion,
+            descripcion: parametros.producto_descripcion,
+            nueva_numeracion: parametros.nueva_numeracion,
+            prefijo: parametros.prefijo,
+            session: session,
+            titulo: parametros.titulo,
+            host: parametros.host
+        };
         //datos['serverUrl'] = parametros.protocol + '://' + parametros.host + "/";
-        datos['usuario_id'] = parametros.usuario_id;
-        datos['usuario_nombre'] = parametros.usuario_nombre;
-        datos['fechaActual'] = parametros.fechaActual;
-        datos['producto_id'] = parametros.producto_id;
-        datos['empresa_id'] = parametros.empresa_id;
-        datos['empresa_nombre'] = parametros.empresa_nombre;
-        datos['documento_id'] = parametros.documento_id;
-        datos['producto_cantidad'] = parametros.producto_cantidad;
-        datos['costo_anterior'] = parametros.anterior_precio;
-        datos['costo_nuevo'] = parametros.nuevo_precio;
-        datos['total_diferencia'] = parametros.total_diferencia;
-        datos['justificacion'] = parametros.justificacion;
-        datos['aprobacion'] = parametros.aprobacion;
-        datos['descripcion'] = parametros.producto_descripcion;
-        datos['nueva_numeracion'] = parametros.nueva_numeracion;
-        datos['prefijo'] = parametros.prefijo;
-        datos['session'] = session;
-        datos['titulo'] = parametros.titulo;
-
         //console.log('Parametros son: ',parametros);
-        //console.log('datos es: ', datos);
+        //console.log('datos para funcion PDF son: ', datos);
         //console.log('session es: ', session);
         //console.log('Esto es "req": ',req);
         //console.log('Esto es "res": ',res);
         return G.Q.nfcall(__generarReporteFactura, datos);
     }).then(function(resultado6){
-        console.log('ultimo resultado: ',resultado6);
-        res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: resultado6}));
+        url_documento = resultado6;
+        var parametro_actualizar_url = {
+            ajuste_precio_id: ajuste_precio_id,
+            url_documento: resultado6
+        };
+        return G.Q.ninvoke(that.m_productos, "subeCosto_UpdateUrlDocumento", parametro_actualizar_url);
+    }).then(function (resultado7) {
+        console.log('Url del documento actualizada!!');
+        res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: url_documento}));
     }).fail(function (err) {
         //console.log('Antes de enviar el error!!!');
         res.send(G.utils.r(req.url, 'Error!! ' + err, 500, {listarAgrupar: {}}));

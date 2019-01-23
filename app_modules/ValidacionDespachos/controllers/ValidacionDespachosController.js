@@ -113,19 +113,41 @@ ValidacionDespachos.prototype.listarImagenes = function(req, res) {
  * aprobados
  */
 ValidacionDespachos.prototype.adjuntarImagen = function(req, res) {
-   
-
     var that = this;
+    var args = req.body.data;
+    console.log('Parametros en el controlador: ', args);
 
-    var args = req.body.data;    
+    var error_count = 0;
+    var error = 'Error:\n';
 
     if (args.validacionDespachos === undefined) {
-        res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
-        return;
+        error_count++;
+        error += 'Variable (validacionDespachos) no esta definida,\n';
     }
 
-    if (!args.validacionDespachos.id_aprobacion || !args.validacionDespachos.prefijo || !args.validacionDespachos.numero) {
-        res.send(G.utils.r(req.url, 'Algunos campos obligatorios estan vacios ', 404, {}));
+    if (!args.validacionDespachos.id_aprobacion) {
+        error_count++;
+        error += 'El "Id" de aprobacion esta vacio,\n';
+    }
+
+    if (!args.validacionDespachos.prefijo) {
+        error_count++;
+        error += 'El "Prefijo" esta vacio,\n';
+    }
+
+    if (!args.validacionDespachos.numero) {
+        error_count++;
+        error += 'El "Numero" esta vacio,\n';
+    }
+
+    if(req.files.file == undefined){
+        error_count++;
+        error += 'Imagen no existe!,\n';
+    }
+
+    if(error_count > 0){
+        error = error.substring(0, (error.length-2));
+        res.send(G.utils.r(req.url, error, 404, {}));
         return;
     }
 

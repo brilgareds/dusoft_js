@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="" />
+    <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -53,16 +55,125 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="14898">
               <caret line="573" column="48" lean-forward="false" selection-start-line="573" selection-start-column="31" selection-end-line="573" selection-end-column="48" />
-              <folding />
+              <folding>
+                <marker date="1548276869458" expanded="true" signature="103:25682" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="213:25678" ph="[...]" />
+                <marker date="1548276869458" expanded="true" signature="803:25677" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="11876:13185" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="12874:13185" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="17757:18617" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="17934:18601" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="17982:18513" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="18113:18426" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="18519:18583" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="18644:18803" ph="/*...*/" />
+                <marker date="1548276869458" expanded="true" signature="18854:21057" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="18886:20979" ph="{&quot;size&quot;: 'lg'...}" />
+                <marker date="1548276869458" expanded="true" signature="20480:20793" ph="[...]" />
+                <marker date="1548276869458" expanded="true" signature="20541:20792" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="20665:20744" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="20824:20961" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="20869:20939" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="21097:21238" ph="/*...*/" />
+                <marker date="1548276869458" expanded="true" signature="21294:21894" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="21438:21861" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="21472:21843" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="21604:21819" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="21660:21792" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="21724:21760" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="21909:22239" ph="/*...*/" />
+                <marker date="1548276869458" expanded="true" signature="22294:22761" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="22431:22745" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="22521:22657" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="22663:22727" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="22820:23100" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="22862:23049" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="23134:23251" ph="/*...*/" />
+                <marker date="1548276869458" expanded="true" signature="23320:23577" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="23369:23416" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="23591:23796" ph="/** @author Cristian Ardila ...*/" />
+                <marker date="1548276869458" expanded="true" signature="23862:24558" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="23999:24433" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="24245:24392" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="24283:24370" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="24439:24510" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="24597:25187" ph="{...}" />
+                <marker date="1548276869458" expanded="true" signature="25318:25665" ph="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ValidacionDespachosController.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ValidacionDespachosController.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app_modules/ValidacionDespachos/controllers/ValidacionDespachosController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="603">
-              <caret line="158" column="116" lean-forward="true" selection-start-line="115" selection-start-column="4" selection-end-line="158" selection-end-column="116" />
+            <state relative-caret-position="327">
+              <caret line="181" column="0" lean-forward="false" selection-start-line="181" selection-start-column="0" selection-end-line="181" selection-end-column="0" />
+              <folding>
+                <marker date="1548276868411" expanded="true" signature="3429:5633" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="4764:5518" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="4832:4897" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="4915:5193" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="4952:5075" ph="{&quot;id_aprobacion&quot;: aprobacion...}" />
+                <marker date="1548276868411" expanded="true" signature="5210:5327" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="5348:5502" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="5524:5630" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="5637:5755" ph="/** @author Eduar Garcia ...*/" />
+                <marker date="1548276868411" expanded="true" signature="5822:6843" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="5934:6055" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="6129:6244" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="6432:6656" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="6677:6831" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="6847:6962" ph="/*...*/" />
+                <marker date="1548276868411" expanded="true" signature="7029:7605" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="7166:7265" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="7345:7601" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="7365:7478" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="7484:7595" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="7609:7841" ph="/** @author Cristian Ardila ...*/" />
+                <marker date="1548276868411" expanded="true" signature="7913:11049" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="8017:8138" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="8246:8369" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="8470:8584" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="8683:8796" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="8910:9034" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="9145:9272" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="9395:9521" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="9639:9757" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="9855:9968" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="10391:10684" ph="{&quot;empresa_id&quot;: empresa_id...}" />
+                <marker date="1548276868411" expanded="true" signature="10785:10913" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="10934:11037" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="11131:11645" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="11203:11283" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="11400:11519" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="11540:11634" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="11730:12652" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="11836:11957" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="12062:12176" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="12381:12517" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="12538:12641" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="12657:12862" ph="/** @author Cristian Ardila ...*/" />
+                <marker date="1548276868411" expanded="true" signature="12940:14897" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="13044:13165" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="13273:13396" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="13497:13611" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="13710:13823" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="13842:14051" ph="{&quot;empresa_id&quot;: args.validacionDespachos.empresa_id...}" />
+                <marker date="1548276868411" expanded="true" signature="14191:14747" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="14274:14446" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="14450:14636" ph="{...}" />
+                <marker date="1548276868411" expanded="true" signature="14768:14886" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/build.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="286">
+              <caret line="11" column="1" lean-forward="false" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -81,10 +192,10 @@
       <file leaf-file-name="validaciondespachos.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="520">
-              <caret line="180" column="24" lean-forward="false" selection-start-line="180" selection-start-column="24" selection-end-line="180" selection-end-column="24" />
+            <state relative-caret-position="4654">
+              <caret line="179" column="0" lean-forward="false" selection-start-line="179" selection-start-column="0" selection-end-line="179" selection-end-column="0" />
               <folding>
-                <element signature="n#style#0;n#input#0;n#span#0;n#div#4;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <marker date="1548276869460" expanded="true" signature="8544:9383" ph="..." />
               </folding>
             </state>
           </provider>
@@ -253,8 +364,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -295,42 +404,6 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="stylesheets" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="reports" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="dusoft_duana" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
@@ -375,7 +448,55 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="validaciondespachos" />
+              <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dusoft_duana" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dusoft_duana" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="documentosbodegas" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -401,37 +522,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="validaciondespachos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="models" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="validaciondespachos" />
+              <option name="myItemId" value="documentosbodegas" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -461,7 +552,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="validaciondespachos" />
+              <option name="myItemId" value="documentosbodegas" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -487,81 +578,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
+              <option name="myItemId" value="dusoft.doc" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -713,11 +730,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="models" />
+              <option name="myItemId" value="MovimientosBodega" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -735,7 +748,33 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
+              <option name="myItemId" value="MovimientosBodega" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="E008" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app_modules" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MovimientosBodega" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="E008" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -745,6 +784,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -915,7 +956,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="538388000" />
+    <option name="totallyTimeSpent" value="538587000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -928,27 +969,37 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="-2" width="1926" height="1060" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17465389" sideWeight="0.4962325" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21528526" sideWeight="0.5042598" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960597" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32831" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24973376" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18191604" sideWeight="0.49574015" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18423855" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.08396125" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32972974" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.6899892" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21528526" sideWeight="0.5042598" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32831" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18191604" sideWeight="0.49574015" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17465389" sideWeight="0.4962325" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32938644" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960597" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24973376" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1219,7 +1270,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4056">
           <caret line="156" column="15" lean-forward="false" selection-start-line="156" selection-start-column="15" selection-end-line="156" selection-end-column="15" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1283,7 +1333,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="26">
           <caret line="186" column="55" lean-forward="false" selection-start-line="186" selection-start-column="55" selection-end-line="186" selection-end-column="55" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1299,25 +1348,124 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="14898">
           <caret line="573" column="48" lean-forward="false" selection-start-line="573" selection-start-column="31" selection-end-line="573" selection-end-column="48" />
-          <folding />
+          <folding>
+            <marker date="1548276869458" expanded="true" signature="103:25682" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="213:25678" ph="[...]" />
+            <marker date="1548276869458" expanded="true" signature="803:25677" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="11876:13185" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="12874:13185" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="17757:18617" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="17934:18601" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="17982:18513" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="18113:18426" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="18519:18583" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="18644:18803" ph="/*...*/" />
+            <marker date="1548276869458" expanded="true" signature="18854:21057" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="18886:20979" ph="{&quot;size&quot;: 'lg'...}" />
+            <marker date="1548276869458" expanded="true" signature="20480:20793" ph="[...]" />
+            <marker date="1548276869458" expanded="true" signature="20541:20792" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="20665:20744" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="20824:20961" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="20869:20939" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="21097:21238" ph="/*...*/" />
+            <marker date="1548276869458" expanded="true" signature="21294:21894" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="21438:21861" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="21472:21843" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="21604:21819" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="21660:21792" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="21724:21760" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="21909:22239" ph="/*...*/" />
+            <marker date="1548276869458" expanded="true" signature="22294:22761" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="22431:22745" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="22521:22657" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="22663:22727" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="22820:23100" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="22862:23049" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="23134:23251" ph="/*...*/" />
+            <marker date="1548276869458" expanded="true" signature="23320:23577" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="23369:23416" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="23591:23796" ph="/** @author Cristian Ardila ...*/" />
+            <marker date="1548276869458" expanded="true" signature="23862:24558" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="23999:24433" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="24245:24392" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="24283:24370" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="24439:24510" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="24597:25187" ph="{...}" />
+            <marker date="1548276869458" expanded="true" signature="25318:25665" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="180" column="24" lean-forward="false" selection-start-line="180" selection-start-column="24" selection-end-line="180" selection-end-column="24" />
+        <state relative-caret-position="4654">
+          <caret line="179" column="0" lean-forward="false" selection-start-line="179" selection-start-column="0" selection-end-line="179" selection-end-column="0" />
           <folding>
-            <element signature="n#style#0;n#input#0;n#span#0;n#div#4;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <marker date="1548276869460" expanded="true" signature="8544:9383" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/ValidacionDespachos/controllers/ValidacionDespachosController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="603">
-          <caret line="158" column="116" lean-forward="true" selection-start-line="115" selection-start-column="4" selection-end-line="158" selection-end-column="116" />
-          <folding />
+        <state relative-caret-position="327">
+          <caret line="181" column="0" lean-forward="false" selection-start-line="181" selection-start-column="0" selection-end-line="181" selection-end-column="0" />
+          <folding>
+            <marker date="1548276868411" expanded="true" signature="3429:5633" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="4764:5518" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="4832:4897" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="4915:5193" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="4952:5075" ph="{&quot;id_aprobacion&quot;: aprobacion...}" />
+            <marker date="1548276868411" expanded="true" signature="5210:5327" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="5348:5502" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="5524:5630" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="5637:5755" ph="/** @author Eduar Garcia ...*/" />
+            <marker date="1548276868411" expanded="true" signature="5822:6843" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="5934:6055" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="6129:6244" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="6432:6656" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="6677:6831" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="6847:6962" ph="/*...*/" />
+            <marker date="1548276868411" expanded="true" signature="7029:7605" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="7166:7265" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="7345:7601" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="7365:7478" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="7484:7595" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="7609:7841" ph="/** @author Cristian Ardila ...*/" />
+            <marker date="1548276868411" expanded="true" signature="7913:11049" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="8017:8138" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="8246:8369" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="8470:8584" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="8683:8796" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="8910:9034" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="9145:9272" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="9395:9521" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="9639:9757" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="9855:9968" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="10391:10684" ph="{&quot;empresa_id&quot;: empresa_id...}" />
+            <marker date="1548276868411" expanded="true" signature="10785:10913" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="10934:11037" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="11131:11645" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="11203:11283" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="11400:11519" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="11540:11634" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="11730:12652" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="11836:11957" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="12062:12176" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="12381:12517" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="12538:12641" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="12657:12862" ph="/** @author Cristian Ardila ...*/" />
+            <marker date="1548276868411" expanded="true" signature="12940:14897" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="13044:13165" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="13273:13396" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="13497:13611" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="13710:13823" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="13842:14051" ph="{&quot;empresa_id&quot;: args.validacionDespachos.empresa_id...}" />
+            <marker date="1548276868411" expanded="true" signature="14191:14747" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="14274:14446" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="14450:14636" ph="{...}" />
+            <marker date="1548276868411" expanded="true" signature="14768:14886" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>

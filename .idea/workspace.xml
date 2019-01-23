@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/ValidacionDespachos/controllers/ValidacionDespachosController.js" afterPath="$PROJECT_DIR$/app_modules/ValidacionDespachos/controllers/ValidacionDespachosController.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dump.rdb" afterPath="$PROJECT_DIR$/dump.rdb" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -767,12 +766,12 @@
       <workItem from="1548101253425" duration="1709000" />
       <workItem from="1548272444656" duration="8000" />
       <workItem from="1548272481484" duration="301000" />
-      <workItem from="1548273274437" duration="70000" />
+      <workItem from="1548273274437" duration="315000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="235128000" />
+    <option name="totallyTimeSpent" value="235373000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="-2" width="1926" height="1060" extended-state="6" />

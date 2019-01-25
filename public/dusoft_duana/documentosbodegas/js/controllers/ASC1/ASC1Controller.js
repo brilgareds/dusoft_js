@@ -128,10 +128,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.listarAgrupar = function (parametro, callback) {
                 var empresa_id = $scope.session.empresaId;
+
+                console.log('su filtro de busqueda es: ', parametro.filtroBusqueda, 'Y su codigo es: ',parametro.radicacion_id);
+
                 if(parametro.radicacion_id == undefined){
                     parametro.radicacion_id = '';
                 }
-                if($scope.root.buscar_radicacion_id !== parametro.radicacion_id ||
+                if((parametro.filtroBusqueda != $scope.filtroBusqueda && parametro.radicacion_id != undefined) || $scope.root.buscar_radicacion_id !== parametro.radicacion_id ||
                     $scope.fecha_ini != parametro.fecha_ini ||
                     $scope.fecha_fin != parametro.fecha_fin){
 
@@ -284,16 +287,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 );
             };
 
-            $scope.formatDate = function(date){
-                if(date == 0 || date == undefined){
-                    date = new Date();
-                }
-                var mes = parseInt(date.getMonth()+1);
-                if(mes<10){ mes = '0'+mes; }
-                var response = '01-'+(mes)+'-'+date.getFullYear()+' 00:00:00';
-                return new Date(response);
-            };
-
             $scope.buscarProductos = function(){
                 //console.log('Before....fecha ini es : ', $scope.producto_fecha1, 'Y fecha2 es: ', $scope.producto_fecha2);
                 var fecha1 = $scope.producto_fecha1;
@@ -324,7 +317,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         if(minute<10){ minute = '0'+minute; }
                         if(seconds<10){ seconds = '0'+seconds; }
 
-                        element.fecha = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+seconds;
+                        element.fecha = day+'/'+month+'/'+year+' '+hour+':'+minute+':'+seconds;
                     });
                     var magnitudMinima = 15;
                     var cantidadProductos = dato.documentosAjustes.length;
@@ -928,6 +921,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
                 return isRealResponse;
             };
+
+            $scope.formatDate = function(date){
+                var response = new Date(date).toFormat('DD/MM/YYYY HH24:MI:SS');
+                return response;
+            };
 //2
             $scope.listar_documentos_ajuste = {
                 data: 'root.listarDocumentosProductos',
@@ -935,26 +933,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
-                enableColumnResizing: true,
+                enableColumnResize: true,
                 columnDefs: [
-                    {field: 'fecha', displayName: "Fecha del Ajuste", cellClass: "txt-center", width: "8.33333333%",
+                    {field: 'fecha', displayName: "Fecha", cellClass: "txt-center", width: "8%"},
+                    //{field: 'fecha', displayName: 'Fecha del Ajuste', width: "8.33333333%"},
+                    {field: 'producto_id', displayName: 'Codigo Producto', width: "9%"}, //
+                    {field: 'descripcion', displayName: 'Descripción', width: "23%"},
+                    {field: 'costo_anterior', displayName: 'Costo Anterior', width: "8%"},
+                    {field: 'costo_asignado', displayName: 'Costo Asignado', width: "9%"},
+                    {field: 'producto_cantidad', displayName: 'Existencia', width: "6%"},
+                    {field: 'total_diferencia', displayName: 'Diferencia', width: "6%"},
+                    {field: 'justificacion', displayName: 'Justificación', width: "16%"},
+                    {field: 'aprobacion', displayName: 'Aprobación', width: "10%"},
+                    {displayName: "Opciones", cellClass: "txt-center", width: "4%",
                         cellTemplate: '<a ng-if="isReal(row.entity.url_documento)" href={{row.entity.url_documento}} target="_blank">\
-                                         {{row.entity.fecha}}\
-                                       </a>\
-                                       <a style="color: inherit; text-decoration: none;" ng-if="!isReal(row.entity.url_documento)">\
-                                         {{row.entity.fecha}}\
+                                         <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-print"></span></button>\
                                        </a>\
                                        '
-                    },
-                    //{field: 'fecha', displayName: 'Fecha del Ajuste', width: "8.33333333%"},
-                    {field: 'producto_id', displayName: 'Codigo Producto', width: "8.33333333%"}, //
-                    {field: 'descripcion', displayName: 'Descripción Completa', width: "25%"},
-                    {field: 'costo_anterior', displayName: 'Costo Anterior', width: "8%"},
-                    {field: 'costo_asignado', displayName: 'Costo Asignado', width: "8%"},
-                    {field: 'producto_cantidad', displayName: 'Existencia Producto', width: "8.33333333%"},
-                    {field: 'total_diferencia', displayName: 'Diferencia Total', width: "8.33333333%"},
-                    {field: 'justificacion', displayName: 'Justificación del Ajuste', width: "17%"},
-                    {field: 'aprobacion', displayName: 'Aprobación del Ajuste', width: "10%"}
+                    }
                 ]
             };
 
@@ -964,7 +960,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
-                enableColumnResizing : true,
+                enableColumnResize: true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo', width: "15%"},
                     {field: 'descripcion', displayName: 'Producto', width: "36%"}, //
@@ -1760,7 +1756,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     //console.log("Eyyy -->",dato);
                     //console.log('Before Fecha: ', dato.documentosAjustes.fecha);
                     var fecha = dato.documentosAjustes.fecha.split('T');
-                    dato.documentosAjustes.fecha = fecha[0]+' '+fecha[1].substring(0, 8);
+                    dato.documentosAjustes.fecha = new Date(fecha[0]+' '+fecha[1].substring(0, 8)).toFormat('DD/MM/YYYY HH24:MI:SS');
                     //console.log('Fecha: ', dato.documentosAjustes.fecha);
                     $scope.root.listarAgrupar = dato.listarAgrupar;
                     $scope.root.listarDocumentosProductos = dato.documentosAjustes;

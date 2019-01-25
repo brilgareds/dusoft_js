@@ -133,7 +133,7 @@ ProductosModel.prototype.subeCosto_UpdateDocumentos = function(obj, callback) {
 };
 
 ProductosModel.prototype.subeCosto_UpdateUrlDocumento = function(obj, callback) {
-    console.log('Entro en funcion "subeCosto_UpdateUrlDocumento"');
+    //console.log('Entro en funcion "subeCosto_UpdateUrlDocumento" con obj:', obj);
     var ajuste_precio_id = obj.ajuste_precio_id;
     var url_documento = obj.url_documento;
 
@@ -163,9 +163,10 @@ ProductosModel.prototype.subeCosto_InsertInvBodAjusPrice = function(obj, callbac
             costo_asignado: obj.nuevo_precio,
             total_diferencia: obj.total_diferencia,
             justificacion: obj.justificacion,
-            aprobacion: obj.aprobacion
+            aprobacion: obj.aprobacion,
+            fecha: obj.fecha_actual
         }).returning('ajuste_precio_id');
-    //console.log(G.sqlformatter.format(insertAjustePrecio.toString()));
+    console.log(G.sqlformatter.format(insertAjustePrecio.toString()));
     insertAjustePrecio.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

@@ -48,12 +48,11 @@ function __generarReporteFactura(rows, callback) {
             detalle: rows.detalle,
             valores: rows.valores,
             justificacion: rows.justificacion,
-            fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
+            fecha_actual: rows.fecha_actual,
             usuario_id: rows.usuario_id,
             usuario_nombre: rows.usuario_nombre,
             serverUrl: rows.serverUrl,
             valores: rows.valores,
-            fechaActual: rows.fechaActual,
             producto_id: rows.producto_id,
             empresa_id: rows.empresa_id,
             empresa_nombre: rows.empresa_nombre,
@@ -118,9 +117,9 @@ Productos.prototype.subeCosto = function(req, res) {
     parametros.empresa_id = session.empresaId;
     parametros.centro_id = session.centroUtilidad;
     parametros.bodega_id = session.bodega;
-    var date = new Date();
+    parametros.fecha_actual = new Date().toFormat('YYYY/MM/DD HH24:MI:SS');
+    parametros.fecha_actual2 = new Date().toFormat('DD/MM/YYYY HH24:MI:SS');
     parametros.total_diferencia = parseFloat(parametros.total_diferencia);
-    parametros.fechaActual = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + ' 00:00:00';
     //console.log('Obj en el controlador es: ', parametros);
 
     G.Q.ninvoke(that.m_productos, "subeCosto_UpdateInventary", parametros).then(function (resultado) {
@@ -138,11 +137,14 @@ Productos.prototype.subeCosto = function(req, res) {
         //console.log('resultado3: ',resultado3[0]);
         return G.Q.ninvoke(that.m_productos, "subeCosto_UpdateDocumentos", parametros);
     }).then(function(resultado4){
-        //console.log('funcion 4');
+        // console.log('funcion 4');
         return G.Q.ninvoke(that.m_productos, "subeCosto_InsertInvBodAjusPrice", parametros);
     }).then(function(resultado5){
         ajuste_precio_id = resultado5[0];
-        console.log('resultado 5, ajuste_precio_id: ', ajuste_precio_id);
+        //console.log('resultado 5, ', ajuste_precio_id);
+        //var date0 = new Date(resultado5[0].fecha);
+        //parametros.fechaActual = date0.getFullYear() + '-' + ('0' + (date0.getMonth() + 1)).slice(-2) + '-' + ('0' + date0.getDate()).slice(-2) + ' '+('0' + date0.getHours()).slice(-2)+':'+('0' + date0.getMinutes()).slice(-2)+':'+('0' + date0.getSeconds()).slice(-2);
+        //console.log('Fecha desde la base de datos es: ', parametros.fecha_actual);
         // return res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: true}));
         var datos = {
             cabecera: '',
@@ -152,7 +154,7 @@ Productos.prototype.subeCosto = function(req, res) {
             justificacion: parametros.justificacion,
             usuario_id: parametros.usuario_id,
             usuario_nombre: parametros.usuario_nombre,
-            fechaActual: parametros.fechaActual,
+            fecha_actual: parametros.fecha_actual2,
             producto_id: parametros.producto_id,
             empresa_id: parametros.empresa_id,
             empresa_nombre: parametros.empresa_nombre,

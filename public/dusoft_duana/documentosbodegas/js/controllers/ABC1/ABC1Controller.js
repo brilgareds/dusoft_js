@@ -314,7 +314,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         if(minute<10){ minute = '0'+minute; }
                         if(seconds<10){ seconds = '0'+seconds; }
 
-                        element.fecha = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+seconds;
+                        element.fecha = day+'/'+month+'/'+year+' '+hour+':'+minute+':'+seconds;
                     });
                     $scope.root.listarAgrupar = dato.listarAgrupar;
                     var magnitudMinima = 15;
@@ -918,26 +918,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
-                enableColumnResizing: true,
+                enableColumnResize: true,
                 columnDefs: [
-                    {field: 'fecha', displayName: "Fecha del Ajuste", cellClass: "txt-center", width: "8.33333333%",
+                    {field: 'fecha', displayName: "Fecha", cellClass: "txt-center", width: "7%"},
+                    //{field: 'fecha', displayName: 'Fecha del Ajuste', width: "8.33333333%"},
+                    {field: 'producto_id', displayName: 'Codigo Producto', width: "9%"}, //
+                    {field: 'descripcion', displayName: 'Descripción', width: "24%"},
+                    {field: 'costo_anterior', displayName: 'Costo Anterior', width: "8%"},
+                    {field: 'costo_asignado', displayName: 'Costo Asignado', width: "9%"},
+                    {field: 'producto_cantidad', displayName: 'Existencia', width: "6%"},
+                    {field: 'total_diferencia', displayName: 'Diferencia', width: "6%"},
+                    {field: 'justificacion', displayName: 'Justificación', width: "16%"},
+                    {field: 'aprobacion', displayName: 'Aprobación', width: "10%"},
+                    {displayName: "Imprimir", cellClass: "txt-center", width: "5%",
                         cellTemplate: '<a ng-if="isReal(row.entity.url_documento)" href={{row.entity.url_documento}} target="_blank">\
-                                         {{row.entity.fecha}}\
-                                       </a>\
-                                       <a style="color: inherit; text-decoration: none;" ng-if="!isReal(row.entity.url_documento)">\
-                                         {{row.entity.fecha}}\
+                                         <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-print"></span></button>\
                                        </a>\
                                        '
-                    },
-                    //{field: 'fecha', displayName: 'Fecha del Ajuste', width: "8.33333333%"},
-                    {field: 'producto_id', displayName: 'Codigo Producto', width: "8.33333333%"}, //
-                    {field: 'descripcion', displayName: 'Descripción Completa', width: "25%"},
-                    {field: 'costo_anterior', displayName: 'Costo Anterior', width: "8%"},
-                    {field: 'costo_asignado', displayName: 'Costo Asignado', width: "8%"},
-                    {field: 'producto_cantidad', displayName: 'Existencia Producto', width: "8.33333333%"},
-                    {field: 'total_diferencia', displayName: 'Diferencia Total', width: "8.33333333%"},
-                    {field: 'justificacion', displayName: 'Justificación del Ajuste', width: "17%"},
-                    {field: 'aprobacion', displayName: 'Aprobación del Ajuste', width: "10%"}
+                    }
                 ]
             };
 
@@ -947,6 +945,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
+                enableColumnResize: true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo', width: "15%"},
                     {field: 'descripcion', displayName: 'Producto', width: "36%"}, //
@@ -954,8 +953,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'costo_ultima_compra', displayName: 'Ultima Compra', width: "16%"},
                     {field: 'existencia', displayName: 'Stock', width: "10%"},
                     {displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "7%",
-                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
-                                        <button ng-click="onModificarAgrupacion(row.entity)" class="btn btn-default btn-xs">\
+                        cellTemplate: '<div ng-if="row.entity" class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
+                                        <button ng-click="onModificarAgrupacion(row.entity.codigo_producto)" class="btn btn-default btn-xs">\
                                             <span class="glyphicon glyphicon-edit"></span>\
                                         </button>\
                                        </div>'
@@ -1316,13 +1315,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             $scope.fecha_ini = 'empty';
                             $scope.fecha_fin = 'empty';
                             $scope.buscarProductos();
-                            var imprimir = confirm("Quieres imprimir el documento?");
-                            if(imprimir == true){
-                                console.log('Imprimiendo PDF!! url: ',reporte);
-                                window.open(reporte, '_blank');
-                            }else{
-                                console.log('No imprimiste el PDF');
-                            }
+                            console.log('Imprimiendo PDF!! url: ',reporte);
+                            window.open(reporte, '_blank');
                             //callback(data.obj.listarAgrupar);
                         }
                     }

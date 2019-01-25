@@ -60,7 +60,7 @@ PreciosProductosModel.prototype.listarFactura = function (callback) {
 
 PreciosProductosModel.prototype.listarDocumentosAjustes = function (obj, callback) {
     //console.log('Object in function "listarDocumentosAjustes": ',obj);
-    var codigo_producto = obj.relacion_id;
+    var codigo_producto = obj.relacion_id.toUpperCase();
     var fecha_ini = obj.fecha_ini+' 00:00:00';
     var fecha_fin = obj.fecha_fin+' 23:59:59';
     var prefijo = obj.prefijo;
@@ -69,46 +69,95 @@ PreciosProductosModel.prototype.listarDocumentosAjustes = function (obj, callbac
 
     //console.log('Entry in function "listarDocumentosAjustes"');
 
-    if(filtro == 'Codigo'){
-        filtroWhere = 'inventarios_productos.codigo_producto';
-    }else if(filtro == 'Descripcion'){
-        if(codigo_producto != ''){
-            codigo_producto = codigo_producto.toUpperCase();
-        }
-        filtroWhere = 'inventarios_productos.descripcion';
-    }else if(filtro == 'Molecula'){
-        filtroWhere = 'inventarios_productos.subclase_id';
-    }
-    var campos = [
-        'a.*',
-        'documentos.prefijo',
-        G.knex.raw('split_part(a.aprobacion, \' \', 1) as aprobacion1'),
-        G.knex.raw('split_part(a.aprobacion, \' \', 2) as aprobacion2'),
-        G.knex.raw('fc_descripcion_producto(a.producto_id) as descripcion')
-    ];
+    if(filtro == 'Molecula'){
+        filtroWhere = 'a.descripcion';
 
-    var query = G.knex.column(campos).select()
-        .from("inv_bodegas_ajuste_precio as a")
-        .innerJoin('documentos', 'a.documento_id', 'documentos.documento_id')
-        .innerJoin('inventarios_productos', 'a.producto_id', 'inventarios_productos.codigo_producto')
-        .where(function() {
-            if(codigo_producto != ''){
-                this.where(filtroWhere, 'LIKE', '%'+codigo_producto+'%')
-                .andWhere('fecha', '>=', fecha_ini)
-                .andWhere('fecha', '<=', fecha_fin)
-                .andWhere('prefijo', '=', prefijo)
-                .andWhere('documentos.empresa_id', '=', empresa_id);
-            }else{
-                this.where('fecha', '>=', fecha_ini)
-                .andWhere('fecha', '<=', fecha_fin)
-                .andWhere('prefijo', '=', prefijo)
-                .andWhere('documentos.empresa_id', '=', empresa_id);
-            }
-        })
-        .orderBy('fecha', 'DESC');
-    //console.log('Llegó este objeto: ',obj);
+        var campos = [
+            
+            'a.subclase_id',
+            'c.*',
+            'd.prefijo',
+            G.knex.raw('split_part(c.aprobacion, \' \', 1) as aprobacion1'),
+            G.knex.raw('split_part(c.aprobacion, \' \', 2) as aprobacion2'),
+            G.knex.raw('fc_descripcion_producto(c.producto_id) as descripcion')
+        ];
+
+        var query = G.knex.column(campos).select()
+            .from('inv_subclases_inventarios as a')
+            .innerJoin('inventarios_productos as b', 'a.subclase_id', 'b.subclase_id')
+            .innerJoin('inv_bodegas_ajuste_precio as c', 'b.codigo_producto', 'c.producto_id')
+            .innerJoin('documentos as d', 'c.documento_id', 'd.documento_id')
+            .where(function() {
+                if(codigo_producto != ''){
+                    this.where(filtroWhere, 'LIKE', '%'+codigo_producto+'%')
+                        .andWhere('c.fecha', '>=', fecha_ini)
+                        .andWhere('c.fecha', '<=', fecha_fin)
+                        .andWhere('d.prefijo', '=', prefijo)
+                        .andWhere('d.empresa_id', '=', empresa_id);
+                }else{
+                    this.where('c.fecha', '>=', fecha_ini)
+                        .andWhere('c.fecha', '<=', fecha_fin)
+                        .andWhere('d.prefijo', '=', prefijo)
+                        .andWhere('d.empresa_id', '=', empresa_id);
+                }
+            })
+            .groupBy([
+                'a.subclase_id',
+                'c.documento_id',
+                'c.producto_id',
+                'c.producto_cantidad',
+                'c.costo_anterior',
+                'c.costo_asignado',
+                'c.total_diferencia',
+                'c.justificacion',
+                'c.aprobacion',
+                'c.fecha',
+                'c.empresa_id',
+                'c.ajuste_precio_id	',
+                'c.url_documento',
+                'd.prefijo',
+                'a.subclase_id'
+            ])
+            .orderBy('c.fecha', 'DESC');
+    }else {
+        if (filtro == 'Codigo') {
+            filtroWhere = 'inventarios_productos.codigo_producto';
+        } else if (filtro == 'Descripcion') {
+            filtroWhere = 'inventarios_productos.descripcion';
+        }
+
+        var campos = [
+            'a.*',
+            'documentos.prefijo',
+            G.knex.raw('split_part(a.aprobacion, \' \', 1) as aprobacion1'),
+            G.knex.raw('split_part(a.aprobacion, \' \', 2) as aprobacion2'),
+            G.knex.raw('fc_descripcion_producto(a.producto_id) as descripcion')
+        ];
+
+        var query = G.knex.column(campos).select()
+            .from("inv_bodegas_ajuste_precio as a")
+            .innerJoin('documentos', 'a.documento_id', 'documentos.documento_id')
+            .innerJoin('inventarios_productos', 'a.producto_id', 'inventarios_productos.codigo_producto')
+            .innerJoin('inv_subclases_inventarios', 'inventarios_productos.subclase_id', 'inv_subclases_inventarios.subclase_id')
+            .where(function () {
+                if (codigo_producto != '') {
+                    this.where(filtroWhere, 'LIKE', '%' + codigo_producto + '%')
+                        .andWhere('fecha', '>=', fecha_ini)
+                        .andWhere('fecha', '<=', fecha_fin)
+                        .andWhere('prefijo', '=', prefijo)
+                        .andWhere('documentos.empresa_id', '=', empresa_id);
+                } else {
+                    this.where('fecha', '>=', fecha_ini)
+                        .andWhere('fecha', '<=', fecha_fin)
+                        .andWhere('prefijo', '=', prefijo)
+                        .andWhere('documentos.empresa_id', '=', empresa_id);
+                }
+            })
+            .orderBy('fecha', 'DESC');
+    }
+    // console.log('Llegó este objeto: ',obj);
     // .orderBy('fecha_entrega', 'asc');
-    //console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
+    console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -130,7 +179,7 @@ PreciosProductosModel.prototype.listarAgrupar = function (obj, callback) {
     }else if(filtro == 'Descripcion'){
         filtroWhere = 'b.descripcion';
     }else if(filtro == 'Molecula'){
-        filtroWhere = 'b.subclase_id';
+        filtroWhere = 'c.descripcion';
     }
 
     if(codigoBuscar != undefined) {
@@ -147,6 +196,7 @@ PreciosProductosModel.prototype.listarAgrupar = function (obj, callback) {
         .select()
         .from("inventarios AS a")
         .innerJoin("inventarios_productos as b", "a.codigo_producto", "b.codigo_producto")
+        .innerJoin('inv_subclases_inventarios as c', 'b.subclase_id', 'c.subclase_id')
         .where('a.empresa_id', '=', empresa_id)
         .andWhere(function() {
             //if(codigoBuscar != undefined && codigoBuscar != ''){

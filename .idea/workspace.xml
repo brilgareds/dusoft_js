@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dump.rdb" afterPath="$PROJECT_DIR$/dump.rdb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/CajaGeneral/controllers/CajaGeneralController.js" afterPath="$PROJECT_DIR$/app_modules/CajaGeneral/controllers/CajaGeneralController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/CajaGeneral/reports/facturaConceptos.html" afterPath="$PROJECT_DIR$/app_modules/CajaGeneral/reports/facturaConceptos.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/CajaGeneral/reports/facturaConceptosPdf.html" afterPath="$PROJECT_DIR$/app_modules/CajaGeneral/reports/facturaConceptosPdf.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/CajaGeneral/reports/notaFacturaSinProductoPdf.html" afterPath="$PROJECT_DIR$/app_modules/CajaGeneral/reports/notaFacturaSinProductoPdf.html" />
-    </list>
+    <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -548,7 +541,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="237149000" />
+    <option name="totallyTimeSpent" value="237611000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="-2" width="1926" height="1060" extended-state="6" />

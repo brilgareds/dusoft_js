@@ -1029,7 +1029,7 @@ function __generarPdf(datos, callback) {
                             .letra_factura_info_40{font: 40% sans-serif;text-align: center;}
                             .letra_factura_info_40_jt{font: 40% sans-serif;text-align: justify;}
                            
-                         </style>
+                         </style>                         
                          <table border='0' width='100%' >
                            <tr>
                             <td align="center" width='40%'>
@@ -1038,7 +1038,7 @@ function __generarPdf(datos, callback) {
                                 <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>
                             <td>
                             <td width='30%'> 
-                                <p ><img  src='{#image logocliente}'  border='0' width="300px" height="80px"></p>                         
+                                <p><img src="{#asset /logocliente.png @encoding=dataURI}" border='0' width="300px" height="80px" style="display:block"/></p>                                                         
                             <td>
                             <td width='30%' valign="top">
                                  <b><p align="center" valign="top" >&nbsp;</p></b>                                                          
@@ -1080,7 +1080,7 @@ function __generarPdf(datos, callback) {
  */
 function __generarPdf2(datos, callback) {
 
-    var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
+    //var logo = G.base64Img.base64Sync("public/images/logocliente.png", function (err, data) {});
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/CajaGeneral/reports/' + datos.archivoHtml, 'utf8'),
@@ -1117,8 +1117,9 @@ function __generarPdf2(datos, callback) {
                          </style>
                          <table border='0' width='100%' >
                            <tr>
-                            <td align="center" width='30%'>
-                                <p ><img  src='{#image logocliente}'  border='0' width="300px" height="80px"></p>
+                            <td align="center" width='30%'>        
+                                <p><img src="{#asset /logocliente.png @encoding=dataURI}" border='0' width="300px" height="80px" style="display:block"/></p>
+                                <!-- <p ><img  src='{#image logocliente}'  border='0' width="300px" height="80px"></p> -->
                                 <p class="letra_factura_info">` + datos.empresa.tipo_id_tercero + `: ` + datos.empresa.id + ` - ` + datos.empresa.digito_verificacion + `</p>
                                 <p class="letra_factura_info">` + datos.empresa.direccion + ` TELEFONO : ` + datos.empresa.telefonos + `</p>
                                 <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>

@@ -128,6 +128,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             that.listarAgrupar = function (parametro, callback) {
                 //console.log('parametros that.listarAgrupar son:', parametro);
                 var empresa_id = $scope.session.empresaId;
+                var data = '';
 
                 if(parametro.radicacion_id == undefined){
                     parametro.radicacion_id = '';
@@ -329,25 +330,54 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 that.listarAgrupar(codigoProductosBuscar, function (dato) {
                     //console.log('Listar agrupar fine!!');
                     //console.log("Los datos devueltos son:  -->",dato);
-                    dato.documentosAjustes.forEach(function(element) {
-                        var fecha0 = new Date(element.fecha);
-                        //element.fecha = fecha[0]+' '+fecha[1].substring(0, 8);
-                        //element.fecha = $scope.formatDate(fecha);
-                        var day = fecha0.getDate();
-                        var month = parseInt(fecha0.getMonth())+1;
-                        var year = fecha0.getFullYear();
-                        var hour = fecha0.getHours();
-                        var minute = fecha0.getMinutes();
-                        var seconds = fecha0.getSeconds();
+                    if(dato.documentosAjustes.length == 0){
+                        dato.documentosAjustes = [
+                            ['fecha', ''],
+                            ['producto_id', ''],
+                            ['descripcion', ''],
+                            ['costo_anterior', ''],
+                            ['costo_asignado', ''],
+                            ['producto_cantidad', ''],
+                            ['total_diferencia', ''],
+                            ['justificacion', ''],
+                            ['aprobacion', ''],
+                            ['url_document , ']
+                        ];
+                    }
+                    if(dato.listarAgrupar.length == 0) {
+                        dato.listarAgrupar = [
+                            ['codigo_producto', ''],
+                            ['descripcion', ''],
+                            ['costo', ''],
+                            ['costo_ultima_compra', ''],
+                            ['existencia', ''],
+                            ['codigo_product', '']
+                        ];
+                    }
+                    $scope.root.listarAgrupar = '';
+                    $scope.root.listarDocumentosProductos = '';
 
-                        if(month<10){ month = '0'+month; }
-                        if(day<10){ day = '0'+day; }
-                        if(hour<10){ hour = '0'+hour; }
-                        if(minute<10){ minute = '0'+minute; }
-                        if(seconds<10){ seconds = '0'+seconds; }
+                    if(dato.documentosAjustes != undefined){
+                        dato.documentosAjustes.forEach(function(element) {
+                            var fecha0 = new Date(element.fecha);
+                            //element.fecha = fecha[0]+' '+fecha[1].substring(0, 8);
+                            //element.fecha = $scope.formatDate(fecha);
+                            var day = fecha0.getDate();
+                            var month = parseInt(fecha0.getMonth())+1;
+                            var year = fecha0.getFullYear();
+                            var hour = fecha0.getHours();
+                            var minute = fecha0.getMinutes();
+                            var seconds = fecha0.getSeconds();
 
-                        element.fecha = day+'/'+month+'/'+year+' '+hour+':'+minute+':'+seconds;
-                    });
+                            if(month<10){ month = '0'+month; }
+                            if(day<10){ day = '0'+day; }
+                            if(hour<10){ hour = '0'+hour; }
+                            if(minute<10){ minute = '0'+minute; }
+                            if(seconds<10){ seconds = '0'+seconds; }
+
+                            element.fecha = day+'/'+month+'/'+year+' '+hour+':'+minute+':'+seconds;
+                        });
+                    }
                     var magnitudMinima = 15;
                     var cantidadProductos = dato.documentosAjustes.length;
                     $scope.masListarAjustes = true;
@@ -355,14 +385,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     for(var i=cantidadProductos; i<magnitudMinima; i++){
                         $scope.masListarDocumentos = false;
-                        dato.documentosAjustes.push('');
+                        dato.documentosAjustes.push({
+                            fecha: '',
+                            producto_id: '',
+                            descripcion: '',
+                            costo_anterior: '',
+                            costo_asignado: '',
+                            producto_cantidad: '',
+                            total_diferencia: '',
+                            justificacion: '',
+                            aprobacion: '',
+                            url_documento: ''
+                        });
                     }
 
                     var magnitudListaAgrupar = 20;
                     var cantidadListarAgrupar = dato.listarAgrupar.length;
                     for(var i=cantidadListarAgrupar; i<magnitudListaAgrupar; i++){
                         $scope.masListarAjustes = false;
-                        dato.listarAgrupar.push('');
+                        dato.listarAgrupar.push({
+                            codigo_producto: ' ',
+                            descripcion: ' ',
+                            costo : ' ',
+                            costo_ultima_compra : ' ',
+                            existencia : ' ',
+                            codigo_producto : ' '
+                        });
                     }
                     //console.log('masListarAjustes: ',$scope.masListarAjustes,' masListarDocumentos: ',$scope.masListarDocumentos);
                     $scope.root.listarAgrupar = dato.listarAgrupar;
@@ -961,17 +1009,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     session: $scope.session,
                     data: {
                         reimprimir: true,
-                        ajuste_precio_id: documento.ajuste_precio_id,
+                        producto_id: parametro.producto_id,
+                        ajuste_precio_id: parametro.ajuste_precio_id,
                         usuario_id: parametro.usuario_id,
                         usuario_nombre: usuario_nombre,
                         empresa_id: parametro.empresa_id,
                         empresa_nombre: empresa_nombre,
                         centro_id: parametro.centro_id,
                         bodega_id: parametro.bodega_id,
-                        producto_id: parametro.cod,
-                        anterior_precio: parametro.costo,
-                        nuevo_precio: parametro.newPrice,
-                        total_diferencia: parametro.totalDiferencia,
+                        producto_cantidad: parametro.producto_cantidad,
+                        numeracion: parametro.numeracion,
+                        prefijo: parametro.prefijo,
+                        anterior_precio: parametro.costo_anterior,
+                        nuevo_precio: parametro.costo_asignado,
+                        descripcion: parametro.descripcion,
+                        total_diferencia: parametro.total_diferencia,
                         justificacion: parametro.justificacion,
                         aprobacion: parametro.aprobacion,
                         titulo: 'AJUSTE SUBE COSTO',
@@ -987,7 +1039,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     window.open(url, '_blank');
                 } else {
                     console.log('PDF NO existe');
-
                     Request.realizarRequest(
                         API.PRODUCTOS.SUBE_COSTO,
                         "POST",
@@ -1039,6 +1090,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ]
             };
 
+            $scope.realCod= function(codigo){
+                var response = false;
+                if(codigo != undefined && codigo != '' && codigo != ' '){
+                    response = true;
+                }
+                return response;
+            };
+
             $scope.listar_agrupar = {
                 data: 'root.listarAgrupar',
                 multiSelect: false,
@@ -1053,8 +1112,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'costo_ultima_compra', displayName: 'Ultima Compra', width: "16%"},
                     {field: 'existencia', displayName: 'Stock', width: "10%"},
                     {field: 'codigo_producto', displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "7%",
-                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
-                                        <button ng-click="onModificarAgrupacion(row.entity)" class="btn btn-default btn-xs">\
+                        cellTemplate: '<div ng-if="realCod(row.entity.codigo_producto)" class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
+                                        <button ng-if="realCod(row.entity.codigo_producto)" ng-click="onModificarAgrupacion(row.entity)" class="btn btn-default btn-xs">\
                                             <span class="glyphicon glyphicon-edit"></span>\
                                         </button>\
                                        </div>'
@@ -1379,13 +1438,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 var usuario_nombre = Usuario.getUsuarioActual().nombre;
                 var empresa_nombre = Usuario.getUsuarioActual().empresa.nombre;
-                var usuario_sessions = Usuario;
-                console.log('Producto seleccionado -->',parametro);
+                //console.log('Producto seleccionado -->',parametro);
                 parametro.empresa_id = $scope.session.empresaId;
                 parametro.centro_id = $scope.session.centroUtilidad;
                 parametro.bodega_id = $scope.session.bodega;
                 parametro.usuario_id = $scope.session.usuario_id;
-
                 var host = $location.protocol() + '://' + $location.host() + ':' + $location.port();
 
                 var obj = {
@@ -1408,6 +1465,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         host: host
                     }
                 };
+                //console.log('Antes del AJAX');
                 //console.log('Objeto --> ',obj);
                 Request.realizarRequest(
                     API.PRODUCTOS.SUBE_COSTO,
@@ -1416,10 +1474,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     function (data) {
                         console.log("data",data);
                         if (data.status === 200) {
-                            // $scope.root.listarAgrupar = data.obj.listarAgrupar;
-                            // console.log("data.obj.listarAgrupar",data.obj.listarAgrupar);
-                            // console.log(Todo bien!!');
-                            parametro = {};
+                            console.log('Todo bien!!');
                             var reporte = data.obj.listarAgrupar;
                             $scope.root.buscar_radicacion_id = '';
                             $scope.fecha_ini = 'empty';

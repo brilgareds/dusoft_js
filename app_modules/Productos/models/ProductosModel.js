@@ -166,7 +166,7 @@ ProductosModel.prototype.subeCosto_InsertInvBodAjusPrice = function(obj, callbac
             aprobacion: obj.aprobacion,
             fecha: obj.fecha_actual
         }).returning('ajuste_precio_id');
-    console.log(G.sqlformatter.format(insertAjustePrecio.toString()));
+    //console.log(G.sqlformatter.format(insertAjustePrecio.toString()));
     insertAjustePrecio.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

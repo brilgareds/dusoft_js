@@ -66,6 +66,8 @@ Precios_productos.prototype.listarAgrupar = function (req, res) {
     var args = req.body.data;
     var parametros = args;
     var session = req.body.session;
+    var resultado = '';
+    var resultado2 = '';
     parametros.empresa_id = session.empresaId;
     parametros.centro_id = session.centroUtilidad;
     parametros.bodega_id = session.bodega;
@@ -82,10 +84,10 @@ Precios_productos.prototype.listarAgrupar = function (req, res) {
     G.Q.ninvoke(that.m_precios_productos, "listarAgrupar", parametros).
         then(function (resultado) {
             //console.log('Primer Resultado: ',resultado[0]);
-            if(resultado == undefined){ var resultado = ' '; }
+            if(resultado == undefined || resultado.length == 0 ){ resultado = ''; }
             G.Q.ninvoke(that.m_precios_productos, "listarDocumentosAjustes", parametros).
             then(function (resultado2) {
-                if(resultado2 == undefined){ var resultado2 = ' '; }
+                if(resultado2 == undefined || resultado2.length == 0){ resultado2 = ''; }
                 //console.log('Segundo Resultado: ',resultado2[0]);
                 res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: resultado, documentosAjustes: resultado2}));
             }).

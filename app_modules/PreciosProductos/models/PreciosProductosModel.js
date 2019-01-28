@@ -249,9 +249,6 @@ PreciosProductosModel.prototype.listarAgrupar = function (obj, callback) {
     //  console.log('SQL Listar_agrupar: ',G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         // resultado.push(codigoBuscar);
-        for(var i = resultado.length; i<magnitud_item2; i++){
-            resultado.push('');
-        }
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [listarAgrupar]:", err);

@@ -37,8 +37,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             var infoEmpresa=Usuario.getUsuarioActual().empresa;
             $scope.filtro.empresa_seleccion = infoEmpresa.codigo;
             $scope.Empresa = Empresa.get(infoEmpresa.nombre, infoEmpresa.codigo);
-
-            console.log('Tu empresa es: ',infoEmpresa);
+            //console.log('Tu empresa es: ',infoEmpresa);
 
             $scope.abrir_fecha_inicial = function ($event) {
                 $event.preventDefault();
@@ -127,25 +126,43 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             that.listarAgrupar = function (parametro, callback) {
+                //console.log('parametros that.listarAgrupar son:', parametro);
                 var empresa_id = $scope.session.empresaId;
-                if(parametro.radicacion_id == undefined){ parametro.radicacion_id = ''; }
-                if($scope.root.buscar_radicacion_id !== parametro.radicacion_id ||
+
+                if(parametro.radicacion_id == undefined){
+                    parametro.radicacion_id = '';
+                }
+
+                if(($scope.listarBuscar0 != $scope.filtroBusqueda && parametro.radicacion_id != undefined
+                    && parametro.radicacion_id.length > 0) || $scope.root.buscar_radicacion_id !== parametro.radicacion_id ||
                     $scope.fecha_ini != parametro.fecha_ini ||
                     $scope.fecha_fin != parametro.fecha_fin){
 
                     $scope.root.buscar_radicacion_id = parametro.radicacion_id;
                     $scope.fecha_ini = parametro.fecha_ini;
                     $scope.fecha_fin = parametro.fecha_fin;
+
+                    if(parametro.paginacion === false){
+                        $scope.paginaActualDocumentos = 1;
+                        $scope.paginaActualAjustes = 1;
+                    }
+                    //console.log('pagina actual paginaActualDocumentos es: ',parseInt($scope.paginaActualDocumentos));
+                    //console.log('pagina actual paginaActualAjustes es: ',parseInt($scope.paginaActualAjustes));
                     var fecha_ini = parametro.fecha_ini;
                     var fecha_fin = parametro.fecha_fin;
+
+                    if(fecha_ini == undefined || fecha_ini == '' ||
+                        fecha_fin == undefined || fecha_fin == ''){
+                        var fechaActual = new Date();
+                        fecha_ini = $filter('date')(fechaActual, "yyyy-MM")+'-01 00:00:00';
+                        fecha_fin = $filter('date')(fechaActual, "yyyy-MM-dd")+' 23:59:59';
+                    }
                     if(fecha_ini && fecha_ini.lenght > 9){
                         fecha_ini = fecha_ini.substring(0, 10);
                     }
                     if(fecha_fin && fecha_fin.lenght > 9){
                         fecha_fin = fecha_fin.substring(10);
                     }
-                    var infoEmpresa=Usuario.getUsuarioActual().empresa;
-                    $scope.Empresa = Empresa.get(infoEmpresa.nombre, infoEmpresa.codigo);
 
                     var obj = {
                         session: $scope.session,
@@ -154,7 +171,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             relacion_id: $scope.root.buscar_radicacion_id,
                             fecha_ini: fecha_ini,
                             fecha_fin: fecha_fin,
-                            prefijo: 'ABC'
+                            prefijo: 'ABC',
+                            paginaActualDocumentos: parseInt($scope.paginaActualDocumentos),
+                            paginaActualAjustes: parseInt($scope.paginaActualAjustes)
                         }
                     };
                     //console.log('Objeto --> ',obj);
@@ -288,14 +307,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 return new Date(response);
             };
 
-            $scope.buscarProductos = function(){
+            $scope.buscarProductos = function(paginacion){
                 //console.log('Before....fecha ini es : ', $scope.producto_fecha1, 'Y fecha2 es: ', $scope.producto_fecha2);
+                if(paginacion === undefined || paginacion === ''){
+                    paginacion = false;
+                }
+                //console.log('Variable paginacion es: ',paginacion);
                 var fecha1 = $scope.producto_fecha1;
                 var fecha2 = $scope.producto_fecha2;
+                if($scope.producto == undefined){
+                    $scope.producto = '';
+                }
                 //console.log('After.....fecha ini es : ', fecha1, 'Y fecha2 es: ', fecha2);
-                var codigoProductosBuscar = {radicacion_id: $scope.producto, fecha_ini: fecha1, fecha_fin: fecha2};
-
+                var codigoProductosBuscar = {
+                    radicacion_id: $scope.producto,
+                    fecha_ini: fecha1,
+                    fecha_fin: fecha2,
+                    paginacion: paginacion
+                };
+                //console.log('Listar agrupar, Codigo a buscar: ',codigoProductosBuscar);
                 that.listarAgrupar(codigoProductosBuscar, function (dato) {
+                    //console.log('Listar agrupar fine!!');
                     //console.log("Los datos devueltos son:  -->",dato);
                     dato.documentosAjustes.forEach(function(element) {
                         var fecha0 = new Date(element.fecha);
@@ -316,14 +348,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         element.fecha = day+'/'+month+'/'+year+' '+hour+':'+minute+':'+seconds;
                     });
-                    $scope.root.listarAgrupar = dato.listarAgrupar;
                     var magnitudMinima = 15;
                     var cantidadProductos = dato.documentosAjustes.length;
+                    $scope.masListarAjustes = true;
+                    $scope.masListarDocumentos = true;
+
                     for(var i=cantidadProductos; i<magnitudMinima; i++){
+                        $scope.masListarDocumentos = false;
                         dato.documentosAjustes.push('');
                     }
+
+                    var magnitudListaAgrupar = 20;
+                    var cantidadListarAgrupar = dato.listarAgrupar.length;
+                    for(var i=cantidadListarAgrupar; i<magnitudListaAgrupar; i++){
+                        $scope.masListarAjustes = false;
+                        dato.listarAgrupar.push('');
+                    }
+                    //console.log('masListarAjustes: ',$scope.masListarAjustes,' masListarDocumentos: ',$scope.masListarDocumentos);
+                    $scope.root.listarAgrupar = dato.listarAgrupar;
                     $scope.root.listarDocumentosProductos = dato.documentosAjustes;
-                    console.log('Nueva lista -->',$scope.root.listarAgrupar);
+                    //console.log('Nueva lista Documentos Generados: ',dato.documentosAjustes);
+                    //console.log('Nueva lista Realizar Ajuste: ',dato.listarAgrupar);
                 });
             };
 
@@ -356,7 +401,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         that.limpiarGuardar=function(){
                             $scope.root.cargarFormato='';
 
-                        }
+                        };
 
                         $scope.guardarEntregado = function () {
 
@@ -367,22 +412,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.cerrar = function () {
                             $scope.root.activarBoton=true;
                             $modalInstance.close();
-                            $scope.producto = '';
-                            $scope.listar_agrupar = '';
-                            $scope.root.buscar_radicacion_id = '';
-                            $scope.fecha_ini = '';
-                            $scope.fecha_fin = '';
                             $scope.buscarProductos();
-                            console.log("227");
+                            console.log("224");
                         };
                     }]
                 };
                 //var modalInstance = $modal.open($scope.opts);
                 var modalInstance = $modal.open($scope.opts);
                 modalInstance.result.then(function () {
-                    that.listarAgrupar({radicacion_id: ""}, function (dato) {
-                        $scope.root.listarAgrupar = dato;
-                    });
+                    $scope.listar_agrupar = '';
+                    $scope.root.buscar_radicacion_id = 'empty';
+                    $scope.producto_fecha1 = $scope.fecha_ini;
+                    $scope.producto_fecha2 = $scope.fecha_fin;
+                    $scope.fecha_ini = 'empty';
+                    $scope.fecha_fin = 'empty';
                 }, function () {});
 
             };
@@ -930,7 +973,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'total_diferencia', displayName: 'Diferencia', width: "6%"},
                     {field: 'justificacion', displayName: 'Justificación', width: "16%"},
                     {field: 'aprobacion', displayName: 'Aprobación', width: "10%"},
-                    {displayName: "Imprimir", cellClass: "txt-center", width: "5%",
+                    {field: 'url_documento', displayName: "Imprimir", cellClass: "txt-center", width: "5%",
                         cellTemplate: '<a ng-if="isReal(row.entity.url_documento)" href={{row.entity.url_documento}} target="_blank">\
                                          <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-print"></span></button>\
                                        </a>\
@@ -952,9 +995,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'costo', displayName: 'Costo', width: "16%"},
                     {field: 'costo_ultima_compra', displayName: 'Ultima Compra', width: "16%"},
                     {field: 'existencia', displayName: 'Stock', width: "10%"},
-                    {displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "7%",
+                    {field: 'codigo_producto', displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "7%",
                         cellTemplate: '<div ng-if="row.entity" class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
-                                        <button ng-click="onModificarAgrupacion(row.entity.codigo_producto)" class="btn btn-default btn-xs">\
+                                        <button ng-click="onModificarAgrupacion(row.entity)" class="btn btn-default btn-xs">\
                                             <span class="glyphicon glyphicon-edit"></span>\
                                         </button>\
                                        </div>'
@@ -1128,7 +1171,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 modalInstance.result.then(function() {
                     $scope.paginaactual = 1;
-                    $scope.buscarProductos($scope.termino_busqueda);
+                    //$scope.buscarProductos($scope.termino_busqueda);
 
                 }, function() {
 
@@ -1254,6 +1297,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.filtroProducto = $scope.filtros[2];
                 }
                 $scope.filtroBusqueda = filtro.nombre;
+                $scope.buscarProductos();
             };
 
             $scope.filtroProducto = $scope.filtros[0];
@@ -1294,7 +1338,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         justificacion: parametro.justificacion,
                         aprobacion: parametro.aprobacion,
                         tipo_doc_general_id: 'ABC1',
-                        titulo: 'AJUSTE BAJE COSTO',
+                        titulo: 'AJUSTE BAJA COSTO',
                         host: host
                     }
                 };
@@ -1335,6 +1379,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.onModificarAgrupacion = function (parametro) {
+                //console.log('Eyyy, parametro es: ',parametro);
                 if(parametro == undefined || parametro.codigo_producto == undefined){
                     return false;
                 } else if(parametro.costo == 0){
@@ -1394,7 +1439,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                         that.agrupar(dato);
                     });
-                    $scope.buscarProductos();
+                    //$scope.buscarProductos();
                 }
             };
 
@@ -1719,11 +1764,54 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.fechainicial = $scope.fechafinal;
             };
 
+            $scope.paginaAnteriorDocumentos = function () {
+                if ($scope.paginaActualDocumentos === 1)
+                    return;
+                $scope.listar_agrupar = '';
+                $scope.root.buscar_radicacion_id = 'empty';
+                $scope.fecha_ini = 'empty';
+                $scope.fecha_fin = 'empty';
+                $scope.paginaActualDocumentos--;
+                $scope.buscarProductos(true);
+            };
+            $scope.paginaAnteriorAjustes = function () {
+                if ($scope.paginaActualAjustes === 1)
+                    return;
+                $scope.listar_agrupar = '';
+                $scope.root.buscar_radicacion_id = 'empty';
+                $scope.fecha_ini = 'empty';
+                $scope.fecha_fin = 'empty';
+                $scope.paginaActualAjustes--;
+                $scope.buscarProductos(true);
+            };
+            $scope.paginaSiguienteDocumentos = function () {
+                $scope.listar_agrupar = '';
+                $scope.root.buscar_radicacion_id = 'empty';
+                $scope.fecha_ini = 'empty';
+                $scope.fecha_fin = 'empty';
+                $scope.paginaActualDocumentos++;
+                $scope.buscarProductos(true);
+            };
+            $scope.paginaSiguienteAjustes = function () {
+                $scope.listar_agrupar = '';
+                $scope.root.buscar_radicacion_id = 'empty';
+                $scope.fecha_ini = 'empty';
+                $scope.fecha_fin = 'empty';
+                $scope.paginaActualAjustes++;
+                $scope.buscarProductos(true);
+            };
+
+
             that.init = function () {
 //                that.consultarFarmacia();
                 //that.consultarMunicipio();
+                $scope.listarBuscar0 = '';
+                $scope.paginaActualDocumentos = 1;
+                $scope.paginaActualAjustes = 1;
                 that.consultarConcepto();
                 that.listarFactura();
+                $scope.masListarAjustes = true;
+                $scope.masListarDocumentos = true;
 
                 $scope.documentos_productos = { };
 
@@ -1731,7 +1819,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     //console.log("Eyyy -->",dato);
                     //console.log('Before Fecha: ', dato.documentosAjustes.fecha);
                     var fecha = dato.documentosAjustes.fecha.split('T');
-                    dato.documentosAjustes.fecha = fecha[0]+' '+fecha[1].substring(0, 8);
+                    dato.documentosAjustes.fecha = new Date(fecha[0]+' '+fecha[1].substring(0, 8)).toFormat('DD/MM/YYYY HH24:MI:SS');
                     //console.log('Fecha: ', dato.documentosAjustes.fecha);
                     $scope.root.listarAgrupar = dato.listarAgrupar;
                     $scope.root.listarDocumentosProductos = dato.documentosAjustes;
@@ -1770,7 +1858,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.Empresa = Empresa.get(infoEmpresa.nombre, infoEmpresa.codigo);
                 //console.log('infoEmpresa: ',infoEmpresa);
                 $scope.filtro.empresa_seleccion = infoEmpresa.codigo;
-                console.log('$scope.filtro.empresa_seleccion: ->',$scope.filtro.empresa_seleccion);
+                //console.log('$scope.filtro.empresa_seleccion: ->',$scope.filtro.empresa_seleccion);
 
                 that.traerEmpresas(function() {
                     $timeout(function() {
@@ -1784,7 +1872,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     $timeout(function() {
 
                                         $scope.filtro.bodega_seleccion = infoEmpresa.centroUtilidad.bodega.codigo;
-                                        console.log('filtro empresa: ', $scope.filtro);
+                                        //console.log('filtro empresa: ', $scope.filtro);
                                         $scope.buscarProductos("");
                                     });
 

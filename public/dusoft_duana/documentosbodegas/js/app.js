@@ -153,7 +153,7 @@ define([
                 // ABC1
                 documentos_bodegas.stateProvider.state('ABC1', {
                     url: "/ABC1",
-                    text: "Ajuste Baje Costo",
+                    text: "Ajuste Baja Costo",
                     templateUrl: "views/ABC1/radicacion.html",
                     parent_name: "DocumentosBodegas",
                     controller: 'ABC1Controller'

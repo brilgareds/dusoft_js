@@ -123,26 +123,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                     }
                 );
-
             };
 
             that.listarAgrupar = function (parametro, callback) {
+                //console.log('parametros that.listarAgrupar son:', parametro);
                 var empresa_id = $scope.session.empresaId;
-
-                console.log('su filtro de busqueda es: ', parametro.filtroBusqueda, 'Y su codigo es: ',parametro.radicacion_id);
 
                 if(parametro.radicacion_id == undefined){
                     parametro.radicacion_id = '';
                 }
-                if((parametro.filtroBusqueda != $scope.filtroBusqueda && parametro.radicacion_id != undefined) || $scope.root.buscar_radicacion_id !== parametro.radicacion_id ||
+
+                if(($scope.listarBuscar0 != $scope.filtroBusqueda && parametro.radicacion_id != undefined
+                    && parametro.radicacion_id.length > 0) || $scope.root.buscar_radicacion_id !== parametro.radicacion_id ||
                     $scope.fecha_ini != parametro.fecha_ini ||
                     $scope.fecha_fin != parametro.fecha_fin){
 
                     $scope.root.buscar_radicacion_id = parametro.radicacion_id;
                     $scope.fecha_ini = parametro.fecha_ini;
                     $scope.fecha_fin = parametro.fecha_fin;
+
+                    if(parametro.paginacion === false){
+                        $scope.paginaActualDocumentos = 1;
+                        $scope.paginaActualAjustes = 1;
+                    }
+                    //console.log('pagina actual paginaActualDocumentos es: ',parseInt($scope.paginaActualDocumentos));
+                    //console.log('pagina actual paginaActualAjustes es: ',parseInt($scope.paginaActualAjustes));
                     var fecha_ini = parametro.fecha_ini;
                     var fecha_fin = parametro.fecha_fin;
+
                     if(fecha_ini == undefined || fecha_ini == '' ||
                         fecha_fin == undefined || fecha_fin == ''){
                         var fechaActual = new Date();
@@ -163,7 +171,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             relacion_id: $scope.root.buscar_radicacion_id,
                             fecha_ini: fecha_ini,
                             fecha_fin: fecha_fin,
-                            prefijo: 'ASC'
+                            prefijo: 'ASC',
+                            paginaActualDocumentos: parseInt($scope.paginaActualDocumentos),
+                            paginaActualAjustes: parseInt($scope.paginaActualAjustes)
                         }
                     };
                     //console.log('Objeto --> ',obj);
@@ -287,15 +297,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 );
             };
 
-            $scope.buscarProductos = function(){
+            $scope.formatDate = function(date){
+                if(date == 0 || date == undefined){
+                    date = new Date();
+                }
+                var mes = parseInt(date.getMonth()+1);
+                if(mes<10){ mes = '0'+mes; }
+                var response = '01-'+(mes)+'-'+date.getFullYear()+' 00:00:00';
+                return new Date(response);
+            };
+
+            $scope.buscarProductos = function(paginacion){
                 //console.log('Before....fecha ini es : ', $scope.producto_fecha1, 'Y fecha2 es: ', $scope.producto_fecha2);
+                if(paginacion === undefined || paginacion === ''){
+                    paginacion = false;
+                }
+                //console.log('Variable paginacion es: ',paginacion);
                 var fecha1 = $scope.producto_fecha1;
                 var fecha2 = $scope.producto_fecha2;
                 if($scope.producto == undefined){
                     $scope.producto = '';
                 }
                 //console.log('After.....fecha ini es : ', fecha1, 'Y fecha2 es: ', fecha2);
-                var codigoProductosBuscar = {radicacion_id: $scope.producto, fecha_ini: fecha1, fecha_fin: fecha2};
+                var codigoProductosBuscar = {
+                    radicacion_id: $scope.producto,
+                    fecha_ini: fecha1,
+                    fecha_fin: fecha2,
+                    paginacion: paginacion
+                };
                 //console.log('Listar agrupar, Codigo a buscar: ',codigoProductosBuscar);
                 that.listarAgrupar(codigoProductosBuscar, function (dato) {
                     //console.log('Listar agrupar fine!!');
@@ -321,19 +350,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     });
                     var magnitudMinima = 15;
                     var cantidadProductos = dato.documentosAjustes.length;
+                    $scope.masListarAjustes = true;
+                    $scope.masListarDocumentos = true;
+
                     for(var i=cantidadProductos; i<magnitudMinima; i++){
+                        $scope.masListarDocumentos = false;
                         dato.documentosAjustes.push('');
                     }
 
                     var magnitudListaAgrupar = 20;
                     var cantidadListarAgrupar = dato.listarAgrupar.length;
                     for(var i=cantidadListarAgrupar; i<magnitudListaAgrupar; i++){
+                        $scope.masListarAjustes = false;
                         dato.listarAgrupar.push('');
                     }
+                    //console.log('masListarAjustes: ',$scope.masListarAjustes,' masListarDocumentos: ',$scope.masListarDocumentos);
                     $scope.root.listarAgrupar = dato.listarAgrupar;
                     $scope.root.listarDocumentosProductos = dato.documentosAjustes;
-                    console.log('Nueva lista documentos ajustes-->',$scope.root.listarDocumentosProductos);
-                    console.log('Nueva lista listarAgrupar-->',$scope.root.listarAgrupar);
+                    //console.log('Nueva lista Documentos Generados: ',dato.documentosAjustes);
+                    //console.log('Nueva lista Realizar Ajuste: ',dato.listarAgrupar);
                 });
             };
 
@@ -354,22 +389,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.modificar.facturaSeleccionada = form.factura_id;
                         $scope.modificar.archivo = form.archivo;
 
-
-
-
                         $scope.onVisualizarAgrupar = function (listado) {
-
                             that.subirArchivoEntregado(listado, $modalInstance);
-
                         };
-
                         that.limpiarGuardar=function(){
                             $scope.root.cargarFormato='';
-
-                        }
-
+                        };
                         $scope.guardarEntregado = function () {
-
                             that.guardarEntregado($scope.modificar.facturaSeleccionada, function (data) {
 
                             });
@@ -377,11 +403,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.cerrar = function () {
                             $scope.root.activarBoton=true;
                             $modalInstance.close();
-                            $scope.producto = '';
-                            $scope.listar_agrupar = '';
-                            $scope.root.buscar_radicacion_id = 'empty';
-                            $scope.fecha_ini = 'empty';
-                            $scope.fecha_fin = 'empty';
                             $scope.buscarProductos();
                             console.log("224");
                         };
@@ -390,17 +411,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //var modalInstance = $modal.open($scope.opts);
                 var modalInstance = $modal.open($scope.opts);
                 modalInstance.result.then(function () {
-                    that.listarAgrupar({radicacion_id: ""}, function (dato) {
-                        $scope.root.listarAgrupar = dato;
-                    });
+                        $scope.producto_fecha1 = $scope.fecha_ini;
+                        $scope.producto_fecha2 = $scope.fecha_fin;
+                        $scope.listar_agrupar = '';
+                        $scope.root.buscar_radicacion_id = 'empty';
+                        $scope.fecha_ini = 'empty';
+                        $scope.fecha_fin = 'empty';
                 }, function () {});
 
             };
-
-
-
-
-
             that.modificarEntregado = function (parametros) {
                 var obj = {
                     session: $scope.session,
@@ -410,7 +429,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     }
                 };
-
 
                 Request.realizarRequest(
                     API.RADICACION.MODIFICAR_ENTREGADO, //Radicacion/guardarFactura
@@ -927,6 +945,68 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 return response;
             };
 //2
+            $scope.imprimir_pdf = function(documento){
+                var parametro = documento;
+                var url = documento.url_documento;
+                var usuario_nombre = Usuario.getUsuarioActual().nombre;
+                var empresa_nombre = Usuario.getUsuarioActual().empresa.nombre;
+                console.log('Producto seleccionado -->',parametro);
+                parametro.empresa_id = $scope.session.empresaId;
+                parametro.centro_id = $scope.session.centroUtilidad;
+                parametro.bodega_id = $scope.session.bodega;
+                parametro.usuario_id = $scope.session.usuario_id;
+                var host = $location.protocol() + '://' + $location.host() + ':' + $location.port();
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        reimprimir: true,
+                        ajuste_precio_id: documento.ajuste_precio_id,
+                        usuario_id: parametro.usuario_id,
+                        usuario_nombre: usuario_nombre,
+                        empresa_id: parametro.empresa_id,
+                        empresa_nombre: empresa_nombre,
+                        centro_id: parametro.centro_id,
+                        bodega_id: parametro.bodega_id,
+                        producto_id: parametro.cod,
+                        anterior_precio: parametro.costo,
+                        nuevo_precio: parametro.newPrice,
+                        total_diferencia: parametro.totalDiferencia,
+                        justificacion: parametro.justificacion,
+                        aprobacion: parametro.aprobacion,
+                        titulo: 'AJUSTE SUBE COSTO',
+                        host: host
+                    }
+                };
+                //console.log('Datos recibidos: ',documento);
+                var request = new XMLHttpRequest();
+                request.open('HEAD', url, false);
+                request.send();
+                if(request.status == 200) {
+                    console.log('PDF existe!!');
+                    window.open(url, '_blank');
+                } else {
+                    console.log('PDF NO existe');
+
+                    Request.realizarRequest(
+                        API.PRODUCTOS.SUBE_COSTO,
+                        "POST",
+                        obj,
+                        function (data) {
+                            if (data.status === 200) {
+                                window.open(data.obj.listarAgrupar, '_blank');
+                                $scope.root.buscar_radicacion_id = '';
+                                $scope.fecha_ini = 'empty';
+                                $scope.fecha_fin = 'empty';
+                                $scope.buscarProductos();
+                            }else{
+                                console.log('Error en Ajax, status: ',data);
+                            }
+                        }
+                    );
+                }
+            };
+
             $scope.listar_documentos_ajuste = {
                 data: 'root.listarDocumentosProductos',
                 multiSelect: false,
@@ -945,11 +1025,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'total_diferencia', displayName: 'Diferencia', width: "6%"},
                     {field: 'justificacion', displayName: 'Justificación', width: "16%"},
                     {field: 'aprobacion', displayName: 'Aprobación', width: "10%"},
-                    {displayName: "Opciones", cellClass: "txt-center", width: "4%",
-                        cellTemplate: '<a ng-if="isReal(row.entity.url_documento)" href={{row.entity.url_documento}} target="_blank">\
-                                         <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-print"></span></button>\
-                                       </a>\
-                                       '
+                    {field: 'url_documento', displayName: "Imprimir", cellClass: "txt-center", width: "5%",
+                        cellTemplate: '<button ng-if="row.entity.producto_id" ng-click="imprimir_pdf(row.entity)" class="btn btn-default btn-xs">\
+                                          <span class="glyphicon glyphicon-print"></span>\
+                                       </button>\
+                                      '
+                    /*    cellTemplate: '<a ng-if="isReal(row.entity.url_documento)" href={{row.entity.url_documento}} target="_blank">\
+                                           <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-print"></span></button>\
+                                         </a>\
+                                        '
+                    */
                     }
                 ]
             };
@@ -967,7 +1052,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'costo', displayName: 'Costo', width: "16%"},
                     {field: 'costo_ultima_compra', displayName: 'Ultima Compra', width: "16%"},
                     {field: 'existencia', displayName: 'Stock', width: "10%"},
-                    {displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "7%",
+                    {field: 'codigo_producto', displayName: "Modificar", cellClass: "txt-center dropdown-button", width: "7%",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" style="text-align:center;">\
                                         <button ng-click="onModificarAgrupacion(row.entity)" class="btn btn-default btn-xs">\
                                             <span class="glyphicon glyphicon-edit"></span>\
@@ -1265,6 +1350,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.filtroProducto = $scope.filtros[2];
                 }
                 $scope.filtroBusqueda = filtro.nombre;
+                $scope.buscarProductos();
             };
 
             $scope.filtroProducto = $scope.filtros[0];
@@ -1339,13 +1425,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             $scope.fecha_ini = 'empty';
                             $scope.fecha_fin = 'empty';
                             $scope.buscarProductos();
-                            var imprimir = confirm("Quieres imprimir el documento?");
-                            if(imprimir == true){
-                                console.log('Imprimiendo PDF!! url: ',reporte);
-                                window.open(reporte, '_blank');
-                            }else{
-                                console.log('No imprimiste el PDF');
-                            }
+                            console.log('Imprimiendo PDF!! url: ',reporte);
+                            window.open(reporte, '_blank');
                             //callback(data.obj.listarAgrupar);
                         }
                     }
@@ -1367,6 +1448,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if(parametro == undefined || parametro.codigo_producto == undefined){
                     return false;
                 } else {
+                    // console.log('Boton de modificar!! parametros: ',parametro);
+
                     $scope.productoSelec = {
                         cod: '',
                         costo: '',
@@ -1407,6 +1490,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     that.listarAgrupar(parametro, function (dato) {
                         // $scope.root.listarAgrupar = dato;
+                        // console.log('Todo bien!!');
                         dato.relacion_id = parametro.relacion_id;
                         $scope.listaFacturaPendienteModificar = [];
                         dato.listarAgrupar.forEach(function (element) {
@@ -1419,7 +1503,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                         that.agrupar(dato);
                     });
-                    $scope.buscarProductos();
+                    //$scope.buscarProductos();
                 }
             };
 
@@ -1744,11 +1828,53 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.fechainicial = $scope.fechafinal;
             };
 
+            $scope.paginaAnteriorDocumentos = function () {
+                if ($scope.paginaActualDocumentos === 1)
+                    return;
+                $scope.listar_agrupar = '';
+                $scope.root.buscar_radicacion_id = 'empty';
+                $scope.fecha_ini = 'empty';
+                $scope.fecha_fin = 'empty';
+                $scope.paginaActualDocumentos--;
+                $scope.buscarProductos(true);
+            };
+            $scope.paginaAnteriorAjustes = function () {
+                if ($scope.paginaActualAjustes === 1)
+                    return;
+                $scope.listar_agrupar = '';
+                $scope.root.buscar_radicacion_id = 'empty';
+                $scope.fecha_ini = 'empty';
+                $scope.fecha_fin = 'empty';
+                $scope.paginaActualAjustes--;
+                $scope.buscarProductos(true);
+            };
+            $scope.paginaSiguienteDocumentos = function () {
+                $scope.listar_agrupar = '';
+                $scope.root.buscar_radicacion_id = 'empty';
+                $scope.fecha_ini = 'empty';
+                $scope.fecha_fin = 'empty';
+                $scope.paginaActualDocumentos++;
+                $scope.buscarProductos(true);
+            };
+            $scope.paginaSiguienteAjustes = function () {
+                $scope.listar_agrupar = '';
+                $scope.root.buscar_radicacion_id = 'empty';
+                $scope.fecha_ini = 'empty';
+                $scope.fecha_fin = 'empty';
+                $scope.paginaActualAjustes++;
+                $scope.buscarProductos(true);
+            };
+
             that.init = function () {
 //                that.consultarFarmacia(); 
                 //that.consultarMunicipio();
+                $scope.listarBuscar0 = '';
+                $scope.paginaActualDocumentos = 1;
+                $scope.paginaActualAjustes = 1;
                 that.consultarConcepto();
                 that.listarFactura();
+                $scope.masListarAjustes = true;
+                $scope.masListarDocumentos = true;
 
                 $scope.documentos_productos = { };
 

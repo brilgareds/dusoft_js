@@ -3,4 +3,13 @@
     <div class="defaultGrid grid-responsive" style="height: 482px"
          ng-grid="listar_agrupar">
     </div>
+    <br>
+</div>
+<div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaActualAjustes == 1" ng-click="paginaAnteriorAjustes()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="!masListarAjustes" ng-click="paginaSiguienteAjustes()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
 </div>

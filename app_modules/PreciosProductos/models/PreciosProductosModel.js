@@ -66,6 +66,12 @@ PreciosProductosModel.prototype.listarDocumentosAjustes = function (obj, callbac
     var prefijo = obj.prefijo;
     var filtro = obj.filtro;
     var empresa_id = obj.empresa_id;
+    var magnitud_item = 20;
+    var offset_num = 0;
+
+    if(obj.paginaActualDocumentos > 0){
+        offset_num = (obj.paginaActualDocumentos-1)*magnitud_item;
+    }
 
     //console.log('Entry in function "listarDocumentosAjustes"');
 
@@ -73,7 +79,7 @@ PreciosProductosModel.prototype.listarDocumentosAjustes = function (obj, callbac
         filtroWhere = 'a.descripcion';
 
         var campos = [
-            
+            'd.numeracion',
             'a.subclase_id',
             'c.*',
             'd.prefijo',
@@ -116,19 +122,22 @@ PreciosProductosModel.prototype.listarDocumentosAjustes = function (obj, callbac
                 'c.ajuste_precio_id	',
                 'c.url_documento',
                 'd.prefijo',
-                'a.subclase_id'
+                'd.numeracion'
             ])
-            .orderBy('c.fecha', 'DESC');
+            .orderBy('c.fecha', 'DESC')
+            .limit(magnitud_item)
+            .offset(offset_num);
     }else {
         if (filtro == 'Codigo') {
-            filtroWhere = 'inventarios_productos.codigo_producto';
+            filtroWhere = 'c.codigo_producto';
         } else if (filtro == 'Descripcion') {
-            filtroWhere = 'inventarios_productos.descripcion';
+            filtroWhere = 'c.descripcion';
         }
 
         var campos = [
+            'b.numeracion',
             'a.*',
-            'documentos.prefijo',
+            'b.prefijo',
             G.knex.raw('split_part(a.aprobacion, \' \', 1) as aprobacion1'),
             G.knex.raw('split_part(a.aprobacion, \' \', 2) as aprobacion2'),
             G.knex.raw('fc_descripcion_producto(a.producto_id) as descripcion')
@@ -136,28 +145,47 @@ PreciosProductosModel.prototype.listarDocumentosAjustes = function (obj, callbac
 
         var query = G.knex.column(campos).select()
             .from("inv_bodegas_ajuste_precio as a")
-            .innerJoin('documentos', 'a.documento_id', 'documentos.documento_id')
-            .innerJoin('inventarios_productos', 'a.producto_id', 'inventarios_productos.codigo_producto')
-            .innerJoin('inv_subclases_inventarios', 'inventarios_productos.subclase_id', 'inv_subclases_inventarios.subclase_id')
+            .innerJoin('documentos as b', 'a.documento_id', 'b.documento_id')
+            .innerJoin('inventarios_productos as c', 'a.producto_id', 'c.codigo_producto')
+            .innerJoin('inv_subclases_inventarios as d', 'c.subclase_id', 'd.subclase_id')
             .where(function () {
                 if (codigo_producto != '') {
                     this.where(filtroWhere, 'LIKE', '%' + codigo_producto + '%')
-                        .andWhere('fecha', '>=', fecha_ini)
-                        .andWhere('fecha', '<=', fecha_fin)
-                        .andWhere('prefijo', '=', prefijo)
-                        .andWhere('documentos.empresa_id', '=', empresa_id);
+                        .andWhere('a.fecha', '>=', fecha_ini)
+                        .andWhere('a.fecha', '<=', fecha_fin)
+                        .andWhere('b.prefijo', '=', prefijo)
+                        .andWhere('b.empresa_id', '=', empresa_id);
                 } else {
-                    this.where('fecha', '>=', fecha_ini)
-                        .andWhere('fecha', '<=', fecha_fin)
-                        .andWhere('prefijo', '=', prefijo)
-                        .andWhere('documentos.empresa_id', '=', empresa_id);
+                    this.where('a.fecha', '>=', fecha_ini)
+                        .andWhere('a.fecha', '<=', fecha_fin)
+                        .andWhere('b.prefijo', '=', prefijo)
+                        .andWhere('b.empresa_id', '=', empresa_id);
                 }
             })
-            .orderBy('fecha', 'DESC');
+            .groupBy([
+                'd.subclase_id',
+                'a.documento_id',
+                'a.producto_id',
+                'a.producto_cantidad',
+                'a.costo_anterior',
+                'a.costo_asignado',
+                'a.total_diferencia',
+                'a.justificacion',
+                'a.aprobacion',
+                'a.fecha',
+                'a.empresa_id',
+                'a.ajuste_precio_id	',
+                'a.url_documento',
+                'b.prefijo',
+                'b.numeracion'
+            ])
+            .orderBy('a.fecha', 'DESC')
+            .limit(magnitud_item)
+            .offset(offset_num);
     }
     // console.log('Llegó este objeto: ',obj);
     // .orderBy('fecha_entrega', 'asc');
-    console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
+    // console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -173,6 +201,11 @@ PreciosProductosModel.prototype.listarAgrupar = function (obj, callback) {
     var magnitud_item2 = 15;
     var filtro = obj.filtro;
     var filtroWhere = '';
+    var offset_num = 0;
+
+    if(obj.paginaActualAjustes > 0){
+        offset_num = (obj.paginaActualAjustes-1)*magnitud_item;
+    }
 
     if(filtro == 'Codigo'){
         filtroWhere = 'a.codigo_producto';
@@ -203,10 +236,17 @@ PreciosProductosModel.prototype.listarAgrupar = function (obj, callback) {
             this.where(filtroWhere, 'like', '%'+codigoBuscar+'%')
             //}
         })
+        .groupBy([
+            'a.codigo_producto',
+            'a.costo',
+            'a.costo_ultima_compra',
+            'a.existencia'
+        ])
         .orderBy('a.codigo_producto')
-        .limit(magnitud_item);
+        .limit(magnitud_item)
+        .offset(offset_num);
     // .orderBy('fecha_entrega', 'asc');
-    //  console.log('Listar_agrupar: ',G.sqlformatter.format(query.toString()));
+    //  console.log('SQL Listar_agrupar: ',G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         // resultado.push(codigoBuscar);
         for(var i = resultado.length; i<magnitud_item2; i++){

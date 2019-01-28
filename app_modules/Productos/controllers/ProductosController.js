@@ -35,6 +35,8 @@ function __generarReporteFactura(rows, callback) {
     var req = rows.req;
     //console.log('session en __generarReporteFactura es:', rows.session);
     var usuario = rows.usuario_id;
+
+
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/Productos/reports/ajuste_sube_costo.html', 'utf8'),
@@ -96,7 +98,7 @@ function __generarReporteFactura(rows, callback) {
                         //console.log('response es: ',response);
                         //__enviarNotificacion(that,usuario,response,"onNotificarTodoPendienteFormula");
                         //that.io.to(session.socket_id).emit(socket,response);
-                        console.log('URL desde controlador: ',reporte_imprimir);
+                        //console.log('URL desde controlador: ',reporte_imprimir);
                         callback(false, reporte_imprimir);
                     }
                 });
@@ -113,6 +115,7 @@ Productos.prototype.subeCosto = function(req, res) {
     var ajuste_precio_id = 0;
     var url_documento = '';
     //console.log('Parametros en controlador son: ',parametros);
+
     parametros.usuario_id = session.usuario_id;
     parametros.empresa_id = session.empresaId;
     parametros.centro_id = session.centroUtilidad;
@@ -120,32 +123,9 @@ Productos.prototype.subeCosto = function(req, res) {
     parametros.fecha_actual = new Date().toFormat('YYYY/MM/DD HH24:MI:SS');
     parametros.fecha_actual2 = new Date().toFormat('DD/MM/YYYY HH24:MI:SS');
     parametros.total_diferencia = parseFloat(parametros.total_diferencia);
-    //console.log('Obj en el controlador es: ', parametros);
 
-    G.Q.ninvoke(that.m_productos, "subeCosto_UpdateInventary", parametros).then(function (resultado) {
-        //console.log('funcion 1');
-        return G.Q.ninvoke(that.m_productos, "subeCosto_SelecInventario", parametros);
-    }).then(function(resultado2){
-        parametros.producto_descripcion = resultado2[0].descripcion;
-        parametros.producto_cantidad = resultado2[0].existencia;
-        //console.log('funcion 2');
-        return G.Q.ninvoke(that.m_productos, "subeCosto_SelectDocuments", parametros);
-    }).then(function(resultado3){
-        parametros.nueva_numeracion = parseInt(resultado3[0].numeracion)+1;
-        parametros.documento_id = resultado3[0].documento_id;
-        parametros.prefijo = resultado3[0].prefijo;
-        //console.log('resultado3: ',resultado3[0]);
-        return G.Q.ninvoke(that.m_productos, "subeCosto_UpdateDocumentos", parametros);
-    }).then(function(resultado4){
-        // console.log('funcion 4');
-        return G.Q.ninvoke(that.m_productos, "subeCosto_InsertInvBodAjusPrice", parametros);
-    }).then(function(resultado5){
-        ajuste_precio_id = resultado5[0];
-        //console.log('resultado 5, ', ajuste_precio_id);
-        //var date0 = new Date(resultado5[0].fecha);
-        //parametros.fechaActual = date0.getFullYear() + '-' + ('0' + (date0.getMonth() + 1)).slice(-2) + '-' + ('0' + date0.getDate()).slice(-2) + ' '+('0' + date0.getHours()).slice(-2)+':'+('0' + date0.getMinutes()).slice(-2)+':'+('0' + date0.getSeconds()).slice(-2);
-        //console.log('Fecha desde la base de datos es: ', parametros.fecha_actual);
-        // return res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: true}));
+    if(parametros.reimprimir != undefined && parametros.ajuste_precio_id != undefined){
+        console.log('parametros en reimprimir son: ',parametros);
         var datos = {
             cabecera: '',
             impuestos: '',
@@ -165,33 +145,98 @@ Productos.prototype.subeCosto = function(req, res) {
             total_diferencia: parametros.total_diferencia,
             aprobacion: parametros.aprobacion,
             descripcion: parametros.producto_descripcion,
-            nueva_numeracion: parametros.nueva_numeracion,
+            nueva_numeracion: parametros.prefijo+'-'+parametros.numeracion,
             prefijo: parametros.prefijo,
             session: session,
             titulo: parametros.titulo,
             host: parametros.host
         };
-        //datos['serverUrl'] = parametros.protocol + '://' + parametros.host + "/";
-        //console.log('Parametros son: ',parametros);
-        //console.log('datos para funcion PDF son: ', datos);
-        //console.log('session es: ', session);
-        //console.log('Esto es "req": ',req);
-        //console.log('Esto es "res": ',res);
-        return G.Q.nfcall(__generarReporteFactura, datos);
-    }).then(function(resultado6){
-        url_documento = resultado6;
-        var parametro_actualizar_url = {
-            ajuste_precio_id: ajuste_precio_id,
-            url_documento: resultado6
-        };
-        return G.Q.ninvoke(that.m_productos, "subeCosto_UpdateUrlDocumento", parametro_actualizar_url);
-    }).then(function (resultado7) {
-        console.log('Url del documento actualizada!!');
-        res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: url_documento}));
-    }).fail(function (err) {
-        //console.log('Antes de enviar el error!!!');
-        res.send(G.utils.r(req.url, 'Error!! ' + err, 500, {listarAgrupar: {}}));
-    }).done();
+        console.log('Datos para PDF en Reimprimir son: ',datos);
+        G.Q.nfcall(__generarReporteFactura, datos).then(function (url_documento){
+            var parametro_actualizar_url = {
+                ajuste_precio_id: parametros.ajuste_precio_id,
+                url_documento: url_documento
+            };
+            var response = G.Q.ninvoke(that.m_productos, "subeCosto_UpdateUrlDocumento", parametro_actualizar_url);
+            if(response){
+                res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: url_documento}));
+            }else{
+                res.send(G.utils.r(req.url, req.body, 500, {listarAgrupar: ''}));
+            }
+        });
+    }else {
+        //console.log('Obj en el controlador es: ', parametros);
+        G.Q.ninvoke(that.m_productos, "subeCosto_UpdateInventary", parametros).then(function (resultado) {
+            //console.log('funcion 1');
+            return G.Q.ninvoke(that.m_productos, "subeCosto_SelecInventario", parametros);
+        }).then(function (resultado2) {
+            parametros.producto_descripcion = resultado2[0].descripcion;
+            parametros.producto_cantidad = resultado2[0].existencia;
+            //console.log('funcion 2');
+            return G.Q.ninvoke(that.m_productos, "subeCosto_SelectDocuments", parametros);
+        }).then(function (resultado3) {
+            parametros.nueva_numeracion = parseInt(resultado3[0].numeracion) + 1;
+            parametros.documento_id = resultado3[0].documento_id;
+            parametros.prefijo = resultado3[0].prefijo;
+            //console.log('resultado3: ',resultado3[0]);
+            return G.Q.ninvoke(that.m_productos, "subeCosto_UpdateDocumentos", parametros);
+        }).then(function (resultado4) {
+            // console.log('funcion 4');
+            return G.Q.ninvoke(that.m_productos, "subeCosto_InsertInvBodAjusPrice", parametros);
+        }).then(function (resultado5) {
+            ajuste_precio_id = resultado5[0];
+            //console.log('resultado 5, ', ajuste_precio_id);
+            //var date0 = new Date(resultado5[0].fecha);
+            //parametros.fechaActual = date0.getFullYear() + '-' + ('0' + (date0.getMonth() + 1)).slice(-2) + '-' + ('0' + date0.getDate()).slice(-2) + ' '+('0' + date0.getHours()).slice(-2)+':'+('0' + date0.getMinutes()).slice(-2)+':'+('0' + date0.getSeconds()).slice(-2);
+            //console.log('Fecha desde la base de datos es: ', parametros.fecha_actual);
+            // return res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: true}));
+            var datos = {
+                cabecera: '',
+                impuestos: '',
+                detalle: '',
+                serverUrl: '',
+                justificacion: parametros.justificacion,
+                usuario_id: parametros.usuario_id,
+                usuario_nombre: parametros.usuario_nombre,
+                fecha_actual: parametros.fecha_actual2,
+                producto_id: parametros.producto_id,
+                empresa_id: parametros.empresa_id,
+                empresa_nombre: parametros.empresa_nombre,
+                documento_id: parametros.documento_id,
+                producto_cantidad: parametros.producto_cantidad,
+                costo_anterior: parametros.costo_anterior,
+                costo_nuevo: parametros.costo_asignado,
+                total_diferencia: parametros.total_diferencia,
+                aprobacion: parametros.aprobacion,
+                descripcion: parametros.descripcion,
+                nueva_numeracion: parametros.nueva_numeracion,
+                prefijo: parametros.prefijo,
+                session: session,
+                titulo: parametros.titulo,
+                host: parametros.host
+            };
+            //datos['serverUrl'] = parametros.protocol + '://' + parametros.host + "/";
+            //console.log('Parametros son: ',parametros);
+            //console.log('datos para funcion PDF son: ', datos);
+            //console.log('session es: ', session);
+            //console.log('Esto es "req": ',req);
+            //console.log('Esto es "res": ',res);
+            return G.Q.nfcall(__generarReporteFactura, datos);
+        }).then(function (resultado6) {
+            url_documento = resultado6;
+            var parametro_actualizar_url = {
+                ajuste_precio_id: ajuste_precio_id,
+                url_documento: resultado6
+            };
+            return G.Q.ninvoke(that.m_productos, "subeCosto_UpdateUrlDocumento", parametro_actualizar_url);
+        }).then(function (resultado7) {
+            console.log('Url del documento actualizada!!');
+            res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: url_documento}));
+        }).fail(function (err) {
+            //console.log('Antes de enviar el error!!!');
+            res.send(G.utils.r(req.url, 'Error!! ' + err, 500, {listarAgrupar: {}}));
+        }).done();
+    }
 };
 
 Productos.prototype.bajeCosto = function(req, res) {

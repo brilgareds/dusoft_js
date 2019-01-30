@@ -1609,7 +1609,7 @@ function __generarPdf(datos, callback) {
                                 <p class="letra_factura_info">` + datos.empresa.pais + ` - ` + datos.empresa.departamento + ` - ` + datos.empresa.municipio + `</p>
                             <td>
                             <td width='30%'> 
-                                <p ><img  src='{#image logocliente}'  border='0' width="300px" height="80px"></p>                         
+                                <p ><img src="{#asset /logocliente.png @encoding=dataURI}" style="display:block" border='0' width="300px" height="80px"/></p>                         
                             <td>
                             <td width='30%' valign="top">
                                  <b><p align="center" valign="top" >&nbsp;</p></b>                                                          

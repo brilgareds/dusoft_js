@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dump.rdb" afterPath="$PROJECT_DIR$/dump.rdb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/FacturacionClientes/controllers/FacturacionClientesController.js" afterPath="$PROJECT_DIR$/app_modules/FacturacionClientes/controllers/FacturacionClientesController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/FacturacionClientes/reports/facturaGeneradaDetallePDF.html" afterPath="$PROJECT_DIR$/app_modules/FacturacionClientes/reports/facturaGeneradaDetallePDF.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Settings.js" afterPath="$PROJECT_DIR$/lib/Settings.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html" afterPath="$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -16,63 +15,16 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="Dusoft Angular" />
+  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/app.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4888">
-              <caret line="201" column="19" lean-forward="false" selection-start-line="201" selection-start-column="19" selection-end-line="201" selection-end-column="19" />
-              <folding>
-                <marker date="1548101336734" expanded="true" signature="25:1756" ph="[...]" />
-                <marker date="1548101336734" expanded="true" signature="6218:6247" ph="{&quot;url&quot;: &quot;/I007&quot;...}" />
-                <marker date="1548101336734" expanded="true" signature="6218:9012" ph="{...}" />
-                <marker date="1548101336734" expanded="true" signature="6218:9024" ph="{...}" />
-                <marker date="1548101336734" expanded="true" signature="6218:9025" ph="[...]" />
-                <marker date="1548101336734" expanded="true" signature="6218:9118" ph="{...}" />
-                <marker date="1548101336734" expanded="true" signature="6340:6626" ph="{&quot;url&quot;: &quot;/I011&quot;...}" />
-                <marker date="1548101336734" expanded="true" signature="6655:6963" ph="{&quot;url&quot;: &quot;/modificarProducto&quot;...}" />
-                <marker date="1548101336734" expanded="true" signature="7055:7341" ph="{&quot;url&quot;: &quot;/I012&quot;...}" />
-                <marker date="1548101336734" expanded="true" signature="7432:7718" ph="{&quot;url&quot;: &quot;/E017&quot;...}" />
-                <marker date="1548101336734" expanded="true" signature="7809:8095" ph="{&quot;url&quot;: &quot;/I015&quot;...}" />
-                <marker date="1548101336734" expanded="true" signature="8185:8471" ph="{&quot;url&quot;: &quot;/E009&quot;...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Url.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4004">
-              <caret line="167" column="13" lean-forward="false" selection-start-line="167" selection-start-column="13" selection-end-line="167" selection-end-column="13" />
-              <folding>
-                <marker date="1548101336736" expanded="true" signature="4980:6329" ph="{...}" />
-                <marker date="1548101336736" expanded="true" signature="6351:7708" ph="{...}" />
-                <marker date="1548101336736" expanded="true" signature="7730:8831" ph="{...}" />
-                <marker date="1548101336736" expanded="true" signature="8853:10102" ph="{...}" />
-                <marker date="1548101336736" expanded="true" signature="10124:11025" ph="{...}" />
-                <marker date="1548101336736" expanded="true" signature="11047:11947" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="routes.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app_modules/Productos/routes.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="416">
-              <caret line="16" column="26" lean-forward="false" selection-start-line="16" selection-start-column="26" selection-end-line="16" selection-end-column="26" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="ProductosController.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="156">
-              <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+            <state relative-caret-position="191">
+              <caret line="136" column="62" lean-forward="false" selection-start-line="136" selection-start-column="62" selection-end-line="136" selection-end-column="62" />
               <folding />
             </state>
           </provider>
@@ -81,88 +33,64 @@
       <file leaf-file-name="ProductosModel.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="9" column="27" lean-forward="false" selection-start-line="9" selection-start-column="27" selection-end-line="9" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="E008Controller.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app_modules/MovimientosBodega/E008/controllers/E008Controller.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="587">
-              <caret line="2378" column="33" lean-forward="false" selection-start-line="2378" selection-start-column="33" selection-end-line="2378" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="E017Controller.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/E017/E017Controller.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="10348">
-              <caret line="398" column="14" lean-forward="false" selection-start-line="368" selection-start-column="12" selection-end-line="398" selection-end-column="14" />
+            <state relative-caret-position="-3822">
+              <caret line="9" column="6" lean-forward="false" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
               <folding>
-                <marker date="1543263012567" expanded="true" signature="6600:8131" ph="..." />
-                <marker date="1543263012567" expanded="true" signature="8831:9070" ph="..." />
-                <marker date="1543263012567" expanded="true" signature="10989:11225" ph="..." />
-                <marker date="1543263012567" expanded="false" signature="11084:11091" ph="×" />
-                <marker date="1543263012567" expanded="true" signature="11283:11478" ph="..." />
-                <marker date="1543263012567" expanded="true" signature="11538:11802" ph="..." />
-                <marker date="1543263012567" expanded="true" signature="13695:13930" ph="..." />
-                <marker date="1543263012567" expanded="false" signature="13789:13796" ph="×" />
-                <marker date="1543263012567" expanded="true" signature="13988:14103" ph="..." />
-                <marker date="1543263012567" expanded="true" signature="14163:14423" ph="..." />
+                <marker date="1548694466961" expanded="true" signature="14450:14456" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="14450:14586" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="14478:14510" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="14589:14789" ph="/*...*/" />
+                <marker date="1548694466961" expanded="true" signature="14869:15479" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="15195:15355" ph="{&quot;1&quot;: params.empresaId...}" />
+                <marker date="1548694466961" expanded="true" signature="15385:15426" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="15447:15475" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="15566:16720" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="16685:16715" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="16724:16932" ph="/*...*/" />
+                <marker date="1548694466961" expanded="true" signature="16988:18082" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="17140:17386" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="17251:17337" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="17678:18028" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="17973:18013" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="18048:18078" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="18085:18242" ph="//..." />
+                <marker date="1548694466961" expanded="true" signature="18384:19083" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="18984:19030" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="19051:19079" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="19087:19184" ph="//..." />
+                <marker date="1548694466961" expanded="true" signature="19271:24120" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="19291:22241" ph="[...]" />
+                <marker date="1548694466961" expanded="true" signature="22917:23021" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="23782:23891" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="23915:23992" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="24027:24065" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="24125:24316" ph="/*...*/" />
+                <marker date="1548694466961" expanded="true" signature="24375:25494" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="24445:24493" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="24814:25136" ph="{&quot;2&quot;: existencia.cantidadNueva...}" />
+                <marker date="1548694466961" expanded="true" signature="25265:25436" ph="{...}" />
+                <marker date="1548694466961" expanded="true" signature="25303:25419" ph="{...}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Settings.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/Settings.js">
+      <file leaf-file-name="Url.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="312">
-              <caret line="12" column="37" lean-forward="true" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
+            <state relative-caret-position="-156">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FacturacionClientesController.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app_modules/FacturacionClientes/controllers/FacturacionClientesController.js">
+      <file leaf-file-name="validaciondespachos.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="295">
-              <caret line="3815" column="118" lean-forward="true" selection-start-line="3815" selection-start-column="118" selection-end-line="3815" selection-end-column="118" />
-              <folding>
-                <marker date="1548101616896" expanded="true" signature="140257:141662" ph="..." />
-                <marker date="1548101616896" expanded="true" signature="140382:140668" ph="{...}" />
-                <marker date="1548101616896" expanded="true" signature="140712:140827" ph="{...}" />
-                <marker date="1548101616896" expanded="true" signature="140862:141104" ph="{...}" />
-                <marker date="1548101616896" expanded="true" signature="141719:143540" ph="..." />
-                <marker date="1548101616896" expanded="true" signature="141752:143506" ph="..." />
-                <marker date="1548101616896" expanded="true" signature="141812:142582" ph="..." />
-                <marker date="1548101616896" expanded="true" signature="141912:141925" ph="..." />
-                <marker date="1548101616896" expanded="true" signature="142586:142615" ph="..." />
-                <marker date="1548101616896" expanded="true" signature="142631:142972" ph="..." />
-                <marker date="1548101616896" expanded="true" signature="142976:143005" ph="..." />
-                <marker date="1548101616896" expanded="true" signature="143034:143469" ph="..." />
-                <marker date="1548101616896" expanded="false" signature="143104:143110" ph=" " />
-                <marker date="1548101616896" expanded="false" signature="143346:143361" ph="..." />
-                <marker date="1548101616896" expanded="true" signature="143473:143501" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="facturaGeneradaDetallePDF.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app_modules/FacturacionClientes/reports/facturaGeneradaDetallePDF.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="156">
-              <caret line="36" column="85" lean-forward="true" selection-start-line="36" selection-start-column="85" selection-end-line="36" selection-end-column="85" />
-              <folding>
-                <element signature="n#style#0;n#img#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-              </folding>
+            <state relative-caret-position="559">
+              <caret line="186" column="18" lean-forward="true" selection-start-line="186" selection-start-column="18" selection-end-line="186" selection-end-column="18" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -171,35 +99,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>AAC1</find>
-      <find>$scope.productoSelec = {</find>
-      <find>total diferen</find>
-      <find>listarFacturaAgrupada</find>
-      <find>init</find>
-      <find>$scope.newPrice</find>
-      <find>productoSelec.costo</find>
-      <find>productoSelec.</find>
-      <find>productoSelec.newPrice</find>
-      <find>onModificarAgrupacion</find>
-      <find>newPrice</find>
-      <find>newUpdate</find>
-      <find>step</find>
-      <find>$modalInstance</find>
-      <find>form</find>
-      <find>&lt;form</find>
-      <find>Submit!!!</find>
-      <find>listarAgrupar =</find>
-      <find>ingresar</find>
-      <find>listarAgrupar</find>
-      <find>listar_productos</find>
-      <find>generar_documento</find>
-      <find>generar_documento =</find>
-      <find>generar_documento = f</find>
-      <find>generar_documento = func</find>
-      <find>validar_producto</find>
-      <find>crearD</find>
-      <find>subeCosto</find>
-      <find>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</find>
+      <find>facturasConcep</find>
+      <find>facturasConcept</find>
+      <find>facturasConcepto</find>
+      <find>facturasConceptosP</find>
+      <find>facturasConceptospdf</find>
+      <find>facturasConceptospd</find>
+      <find>facturasConceptosp</find>
+      <find>facturasConceptos</find>
+      <find>pdf</find>
+      <find>facturasConceptosn</find>
+      <find>loo</find>
+      <find>lo</find>
+      <find>logocliente.png</find>
+      <find>NOTA CREDITO</find>
+      <find>NOTA CREDIT</find>
+      <find>NOTA CREDI</find>
+      <find>NOTA CRED</find>
+      <find>NOTA CRE</find>
+      <find>NOTA CR</find>
+      <find>NOTA C</find>
+      <find>NOTA22</find>
+      <find>NOTA2</find>
+      <find>NOTA44</find>
+      <find>NOTA4</find>
+      <find>NOTA1</find>
+      <find>NOTA3</find>
+      <find>logo</find>
+      <find>NOTA</find>
+      <find>aprobacion2</find>
+      <find>documentoDespachoAprobado.obtenerImagenes().length == 4</find>
     </findStrings>
     <replaceStrings>
       <replace>AAC1</replace>
@@ -214,6 +143,8 @@
       <dir>$PROJECT_DIR$/app_modules/MovimientosBodega</dir>
       <dir>$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1</dir>
       <dir>$PROJECT_DIR$</dir>
+      <dir>$PROJECT_DIR$/app_modules/CajaGeneral</dir>
+      <dir>$PROJECT_DIR$/public/dusoft_duana/validaciondespachos</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -254,6 +185,14 @@
         <option value="$PROJECT_DIR$/lib/Settings.js" />
         <option value="$PROJECT_DIR$/app_modules/FacturacionClientes/controllers/FacturacionClientesController.js" />
         <option value="$PROJECT_DIR$/app_modules/FacturacionClientes/reports/facturaGeneradaDetallePDF.html" />
+        <option value="$PROJECT_DIR$/app_modules/ValidacionDespachos/controllers/ValidacionDespachosController.js" />
+        <option value="$PROJECT_DIR$/app_modules/CajaGeneral/reports/facturaConceptosPdf.html" />
+        <option value="$PROJECT_DIR$/app_modules/CajaGeneral/reports/facturaConceptos.html" />
+        <option value="$PROJECT_DIR$/app_modules/CajaGeneral/reports/notaFacturaSinProductoPdf.html" />
+        <option value="$PROJECT_DIR$/app_modules/Notas/reports/notaFactura.html" />
+        <option value="$PROJECT_DIR$/app_modules/CajaGeneral/controllers/CajaGeneralController.js" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html" />
       </list>
     </option>
   </component>
@@ -290,6 +229,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -330,6 +270,24 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="reports" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dusoft Angular" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="public" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="dusoft_duana" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
@@ -352,7 +310,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemId" value="validaciondespachos" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -374,33 +332,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemId" value="validaciondespachos" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -426,7 +358,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
+              <option name="myItemId" value="validaciondespachos" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -448,41 +380,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="constants" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft.doc" />
+              <option name="myItemId" value="lib" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -594,7 +492,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="MovimientosBodega" />
+              <option name="myItemId" value="CajaGeneral" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -612,11 +510,11 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="MovimientosBodega" />
+              <option name="myItemId" value="CajaGeneral" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="E008" />
+              <option name="myItemId" value="reports" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -634,11 +532,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="MovimientosBodega" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="E008" />
+              <option name="myItemId" value="CajaGeneral" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -648,7 +542,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -777,34 +670,51 @@
       <workItem from="1546436777859" duration="25570000" />
       <workItem from="1546521398182" duration="26859000" />
       <workItem from="1546605847702" duration="6287000" />
-      <workItem from="1548101253425" duration="456000" />
+      <workItem from="1548101253425" duration="1709000" />
+      <workItem from="1548272444656" duration="8000" />
+      <workItem from="1548272481484" duration="301000" />
+      <workItem from="1548273274437" duration="315000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="233416000" />
+    <option name="totallyTimeSpent" value="238280000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="-2" width="1926" height="1060" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17784877" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.08396125" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32972974" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.7405813" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1826411" sideWeight="0.4962325" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21528526" sideWeight="0.5042598" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960597" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32938644" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32831" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24973376" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31862217" sideWeight="0.49574015" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.08396125" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32972974" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32185146" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1826411" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -818,64 +728,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/directive.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/models.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="6" column="3" lean-forward="true" selection-start-line="6" selection-start-column="3" selection-end-line="6" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/services.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="108" column="105" lean-forward="false" selection-start-line="108" selection-start-column="76" selection-end-line="108" selection-end-column="105" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/prueba/reportes/dist/main.js" />
-    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="132" column="0" lean-forward="false" selection-start-line="132" selection-start-column="0" selection-end-line="132" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/dist/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="170" column="4814" lean-forward="false" selection-start-line="170" selection-start-column="4804" selection-end-line="170" selection-end-column="4814" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app_modules/MovimientosBodega/MovBodegas/config.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="20" column="1" lean-forward="true" selection-start-line="20" selection-start-column="1" selection-end-line="20" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/css/style.css" />
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1GestionarProductosController.js" />
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/js/controllers/PreciosProductosController.js" />
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/models/Index/EmpresaDocumento.js">
@@ -958,37 +810,8 @@
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/index.html" />
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4888">
+        <state relative-caret-position="5226">
           <caret line="201" column="19" lean-forward="false" selection-start-line="201" selection-start-column="19" selection-end-line="201" selection-end-column="19" />
-          <folding>
-            <marker date="1548101336734" expanded="true" signature="25:1756" ph="[...]" />
-            <marker date="1548101336734" expanded="true" signature="6218:6247" ph="{&quot;url&quot;: &quot;/I007&quot;...}" />
-            <marker date="1548101336734" expanded="true" signature="6218:9012" ph="{...}" />
-            <marker date="1548101336734" expanded="true" signature="6218:9024" ph="{...}" />
-            <marker date="1548101336734" expanded="true" signature="6218:9025" ph="[...]" />
-            <marker date="1548101336734" expanded="true" signature="6218:9118" ph="{...}" />
-            <marker date="1548101336734" expanded="true" signature="6340:6626" ph="{&quot;url&quot;: &quot;/I011&quot;...}" />
-            <marker date="1548101336734" expanded="true" signature="6655:6963" ph="{&quot;url&quot;: &quot;/modificarProducto&quot;...}" />
-            <marker date="1548101336734" expanded="true" signature="7055:7341" ph="{&quot;url&quot;: &quot;/I012&quot;...}" />
-            <marker date="1548101336734" expanded="true" signature="7432:7718" ph="{&quot;url&quot;: &quot;/E017&quot;...}" />
-            <marker date="1548101336734" expanded="true" signature="7809:8095" ph="{&quot;url&quot;: &quot;/I015&quot;...}" />
-            <marker date="1548101336734" expanded="true" signature="8185:8471" ph="{&quot;url&quot;: &quot;/E009&quot;...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4004">
-          <caret line="167" column="13" lean-forward="false" selection-start-line="167" selection-start-column="13" selection-end-line="167" selection-end-column="13" />
-          <folding>
-            <marker date="1548101336736" expanded="true" signature="4980:6329" ph="{...}" />
-            <marker date="1548101336736" expanded="true" signature="6351:7708" ph="{...}" />
-            <marker date="1548101336736" expanded="true" signature="7730:8831" ph="{...}" />
-            <marker date="1548101336736" expanded="true" signature="8853:10102" ph="{...}" />
-            <marker date="1548101336736" expanded="true" signature="10124:11025" ph="{...}" />
-            <marker date="1548101336736" expanded="true" signature="11047:11947" ph="{...}" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1003,7 +826,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="416">
           <caret line="16" column="26" lean-forward="false" selection-start-line="16" selection-start-column="26" selection-end-line="16" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1014,85 +836,166 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="10348">
           <caret line="398" column="14" lean-forward="false" selection-start-line="368" selection-start-column="12" selection-end-line="398" selection-end-column="14" />
-          <folding>
-            <marker date="1543263012567" expanded="true" signature="6600:8131" ph="..." />
-            <marker date="1543263012567" expanded="true" signature="8831:9070" ph="..." />
-            <marker date="1543263012567" expanded="true" signature="10989:11225" ph="..." />
-            <marker date="1543263012567" expanded="false" signature="11084:11091" ph="×" />
-            <marker date="1543263012567" expanded="true" signature="11283:11478" ph="..." />
-            <marker date="1543263012567" expanded="true" signature="11538:11802" ph="..." />
-            <marker date="1543263012567" expanded="true" signature="13695:13930" ph="..." />
-            <marker date="1543263012567" expanded="false" signature="13789:13796" ph="×" />
-            <marker date="1543263012567" expanded="true" signature="13988:14103" ph="..." />
-            <marker date="1543263012567" expanded="true" signature="14163:14423" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/AAC1/AAC1Controller.js" />
     <entry file="file://$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+        <state relative-caret-position="191">
+          <caret line="136" column="62" lean-forward="false" selection-start-line="136" selection-start-column="62" selection-end-line="136" selection-end-column="62" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="9" column="27" lean-forward="false" selection-start-line="9" selection-start-column="27" selection-end-line="9" selection-end-column="27" />
-          <folding />
+        <state relative-caret-position="-3822">
+          <caret line="9" column="6" lean-forward="false" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
+          <folding>
+            <marker date="1548694466961" expanded="true" signature="14450:14456" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="14450:14586" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="14478:14510" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="14589:14789" ph="/*...*/" />
+            <marker date="1548694466961" expanded="true" signature="14869:15479" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="15195:15355" ph="{&quot;1&quot;: params.empresaId...}" />
+            <marker date="1548694466961" expanded="true" signature="15385:15426" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="15447:15475" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="15566:16720" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="16685:16715" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="16724:16932" ph="/*...*/" />
+            <marker date="1548694466961" expanded="true" signature="16988:18082" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="17140:17386" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="17251:17337" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="17678:18028" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="17973:18013" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="18048:18078" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="18085:18242" ph="//..." />
+            <marker date="1548694466961" expanded="true" signature="18384:19083" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="18984:19030" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="19051:19079" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="19087:19184" ph="//..." />
+            <marker date="1548694466961" expanded="true" signature="19271:24120" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="19291:22241" ph="[...]" />
+            <marker date="1548694466961" expanded="true" signature="22917:23021" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="23782:23891" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="23915:23992" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="24027:24065" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="24125:24316" ph="/*...*/" />
+            <marker date="1548694466961" expanded="true" signature="24375:25494" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="24445:24493" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="24814:25136" ph="{&quot;2&quot;: existencia.cantidadNueva...}" />
+            <marker date="1548694466961" expanded="true" signature="25265:25436" ph="{...}" />
+            <marker date="1548694466961" expanded="true" signature="25303:25419" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/MovimientosBodega/E008/controllers/E008Controller.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="587">
+        <state relative-caret-position="61828">
           <caret line="2378" column="33" lean-forward="false" selection-start-line="2378" selection-start-column="33" selection-end-line="2378" selection-end-column="33" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/FacturacionClientes/controllers/FacturacionClientesController.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="99190">
+          <caret line="3815" column="118" lean-forward="false" selection-start-line="3815" selection-start-column="118" selection-end-line="3815" selection-end-column="118" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/documentoAprobadoDetalle.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/ValidacionDespachos/controllers/ValidacionDespachosController.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="327">
+          <caret line="159" column="0" lean-forward="false" selection-start-line="159" selection-start-column="0" selection-end-line="159" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/FacturacionClientes/reports/facturaGeneradaDetallePDF.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="36" column="8" lean-forward="true" selection-start-line="36" selection-start-column="8" selection-end-line="36" selection-end-column="85" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/CajaGeneral/reports/facturaConceptosPdf.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="63" column="4" lean-forward="true" selection-start-line="63" selection-start-column="4" selection-end-line="63" selection-end-column="81" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/Settings.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="312">
-          <caret line="12" column="37" lean-forward="true" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
+          <caret line="12" column="37" lean-forward="false" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/CajaGeneral/reports/facturaConceptos.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="373">
+          <caret line="70" column="12" lean-forward="false" selection-start-line="70" selection-start-column="12" selection-end-line="70" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/Notas/reports/notaFactura.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="106" column="39" lean-forward="false" selection-start-line="106" selection-start-column="39" selection-end-line="106" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/CajaGeneral/reports/notaFacturaSinProductoPdf.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="64" column="8" lean-forward="true" selection-start-line="64" selection-start-column="8" selection-end-line="64" selection-end-column="85" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/CajaGeneral/reports/notaFactura.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="83" column="105" lean-forward="true" selection-start-line="83" selection-start-column="105" selection-end-line="83" selection-end-column="105" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_modules/CajaGeneral/controllers/CajaGeneralController.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="1038" column="32" lean-forward="true" selection-start-line="1038" selection-start-column="32" selection-end-line="1038" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/constants/Url.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-156">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app_modules/FacturacionClientes/controllers/FacturacionClientesController.js">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="295">
-          <caret line="3815" column="118" lean-forward="true" selection-start-line="3815" selection-start-column="118" selection-end-line="3815" selection-end-column="118" />
-          <folding>
-            <marker date="1548101616896" expanded="true" signature="140257:141662" ph="..." />
-            <marker date="1548101616896" expanded="true" signature="140382:140668" ph="{...}" />
-            <marker date="1548101616896" expanded="true" signature="140712:140827" ph="{...}" />
-            <marker date="1548101616896" expanded="true" signature="140862:141104" ph="{...}" />
-            <marker date="1548101616896" expanded="true" signature="141719:143540" ph="..." />
-            <marker date="1548101616896" expanded="true" signature="141752:143506" ph="..." />
-            <marker date="1548101616896" expanded="true" signature="141812:142582" ph="..." />
-            <marker date="1548101616896" expanded="true" signature="141912:141925" ph="..." />
-            <marker date="1548101616896" expanded="true" signature="142586:142615" ph="..." />
-            <marker date="1548101616896" expanded="true" signature="142631:142972" ph="..." />
-            <marker date="1548101616896" expanded="true" signature="142976:143005" ph="..." />
-            <marker date="1548101616896" expanded="true" signature="143034:143469" ph="..." />
-            <marker date="1548101616896" expanded="false" signature="143104:143110" ph=" " />
-            <marker date="1548101616896" expanded="false" signature="143346:143361" ph="..." />
-            <marker date="1548101616896" expanded="true" signature="143473:143501" ph="..." />
-          </folding>
+        <state relative-caret-position="312">
+          <caret line="12" column="6" lean-forward="true" selection-start-line="12" selection-start-column="6" selection-end-line="12" selection-end-column="6" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app_modules/FacturacionClientes/reports/facturaGeneradaDetallePDF.html">
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="36" column="85" lean-forward="true" selection-start-line="36" selection-start-column="85" selection-end-line="36" selection-end-column="85" />
-          <folding>
-            <element signature="n#style#0;n#img#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
+        <state relative-caret-position="559">
+          <caret line="186" column="18" lean-forward="true" selection-start-line="186" selection-start-column="18" selection-end-line="186" selection-end-column="18" />
+          <folding />
         </state>
       </provider>
     </entry>

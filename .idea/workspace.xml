@@ -2,16 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="47612a7a-7486-496a-aa8d-c2807e7e816a" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dump.rdb" afterPath="$PROJECT_DIR$/dump.rdb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js" afterPath="$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js" afterPath="$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js" afterPath="$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js" afterPath="$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app_modules/Productos/reports/ajuste_sube_costo.html" afterPath="$PROJECT_DIR$/app_modules/Productos/reports/ajuste_sube_costo.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/pl.js" afterPath="$PROJECT_DIR$/lib/pl.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ASC1/ASC1Controller.js" afterPath="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ASC1/ASC1Controller.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html" afterPath="$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server.js" afterPath="$PROJECT_DIR$/server.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/unit_testing/server.js" afterPath="$PROJECT_DIR$/unit_testing/server.js" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -59,25 +58,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ASC1Controller.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ASC1Controller.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ASC1/ASC1Controller.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="143">
-              <caret line="418" column="86" lean-forward="false" selection-start-line="418" selection-start-column="86" selection-end-line="418" selection-end-column="86" />
+            <state relative-caret-position="9438">
+              <caret line="363" column="88" lean-forward="false" selection-start-line="363" selection-start-column="88" selection-end-line="363" selection-end-column="88" />
               <folding>
-                <marker date="1548716564577" expanded="true" signature="40713:41097" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="40897:41048" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="41282:41429" ph="..." />
-                <marker date="1548716564577" expanded="false" signature="41751:41769" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="41770:42001" ph="..." />
-                <marker date="1548716564577" expanded="false" signature="42224:42242" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="42243:42459" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="48187:48328" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="50074:50092" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="50093:50453" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="50263:50406" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="51138:51594" ph="..." />
-                <marker date="1548716564577" expanded="true" signature="51318:51545" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="40886:41270" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="41070:41221" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="41455:41602" ph="..." />
+                <marker date="1548771161582" expanded="false" signature="41924:41942" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="41943:42174" ph="..." />
+                <marker date="1548771161582" expanded="false" signature="42397:42415" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="42416:42632" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="48422:48563" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="50309:50327" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="50328:50688" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="50498:50641" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="51373:51829" ph="..." />
+                <marker date="1548771161582" expanded="true" signature="51553:51780" ph="..." />
               </folding>
             </state>
           </provider>
@@ -86,23 +85,43 @@
       <file leaf-file-name="ABC1Controller.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="351">
-              <caret line="417" column="86" lean-forward="true" selection-start-line="417" selection-start-column="86" selection-end-line="417" selection-end-column="86" />
+            <state relative-caret-position="9464">
+              <caret line="364" column="59" lean-forward="false" selection-start-line="364" selection-start-column="59" selection-end-line="364" selection-end-column="59" />
               <folding>
-                <marker date="1548716564829" expanded="true" signature="40612:40996" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="40796:40947" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="41181:41328" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="41650:41668" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="41669:41900" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="42123:42141" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="42142:42358" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="47893:48034" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="49391:49409" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="49410:49770" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="49580:49723" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="50455:50911" ph="..." />
-                <marker date="1548716564829" expanded="true" signature="50635:50862" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="40785:41169" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="40969:41120" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="41354:41501" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="41823:41841" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="41842:42073" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="42296:42314" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="42315:42531" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="48066:48207" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="49564:49582" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="49583:49943" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="49753:49896" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="50628:51084" ph="..." />
+                <marker date="1548773274153" expanded="true" signature="50808:51035" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="442">
+              <caret line="212" column="6" lean-forward="false" selection-start-line="212" selection-start-column="6" selection-end-line="212" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/public/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="50" lean-forward="true" selection-start-line="0" selection-start-column="50" selection-end-line="0" selection-end-column="50" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -111,7 +130,7 @@
         <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ASC1/ajustarPrecio.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="156">
-              <caret line="6" column="6" lean-forward="true" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+              <caret line="6" column="6" lean-forward="false" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
               <folding />
             </state>
           </provider>
@@ -120,8 +139,8 @@
       <file leaf-file-name="ProductosController.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="997">
-              <caret line="154" column="10" lean-forward="false" selection-start-line="154" selection-start-column="10" selection-end-line="154" selection-end-column="10" />
+            <state relative-caret-position="4030">
+              <caret line="155" column="81" lean-forward="false" selection-start-line="155" selection-start-column="81" selection-end-line="155" selection-end-column="81" />
               <folding />
             </state>
           </provider>
@@ -130,8 +149,8 @@
       <file leaf-file-name="PreciosProductosController.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="89" column="89" lean-forward="true" selection-start-line="89" selection-start-column="89" selection-end-line="89" selection-end-column="89" />
+            <state relative-caret-position="2314">
+              <caret line="89" column="89" lean-forward="false" selection-start-line="89" selection-start-column="89" selection-end-line="89" selection-end-column="89" />
               <folding />
             </state>
           </provider>
@@ -140,7 +159,7 @@
       <file leaf-file-name="PreciosProductosModel.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="143">
+            <state relative-caret-position="6500">
               <caret line="250" column="40" lean-forward="false" selection-start-line="250" selection-start-column="40" selection-end-line="250" selection-end-column="40" />
               <folding />
             </state>
@@ -150,7 +169,7 @@
       <file leaf-file-name="ProductosModel.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="163">
+            <state relative-caret-position="4368">
               <caret line="168" column="6" lean-forward="false" selection-start-line="168" selection-start-column="6" selection-end-line="168" selection-end-column="6" />
               <folding />
             </state>
@@ -161,14 +180,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Documentos de Ajuste</find>
-      <find>listar_documentos_ajuste</find>
-      <find>post</find>
-      <find>listarAgru</find>
-      <find>p</find>
-      <find>url desde</find>
-      <find>host</find>
-      <find>buscarProd</find>
       <find>__generarReporteFactura</find>
       <find>aprobacion2</find>
       <find>subeCosto_UpdateUrlDocumento</find>
@@ -191,6 +202,14 @@
       <find>listarAgrupar</find>
       <find>listar_agrupar</find>
       <find>data: 'root.listar</find>
+      <find>_blank</find>
+      <find>imprimiendo</find>
+      <find>fecha</find>
+      <find>var io = require('socket.io').listen(5000);</find>
+      <find>var io = require('socket.io').listen(500</find>
+      <find>var io = require('socket.io').listen(50</find>
+      <find>var io = require('socket.io').listen(5</find>
+      <find>var io = require('socket.io').listen(</find>
     </findStrings>
     <replaceStrings>
       <replace>AAC1</replace>
@@ -225,8 +244,8 @@
       <dir>$PROJECT_DIR$/public/dusoft_duana/validaciondespachos</dir>
       <dir>$PROJECT_DIR$/public/dusoft_duana/pedidos/js/controllers</dir>
       <dir>$PROJECT_DIR$/public/dusoft_duana/documentosbodegas</dir>
-      <dir>$PROJECT_DIR$</dir>
       <dir>$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ASC1</dir>
+      <dir>$PROJECT_DIR$</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -235,8 +254,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/css/style.css" />
-        <option value="$PROJECT_DIR$/public/dusoft_duana/FacturacionDespachos/js/controllers/cajaGeneral/CajaGeneralController.js" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/js/controllers/PreciosProductosController.js" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/js/controllers/PreciosProductosController.js" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/AAC1/radicacion.html" />
@@ -281,11 +298,13 @@
         <option value="$PROJECT_DIR$/public/dusoft_duana/validaciondespachos/views/validaciondespachos/validaciondespachos.html" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ABC1/ajustarPrecio.html" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ASC1/ajustarPrecio.html" />
-        <option value="$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js" />
         <option value="$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js" />
         <option value="$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js" />
-        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" />
+        <option value="$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js" />
         <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ASC1/ASC1Controller.js" />
+        <option value="$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js" />
+        <option value="$PROJECT_DIR$/server.js" />
+        <option value="$PROJECT_DIR$/public/index.html" />
       </list>
     </option>
   </component>
@@ -322,7 +341,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -349,374 +367,9 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="reports" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="validaciondespachos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="validaciondespachos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="validaciondespachos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dusoft_duana" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="documentosbodegas" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ASC1" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Productos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Productos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="reports" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Productos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="models" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Productos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="models" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Dusoft Angular" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app_modules" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PreciosProductos" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -889,11 +542,13 @@
       <workItem from="1548419315877" duration="1146000" />
       <workItem from="1548510720276" duration="6504000" />
       <workItem from="1548678333129" duration="12173000" />
+      <workItem from="1548765451520" duration="6406000" />
+      <workItem from="1548938159070" duration="2414000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="626223000" />
+    <option name="totallyTimeSpent" value="635149000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -908,37 +563,25 @@
     <frame x="-3" y="-2" width="1926" height="1060" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1826411" sideWeight="0.4962325" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.185836" sideWeight="0.4962325" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21528526" sideWeight="0.5042598" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960597" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32938644" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32831" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32831" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24973376" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2669537" sideWeight="0.49574015" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.270183" sideWeight="0.49574015" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21528526" sideWeight="0.5042598" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32831" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31862217" sideWeight="0.49574015" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1826411" sideWeight="0.4962325" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960597" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.32938644" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24973376" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14589989" sideWeight="0.5037675" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -952,20 +595,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/includes/classes/Usuario.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="130">
-          <caret line="11" column="11" lean-forward="false" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app_modules/FacturacionClientes/reports/reporteDetallePedido.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-9">
-          <caret line="88" column="16" lean-forward="false" selection-start-line="88" selection-start-column="16" selection-end-line="88" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/Productos/reports/javascripts/helpers.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="182">
@@ -1203,7 +832,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="338">
           <caret line="13" column="8" lean-forward="false" selection-start-line="13" selection-start-column="8" selection-end-line="13" selection-end-column="8" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1212,7 +840,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1220,7 +847,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="495">
           <caret line="178" column="159" lean-forward="false" selection-start-line="178" selection-start-column="159" selection-end-line="178" selection-end-column="159" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1228,13 +854,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-156">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/Productos/models/ProductosModel.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="163">
+        <state relative-caret-position="4368">
           <caret line="168" column="6" lean-forward="false" selection-start-line="168" selection-start-column="6" selection-end-line="168" selection-end-column="6" />
           <folding />
         </state>
@@ -1244,15 +869,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="442">
           <caret line="50" column="45" lean-forward="false" selection-start-line="50" selection-start-column="45" selection-end-line="50" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="997">
-          <caret line="154" column="10" lean-forward="false" selection-start-line="154" selection-start-column="10" selection-end-line="154" selection-end-column="10" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1260,13 +876,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="78">
           <caret line="3" column="32" lean-forward="false" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/PreciosProductos/models/PreciosProductosModel.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
+        <state relative-caret-position="6500">
           <caret line="250" column="40" lean-forward="false" selection-start-line="250" selection-start-column="40" selection-end-line="250" selection-end-column="40" />
           <folding />
         </state>
@@ -1274,8 +889,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app_modules/PreciosProductos/controllers/PreciosProductosController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="89" column="89" lean-forward="true" selection-start-line="89" selection-start-column="89" selection-end-line="89" selection-end-column="89" />
+        <state relative-caret-position="2314">
+          <caret line="89" column="89" lean-forward="false" selection-start-line="89" selection-start-column="89" selection-end-line="89" selection-end-column="89" />
           <folding />
         </state>
       </provider>
@@ -1283,52 +898,76 @@
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/views/ASC1/ajustarPrecio.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="156">
-          <caret line="6" column="6" lean-forward="true" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+          <caret line="6" column="6" lean-forward="false" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js">
+    <entry file="file://$PROJECT_DIR$/app_modules/Productos/controllers/ProductosController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="417" column="86" lean-forward="true" selection-start-line="417" selection-start-column="86" selection-end-line="417" selection-end-column="86" />
-          <folding>
-            <marker date="1548716564829" expanded="true" signature="40612:40996" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="40796:40947" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="41181:41328" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="41650:41668" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="41669:41900" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="42123:42141" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="42142:42358" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="47893:48034" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="49391:49409" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="49410:49770" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="49580:49723" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="50455:50911" ph="..." />
-            <marker date="1548716564829" expanded="true" signature="50635:50862" ph="..." />
-          </folding>
+        <state relative-caret-position="4030">
+          <caret line="155" column="81" lean-forward="false" selection-start-line="155" selection-start-column="81" selection-end-line="155" selection-end-column="81" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ASC1/ASC1Controller.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="418" column="86" lean-forward="false" selection-start-line="418" selection-start-column="86" selection-end-line="418" selection-end-column="86" />
+        <state relative-caret-position="9438">
+          <caret line="363" column="88" lean-forward="false" selection-start-line="363" selection-start-column="88" selection-end-line="363" selection-end-column="88" />
           <folding>
-            <marker date="1548716564577" expanded="true" signature="40713:41097" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="40897:41048" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="41282:41429" ph="..." />
-            <marker date="1548716564577" expanded="false" signature="41751:41769" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="41770:42001" ph="..." />
-            <marker date="1548716564577" expanded="false" signature="42224:42242" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="42243:42459" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="48187:48328" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="50074:50092" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="50093:50453" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="50263:50406" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="51138:51594" ph="..." />
-            <marker date="1548716564577" expanded="true" signature="51318:51545" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="40886:41270" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="41070:41221" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="41455:41602" ph="..." />
+            <marker date="1548771161582" expanded="false" signature="41924:41942" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="41943:42174" ph="..." />
+            <marker date="1548771161582" expanded="false" signature="42397:42415" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="42416:42632" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="48422:48563" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="50309:50327" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="50328:50688" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="50498:50641" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="51373:51829" ph="..." />
+            <marker date="1548771161582" expanded="true" signature="51553:51780" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/dusoft_duana/documentosbodegas/js/controllers/ABC1/ABC1Controller.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9464">
+          <caret line="364" column="59" lean-forward="false" selection-start-line="364" selection-start-column="59" selection-end-line="364" selection-end-column="59" />
+          <folding>
+            <marker date="1548773274153" expanded="true" signature="40785:41169" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="40969:41120" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="41354:41501" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="41823:41841" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="41842:42073" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="42296:42314" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="42315:42531" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="48066:48207" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="49564:49582" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="49583:49943" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="49753:49896" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="50628:51084" ph="..." />
+            <marker date="1548773274153" expanded="true" signature="50808:51035" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="212" column="6" lean-forward="false" selection-start-line="212" selection-start-column="6" selection-end-line="212" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="50" lean-forward="true" selection-start-line="0" selection-start-column="50" selection-end-line="0" selection-end-column="50" />
+          <folding />
         </state>
       </provider>
     </entry>

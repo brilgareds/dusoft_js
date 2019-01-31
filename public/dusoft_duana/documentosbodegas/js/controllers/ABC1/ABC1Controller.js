@@ -358,23 +358,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     if(dato.documentosAjustes != undefined){
                         dato.documentosAjustes.forEach(function(element) {
-                            var fecha0 = new Date(element.fecha);
-                            //element.fecha = fecha[0]+' '+fecha[1].substring(0, 8);
-                            //element.fecha = $scope.formatDate(fecha);
-                            var day = fecha0.getDate();
-                            var month = parseInt(fecha0.getMonth())+1;
-                            var year = fecha0.getFullYear();
-                            var hour = fecha0.getHours();
-                            var minute = fecha0.getMinutes();
-                            var seconds = fecha0.getSeconds();
+                            if(element.fecha != undefined && element.fecha != ''){
+                                var fecha0 = new Date(element.fecha);
+                                //element.fecha = fecha[0]+' '+fecha[1].substring(0, 8);
+                                //element.fecha = $scope.formatDate(fecha);
+                                var day = fecha0.getDate();
+                                var month = parseInt(fecha0.getMonth())+1;
+                                var year = fecha0.getFullYear();
+                                var hour = fecha0.getHours();
+                                var minute = fecha0.getMinutes();
+                                var seconds = fecha0.getSeconds();
 
-                            if(month<10){ month = '0'+month; }
-                            if(day<10){ day = '0'+day; }
-                            if(hour<10){ hour = '0'+hour; }
-                            if(minute<10){ minute = '0'+minute; }
-                            if(seconds<10){ seconds = '0'+seconds; }
+                                if(month<10){ month = '0'+month; }
+                                if(day<10){ day = '0'+day; }
+                                if(hour<10){ hour = '0'+hour; }
+                                if(minute<10){ minute = '0'+minute; }
+                                if(seconds<10){ seconds = '0'+seconds; }
 
-                            element.fecha = day+'/'+month+'/'+year+' '+hour+':'+minute+':'+seconds;
+                                element.fecha = day+'/'+month+'/'+year+' '+hour+':'+minute+':'+seconds;
+                            }
                         });
                     }
                     var magnitudMinima = 15;

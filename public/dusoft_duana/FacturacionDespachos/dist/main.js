@@ -51700,11 +51700,11 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 var session=localStorageService.get("session");
                // console.log("session ",session);
                 var llavesMemoria = localStorageService.keys();
-                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat"];
+                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat","validacionEgresosDetalle"];
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
-
+console.log("key",key);
                     if (llavesPermanentes.indexOf(key) === -1) {
                         localStorageService.remove(key);
                     }
@@ -56836,14 +56836,10 @@ define('controllers/facturacionCliente/FacturacionClientesController',["angular"
                                    <a href="javascripts:void(0);" ng-click="sincronizarFactura(row.entity)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-<<<<<<< HEAD
                                    <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity,0)" class = "glyphicon glyphicon-print"> Factura </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarFacturasDespachadas()[0].mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
                                    <a href="javascript:void(0);" ng-click="imprimirReporteFacturaDian(row.entity,0)" class = "glyphicon glyphicon-print"> Factura DIAN </a>\
-=======
-                                   <a href="javascripts:void(0);" ng-click="imprimirReporteFactura(row.entity,0)" class = "glyphicon glyphicon-print"> factura </a>\
->>>>>>> e0b965303a1d368931a3c13e33b4f10848486f29
                                 </li>\
                            </ul>\
                       </div>'

@@ -43191,7 +43191,7 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
                     windowClass: 'app-modal-window-ls-xlg-ls',
                     keyboard: false,
                     showFilter: true,
-                    templateUrl: 'views/PreciosProductos/modificarEntregado.html',
+                    templateUrl: 'views/preciosProductos/modificarEntregado.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                             $scope.modificar = {};
@@ -43483,7 +43483,7 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
-                    templateUrl: 'views/PreciosProductos/vistaConceptos.html',
+                    templateUrl: 'views/preciosProductos/vistaConceptos.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
@@ -43536,7 +43536,7 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
-                    templateUrl: 'views/PreciosProductos/agrupaFactura.html',
+                    templateUrl: 'views/preciosProductos/agrupaFactura.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                             $scope.agrupar = {};
@@ -43629,7 +43629,7 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
-                    templateUrl: 'views/PreciosProductos/vistaModificarFactura.html',
+                    templateUrl: 'views/preciosProductos/vistaModificarFactura.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                             $scope.editar = {};
@@ -48131,11 +48131,11 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 var session=localStorageService.get("session");
                // console.log("session ",session);
                 var llavesMemoria = localStorageService.keys();
-                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat"];
+                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat","validacionEgresosDetalle"];
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
-
+console.log("key",key);
                     if (llavesPermanentes.indexOf(key) === -1) {
                         localStorageService.remove(key);
                     }
@@ -54050,7 +54050,7 @@ define('app',["angular",
     "httpinterceptor",
     "dragndropfile",
     "js/directive",
-    "controllers/PreciosProductos/RadicacionController",
+    "controllers/gestionFacturas/RadicacionController",
     "includes/validation/ValidacionNumeroDecimal",
     "includes/menu/menucontroller",
     "url",
@@ -54112,7 +54112,7 @@ define('app',["angular",
                 .state('Gestionfacturas', {
                     url: "/Gestionfacturas",
                     text: "Gestion Facturas",
-                    templateUrl: "views/PreciosProductos/radicacion.html",
+                    templateUrl: "views/preciosProductos/radicacion.html",
                     controller: "RadicacionController"
                 });
 

@@ -6,10 +6,178 @@ var ProductosModel = function() {
 // Autor:      : Camilo Orozco 
 // Descripcion : Validar si un producto existe o no en la base de datos
 // Calls       : OrdenesCompra -> OrdenesCompraController -> ordenCompraArchivoPlano();
-// 
-ProductosModel.prototype.validar_producto = function(codigo_producto, callback) {
+//
+ProductosModel.prototype.subeCosto_UpdateInventary = function(obj, callback) {
+    var empresa_id = obj.empresa_id;
+    var codigoBuscar = obj.producto_id;
+    var nuevo_precio = obj.nuevo_precio;
 
-    var sql = " select a. *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios_productos a where a.codigo_producto = :1 ";
+    if (codigoBuscar != undefined && codigoBuscar != '') {
+        codigoBuscar = codigoBuscar.toUpperCase();
+
+        var queryUpdateCosto = G.knex('inventarios')
+            .where('codigo_producto', '=', codigoBuscar)
+            .andWhere('empresa_id', '=', empresa_id)
+            .update({
+                costo: nuevo_precio,
+                costo_ultima_compra: nuevo_precio
+            });
+        // .orderBy('fecha_entrega', 'asc');
+        //  console.log(G.sqlformatter.format(query.toString()));
+        queryUpdateCosto.then(function (resultado) {
+            callback(false, resultado);
+        }).catch(function (err) {
+            console.log("err [listarAgrupar]:", err);
+            callback(err);
+        });
+    }
+};
+
+ProductosModel.prototype.subeCosto_SelecInventario = function(obj, callback) {
+    var empresa_id = obj.empresa_id;
+    var codigoBuscar = obj.producto_id;
+
+    if (codigoBuscar != undefined && codigoBuscar != '') {
+        codigoBuscar = codigoBuscar.toUpperCase();
+
+        var querySelecBeforeValues = G.knex.column(
+            G.knex.raw("fc_descripcion_producto(codigo_producto) as descripcion"),
+            'costo',
+            'existencia')
+            .select()
+            .from("inventarios")
+            .where('codigo_producto', '=', codigoBuscar)
+            .andWhere('empresa_id', '=', empresa_id);
+        // .orderBy('fecha_entrega', 'asc');
+        //  console.log(G.sqlformatter.format(query.toString()));
+        querySelecBeforeValues.then(function (resultado) {
+            callback(false, resultado);
+        }).catch(function (err) {
+            console.log("err [listarAgrupar]:", err);
+            callback(err);
+        });
+    }
+};
+
+ProductosModel.prototype.subeCosto_SelectBodDocNum = function(obj, callback) {
+    var empresa_id = obj.empresa_id;
+    var centro_id = obj.centro_id;
+    var bodega_id = obj.bodega_id;
+
+    var querySelecNumeracionDocumento = G.knex.column("numeracion")
+        .select()
+        .from("bodegas_doc_numeraciones")
+        .where('empresa_id', '=', empresa_id)
+        .andWhere('centro_utilidad', '=', centro_id)
+        .andWhere('bodega', '=', bodega_id)
+        .andWhere('tipo_doc_bodega_id', '=', obj.tipo_doc_general_id);
+    //console.log('Este es el SQL: ',G.sqlformatter.format(querySelecNumeracionDocumento.toString()));
+    querySelecNumeracionDocumento.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarAgrupar]:", err);
+        callback(err);
+    });
+};
+
+ProductosModel.prototype.subeCosto_InsertBodDocNum = function(obj, callback) {
+    var empresa_id = obj.empresa_id;
+    var centro_id = obj.centro_id;
+    var bodega_id = obj.bodega_id;
+
+    var querySelecNumeracionDocumento = G.knex.column("numeracion")
+        .select()
+        .from("bodegas_doc_numeraciones")
+        .where('empresa_id', '=', empresa_id)
+        .andWhere('centro_utilidad', '=', centro_id)
+        .andWhere('bodega', '=', bodega_id)
+        .andWhere('tipo_doc_bodega_id', '=', obj.tipo_doc_general_id);
+    //console.log('Este es el SQL: ',G.sqlformatter.format(querySelecNumeracionDocumento.toString()));
+    querySelecNumeracionDocumento.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarAgrupar]:", err);
+        callback(err);
+    });
+};
+
+ProductosModel.prototype.subeCosto_SelectDocuments = function(obj, callback) {
+    var tipo_doc_general_id = obj.tipo_doc_general_id;
+    var querySelecNumeracion = G.knex.column("numeracion", "documento_id", "prefijo")
+        .from("documentos")
+        .where('empresa_id', '=', obj.empresa_id)
+        .andWhere('tipo_doc_general_id', '=', tipo_doc_general_id);
+    //console.log('Este es el SQL: ',G.sqlformatter.format(querySelecNumeracion.toString()));
+    querySelecNumeracion.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarAgrupar]:", err);
+        callback(err);
+    });
+};
+
+ProductosModel.prototype.subeCosto_UpdateDocumentos = function(obj, callback) {
+    var queryUpdateNumeracion = G.knex('documentos')
+        .where('empresa_id', '=', obj.empresa_id)
+        .andWhere('tipo_doc_general_id', '=', obj.tipo_doc_general_id)
+        .andWhere('documento_id', '=', obj.documento_id)
+        .update({
+            numeracion: obj.nueva_numeracion
+        });
+    queryUpdateNumeracion.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarAgrupar]:", err);
+        callback(err);
+    });
+};
+
+ProductosModel.prototype.subeCosto_UpdateUrlDocumento = function(obj, callback) {
+    //console.log('Entro en funcion "subeCosto_UpdateUrlDocumento" con obj:', obj);
+    var ajuste_precio_id = obj.ajuste_precio_id;
+    var url_documento = obj.url_documento;
+
+    var UpdateUrlDocumento = G.knex('inv_bodegas_ajuste_precio')
+        .where('ajuste_precio_id', '=', ajuste_precio_id)
+        .update({
+            url_documento: url_documento
+        });
+    // .orderBy('fecha_entrega', 'asc');
+    // console.log(G.sqlformatter.format(UpdateUrlDocumento.toString()));
+    UpdateUrlDocumento.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarAgrupar]:", err);
+        callback(err);
+    });
+};
+
+ProductosModel.prototype.subeCosto_InsertInvBodAjusPrice = function(obj, callback) {
+    var insertAjustePrecio = G.knex('inv_bodegas_ajuste_precio')
+        .insert({
+            documento_id: obj.documento_id,
+            empresa_id: obj.empresa_id,
+            producto_id: obj.producto_id,
+            producto_cantidad: obj.producto_cantidad,
+            costo_anterior: obj.anterior_precio,
+            costo_asignado: obj.nuevo_precio,
+            total_diferencia: obj.total_diferencia,
+            justificacion: obj.justificacion,
+            aprobacion: obj.aprobacion,
+            fecha: obj.fecha_actual,
+            usuario_id: obj.usuario_id
+        }).returning('ajuste_precio_id');
+    //console.log(G.sqlformatter.format(insertAjustePrecio.toString()));
+    insertAjustePrecio.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarAgrupar]:", err);
+        callback(err);
+    });
+};
+
+ProductosModel.prototype.validar_producto = function(codigo_producto, callback) {
+   var sql = " select a. *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios_productos a where a.codigo_producto = :1 ";
     
    G.knex.raw(sql, {1:codigo_producto}).
    then(function(resultado){
@@ -377,7 +545,6 @@ ProductosModel.prototype.actualizarExistenciasProducto = function(params, callba
            console.log("error al actualizar existencias ", err);
            transaccion.rollback(err);
         });
-
     }).
     then(function(){
         callback(false);

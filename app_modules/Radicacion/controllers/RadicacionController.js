@@ -61,6 +61,23 @@ Radicacion.prototype.listarFactura = function (req, res) {
             done();
 
 };
+
+Radicacion.prototype.listarProducto = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(that.m_radicacion, "listarProducto").
+    then(function (resultado) {
+        res.send(G.utils.r(req.url, 'lista de Producto ok!!!!', 200, {listarProducto: resultado}));
+    }).
+    fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al listar Producto', 500, {listarProducto: {}}));
+    }).
+    done();
+
+};
+
+
 Radicacion.prototype.listarAgrupar = function (req, res) {
     var that = this;
     var args = req.body.data;
@@ -75,7 +92,6 @@ Radicacion.prototype.listarAgrupar = function (req, res) {
                 res.send(G.utils.r(req.url, 'Error al listar ', 500, {listarAgrupar: {}}));
             }).
             done();
-
 };
 
 Radicacion.prototype.eliminarGrupoFactura = function (req, res) {

@@ -99,23 +99,23 @@ define(["angular",
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
                                             <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)">\
-                                                <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'1\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}" >Modificar</a>\
+                                                <a href="javascripts:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'1\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}" >Modificar</a>\
                                             </li>\
-                                            <li  ng-if="row.entity.estado_actual_pedido != 11 "><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'2\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnVerPedido}}">Ver</a></li>\
+                                            <li  ng-if="row.entity.estado_actual_pedido != 11 "><a href="javascripts:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'2\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnVerPedido}}">Ver</a></li>\
                                             <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null) ||  row.entity.estado_actual_pedido == 8 || row.entity.estado_actual_pedido == 10">\
-                                                <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'3\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificacionEspecial}}" >Modificación Especial</a>\
+                                                <a href="javascripts:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'3\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificacionEspecial}}" >Modificación Especial</a>\
                                             </li>\
                                             <li ng-if="row.entity.getTieneDespacho()">\
-                                                <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
+                                                <a href="javascripts:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
                                             </li>\
 					     <li ng-if="row.entity.estado_actual_pedido== 0 && rootPedidosFarmacias.opciones.sw_anulacion_pedidos_farmacia">\
-                                                <a href="javascript:void(0);" ng-click="onAnularPedido(row.entity)">Anular</a>\
+                                                <a href="javascripts:void(0);" ng-click="onAnularPedido(row.entity)">Anular</a>\
                                             </li>\
                                             <li ng-if="false">\
-                                                <a href="javascript:void(0);" ng-click="ventanaEnviarEmail(row.entity)">Enviar Email</a>\
+                                                <a href="javascripts:void(0);" ng-click="ventanaEnviarEmail(row.entity)">Enviar Email</a>\
                                             </li>\
                                             <li ng-if="rootPedidosFarmacias.opciones.sw_consultar_logs">\
-                                                <a href="javascript:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
+                                                <a href="javascripts:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
                                             </li>\
                                         </ul>\n\
                                     </div>'

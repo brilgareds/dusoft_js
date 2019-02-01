@@ -187,7 +187,7 @@ PreciosProductosModel.prototype.listarDocumentosAjustes = function (obj, callbac
     }
     // console.log('Llegó este objeto: ',obj);
     // .orderBy('fecha_entrega', 'asc');
-    // console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
+     console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

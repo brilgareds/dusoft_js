@@ -82,7 +82,7 @@ function __generarReporteFactura(rows, callback) {
                 var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
                 var reporte = "/public/reports/" + nombre_reporte;
                 var reporte_imprimir = "/reports/" + nombre_reporte;
-                G.fs.writeFile('http://10.0.2.191' + G.dirname + reporte, body, "binary", function(err) {
+                G.fs.writeFile(G.dirname + reporte, body, "binary", function(err) {
                     //console.log('fine3 en funcion PDF',err);
                     console.log('dirname es: ',G.dirname);
                     if (err) {

@@ -526,13 +526,13 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                            <li ng-if="row.entity.get_estado_cotizacion() == \'0\' || row.entity.get_estado_cotizacion() == \'2\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_estado }}" ng-click="activarCotizacion(row.entity)" >Activar</a></li>\
-                                                <li ng-if="row.entity.get_estado_cotizacion() == \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_visualizar_cotizaciones }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
-                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_cotizaciones }}" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
-                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);"  ng-click="solicitarAutorizacion(row.entity)" >Solicitar autorizacion</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_reporte_cotizaciones }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_email_cotizaciones }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
+                                            <li ng-if="row.entity.get_estado_cotizacion() == \'0\' || row.entity.get_estado_cotizacion() == \'2\' " ><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_estado }}" ng-click="activarCotizacion(row.entity)" >Activar</a></li>\
+                                                <li ng-if="row.entity.get_estado_cotizacion() == \'0\' " ><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_visualizar_cotizaciones }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
+                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_cotizaciones }}" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascripts:void(0);"  ng-click="solicitarAutorizacion(row.entity)" >Solicitar autorizacion</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_reporte_cotizaciones }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_email_cotizaciones }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                             </ul>\
                                        </div>'
                     }
@@ -992,20 +992,20 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
-                                                <li ng-if="(row.entity.getEstadoActualPedido() == \'0\' || row.entity.getEstadoActualPedido() == \'8\') && row.entity.getEstado()!= 2 " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_modificar_pedidos }}" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
-                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
-                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_reporte_pedidos }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
-                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_email_pedidos }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
-                                                <li ng-if="row.entity.getEstadoFacturaFiscal() == 1"><a href="javascript:void(0);" ng-click="ventanaFacturasPedido(row.entity)" >Listar facturas</a></li>\
+                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
+                                                <li ng-if="(row.entity.getEstadoActualPedido() == \'0\' || row.entity.getEstadoActualPedido() == \'8\') && row.entity.getEstado()!= 2 " ><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_modificar_pedidos }}" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascripts:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
+                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_reporte_pedidos }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
+                                                <li ng-if="row.entity.getEstado()!=2"><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_email_pedidos }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
+                                                <li ng-if="row.entity.getEstadoFacturaFiscal() == 1"><a href="javascripts:void(0);" ng-click="ventanaFacturasPedido(row.entity)" >Listar facturas</a></li>\
                                                 <li ng-if="row.entity.getTieneDespacho()">\
-                                                <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
+                                                <a href="javascripts:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
                                             </li>\
                                              <li ng-if="row.entity.getEstado()!=2 && row.entity.getEstado()== 1 && row.entity.getEstadoActualPedido() == 0 && datos_view.opciones.sw_anulacion_pedidos_clientes">\
-                                                <a href="javascript:void(0);" ng-click="onAnularPedido(row.entity)">Anular Pedido</a>\
+                                                <a href="javascripts:void(0);" ng-click="onAnularPedido(row.entity)">Anular Pedido</a>\
                                             </li>\
                                              <li ng-if="datos_view.opciones.sw_consultar_logs">\
-                                                <a href="javascript:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
+                                                <a href="javascripts:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
                                             </li>\
                                             </ul>\
                                        </div>'

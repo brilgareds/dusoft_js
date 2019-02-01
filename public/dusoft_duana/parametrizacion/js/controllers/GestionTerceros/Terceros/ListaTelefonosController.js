@@ -36,10 +36,10 @@ define(["angular",
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
                                             <li>\
-                                                <a href="javascript:void(0);" ng-click="onEditarTelefono(row.entity)">Editar</a>\
+                                                <a href="javascripts:void(0);" ng-click="onEditarTelefono(row.entity)">Editar</a>\
                                             </li>\
                                             <li>\
-                                                <a href="javascript:void(0);" ng-click="onRemoverTelefono(row.entity)">Remover</a>\
+                                                <a href="javascripts:void(0);" ng-click="onRemoverTelefono(row.entity)">Remover</a>\
                                             </li>\
                                         </ul>\
                                     </div>'

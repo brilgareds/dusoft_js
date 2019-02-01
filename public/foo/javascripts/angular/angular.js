@@ -15310,13 +15310,13 @@ function FormController(element, attrs) {
  *
  * Since the role of forms in client-side Angular applications is different than in classical
  * roundtrip apps, it is desirable for the browser not to translate the form submission into a full
- * page reload that sends the data to the server. Instead some javascript logic should be triggered
+ * page reload that sends the data to the server. Instead some javascripts logic should be triggered
  * to handle the form submission in an application-specific way.
  *
  * For this reason, Angular prevents the default action (form submission to the server) unless the
  * `<form>` element has an `action` attribute specified.
  *
- * You can use one of the following two ways to specify what javascript method should be called when
+ * You can use one of the following two ways to specify what javascripts method should be called when
  * a form is submitted:
  *
  * - {@link ng.directive:ngSubmit ngSubmit} directive on the form element

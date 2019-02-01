@@ -195,16 +195,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                               <button class="btn btn-default btn-xs dropdown-toggle" ng-class="row.entity.tiene_pendientes? \'btn-danger\' : \'btn-success\'" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                               <ul class="dropdown-menu dropdown-options">\
                                 <li ng-if="row.entity.tiene_pendientes">\n\
-                                  <a href="javascript:void(0);" ng-click="dispensacionPendientes(row.entity.formula_id, row.entity.formula_papel, row.entity.tipo_id_paciente, row.entity.paciente_id, row.entity.plan_id, row.entity.plan_descripcion, row.entity.nombre_paciente, row.entity.fecha_formula)" class="glyphicon glyphicon-tasks">&nbsp;Pendientes</a>\
+                                  <a href="javascripts:void(0);" ng-click="dispensacionPendientes(row.entity.formula_id, row.entity.formula_papel, row.entity.tipo_id_paciente, row.entity.paciente_id, row.entity.plan_id, row.entity.plan_descripcion, row.entity.nombre_paciente, row.entity.fecha_formula)" class="glyphicon glyphicon-tasks">&nbsp;Pendientes</a>\
                                 </li>\
                                 <li ng-if="row.entity.tiene_pendientes">\n\
-                                  <a href="javascript:void(0);" ng-click="abrirModalRegistroLlamadas(row.entity)" class="glyphicon glyphicon-phone-alt">&nbsp;Registro llamadas</a>\
+                                  <a href="javascripts:void(0);" ng-click="abrirModalRegistroLlamadas(row.entity)" class="glyphicon glyphicon-phone-alt">&nbsp;Registro llamadas</a>\
                                 </li>\
                                 <li>\
-                                  <a href="javascript:void(0);" ng-click="imprimirTodoDispensado(row.entity.formula_id, false)" class="glyphicon glyphicon-print">&nbsp;Dispensados</a>\
+                                  <a href="javascripts:void(0);" ng-click="imprimirTodoDispensado(row.entity.formula_id, false)" class="glyphicon glyphicon-print">&nbsp;Dispensados</a>\
                                 </li>\
                                 <li ng-if="row.entity.tiene_pendientes">\
-                                  <a href="javascript:void(0);" ng-click="imprimirPendientes(row.entity.formula_id)" class="glyphicon glyphicon-print" ng-validate-events="{{habilitar_modificacion_producto()}}">&nbsp;Pendientes</a>\
+                                  <a href="javascripts:void(0);" ng-click="imprimirPendientes(row.entity.formula_id)" class="glyphicon glyphicon-print" ng-validate-events="{{habilitar_modificacion_producto()}}">&nbsp;Pendientes</a>\
                                 </li>\
                               </ul>\
                             </div>'

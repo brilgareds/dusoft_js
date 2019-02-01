@@ -211,8 +211,9 @@ if (cluster.isMaster) {
 
 */
     //crea servidor http
-    var app = express();    
+    var app = express();
     var server = app.listen(G.settings.server_port);
+    //console.log('Server en el Socket es: ',server);
     var container = intravenous.create();
     var io = require('socket.io').listen(server);
 

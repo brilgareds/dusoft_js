@@ -261,19 +261,19 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
-                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
-                                                <li ng-if="row.entity.estado == 6"><a href="javascript:void(0);" ng-click="onMostrarPendientes(row.entity)" >Ver pendientes</a></li>\
-                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
-                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity,0)" >Enviar por Email</a></li>\
-                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
-                                                <li ng-if="row.entity.getTotalArchivos() > 0"><a href="javascript:void(0);" ng-click="onMostrarArchivosAdjuntos(row.entity)" >Archivos adjuntos</a></li>\
-                                                    <li ng-if="opciones.sw_bloquear_orden && row.entity.estado != 5"><a href="javascript:void(0);" \
+                                                <li ng-if="row.entity.estado != 5"><a href="javascripts:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascripts:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.estado == 6"><a href="javascripts:void(0);" ng-click="onMostrarPendientes(row.entity)" >Ver pendientes</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascripts:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascripts:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity,0)" >Enviar por Email</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascripts:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
+                                                <li ng-if="row.entity.getTotalArchivos() > 0"><a href="javascripts:void(0);" ng-click="onMostrarArchivosAdjuntos(row.entity)" >Archivos adjuntos</a></li>\
+                                                    <li ng-if="opciones.sw_bloquear_orden && row.entity.estado != 5"><a href="javascripts:void(0);" \
                                                         ng-click="onCambiarEstadoOrden(row.entity, 5)">Bloquear OC</a></li>\
-                                                <li ng-if="opciones.sw_bloquear_orden && row.entity.estado == 5"><a href="javascript:void(0);" \
+                                                <li ng-if="opciones.sw_bloquear_orden && row.entity.estado == 5"><a href="javascripts:void(0);" \
                                                     ng-click="onCambiarEstadoOrden(row.entity, 1)">Desbloquear OC</a></li>\
-                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="onCambiarEstadoOrden(row.entity, 2)">Anular OC</a></li>\
-                                                <li ><a href="javascript:void(0);" ng-click="onVerLogOrdenCompra(row.entity)">Logs OC</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascripts:void(0);" ng-click="onCambiarEstadoOrden(row.entity, 2)">Anular OC</a></li>\
+                                                <li ><a href="javascripts:void(0);" ng-click="onVerLogOrdenCompra(row.entity)">Logs OC</a></li>\
                                             </ul>\
                                         </div>'
                     }

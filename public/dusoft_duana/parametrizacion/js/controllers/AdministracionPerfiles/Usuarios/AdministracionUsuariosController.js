@@ -93,8 +93,8 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown"> <span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options grid-sm-options">\
-                                                <li><a href="javascript:void(0);" ng-click="seleccionarCentroUtilidad(row.entity);" >Listar Bodegas</a></li>\
-                                                <li ng-if="row.entity.estado"><a href="javascript:void(0);" ng-click="removerCentroUtilidad(row.entity);" >Remover</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-click="seleccionarCentroUtilidad(row.entity);" >Listar Bodegas</a></li>\
+                                                <li ng-if="row.entity.estado"><a href="javascripts:void(0);" ng-click="removerCentroUtilidad(row.entity);" >Remover</a></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -120,8 +120,8 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown"> <span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options grid-sm-options">\
-                                                <li ng-if="!row.entity.estado"><a href="javascript:void(0);" ng-click="onSeleccionarBodega(row.entity);" >Seleccionar</a></li>\
-                                                <li ng-if="row.entity.estado"><a href="javascript:void(0);" ng-click="removerBodega(row.entity);" >Remover</a></li>\
+                                                <li ng-if="!row.entity.estado"><a href="javascripts:void(0);" ng-click="onSeleccionarBodega(row.entity);" >Seleccionar</a></li>\
+                                                <li ng-if="row.entity.estado"><a href="javascripts:void(0);" ng-click="removerBodega(row.entity);" >Remover</a></li>\
                                             </ul>\
                                         </div>'
                     }

@@ -121,6 +121,7 @@ PreciosProductosModel.prototype.listarDocumentosAjustes = function (obj, callbac
                 'c.empresa_id',
                 'c.ajuste_precio_id	',
                 'c.url_documento',
+                'c.usuario_id',
                 'd.prefijo',
                 'd.numeracion'
             ])
@@ -176,6 +177,7 @@ PreciosProductosModel.prototype.listarDocumentosAjustes = function (obj, callbac
                 'a.empresa_id',
                 'a.ajuste_precio_id	',
                 'a.url_documento',
+                'a.usuario_id',
                 'b.prefijo',
                 'b.numeracion'
             ])

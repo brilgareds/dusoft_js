@@ -320,7 +320,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.despachoId = data.obj.validacionDespachos.id_aprobacion_planillas;
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         //$state.go('ValidacionEgresos');
-
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
@@ -391,7 +390,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             * @fecha 2016-12-26
             */
             $scope.subirArchivo = function(files) {
-                
+                console.log('Inicio funcion "subirArchivo"');
                 var fd = new FormData();
                 fd.append("file", files[0]);
                 fd.append("session", JSON.stringify($scope.session));
@@ -404,18 +403,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 ));
-                
+
+                //console.log('Objeto enviado por ajax: ', fd);
                 
                 Request.subirArchivo(API.VALIDACIONDESPACHOS.ADJUNTAR_IMAGEN, fd, function(respuesta) {
-                    
+
+                    console.log('Ajax response: '+ respuesta.status + '!!! respuesta es: ',respuesta);
+
                     if(respuesta.status === 200){
                         that.listarImagenes(function(){
                             
                         });
                     } else {
-
+                        alert(respuesta.msj);
                     }
-                    
                 });
             };
             
@@ -425,6 +426,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * +Descripcion Permite listar las imagenes de una aprobacion
              */
             that.listarImagenes = function (callback) {
+                console.log('entry in function "listarImagenes"');
                 $scope.documentoDespachoAprobado.vaciarImagenes();
                 ValidacionDespachosService.listarImagenes($scope.session, $scope.despachoId, function (data) {
 

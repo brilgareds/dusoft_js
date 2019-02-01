@@ -1,0 +1,96 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">  
+                        <h4 class="h4MarginTopBottom"><span >Modificar Factura</span> </h4>
+                    </div>
+                </div> 
+            </div> 
+            <div class="panel-body">
+                <div class="row"> 
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                        <label class="col-md-12  control-label" >No. factura</label>
+                        <legend></legend>
+                        <input type="text" class="form-control" ng-model="editar.numeroFactura" id="colFmLabelSm" placeholder="Digite el numero de factura">
+                    </div>
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                        <label class="col-md-4  control-label" >Ciudad</label>
+                        <legend></legend>
+                        <ui-select ng-model="editar.farmaciaSeleccionada" theme="select2" class="form-control selectgeneral pull-left col-md-8" >
+                            <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.nombre_ciudad}}</ui-select-match>
+                            <ui-select-choices refresh="consultarMunicipio($select.search)" refresh-delay="0" repeat="filtro in root.municipio | filter:$select.search">
+                                {{ filtro.nombre_ciudad}}
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>   
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                        <label class="col-md-12  control-label" >Proveedor</label>
+                        <legend></legend>
+                        <ui-select ng-model="editar.conceptoSeleccionado"
+                                   theme="select2"
+                                   class="form-control selectgeneral pull-left col-md-8"
+                                   ng-change="onSeleccionConcepto()"
+                                   >
+                            <ui-select-match  placeholder="Seleccionar Concepto">{{ $select.selected.observacion}}</ui-select-match>
+                            <ui-select-choices refresh="onSeleccionConcepto()"  refresh-delay="0"  repeat="filtros in editar.concepto | filter:$select.search">
+                                {{ filtros.observacion}}
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+                <br>
+                <div class="row"> 
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                        <label class="col-md-12  control-label">Precio</label>
+                        <legend></legend>
+                        <input type="text" class="form-control" validacion-numero-decimal ng-model="editar.precioSeleccionado" id="formGroupExampleInput" placeholder="Digite el precio">
+                    </div>
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                        <label class="col-md-12  control-label">Concepto</label>
+                        <legend></legend>
+                        <input type="text" class="form-control" ng-model="editar.conceptooSeleccionado" id="formGroupExampleInput" placeholder="Digite el concepto">
+                    </div>
+                    <div class="col-xs-4 col-sm-4 col-md-4">
+                        <label class="col-md-12  control-label">Fecha Entrega</label>
+                        <legend></legend>
+                        <p class="input-group">
+                            <input type="text" class="form-control readonlyinput" 
+                                   datepicker-popup="{{format}}" 
+                                   ng-model="editar.fecha_entrega" 
+                                   is-open="abrir_fecha_editar" 
+                                   min="minDate"   
+                                   readonly  close-text="Cerrar" 
+                                   ng-change="" 
+                                   clear-text="Borrar" 
+                                   current-text="Hoy" 
+                                   placeholder="Fecha Inicial" 
+                                   show-weeks="false" 
+                                   toggle-weeks-text="#"  />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" ng-click="abrir_fecha_inicial_editar($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>            
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">   
+                        <label class="col-md-12 control-label">Cargar Archivo</label>
+                        <legend></legend>        
+                        <div>
+                            <div class="input-group form-group">
+                                <input title="Adjuntar archivo" type="file" ng-model="editar.cargarArchivo" class="uploadChat" onchange="angular.element(this).scope().onArchivoSeleccionado(this.files)" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-md" ng-click="cancelar()">Cancelar</button>
+                <button type="button" class="btn btn-success btn-md" ng-click="onEditarFactura()" >Guardar</button>
+            </div>
+        </div>
+    </div>
+</div> 
+<visualizar-reporte></visualizar-reporte>

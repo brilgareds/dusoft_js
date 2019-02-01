@@ -48,9 +48,9 @@ define(["angular",
                         cellTemplate: '<div class="btn-group">\
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
-                                            <li><a href="javascript:void(0);" ng-click="onEditarPedidoTemporal(row.entity)" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}">Modificar</a></li>\
+                                            <li><a href="javascripts:void(0);" ng-click="onEditarPedidoTemporal(row.entity)" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}">Modificar</a></li>\
                                             <li class="divider"></li>\
-                                            <li><a href="javascript:void(0);" ng-validate-events="{{root.servicio.getOpcionesModulo(row.entity).btnEliminarPedidoTemporal}}" ng-click="onEliminarPedidoTemporal(row.entity, row.entity)" >Eliminar</a></li>\
+                                            <li><a href="javascripts:void(0);" ng-validate-events="{{root.servicio.getOpcionesModulo(row.entity).btnEliminarPedidoTemporal}}" ng-click="onEliminarPedidoTemporal(row.entity, row.entity)" >Eliminar</a></li>\
                                         </ul>\n\
                                         </div>'
                     }

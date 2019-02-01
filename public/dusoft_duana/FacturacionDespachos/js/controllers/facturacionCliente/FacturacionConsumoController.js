@@ -240,13 +240,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
                                 <li ng-if="row.entity.getEstadoFacturacion() == 0">\
-                                   <a href="javascript:void(0);" ng-click="detalleFacturaTemporal(row.entity)" class= "glyphicon glyphicon-edit"> Modificar </a>\
+                                   <a href="javascripts:void(0);" ng-click="detalleFacturaTemporal(row.entity)" class= "glyphicon glyphicon-edit"> Modificar </a>\
                                 </li>\
                                 <li ng-if="row.entity.getEstadoFacturacion() == 0">\
-                                   <a href="javascript:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
+                                   <a href="javascripts:void(0);" ng-click="btn_eliminar_temporal(row.entity)" class= "glyphicon glyphicon-trash"> Eliminar </a>\
                                 </li>\
                                 <li ng-if="row.entity.getEstadoFacturacion() == 1 ">\
-                                   <a href="javascript:void(0);" ng-click="imprimirReporteFactura(row.entity)" class = "glyphicon glyphicon-print"> factura </a>\
+                                   <a href="javascripts:void(0);" ng-click="imprimirReporteFactura(row.entity)" class = "glyphicon glyphicon-print"> factura </a>\
                                 </li>\
                            </ul>\
                       </div>'

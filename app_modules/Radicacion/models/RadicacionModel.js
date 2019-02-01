@@ -60,36 +60,21 @@ RadicacionModel.prototype.listarFactura = function (callback) {
 RadicacionModel.prototype.listarAgrupar = function (obj, callback) {
 
     var query = G.knex.column(
-             'a.relacion_id',
-             'c.municipio',
-             'b.numero_factura',
+             'a.codigo_producto',
              'b.descripcion',
-              G.knex.raw("to_char(b.fecha_entrega,'DD/MM/YYYY') as fecha_entrega"),
-             'a.imprimir',
+             'a.costo',
+             'a.costo_ultima_compra',
+             'a.existencia',
              'a.archivo',
              'a.factura_id',
              'b.sw_entregado',
              'b.ruta')
             .select()
-            .from("agrupar_factura as a")
-            .innerJoin("factura as b", "a.factura_id", "b.factura_id")
-            .innerJoin("tipo_mpios as c",
-            
-                   function () {
-                        this.on("b.tipo_mpio_id", "c.tipo_mpio_id")
-                                .on("b.tipo_dpto_id", "c.tipo_dpto_id")
-                                .on("b.tipo_pais_id", "c.tipo_pais_id")
-                                
-                    })
-            .where(function () {
-                if (obj.relacion_id !== undefined) {
-                    this.andWhere("a.relacion_id", obj.relacion_id)
-                }
-            }).orderBy("a.relacion_id");
-
-
+            .from("inventarios AS a")
+            .innerJoin("inventarios_productos as b", "a.codigo_producto", "b.codigo_producto")
+            .orderBy('a.codigo_producto');
     // .orderBy('fecha_entrega', 'asc');
-//    console.log(G.sqlformatter.format(query.toString()));
+    //  console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -98,8 +83,6 @@ RadicacionModel.prototype.listarAgrupar = function (obj, callback) {
     });
 
 };
-
-
 
 
 RadicacionModel.prototype.guardarConcepto = function (obj, callback) {

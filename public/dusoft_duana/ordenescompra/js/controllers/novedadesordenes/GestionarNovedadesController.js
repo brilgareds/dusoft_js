@@ -300,9 +300,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         cellTemplate:'<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="novedades_producto_orden_compra(row, true);" >Agregar Novedad</a></li>\
-                                                <li ng-if="row.entity.get_novedad().get_id() != \'\' " ><a href="javascript:void(0);" ng-click="novedades_producto_orden_compra(row)" >Modificar</a></li>\
-                                                <li ng-if="row.entity.get_novedad().get_id() != \'\'"><a href="javascript:void(0);" ng-click="onEliminarNovedad(row.entity,0)" >Eliminar</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-click="novedades_producto_orden_compra(row, true);" >Agregar Novedad</a></li>\
+                                                <li ng-if="row.entity.get_novedad().get_id() != \'\' " ><a href="javascripts:void(0);" ng-click="novedades_producto_orden_compra(row)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.get_novedad().get_id() != \'\'"><a href="javascripts:void(0);" ng-click="onEliminarNovedad(row.entity,0)" >Eliminar</a></li>\
                                             </ul>\
                                         </div>' }
                 ]

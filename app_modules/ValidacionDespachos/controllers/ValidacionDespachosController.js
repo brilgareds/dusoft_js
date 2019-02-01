@@ -162,28 +162,21 @@ ValidacionDespachos.prototype.adjuntarImagen = function(req, res) {
         G.Q.nfcall(G.fs.copy, rutaTmp, rutaNueva).then(function() {
             return  G.Q.nfcall(G.fs.unlink, rutaTmp);
         }).then(function() {
-            
             var obj = {
                 id_aprobacion : aprobacion,
                 path : prefijo + "-" + numero + "/" + file.name
             };
-            
             return G.Q.ninvoke(that.m_ValidacionDespachos, 'agregarImagen', obj)
-            
         }).then(function(){
             res.send(G.utils.r(req.url, 'Imagen guardada', 200, {validacionDespachos: {}}));
-            
         }).fail(function(err) {
             G.fs.unlinkSync(rutaNueva);
             res.send(G.utils.r(req.url, 'Error guardando la imagen', 500, {validacionDespachos: {}}));
         }).done();
-
     } else {
         res.send(G.utils.r(req.url, 'Error guardando la imagen', 500, {validacionDespachos: {}}));
     }
-
 };
-
 
 /**
  * @author Eduar Garcia
@@ -191,38 +184,27 @@ ValidacionDespachos.prototype.adjuntarImagen = function(req, res) {
  * +Descripcion Metodo para eliminar una imagen de la aprobacion
  */
 ValidacionDespachos.prototype.eliminarImagen = function(req, res) {
-   
-
     var that = this;
-
-    var args = req.body.data;    
-
+    var args = req.body.data;
     if (args.validacionDespachos === undefined) {
         res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
         return;
     }
-
     if (!args.validacionDespachos.id || !args.validacionDespachos.path) {
         res.send(G.utils.r(req.url, 'Algunos campos obligatorios estan vacios ', 404, {}));
         return;
     }
-
-    var id = args.validacionDespachos.id; 
+    var id = args.validacionDespachos.id;
     var path = args.validacionDespachos.path;
-
     G.Q.ninvoke(that.m_ValidacionDespachos, 'eliminarImagen', {id:id}).then(function(resultado) {
         var rutaNueva = G.dirname + G.settings.carpeta_aprobacion_despachos + path;
         G.fs.unlinkSync(rutaNueva);
         return res.send(G.utils.r(req.url, 'Eliminacion exitosa', 200, {imagenes: resultado}));
-
     }).fail(function(err) {
         console.log("error generado ", err);
         res.send(G.utils.r(req.url, 'Error al eliminar la imagen', 500, {validacionDespachos: {}}));
-
     }).done();
-
 };
-
 
 /*
  * funcion para consultar empresas
@@ -231,7 +213,6 @@ ValidacionDespachos.prototype.eliminarImagen = function(req, res) {
  * @returns {datos de consulta}
  */
 ValidacionDespachos.prototype.listarEmpresas = function(req, res) {
-
     var that = this;
     var args = req.body.data;
     var empresa = args.listar_empresas.empresaName;
@@ -258,27 +239,21 @@ ValidacionDespachos.prototype.listarEmpresas = function(req, res) {
  * @returns {unresolved}
  */
 ValidacionDespachos.prototype.registrarAprobacion = function(req, res) {
-
     var that = this;
-
     var args = req.body.data;
 
     if (args.validacionDespachos === undefined) {
         res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
         return;
     }
-
-
     if (args.validacionDespachos.empresa_id === undefined || args.validacionDespachos.empresa_id === '') {
         res.send(G.utils.r(req.url, 'El id de la empresa no esta definido o esta vacio', 404, {}));
         return;
     }
-
     if (args.validacionDespachos.prefijo === undefined || args.validacionDespachos.prefijo === '') {
         res.send(G.utils.r(req.url, 'El prefijo no esta definido o esta vacio', 404, {}));
         return;
     }
-
     if (args.validacionDespachos.numero === undefined || args.validacionDespachos.numero === '') {
         res.send(G.utils.r(req.url, 'El numero no esta definido o esta vacio', 404, {}));
         return;
@@ -291,13 +266,10 @@ ValidacionDespachos.prototype.registrarAprobacion = function(req, res) {
         res.send(G.utils.r(req.url, 'La cantidad de cajas y neveras no deben estar en cero', 404, {}));
         return;
     }
-    
     if (args.validacionDespachos.cantidad_neveras === undefined || args.validacionDespachos.cantidad_neveras === '') {
         res.send(G.utils.r(req.url, 'La cantidad de neveras no esta definido o esta vacio', 404, {}));
         return;
     }
-    
-    
     if (args.validacionDespachos.observacion === undefined || args.validacionDespachos.observacion === '') {
         res.send(G.utils.r(req.url, 'La observacion no esta definido o esta vacio', 404, {}));
         return;
@@ -326,17 +298,11 @@ ValidacionDespachos.prototype.registrarAprobacion = function(req, res) {
         usuario_id: req.session.user.usuario_id
     };
 
-
     G.Q.ninvoke(that.m_ValidacionDespachos, 'registrarAprobacion', obj).then(function(resultado) {
-
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {validacionDespachos: resultado}));
-
     }).fail(function(err) {
-
         res.send(G.utils.r(req.url, 'Error en el registro', 500, {validacionDespachos: {}}));
-
     }).done();
-
 };
 
 
@@ -347,16 +313,11 @@ ValidacionDespachos.prototype.listarDocumentosOtrasSalidas = function(req,res){
     var obj = {
         termino_busqueda:args.validacionDespachos.termino_busqueda || ""
     };
-   
     
     G.Q.ninvoke(that.m_ValidacionDespachos, 'listarDocumentosOtrasSalidas', obj).then(function(resultado) {
-
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {documentos: resultado}));
-
     }).fail(function(err) {
-
         res.send(G.utils.r(req.url, 'Error en el registro', 500, {documentos: {}}));
-
     }).done();
 };
 

@@ -75,20 +75,20 @@ define(["angular",
                         .state('AutorizacionesProductos', {
                     url: "/AutorizacionesProductos",
                     text: "Autorizaciones Productos",
-                    templateUrl: "views/productosPedidos/listarPedidos.html",
+                    templateUrl: "views/productosPrecios/actualizar.html",
                     controller: "ProductosPedidosController"
                 }).
                         state('AutorizacionesDetalle', {
                     url: "/AutorizacionesDetalle",
                     text: "Autorizaciones Detalle",
-                    templateUrl: "views/productosPedidos/listarPedidoDetalle.html",
+                    templateUrl: "views/productosPrecios/listarPedidoDetalle.html",
                     parent_name: "AutorizacionesProductos",
                     controller: "AutorizacionDetalleController"
                 }).
                         state('DetalleVerificacion', {
                     url: "/DetalleVerificacion",
                     text: "Detalle de Verificacion",
-                    templateUrl: "views/productosPedidos/listarDetalleVerificacion.html",
+                    templateUrl: "views/productosPrecios/listarDetalleVerificacion.html",
                     parent_name: "AutorizacionesProductos",
                     controller: "DetalleVerificacionController"
                 });

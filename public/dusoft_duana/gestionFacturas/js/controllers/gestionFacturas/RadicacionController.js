@@ -247,7 +247,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     windowClass: 'app-modal-window-ls-xlg-ls',
                     keyboard: false,
                     showFilter: true,
-                    templateUrl: 'views/gestionFacturas/modificarEntregado.html',
+                    templateUrl: 'views/preciosProductos/modificarEntregado.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                             $scope.modificar = {};
@@ -539,7 +539,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
-                    templateUrl: 'views/gestionFacturas/vistaConceptos.html',
+                    templateUrl: 'views/preciosProductos/vistaConceptos.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
@@ -592,7 +592,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
-                    templateUrl: 'views/gestionFacturas/agrupaFactura.html',
+                    templateUrl: 'views/preciosProductos/agrupaFactura.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                             $scope.agrupar = {};
@@ -685,7 +685,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
-                    templateUrl: 'views/gestionFacturas/vistaModificarFactura.html',
+                    templateUrl: 'views/preciosProductos/vistaModificarFactura.html',
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                             $scope.editar = {};

@@ -132,9 +132,9 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="onAbrirVentanaAutorizacionOrdenesCompras(row.entity,1);" >Autorizar</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-click="onAbrirVentanaAutorizacionOrdenesCompras(row.entity,1);" >Autorizar</a></li>\
                                                 <li class="divider"></li>\
-                                                <li><a href="javascript:void(0);" ng-click="onAbrirVentanaAutorizacionOrdenesCompras(row.entity,0);" >No Autorizar</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-click="onAbrirVentanaAutorizacionOrdenesCompras(row.entity,0);" >No Autorizar</a></li>\
                                             </ul>\
                                         </div>'
                     }

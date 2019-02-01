@@ -373,10 +373,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         });
                     }
                 }
+                console.log("documento ",documento);
+                if (documento !== null){
                 if (documento.estado === 2) {
                     // $scope.datos_view.seleccionarOtros = false;
                     $scope.datos_view.estadoRegistro = 2;
                 }
+               }else{
+                   $scope.datos_view.estadoRegistro=1;
+               }
             };
             
           /**

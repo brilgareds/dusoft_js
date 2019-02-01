@@ -405,21 +405,45 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedido = function(req, res) {
  *     }
  */
 
-PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
-
+PedidosFarmacias.prototype.asignarResponsablesPedidoAutomatico = function(req, callback) {
     var that = this;
+    G.Q.nfcall(__asignarResponsablesPedido,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+};
 
+PedidosFarmacias.prototype.asignarResponsablesPedido= function(req, res) {
+    var that = this;
+    G.Q.nfcall(__asignarResponsablesPedido,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("listarGetDocTemporal ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();    
+};
+
+function __asignarResponsablesPedido(req,that, callback) {
+    var send = {};
     var args = req.body.data;
 
     if (args.asignacion_pedidos === undefined || args.asignacion_pedidos.pedidos === undefined || args.asignacion_pedidos.estado_pedido === undefined || args.asignacion_pedidos.responsable === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+//        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        send.msj='Algunos Datos Obligatorios No Estan Definidos';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);;
         return;
     }
 
     var params = args.asignacion_pedidos;
 
     if (params.pedidos.length === 0 || params.estado_pedido === "" || params.responsable === "") {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
+        send.msj='Algunos Datos Obligatorios No Estan Definidos';
+        send.status=404;
+        send.respuesta={};
+        callback(false,send);;
         return;
     }
 
@@ -457,7 +481,12 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
                 }
                 // Notificar al operario, los pedidos Asignados en Real Time
                 that.e_pedidos_farmacias.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
-                res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
+//                res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
+                send.msj='Asignacion de Resposables';
+                send.status=200;
+                send.respuesta={};
+                callback(false,send);
+                return;
             }
             
         }).fail(function(err){
@@ -468,7 +497,13 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
                 err.msj = "Se ha generado un error..";
             }
             
-            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+//            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+                send.msj=err.msj;
+                send.status=err.status;
+                send.respuesta={};
+                callback(false,send);
+                return;
+            
         }).done();
        
     });

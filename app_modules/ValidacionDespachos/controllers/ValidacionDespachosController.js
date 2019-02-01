@@ -151,7 +151,7 @@ ValidacionDespachos.prototype.adjuntarImagen = function(req, res) {
         return;
     }
 
-    var aprobacion = args.validacionDespachos.id_aprobacion; 
+    var aprobacion = args.validacionDespachos.id_aprobacion;
     var prefijo = args.validacionDespachos.prefijo;
     var numero = args.validacionDespachos.numero;
     var file = req.files.file;

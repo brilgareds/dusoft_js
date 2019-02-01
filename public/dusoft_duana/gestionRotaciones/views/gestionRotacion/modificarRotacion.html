@@ -1,0 +1,84 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <button type="button" class="close" ng-click="cancelar()">&times;</button>
+                <h4 class="h4MarginTopBottom"><span >EDITAR INFORMACIÓN</span> </h4>
+            </div> 
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-4 col-sm-8 col-md-6">
+                        <label class="col-md-12  control-label" >EMPRESA</label>
+                        <input type="text" class="form-control" ng-model="editar.empresaSeleccionada.razon_social" ng-disabled="true"  placeholder="Ingrese nombre de dispositivo">
+                 
+                    </div>
+               
+                    <div class="col-xs-4 col-sm-8 col-md-6">
+                        <label class="col-md-12  control-label">FARMACIA</label>
+                        <input type="text" class="form-control" ng-model="editar.farmaciaSeleccionada.descripcion" ng-disabled="true" placeholder="Ingrese serial de dispositivo">
+                    </div>
+               </div>
+                    
+                <div class="row"> 
+                    <div class="col-xs-4 col-sm-8 col-md-6">
+                        <label class="col-md-12  control-label">ZONA</label>
+                            <input type="text" class="form-control" ng-model="editar.zonaSeleccionada.descripcion" ng-disabled="true"  placeholder="Ingrese modelo de dispositivo">
+                </div>
+                    
+                    
+                              <div class="col-xs-4 col-sm-8 col-md-6">
+                        <label class="col-md-12  control-label">FECHA ROTACIÓN</label>
+                        <p class="input-group">
+                            <input type="text" class="form-control readonlyinput" 
+                                   datepicker-popup="{{format}}"
+                                   ng-model="editar.fecha_rotacion" 
+                                   is-open="abrir_fecha_rotacion" 
+                                   max-date="maxDate"    
+                                   readonly  close-text="Cerrar" 
+                                   ng-change="" 
+                                   clear-text="Borrar" 
+                                   current-text="Hoy" 
+                                   placeholder="FECHA ROTACIÓN" 
+                                   show-weeks="false" 
+                                   toggle-weeks-text="#"  />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" ng-click="abrir_fecha_rotacion_editar($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>            
+                        </p>
+                    </div>
+                    </div>    
+                    
+                    <div class="row">
+                              <div class="col-xs-4 col-sm-8 col-md-6">
+                        <label class="col-md-12  control-label">FECHA DIGITACIÓN</label>
+                        <p class="input-group">
+                            <input type="text" class="form-control readonlyinput" 
+                                   datepicker-popup="{{format}}" 
+                                   uib-datepicker-popup="dd/MM/yyyy" 
+                                   ng-model="editar.fecha_digitacion" 
+                                   is-open="abrir_fecha_digitacion" 
+                                   max-date="maxDate"    
+                                   readonly  close-text="Cerrar" 
+                                   ng-change="" 
+                                   clear-text="Borrar" 
+                                   current-text="Hoy" 
+                                   placeholder="FECHA DIGITACIÓN" 
+                                   show-weeks="false" 
+                                   toggle-weeks-text="#"  />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" ng-click="abrir_fecha_digitacion_editar($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>            
+                        </p>
+                    </div>
+                    </div>    
+ 
+                </div>
+
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-basic btn-md" ng-click="cancelar()">CANCELAR</button>
+                <button type="button" class="btn btn-primary btn-md" ng-click="onModificarRotacion()" >ACTUALIZAR INFORMACIÓN</button>
+            </div>
+            </div>
+        </div>
+    </div>

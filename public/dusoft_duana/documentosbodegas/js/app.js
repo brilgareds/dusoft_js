@@ -61,6 +61,8 @@ define([
     "models/I012/Clientes",
     "models/I015/ProductoI015",
     "models/I015/DocumentoI015",
+    "models/I008/ProductoI008",
+    "models/I008/DocumentoI008",
     "models/Index/TipoDocumentos",
     "models/Index/EmpresaDocumento",
     "models/Index/DocumentoBodega",
@@ -83,6 +85,7 @@ define([
     "controllers/I007/I007Controller",
     "controllers/I007/I007GestionarTercerosController",
     "controllers/I007/I007GestionarProductosController",
+    "controllers/I008/I008Controller",
     "controllers/I011/I011Controller",
     "controllers/I011/ModificarProductoController",
     "controllers/I012/I012Controller",
@@ -94,6 +97,7 @@ define([
     "services/E009/E009Service",
     "services/E017/E017Service",
     "services/I007/I007Service",
+    "services/I008/I008Service",
     "services/I011/I011Service",
     "services/I012/I012Service",
     "services/I015/I015Service",
@@ -184,6 +188,15 @@ define([
                     templateUrl: "views/I007/index.html",
                     parent_name: "DocumentosBodegas",
                     controller: 'I007Controller'
+                });
+                
+                // I008 
+                documentos_bodegas.stateProvider.state('I008', {
+                    url: "/I008",
+                    text: "Administración Documentos de Bodega [I008]",
+                    templateUrl: "views/I008/index.html",
+                    parent_name: "DocumentosBodegas",
+                    controller: 'I008Controller'
                 });
 
                 // I0011 

@@ -654,7 +654,6 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
 
 function __creaExcel(data, callback) {
     
-    console.log("__creaExcel");
     
     var workbook = new G.Excel.Workbook();
     var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
@@ -1002,19 +1001,8 @@ function __creaExcelFarmacias(data,farmacias, callback) {
 
     var style = {font: font, border: border, alignment: alignment};
 
-//    worksheet.getCell('A1').style = style;
-//    worksheet.getCell('B1').style = style;
-//    worksheet.getCell('C1').style = style;
-//    worksheet.getCell('D1').style = style;
-//    worksheet.getCell('E1').style = style;
-//    worksheet.getCell('F1').style = style;
-//    worksheet.getCell('G1').style = style;
-//    worksheet.getCell('H1').style = style;
-//    worksheet.getCell('I1').style = style;
-//    worksheet.getCell('J1').style = style;
-//    worksheet.getCell('K1').style = style;
     workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
-        console.log("saved");
+        
         callback(false, data.nameArchivo);
         return;
     });

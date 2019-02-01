@@ -21,6 +21,7 @@ define(["angular"], function(angular) {
                  "IMPRIMIR_REPORTE_PEDIDO": BASE_URL + "/FacturacionClientes/generarReportePedido",
                  "IMPRIMIR_REPORTE_DESPACHO": BASE_URL + "/FacturacionClientes/generarReporteDespacho",
                  "IMPRIMIR_REPORTE_FACTURA": BASE_URL + "/FacturacionClientes/generarReporteFacturaGenerada",
+                 "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/FacturacionClientes/generarReporteFacturaGeneradaDian",
                  "SINCRONIZAR_FI": BASE_URL + "/FacturacionClientes/sincronizarFactura",
                  "PROCESAR_DESPACHOS": BASE_URL + "/FacturacionClientes/procesarDespachos",
                  "FACTURAS_EN_PROCESO": BASE_URL + "/FacturacionClientes/procesosFacturacion",
@@ -59,7 +60,6 @@ define(["angular"], function(angular) {
                 "GUARDAR_FACTURA_CAJA_GENERAL": BASE_URL + "/CajaGeneral/guardarFacturaCajaGenral",
                 "LISTAR_FACTURAS_GENERADAS_NOTAS": BASE_URL + "/CajaGeneral/listarFacturasGeneradasNotas",
                 "IMPRIMIR_FACTURA_NOTAS": BASE_URL + "/CajaGeneral/imprimirFacturaNotas",
-                "IMPRIMIR_FACTURA_NOTAS_DETALLE": BASE_URL + "/CajaGeneral/imprimirFacturaNotasDetalle",
                 "IMPRIMIR_NOTA": BASE_URL + "/CajaGeneral/imprimirNota",
                 "SINCRONIZAR_FACTURA_NOTAS": BASE_URL + "/CajaGeneral/sincronizarFacturaNotas",
                 "LISTAR_PREFIJOS": BASE_URL + "/CajaGeneral/listarPrefijos",
@@ -68,7 +68,8 @@ define(["angular"], function(angular) {
                 "LISTAR_IMPUESTOS_TERCERO": BASE_URL + "/CajaGeneral/consultarImpuestosTercero",
                 "LISTAR_NOTAS": BASE_URL + "/CajaGeneral/listarNotas",
                 "GENERAR_SINCRONIZACION_DIAN_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDian",
-                "GENERAR_SINCRONIZACION_DIAN_NOTA_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDianNota"
+                "GENERAR_SINCRONIZACION_DIAN_NOTA_SERVICIO" : BASE_URL + "/CajaGeneral/generarSincronizacionDianNota",
+                "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/CajaGeneral/generarReporteFacturaGeneradaDian"
             },
             'NOTAS': {
                 "CONSULTAR_NOTAS": BASE_URL + "/Notas/ConsultarNotas",
@@ -83,7 +84,8 @@ define(["angular"], function(angular) {
                 "IMPRIMIR_NOTA_CREDITO": BASE_URL + "/Notas/imprimirNotaCredito",
                 "SINCRONIZAR_NOTAS": BASE_URL + "/Notas/sincronizarNotas",
                 "GENERAR_SINCRONIZACION_DIAN_DEBITO" : BASE_URL + "/Notas/generarSincronizacionDianDebito",
-                "GENERAR_SINCRONIZACION_DIAN_CREDITO" : BASE_URL + "/Notas/generarSincronizacionDianCredito"
+                "GENERAR_SINCRONIZACION_DIAN_CREDITO" : BASE_URL + "/Notas/generarSincronizacionDianCredito",
+                "IMPRIMIR_REPORTE_FACTURA_DIAN": BASE_URL + "/Notas/generarReporteFacturaGeneradaDian"
             },
             'TERCEROS': {
                 'LISTAR_TERCEROS': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",

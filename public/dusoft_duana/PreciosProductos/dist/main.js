@@ -42945,11 +42945,11 @@ define('includes/classes/Empresa',["angular", "js/models"], function(angular, mo
 
 /* global entregado, si, $flow, that, $http, echo, subirArchivo, flow, data, modalInstancesy, form, backdrop, parametros, parametros, parametros, archivo */
 
-define('controllers/gestionFacturas/RadicacionController',["angular", "js/controllers", 'includes/slide/slideContent',
+define('controllers/PreciosProductosController',["angular", "js/controllers", 'includes/slide/slideContent',
     "includes/classes/Empresa",
 ], function (angular, controllers) {
 
-    controllers.controller('RadicacionController', [
+    controllers.controller('PreciosProductosController', [
         '$scope', '$rootScope', "Request",
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
@@ -43064,7 +43064,6 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
 
 
             that.listarAgrupar = function (parametro, callback) {
-
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -43077,8 +43076,10 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
                         "POST",
                         obj,
                         function (data) {
+                            console.log("data",data);
                             if (data.status === 200) {
                                 // $scope.root.listarAgrupar = data.obj.listarAgrupar;
+                                console.log("data.obj.listarAgrupar",data.obj.listarAgrupar);
                                 parametro = {};
                                 callback(data.obj.listarAgrupar);
                             }
@@ -43738,7 +43739,11 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
 
                 ]
             };
-//2            
+
+            $scope.listarProductos = function(data){
+                console.log('input -->',data);
+            }
+//2
             $scope.listar_agrupar = {
                 data: 'root.listarAgrupar',
                 multiSelect: false,
@@ -43764,9 +43769,7 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
                     }
                 ]
             };
-
-// agrupar              hoy
-
+            // agrupar  hoy
 
             $scope.listarFactura = {
                 data: 'listaFacturaPendiente',
@@ -43808,8 +43811,6 @@ define('controllers/gestionFacturas/RadicacionController',["angular", "js/contro
                                              </label>\
                                          </div>\
                                        </div>'
-
-
                     }
                 ]
             };
@@ -44545,7 +44546,7 @@ define('url',["angular"], function (angular) {
                 
                 'AGRUPAR_FACTURA': BASE_URL + "/Radicacion/agruparFactura",         
                 
-                'LISTAR_AGRUPAR': BASE_URL + "/Radicacion/listarAgrupar",
+                'LISTAR_AGRUPAR': BASE_URL + "/Precios_productos/listarAgrupar",
                 
                 'MODIFICAR_ENTREGADO': BASE_URL + "/Radicacion/modificarEntregado",
                 
@@ -44574,6 +44575,42 @@ define('url',["angular"], function (angular) {
 
     return Url;
 });
+
+
+
+UsernameAdmin_User = 'Admin_User';
+Password = 'Admin_Passw';
+
+acuerdoFisicoFacturacionElectronica = true;
+adjuntarPdfNotificaciones = false;
+adjuntarXmlNotificaciones = false;
+cantidadDiasAceptacionAutomatica = 3;
+codigoCiudad = 91001;
+codigoDepartamento = 91;
+codigoPais = 'CO';
+direccion = 0;
+emailPrincipal = 'julieta@gmail.com';
+enviarCorreoCertificado = true;
+enviarCorreoDeBienvenida = true;
+enviarFisico = false;
+enviarNotificaciones = false;
+enviarPlataformaFacturacion = false;
+formatoFactura = 'PDF';
+naturaleza = 'NATURAL';
+telefono = 3147913;
+
+codigoDian = 13;
+numeroIdentificacion = 41906804;
+
+apellidos = 'GUERRERO RAMIREZ';
+nombre = 'JULIETA LILI';
+tiposRepresentacion = 'R-99-PJ';
+
+generarContrasena = true;
+nombreUsuario = 41906804;
+
+
+
 
 
 define('includes/classes/Usuario',["angular", "js/models"], function(angular, models) {
@@ -47861,7 +47898,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 window.location = "../pages/401.html";
                 return;
             }
-
+            
             // setUsuarioActual(obj_session);
             
             self.redireccionarLogin = function(){
@@ -48088,18 +48125,34 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 $scope.Usuario.getEmpresa().setCentroUtilidadSeleccionado(centro);
             };
             
-            $scope.onBodegaSeleccionada = function(bodega){
+            $scope.onBodegaSeleccionada = function(bodega){ 
+              //  console.log("history.length ",history.length );
                 localStorageService.set("bodega_usuario", bodega.getCodigo());
                 $scope.Usuario.getEmpresa().getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega); 
+                self.limpiar();
+//                var moduloActual = $scope.Usuario.getModuloActual();
                 
-                var moduloActual = $scope.Usuario.getModuloActual();
-                
-                if(!moduloActual || moduloActual.nombre.toLowerCase() === 'dashboard'){
-                    return;
-                }
+//                if(!moduloActual || moduloActual.nombre.toLowerCase() === 'dashboard'){
+//                    return;
+//                }
                 
                 self.irAlHome();
                 
+            };
+            
+            self.limpiar = function () {
+                var session=localStorageService.get("session");
+               // console.log("session ",session);
+                var llavesMemoria = localStorageService.keys();
+                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat","validacionEgresosDetalle"];
+
+                for (var i in llavesMemoria) {
+                    var key = llavesMemoria[i];
+console.log("key",key);
+                    if (llavesPermanentes.indexOf(key) === -1) {
+                        localStorageService.remove(key);
+                    }
+                }
             };
             
             $scope.onIrAlHome = function(){
@@ -48145,6 +48198,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
             };
             
             self.irAlHome = function(mensaje){
+                console.log("ir al home");
                 var moduloActual = $scope.Usuario.getModuloActual();
                 localStorageService.set("mensajeDashboard", null);
                 
@@ -48160,8 +48214,10 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     localStorageService.set("mensajeDashboard", mensaje);
                 }
                                 
-                if(moduloActual.nombre.toLowerCase() === 'dashboard'){
-                    return;
+                if(moduloActual.nombre.toLowerCase() !== 'dashboard'){
+//                    console.log("dashboard");
+//                    localStorageService.clearAll(); 
+//                    return;
                 }
                 window.location = "/dusoft_duana/home";
             };
@@ -48515,7 +48571,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                    device:"web",
                    appId: "dusoft-web"
                 };
-                 console.log("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ",datos);
+                
                 //localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });
@@ -54007,7 +54063,7 @@ define('app',["angular",
     "httpinterceptor",
     "dragndropfile",
     "js/directive",
-    "controllers/PreciosProductos/RadicacionController",
+    "controllers/PreciosProductosController",
     "includes/validation/ValidacionNumeroDecimal",
     "includes/menu/menucontroller",
     "url",
@@ -54026,7 +54082,7 @@ define('app',["angular",
     "chart",
 ], function(angular, Agencia) {
     /* App Module and its dependencies */
-    var gestionFacturas = angular.module('gestionFacturas', [
+    var preciosProductos = angular.module('preciosProductos', [
         'ui.router',
         'controllers',
         'models',
@@ -54042,35 +54098,35 @@ define('app',["angular",
         'angular-web-notification'
     ]);
 
-    gestionFacturas.urlRouterProvider;
-    gestionFacturas.stateProvider;
+    preciosProductos.urlRouterProvider;
+    preciosProductos.stateProvider;
 
-    gestionFacturas.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
+    preciosProductos.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
 
             // For any unmatched url, send to /route1
             //intercepta los http para validar el usuario
             $httpProvider.interceptors.push('HttpInterceptor');
 
-            gestionFacturas.urlRouterProvider = $urlRouterProvider;
-            gestionFacturas.stateProvider = $stateProvider;
+            preciosProductos.urlRouterProvider = $urlRouterProvider;
+            preciosProductos.stateProvider = $stateProvider;
 
 
         }]).run(["$rootScope", "localStorageService", "$location", "$state", function($rootScope, localStorageService, $location, $state) {
             //se inicializa el usuario y la empresa para el modulo
-            $rootScope.name = "gestionFacturas";
-            var vistaDefecto = "gestionFacturas";
+            $rootScope.name = "preciosProductos";
+            var vistaDefecto = "preciosProductos";
 
             $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion) {
 
 
-                gestionFacturas.urlRouterProvider.otherwise(vistaDefecto);
+                preciosProductos.urlRouterProvider.otherwise(vistaDefecto);
 
-                gestionFacturas.stateProvider
-                .state('Gestionfacturas', {
-                    url: "/Gestionfacturas",
-                    text: "Gestion Facturas",
-                    templateUrl: "views/PreciosProductos/radicacion.html",
-                    controller: "RadicacionController"
+                preciosProductos.stateProvider
+                .state('PreciosProductos', {
+                    url: "/PreciosProductos",
+                    text: "Precios Productos",
+                    templateUrl: "views/preciosProductos/radicacion.html",
+                    controller: "PreciosProductosController"
                 });
 
                 if ($location.path() === "") {
@@ -54084,8 +54140,8 @@ define('app',["angular",
 
         }]);
 
-    angular.bootstrap(document, ['gestionFacturas']);
-    return gestionFacturas;
+    angular.bootstrap(document, ['preciosProductos']);
+    return preciosProductos;
 });
 
 require(["app"]);

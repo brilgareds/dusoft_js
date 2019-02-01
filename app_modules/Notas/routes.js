@@ -11,6 +11,10 @@ module.exports = function(app, di_container) {
         c_sincronizacion.facturacionElectronicaNotaDebito(req, res);
     });
     
+    app.post('/api/Sincronizacion/consultaFacturacionElectronica', function(req, res) {      
+        c_sincronizacion.consultaFacturacionElectronica(req, res);
+    });
+    
     app.post('/api/Notas/listarFacturas', function(req, res) {
         c_notas.listarFacturas(req, res);
     });
@@ -61,6 +65,10 @@ module.exports = function(app, di_container) {
     
     app.post('/api/Notas/generarSincronizacionDianCredito', function(req, res) {
         c_notas.generarSincronizacionDianCredito(req, res);
+    });
+    
+    app.post('/api/Notas/generarReporteFacturaGeneradaDian', function(req, res) {
+        c_notas.generarReporteFacturaGeneradaDian(req, res);
     });
     
 };

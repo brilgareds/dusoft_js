@@ -53,6 +53,11 @@ module.exports = function(app, di_container) {
     app.post('/api/FacturacionClientes/consultaFacturaGeneradaDetalle', function(req, res) {     
         c_facturacion_clientes.consultaFacturaGeneradaDetalle(req, res);
     });
+    
+     app.post('/api/FacturacionClientes/generarReporteFacturaGeneradaDian', function(req, res) {     
+        c_facturacion_clientes.generarReporteFacturaGeneradaDian(req, res);
+    });
+ 
      
     app.post('/api/FacturacionClientes/generarReporteFacturaGenerada', function(req, res) {     
         c_facturacion_clientes.generarReporteFacturaGenerada(req, res);

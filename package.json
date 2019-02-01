@@ -7,6 +7,8 @@
   },
   "dependencies": {
     "accounting": "~0.4.1",
+    "base64-img": "^1.0.4",
+    "base64topdf": "^1.1.8",
     "bson": "^3.0.2",
     "commander": "2.1.0",
     "connect-multiparty": "~1.2.5",
@@ -31,8 +33,10 @@
     "measured": "^1.1.0",
     "moment": "^2.13.0",
     "mongodb": "^3.1.1",
+    "nginx": "0.0.0",
     "node-xlsx": "~0.5.1",
     "nodemailer": "^0.6.5",
+    "pdf-to-base64": "^1.0.1",
     "os-tmpdir": "^2.0.0",
     "package.json": "^2.0.1",
     "pg": "^4.5.5",
@@ -47,6 +51,7 @@
     "sqlformatter": "^0.1.0",
     "uuid": "^3.3.2",
     "xls-to-json": "*",
-    "xml-formatter": "^1.0.1"
+    "xml-formatter": "^1.0.1",
+    "xml-js": "^1.6.8"
   }
 }

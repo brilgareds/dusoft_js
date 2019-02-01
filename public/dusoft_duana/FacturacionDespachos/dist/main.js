@@ -67475,7 +67475,7 @@ define('app',[
                 }).state('PedidosClientesDespacho', {  
                     url: "/PedidosClientesDespacho",
                     text: "Listado de los productos listos para facturar",
-                    templateUrl: "views/facturacionClientes/actualizar.html",
+                    templateUrl: "views/facturacionClientes/listarPedidos.html",
                     controller: "PedidosClientesController",
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {

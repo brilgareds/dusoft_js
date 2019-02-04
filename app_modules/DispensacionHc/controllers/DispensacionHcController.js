@@ -2471,10 +2471,15 @@ function __generarPdf(datos, callback) {
         template: {
             content: G.fs.readFileSync('app_modules/DispensacionHc/reports/'+datos.archivoHtml, 'utf8'),
             recipe: "html",
+           // style: G.dirname + "/public/stylesheets/bootstrap.min.css",
             engine: 'jsrender',
             phantom: {
                 margin: "10px",
-                width: '700px'
+                width: '700px',
+                header: '\
+                             <link href="{{:serverUrl}}stylesheets/DispensacionHc/style.css" rel=stylesheet type=text/css > \
+                             <link href="{{:serverUrl}}stylesheets/DispensacionHc/style-print.css" rel=stylesheet type=text/css media="print"> \
+                        '
             }
         },
         data: datos

@@ -1,7 +1,7 @@
 define(["angular", "js/services"], function(angular, services) {
 
 
-    services.factory('ParametrosBusquedaService',
+    services.factory('ServerServiceDoc',
             ['$rootScope', 'Request', 'API',"AlertService",
                 "Usuario", "$modal", "localStorageService", function($rootScope, Request, API,
                 AlertService,$modal, Usuario, localStorageService) {
@@ -29,6 +29,24 @@ define(["angular", "js/services"], function(angular, services) {
                         );
 
                     };
+                    
+                    self.insertarTipoCuenta = function(obj, callback) {
+
+                        Request.realizarRequest(
+                                API.SINCRONIZACION_DOCUMENTOS.INSERTAR_TIPO_CUENTA,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: obj
+                                },
+                        function(data) {                           
+                            callback(data);
+                           // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        }
+                        );
+
+                    };
+                    
                     
                   
                     return this;

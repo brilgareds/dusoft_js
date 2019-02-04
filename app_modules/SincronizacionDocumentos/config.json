@@ -5,14 +5,14 @@
                 "sincronizacion_controller": {
                     "module": "SincronizacionDocumentos",
                     "controller": "SincronizacionDocumentosController",
-                    "alias": "c_Sincronizacion"
+                    "alias": "c_SincronizacionDoc"
                 }
             }],
         "models": [{
                 "sincronizacion_model": {
                     "module": "SincronizacionDocumentos",
                     "model": "SincronizacionDocumentosModel",
-                    "alias": "m_Sincronizacion"
+                    "alias": "m_SincronizacionDoc"
                 }
             }],
         "events": [],

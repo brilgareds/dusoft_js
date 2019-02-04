@@ -5,30 +5,49 @@ define(["angular", "js/controllers"
         '$scope', '$rootScope', "Request",
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
-        "Usuario", "socket", "$timeout",
-        "Empresa", "serverService",
+        "Usuario", "socket","Empresa", "ServerServiceDoc",
         function ($scope, $rootScope, Request,
                 $filter, $state, $modal,
                 API, AlertService, localStorageService,
-                Usuario, socket, Empresa, serverService) {
+                Usuario, socket, Empresa, ServerServiceDoc) {
 
             var that = this;
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-           $scope.root={};
+            that.init = function(callback) {
+                $scope.root = {prefijo:{}};         
+                callback();
+            };
 
             that.listarPrefijos = function () {
                 var obj = {
                     session: $scope.session,
                     data: {
-                        empresaId: Usuario.getUsuarioActual().getEmpresa()
+                        empresaId: Usuario.getUsuarioActual().getEmpresa().codigo
                     }
                 };
-                serverService.listarPrefijos(obj, function (data) {
+//                console.log("ServerService",ServerServiceDoc);
+                ServerServiceDoc.listarPrefijos(obj, function (data) {
                     if (data.status === 200) {
                         $scope.root.listarPrefijo=data.obj.listarPrefijos;
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
+                    }
+                });
+            };
+            
+            that.insertarTipoCuenta = function () {
+                var obj = {
+                    session: $scope.session,
+                    cuentaId: "",
+                    cuentaCategotia:"" 
+                    
+                };
+                ServerServiceDoc.insertarTipoCuenta(obj, function (data) {
+                    if (data.status === 200) {
+                       console.log("data",data);
                     } else {
                         AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
                     }
@@ -37,7 +56,7 @@ define(["angular", "js/controllers"
 
 
             that.init(function () {
-               
+               that.listarPrefijos();
             });
     }]);
 });

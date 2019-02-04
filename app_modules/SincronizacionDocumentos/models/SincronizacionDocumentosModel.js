@@ -3,18 +3,17 @@ var SincronizacionDocumentosModel = function() {
 };
 
 SincronizacionDocumentosModel.prototype.listarPrefijos = function(obj, callback) {
-    console.log('entro en el modelo!');
+    console.log('entro en el modelo!',obj);
+    console.log('entro en el modelo!',obj.empresaId);
     
-    var sql = knex.select('prefijo', 'tipo_doc_general_id', 'texto1')
-            .from('documentos')
+    var query = G.knex.select(['a.prefijo', 'a.tipo_doc_general_id', 'a.texto1'])
+            .from('documentos as a')
             .where(function(){
-                this.andWhere('empresa_id', obj.empresaId)
-            })
-            .orderBy('tipo_doc_general_id');
-    
-    var query = G.knex.raw(sql, {1: obj.autorizacionId});
+            }).andWhere('empresa_id', obj.empresaId)
+              .orderBy('tipo_doc_general_id');
+      console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado) {
-       callback(false, resultado.rows);
+       callback(false, resultado);
      }).catch (function(err) {
         console.log("error sql",err);
         callback(err);

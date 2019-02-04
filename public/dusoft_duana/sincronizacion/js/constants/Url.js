@@ -9,6 +9,7 @@ define(["angular"], function(angular) {
             'BASE_URL': BASE_URL,
             'SINCRONIZACION_DOCUMENTOS': {
                 "LISTAR_PREFIJOS": BASE_URL + "/SincronizacionDocumentos/listarPrefijos",
+                "INSERTAR_TIPO_CUENTA": BASE_URL + "/SincronizacionDocumentos/insertTipoCuentas",
             }
         }
     };

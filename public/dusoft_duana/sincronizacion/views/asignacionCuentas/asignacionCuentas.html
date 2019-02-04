@@ -8,9 +8,9 @@
                         <ui-select ng-model="root.prefijo"
                                    theme="select2"
                                    class="form-control selectgeneral pull-left col-md-4">
-                            <ui-select-match  placeholder="Seleccionar Prefijo">{{ $select.selected.descripcion}}</ui-select-match>
+                            <ui-select-match  placeholder="Seleccionar Prefijo">{{ $select.selected.prefijo}}</ui-select-match>
                             <ui-select-choices repeat="filtro in root.listarPrefijo | filter:$select.search">
-                                {{ filtro.descripcion}}
+                                {{ filtro.prefijo}}
                             </ui-select-choices>
                         </ui-select>
                     </div>

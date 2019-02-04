@@ -8,8 +8,8 @@ SincronizacionDocumentos.prototype.listarPrefijos = function(req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(this.m_sincronizacion,'listarPrefijos', args).
-       then(function(prefijos) {
+    G.Q.ninvoke(this.m_Sincronizacion,'listarPrefijos', args.data).then(function(prefijos) {
+        console.log("listarPrefijos",prefijos);
        res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {listarPrefijos: prefijos}));
     }).
        fail(function(err) {
@@ -19,7 +19,7 @@ SincronizacionDocumentos.prototype.listarPrefijos = function(req, res) {
 };
 
 SincronizacionDocumentos.$inject = [
-                          "m_Sincronizacion"
+                          "m_SincronizacionDoc"
                          ];
 
 module.exports = SincronizacionDocumentos;

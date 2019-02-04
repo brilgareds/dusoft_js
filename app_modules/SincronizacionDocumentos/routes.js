@@ -5,5 +5,8 @@ module.exports = function(app, di_container) {
     app.post('/api/SincronizacionDocumentos/listarPrefijos', function(req, res) {
         c_SincronizacionDoc.listarPrefijos(req, res);
     });
-
+    
+    app.post('/api/SincronizacionDocumentos/listarTipoCuentaCategoria', function(req, res) {
+        c_SincronizacionDoc.listarTipoCuentasCategoria(req, res);
+    });
 };

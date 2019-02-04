@@ -423,6 +423,7 @@ FacturacionProveedoresModel.prototype.ingresarFacturaCabecera = function(obj,tra
         callback(false, resultado[0]);
 
     }). catch (function(err) {
+        console.log(G.sqlformatter.format(query.toString()));
         console.log("ERROR:::inv_facturas_proveedores ", err);
         callback(err);
     }).done();

@@ -1,0 +1,57 @@
+{
+    "module": "Autorizaciones",
+    "dependency": {
+        "controllers": [{
+                "autorizaciones_controller": {
+                    "module": "Autorizaciones",
+                    "controller": "AutorizacionesController",
+                    "alias": "c_autorizaciones"
+                }
+            }],
+        "models": [{
+                "autorizaciones_model": {
+                    "module": "Autorizaciones",
+                    "model": "AutorizacionesModel",
+                    "alias": "m_autorizaciones"
+                },
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
+                },
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "ordenes_compra_model": {
+                    "module": "OrdenesCompra",
+                    "model": "OrdenesCompraModel",
+                    "alias": "m_ordenes_compra"
+                },
+                "productos_model": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                }
+            }],
+        "events": [{
+                "pedidos_clientes_events": {
+                    "module": "PedidosClientes",
+                    "event": "PedidosClientesEvents",
+                    "alias": "e_pedidos_clientes"
+                },
+                "pedidos_farmacias_events": {
+                    "module": "PedidosFarmacias",
+                    "event": "PedidosFarmaciasEvents",
+                    "alias": "e_pedidos_farmacias"
+                }
+            }],
+        "cronJobs": []
+    }
+}

@@ -10,7 +10,7 @@ define(["angular"], function(angular) {
             'SINCRONIZACION_DOCUMENTOS': {
                 "LISTAR_PREFIJOS": BASE_URL + "/SincronizacionDocumentos/listarPrefijos",
                 "INSERTAR_TIPO_CUENTA": BASE_URL + "/SincronizacionDocumentos/insertTipoCuentas",
-                "LISTAR_TIPO_CUENTA": BASE_URL + "/SincronizacionDocumentos/listarTipoCuentaCategoria",
+                "LISTAR_TIPO_CUENTA_CATEGORIA": BASE_URL + "/SincronizacionDocumentos/listarTipoCuentaCategoria",
             }
         }
     };

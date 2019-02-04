@@ -35,7 +35,8 @@ define(["angular", "js/services"], function(angular, services) {
                                 API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPO_CUENTA_CATEGORIA,
                                 "POST",
                                 {
-                                    session: obj.session
+                                    session: obj.session,
+                                    data:{}
                                 },
                         function(data) {                           
                             callback(data);

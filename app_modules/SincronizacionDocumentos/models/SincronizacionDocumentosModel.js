@@ -11,7 +11,7 @@ SincronizacionDocumentosModel.prototype.listarPrefijos = function(obj, callback)
             .where(function(){
             }).andWhere('empresa_id', obj.empresaId)
               .orderBy('tipo_doc_general_id');
-      console.log(G.sqlformatter.format(query.toString()));
+//      console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado) {
        callback(false, resultado);
      }).catch (function(err) {
@@ -23,8 +23,8 @@ SincronizacionDocumentosModel.prototype.listarPrefijos = function(obj, callback)
 SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj, callback) {
     console.log('entro en el modelo de "listarTiposCuentasCategorias"!');
     
-    var query = G.knex.select('categoria_id', 'categoria_descripcion')
-            .from('tipos_cuentas')             
+    var query = G.knex.select(['categoria_id', 'categoria_descripcion'])
+                .from('tipos_cuentas_categorias');           
     
     query.then(function(resultado) {
        callback(false, resultado);
@@ -34,6 +34,20 @@ SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj
      });
 };
 
+SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {
+    console.log('entro en el modelo de "listarTiposCuentas"!');
+    
+    var query = G.knex.select('tipos_cu.cuenta_id', 'tipos_cate.categoria_descripcion')
+            .from('tipos_cuentas as tipos_cu')
+            .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')            
+    
+    query.then(function(resultado) {
+       callback(false, resultado);
+     }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+     });
+};
 /*
 
 SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {

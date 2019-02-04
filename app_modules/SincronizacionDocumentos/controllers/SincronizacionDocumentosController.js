@@ -4,12 +4,12 @@ var SincronizacionDocumentos = function(sincronizacion) {
 };
 
 SincronizacionDocumentos.prototype.listarPrefijos = function(req, res) {
-    console.log('Entro en el controlador, listarPrefijos!!!');
+//    console.log('Entro en el controlador, listarPrefijos!!!');
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(this.m_Sincronizacion,'listarPrefijos', args.data).then(function(prefijos) {
-        console.log("listarPrefijos",prefijos);
+    G.Q.ninvoke(this.m_SincronizacionDoc,'listarPrefijos', args.data).then(function(prefijos) {
+//        console.log("listarPrefijos",prefijos);
        res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {listarPrefijos: prefijos}));
     }).
        fail(function(err) {
@@ -23,8 +23,8 @@ SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = function(req, res
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(this.m_SincronizacionDoc,'listarTipoCuentaCategoria', args).
-       then(function(tipoCuentascategoria) {
+    G.Q.ninvoke(that.m_SincronizacionDoc,'listarTipoCuentaCategoria', args).then(function(tipoCuentascategoria) {
+        
        res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarTipoCuentaCategoria: tipoCuentascategoria}));
     }).
        fail(function(err) {

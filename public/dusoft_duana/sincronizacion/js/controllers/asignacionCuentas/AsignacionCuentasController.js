@@ -38,18 +38,21 @@ define(["angular", "js/controllers"
                 });
             };
             
-            that.listarTipoCuentaCategoria = function () {
+            that.listarTipoCuentaCategoria = function (callback) {
                 var obj = {
                     session: $scope.session
                 };
                 ServerServiceDoc.listarTipoCuentaCategoria(obj, function (data) {
                     if (data.status === 200) {
-                        $scope.root.listarTipoCuentaCategoria=data.obj.listarTipoCuentaCategoria;
+                        
+                        callback(data.obj.tipoCuentascategoria);
                     } else {
                         AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
                     }
                 });
             };
+            
+            
             
             that.insertarTipoCuenta = function () {
                 var obj = {
@@ -83,19 +86,23 @@ define(["angular", "js/controllers"
                                            <h4 class="modal-title">Crear Cuenta</h4>\
                                        </div>\
                                        <div class="modal-body">\
+                                        <div class="row">\
                                            <label>Cuenta No: </label>\
                                            <input ng-model="cuenta" validacion-numero-entero type="text" class="form-control">\
+                                        </div>\
+                                        <div class="row">\
                                            <div class="form-group">\
                                                 <label  class="col-form-label">Prefijo</label>\
                                                 <ui-select ng-model="root.prefijo"\
                                                            theme="select2"\
                                                            class="form-control selectgeneral pull-left col-md-4">\
-                                                    <ui-select-match  placeholder="Seleccionar Prefijo">{{ $select.selected.prefijo}}</ui-select-match>\
+                                                    <ui-select-match  placeholder="Seleccionar Prefijo">{{ $select.selected.categoria_descripcion}}</ui-select-match>\
                                                     <ui-select-choices repeat="filtro in root.listarTipoCuentaCategoria | filter:$select.search">\
                                                         {{ filtro.categoria_descripcion}}\
                                                     </ui-select-choices>\
                                                 </ui-select>\
                                             </div>\
+                                        </div>\
                                        </div>\
                                        <div class="modal-footer">\
                                            <button class="btn btn-success" ng-click="guardar()">Aceptar</button>\
@@ -103,6 +110,11 @@ define(["angular", "js/controllers"
                                        </div>',
                     scope: $scope,
                     controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                            
+                           that.listarTipoCuentaCategoria(function(data){
+                                $scope.root.listarTipoCuentaCategoria=data;
+                           });
+                          
                            
                             $scope.guardar=function(){     
                                 

@@ -29,6 +29,21 @@ define(["angular", "js/services"], function(angular, services) {
                         );
 
                     };
+                    self.listarTipoCuentaCategoria = function(obj, callback) {
+
+                        Request.realizarRequest(
+                                API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPO_CUENTA_CATEGORIA,
+                                "POST",
+                                {
+                                    session: obj.session
+                                },
+                        function(data) {                           
+                            callback(data);
+                           // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        }
+                        );
+
+                    };
                     
                     self.insertarTipoCuenta = function(obj, callback) {
 

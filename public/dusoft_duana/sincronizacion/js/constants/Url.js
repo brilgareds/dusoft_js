@@ -7,16 +7,8 @@ define(["angular"], function(angular) {
     var data = {
         'API': {
             'BASE_URL': BASE_URL,
-            'REPORTES': {
-                "LISTAR_DR_ARIAS": BASE_URL + "/Reportes/DrArias/listarDrArias",
-                'CENTROS_UTILIDAD_EMPRESAS':BASE_URL+'/CentrosUtilidad/listarCentrosUtilidadEmpresa',
-                'BODEGAS_EMPRESA':BASE_URL+'/Bodegas/listarBodegasEmpresas',
-                'LISTAR_EMPRESAS': BASE_URL+"/Empresas/listarEmpresas",
-                'LISTAR_PLANES':BASE_URL+'/Reportes/DrArias/listarPlanes',
-                "REPORTES_GENERADOS": BASE_URL + "/Reportes/DrArias/reportesGenerados",
-                "ROTACION_ZONAS": BASE_URL + "/Reportes/DrArias/rotacionZonas",
-                "ROTACION_ZONAS_MOVIL": BASE_URL + "/Reportes/DrArias/rotacionZonasMovil",
-                "GENERAR_ROTACIONES": BASE_URL + "/Reportes/DrArias/generarRotaciones"
+            'SINCRONIZACION_DOCUMENTOS': {
+                "LISTAR_PREFIJOS": BASE_URL + "/SincronizacionDocumentos/listarPrefijos",
             }
         }
     };

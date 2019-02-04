@@ -10,13 +10,13 @@ define(["angular", "js/services"], function(angular, services) {
 
                     /*
                      * @Author: Andres Mauricio Gonzalez T.
-                     * @fecha 05/02/2016
-                     * +Descripcion: lista Dr. Arias
+                     * @fecha 04/02/2019
+                     * +Descripcion: lista prefijos
                      */
-                    self.buscarReporteDrArias = function(obj, callback) {
+                    self.listarPrefijos = function(obj, callback) {
 
                         Request.realizarRequest(
-                                API.REPORTES.LISTAR_DR_ARIAS,
+                                API.SINCRONIZACION_DOCUMENTOS.LISTAR_PREFIJOS,
                                 "POST",
                                 {
                                     session: obj.session,
@@ -30,88 +30,7 @@ define(["angular", "js/services"], function(angular, services) {
 
                     };
                     
-                    /*
-                     * @Author: Andres Mauricio Gonzalez T.
-                     * @fecha 05/02/2016
-                     * +Descripcion: lista reportes Dr. Arias generados
-                     */
-                    self.reportesGenerados = function(obj, callback) {
-                        Request.realizarRequest(
-                                API.REPORTES.REPORTES_GENERADOS,
-                                "POST",
-                                {
-                                    session: obj.session,
-                                    data: obj
-                                },
-                            function(data) {   
-                             
-                                callback(data);  
-                            }
-                        );
-                    };
-                    
-                    /*
-                     * @Author: Andres Mauricio Gonzalez T.
-                     * @fecha 05/09/2018
-                     * +Descripcion: zonas para rotaciones
-                     */
-                    self.rotacionZonas = function (obj, callback) {
-
-                        Request.realizarRequest(
-                                API.REPORTES.ROTACION_ZONAS,
-                                "POST",
-                                {
-                                    session: obj.session,
-                                    data: obj
-                                },
-                                function (data) {
-                                    callback(data);
-                                }
-                        );
-
-                    };
-                    /*
-                     * @Author: Andres Mauricio Gonzalez T.
-                     * @fecha 05/09/2018
-                     * +Descripcion: zonas para rotaciones
-                     */
-                    self.rotacionZonasMovil = function (obj, callback) {
-
-                        Request.realizarRequest(
-                                API.REPORTES.ROTACION_ZONAS_MOVIL,
-                                "POST",
-                                {
-                                    session: obj.session,
-                                    data: obj
-                                },
-                                function (data) {
-                                    callback(data);
-                                }
-                        );
-
-                    };
-                    
-                    /*
-                     * @Author: Andres Mauricio Gonzalez T.
-                     * @fecha 05/09/2018
-                     * +Descripcion: zonas para rotaciones
-                     */
-                    self.generarRotaciones = function (obj, callback) {
-
-                        Request.realizarRequest(
-                                API.REPORTES.GENERAR_ROTACIONES,
-                                "POST",
-                                {
-                                    session: obj.session,
-                                    data: obj
-                                },
-                                function (data) {
-                                    callback(data);
-                                }
-                        );
-
-                    };
-
+                  
                     return this;
-                }]);
+    }]);
 });

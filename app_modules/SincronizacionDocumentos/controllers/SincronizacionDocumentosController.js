@@ -9,7 +9,7 @@ SincronizacionDocumentos.prototype.listarPrefijos = function(req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(this.m_SincronizacionDoc,'listarPrefijos', args.data).then(function(prefijos) {
-//        console.log("listarPrefijos",prefijos);
+       console.log("listarPrefijos",prefijos);
        res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {listarPrefijos: prefijos}));
     }).
        fail(function(err) {

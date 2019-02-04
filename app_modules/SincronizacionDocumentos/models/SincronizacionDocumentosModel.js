@@ -20,12 +20,11 @@ SincronizacionDocumentosModel.prototype.listarPrefijos = function(obj, callback)
      });
 };
 
-SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {
-    console.log('entro en el modelo de "listarTiposCuentas"!');
+SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj, callback) {
+    console.log('entro en el modelo de "listarTiposCuentasCategorias"!');
     
-    var query = G.knex.select('tipos_cu.cuenta_id', 'tipos_cate.categoria_descripcion')
-            .from('tipos_cuentas as tipos_cu')
-            .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')            
+    var query = G.knex.select('categoria_id', 'categoria_descripcion')
+            .from('tipos_cuentas')             
     
     query.then(function(resultado) {
        callback(false, resultado);
@@ -35,11 +34,14 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
      });
 };
 
-SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj, callback) {
-    console.log('entro en el modelo de "listarTiposCuentasCategorias"!');
+/*
+
+SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {
+    console.log('entro en el modelo de "listarTiposCuentas"!');
     
-    var query = G.knex.select('categoria_id', 'categoria_descripcion')
-            .from('tipos_cuentas')             
+    var query = G.knex.select('tipos_cu.cuenta_id', 'tipos_cate.categoria_descripcion')
+            .from('tipos_cuentas as tipos_cu')
+            .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')            
     
     query.then(function(resultado) {
        callback(false, resultado);
@@ -130,6 +132,8 @@ SincronizacionDocumentosModel.prototype.insertTiposCuentasCategorias = function(
      });
 };
 
+*/
 
+SincronizacionDocumentosModel.$inject = [];
 
 module.exports = SincronizacionDocumentosModel;

@@ -33,6 +33,21 @@ SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = function(req, res
        done();
 };
 
+SincronizacionDocumentos.prototype.listarDocumentosCuentas = function(req, res) {
+    console.log('Entro en el controlador, listarDocumentosCuentas!!!');
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(that.m_SincronizacionDoc,'listarDocumentosCuentas', args).then(function(tipoCuentascategoria) {
+        
+       res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarDocumentosCuentas: listarDocumentosCuentas}));
+    }).
+       fail(function(err) {
+       res.send(G.utils.r(req.url, 'Error Listado de listarDocumentosCuentas', 500, {listarDocumentosCuentas: {}}));
+    }).
+       done();
+};
+
 SincronizacionDocumentos.prototype.insertTiposCuentas = function(req, res) {
     console.log('Entro en el controlador, insertTiposCuentas!!!');
     var that = this;

@@ -13,4 +13,8 @@ module.exports = function(app, di_container) {
     app.post('/api/SincronizacionDocumentos/insertTiposCuentas', function(req, res) {
         c_SincronizacionDoc.insertTiposCuentas(req, res);
     });
+    
+    app.post('/api/SincronizacionDocumentos/listarDocumentosCuentas', function(req, res) {
+        c_SincronizacionDoc.listarDocumentosCuentas(req, res);
+    });
 };

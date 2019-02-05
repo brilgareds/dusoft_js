@@ -34,8 +34,6 @@ SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = function(req, res
 };
 
 
- /*
-
 SincronizacionDocumentos.prototype.listarTiposCuentas = function(req, res) {
     console.log('Entro en el controlador, listarTiposCuentas!!!');
     var that = this;
@@ -95,7 +93,7 @@ SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function(req, 
     }).
        done();
 };
-*/
+
 
 SincronizacionDocumentos.$inject = [
     "m_SincronizacionDoc"

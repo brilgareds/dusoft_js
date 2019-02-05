@@ -48,7 +48,7 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
         callback(err);
      });
 };
-/*
+
 
 SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {
     console.log('entro en el modelo de "listarTiposCuentas"!');
@@ -68,17 +68,20 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
 SincronizacionDocumentosModel.prototype.listarDocumentosCuentas = function(obj, callback) {
     console.log('entro en el modelo de "listarTiposCuentas"!');
     
-    var query = G.knex.select(
+    var query = G.knex.select([
             'doc_cu.prefijo', 
             'doc_cu.empresa_id',
             'doc_cu.centro_id',
             'doc_cu.bodega_id',
-            'doc_cu.cuenta_debito')
-            .from('documentos_cuentas as doc_cu')
-            .innerJoin('tipos_cuentas as tipos_cu', 'doc_cu.cuenta_debito', 'tipos_cu.cuenta_id')            
-            .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')        
-            .innerJoin('tipos_cuentas as tipos_cu', 'doc_cu.cuenta_credito', 'tipos_cu.cuenta_id')            
-            .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')
+            'doc_cu.cuenta_debito as cuenta_debito_num',
+            'tipos_cate.categoria_descripcion as cuenta_debito_des',
+            'doc_cu.cuenta_credito as cuenta_credito_num',
+            'tipos_cate2.categoria_descripcion as cuenta_credito_des'])
+        .from('documentos_cuentas as doc_cu')
+        .innerJoin('tipos_cuentas as tipos_cu', 'doc_cu.cuenta_debito', 'tipos_cu.cuenta_id')            
+        .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')        
+        .innerJoin('tipos_cuentas as tipos_cu2', 'doc_cu.cuenta_credito', 'tipos_cu.cuenta_id')            
+        .innerJoin('tipos_cuentas_categorias as tipos_cate2', 'tipos_cu.cuenta_categoria', 'tipos_cate2.categoria_id')
     
     query.then(function(resultado) {
        callback(false, resultado);
@@ -146,7 +149,6 @@ SincronizacionDocumentosModel.prototype.insertTiposCuentasCategorias = function(
      });
 };
 
-*/
 
 SincronizacionDocumentosModel.$inject = [];
 

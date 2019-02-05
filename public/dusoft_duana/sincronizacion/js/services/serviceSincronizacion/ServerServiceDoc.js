@@ -46,6 +46,38 @@ define(["angular", "js/services"], function(angular, services) {
 
                     };
                     
+                    self.listarDocumentosCuentas = function (obj, callback) {
+
+                        Request.realizarRequest(
+                                API.SINCRONIZACION_DOCUMENTOS.LISTAR_DOCUMENTOS_CUENTAS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {}
+                                },
+                                function (data) {
+                                    callback(data);
+                                    // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                }
+                        );
+                    };
+                    
+                    self.listarTiposCuentas = function (obj, callback) {
+
+                        Request.realizarRequest(
+                                API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_CUENTAS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {}
+                                },
+                                function (data) {
+                                    callback(data);
+                                    // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                }
+                        );
+                    };
+                    
                     self.insertarTipoCuenta = function(obj, callback) {
 
                         Request.realizarRequest(

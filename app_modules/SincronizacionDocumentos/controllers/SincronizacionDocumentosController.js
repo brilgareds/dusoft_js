@@ -9,7 +9,7 @@ SincronizacionDocumentos.prototype.listarPrefijos = function(req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(this.m_SincronizacionDoc,'listarPrefijos', args.data).then(function(prefijos) {
-       console.log("listarPrefijos",prefijos);
+      
        res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {listarPrefijos: prefijos}));
     }).
        fail(function(err) {
@@ -38,7 +38,7 @@ SincronizacionDocumentos.prototype.listarDocumentosCuentas = function(req, res) 
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_SincronizacionDoc,'listarDocumentosCuentas', args).then(function(tipoCuentascategoria) {
+    G.Q.ninvoke(that.m_SincronizacionDoc,'listarDocumentosCuentas', args).then(function(listarDocumentosCuentas) {
         
        res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarDocumentosCuentas: listarDocumentosCuentas}));
     }).

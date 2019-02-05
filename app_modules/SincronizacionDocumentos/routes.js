@@ -17,4 +17,8 @@ module.exports = function(app, di_container) {
     app.post('/api/SincronizacionDocumentos/listarDocumentosCuentas', function(req, res) {
         c_SincronizacionDoc.listarDocumentosCuentas(req, res);
     });
+    
+    app.post('/api/SincronizacionDocumentos/listarTiposCuentas', function(req, res) {
+        c_SincronizacionDoc.listarTiposCuentas(req, res);
+    });
 };

@@ -70,7 +70,7 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
 SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {
     console.log('entro en el modelo de "listarTiposCuentas"!');
     
-    var query = G.knex.select('tipos_cu.cuenta_id', 'tipos_cate.categoria_descripcion')
+    var query = G.knex.select('tipos_cu.cuenta_id', 'tipos_cate.categoria_descripcion','tipos_cate.categoria_id')
             .from('tipos_cuentas as tipos_cu')
             .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')            
     
@@ -83,7 +83,7 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
 };
 
 SincronizacionDocumentosModel.prototype.listarDocumentosCuentas = function(obj, callback) {
-    console.log('entro en el modelo de "listarTiposCuentas"!');
+    console.log('entro en el modelo de "listarDocumentosCuentas"!');
     
     var query = G.knex.select([
             'doc_cu.prefijo', 
@@ -99,7 +99,7 @@ SincronizacionDocumentosModel.prototype.listarDocumentosCuentas = function(obj, 
         .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')        
         .innerJoin('tipos_cuentas as tipos_cu2', 'doc_cu.cuenta_credito', 'tipos_cu.cuenta_id')            
         .innerJoin('tipos_cuentas_categorias as tipos_cate2', 'tipos_cu.cuenta_categoria', 'tipos_cate2.categoria_id')
-    
+    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
        callback(false, resultado);
      }).catch (function(err) {

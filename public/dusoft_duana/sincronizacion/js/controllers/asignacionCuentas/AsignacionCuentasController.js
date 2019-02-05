@@ -16,10 +16,21 @@ define(["angular", "js/controllers"
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-            
+            $scope.credito_debito=false;
+            $scope.debito_credito=false;
             that.init = function (callback) {
                 $scope.root = {prefijo: {}};
                 callback();
+            };
+            
+            $scope.validarDebito=function(data){
+              if(data===0){
+                $scope.credito_debito=true;
+                $scope.debito_credito=false;  
+              }else{
+                $scope.credito_debito=false;
+                $scope.debito_credito=true;  
+              }  
             };
 
             that.listarPrefijos = function () {
@@ -54,6 +65,37 @@ define(["angular", "js/controllers"
                 });
             };
             
+            that.listarDocumentosCuentas = function () {
+                console.log("listarDocumentosCuentas");
+                var obj = {
+                    session: $scope.session
+                };
+                ServerServiceDoc.listarDocumentosCuentas(obj, function (data) {
+                    if (data.status === 200) {
+                        console.log("data",data.obj);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
+                    }
+                });
+            };
+            
+            that.listarTiposCuentas = function () {
+                console.log("listarTiposCuentas");
+                var obj = {
+                    session: $scope.session
+                };
+                ServerServiceDoc.listarTiposCuentas(obj, function (data) {
+                    if (data.status === 200) {
+                        console.log("data",data.obj.listarTiposCuentas);
+                        $scope.root.listarTiposCuentas=data.obj.listarTiposCuentas;
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
+                    }
+                });
+            };
+            
+            that.listarTiposCuentas();
+            
            that.insertarTipoCuenta = function (obj) {
                 var obj = {
                     session: $scope.session,
@@ -66,6 +108,13 @@ define(["angular", "js/controllers"
                         AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
                     }
                 });
+            };
+            
+            $scope.validarCuenta=function(data,compara){
+                if((data.cuenta_id+"").slice(0, 2)===compara){
+                   return true; 
+                }
+              return false;  
             };
 
             $scope.crearCuenta = function () {

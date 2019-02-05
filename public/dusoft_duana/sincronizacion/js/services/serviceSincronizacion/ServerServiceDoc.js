@@ -53,7 +53,7 @@ define(["angular", "js/services"], function(angular, services) {
                                 "POST",
                                 {
                                     session: obj.session,
-                                    data: obj
+                                    data: obj.data
                                 },
                         function(data) {                           
                             callback(data);

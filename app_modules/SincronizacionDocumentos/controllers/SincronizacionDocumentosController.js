@@ -33,6 +33,20 @@ SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = function(req, res
        done();
 };
 
+SincronizacionDocumentos.prototype.insertTiposCuentas = function(req, res) {
+    console.log('Entro en el controlador, insertTiposCuentas!!!');
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(this.m_SincronizacionDoc,'insertTiposCuentas', args).then(function(tiposCuentas) {
+       res.send(G.utils.r(req.url, 'insertTiposCuentas!!!!', 200, {insertTiposCuentas: true}));
+    }).
+       fail(function(err) {
+       res.send(G.utils.r(req.url, 'Error insertTiposCuentas', 500, {insertTiposCuentas: false}));
+    }).
+       done();
+};
+
 
  /*
 
@@ -66,20 +80,7 @@ SincronizacionDocumentos.prototype.insertDocumentosCuentas = function(req, res) 
        done();
 };
 
-SincronizacionDocumentos.prototype.insertTiposCuentas = function(req, res) {
-    console.log('Entro en el controlador, insertTiposCuentas!!!');
-    var that = this;
-    var args = req.body.data;
 
-    G.Q.ninvoke(this.m_SincronizacionDoc,'insertTiposCuentas', args).
-       then(function(tiposCuentas) {
-       res.send(G.utils.r(req.url, 'insertTiposCuentas!!!!', 200, {insertTiposCuentas: true}));
-    }).
-       fail(function(err) {
-       res.send(G.utils.r(req.url, 'Error insertTiposCuentas', 500, {insertTiposCuentas: false}));
-    }).
-       done();
-};
 
 SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function(req, res) {
     console.log('Entro en el controlador, insertTiposCuentasCategorias!!!');

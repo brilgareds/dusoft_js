@@ -9,7 +9,7 @@ SincronizacionDocumentos.prototype.listarPrefijos = function(req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(this.m_SincronizacionDoc,'listarPrefijos', args.data).then(function(prefijos) {
-//        console.log("listarPrefijos",prefijos);
+       console.log("listarPrefijos",prefijos);
        res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {listarPrefijos: prefijos}));
     }).
        fail(function(err) {
@@ -47,8 +47,6 @@ SincronizacionDocumentos.prototype.insertTiposCuentas = function(req, res) {
        done();
 };
 
-
- /*
 
 SincronizacionDocumentos.prototype.listarTiposCuentas = function(req, res) {
     console.log('Entro en el controlador, listarTiposCuentas!!!');
@@ -96,7 +94,7 @@ SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function(req, 
     }).
        done();
 };
-*/
+
 
 SincronizacionDocumentos.$inject = [
     "m_SincronizacionDoc"

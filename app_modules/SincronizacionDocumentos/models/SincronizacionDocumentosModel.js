@@ -33,24 +33,6 @@ SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj
      });
 };
 
-SincronizacionDocumentosModel.prototype.insertTiposCuentas = function(obj, callback) {
-    console.log('entro en el modelo de "tipos_cuentas"!',obj);
-    
-    var query = G.knex('tipos_cuentas')
-        .insert({
-            cuenta_id: obj.cuentaId,
-            cuenta_categoria: obj.cuentaCategoria
-        });
-    console.log(G.sqlformatter.format(query.toString()));
-    query.then(function(resultado) {
-       callback(false, resultado);
-     }).catch (function(err) {
-        console.log("error sql",err);
-        callback(err);
-     });
-};
-
-
 SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {
     console.log('entro en el modelo de "listarTiposCuentas"!');
     
@@ -94,6 +76,22 @@ SincronizacionDocumentosModel.prototype.listarDocumentosCuentas = function(obj, 
      });
 };
 
+SincronizacionDocumentosModel.prototype.insertTiposCuentas = function(obj, callback) {
+    console.log('entro en el modelo de "tipos_cuentas"!',obj);
+    
+    var query = G.knex('tipos_cuentas')
+        .insert({
+            cuenta_id: obj.cuentaId,
+            cuenta_categoria: obj.cuentaCategoria
+        });
+    console.log(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado) {
+       callback(false, resultado);
+     }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+     });
+};
 
 SincronizacionDocumentosModel.prototype.insertDocumentosCuentas = function(obj, callback) {
     console.log('entro en el modelo de "documentos_cuentas"!');

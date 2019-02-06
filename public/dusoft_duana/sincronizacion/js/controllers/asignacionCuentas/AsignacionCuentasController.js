@@ -20,18 +20,60 @@ define(["angular", "js/controllers"
             $scope.debito_credito=false;
             that.init = function (callback) {
                 $scope.root = {prefijo: {}};
+                $scope.cuentas = [];
+                $scope.cuentas.seccion_1 = [];
+                $scope.cuentas.seccion_2 = [];
+                $scope.contador_checked = 0;
+                $scope.seccion_1 = false;
+                $scope.seccion_2 = false;
+                $scope.boton = false;
                 callback();
             };
             
-            $scope.validarDebito=function(data,e){
-              if(data===0){
-                $scope.credito_debito=true;
-                $scope.debito_credito=false;  
-              }else{
-                $scope.credito_debito=false;
-                $scope.debito_credito=true;  
-              }  
-              console.log("asset",e);
+
+            $scope.prefijo_actualizado = function(prefijo){
+                console.log('prefijo es:', prefijo);                
+                if(prefijo != undefined && prefijo != '' && prefijo != ' '){
+                    $scope.seccion_1 = true;
+                    $scope.seccion_2 = true;
+                    $scope.boton = true;
+                }
+            };
+            
+            $scope.validarDebito=function(cuenta, checked, otro){                
+                //console.log('cuenta: ',cuenta);
+                //console.log('checked es: ',checked);
+                //console.log('otro es: ',otro);
+                
+                if(checked){
+                    $scope.contador_checked++;     
+                    
+                    if(otro === 'seccion_1'){
+                       $scope.cuentas.seccion_1.push(cuenta.cuenta_id);
+                       $scope.seccion_2 = false;
+                    }else if(otro === 'seccion_2'){
+                       $scope.cuentas.seccion_2.push(cuenta.cuenta_id);
+                       $scope.seccion_1 = false;
+                    }                       
+                }else{
+                    $scope.contador_checked--;   
+                    
+                    if(otro === 'seccion_1'){
+                        $scope.cuentas.seccion_1.splice($scope.cuentas.seccion_1.indexOf(cuenta.cuenta_id), 1);
+                    }else if(otro === 'seccion_2'){
+                        $scope.cuentas.seccion_1.splice($scope.cuentas.seccion_2.indexOf(cuenta.cuenta_id), 1);
+                    }
+                    
+                    if($scope.contador_checked === 0){
+                        $scope.seccion_1 = true;
+                        $scope.seccion_2 = true;
+                    }
+                }                                                  
+                console.log('Total cuentas: ',$scope.cuentas);
+                //console.log('contador de checked: ', $scope.contador_checked);
+                //console.log('seccion 1: ', $scope.seccion_1);
+                //console.log('seccion 2: ', $scope.seccion_2);
+
             };
 
             that.listarPrefijos = function () {

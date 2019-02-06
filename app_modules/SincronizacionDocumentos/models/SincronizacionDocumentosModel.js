@@ -33,44 +33,10 @@ SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj
      });
 };
 
-SincronizacionDocumentosModel.prototype.insertTiposCuentas = function(obj, callback) {
-    console.log('entro en el modelo de "tipos_cuentas"!',obj);
-    
-    var query = G.knex('tipos_cuentas')
-        .insert({
-            cuenta_id: obj.cuentaId,
-            cuenta_categoria: obj.cuentaCategoria
-        });
-    console.log(G.sqlformatter.format(query.toString()));
-    query.then(function(resultado) {
-       callback(false, resultado);
-     }).catch (function(err) {
-        console.log("error sql",err);
-        callback(err);
-     });
-};
-
-
 SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {
     console.log('entro en el modelo de "listarTiposCuentas"!');
     
     var query = G.knex.select('tipos_cu.cuenta_id', 'tipos_cate.categoria_descripcion')
-            .from('tipos_cuentas as tipos_cu')
-            .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')            
-    
-    query.then(function(resultado) {
-       callback(false, resultado);
-     }).catch (function(err) {
-        console.log("error sql",err);
-        callback(err);
-     });
-};
-
-
-SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {
-    console.log('entro en el modelo de "listarTiposCuentas"!');
-    
-    var query = G.knex.select('tipos_cu.cuenta_id', 'tipos_cate.categoria_descripcion','tipos_cate.categoria_id')
             .from('tipos_cuentas as tipos_cu')
             .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')            
     
@@ -97,9 +63,11 @@ SincronizacionDocumentosModel.prototype.listarDocumentosCuentas = function(obj, 
         .from('documentos_cuentas as doc_cu')
         .innerJoin('tipos_cuentas as tipos_cu', 'doc_cu.cuenta_debito', 'tipos_cu.cuenta_id')            
         .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')        
-        .innerJoin('tipos_cuentas as tipos_cu2', 'doc_cu.cuenta_credito', 'tipos_cu.cuenta_id')            
-        .innerJoin('tipos_cuentas_categorias as tipos_cate2', 'tipos_cu.cuenta_categoria', 'tipos_cate2.categoria_id')
-    console.log(G.sqlformatter.format(query.toString())); 
+        .innerJoin('tipos_cuentas as tipos_cu2', 'doc_cu.cuenta_credito', 'tipos_cu2.cuenta_id')            
+        .innerJoin('tipos_cuentas_categorias as tipos_cate2', 'tipos_cu2.cuenta_categoria', 'tipos_cate2.categoria_id');
+
+        console.log(G.sqlformatter.format(query.toString())); 
+
     query.then(function(resultado) {
        callback(false, resultado);
      }).catch (function(err) {
@@ -108,6 +76,22 @@ SincronizacionDocumentosModel.prototype.listarDocumentosCuentas = function(obj, 
      });
 };
 
+SincronizacionDocumentosModel.prototype.insertTiposCuentas = function(obj, callback) {
+    console.log('entro en el modelo de "tipos_cuentas"!',obj);
+    
+    var query = G.knex('tipos_cuentas')
+        .insert({
+            cuenta_id: obj.cuentaId,
+            cuenta_categoria: obj.cuentaCategoria
+        });
+    console.log(G.sqlformatter.format(query.toString()));
+    query.then(function(resultado) {
+       callback(false, resultado);
+     }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+     });
+};
 
 SincronizacionDocumentosModel.prototype.insertDocumentosCuentas = function(obj, callback) {
     console.log('entro en el modelo de "documentos_cuentas"!');
@@ -129,25 +113,6 @@ SincronizacionDocumentosModel.prototype.insertDocumentosCuentas = function(obj, 
         callback(err);
      });
 };
-
-
-SincronizacionDocumentosModel.prototype.insertTiposCuentas = function(obj, callback) {
-    console.log('entro en el modelo de "tipos_cuentas"!');
-    
-    var query = G.knex('tipos_cuentas')
-        .insert({
-            cuenta_id: obj.cuentaId,
-            cuenta_categoria: obj.cuentaCategoria
-        });
-    
-    query.then(function(resultado) {
-       callback(false, resultado);
-     }).catch (function(err) {
-        console.log("error sql",err);
-        callback(err);
-     });
-};
-
 
 SincronizacionDocumentosModel.prototype.insertTiposCuentasCategorias = function(obj, callback) {
     console.log('entro en el modelo de "tipos_cuentas_categorias"!');

@@ -40,9 +40,9 @@ define(["angular", "js/controllers"
             };
             
             $scope.validarDebito=function(cuenta, checked, otro){                
-                console.log('cuenta: ',cuenta);
+                //console.log('cuenta: ',cuenta);
                 //console.log('checked es: ',checked);
-                //console.log('otro es: ',otro);                
+                //console.log('otro es: ',otro);
                 
                 if(checked){
                     $scope.contador_checked++;     

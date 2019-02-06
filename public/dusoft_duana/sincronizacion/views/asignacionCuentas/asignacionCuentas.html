@@ -33,7 +33,7 @@
                                      <li class="list-group-item">
                                         <label  class="col-form-label">Debito</label>
                                         <span class="checkbox" ng-if="validarCuenta(category,'61')" ng-repeat="category in root.listarTiposCuentas">     
-                                            <input type="checkbox" id="{{category}}" ng-change="validarDebito(0)" ng-disabled="debito_credito" ng-model="asset.category[$index]">
+                                            <input type="checkbox" id="{{category}}" ng-change="validarDebito(0,$index)" ng-disabled="debito_credito" ng-model="asset.category[$index]">
                                                 <label for="{{category}}"><span class="label label-success">{{category.cuenta_id}}</span> {{category.categoria_descripcion}}</label>                                      
                                         </span>
                                         <hr style="color: #0056b2;" />

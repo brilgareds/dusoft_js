@@ -23,7 +23,7 @@ define(["angular", "js/controllers"
                 callback();
             };
             
-            $scope.validarDebito=function(data){
+            $scope.validarDebito=function(data,e){
               if(data===0){
                 $scope.credito_debito=true;
                 $scope.debito_credito=false;  
@@ -31,6 +31,7 @@ define(["angular", "js/controllers"
                 $scope.credito_debito=false;
                 $scope.debito_credito=true;  
               }  
+              console.log("asset",e);
             };
 
             that.listarPrefijos = function () {

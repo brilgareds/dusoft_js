@@ -23,9 +23,7 @@ define(["angular", "js/controllers"
             that.init = function(callback) {
                 $scope.root = {};         
                 callback();
-            };
-            
-           
+            };                       
 
             that.init(function() {
                 

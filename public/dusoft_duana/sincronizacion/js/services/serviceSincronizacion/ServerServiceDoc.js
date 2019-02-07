@@ -62,6 +62,21 @@ define(["angular", "js/services"], function(angular, services) {
                         );
                     };
                     
+                    self.listarTiposFacturas = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_FACTURAS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {}
+                                },
+                                function (data) {                                    
+                                    callback(data);
+                                    // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                }
+                        );
+                    };
+                    
                     self.listarTiposCuentas = function (obj, callback) {
 
                         Request.realizarRequest(
@@ -95,8 +110,21 @@ define(["angular", "js/services"], function(angular, services) {
 
                     };
                     
-                    
-                  
+                    self.guardarCuentas = function(obj, callback) {
+                        Request.realizarRequest(
+                            API.SINCRONIZACION_DOCUMENTOS.GUARDAR_CUENTAS,
+                            "POST",
+                            {
+                                session: obj.session,
+                                data: obj
+                            },
+                            function(data) {                           
+                                callback(data);
+                               // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        );
+
+                    };                                                          
                     return this;
     }]);
 });

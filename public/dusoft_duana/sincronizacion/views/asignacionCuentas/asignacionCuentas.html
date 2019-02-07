@@ -1,5 +1,30 @@
 <div class="row">    
     <div class="col-md-12 col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="col-form-label">Factura</label>
+                            <ui-select ng-model="root.listarTiposFacturas2"
+                                       theme="select2"
+                                       class="form-control selectgeneral pull-left col-md-4"
+                                       ng-change="tipo_factura_actualizado($select.selected.descripcion)">
+                                <ui-select-match placeholder="Seleccionar Factura">{{ $select.selected.descripcion}}</ui-select-match>
+                                <ui-select-choices repeat="filtro in root.listarTiposFacturas | filter:$select.search">
+                                    {{ filtro.descripcion }}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>        
+</div>
+<br>
+<div class="row">    
+    <form ng-submit="guardar_cuentas()" class="col-md-12 col-lg-12">
         <!--<div class="container">-->
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -7,7 +32,7 @@
                         <div class="col-md-1">
                             <div class="form-group">
                                 <div class="input-group form-group">
-                                    <label  class="col-form-label">&nbsp;</label>
+                                    <label class="col-form-label">&nbsp;</label>
                                     <div class="input-group form-group">
                                         <button class="btn btn-success" ng-click="crearCuenta()" >Crear Cuenta</button>
                                     </div> 
@@ -16,7 +41,7 @@
                         </div>
                         <div class="col-md-1">
                             <div class="form-group">
-                                <label  class="col-form-label">Prefijo</label>
+                                <label class="col-form-label">Prefijo</label>
                                 <ui-select ng-model="root.prefijo"
                                            theme="select2"
                                            class="form-control selectgeneral pull-left col-md-4"
@@ -34,12 +59,12 @@
                                      <li class="list-group-item">
                                         <label class="col-form-label">Debito</label>
                                         <span class="checkbox" ng-if="validarCuenta(category,'61')" ng-repeat="category in root.listarTiposCuentas">     
-                                            <input type="checkbox" id="{{category.cuenta_id}}" ng-disabled="!seccion_1" ng-change="validarDebito(category, checked, 'seccion_1')" ng-model="checked">
+                                            <input type="checkbox" id="{{category.cuenta_id}}" ng-disabled="!seccion_1" ng-change="validarDebito(category, checked, 'seccion_1', 'debito')" ng-model="checked">
                                             <label for="{{category}}"><span class="label label-success">{{category.cuenta_id}}</span> {{category.categoria_descripcion}}</label>                                      
                                         </span>
                                         <hr style="color: #0056b2;" />
                                         <span class="checkbox" ng-if="validarCuenta(category,'14')" ng-repeat="category in root.listarTiposCuentas">     
-                                            <input type="checkbox" id="{{category.cuenta_id}}" ng-disabled="!seccion_2" ng-change="validarDebito(category, checked, 'seccion_2')" ng-model="checked">
+                                            <input type="checkbox" id="{{category.cuenta_id}}" ng-disabled="!seccion_2" ng-change="validarDebito(category, checked, 'seccion_2', 'debito')" ng-model="checked">
                                             <label for="{{category}}"><span class="label label-success">{{category.cuenta_id}}</span> {{category.categoria_descripcion}}</label>                                      
                                         </span>
                                      </li>
@@ -52,12 +77,12 @@
                                      <li class="list-group-item">
                                         <label  class="col-form-label">Credito</label>
                                         <span class="checkbox" ng-if="validarCuenta(category,'14')" ng-repeat="category in root.listarTiposCuentas">     
-                                            <input type="checkbox" id="{{category.cuenta_id}}" ng-disabled="!seccion_1" ng-change="validarDebito(category, checked, 'seccion_1')" ng-model="checked">
+                                            <input type="checkbox" id="{{category.cuenta_id}}" ng-disabled="!seccion_1" ng-change="validarDebito(category, checked, 'seccion_1', 'credito')" ng-model="checked">
                                             <label for="{{category}}"><span class="label label-success">{{category.cuenta_id}}</span> {{category.categoria_descripcion}}</label>                                      
                                         </span>
                                         <hr style="color: #0056b2;" />
                                         <span class="checkbox" ng-if="validarCuenta(category,'61')" ng-repeat="category in root.listarTiposCuentas">     
-                                            <input type="checkbox" id="{{category.cuenta_id}}" ng-disabled="!seccion_2" ng-change="validarDebito(category, checked, 'seccion_2')" ng-model="checked">
+                                            <input type="checkbox" id="{{category.cuenta_id}}" ng-disabled="!seccion_2" ng-change="validarDebito(category, checked, 'seccion_2', 'credito')" ng-model="checked">
                                             <label for="{{category}}"><span class="label label-success">{{category.cuenta_id}}</span> {{category.categoria_descripcion}}</label>                                      
                                         </span>
                                      </li>
@@ -71,6 +96,6 @@
                 </div>
             </div>
         <!--</div>-->
-    </div>
+    </form>
 </div>
 <!--<visualizar-reporte></visualizar-reporte>-->

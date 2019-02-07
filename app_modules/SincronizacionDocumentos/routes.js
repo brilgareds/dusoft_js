@@ -1,5 +1,4 @@
-module.exports = function(app, di_container) {
-    
+module.exports = function(app, di_container) {    
     var c_SincronizacionDoc = di_container.get("c_SincronizacionDoc");
 
     app.post('/api/SincronizacionDocumentos/listarPrefijos', function(req, res) {
@@ -21,4 +20,12 @@ module.exports = function(app, di_container) {
     app.post('/api/SincronizacionDocumentos/listarTiposCuentas', function(req, res) {
         c_SincronizacionDoc.listarTiposCuentas(req, res);
     });
+    
+    app.post('/api/SincronizacionDocumentos/listarTiposFacturas', function(req, res) {
+        c_SincronizacionDoc.listarTiposFacturas(req, res);
+    });
+    
+    app.post('/api/SincronizacionDocumentos/guardarCuentas', function(req, res) {
+        c_SincronizacionDoc.guardarCuentas(req, res);
+    });        
 };

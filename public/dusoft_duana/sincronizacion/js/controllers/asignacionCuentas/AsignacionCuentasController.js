@@ -47,15 +47,7 @@ define(["angular", "js/controllers"
                 var obj = {
                     session: $scope.session,
                     data: $scope.cuentas
-                };              
-                
-                console.log('tipo de dato: ',typeof($scope.cuentas));
-                
-                for(var cuentaActual of $scope.cuentas){
-                    console.log('cuentaActual: ',cuentaActual);
-                    //console.log('item es: ', item,' y el index es: ',index);
-                };                                  
-                
+                };
                 console.log('El objeto enviado es ',$scope.cuentas);                                
                 
                 //prefijo,
@@ -70,17 +62,16 @@ define(["angular", "js/controllers"
                 //id_tercero_asiento,
                 //observacion_asiento
                 
-                //ServerServiceDoc.guardarCuentas(obj, function (data) {
-                //    console.log('Ajax init_0!');
-                //    if (data.status === 200) {
-                //        console.log('Ajax fine');
-                //        console.log("data",data.obj.listarTiposCuentas);
-                //        $scope.root.listarTiposCuentas=data.obj.listarTiposCuentas;
-                //    } else {
-                //        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                //    }
-                //});
-                console.log('Funcion del submit!!');
+                ServerServiceDoc.guardarCuentas(obj, function (data) {                    
+                    if (data.status === 200) {
+                        console.log('Ajax fine');
+                        console.log("data",data.obj.listarTiposCuentas);
+                        $scope.root.listarTiposCuentas=data.obj.listarTiposCuentas;
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
+                    }
+                });
+                //console.log('Funcion del submit!!');
                 console.log('Cuentas son: ',$scope.cuentas);
             };
             

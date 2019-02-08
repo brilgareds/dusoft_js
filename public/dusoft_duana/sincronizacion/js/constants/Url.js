@@ -12,6 +12,7 @@ define(["angular"], function(angular) {
                 "LISTAR_DOCUMENTOS_CUENTAS": BASE_URL + "/SincronizacionDocumentos/listarDocumentosCuentas",
                 "LISTAR_TIPOS_CUENTAS": BASE_URL + "/SincronizacionDocumentos/listarTiposCuentas",
                 "LISTAR_TIPOS_FACTURAS": BASE_URL + "/SincronizacionDocumentos/listarTiposFacturas",
+                "GUARDAR_CUENTAS": BASE_URL + "/SincronizacionDocumentos/guardarCuentas"
             }
         }
     };

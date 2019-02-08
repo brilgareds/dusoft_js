@@ -32,10 +32,13 @@ SincronizacionDocumentosModel.prototype.listarTiposFacturas = function(obj, call
      });
 };
 
-SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback) {
-    console.log('entro en el modelo de "guardarCuentas"!');    
+SincronizacionDocumentosModel.prototype.guardarCuentas = function(array, callback) {
+    console.log('entro en el modelo de "guardarCuentas"!');   
     
-    var query = G.knex('documentos_cuentas')
+    for(var obj in array){
+        console.log('cuentaActual: ',cuentaActual);
+        //console.log('item es: ', item,' y el index es: ',index);
+        var query = G.knex('documentos_cuentas')
         .insert({
             prefijo: obj.prefijo,
             emrpesa_id: obj.emrpesa_id,
@@ -49,14 +52,16 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback)
             id_tercero_asiento: obj.id_tercero_asiento,
             observacion_asiento: obj.observacion_asiento
         });
-    //console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
-    
-    query.then(function(resultado) {
-       callback(false, resultado);
-     }).catch (function(err) {
-        console.log("error sql",err);
-        callback(err);
-     });
+        //console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
+
+        query.then(function(resultado) {
+
+        }).catch (function(err) {
+            console.log("error sql",err);
+            callback(err);
+         });                
+    };     
+    return true;
 };
 
 SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj, callback) {

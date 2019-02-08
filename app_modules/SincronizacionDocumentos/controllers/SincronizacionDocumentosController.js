@@ -109,7 +109,7 @@ SincronizacionDocumentos.prototype.listarTiposFacturas = function(req, res) {
 };
 
 SincronizacionDocumentos.prototype.guardarCuentas = function(req, res) {
-    console.log('In Controller!!');
+    console.log('In Controller backend - guardarCuentas!!');
     var that = this;
     var args = req.body.data;
     

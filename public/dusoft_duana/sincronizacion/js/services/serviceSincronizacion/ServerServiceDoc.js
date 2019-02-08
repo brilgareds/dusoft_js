@@ -94,23 +94,23 @@ define(["angular", "js/services"], function(angular, services) {
                     };
                     
                     self.insertarTipoCuenta = function(obj, callback) {
-
                         Request.realizarRequest(
-                                API.SINCRONIZACION_DOCUMENTOS.INSERTAR_TIPO_CUENTA,
-                                "POST",
-                                {
-                                    session: obj.session,
-                                    data: obj.data
-                                },
-                        function(data) {                           
-                            callback(data);
-                           // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                        }
+                            API.SINCRONIZACION_DOCUMENTOS.INSERTAR_TIPO_CUENTA,
+                            "POST",
+                            {
+                                session: obj.session,
+                                data: obj.data
+                            },
+                            function(data) {                           
+                                callback(data);
+                               // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
                         );
 
                     };
                     
                     self.guardarCuentas = function(obj, callback) {
+                        console.log('Ajax init_0!');
                         Request.realizarRequest(
                             API.SINCRONIZACION_DOCUMENTOS.GUARDAR_CUENTAS,
                             "POST",
@@ -118,7 +118,8 @@ define(["angular", "js/services"], function(angular, services) {
                                 session: obj.session,
                                 data: obj
                             },
-                            function(data) {                           
+                            function(data) {          
+                                console.log('Ajax finish!!');
                                 callback(data);
                                // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }

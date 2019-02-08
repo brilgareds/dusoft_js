@@ -82,12 +82,23 @@ define(["angular", "js/controllers"
                 
                 if(checked){
                     $scope.contador_checked++;
-                    
-                    if($scope.cuentas[categoria_string] === undefined){
-                        $scope.cuentas[categoria_string] = [];
-                    }                      
-                    $scope.cuentas[categoria_string][origen] = cuenta_id;      
-                                        
+                    if($scope.cuentas === undefined){
+                        $scope.cuentas = [];
+                    }
+                    //var array = [{cuenta_id: {cuenta_id: }}] ['']['prefijo'] = $scope.cuentas.prefijo;
+                    //$scope.cuentas.push();
+                    $scope.cuentas[cuenta_id]['empresa_id'] = Usuario.getUsuarioActual().getEmpresa().codigo;
+                    $scope.cuentas[cuenta_id]['centro_id'] = Usuario.getUsuarioActual().getEmpresa().centroUtilidad.codigo;
+                    $scope.cuentas[cuenta_id]['bodega_id'] = Usuario.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo;
+
+                    //$scope.cuentas[cuenta_id]['sw_cuentas'] = 1;
+                    //$scope.cuentas[cuenta_id]['centro_costos_asientos'] = 0;
+                    //$scope.cuentas[cuenta_id]['centro_utilidad_asiento'] = 0;
+                    //$scope.cuentas[cuenta_id]['cod_linea_costo_asiento'] = 0;
+                    //$scope.cuentas[cuenta_id]['id_tercero_asiento'] = null;
+                    //$scope.cuentas[cuenta_id]['observacion_asiento'] = null;
+                    console.log('');
+
                     if(seccion === 'seccion_1'){                       
                        $scope.seccion_2 = false;
                     }else if(seccion === 'seccion_2'){

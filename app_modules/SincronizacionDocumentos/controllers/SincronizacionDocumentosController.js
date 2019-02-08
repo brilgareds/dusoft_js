@@ -24,7 +24,6 @@ SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = function(req, res
     var args = req.body.data;
 
     G.Q.ninvoke(that.m_SincronizacionDoc,'listarTipoCuentaCategoria', args).then(function(tipoCuentascategoria) {
-        
        res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarTipoCuentaCategoria: tipoCuentascategoria}));
     }).
        fail(function(err) {

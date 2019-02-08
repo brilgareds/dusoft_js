@@ -41,7 +41,7 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function(array, callbac
         var query = G.knex('documentos_cuentas')
         .insert({
             prefijo: obj.prefijo,
-            emrpesa_id: obj.emrpesa_id,
+            empresa_id: obj.empresa_id,
             centro_id: obj.centro_id,
             bodega_id: obj.bodega_id,
             cuenta_debito: obj.cuenta_debito,

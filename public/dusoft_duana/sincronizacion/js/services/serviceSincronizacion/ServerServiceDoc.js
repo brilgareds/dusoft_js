@@ -114,11 +114,8 @@ define(["angular", "js/services"], function(angular, services) {
                         Request.realizarRequest(
                             API.SINCRONIZACION_DOCUMENTOS.GUARDAR_CUENTAS,
                             "POST",
-                            {
-                                session: obj.session,
-                                data: obj
-                            },
-                            function(data) {          
+                            obj,
+                            function(data) {
                                 console.log('Ajax finish!!');
                                 callback(data);
                                // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);

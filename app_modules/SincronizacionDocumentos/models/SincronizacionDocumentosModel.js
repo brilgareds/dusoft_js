@@ -33,35 +33,80 @@ SincronizacionDocumentosModel.prototype.listarTiposFacturas = function(obj, call
 };
 
 SincronizacionDocumentosModel.prototype.guardarCuentas = function(array, callback) {
-    console.log('entro en el modelo de "guardarCuentas"!');   
-    
-    for(var obj in array){
-        console.log('cuentaActual: ',cuentaActual);
-        //console.log('item es: ', item,' y el index es: ',index);
-        var query = G.knex('documentos_cuentas')
-        .insert({
-            prefijo: obj.prefijo,
-            empresa_id: obj.empresa_id,
-            centro_id: obj.centro_id,
-            bodega_id: obj.bodega_id,
-            cuenta_debito: obj.cuenta_debito,
-            cuenta_credito: obj.cuenta_credito,
-            centro_costos_asientos: obj.centro_costos_asientos,
-            centro_utiliad_asiento: obj.centro_utiliad_asiento,
-            cod_linea_costo_asiento: obj.cod_linea_costo_asiento,
-            id_tercero_asiento: obj.id_tercero_asiento,
-            observacion_asiento: obj.observacion_asiento
+    console.log('entro en el modelo de "guardarCuentas"!');
+    var categorias = array.categorias;
+    var sw_cuentas = [0, 1];
+    var tipo_cuenta = '';
+    //console.log('Array in model is: ', categorias);
+
+    for(var index in categorias){
+        var obj = categorias[index];
+        //console.log('For in Model: ', obj);
+        sw_cuentas.forEach(function(sw_cuenta){
+            if(sw_cuenta == 0){
+                tipo_cuenta = 'debito';
+            }else if(sw_cuenta == 1){
+                tipo_cuenta = 'credito';
+            }
+
+            var query = G.knex.select('documentos_cuentas_id')
+                .from('documentos_cuentas')
+                .where({cuenta: obj.debito.cuenta_id, sw_cuenta: sw_cuenta});
+            console.log('Query: ', G.sqlformatter.format(query.toString()));
+            query.then(function(resultado) {
+                //console.log('Resultado es: ', resultado);
+                if(resultado[0] === undefined || resultado[0].documentos_cuentas_id === undefined){
+                    var insert = G.knex('documentos_cuentas')
+                    .insert({
+                            prefijo: array.prefijo_id,
+                            empresa_id: array.empresa_id,
+                            centro_id: array.centro_id,
+                            bodega_id: array.bodega_id,
+                            cuenta: obj[tipo_cuenta].cuenta_id,
+                            sw_cuenta: sw_cuenta,
+                            centro_costos_asientos: obj[tipo_cuenta].centro_costos_asientos,
+                            centro_utilidad_asiento: obj[tipo_cuenta].centro_utilidad_asiento,
+                            cod_linea_costo_asiento: obj[tipo_cuenta].cod_linea_costo_asiento,
+                            id_tercero_asiento: obj[tipo_cuenta].id_tercero_asiento,
+                            observacion_asiento: obj[tipo_cuenta].observacion_asiento
+                    });
+                    console.log('Insert: ', G.sqlformatter.format(insert.toString()));
+
+                    insert.then(function(resultado) {
+
+                    }).catch (function(err) {
+                        console.log("error sql",err);
+                        callback(err);
+                    });
+                }else{
+                    var update = G.knex('documentos_cuentas')
+                        .where({cuenta: obj.debito.cuenta_id, sw_cuenta: sw_cuenta})
+                        .update({
+                            prefijo: array.prefijo_id,
+                            empresa_id: array.empresa_id,
+                            centro_id: array.centro_id,
+                            bodega_id: array.bodega_id,
+                            centro_costos_asientos: obj[tipo_cuenta].centro_costos_asientos,
+                            centro_utilidad_asiento: obj[tipo_cuenta].centro_utilidad_asiento,
+                            cod_linea_costo_asiento: obj[tipo_cuenta].cod_linea_costo_asiento,
+                            id_tercero_asiento: obj[tipo_cuenta].id_tercero_asiento,
+                            observacion_asiento: obj[tipo_cuenta].observacion_asiento
+                        });
+                    console.log('Update: ', G.sqlformatter.format(update.toString()));
+                    update.then(function(resultado) {
+
+                    }).catch (function(err) {
+                        console.log("error sql",err);
+                        callback(err);
+                    });
+                }
+            }).catch (function(err) {
+                console.log("error sql",err);
+                callback(err);
+            })
         });
-        //console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
-
-        query.then(function(resultado) {
-
-        }).catch (function(err) {
-            console.log("error sql",err);
-            callback(err);
-         });                
-    };     
-    return true;
+    };
+    callback(false, true);
 };
 
 SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj, callback) {
@@ -82,11 +127,11 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
     console.log('entro en el modelo de "listarTiposCuentas"!');
     
     var query = G.knex.select('tipos_cu.cuenta_id', 'tipos_cate.categoria_descripcion', 'tipos_cate.categoria_id')
-            .from('tipos_cuentas as tipos_cu')
-            .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id')            
+        .from('tipos_cuentas as tipos_cu')
+        .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id');
     
     query.then(function(resultado) {
-       callback(false, resultado);
+        callback(false, resultado);
      }).catch (function(err) {
         console.log("error sql",err);
         callback(err);

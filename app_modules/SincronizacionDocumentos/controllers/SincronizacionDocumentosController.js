@@ -9,7 +9,7 @@ SincronizacionDocumentos.prototype.listarPrefijos = function(req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(this.m_SincronizacionDoc,'listarPrefijos', args.data).then(function(prefijos) {
-      
+
        res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {listarPrefijos: prefijos}));
     }).
        fail(function(err) {
@@ -69,7 +69,7 @@ SincronizacionDocumentos.prototype.listarTiposCuentas = function(req, res) {
 
     G.Q.ninvoke(this.m_SincronizacionDoc,'listarTiposCuentas', args).
        then(function(tiposCuentas) {
-       res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarTiposCuentas: tiposCuentas}));
+        res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarTiposCuentas: tiposCuentas}));
     }).
        fail(function(err) {
        res.send(G.utils.r(req.url, 'Error Listado de TiposCuentas', 500, {listarTiposCuentas: {}}));
@@ -98,7 +98,7 @@ SincronizacionDocumentos.prototype.listarTiposFacturas = function(req, res) {
     var args = req.body.data;
     
     G.Q.ninvoke(this.m_SincronizacionDoc,'listarTiposFacturas', args).
-       then(function(listarTiposFacturas) {          
+       then(function(listarTiposFacturas) {
        res.send(G.utils.r(req.url, 'listarTiposFacturas!', 200, {listarTiposFacturas: listarTiposFacturas}));
     }).
        fail(function(err) {
@@ -111,15 +111,16 @@ SincronizacionDocumentos.prototype.guardarCuentas = function(req, res) {
     console.log('In Controller backend - guardarCuentas!!');
     var that = this;
     var args = req.body.data;
-    
+
     G.Q.ninvoke(this.m_SincronizacionDoc,'guardarCuentas', args).
-       then(function(listarTiposFacturas) {          
-       res.send(G.utils.r(req.url, 'guardarCuentas!', 200, {status: true}));
-    }).
-       fail(function(err) {
-       res.send(G.utils.r(req.url, 'Error guardarCuentas', 500, {status: false}));
-    }).
-       done();
+        then(function(resultado) {
+            console.log('Todo bien en "guardarCuentas"');
+            res.send(G.utils.r(req.url, 'La actualización de cuentas fue exitosa!', 200, {status: true}));
+        }).
+           fail(function(err) {
+            res.send(G.utils.r(req.url, 'Error guardarCuentas', 500, {status: false}));
+        }).
+           done();
 };
 
 SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function(req, res) {

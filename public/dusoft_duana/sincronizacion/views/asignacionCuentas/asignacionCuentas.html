@@ -56,60 +56,60 @@
                         <div class="col-md-6">
                             <div class="col-md-12 contenedor-tipos-cuentas">
                                 <label class="col-form-label titulo-tipo-cuenta">Debito</label>
-                                <span class="checkbox col-md-12" ng-if="validarCuenta(category,'61')" ng-repeat="category in root.listarTiposCuentas">
+                                <span class="checkbox col-md-12" ng-if="validarCuenta(category.debito, '61')" ng-repeat="category in root.listarTiposCuentas">
                                     <div class="col-md-12">
                                         <input type="checkbox" ng-disabled="!seccion_1" ng-change="validarDebito(category, checked, 'seccion_1', 'debito')" ng-model="checked">
-                                        <label for="{{category}}"><span class="label label-success">{{category.cuenta_id}}</span> {{category.categoria_descripcion}}</label>
+                                        <label for="{{category}}"><span class="label label-success" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.cuenta_id">{{category.debito.cuenta_id}}</span> {{category.debito.categoria_descripcion}}</label>
                                     </div><br class="col-md-12">
                                     <div class="col-md-12">
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Centro Costos Asientos</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].centro_costos_asientos" ng-change="" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.centro_costos_asientos" ng-change="" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Centro Utilidad Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].centro_utilidad_asiento" ng-change="" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.centro_utilidad_asiento" ng-change="" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Cod Linea Costo Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].cod_linea_costo_asiento" ng-change="" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.cod_linea_costo_asiento" ng-change="" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Id Tercero Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].id_tercero_asiento" ng-change="" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.id_tercero_asiento" ng-change="" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Observacion Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].observacion_asiento" ng-change="" placeholder="Observacion Asiento" title="Observacion Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.observacion_asiento" ng-change="" placeholder="Observacion Asiento" title="Observacion Asiento">
                                         </div>
                                     </div><br class="col-md-12"><br class="col-md-12">
                                 </span>
                                 <hr class="col-md-11" style="background:#00000052;" />
-                                <span class="checkbox col-md-12" ng-if="validarCuenta(category,'14')" ng-repeat="category in root.listarTiposCuentas">
+                                <span class="checkbox col-md-12" ng-if="validarCuenta(category.debito,'14')" ng-repeat="category in root.listarTiposCuentas">
                                     <div class="col-md-12">
                                         <input type="checkbox" id="" ng-disabled="!seccion_2" ng-change="validarDebito(category, checked, 'seccion_2', 'debito')" ng-model="checked">
-                                        <label for="{{category.cuenta_id}}"><span class="label label-success">{{category.cuenta_id}}</span> {{category.categoria_descripcion}}</label><br class="col-md-12">
+                                        <label for="{{category.cuenta_id}}"><span class="label label-success" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.cuenta_id">{{category.debito.cuenta_id}}</span> {{category.debito.categoria_descripcion}}</label><br class="col-md-12">
                                     </div><br class="col-md-12">
                                     <div class="col-md-12">
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Centro Costos Asientos</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].centro_costos_asientos" ng-change="" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.centro_costos_asientos" ng-change="" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Centro Utilidad Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].centro_utilidad_asiento" ng-change="" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.centro_utilidad_asiento" ng-change="" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Cod Linea Costo Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].cod_linea_costo_asiento" ng-change="" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.cod_linea_costo_asiento" ng-change="" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Id Tercero Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].id_tercero_asiento" ng-change="" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.id_tercero_asiento" ng-change="" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Observacion Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].observacion_asiento" ng-change="" placeholder="Observacion Asiento" title="Observacion Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.debito.categoria_descripcion].debito.observacion_asiento" ng-change="" placeholder="Observacion Asiento" title="Observacion Asiento">
                                         </div>
                                     </div><br class="col-md-12"><br class="col-md-12">
                                 </span>
@@ -118,60 +118,60 @@
                         <div class="col-md-6">
                             <div class="col-md-12 contenedor-tipos-cuentas">
                                 <label class="col-form-label titulo-tipo-cuenta">Credito</label>
-                                <span class="checkbox col-md-12" ng-if="validarCuenta(category,'14')" ng-repeat="category in root.listarTiposCuentas">
+                                <span class="checkbox col-md-12" ng-if="validarCuenta(category.credito,'14')" ng-repeat="category in root.listarTiposCuentas">
                                     <div class="col-md-12">
                                         <input type="checkbox" ng-disabled="!seccion_1" ng-change="validarDebito(category, checked, 'seccion_1', 'credito')" ng-model="checked">
-                                        <label for="{{category}}"><span class="label label-success">{{category.cuenta_id}}</span> {{category.categoria_descripcion}}</label>
+                                        <label for="{{category}}"><span class="label label-success" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.cuenta_id">{{category.credito.cuenta_id}}</span> {{category.credito.categoria_descripcion}}</label>
                                     </div><br class="col-md-12">
                                     <div class="col-md-12">
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Centro Costos Asientos</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].centro_costos_asientos" ng-change="" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.centro_costos_asientos" ng-change="" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Centro Utilidad Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].centro_utilidad_asiento" ng-change="" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.centro_utilidad_asiento" ng-change="" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Cod Linea Costo Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].cod_linea_costo_asiento" ng-change="" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.cod_linea_costo_asiento" ng-change="" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Id Tercero Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].id_tercero_asiento" ng-change="" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.id_tercero_asiento" ng-change="" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Observacion Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].observacion_asiento" ng-change="" placeholder="Observacion Asiento" title="Observacion Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.observacion_asiento" ng-change="" placeholder="Observacion Asiento" title="Observacion Asiento">
                                         </div>
                                     </div><br class="col-md-12"><br class="col-md-12">
                                 </span>
                                 <hr class="col-md-11" style="background:#00000052;" />
-                                <span class="checkbox col-md-12" ng-if="validarCuenta(category,'61')" ng-repeat="category in root.listarTiposCuentas">
+                                <span class="checkbox col-md-12" ng-if="validarCuenta(category.credito,'61')" ng-repeat="(key, category) in root.listarTiposCuentas">
                                     <div class="col-md-12">
                                         <input type="checkbox" ng-disabled="!seccion_2" ng-change="validarDebito(category, checked, 'seccion_2', 'credito')" ng-model="checked">
-                                        <label for="{{category}}"><span class="label label-success">{{category.cuenta_id}}</span> {{category.categoria_descripcion}}</label>
+                                        <label for="{{category}}"><span class="label label-success" ng-model="documentosCuentas.categorias[category.categoria_descripcion].credito.cuenta_id">{{category.credito.cuenta_id}}</span> {{category.credito.categoria_descripcion}}</label>
                                     </div><br class="col-md-12">
                                     <div class="col-md-12">
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Centro Costos Asientos</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].centro_costos_asientos" ng-change="" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.centro_costos_asientos" ng-change="" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Centro Utilidad Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].centro_utilidad_asiento" ng-change="" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.centro_utilidad_asiento" ng-change="" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Cod Linea Costo Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].cod_linea_costo_asiento" ng-change="" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.cod_linea_costo_asiento" ng-change="" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Id Tercero Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].id_tercero_asiento" ng-change="" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.id_tercero_asiento" ng-change="" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
                                         </div>
                                         <div class="col-md-2 contenedor-campos">
                                             <label class="col-form-label contenedor-campos-label">Observacion Asiento</label>
-                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="cuentas[category.cuenta_id].observacion_asiento" ng-change="" placeholder="Observacion Asiento" title="Observacion Asiento">
+                                            <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="documentosCuentas.categorias[category.credito.categoria_descripcion].credito.observacion_asiento" ng-change="" placeholder="Observacion Asiento" title="Observacion Asiento">
                                         </div>
                                     </div><br class="col-md-12"><br class="col-md-12">
                                 </span>

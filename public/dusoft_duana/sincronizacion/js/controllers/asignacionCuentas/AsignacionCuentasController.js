@@ -19,14 +19,17 @@ define(["angular", "js/controllers"
             $scope.credito_debito=false;
             $scope.debito_credito=false;
             that.init = function (callback) {
-                $scope.root = {prefijo: {}};
-                $scope.cuentas = [];
-                $scope.cuentas.seccion_1 = [];
-                $scope.cuentas.seccion_2 = [];
+                $scope.root = {prefijo: {}};      
+                $scope.root.listarTiposFacturas = [
+                    { descripcion: 'Factura Talonario', id: 213 },
+                    { descripcion: 'Factura 2', id: 5871 },
+                    { descripcion: 'Factura 3', id: 3125 }
+                ];
                 $scope.contador_checked = 0;
                 $scope.seccion_1 = false;
                 $scope.seccion_2 = false;
                 $scope.boton = false;
+                $scope.cuentas = [];
                 callback();
             };
             
@@ -37,39 +40,70 @@ define(["angular", "js/controllers"
                     $scope.seccion_1 = true;
                     $scope.seccion_2 = true;
                     $scope.boton = true;
+                    $scope.cuentas.prefijo = prefijo;
                 }
+            };     
+                                    
+            $scope.guardar_cuentas = function(){
+                var obj = {
+                    session: $scope.session,
+                    data: $scope.cuentas
+                };
+                console.log('El objeto enviado es ',$scope.cuentas);                                
+                
+                //prefijo,
+                //emrpesa_id,
+                //centro_id,
+                //bodega_id,
+                //cuenta_debito,
+                //cuenta_credito,
+                //centro_costos_asientos,
+                //centro_utiliad_asiento,
+                //cod_linea_costo_asiento,
+                //id_tercero_asiento,
+                //observacion_asiento
+                
+                ServerServiceDoc.guardarCuentas(obj, function (data) {                    
+                    if (data.status === 200) {
+                        console.log('Ajax fine');
+                        console.log("data",data.obj.listarTiposCuentas);
+                        $scope.root.listarTiposCuentas=data.obj.listarTiposCuentas;
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
+                    }
+                });
+                //console.log('Funcion del submit!!');
+                console.log('Cuentas son: ',$scope.cuentas);
             };
             
-            $scope.validarDebito=function(cuenta, checked, otro){                
-                //console.log('cuenta: ',cuenta);
-                //console.log('checked es: ',checked);
-                //console.log('otro es: ',otro);
+            $scope.validarDebito=function(cuenta, checked, seccion, origen){      
+                var categoria_id = cuenta.categoria_id;
+                var categoria_string = 'categoria_'+categoria_id;
+                var cuenta_id = cuenta.cuenta_id;                
                 
                 if(checked){
-                    $scope.contador_checked++;     
+                    $scope.contador_checked++;
                     
-                    if(otro === 'seccion_1'){
-                       $scope.cuentas.seccion_1.push(cuenta.cuenta_id);
+                    if($scope.cuentas[categoria_string] === undefined){
+                        $scope.cuentas[categoria_string] = [];
+                    }                      
+                    $scope.cuentas[categoria_string][origen] = cuenta_id;      
+                                        
+                    if(seccion === 'seccion_1'){                       
                        $scope.seccion_2 = false;
-                    }else if(otro === 'seccion_2'){
-                       $scope.cuentas.seccion_2.push(cuenta.cuenta_id);
+                    }else if(seccion === 'seccion_2'){
                        $scope.seccion_1 = false;
                     }                       
                 }else{
-                    $scope.contador_checked--;   
-                    
-                    if(otro === 'seccion_1'){
-                        $scope.cuentas.seccion_1.splice($scope.cuentas.seccion_1.indexOf(cuenta.cuenta_id), 1);
-                    }else if(otro === 'seccion_2'){
-                        $scope.cuentas.seccion_1.splice($scope.cuentas.seccion_2.indexOf(cuenta.cuenta_id), 1);
-                    }
+                    $scope.contador_checked--;                     
+                    $scope.cuentas[categoria_string][origen] = '';                                    
                     
                     if($scope.contador_checked === 0){
                         $scope.seccion_1 = true;
                         $scope.seccion_2 = true;
                     }
                 }                                                  
-                console.log('Total cuentas: ',$scope.cuentas);
+                //console.log('Total cuentas: ',$scope.cuentas);
                 //console.log('contador de checked: ', $scope.contador_checked);
                 //console.log('seccion 1: ', $scope.seccion_1);
                 //console.log('seccion 2: ', $scope.seccion_2);
@@ -214,8 +248,8 @@ define(["angular", "js/controllers"
                                    return true;
                                }
                                 var obj={
-                                    cuentaId:$scope.cuantaId,
-                                    cuentaCategoria:$scope.cuentaCategoriaId.selectedItem.categoria_id
+                                    cuentaId: $scope.cuantaId,
+                                    cuentaCategoria: $scope.cuentaCategoriaId.selectedItem.categoria_id
                                 };
                                 that.insertarTipoCuenta(obj);
                                 $modalInstance.close();
@@ -228,10 +262,22 @@ define(["angular", "js/controllers"
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-
-
+            that.listarTiposFacturas = function(){
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        empresaId: Usuario.getUsuarioActual().getEmpresa().codigo
+                    }
+                };
+                ServerServiceDoc.listarTiposFacturas(obj, function(data){
+                    $scope.root.listarTiposFacturas = data.obj.listarTiposFacturas;
+                    //console.log('Ajax init!! data: ', data.obj.listarTiposFacturas);
+                });
+            };
+                        
             that.init(function () {
                 that.listarPrefijos();
+                that.listarTiposFacturas();
             });
         }]);
 });

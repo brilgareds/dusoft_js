@@ -1,8 +1,6 @@
 define(["angular"], function(angular) {
     var Url = angular.module('Url', []);
-
     var BASE_URL = "/api";
-
 
     var data = {
         'API': {
@@ -14,6 +12,9 @@ define(["angular"], function(angular) {
                 "LISTAR_DOCUMENTOS_CUENTAS": BASE_URL + "/SincronizacionDocumentos/listarDocumentosCuentas",
                 "LISTAR_TIPOS_CUENTAS": BASE_URL + "/SincronizacionDocumentos/listarTiposCuentas",
                 "SINCRONIZACION_DOCUMENTOS": BASE_URL + "/SincronizacionDocumentos/sincronizarDocumentos",
+                "LISTAR_TIPOS_FACTURAS": BASE_URL + "/SincronizacionDocumentos/listarTiposFacturas",
+                "GUARDAR_CUENTAS": BASE_URL + "/SincronizacionDocumentos/guardarCuentas"
+
             }
         }
     };

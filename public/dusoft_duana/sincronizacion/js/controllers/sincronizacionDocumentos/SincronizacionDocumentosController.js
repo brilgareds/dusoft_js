@@ -25,6 +25,11 @@ define(["angular", "js/controllers"
                 estado:true
             };
             
+ 
+            that.init = function(callback) {
+                $scope.root = {};         
+                callback();
+            };                       
 
             that.listarPrefijos = function () {
                 var obj = {

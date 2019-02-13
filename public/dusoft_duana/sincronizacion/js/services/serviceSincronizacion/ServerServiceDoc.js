@@ -80,6 +80,21 @@ define(["angular", "js/services"], function(angular, services) {
                         );
                     };
                     
+                    self.listarTiposFacturas = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_FACTURAS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {}
+                                },
+                                function (data) {                                    
+                                    callback(data);
+                                    // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                }
+                        );
+                    };
+                    
                     self.listarTiposCuentas = function (obj, callback) {
 
                         Request.realizarRequest(
@@ -97,24 +112,38 @@ define(["angular", "js/services"], function(angular, services) {
                     };
                     
                     self.insertarTipoCuenta = function(obj, callback) {
-
                         Request.realizarRequest(
-                                API.SINCRONIZACION_DOCUMENTOS.INSERTAR_TIPO_CUENTA,
-                                "POST",
-                                {
-                                    session: obj.session,
-                                    data: obj.data
-                                },
-                        function(data) {                           
-                            callback(data);
-                           // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                        }
+                            API.SINCRONIZACION_DOCUMENTOS.INSERTAR_TIPO_CUENTA,
+                            "POST",
+                            {
+                                session: obj.session,
+                                data: obj.data
+                            },
+                            function(data) {                           
+                                callback(data);
+                               // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
                         );
 
                     };
                     
-                    
-                  
+                    self.guardarCuentas = function(obj, callback) {
+                        console.log('Ajax init_0!');
+                        Request.realizarRequest(
+                            API.SINCRONIZACION_DOCUMENTOS.GUARDAR_CUENTAS,
+                            "POST",
+                            {
+                                session: obj.session,
+                                data: obj
+                            },
+                            function(data) {          
+                                console.log('Ajax finish!!');
+                                callback(data);
+                               // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        );
+
+                    };                                                          
                     return this;
     }]);
 });

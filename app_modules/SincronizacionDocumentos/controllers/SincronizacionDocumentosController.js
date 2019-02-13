@@ -96,7 +96,35 @@ SincronizacionDocumentos.prototype.insertDocumentosCuentas = function(req, res) 
        done();
 };
 
+SincronizacionDocumentos.prototype.listarTiposFacturas = function(req, res) {
+    console.log('In Controller!!');
+    var that = this;
+    var args = req.body.data;
+    
+    G.Q.ninvoke(this.m_SincronizacionDoc,'listarTiposFacturas', args).
+       then(function(listarTiposFacturas) {          
+       res.send(G.utils.r(req.url, 'listarTiposFacturas!', 200, {listarTiposFacturas: listarTiposFacturas}));
+    }).
+       fail(function(err) {
+       res.send(G.utils.r(req.url, 'Error listarTiposFacturas', 500, {listarTiposFacturas: false}));
+    }).
+       done();
+};
 
+SincronizacionDocumentos.prototype.guardarCuentas = function(req, res) {
+    console.log('In Controller backend - guardarCuentas!!');
+    var that = this;
+    var args = req.body.data;
+    
+    G.Q.ninvoke(this.m_SincronizacionDoc,'guardarCuentas', args).
+       then(function(listarTiposFacturas) {          
+       res.send(G.utils.r(req.url, 'guardarCuentas!', 200, {status: true}));
+    }).
+       fail(function(err) {
+       res.send(G.utils.r(req.url, 'Error guardarCuentas', 500, {status: false}));
+    }).
+       done();
+};
 
 SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function(req, res) {
     console.log('Entro en el controlador, insertTiposCuentasCategorias!!!');

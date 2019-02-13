@@ -111,16 +111,45 @@ SincronizacionDocumentos.prototype.guardarCuentas = function(req, res) {
     console.log('In Controller backend - guardarCuentas!!');
     var that = this;
     var args = req.body.data;
+    var categorias = args.categorias;
+    var sw_cuentas = [0, 1];
+    var tipo_cuenta = '';
+    var cuentas = {};
+    var error_count = 0;
+    //console.log('Array in model is: ', categorias);
 
-    G.Q.ninvoke(this.m_SincronizacionDoc,'guardarCuentas', args).
-        then(function(resultado) {
-            console.log('Todo bien en "guardarCuentas"');
-            res.send(G.utils.r(req.url, 'La actualización de cuentas fue exitosa!', 200, {status: true}));
-        }).
-           fail(function(err) {
-            res.send(G.utils.r(req.url, 'Error guardarCuentas', 500, {status: false}));
-        }).
-           done();
+    for(var index in categorias){
+        var obj = categorias[index];
+        sw_cuentas.forEach(function(sw_cuenta) {
+            if (sw_cuenta == 0) {
+                tipo_cuenta = 'debito';
+            } else if (sw_cuenta == 1) {
+                tipo_cuenta = 'credito';
+            }
+            cuentas = obj[tipo_cuenta];
+            cuentas.sw_cuenta = sw_cuenta;
+            cuentas.tipo_cuenta = tipo_cuenta;
+            cuentas.empresa_id = args.empresa_id;
+            cuentas.centro_id = args.centro_id;
+            cuentas.bodega_id = args.bodega_id;
+            cuentas.prefijo_id = args.prefijo_id;
+            //console.log('For in Controller: ', cuentas);
+
+            G.Q.ninvoke(that.m_SincronizacionDoc,'guardarCuentas', cuentas).
+            then(function(resultado) {
+                console.log('Todo bien en "guardarCuentas"');
+            }).
+            fail(function(err) {
+                error_count++;
+                console.log('Error en "guardarCuentas"');
+            });
+        });
+    }
+    if(error_count > 0){
+        res.send(G.utils.r(req.url, 'Error guardarCuentas', 500, {status: false}));
+    }else{
+        res.send(G.utils.r(req.url, 'La actualización de cuentas fue exitosa!', 200, {status: true}));
+    }
 };
 
 SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function(req, res) {

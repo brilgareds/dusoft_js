@@ -92,7 +92,7 @@ define(["angular", "js/controllers"
                     }
                 });
             };
-
+            
             that.listarTipoCuentaCategoria = function (callback) {
                 console.log("listarTipoCuentaCategoria");
                 var obj = {

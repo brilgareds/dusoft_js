@@ -29,6 +29,24 @@ define(["angular", "js/services"], function(angular, services) {
                         );
 
                     };
+                    
+                    self.sincronizacionDocumentos = function(obj, callback) {
+
+                        Request.realizarRequest(
+                                API.SINCRONIZACION_DOCUMENTOS.SINCRONIZACION_DOCUMENTOS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: obj
+                                },
+                        function(data) {                           
+                            callback(data);
+                           // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        }
+                        );
+
+                    };
+                    
                     self.listarTipoCuentaCategoria = function(obj, callback) {
 
                         Request.realizarRequest(

@@ -148,6 +148,7 @@ function __consultaDetalleFacturaGenerada(parametros, tabla1, tabla2, campo) {
         G.knex.raw("trunc(((a.valor_unitario * (a.porc_iva/100))* a.cantidad),2) as iva_total"),
         G.knex.raw("to_char((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))),'LFM9,999,999.00') as valor_unitario_iva"),
         G.knex.raw("to_char((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))),'LFM9,999,999.00') as total"),
+        G.knex.raw("((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))))) as total1"),
         G.knex.raw("(c.observacion ||''|| (case when c.observacion is null or c.observacion='' then (select \
                                     observacion from\
                                     productos_consumo\
@@ -239,7 +240,6 @@ FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (ob
                 )
     }
 
-//    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -1091,7 +1091,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function (estado, o
     }
 
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);
- console.log("ssssssss",G.sqlformatter.format(query.toString()));
+ 
     if (transaccion)
         query.transacting(transaccion);
     query.then(function (resultado) {
@@ -2288,7 +2288,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
 
             return G.Q.ninvoke(that, 'insertarPcFactura', {parametros: obj, swTipoFactura: '1'}, transaccion);
         }).then(function () {
-            console.log("obj.parametros", obj.parametros.pedido.facturaEspecial);
+        
             if (obj.parametros.pedido.facturaEspecial !== undefined && obj.parametros.pedido.facturaEspecial >= 0) {
                 return G.Q.nfcall(__DatosProductoConsumo, that, obj.parametros.pedido);
             } else {

@@ -21,4 +21,8 @@ module.exports = function(app, di_container) {
     app.post('/api/SincronizacionDocumentos/listarTiposCuentas', function(req, res) {
         c_SincronizacionDoc.listarTiposCuentas(req, res);
     });
+    
+    app.post('/api/SincronizacionDocumentos/sincronizarDocumentos', function(req, res) {
+        c_SincronizacionDoc.sincronizarDocumentos(req, res);
+    });
 };

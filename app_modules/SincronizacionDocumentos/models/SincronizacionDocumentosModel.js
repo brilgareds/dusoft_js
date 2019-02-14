@@ -36,7 +36,7 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function(array, callbac
     console.log('entro en el modelo de "guardarCuentas"!');   
     
     for(var obj in array){
-        console.log('cuentaActual: ',cuentaActual);
+        
         //console.log('item es: ', item,' y el index es: ',index);
         var query = G.knex('documentos_cuentas')
         .insert({
@@ -156,12 +156,17 @@ SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function(obj, cal
             'categoria_id',
             'categoria_descripcion'
             ])
-        .from('documentos_cuentas as doc_cu')
-        .innerJoin('tipos_cuentas as tipos_cu', 'doc_cu.cuenta', 'tipos_cu.cuenta_id')            
-        .innerJoin('tipos_cuentas_categorias as tipos_cate', 'tipos_cu.cuenta_categoria', 'tipos_cate.categoria_id');
+        .from('documentos_cuentas as doc_cu')            
+        .innerJoin('tipos_cuentas_categorias as tipos_cate', 'doc_cu.cuenta_categoria', 'tipos_cate.categoria_id')
+        .where(function () {
+                this.andWhere('prefijo', obj.prefijo)
+                    .andWhere('empresa_id', obj.empresaId)
+                    .andWhere('bodega_id', obj.bodega)
+                    .andWhere('parametrizacion_ws_fi', obj.wsFi);
+            });
 
-       // console.log(G.sqlformatter.format(query.toString())); 
-
+//        console.log("listarCuentasDetalle",G.sqlformatter.format(query.toString())); 
+console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
        callback(false, resultado);
      }).catch (function(err) {

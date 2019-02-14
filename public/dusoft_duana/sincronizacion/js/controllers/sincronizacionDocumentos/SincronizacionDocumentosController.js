@@ -112,7 +112,9 @@ define(["angular", "js/controllers"
                         }
                         console.log("$scope.root.asientosContables:: ",$scope.root.asientosContables );
                     } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
+                        console.log(" data.mensaje", data.msj);
+                        console.log(" data.mensaje", data);
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", data.msj);
                     }
                 });
             };

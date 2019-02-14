@@ -28,6 +28,11 @@
                     "module": "FacturacionProveedores",
                     "model": "FacturacionProveedoresModel",
                     "alias": "m_facturacion_proveedores"
+                },
+                "caja_general_model": {
+                    "module": "CajaGeneral",
+                    "model": "CajaGeneralModel",
+                    "alias": "m_caja_general"
                 }
             }],
         "events": [],

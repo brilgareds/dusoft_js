@@ -926,7 +926,7 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
         this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
                 .andWhere("a.tercero_id", obj.terceroId)
     });
-
+console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

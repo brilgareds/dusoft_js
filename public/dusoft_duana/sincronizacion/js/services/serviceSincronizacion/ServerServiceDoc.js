@@ -62,15 +62,13 @@ define(["angular", "js/services"], function(angular, services) {
                         );
                     };
                     
-                    self.listarTiposFacturas = function (obj, callback) {
+                    self.listarTiposServicios = function (obj, callback) {
+                        console.log('objeto enviado al ajax: ',obj);
                         Request.realizarRequest(
-                                API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_FACTURAS,
+                                API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_SERVICIOS,
                                 "POST",
-                                {
-                                    session: obj.session,
-                                    data: {}
-                                },
-                                function (data) {                                    
+                                obj,
+                                function (data) {
                                     callback(data);
                                     // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                                 }
@@ -82,10 +80,7 @@ define(["angular", "js/services"], function(angular, services) {
                         Request.realizarRequest(
                                 API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_CUENTAS,
                                 "POST",
-                                {
-                                    session: obj.session,
-                                    data: {}
-                                },
+                                obj,
                                 function (data) {
                                     callback(data);
                                     // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);

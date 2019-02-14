@@ -92,17 +92,17 @@ SincronizacionDocumentos.prototype.insertDocumentosCuentas = function(req, res) 
        done();
 };
 
-SincronizacionDocumentos.prototype.listarTiposFacturas = function(req, res) {
+SincronizacionDocumentos.prototype.listarTiposServicios = function(req, res) {
     console.log('In Controller!!');
     var that = this;
     var args = req.body.data;
     
-    G.Q.ninvoke(this.m_SincronizacionDoc,'listarTiposFacturas', args).
-       then(function(listarTiposFacturas) {
-       res.send(G.utils.r(req.url, 'listarTiposFacturas!', 200, {listarTiposFacturas: listarTiposFacturas}));
+    G.Q.ninvoke(this.m_SincronizacionDoc,'listarTiposServicios', args).
+       then(function(listarTiposServicios) {
+       res.send(G.utils.r(req.url, 'listarTiposServicios!', 200, {listarTiposServicios: listarTiposServicios}));
     }).
        fail(function(err) {
-       res.send(G.utils.r(req.url, 'Error listarTiposFacturas', 500, {listarTiposFacturas: false}));
+       res.send(G.utils.r(req.url, 'Error listarTiposServicios', 500, {listarTiposServicios: false}));
     }).
        done();
 };
@@ -127,22 +127,24 @@ SincronizacionDocumentos.prototype.guardarCuentas = function(req, res) {
                 tipo_cuenta = 'credito';
             }
             cuentas = obj[tipo_cuenta];
-            cuentas.sw_cuenta = sw_cuenta;
-            cuentas.tipo_cuenta = tipo_cuenta;
-            cuentas.empresa_id = args.empresa_id;
-            cuentas.centro_id = args.centro_id;
-            cuentas.bodega_id = args.bodega_id;
-            cuentas.prefijo_id = args.prefijo_id;
-            //console.log('For in Controller: ', cuentas);
+            if(cuentas !== undefined){
+                cuentas.sw_cuenta = sw_cuenta;
+                cuentas.tipo_cuenta = tipo_cuenta;
+                cuentas.empresa_id = args.empresa_id;
+                cuentas.centro_id = args.centro_id;
+                cuentas.bodega_id = args.bodega_id;
+                cuentas.prefijo_id = args.prefijo_id;
+                //console.log('For in Controller: ', cuentas);
 
-            G.Q.ninvoke(that.m_SincronizacionDoc,'guardarCuentas', cuentas).
-            then(function(resultado) {
-                console.log('Todo bien en "guardarCuentas"');
-            }).
-            fail(function(err) {
-                error_count++;
-                console.log('Error en "guardarCuentas"');
-            });
+                G.Q.ninvoke(that.m_SincronizacionDoc,'guardarCuentas', cuentas).
+                then(function(resultado) {
+                    console.log('Todo bien en "guardarCuentas"');
+                }).
+                fail(function(err) {
+                    error_count++;
+                    console.log('Error en "guardarCuentas"');
+                });
+            }
         });
     }
     if(error_count > 0){

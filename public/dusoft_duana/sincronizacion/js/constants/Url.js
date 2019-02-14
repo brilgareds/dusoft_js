@@ -11,7 +11,7 @@ define(["angular"], function(angular) {
                 "LISTAR_TIPO_CUENTA_CATEGORIA": BASE_URL + "/SincronizacionDocumentos/listarTipoCuentaCategoria",
                 "LISTAR_DOCUMENTOS_CUENTAS": BASE_URL + "/SincronizacionDocumentos/listarDocumentosCuentas",
                 "LISTAR_TIPOS_CUENTAS": BASE_URL + "/SincronizacionDocumentos/listarTiposCuentas",
-                "LISTAR_TIPOS_FACTURAS": BASE_URL + "/SincronizacionDocumentos/listarTiposFacturas",
+                "LISTAR_TIPOS_SERVICIOS": BASE_URL + "/SincronizacionDocumentos/listarTiposServicios",
                 "GUARDAR_CUENTAS": BASE_URL + "/SincronizacionDocumentos/guardarCuentas"
             }
         }

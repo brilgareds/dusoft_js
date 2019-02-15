@@ -62,7 +62,7 @@ define(["angular", "js/controllers"
                     $scope.documentosCuentas.servicio = servicio;
                     that.listarTiposCuentas();
                 }
-            };
+            }; 
                                     
             $scope.guardar_cuentas = function(){
                 //var respuestaUsuario = confirm('¿Esta seguro de actualizar los valores de esas cuentas?');

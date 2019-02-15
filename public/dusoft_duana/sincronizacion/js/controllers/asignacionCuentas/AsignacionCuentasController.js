@@ -64,25 +64,29 @@ define(["angular", "js/controllers"
             };
                                     
             $scope.guardar_cuentas = function(){
-                var obj = {
-                    session: $scope.session,
-                    data: $scope.documentosCuentas
-                };
-                /*
-                for(var index in $scope.documentosCuentas.categorias) {
+                //var respuestaUsuario = confirm('¿Esta seguro de actualizar los valores de esas cuentas?');
+                var cuentas_actualizadas = JSON.parse(JSON.stringify($scope.documentosCuentas));
+                for(categoria in cuentas_actualizadas.categorias){
+                    if(cuentas_actualizadas.categorias[categoria].debito !== undefined
+                        && (cuentas_actualizadas.categorias[categoria].debito.check === undefined || !cuentas_actualizadas.categorias[categoria].debito.check)){
+                        delete cuentas_actualizadas.categorias[categoria].debito;
+                    }
+                    if(cuentas_actualizadas.categorias[categoria].credito !== undefined
+                        && (cuentas_actualizadas.categorias[categoria].credito.check === undefined || !cuentas_actualizadas.categorias[categoria].credito.check)){
+                        delete cuentas_actualizadas.categorias[categoria].credito;
+                    }
 
-                    if($scope.documentosCuentas.categorias[index].debito.centro_costos_asientos === undefined
-                        || $scope.documentosCuentas.categorias[index].debito.centro_utilidad_asiento === undefined
-                        || $scope.documentosCuentas.categorias[index].debito.cod_linea_costo_asiento === undefined
-                        || $scope.documentosCuentas.categorias[index].debito.id_tercero_asiento === undefined
-                        || $scope.documentosCuentas.categorias[index].debito.observacion_asiento === undefined){
-                        delete $scope.documentosCuentas.categorias[index];
+                    if(cuentas_actualizadas.categorias[categoria].debito === undefined
+                        && cuentas_actualizadas.categorias[categoria].credito === undefined){
+                        delete cuentas_actualizadas.categorias[categoria];
                     }
                 }
-                 */
+                var obj = {
+                    session: $scope.session,
+                    data: cuentas_actualizadas
+                };
                 console.log('El objeto enviado es ', obj.data);
                 ServerServiceDoc.guardarCuentas(obj, function (data) {
-                    console.log('status: ', data.status);
                     if (data.status === 200) {
                         AlertService.mostrarVentanaAlerta("Actualizacion de cuentas", data.msj);
                         //$scope.root.listarTiposCuentas = data.obj.listarTiposCuentas;
@@ -93,7 +97,7 @@ define(["angular", "js/controllers"
                 //console.log('Funcion del submit!!');
                 console.log('Cuentas son: ',$scope.documentosCuentas);
             };
-            
+            /*
             $scope.validarDebito=function(cuenta, checked, seccion, origen){      
                 var categoria_id = cuenta.categoria_id;
                 var categoria_string = 'categoria_'+categoria_id;
@@ -137,6 +141,7 @@ define(["angular", "js/controllers"
                 //console.log('seccion 1: ', $scope.seccion_1);
                 //console.log('seccion 2: ', $scope.seccion_2);
             };
+            */
 
             that.listarPrefijos = function () {
                 var obj = {

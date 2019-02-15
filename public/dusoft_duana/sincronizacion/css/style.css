@@ -48,3 +48,13 @@
     margin-bottom: 15px;
     height: 1px;
 }
+
+.tipos-cuenta{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.sin-padding{
+    padding-left: 0px;
+    padding-right: 0px;
+}

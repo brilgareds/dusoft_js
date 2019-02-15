@@ -68,9 +68,9 @@ define(["angular", "js/controllers"
                     session: $scope.session,
                     data: $scope.documentosCuentas
                 };
-
+                /*
                 for(var index in $scope.documentosCuentas.categorias) {
-                    /*
+
                     if($scope.documentosCuentas.categorias[index].debito.centro_costos_asientos === undefined
                         || $scope.documentosCuentas.categorias[index].debito.centro_utilidad_asiento === undefined
                         || $scope.documentosCuentas.categorias[index].debito.cod_linea_costo_asiento === undefined
@@ -78,8 +78,8 @@ define(["angular", "js/controllers"
                         || $scope.documentosCuentas.categorias[index].debito.observacion_asiento === undefined){
                         delete $scope.documentosCuentas.categorias[index];
                     }
-                    */
                 }
+                 */
                 console.log('El objeto enviado es ', obj.data);
                 ServerServiceDoc.guardarCuentas(obj, function (data) {
                     console.log('status: ', data.status);
@@ -224,7 +224,8 @@ define(["angular", "js/controllers"
                                 cod_linea_costo_asiento: cuenta.cod_linea_costo_asiento,
                                 id_tercero_asiento: cuenta.id_tercero_asiento,
                                 observacion_asiento: cuenta.observacion_asiento,
-                                sw_cuenta: cuenta.sw_cuenta
+                                sw_cuenta: cuenta.sw_cuenta,
+                                parametrizacion_ws_fi: cuenta.parametrizacion_ws_fi
                             };
 
                             if(cuenta.sw_cuenta === '0'){

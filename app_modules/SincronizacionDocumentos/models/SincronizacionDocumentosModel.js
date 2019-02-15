@@ -47,15 +47,24 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback)
 
     var query = G.knex.select('documentos_cuentas_id')
         .from('documentos_cuentas')
-        .where({cuenta: obj.cuenta_id, sw_cuenta: obj.sw_cuenta});
-
+        .where({
+            prefijo: obj.prefijo_id,
+            empresa_id: obj.empresa_id,
+            centro_id: obj.centro_id,
+            bodega_id: obj.bodega_id,
+            cuenta: obj.cuenta_id,
+            sw_cuenta: obj.sw_cuenta,
+            parametrizacion_ws_fi: obj.parametrizacion_ws_fi,
+            cuenta_categoria: obj.categoria_id
+        });
     //console.log('Query: ', G.sqlformatter.format(query.toString()));
 
     query.then(function(resultado) {
         //console.log('Resultado de consulta es: ', resultado);
         if(resultado.length === 0){
+            //console.log('Dentro del IF!!!!');
             var insert = G.knex('documentos_cuentas')
-            .insert({
+                .insert({
                     prefijo: obj.prefijo_id,
                     empresa_id: obj.empresa_id,
                     centro_id: obj.centro_id,
@@ -66,8 +75,10 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback)
                     centro_utilidad_asiento: obj.centro_utilidad_asiento,
                     cod_linea_costo_asiento: obj.cod_linea_costo_asiento,
                     id_tercero_asiento: obj.id_tercero_asiento,
-                    observacion_asiento: obj.observacion_asiento
-            });
+                    observacion_asiento: obj.observacion_asiento,
+                    parametrizacion_ws_fi: obj.parametrizacion_ws_fi,
+                    cuenta_categoria: obj.categoria_id
+                });
             console.log('Insert: ', G.sqlformatter.format(insert.toString()));
 
             insert.then(function(resultado) {
@@ -77,13 +88,19 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback)
                 callback(err);
             });
         }else{
+            //console.log('Dentro del ELSE!!!!');
             var update = G.knex('documentos_cuentas')
-                .where({cuenta: obj.cuenta_id, sw_cuenta: obj.sw_cuenta})
-                .update({
+                .where({
                     prefijo: obj.prefijo_id,
                     empresa_id: obj.empresa_id,
                     centro_id: obj.centro_id,
                     bodega_id: obj.bodega_id,
+                    cuenta: obj.cuenta_id,
+                    sw_cuenta: obj.sw_cuenta,
+                    parametrizacion_ws_fi: obj.parametrizacion_ws_fi,
+                    cuenta_categoria: obj.categoria_id
+                })
+                .update({
                     centro_costos_asientos: obj.centro_costos_asientos,
                     centro_utilidad_asiento: obj.centro_utilidad_asiento,
                     cod_linea_costo_asiento: obj.cod_linea_costo_asiento,
@@ -133,6 +150,7 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
             'doc_cu.cod_linea_costo_asiento',
             'doc_cu.id_tercero_asiento',
             'doc_cu.observacion_asiento',
+            'doc_cu.parametrizacion_ws_fi',
             'tipos_cate.categoria_descripcion',
             'tipos_cate.categoria_id')
         .from('documentos_cuentas as doc_cu')

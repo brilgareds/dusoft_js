@@ -138,7 +138,7 @@ SincronizacionDocumentos.prototype.guardarCuentas = function(req, res) {
 
                 G.Q.ninvoke(that.m_SincronizacionDoc,'guardarCuentas', cuentas).
                 then(function(resultado) {
-                    console.log('Todo bien en "guardarCuentas"');
+                    console.log('All fine in "guardarCuentas"');
                 }).
                 fail(function(err) {
                     error_count++;

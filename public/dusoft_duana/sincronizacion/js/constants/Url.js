@@ -12,6 +12,8 @@ define(["angular"], function(angular) {
                 "LISTAR_DOCUMENTOS_CUENTAS": BASE_URL + "/SincronizacionDocumentos/listarDocumentosCuentas",
                 "LISTAR_TIPOS_CUENTAS": BASE_URL + "/SincronizacionDocumentos/listarTiposCuentas",
                 "LISTAR_TIPOS_SERVICIOS": BASE_URL + "/SincronizacionDocumentos/listarTiposServicios",
+                "SINCRONIZACION_DOCUMENTOS": BASE_URL + "/SincronizacionDocumentos/sincronizarDocumentos",
+                "LISTAR_TIPOS_FACTURAS": BASE_URL + "/SincronizacionDocumentos/listarTiposFacturas",
                 "GUARDAR_CUENTAS": BASE_URL + "/SincronizacionDocumentos/guardarCuentas"
             }
         }
@@ -20,7 +22,5 @@ define(["angular"], function(angular) {
     angular.forEach(data, function(key, value) {
         Url.constant(value, key);
     });
-
-
     return Url;
 });

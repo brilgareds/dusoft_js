@@ -16,16 +16,24 @@ module.exports = function(app, di_container) {
     app.post('/api/SincronizacionDocumentos/listarDocumentosCuentas', function(req, res) {
         c_SincronizacionDoc.listarDocumentosCuentas(req, res);
     });
-    
+
     app.post('/api/SincronizacionDocumentos/listarTiposCuentas', function(req, res) {
         c_SincronizacionDoc.listarTiposCuentas(req, res);
     });
-    
+
     app.post('/api/SincronizacionDocumentos/listarTiposServicios', function(req, res) {
         c_SincronizacionDoc.listarTiposServicios(req, res);
+
+    app.post('/api/SincronizacionDocumentos/sincronizarDocumentos', function(req, res) {
+        c_SincronizacionDoc.sincronizarDocumentos(req, res);
+    });
+
+    app.post('/api/SincronizacionDocumentos/listarTiposFacturas', function(req, res) {
+        c_SincronizacionDoc.listarTiposFacturas(req, res);
     });
     
     app.post('/api/SincronizacionDocumentos/guardarCuentas', function(req, res) {
         c_SincronizacionDoc.guardarCuentas(req, res);
     });        
+
 };

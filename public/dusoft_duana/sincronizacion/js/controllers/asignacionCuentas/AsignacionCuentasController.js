@@ -40,6 +40,7 @@ define(["angular", "js/controllers"
                 callback();
             };
             
+
             $scope.prefijo_actualizado = function(prefijo){
                 console.log('prefijo es:', prefijo);                
                 if(prefijo != undefined && prefijo != '' && prefijo != ' '){
@@ -140,6 +141,7 @@ define(["angular", "js/controllers"
                 //console.log('contador de checked: ', $scope.contador_checked);
                 //console.log('seccion 1: ', $scope.seccion_1);
                 //console.log('seccion 2: ', $scope.seccion_2);
+
             };
             */
 
@@ -159,7 +161,7 @@ define(["angular", "js/controllers"
                     }
                 });
             };
-
+            
             that.listarTipoCuentaCategoria = function (callback) {
                 console.log("listarTipoCuentaCategoria");
                 var obj = {

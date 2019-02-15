@@ -13,6 +13,26 @@
                     "module": "SincronizacionDocumentos",
                     "model": "SincronizacionDocumentosModel",
                     "alias": "m_SincronizacionDoc"
+                },
+                "notas_model": {
+                    "module": "Notas",
+                    "model": "NotasModel",
+                    "alias": "m_notas"
+                },
+                "facturacion_cliente_model": {
+                    "module": "FacturacionClientes",
+                    "model": "FacturacionClientesModel",
+                    "alias": "m_facturacion_clientes"
+                },
+                "facturacion_proveedores_model": {
+                    "module": "FacturacionProveedores",
+                    "model": "FacturacionProveedoresModel",
+                    "alias": "m_facturacion_proveedores"
+                },
+                "caja_general_model": {
+                    "module": "CajaGeneral",
+                    "model": "CajaGeneralModel",
+                    "alias": "m_caja_general"
                 }
             }],
         "events": [],

@@ -1928,7 +1928,7 @@ FacturacionClientes.prototype.imprimirCsv = function (req, res) {
 
         return G.Q.nfcall(__generarCsvBarranquilla, resultado);
     }).then(function (resultado) {
-        console.log("resultado", resultado);
+        
         res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {imprimirCsv: resultado}));
     }).
             fail(function (err) {

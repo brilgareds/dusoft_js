@@ -42,15 +42,14 @@ SincronizacionDocumentosModel.prototype.listarTiposServicios = function(obj, cal
      });
 };
 
-SincronizacionDocumentosModel.prototype.guardarCuentas = function(array, callback) {
-    console.log('entro en el modelo de "guardarCuentas"!');   
-    
-    for(var obj in array){
-        //console.log('item es: ', item,' y el index es: ',index);
-        var query = G.knex('documentos_cuentas')
-        .insert({
-            prefijo: obj.prefijo,
-            emrpesa_id: obj.emrpesa_id,
+SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback) {
+    console.log('entro en el modelo de "guardarCuentas"!');
+
+    var query = G.knex.select('documentos_cuentas_id')
+        .from('documentos_cuentas')
+        .where({
+            prefijo: obj.prefijo_id,
+            empresa_id: obj.empresa_id,
             centro_id: obj.centro_id,
             bodega_id: obj.bodega_id,
             cuenta: obj.cuenta_id,
@@ -371,7 +370,6 @@ console.log("result crearInformacionContableResult---",result.crearInformacionCo
 
     }).done();
 };
-
 
 SincronizacionDocumentosModel.$inject = [];
 

@@ -26,7 +26,10 @@ define(["angular", "js/controllers"
                 $scope.seccion_2 = false;
                 $scope.servicios = false;
                 $scope.boton = false;
-                $scope.tipos_categorias = ['debito', 'credito'];
+                $scope.root.tipos_categorias = [
+                    { 'descripcion': 'Debito',  'id': 0 },
+                    { 'descripcion': 'Credito', 'id': 1 }
+                ];
                 $scope.root.listarTiposCuentas = {};
                 $scope.documentosCuentas = {
                     empresa_id: Usuario.getUsuarioActual().getEmpresa().codigo,
@@ -51,6 +54,15 @@ define(["angular", "js/controllers"
                     $scope.documentosCuentas.prefijo_id = prefijo;
                     that.listarTiposServicios(prefijo);
                 }
+            };
+
+            $scope.categoria_actualizada = function(categoria){
+                $scope.documentosCuentas.categoriaId = categoria.id;
+                $scope.documentosCuentas.categoriaDescripcion = categoria.descripcion;
+            };
+
+            $scope.tipo_cuenta_actualizado = function(tipo_cuenta){
+                $scope.documentosCuentas.tipo_cuenta = tipo_cuenta;
             };
 
             $scope.servicio_actualizado = function(servicio){
@@ -155,7 +167,9 @@ define(["angular", "js/controllers"
 //                console.log("ServerService",ServerServiceDoc);
                 ServerServiceDoc.listarPrefijos(obj, function (data) {
                     if (data.status === 200) {
-                        $scope.root.listarPrefijo = data.obj.listarPrefijos;
+                        console.log('Prefijos Array: ', data);
+                        $scope.root.listarPrefijos = data.obj.listarPrefijos.prefijos;
+                        $scope.root.listarPrefijosFiltrados = data.obj.listarPrefijos.prefijosFiltrados;
                     } else {
                         AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
                     }
@@ -169,7 +183,7 @@ define(["angular", "js/controllers"
                 };
                 ServerServiceDoc.listarTipoCuentaCategoria(obj, function (data) {
                     if (data.status === 200) {
-                        console.log("data", data.obj.listarTipoCuentaCategoria);
+                        console.log("data: ", data.obj.listarTipoCuentaCategoria);
                         callback(data.obj.listarTipoCuentaCategoria);
                     } else {
                         AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
@@ -320,8 +334,15 @@ define(["angular", "js/controllers"
                     data: obj
                 };
                 ServerServiceDoc.insertarTipoCuenta(obj, function (data) {
+                    //console.log('Respuesta del insert desde el controlador Frontend!!: ', data);
                     if (data.status === 200) {
-                       AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", "Se Almacena Correctamente");
+                       AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", "Se Almacenó Correctamente");
+                       $scope.documentosCuentas.cuenta = '';
+                       that.listarTiposCuentas();
+                       that.listarPrefijos(obj.data.empresaId);
+                       that.listarTiposServicios(obj.data.prefijoId);
+                    } else if(data.obj.insertTiposCuentas !== undefined && data.obj.insertTiposCuentas.length > 0){
+                        AlertService.mostrarVentanaAlerta(data.obj.insertTiposCuentas);
                     } else {
                         AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
                     }
@@ -356,34 +377,68 @@ define(["angular", "js/controllers"
                     dialogFade: false,
                     keyboard: true,
                     template: ' <div class="modal-header">\
-                                           <button type="button" class="close" ng-click="close()">&times;</button>\
-                                           <h4 class="modal-title">Crear Cuenta</h4>\
-                                       </div>\
-                                       <div class="modal-body">\
-                                        <div class="row">\
-                                          <div class="col-md-4">\
+                                   <button type="button" class="close" ng-click="close()">&times;</button>\
+                                   <h4 class="modal-title">Crear Cuenta</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <div class="row">\
+                                        <div class="col-md-4">\
                                            <label>Cuenta No: </label>\
-                                           <input ng-model="cuantaId" validacion-numero-entero type="text" class="form-control">\
-                                          </div>\
-                                          <div class="col-md-8">\
+                                           <input ng-model="documentosCuentas.cuenta" validacion-numero-entero type="text" class="form-control" placeholder="Ingrese cuenta">\
+                                        </div>\
+                                        <div class="col-md-8">\
                                             <div class="form-group">\
-                                                <label  class="col-form-label">Categoria Cuenta</label>\
-                                                <ui-select ng-model="cuentaCategoriaId.selectedItem"\
+                                                <label class="col-form-label">Tipo Cuenta</label>\
+                                                <ui-select ng-model="root.tipo_cuenta2"\
                                                            theme="select2"\
-                                                           class="form-control selectgeneral pull-left col-md-2">\
-                                                    <ui-select-match  placeholder="Seleccionar Prefijo">{{ $select.selected.categoria_descripcion}}</ui-select-match>\
+                                                           class="form-control selectgeneral pull-left col-md-2"\
+                                                           ng-change="tipo_cuenta_actualizado($select.selected.id)">\
+                                                    <ui-select-match placeholder="Seleccionar Tipo Cuenta">{{$select.selected.descripcion}}</ui-select-match>\
+                                                    <ui-select-choices repeat="filtro in root.tipos_categorias | filter:$select.search">\
+                                                        {{ filtro.descripcion }}\
+                                                    </ui-select-choices>\
+                                                </ui-select>\
+                                                <br>\
+                                                <label class="col-form-label" style="margin-top: 5px;">Prefijo</label>\
+                                                <ui-select ng-model="root.prefijo2"\
+                                                           theme="select2"\
+                                                           class="form-control selectgeneral pull-left col-md-4"\
+                                                           ng-change="prefijo_actualizado($select.selected.prefijo)">\
+                                                    <ui-select-match placeholder="Seleccionar Prefijo">{{ $select.selected.prefijo}}</ui-select-match>\
+                                                    <ui-select-choices repeat="filtro in root.listarPrefijos | filter:$select.search">\
+                                                        {{ filtro.prefijo }}\
+                                                    </ui-select-choices>\
+                                                </ui-select>\
+                                                <br>\
+                                                <label class="col-form-label" style="margin-top: 5px;">Servicio (Funcion)</label>\
+                                                <ui-select ng-model="root.listarTiposServicios2"\
+                                                           theme="select2"\
+                                                           class="form-control selectgeneral pull-left col-md-2"\
+                                                           ng-change="servicio_actualizado($select.selected.id)">\
+                                                    <ui-select-match placeholder="Seleccionar Servicio">{{$select.selected.descripcion}}</ui-select-match>\
+                                                    <ui-select-choices repeat="filtro in root.listarTiposServicios | filter:$select.search">\
+                                                        {{ filtro.descripcion }}\
+                                                    </ui-select-choices>\
+                                                </ui-select>\
+                                                <br>\
+                                                <label class="col-form-label" style="margin-top: 5px;">Categoria</label>\
+                                                <ui-select ng-model="listarTipoCuentaCategoria2"\
+                                                           theme="select2"\
+                                                           class="form-control selectgeneral pull-left col-md-2"\
+                                                           ng-change="categoria_actualizada($select.selected)">\
+                                                    <ui-select-match placeholder="Seleccionar Categoria">{{$select.selected.descripcion}}</ui-select-match>\
                                                     <ui-select-choices repeat="filtro in root.listarTipoCuentaCategoria | filter:$select.search">\
-                                                        {{ filtro.categoria_descripcion}}\
+                                                        {{ filtro.descripcion }}\
                                                     </ui-select-choices>\
                                                 </ui-select>\
                                             </div>\
-                                          </div>\
                                         </div>\
-                                       </div>\
-                                       <div class="modal-footer">\
-                                           <button class="btn btn-success" ng-click="guardar()">Aceptar</button>\
-                                           <button class="btn btn-danger" ng-click="close()">Cancelar</button>\
-                                       </div>',
+                                    </div>\
+                                </div>\
+                                <div class="modal-footer">\
+                                   <button class="btn btn-success" ng-click="guardar()">Aceptar</button>\
+                                   <button class="btn btn-danger" ng-click="close()">Cancelar</button>\
+                                </div>',
                     scope: $scope,
                     controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
                             $scope.cuentaCategoriaId={categoria_id:0,categoria_descripcion:"------"};
@@ -394,13 +449,29 @@ define(["angular", "js/controllers"
 
 
                             $scope.guardar = function () {                          
-                               if($scope.cuentaCategoriaId.selectedItem.categoria_id===0 && $scope.cuantaId===undefined){
-                                   return true;
-                               }
-                                var obj={
-                                    cuentaId: $scope.cuantaId,
-                                    cuentaCategoria: $scope.cuentaCategoriaId.selectedItem.categoria_id
+                                if($scope.documentosCuentas.prefijo_id === undefined || !$scope.documentosCuentas.prefijo_id.length > 0,
+                                    $scope.documentosCuentas.empresa_id === undefined || !$scope.documentosCuentas.empresa_id.length > 0,
+                                    $scope.documentosCuentas.centro_id === undefined || !$scope.documentosCuentas.centro_id.length > 0,
+                                    $scope.documentosCuentas.bodega_id === undefined || !$scope.documentosCuentas.bodega_id.length > 0,
+                                    $scope.documentosCuentas.cuenta === undefined || !$scope.documentosCuentas.cuenta.length > 0,
+                                    $scope.documentosCuentas.categoriaId === undefined || !$scope.documentosCuentas.categoriaId.length > 0,
+                                    $scope.documentosCuentas.categoriaDescripcion === undefined || !$scope.documentosCuentas.categoriaDescripcion.length > 0,
+                                    $scope.documentosCuentas.servicio === undefined || !$scope.documentosCuentas.servicio.length > 0,
+                                    $scope.documentosCuentas.tipo_cuenta === undefined || !$scope.documentosCuentas.tipo_cuenta === ''){
+                                    return false;
+                                }
+                                var obj = {
+                                    prefijoId: $scope.documentosCuentas.prefijo_id,
+                                    empresaId: $scope.documentosCuentas.empresa_id,
+                                    centroId: $scope.documentosCuentas.centro_id,
+                                    bodegaId: $scope.documentosCuentas.bodega_id,
+                                    cuentaId: $scope.documentosCuentas.cuenta,
+                                    cuentaCategoriaId: $scope.documentosCuentas.categoriaId,
+                                    cuentaCategoriaDescripcion: $scope.documentosCuentas.categoriaDescripcion,
+                                    cuentaServicio: $scope.documentosCuentas.servicio,
+                                    cuentaTipo: $scope.documentosCuentas.tipo_cuenta
                                 };
+                                //console.log('objeto en insert Cuenta - Frontend: ', obj);
                                 that.insertarTipoCuenta(obj);
                                 $modalInstance.close();
                             };
@@ -420,7 +491,8 @@ define(["angular", "js/controllers"
                     }
                 };
                 ServerServiceDoc.listarTiposServicios(obj, function(data){
-                    $scope.root.listarTiposServicios = data.obj.listarTiposServicios;
+                    $scope.root.listarTiposServicios = data.obj.listarTiposServicios.servicios;
+                    $scope.root.listarTiposServiciosFiltrados = data.obj.listarTiposServicios.serviciosFiltrados;
                     console.log('Servicios: ', $scope.root.listarTiposServicios);
                     //console.log('Ajax init!! data: ', data.obj.listarTiposServicios);
                 });
@@ -428,6 +500,7 @@ define(["angular", "js/controllers"
                         
             that.init(function () {
                 that.listarPrefijos();
+                that.listarTiposServicios();
             });
         }]);
 });

@@ -4,38 +4,71 @@ var SincronizacionDocumentosModel = function() {
 
 SincronizacionDocumentosModel.prototype.listarPrefijos = function(obj, callback) {
     console.log('entro en el modelo!',obj);
-    
+    var data = {prefijos: '', prefijosFiltrados: ''};
+
     var query = G.knex
-                .distinct('a.prefijo', 'a.tipo_doc_general_id', 'a.texto1')
-                .select()
-                .from('documentos as a')
-                .innerJoin('documentos_cuentas as b', 'a.prefijo', 'b.prefijo')
-                .where('a.empresa_id', obj.empresaId)
-                .orderBy('a.prefijo');
+        .distinct('a.prefijo', 'a.tipo_doc_general_id', 'a.texto1')
+        .select()
+        .from('documentos as a')
+        .where('a.empresa_id', obj.empresaId)
+        .orderBy('a.prefijo');
     query.then(function(resultado) {
-       callback(false, resultado);
-     }).catch (function(err) {
-        console.log("error sql",err);
+        data.prefijos = resultado;
+        var query = G.knex
+            .distinct('a.prefijo', 'a.tipo_doc_general_id', 'a.texto1')
+            .select()
+            .from('documentos as a')
+            .innerJoin('documentos_cuentas as b', 'a.prefijo', 'b.prefijo')
+            .where('a.empresa_id', obj.empresaId)
+            .orderBy('a.prefijo');
+        query.then(function (resultado) {
+            data.prefijosFiltrados = resultado;
+            callback(false, data);
+        }).catch(function (err) {
+            console.log("error sql", err);
+            callback(err);
+        })
+    }).catch(function(err) {
+        console.log("error sql", err);
         callback(err);
-     });
+    });
 };
 
 SincronizacionDocumentosModel.prototype.listarTiposServicios = function(obj, callback) {
     console.log('entro en el modelo de "listarTiposServicios"!');
     console.log('Objeto en modelo: ', obj);
-    var prefijo = obj.prefijo;
+    var data = {servicios: '', serviciosFiltrados: ''};
 
     var query = G.knex.distinct([
         'para_ws.parametrizacion_ws_fi_id as id',
         'para_ws.nombre as descripcion'])
         .select()
-        .from('parametrizacion_ws_fi as para_ws')
-        .innerJoin('documentos_cuentas as doc_cu', 'para_ws.parametrizacion_ws_fi_id', 'doc_cu.parametrizacion_ws_fi')
-        .where('doc_cu.prefijo', prefijo);
-    console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
+        .from('parametrizacion_ws_fi as para_ws');
+    //console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
     
     query.then(function(resultado) {
-       callback(false, resultado);
+        data.servicios = resultado;
+        if(obj.prefijo !== undefined){
+            var prefijo = obj.prefijo;
+            var query = G.knex.distinct([
+                'para_ws.parametrizacion_ws_fi_id as id',
+                'para_ws.nombre as descripcion'])
+                .select()
+                .from('parametrizacion_ws_fi as para_ws')
+                .innerJoin('documentos_cuentas as doc_cu', 'para_ws.parametrizacion_ws_fi_id', 'doc_cu.parametrizacion_ws_fi')
+                .where('doc_cu.prefijo', prefijo);
+            //console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
+            query.then(function(resultado) {
+                data.serviciosFiltrados = resultado;
+                callback(false, data);
+            }).catch (function(err) {
+                console.log("error sql",err);
+                callback(err);
+            });
+        }else{
+            data.serviciosFiltrados = [];
+            callback(false, data);
+        }
      }).catch (function(err) {
         console.log("error sql",err);
         callback(err);
@@ -124,7 +157,7 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback)
 SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj, callback) {
     console.log('entro en el modelo de "listarTiposCuentasCategorias"!');
     
-    var query = G.knex.select(['categoria_id', 'categoria_descripcion'])
+    var query = G.knex.select(['categoria_id as id', 'categoria_descripcion as descripcion'])
                 .from('tipos_cuentas_categorias');           
     
     query.then(function(resultado) {
@@ -136,7 +169,7 @@ SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function(obj
 };
 
 SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callback) {
-    console.log('entro en el modelo de "listarTiposCuentas"!');
+    //console.log('entro en el modelo de "listarTiposCuentas"!');
     
     var query = G.knex.select(
             'doc_cu.prefijo as prefijo_id',
@@ -162,7 +195,7 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
         .andWhere('doc_cu.parametrizacion_ws_fi', obj.servicio)
         .orderBy('tipos_cate.categoria_descripcion');
 
-    console.log(G.sqlformatter.format(query.toString()));
+    //console.log(G.sqlformatter.format(query.toString()));
 
     query.then(function(resultado) {
         //console.log('Cuentas desde modelo: ', resultado);
@@ -283,19 +316,54 @@ SincronizacionDocumentosModel.prototype.listarDocumentosCuentas = function(obj, 
 };
 
 SincronizacionDocumentosModel.prototype.insertTiposCuentas = function(obj, callback) {
-    console.log('entro en el modelo de "tipos_cuentas"!',obj);
-    
-    var query = G.knex('tipos_cuentas')
-        .insert({
-            cuenta_id: obj.cuentaId,
-            cuenta_categoria: obj.cuentaCategoria
+    console.log('entro en el modelo de "insertTiposCuentas"!',obj);
+    var observacion_asiento = 'No Aplica Observacion Asiento - '+obj.cuentaCategoriaDescripcion;
+
+    var select = G.knex('documentos_cuentas')
+        .select('documentos_cuentas_id')
+        .where({
+            prefijo: obj.prefijoId,
+            empresa_id: obj.empresaId,
+            centro_id: obj.centroId,
+            bodega_id: obj.bodegaId,
+            cuenta: obj.cuentaId,
+            sw_cuenta: obj.cuentaTipo,
+            parametrizacion_ws_fi: obj.cuentaServicio
         });
-    query.then(function(resultado) {
-       callback(false, resultado);
-     }).catch (function(err) {
+    console.log('Select en insertTiposCuentas ',G.sqlformatter.format(select.toString()));
+
+    select.then(function(resultado) {
+        console.log('Resultado en modelo es: ', resultado);
+        if(resultado === undefined || resultado[0] === undefined){
+            //console.log('Entro en el if!!!');
+            var query = G.knex('documentos_cuentas')
+                .insert({
+                    prefijo: obj.prefijoId,
+                    empresa_id: obj.empresaId,
+                    centro_id: obj.centroId,
+                    bodega_id: obj.bodegaId,
+                    cuenta: obj.cuentaId,
+                    sw_cuenta: obj.cuentaTipo,
+                    observacion_asiento: observacion_asiento,
+                    parametrizacion_ws_fi: obj.cuentaServicio,
+                    cuenta_categoria: obj.cuentaCategoriaId
+                });
+            query.then(function (resultado) {
+                console.log('Insert fine!!!');
+                callback(false, resultado);
+            }).catch(function (err) {
+                console.log("error sql", err);
+                callback(err);
+            });
+        }else{
+            console.log('Entro en el else!!!');
+            var response = ['repetido'];
+            callback(false, response);
+        }
+    }).catch (function(err) {
         console.log("error sql",err);
         callback(err);
-     });
+    });
 };
 
 SincronizacionDocumentosModel.prototype.insertDocumentosCuentas = function(obj, callback) {

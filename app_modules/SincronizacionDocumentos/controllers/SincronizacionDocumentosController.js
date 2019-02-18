@@ -56,17 +56,22 @@ SincronizacionDocumentos.prototype.insertTiposCuentas = function (req, res) {
     var args = req.body.data;
 
     G.Q.ninvoke(this.m_SincronizacionDoc, 'insertTiposCuentas', args).then(function (tiposCuentas) {
-        res.send(G.utils.r(req.url, 'insertTiposCuentas!!!!', 200, {insertTiposCuentas: true}));
+        console.log('Respuesta del modelo en el controlador: ', tiposCuentas);
+        if(tiposCuentas[0] === 'repetido') {
+            res.send(G.utils.r(req.url, 'Error: esos valores ya existen en la base de datos!!"', 500, {}));
+        }else{
+            res.send(G.utils.r(req.url, 'insertTiposCuentas!!!!', 200, {insertTiposCuentas: true}));
+        }
     }).
-            fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error insertTiposCuentas', 500, {insertTiposCuentas: false}));
-            }).
-            done();
+    fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error insertTiposCuentas', 500, {insertTiposCuentas: false}));
+    }).
+    done();
 };
 
 
 SincronizacionDocumentos.prototype.listarTiposCuentas = function (req, res) {
-    console.log('Entro en el controlador, listarTiposCuentas!!!');
+    //console.log('Entro en el controlador, listarTiposCuentas!!!');
     var that = this;
     var args = req.body.data;
 
@@ -81,7 +86,7 @@ SincronizacionDocumentos.prototype.listarTiposCuentas = function (req, res) {
 };
 
 SincronizacionDocumentos.prototype.insertDocumentosCuentas = function (req, res) {
-    console.log('Entro en el controlador, insertDocumentosCuentas!!!');
+    //console.log('Entro en el controlador, insertDocumentosCuentas!!!');
     var that = this;
     var args = req.body.data;
 
@@ -96,7 +101,7 @@ SincronizacionDocumentos.prototype.insertDocumentosCuentas = function (req, res)
 };
 
 SincronizacionDocumentos.prototype.listarTiposServicios = function(req, res) {
-    console.log('In Controller!!');
+    //console.log('In Controller!!');
     var that = this;
     var args = req.body.data;
 

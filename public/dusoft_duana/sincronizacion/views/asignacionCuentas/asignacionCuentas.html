@@ -22,8 +22,8 @@
                                        theme="select2"
                                        class="form-control selectgeneral pull-left col-md-4"
                                        ng-change="prefijo_actualizado($select.selected.prefijo)">
-                                <ui-select-match placeholder="Seleccionar Prefijo">{{ $select.selected.prefijo}}</ui-select-match>
-                                <ui-select-choices repeat="filtro in root.listarPrefijo | filter:$select.search">
+                                <ui-select-match placeholder="Seleccionar Prefijo">{{$select.selected.prefijo}}</ui-select-match>
+                                <ui-select-choices repeat="filtro in root.listarPrefijosFiltrados | filter:$select.search">
                                     {{ filtro.prefijo }}
                                 </ui-select-choices>
                             </ui-select>
@@ -38,7 +38,7 @@
                                        ng-disabled="!servicios"
                                        ng-change="servicio_actualizado($select.selected.id)">
                                 <ui-select-match placeholder="Seleccionar Servicio">{{ $select.selected.descripcion}}</ui-select-match>
-                                <ui-select-choices repeat="filtro in root.listarTiposServicios | filter:$select.search">
+                                <ui-select-choices repeat="filtro in root.listarTiposServiciosFiltrados | filter:$select.search">
                                     {{ filtro.descripcion }}
                                 </ui-select-choices>
                             </ui-select>

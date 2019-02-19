@@ -2306,6 +2306,7 @@ function __validarDumian(identificacion_cliente, tipo_id_cliente) {
             (identificacion_cliente === '10119' && tipo_id_cliente === "CE") || //UCI MARIO CORREA- LOS CHORROS+
             (identificacion_cliente === '10368' && tipo_id_cliente === "CC") || //LABORATORIO CLINICA SAN RAFAEL DUMIAN GIRARDOT+
             (identificacion_cliente === '900775143' && tipo_id_cliente === "NIT")|| //UNION TEMPORAL DUCOT 
+            (identificacion_cliente === '890303461' && tipo_id_cliente === "NIT")|| //HOSPITAL UNIVERSITARIO DEL VALLE EVARISTO GARCIA E.S.E
             (identificacion_cliente === '900617997' && tipo_id_cliente === "NIT")|| //VIVESSALUD EJE CAFETERO 
                     (identificacion_cliente === '900112820' && tipo_id_cliente === "NIT") || //CMS LTDA MANIZALEZ+
                     (identificacion_cliente === '900112820' && tipo_id_cliente === "PA") || //CMS - CLINICA AMAN+
@@ -2496,6 +2497,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
             } else if (pedido.identificacion_cliente === '900617997') {
 
                 $tercero = '900617997';
+                
+            } else if (pedido.identificacion_cliente === '890303461') {
+
+                $tercero = '890303461';
 
             } else {
 

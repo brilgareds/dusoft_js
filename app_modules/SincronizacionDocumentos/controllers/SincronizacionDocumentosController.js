@@ -181,8 +181,11 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
         res.send(G.utils.r(req.url, 'sincronizacionDocumentos!!!!', 200, {sincronizacionDocumentos: true, result: result, parametro: param}));
 
     }).fail(function (err) {
-        console.log("errer", err);
-        res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
+        if (err.mensaje !== undefined) {
+            res.send(G.utils.r(req.url, err.respuesta.error.mensaje, err.respuesta.error.status, {sincronizacionDocumentos: false, error: err.err}));
+        } else {
+            res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
+        }
 
     }).done();
 };
@@ -428,7 +431,7 @@ function __facturasVentaFi(obj, that, callback) {
 
 function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, contrato, empuestos, callback) {
 
-    var cuentas = detalle[index];
+    var cuentas = detalle[index];//categoria_id
 
     if (!cuentas) {
         callback(false, arreglo);
@@ -443,7 +446,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
 
     switch (cuentas.categoria_id) {
 
-        case 12:
+        case 12://MEDICAMENTOS GRAVADOS
 
             if (totalesFactura.medicamentosGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
@@ -460,7 +463,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             }
 
             break;
-        case 3:
+        case 3://COSTO MEDICAMENTOS GRAVADOS
 
             if (totalesFactura.costoMedicamentosGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
@@ -475,8 +478,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 16:
-            //diferente Cuenta representa inventario_medicamentos_gravados
+        case 16://INVENTARIO MEDICAMENTOS GRAVADOS
             if (totalesFactura.costoMedicamentosGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
                     cuentas.valorcreditoasiento = 0;
@@ -490,7 +492,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 4:
+        case 4://MEDICAMENTOS NO GRAVADOS
 
             if (totalesFactura.medicamentosNoGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
@@ -506,7 +508,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 13:
+        case 13://COSTO MEDICAMENTOS NO GRAVADOS
 
             if (parseInt(totalesFactura.costoMedicamentosNoGravados) > 0) {
 
@@ -522,7 +524,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 14:
+        case 14://INVENTARIO MEDICAMENTOS NO GRAVADOS
 
             //diferente Cuenta representa inventario_medicamentos_no_gravados
             if (totalesFactura.costoMedicamentosNoGravados > 0) {
@@ -538,7 +540,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 15:
+        case 15://INSUMOS GRAVADOS
             if (totalesFactura.insumosGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
                     cuentas.valorcreditoasiento = 0;
@@ -552,7 +554,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 17:
+        case 17://COSTO INSUMOS GRAVADOS
             if (totalesFactura.costoInsumosGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
                     cuentas.valorcreditoasiento = 0;
@@ -566,7 +568,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 18:
+        case 18://INVENTARIO INSUMOS GRAVADOS
             //diferente Cuenta representa inventario_insumos_gravados
             if (totalesFactura.costoInsumosGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
@@ -581,7 +583,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 19:
+        case 19://INSUMOS NO GRAVADOS
             if (totalesFactura.insumosNoGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
                     cuentas.valorcreditoasiento = 0;
@@ -595,7 +597,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 20:
+        case 20://COSTO INSUMOS NO GRAVADO
             if (totalesFactura.costoInsumosNoGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
                     cuentas.valorcreditoasiento = 0;
@@ -609,7 +611,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 21:
+        case 21://INVENTARIOS INSUMOS NO GRAVADOS
             //diferente Cuenta representa inventario_insumos_no_gravados
             if (totalesFactura.costoInsumosNoGravados > 0) {
                 if (cuentas.sw_cuenta === '0') {
@@ -625,8 +627,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 5:
-            //diferente Cuenta representa inventario_insumos_no_gravados
+        case 5://IVA
             if (parseFloat(totalesFactura.iva) > 0) {
                 cuentas.valorcreditoasiento = totalesFactura.iva;
                 cuentas.valordebitoasiento = 0;
@@ -637,17 +638,16 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 });
             }
             break;
-        case 6:
-            //diferente Cuenta representa inventario_insumos_no_gravados
+        case 6://RETEFUENTE
 
             if (empuestos[0].sw_rtf === '2' || empuestos[0].sw_rtf === '3') {
                 if (totalesFactura.subtotal >= parseInt(empuestos[0].base_rtf)) {
-                    empuestos.retencion_fuente = totalesFactura.subtotal * (contrato[0].porcentaje_rtf / 100);
+                    empuestos.retencion_fuente = parseInt(totalesFactura.subtotal * (contrato[0].porcentaje_rtf / 100));
                     if (empuestos.retencion_fuente > 0) {
                         cuentas.valorcreditoasiento = 0;
                         cuentas.valordebitoasiento = empuestos.retencion_fuente;
                         cuentas.valorbaseasiento = totalesFactura.subtotal;
-                        cuentas.valortasaasiento = empuestos[0].porcentaje_rtf;
+                        cuentas.valortasaasiento = contrato[0].porcentaje_rtf;
                         __JsonFacturaDetalle(cuentas, function (data) {
                             arreglo.push(data)
                         });
@@ -655,16 +655,16 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 }
             }
             break;
-        case 7:
-            //diferente Cuenta representa inventario_insumos_no_gravados
-            if (empuestos[0].sw_ica === '2' || empuestos[0].sw_ica === '3' && (contrato[0].porcentaje_ica === "3.30" || contrato[0].porcentaje_ica === "7.0" || contrato[0].porcentaje_ica === "11.0")) {
+        case 7://ICA
+            if (empuestos[0].sw_ica === '2' || empuestos[0].sw_ica === '3' && (contrato[0].porcentaje_ica === cuentas.ica_porcentaje)) {
                 if (totalesFactura.subtotal >= empuestos[0].base_ica) {
-                    empuestos.retencion_ica = totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000);
+                    empuestos.retencion_ica = parseInt(totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000));
+                  
                     if (empuestos.retencion_ica > 0) {
                         cuentas.valorcreditoasiento = 0;
                         cuentas.valordebitoasiento = empuestos.retencion_ica;
                         cuentas.valorbaseasiento = totalesFactura.subtotal;
-//                        cuentas.valortasaasiento = empuestos.porc_ica;
+                        cuentas.valortasaasiento = contrato[0].porcentaje_ica;
                         __JsonFacturaDetalle(cuentas, function (data) {
                             arreglo.push(data)
                         });
@@ -672,67 +672,32 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 }
             }
             break;
-        case 8:
-            //diferente Cuenta representa inventario_insumos_no_gravados
-            if ((empuestos[0].sw_ica === '2' || empuestos[0].sw_ica === '3') && (contrato[0].porcentaje_ica === "5.40")) {
-                if (totalesFactura.subtotal >= empuestos[0].base_ica) {
-                    empuestos.retencion_ica = totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000);
-                    if (empuestos.retencion_ica > 0) {
-                        cuentas.valorcreditoasiento = 0;
-                        cuentas.valordebitoasiento = empuestos.retencion_ica;
-                        cuentas.valorbaseasiento = totalesFactura.subtotal;
-//                        cuentas.valortasaasiento = empuestos.porc_ica;
-                        __JsonFacturaDetalle(cuentas, function (data) {
-                            arreglo.push(data)
-                        });
-                    }
-                }
-            }
-            break;
-        case 9:
-
-            if (empuestos[0].sw_ica === '2' || empuestos[0].sw_ica === '3' && (contrato[0].porcentaje_ica === "6.00")) {
-                if (totalesFactura.subtotal >= empuestos[0].base_ica) {
-                    empuestos.retencion_ica = totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000);
-                    if (empuestos.retencion_ica > 0) {
-                        cuentas.valorcreditoasiento = 0;
-                        cuentas.valordebitoasiento = empuestos.retencion_ica;
-                        cuentas.valorbaseasiento = totalesFactura.subtotal;
-//                        cuentas.valortasaasiento = empuestos.porc_ica;
-                        __JsonFacturaDetalle(cuentas, function (data) {
-                            arreglo.push(data);
-                        });
-                    }
-                }
-            }
-            break;
-        case 10:
-            empuestos.impusto_cree = totalesFactura.subtotal * 0.004;
+        case 10://CREE DEBITO
+            empuestos.impusto_cree = Math.round(totalesFactura.subtotal * cuentas.cree_porcentaje);
             if (empuestos.impusto_cree > 0) {
+                if (cuentas.sw_cuenta === '0') {
                 cuentas.valorcreditoasiento = 0;
                 cuentas.valordebitoasiento = empuestos.impusto_cree;
+                } else if (cuentas.sw_cuenta === '1') {
+                    cuentas.valorcreditoasiento = empuestos.impusto_cree;
+                    cuentas.valordebitoasiento = 0;
+                }
                 cuentas.valorbaseasiento = totalesFactura.subtotal;
-                cuentas.valortasaasiento = 0.004;
+                cuentas.valortasaasiento = cuentas.cree_porcentaje;
                 __JsonFacturaDetalle(cuentas, function (data) {
                     arreglo.push(data);
                 });
             }
             break;
-        case 22:
-            empuestos.impusto_cree = totalesFactura.subtotal * 0.004;
-            if (empuestos.impusto_cree > 0) {
-
-                cuentas.valorcreditoasiento = empuestos.impusto_cree;
-                cuentas.valordebitoasiento = 0;
-                cuentas.valorbaseasiento = totalesFactura.subtotal;
-                cuentas.valortasaasiento = 0.004;
-                __JsonFacturaDetalle(cuentas, function (data) {
-                    arreglo.push(data);
-                });
+     
+        case 23://TOTAL
+            var total=0;
+            
+             total = ((((totalesFactura.medicamentosGravados + totalesFactura.medicamentosNoGravados + totalesFactura.insumosGravados + totalesFactura.insumosNoGravados + totalesFactura.iva) - empuestos.retencion_fuente) - empuestos.retencion_ica));
+            console.log("Total1:: ",total);
+            if(cuentas.parametrizacion_ws_fi===2){
+                total = parseFloat(totalesFactura.subtotal) + parseFloat(totalesFactura.iva) - parseFloat(empuestos.retencion_fuente) - parseFloat(empuestos.retencion_ica);
             }
-            break;
-        case 23:
-            var total = ((((totalesFactura.medicamentosGravados + totalesFactura.medicamentosNoGravados + totalesFactura.insumosGravados + totalesFactura.insumosNoGravados + totalesFactura.iva) - empuestos.retencion_fuente) - empuestos.retencion_ica));
             
             if (cuentas.sw_cuenta === '0') {
                 cuentas.valorcreditoasiento = 0;
@@ -742,10 +707,42 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                 cuentas.valordebitoasiento = 0;
             }
             cuentas.valorbaseasiento = 0;
-            cuentas.cuenta = totalesFactura.cuenta;
+//            cuentas.cuenta = totalesFactura.cuenta;
+            cuentas.cuenta = contrato[0].cuenta_contable;
             __JsonFacturaDetalle(cuentas, function (data) {
                 arreglo.push(data);
             });
+            break;
+            
+        case 28://TOTAL
+            var base=0;
+            if(totalesFactura.porc_iva!==0){
+              base=(totalesFactura.iva / totalesFactura.porc_iva);
+            }
+            
+            var valor=(parseFloat(totalesFactura.subtotal) - base);
+//            if (totalesFactura.identercero === cuentas.id_tercero_asiento) {
+//
+//            }
+console.log("/*/*/***/subtotal: ",parseFloat(totalesFactura.subtotal));
+console.log("/*/*/***/iva: ",parseFloat(totalesFactura.iva));
+console.log("/*/*/***/porc_iva: ",parseFloat(totalesFactura.porc_iva));
+console.log("/*/*/***/",valor);
+            if (valor > 0) {
+                if (cuentas.sw_cuenta === '0') {
+                    cuentas.valorcreditoasiento = 0;
+                    cuentas.valordebitoasiento = valor;
+                } else if (cuentas.sw_cuenta === '1') {
+                    cuentas.valorcreditoasiento = valor;
+                    cuentas.valordebitoasiento = 0;
+                }
+                cuentas.valorbaseasiento = 0;
+
+                cuentas.cuenta = contrato[0].cuenta_contable;
+                __JsonFacturaDetalle(cuentas, function (data) {
+                    arreglo.push(data);
+                });
+            }
             break;
     }
 

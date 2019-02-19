@@ -154,7 +154,10 @@ SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function(obj, cal
             'id_tercero_asiento',
             'observacion_asiento',
             'categoria_id',
-            'categoria_descripcion'
+            'categoria_descripcion',
+            'parametrizacion_ws_fi',
+            'ica_porcentaje',
+            'cree_porcentaje'
             ])
         .from('documentos_cuentas as doc_cu')            
         .innerJoin('tipos_cuentas_categorias as tipos_cate', 'doc_cu.cuenta_categoria', 'tipos_cate.categoria_id')
@@ -163,7 +166,7 @@ SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function(obj, cal
                     .andWhere('empresa_id', obj.empresaId)
                     .andWhere('bodega_id', obj.bodega)
                     .andWhere('parametrizacion_ws_fi', obj.wsFi);
-            });
+            }).orderBy("cuenta_categoria","asc");
 
 //        console.log("listarCuentasDetalle",G.sqlformatter.format(query.toString())); 
 console.log(G.sqlformatter.format(query.toString())); 

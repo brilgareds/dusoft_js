@@ -29,7 +29,7 @@ define(["angular", "js/controllers"
             that.init = function(callback) {
                 $scope.root = {};         
                 callback();
-            };                       
+            };
 
             that.listarPrefijos = function () {
                 var obj = {
@@ -41,7 +41,9 @@ define(["angular", "js/controllers"
 //                console.log("ServerService",ServerServiceDoc);
                 ServerServiceDoc.listarPrefijos(obj, function (data) {
                     if (data.status === 200) {
-                        $scope.root.listarPrefijo = data.obj.listarPrefijos;
+                        console.log('Prefijos Array: ', data);
+                        $scope.root.listarPrefijos = data.obj.listarPrefijos.prefijos;
+                        $scope.root.listarPrefijosFiltrados = data.obj.listarPrefijos.prefijosFiltrados;
                     } else {
                         AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
                     }
@@ -49,7 +51,8 @@ define(["angular", "js/controllers"
             };
 
 
-            $scope.prefijo_actualizado = function (prefijo) {
+            $scope.prefijo_actualizado = function(prefijo){
+                console.log('prefijo es:', prefijo);
                 $scope.root.prefijo = prefijo;
             };
             
@@ -63,18 +66,31 @@ define(["angular", "js/controllers"
                that.consulta(0); 
             };
             
-            that.consulta= function (sw) {
-                
-                var prefijo = $scope.root.prefijo;
-                var numero = $scope.root.numero;                
-                var obj={
-                    prefijo: prefijo.prefijo,
-                    facturaFiscal: numero,
-                    sincronizar:sw
+            that.consulta = function (sw) {
+                var prefijo = $scope.root.prefijo2;
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        prefijoId: prefijo.prefijo
+                    }
                 };
-                that.sincronizacionDocumentos(obj);
-            };
 
+                ServerServiceDoc.buscarServicio(obj, function (data) {
+                    $scope.root.servicio = data.obj.servicio.id;
+                    console.log('Servicio: ', $scope.root.servicio);
+
+                    var servicio = $scope.root.servicio;
+
+                    var numero = $scope.root.numero;
+                    var obj = {
+                        prefijo: prefijo,
+                        facturaFiscal: numero,
+                        sincronizar: sw,
+                        servicio: servicio
+                    };
+                    that.sincronizacionDocumentos(obj);
+                });
+            };
 
             that.sincronizacionDocumentos = function (parametros) {
                 $scope.root.estado=false;
@@ -88,9 +104,13 @@ define(["angular", "js/controllers"
                         empresaId: Usuario.getUsuarioActual().getEmpresa().codigo,
                         prefijo: parametros.prefijo,
                         facturaFiscal: parametros.facturaFiscal,
-                        sincronizar: parametros.sincronizar
+                        sincronizar: parametros.sincronizar,
+                        servicio: parametros.servicio
                     }
                 };
+
+                console.log('Objeto antes de Ajax: ', obj);
+
                 ServerServiceDoc.sincronizacionDocumentos(obj, function (data) {
                     if (data.status === 200) {
                         $scope.root.estado=true;
@@ -170,8 +190,8 @@ define(["angular", "js/controllers"
                 ]
 
             };
-            
-            
+
+
 
 
             that.init = function (callback) {

@@ -34,8 +34,48 @@ SincronizacionDocumentosModel.prototype.listarPrefijos = function(obj, callback)
     });
 };
 
+SincronizacionDocumentosModel.prototype.buscarServicio = function(obj, callback) {
+    console.log('In model of "buscarServicio"');
+
+    var query = G.knex.distinct([
+        'pm.parametrizacion_ws_fi_id as id',
+        'pm.nombre as descripcion'])
+        .select()
+        .from('documentos_cuentas as dc')
+        .innerJoin('parametrizacion_ws_fi as pm', 'dc.parametrizacion_ws_fi', 'pm.parametrizacion_ws_fi_id')
+        .where('dc.empresa_id', obj.empresaId)
+            .andWhere('dc.centro_id', obj.centroId)
+            .andWhere('dc.bodega_id', obj.bodegaId)
+            .andWhere('dc.prefijo', obj.prefijoId)
+            .andWhere('dc.centro_id', obj.centroId);
+
+    console.log('SQL en buscarServicio ', G.sqlformatter.format(query.toString()));
+
+    query.then(function(resultado) {
+        console.log('Sql fine in Model buscarServicio!');
+        //data.serviciosFiltrados = resultado;
+        callback(false, resultado[0]);
+    }).catch (function(err) {
+        console.log("error sql in buscarServicio!",err);
+        callback(err);
+    });
+};
+
+SincronizacionDocumentosModel.prototype.listarRCD = function(){
+    var query = G.knex.distinct([
+        'dc.parametrizacion_ws_fi_id as id',
+        'dc.nombre as descripcion'])
+        .select()
+        .from('documentos_cuentas as dc');
+    //console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    });
+};
+
 SincronizacionDocumentosModel.prototype.listarTiposServicios = function(obj, callback) {
-    console.log('entro en el modelo de "listarTiposServicios"!');
+    console.log('Entro en el modelo de "listarTiposServicios"!');
     console.log('Objeto en modelo: ', obj);
     var data = {servicios: '', serviciosFiltrados: ''};
 
@@ -77,6 +117,21 @@ SincronizacionDocumentosModel.prototype.listarTiposServicios = function(obj, cal
 
 SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback) {
     console.log('entro en el modelo de "guardarCuentas"!');
+    if(obj.id_tercero_asiento === ''){
+        obj.id_tercero_asiento = null;
+    }
+    if(obj.centro_costos_asientos === ''){
+        obj.centro_costos_asientos = null;
+    }
+    if(obj.centro_utilidad_asiento === ''){
+        obj.centro_utilidad_asiento = null;
+    }
+    if(obj.cod_linea_costo_asiento === ''){
+        obj.cod_linea_costo_asiento = null;
+    }
+    if(obj.observacion_asiento === ''){
+        obj.observacion_asiento = null;
+    }
 
     var query = G.knex.select('documentos_cuentas_id')
         .from('documentos_cuentas')
@@ -122,6 +177,7 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback)
             });
         }else{
             //console.log('Dentro del ELSE!!!!');
+
             var update = G.knex('documentos_cuentas')
                 .where({
                     prefijo: obj.prefijo_id,
@@ -187,7 +243,7 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
             'tipos_cate.categoria_descripcion',
             'tipos_cate.categoria_id')
         .from('documentos_cuentas as doc_cu')
-        .innerJoin('tipos_cuentas_categorias as tipos_cate', 'doc_cu.cuenta_categoria', 'tipos_cate.categoria_id')
+        .leftJoin('tipos_cuentas_categorias as tipos_cate', 'doc_cu.cuenta_categoria', 'tipos_cate.categoria_id')
         .where('doc_cu.empresa_id', '=', obj.empresa_id)
         .andWhere('doc_cu.centro_id', obj.centro_id)
         .andWhere('doc_cu.bodega_id', obj.bodega_id)
@@ -331,6 +387,7 @@ SincronizacionDocumentosModel.prototype.insertTiposCuentas = function(obj, callb
             bodega_id: obj.bodegaId,
             cuenta: obj.cuentaId,
             sw_cuenta: obj.cuentaTipo,
+            cuenta_categoria: obj.cuentaCategoriaId,
             parametrizacion_ws_fi: obj.cuentaServicio
         });
     console.log('Select en insertTiposCuentas ',G.sqlformatter.format(select.toString()));

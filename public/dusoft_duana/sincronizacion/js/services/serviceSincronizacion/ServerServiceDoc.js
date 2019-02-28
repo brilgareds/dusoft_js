@@ -46,6 +46,20 @@ define(["angular", "js/services"], function(angular, services) {
                         );
 
                     };
+
+                self.buscarServicio = function(obj, callback) {
+                    Request.realizarRequest(
+                        API.SINCRONIZACION_DOCUMENTOS.BUSCAR_SERVICIO,
+                        "POST",
+                        obj,
+                        function(data) {
+                            //console.log('Respuesta del AJAX es : ', data);
+                            callback(data);
+                            // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        }
+                    );
+
+                };
                     
                     self.listarTipoCuentaCategoria = function(obj, callback) {
 

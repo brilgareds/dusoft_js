@@ -9,12 +9,12 @@
                             <div class="col-md-12 col-lg-12">
                                 <div class="form-group">
                                     <label  class="col-form-label">Prefijo:</label>
-                                    <ui-select ng-model="root.prefijo"
+                                    <ui-select ng-model="root.prefijo2"
                                                theme="select2"
                                                class="form-control selectgeneral pull-left"
-                                               >
+                                               ng-change="prefijo_actualizado($select.selected.prefijo)">
                                         <ui-select-match  placeholder="Seleccionar Prefijo ">{{ $select.selected.prefijo}}</ui-select-match>
-                                        <ui-select-choices repeat="filtro in root.listarPrefijo | filter:$select.search">
+                                        <ui-select-choices repeat="filtro in root.listarPrefijos | filter:$select.search">
                                             {{ filtro.prefijo}}
                                         </ui-select-choices>
                                     </ui-select>

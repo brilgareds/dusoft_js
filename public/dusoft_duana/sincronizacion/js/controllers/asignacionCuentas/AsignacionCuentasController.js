@@ -51,6 +51,7 @@ define(["angular", "js/controllers"
                     $scope.documentosCuentas.categorias = {};
                     $scope.root.listarTiposCuentas = '';
                     $scope.root.listarTiposServicios2 = '';
+                    $scope.root.listarTiposCuentas.prefijo_id = prefijo;
                     $scope.documentosCuentas.prefijo_id = prefijo;
                     that.listarTiposServicios(prefijo);
                 }
@@ -78,20 +79,16 @@ define(["angular", "js/controllers"
                                     
             $scope.guardar_cuentas = function(){
                 //var respuestaUsuario = confirm('¿Esta seguro de actualizar los valores de esas cuentas?');
-                var cuentas_actualizadas = JSON.parse(JSON.stringify($scope.documentosCuentas));
-                for(categoria in cuentas_actualizadas.categorias){
-                    if(cuentas_actualizadas.categorias[categoria].debito !== undefined
-                        && (cuentas_actualizadas.categorias[categoria].debito.check === undefined || !cuentas_actualizadas.categorias[categoria].debito.check)){
-                        delete cuentas_actualizadas.categorias[categoria].debito;
-                    }
-                    if(cuentas_actualizadas.categorias[categoria].credito !== undefined
-                        && (cuentas_actualizadas.categorias[categoria].credito.check === undefined || !cuentas_actualizadas.categorias[categoria].credito.check)){
-                        delete cuentas_actualizadas.categorias[categoria].credito;
-                    }
-
-                    if(cuentas_actualizadas.categorias[categoria].debito === undefined
-                        && cuentas_actualizadas.categorias[categoria].credito === undefined){
-                        delete cuentas_actualizadas.categorias[categoria];
+                var cuentas_actualizadas = JSON.parse(JSON.stringify($scope.root.listarTiposCuentas));
+                for(tipo_cuenta in cuentas_actualizadas){
+                    if(Array.isArray(cuentas_actualizadas[tipo_cuenta]) && cuentas_actualizadas[tipo_cuenta].length > 0){
+                        for(index in cuentas_actualizadas[tipo_cuenta]){
+                            if(cuentas_actualizadas[tipo_cuenta][index] !== undefined
+                                && (cuentas_actualizadas[tipo_cuenta][index].check === undefined || !cuentas_actualizadas[tipo_cuenta][index].check)){
+                                    delete cuentas_actualizadas[tipo_cuenta][index];
+                                    console.log('Un elemento borrado!!');
+                            }
+                        }
                     }
                 }
                 var obj = {
@@ -235,7 +232,9 @@ define(["angular", "js/controllers"
                             cuentas_count++;
                             cuenta = resultado[key];
                             categoria_nueva = cuenta.categoria_descripcion;
-                            //console.log('cuenta es: ', cuenta);
+
+                            console.log('cuenta es: ', cuenta);
+
                             datos_cuenta = {
                                 cuenta_id: cuenta.cuenta,
                                 categoria_id: cuenta.categoria_id,
@@ -249,6 +248,7 @@ define(["angular", "js/controllers"
                                 parametrizacion_ws_fi: cuenta.parametrizacion_ws_fi
                             };
 
+
                             if(cuenta.sw_cuenta === '0'){
                                 tipo_cuenta = 'debito';
                             }else if(cuenta.sw_cuenta === '1'){
@@ -258,7 +258,7 @@ define(["angular", "js/controllers"
                                 $scope.documentosCuentas.categorias[cuenta.categoria_descripcion] = {};
                             }
                             if($scope.documentosCuentas.categorias[cuenta.categoria_descripcion][tipo_cuenta] === undefined) {
-                                $scope.documentosCuentas.categorias[cuenta.categoria_descripcion][tipo_cuenta] = {};
+                                $scope.documentosCuentas.categorias[cuenta.categoria_descripcion][tipo_cuenta] = [];
                             }
                             if($scope.root.listarTiposCuentas['debito'] === undefined){
                                 $scope.root.listarTiposCuentas['debito'] = [];
@@ -295,7 +295,7 @@ define(["angular", "js/controllers"
                             // }else{
                             //     categoria_vieja = categoria_nueva;
                             // }
-                            $scope.documentosCuentas.categorias[cuenta.categoria_descripcion][tipo_cuenta] = datos_cuenta;
+                            $scope.documentosCuentas.categorias[cuenta.categoria_descripcion][tipo_cuenta].push(datos_cuenta);
                             $scope.root.listarTiposCuentas[tipo_cuenta].push(datos_cuenta);
                             //console.log('Array en ciclo: ', $scope.documentosCuentas);
 

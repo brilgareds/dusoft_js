@@ -7,6 +7,24 @@ var SincronizacionDocumentos = function (sincronizacion, m_notas, m_facturacion_
     this.m_caja_general = m_caja_general;
 };
 
+
+SincronizacionDocumentos.prototype.buscarServicio = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    console.log('In Controller backend of "buscarServicio", body is: ', req.body);
+    args.empresaId = req.body.session.empresaId;
+    args.centroId = req.body.session.centroUtilidad;
+    args.bodegaId = req.body.session.bodega;
+
+    G.Q.ninvoke(this.m_SincronizacionDoc, 'buscarServicio', args).then(function (servicio) {
+        res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {servicio: servicio}));
+    }).
+    fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error Listando Prefijos', 500, {servicio: false}));
+    }).
+    done();
+};
+
 SincronizacionDocumentos.prototype.listarPrefijos = function (req, res) {
 //    console.log('Entro en el controlador, listarPrefijos!!!');
     var that = this;
@@ -118,31 +136,30 @@ SincronizacionDocumentos.prototype.listarTiposServicios = function(req, res) {
 SincronizacionDocumentos.prototype.guardarCuentas = function (req, res) {
     console.log('In Controller backend - guardarCuentas!!');
     var that = this;
-    var args = req.body.data;
-    var categorias = args.categorias;
-    var sw_cuentas = [0, 1];
-    var tipo_cuenta = '';
+    var args = req.body;
+    var categorias = args.data;
     var cuentas = {};
     var error_count = 0;
-    //console.log('Array in model is: ', categorias);
+    var sw_cuenta = 0;
+    console.log('args Entry is: ', args);
 
-    for(var index in categorias){
-        var obj = categorias[index];
-        sw_cuentas.forEach(function(sw_cuenta) {
-            if (sw_cuenta == 0) {
-                tipo_cuenta = 'debito';
-            } else if (sw_cuenta == 1) {
-                tipo_cuenta = 'credito';
-            }
-            cuentas = obj[tipo_cuenta];
-            if(cuentas !== undefined){
+    for(var tipo_cuenta in categorias){
+        for(var index in categorias[tipo_cuenta]){
+            console.log('For in Controller: ', categorias[tipo_cuenta]);
+            if(categorias[tipo_cuenta][index] !== undefined){
+                if(tipo_cuenta === 'debito'){
+                    sw_cuenta = 0;
+                }else if(tipo_cuenta === 'credito'){
+                    sw_cuenta = 1;
+                }
+                cuentas = categorias[tipo_cuenta][index];
                 cuentas.sw_cuenta = sw_cuenta;
                 cuentas.tipo_cuenta = tipo_cuenta;
-                cuentas.empresa_id = args.empresa_id;
-                cuentas.centro_id = args.centro_id;
-                cuentas.bodega_id = args.bodega_id;
-                cuentas.prefijo_id = args.prefijo_id;
-                //console.log('For in Controller: ', cuentas);
+                cuentas.empresa_id = args.session.empresaId;
+                cuentas.centro_id = args.session.centroUtilidad;
+                cuentas.bodega_id = args.session.bodega;
+                cuentas.prefijo_id = categorias.prefijo_id;
+                console.log('Array final: ', cuentas);
 
                 G.Q.ninvoke(that.m_SincronizacionDoc,'guardarCuentas', cuentas).
                 then(function(resultado) {
@@ -153,7 +170,7 @@ SincronizacionDocumentos.prototype.guardarCuentas = function (req, res) {
                     console.log('Error en "guardarCuentas"');
                 });
             }
-        });
+        }
     }
     if(error_count > 0){
         res.send(G.utils.r(req.url, 'Error guardarCuentas', 500, {status: false}));
@@ -168,13 +185,13 @@ SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function (req,
     var args = req.body.data;
 
     G.Q.ninvoke(this.m_SincronizacionDoc, 'insertTiposCuentasCategorias', args).
-            then(function (tiposCuentasCategorias) {
-                res.send(G.utils.r(req.url, 'insertTiposCuentasCategorias!!!!', 200, {insertTiposCuentasCategorias: true}));
-            }).
-            fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error insertTiposCuentasCategorias', 500, {insertTiposCuentasCategorias: false}));
-            }).
-            done();
+        then(function (tiposCuentasCategorias) {
+            res.send(G.utils.r(req.url, 'insertTiposCuentasCategorias!!!!', 200, {insertTiposCuentasCategorias: true}));
+        }).
+        fail(function (err) {
+            res.send(G.utils.r(req.url, 'Error insertTiposCuentasCategorias', 500, {insertTiposCuentasCategorias: false}));
+        }).
+        done();
 };
 
 SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
@@ -183,21 +200,42 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     var args = req.body.data;
     var param;
     var sincronizar = args.data.sincronizar;
+    var servicio = args.data.servicio;
+    var funcion_ws = '';
+
+    console.log(args);
 
     var obj = {
         bodega: req.session.user.bodega,
-        wsFi: 2,
+        wsFi: servicio,
         facturaFiscal: args.data.facturaFiscal,
         factura_fiscal: args.data.facturaFiscal,
         empresaId: args.data.empresaId,
         empresa_id: args.data.empresaId,
-        prefijo: args.data.prefijo,
+        prefijoId: args.data.prefijo.prefijo,
         usuario: req.session.user.usuario_id
     };
-    console.log("--->>> ", obj);
+    console.log("Objeto para sincronizacion: ", obj);
 
-//    G.Q.nfcall(__facturasVentaFi, obj, that).then(function (result) {
-    G.Q.nfcall(__facturasTalonarioFi, obj, that).then(function (result) {
+    switch (servicio) {
+        case 1:
+            funcion_ws = __facturasVentaFi;
+            break;
+        case 2:
+            funcion_ws = __facturasTalonarioFi;
+            break;
+        case 8:
+            funcion_ws = __enviarReciboRCD;
+            break;
+        default:
+            console.log('Error, funcion no asignada!!');
+            break;
+    }
+    //console.log('Funcion: "'+funcion_ws+'"');
+
+    G.Q.nfcall(funcion_ws, obj, that).then(function (result) {
+        console.log('Funcion: "'+funcion_ws+'"');
+ //   G.Q.nfcall(__facturasTalonarioFi, obj, that).then(function (result) {
 
         param = result;
 
@@ -224,6 +262,10 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
 
     }).done();
 };
+
+
+
+
 
 function __facturasTalonarioFi(obj, that, callback) {
     console.log("00--->>> ", obj);
@@ -269,12 +311,12 @@ function __facturasTalonarioFi(obj, that, callback) {
             parametro.prefijo = obj.prefijo;
             parametro.facturaFiscal = obj.facturaFiscal;
             parametro.terceroId = facturaTalonario[0].tercero_id;
-//        parametro.parametrizacionCabeceraFi=result[0].parametrizacionCabeceraFi;
-//        parametro.nombre=result[0].nombre;
+//          parametro.parametrizacionCabeceraFi=result[0].parametrizacionCabeceraFi;
+//          parametro.nombre=result[0].nombre;
             parametro.estadoencabezado = result[0].estadoencabezado;
             parametro.tipotercero = result[0].tipotercero;
-//        parametro.plazotercero=result[0].plazotercero;
-//        parametro.numeroradicacion=result[0].numeroradicacion;
+//          parametro.plazotercero=result[0].plazotercero;
+//          parametro.numeroradicacion=result[0].numeroradicacion;
             parametro.codempresa = result[0].codempresa;
             parametro.coddocumentoencabezado = result[0].coddocumentoencabezado;
             parametro.observaciones = "Factura " + obj.prefijo + " #" + obj.facturaFiscal;
@@ -325,6 +367,9 @@ function __facturasTalonarioFi(obj, that, callback) {
     }).done();
 }
 
+
+
+
 function __facturasVentaFi(obj, that, callback) {
     var parametro = {};
     var listarFacturas;
@@ -335,6 +380,158 @@ function __facturasVentaFi(obj, that, callback) {
     var totalesFactura;
 
     G.Q.ninvoke(that.m_notas, 'listarFacturas', obj).then(function (result) {
+
+        if (result.length > 0) {
+            listarFacturas = result;
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultaDetalleFacturaGenerada', obj, 0);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'No se encontro la Factura'};
+        }
+    }).then(function (result) {
+        if (result.length > 0) {
+            listarFacturasDetalle = result;
+            obj.terceroId = listarFacturas[0].tercero_id;
+            obj.tipoIdTercero = listarFacturas[0].tipo_id_tercero;
+            obj.anio = listarFacturas[0].anio_factura;
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'No se encontro el Detalle de la Factura'};
+        }
+    }).then(function (result) {
+        if (result.length > 0) {
+            contrato = result;
+            return G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'No se econtro el Contrato del tercero'};
+        }
+
+    }).then(function (result) {
+        if (result.length > 0) {
+            empuestos = result;
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFi', obj);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'No se encontro la parametrizacion de los impuestos'};
+        }
+
+    }).then(function (result) {
+        if (result.length > 0) {
+            parametro.fechaFactura = listarFacturas[0].fecha_factura;
+            parametro.usuarioId = obj.usuario;
+            parametro.prefijo = result[0].prefijo_fi;
+            obj.parametrizacion = '1';
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'parametrizacionCabeceraFi', obj);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'No se encontro el prefijo de FI'};
+        }
+
+    }).then(function (result) {
+        if (result.length > 0) {
+            parametro.facturaFiscal = listarFacturas[0].factura_fiscal;
+            parametro.terceroId = listarFacturas[0].tercero_id;
+            parametro.parametrizacionCabeceraFi = result[0].parametrizacionCabeceraFi;
+            parametro.nombre = result[0].nombre;
+            parametro.estadoencabezado = result[0].estadoencabezado;
+            parametro.tipotercero = result[0].tipotercero;
+            parametro.plazotercero = result[0].plazotercero;
+            parametro.numeroradicacion = result[0].numeroradicacion;
+            parametro.codempresa = result[0].codempresa;
+            parametro.coddocumentoencabezado = result[0].coddocumentoencabezado;
+            parametro.observaciones = listarFacturas[0].observaciones;
+            return G.Q.nfcall(__JsonFacturaEncabezado, parametro);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'Se produjo un error al consultar la parametrizacion de la cabecera'};
+        }
+
+    }).then(function (result) {
+
+        if (result !== undefined) {
+            encabezado = result;
+            //identerceroencabezado
+            var separacion = {
+                medicamentosGravados: 0,
+                costoMedicamentosGravados: 0,
+                medicamentosNoGravados: 0,
+                costoMedicamentosNoGravados: 0,
+                insumosGravados: 0,
+                costoInsumosGravados: 0,
+                insumosNoGravados: 0,
+                costoInsumosNoGravados: 0,
+                porc_iva: 0,
+                subtotal: 0,
+                iva: 0,
+                total: 0
+            };
+            return G.Q.nfcall(__SeparacionMedicamentosInsumos, listarFacturasDetalle, 0, separacion);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'Se produjo un error al crear la cabecera'};
+        }
+    }).then(function (result) {
+        if (result !== undefined) {
+            totalesFactura = result;
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarCuentasDetalle', obj);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'Se produjo un error al crear los totales'};
+        }
+
+    }).then(function (result) {
+        console.log("listarCuentasDetalle", result);
+        if (result.length > 0) {
+            empuestos.retencion_ica = 0;
+            empuestos.retencion_fuente = 0;
+            empuestos.impusto_cree = 0;
+            totalesFactura.identercero = listarFacturas[0].tercero_id;
+            totalesFactura.cuenta = contrato[0].cuenta_contable;
+            return G.Q.nfcall(__EncabezadoFacturaDetalle, result, totalesFactura, [], 0, contrato, empuestos);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'Se produjo un error al consultar las cuentas de la factura'};
+        }
+
+    }).then(function (result) {
+        if (result !== undefined > 0) {
+            param = {'encabezadofactura': encabezado, 'asientoscontables': result};
+            callback(false, param);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'Se produjo un error al crear los asientos contables'};
+        }
+    }).fail(function (err) {
+        var mensaje = {};
+        if (err.error !== undefined) {
+            mensaje.status = err.status;
+            mensaje.mensaje = err.mensaje;
+            mensaje.respuesta = {sincronizacionDocumentos: false, error: err};
+        } else {
+            mensaje.mensaje = 'Error sincronizacionDocumentos';
+            mensaje.status = 500;
+            mensaje.respuesta = {sincronizacionDocumentos: false, error: err};
+        }
+
+        callback(mensaje);
+    }).done();
+}
+
+
+
+
+
+
+
+
+
+function __enviarReciboRCD(obj, that, callback) {
+    console.log('In __enviarReciboRCD!!!');
+    var parametro = {};
+    var listarFacturas;
+    var listarFacturasDetalle;
+    var contrato;
+    var empuestos;
+    var encabezado;
+    var totalesFactura;
+
+    // return 'Eyyy';         //  recibos_caja
+    console.log('Before function listarFacturas, obj: ', obj);
+
+    G.Q.ninvoke(that.m_caja_general, 'listarRecibosCajaPorPrefijo', obj).then(function (result) {
+        console.log('listarFacturas fine!!');
 
         if (result.length > 0) {
             listarFacturas = result;

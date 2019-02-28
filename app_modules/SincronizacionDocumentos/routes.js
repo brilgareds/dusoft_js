@@ -36,4 +36,8 @@ module.exports = function(app, di_container) {
     app.post('/api/SincronizacionDocumentos/guardarCuentas', function(req, res) {
         c_SincronizacionDoc.guardarCuentas(req, res);
     });
+
+    app.post('/api/SincronizacionDocumentos/buscarServicio', function(req, res) {
+        c_SincronizacionDoc.buscarServicio(req, res);
+    });
 };

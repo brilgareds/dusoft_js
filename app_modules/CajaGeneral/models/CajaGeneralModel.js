@@ -491,6 +491,62 @@ CajaGeneralModel.prototype.listarRecibosCaja = function (obj, callback) {
         callback(err);
     });
 };
+
+CajaGeneralModel.prototype.listarRecibosCajaPorPrefijo = function (obj, callback) {
+    var empresa = obj.empresaId;
+    var prefijo = obj.prefijoId;
+
+    console.log('obj.empresaId: ', empresa);
+    console.log('obj.prefijoId: ', prefijo);
+
+    var columna = [
+        "a.empresa_id",
+        "a.centro_utilidad",
+        "a.factura_fiscal as recibo_caja",
+        "a.fecha_registro as fecha_ingcaja",
+        "b.caja_id",
+        "b.descripcion as caja",
+        "a.total_efectivo",
+        "a.total_cheques",
+        "a.total_bonos",
+        "a.total_tarjetas",
+        "a.usuario_id",
+        "a.prefijo",
+        G.knex.raw("(a.total_efectivo + a.total_cheques + a.total_tarjetas + a.total_bonos) as suma"),
+        G.knex.raw("CASE WHEN b.estado ='0' THEN a.total_abono ELSE -1 END AS total_abono")
+    ];
+
+    console.log('Despues de columna!!');
+
+    var query = G.knex.select(columna)
+        .from('fac_facturas as b')
+        .leftJoin('fac_facturas_contado as a',
+            function () {
+                this.on("a.documento_id", "b.documento_id")
+            })
+        .leftJoin('fac_facturas_conceptos as c',
+            function () {
+                this.on("b.factura_fiscal", "c.factura_fiscal")
+                    .on("b.prefijo", "c.prefijo")
+            })
+        .leftJoin('cajas_rapidas as d',
+            function () {
+                this.on("c.caja_id", "d.caja_id")
+            })
+        .where('a.empresa_id', empresa)
+        .andWhere('a.prefijo', prefijo);
+
+    console.log("Query resultado: ", G.sqlformatter.format(query.toString()));
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        //console.log("err [listarPrefijos]:", query.toSQL());
+        console.log("err [listarPrefijos]:", err);
+        callback(err);
+    });
+};
 /**
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar los grupos

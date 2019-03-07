@@ -235,10 +235,27 @@ SincronizacionDocumentosModel.prototype.obtenerPrefijoFI = function(obj, callbac
         .where('a.prefijo', obj.tipo_documento)
         .andWhere('a.empresa_id', obj.empresa)
     );
+
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
 };
 
 SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function(obj, callback) {
     console.log('In Model "obtenerDetalleBonificacion"');
+
+    var response = {
+        facturas: [],
+        medicamentos_gravados: 0,
+        medicamentos_no_gravados: 0,
+        insumos_gravados: 0,
+        insumos_no_gravados: 0,
+        iva: 0,
+        subtotal: 0,
+        total: 0
+    };
 
     var query = G.knex.column(
         'a.*',
@@ -264,7 +281,27 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function(ob
 
     query.then(function(resultado){
         if(resultado && resultado.length > 0){
-            callback(false, resultado);
+            response.facturas = resultado;
+
+            for(let factura of response.facturas){
+                if (factura.sw_medicamento == "1") {
+                    if (factura.iva > 0) {
+                        response.medicamentos_gravados += factura.subtotal;
+                    } else {
+                        response.medicamentos_no_gravados += factura.subtotal;
+                    }
+                } else if (factura.sw_insumos == "1") {
+                    if (factura.iva > 0) {
+                        response.insumos_gravados += factura.subtotal;
+                    } else {
+                        response.insumos_no_gravados += factura.subtotal;
+                    }
+                }
+                response.subtotal += factura.subtotal;
+                response.iva += factura.iva_total;
+                response.total += factura.total;
+            }
+            callback(false, response);
         }else{
             throw {error: 1, status: 500, mensaje: 'Result empty in "obtenerDetalleBonificacion"'};
         }
@@ -384,6 +421,25 @@ SincronizacionDocumentosModel.prototype.listarTiposServicios = function(obj, cal
         console.log("error sql",err);
         callback(err);
      });
+};
+
+SincronizacionDocumentosModel.prototype.cuentasFiltradas = function(obj, callback) {
+    console.log('In model "cuentasFiltradas"');
+
+    var query = G.knex.select()
+        .from('documentos_cuentas')
+        .where({
+            prefijo: obj.prefijo,
+            empresa_id: obj.empresa_id,
+            centro_id: obj.centro_id,
+            bodega_id: obj.bodega_id,
+            parametrizacion_ws_fi: obj.parametrizacion
+        });
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
 };
 
 SincronizacionDocumentosModel.prototype.guardarCuentas = function(obj, callback) {

@@ -202,6 +202,7 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     var sincronizar = args.data.sincronizar;
     var servicio = args.data.servicio;
     var funcion_ws = '';
+    var prefijo_fi = '';
 
     console.log('Usuario: ', req.session.user);
 
@@ -217,6 +218,7 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
         bodega: req.session.user.bodega,
         bodegaId: req.session.user.bodega,
         prefijo: args.data.prefijo.prefijo,
+        prefijoFI: '',
         prefijoId: args.data.prefijo.prefijo,
         usuarioId: req.session.user.usuario_id
     };
@@ -738,21 +740,105 @@ function __enviarReciboRCD(obj, that, callback) {
 
 function __ingresoBonificaciones(obj, that, callback) {
     console.log('In "__ingresoBonificaciones"');
+    var documento = {};
 
     G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerEncabezadoBonificacion', obj).then(function (result) {
         console.log('"obtenerEncabezadoBonificacion" fine!!');
+        if(result !== undefined && result.length > 0){
+            documento.encabezadofactura = result[0];
 
-        return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerDetalleBonificacion', obj);
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerDetalleBonificacion', obj);
+        }else{
+            throw {error: 1, status: 404, mensaje: 'No se encontro el Encabezado!!'};
+        }
     }).then(function(result){
         console.log('"obtenerDetalleBonificacion" fine!!');
 
-        return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFI', obj);
+        if(result !== undefined && result.facturas !== undefined && result.facturas.length > 0){
+            documento.asientoscontables = result.facturas;
+            documento.medicamentos_gravados = result.medicamentos_gravados;
+            documento.medicamentos_no_gravados = result.medicamentos_no_gravados;
+            documento.insumos_gravados = result.insumos_gravados;
+            documento.insumos_no_gravados = result.insumos_no_gravados;
+            documento.iva = result.iva;
+            documento.subtotal = result.subtotal;
+            documento.total = result.total;
+
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFI', obj);
+        }else{
+            throw {error: 1, status: 404, mensaje: 'No se encontro el detalle de la bonificacion!!'};
+        }
     }).then(function (result) {
         console.log('Finish all function!!');
 
-        callback(false, result)
-    })
-    .fail(function(){
+        if(result !== undefined && result.length > 0){
+            obj.prefijoFI = result[0].prefijo_fi; // codigo_documento
+            obj.estado = 3;
+
+            //var $encabezado['numerodocumentoencabezado'] = documento.encabezadofactura.numero;
+            var date = new Date();
+            var mes = String(parseInt(date.getMonth())+1);
+            if(mes.length === 1){ mes = '0'+mes; }
+
+            var fecha_documento = date.getDate()+'/'+mes+'/'+date.getFullYear();
+            var identificacion_tercero = documento.encabezadofactura.tercero_id;
+            var observacion_encabezado = documento.encabezadofactura.observacion;
+            var error = { contador: 0, msj: '' };
+            var resultado_sincronizacion = false;
+
+            //var usuario_creacion = UserGetUID();
+
+            documento.encabezadofactura.codempresa = "DUA";
+            documento.encabezadofactura.coddocumentoencabezado = obj.prefijoFI;
+
+            console.log('Objeto "Documento": ', documento);
+
+            /* =============================== Estructura WS de Bonificaciones =============================== */
+            // $encabezado['codempresa'] = $codigo_empresa;
+
+            if (documento.encabezadofactura.codempresa) {
+                error.contador++;
+                error.msj += 'El Codigo de la Empresa no esta definido';
+            }
+
+            if (documento.encabezadofactura.coddocumentoencabezado) {
+                error.contador++;
+                error.msj += 'El Prefijo FI, no esta parametrizado para ese documento';
+            }
+
+            if (documento.encabezadofactura.numero) {
+                error.contador++;
+                error.msj = 'El numero de factura es obligatorio';
+            }
+
+            if (documento.encabezadofactura.tercero_id) {
+                error.contador++;
+                error.msj = 'El proveedor no posee una identificacion valid';
+            }
+
+            if (documento.encabezadofactura.observacion) {
+                error.contador++;
+                error.msj = 'Debe Ingresar una observacion';
+            }
+
+            if(error.contador === 0){
+                resultado_sincronizacion = true;
+            }
+
+            documento.encabezadofactura.estadoencabezado = 3;
+            documento.encabezadofactura.fecharegistroencabezado = fecha_documento;
+            documento.encabezadofactura.usuariocreacion = 1350;
+            documento.encabezadofactura.tipotercero = 3;
+
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'cuentasFiltradas', obj);
+        }else{
+            throw {error: 1, status: 404, mensaje: 'No se encontro el Prefijo del Fi'};
+        }
+    }).then(function(result){
+        console.log('In "cuentasFiltradas"');
+
+        callback(false, result);
+    }).fail(function(){
         callback('Hubo un error!!!');
     }).done();
 }

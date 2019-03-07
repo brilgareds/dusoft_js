@@ -175,7 +175,7 @@ DrAriasModel.prototype.rotacionZonas = function (sw,callback) {
                 this.andWhere(G.knex.raw("a.empresa_id in ('FD','03')"))
                     .andWhere("a.estado","1")
                     .andWhere(G.knex.raw("a.bodega not in (42,77,50,65,63,81)"))
-               
+                    .andWhere(G.knex.raw("c.fecha_registro is not null"))
             }).orderBy(filtro, orden);
 
     query.then(function (resultado) {

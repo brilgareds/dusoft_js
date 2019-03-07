@@ -16,19 +16,15 @@ define(["angular", "js/controllers"
 
             var that = this;
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
+            $scope.servicio = '';
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
             $scope.root = {
                 prefijo: {},
-                estado:true
-            };
-            
- 
-            that.init = function(callback) {
-                $scope.root = {};         
-                callback();
+                estado:true,
+                listarTiposServicios: {}
             };
 
             that.listarPrefijos = function () {
@@ -65,6 +61,10 @@ define(["angular", "js/controllers"
             $scope.buscar = function () {
                that.consulta(0); 
             };
+
+            $scope.servicio_actualizado = function(servicio){
+                $scope.servicio = servicio;
+            };
             
             that.consulta = function (sw) {
                 var prefijo = $scope.root.prefijo2;
@@ -86,9 +86,20 @@ define(["angular", "js/controllers"
                         prefijo: prefijo,
                         facturaFiscal: numero,
                         sincronizar: sw,
-                        servicio: servicio
+                        servicio: $scope.servicio
                     };
                     that.sincronizacionDocumentos(obj);
+                });
+            };
+
+            that.listarTiposServicios = function(){
+                var obj = {
+                    session: $scope.session,
+                    data: {}
+                };
+                ServerServiceDoc.listarTiposServicios(obj, function(data){
+                    console.log('Servicios: ', data);
+                    $scope.root.listarTiposServicios = data.obj.listarTiposServicios.servicios;
                 });
             };
 
@@ -101,7 +112,6 @@ define(["angular", "js/controllers"
                 var obj = {
                     session: $scope.session,
                     data: {
-                        empresaId: Usuario.getUsuarioActual().getEmpresa().codigo,
                         prefijo: parametros.prefijo,
                         facturaFiscal: parametros.facturaFiscal,
                         sincronizar: parametros.sincronizar,
@@ -190,21 +200,12 @@ define(["angular", "js/controllers"
                 ]
 
             };
-
-
-
-
-            that.init = function (callback) {
+            that.init = function () {
                 $scope.root = {};
+                that.listarTiposServicios();
                 that.listarPrefijos();
-                callback();
             };
 
-
-
-            that.init(function () {
-
-            });
-
+            that.init();
         }]);
 });

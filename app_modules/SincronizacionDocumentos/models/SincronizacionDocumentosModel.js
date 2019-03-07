@@ -61,16 +61,287 @@ SincronizacionDocumentosModel.prototype.buscarServicio = function(obj, callback)
     });
 };
 
-SincronizacionDocumentosModel.prototype.listarRCD = function(){
-    var query = G.knex.distinct([
-        'dc.parametrizacion_ws_fi_id as id',
-        'dc.nombre as descripcion'])
+SincronizacionDocumentosModel.prototype.encabezadoReciboRCC = function(obj, callback){
+
+    var query = G.knex.column('RC.*',
+        G.knex.raw("TO_CHAR(RC.fecha_registro, 'DD-MM-YYYY') as fecha_registro"))
         .select()
-        .from('documentos_cuentas as dc');
-    //console.log('SQL en AjustePrecios ',G.sqlformatter.format(query.toString()));
+        .from('recibos_caja as RC')
+        .where('RC.recibo_caja', obj.facturaFiscal)
+        .andWhere('RC.prefijo', obj.prefijo);
 
     query.then(function(resultado) {
         callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
+SincronizacionDocumentosModel.prototype.listarEncabezadoRCD = function(obj, callback){
+    // console.log('In listarEncabezadoRCD of Model!! obj is: ', obj);
+
+    var query = G.knex.column(
+            G.knex.raw("'NTC' as coddocumentoencabezado"), // Codigo de Documento Encabezado
+            G.knex.raw("'DUA' as codempresa"),
+            G.knex.raw("'3' as estadoencabezado"),
+            G.knex.raw("TO_CHAR(rc.fecha_registro, 'DD-MM-YYYY') as fecharegistroencabezado"),
+            'rc.tercero_id as identerceroencabezado',
+            'rc.recibo_caja as numerodocumentoencabezado',
+            'rc.observacion as observacionencabezado',
+            'rc.usuario_id as usuariocreacion',
+            G.knex.raw("'3' as tipotercero"),
+            'rc.tercero_id',
+            'rc.empresa_recibo',
+            'tc.cuenta_contable')
+        .select()
+        .from('recibos_caja as rc')
+        .leftJoin('terceros_clientes as tc',
+            function() {
+                this.on('rc.tipo_id_tercero', 'tc.tipo_id_tercero')
+                    .on('rc.tercero_id', 'tc.tercero_id')
+            })
+        .where('rc.recibo_caja', obj.facturaFiscal)
+            .andWhere('rc.prefijo', obj.prefijoId);
+
+    //console.log('SQL en listarEncabezadoRCD: ', G.sqlformatter.format(query.toString()));
+
+    query.then(function(resultado) {
+        if(resultado[0] !== undefined){
+            if(resultado[0].numerodocumentoencabezado !== undefined){
+                resultado[0].numerodocumentoencabezado = String(resultado[0].numerodocumentoencabezado);
+            }
+            if(resultado[0].usuariocreacion !== undefined){
+                resultado[0].usuariocreacion = String(resultado[0].usuariocreacion);
+            }
+
+            callback(false, resultado);
+        }else{
+            callback(false);
+        }
+    });
+};
+
+SincronizacionDocumentosModel.prototype.listarFacturasDFIN1121 = function(obj, callback){
+    var response = {
+        'facturas': [],
+        'credito': 0
+    };
+    //console.log('In listarFacturasDFIN1121 of Model!! obj is: ', obj);
+
+    var column1 = [
+        G.knex.raw("'0' as codcentrocostoasiento"),
+        G.knex.raw("'0' as codcentroutilidadasiento"),
+        G.knex.raw("'"+obj.cuentaContable+"' AS codcuentaasiento"),
+        G.knex.raw("'0' as  codlineacostoasiento"),
+        G.knex.raw("'"+obj.terceroId+"' AS identerceroasiento"),
+        G.knex.raw("'SIN OBSERVACION PARA EL ASIENTO' AS observacionasiento"),
+        G.knex.raw("'0' AS valorbaseasiento"),
+        'RES.valor_abonado_rt as valorcreditoasiento',
+        G.knex.raw("'0' AS valordebitoasiento"),
+        G.knex.raw("'0' AS valortasaasiento")
+    ];
+
+    var column2 = [
+        G.knex.raw("SUM(valor_abonado_rt) AS total_credito")
+    ];
+    //console.log('Antes de la funcion!!');
+
+    var query = G.knex.column(column1)
+        .select()
+        .from(function() {
+            this.select(
+                'u.prefijo',
+                'u.recibo_caja',
+                G.knex.raw("'1' AS estado_1121"),
+                G.knex.raw("SUM(valor_abonado) AS valor_abonado_rt"))
+                .from('rc_detalle_tesoreria_facturas as u')
+                .where('u.prefijo', obj.prefijo)
+                .andWhere('u.recibo_caja', obj.facturaFiscal)
+                .groupBy(G.knex.raw("1, 2, 3")).as('RES')
+        })
+        .where('RES.valor_abonado_rt', '>', '0');
+
+    console.log("Queryyyy listarFacturasDFIN1121: ", G.sqlformatter.format(query.toString()));
+
+    query.then(function(facturas) {
+        if (facturas.length > 0) {
+            facturas[0].valorcreditoasiento = parseFloat(facturas[0].valorcreditoasiento);
+            response.facturas = facturas;
+
+            var query = G.knex.column(column2)
+                .select()
+                .from(function() {
+                    this.select(
+                        'u.prefijo',
+                        'u.recibo_caja',
+                        G.knex.raw("'1' AS estado_1121"),
+                        G.knex.raw("SUM(valor_abonado) AS valor_abonado_rt"))
+                        .from('rc_detalle_tesoreria_facturas as u')
+                        .where('u.prefijo', obj.prefijo)
+                        .andWhere('u.recibo_caja', obj.facturaFiscal)
+                        .groupBy(G.knex.raw("1, 2, 3")).as('RES')
+                })
+                .where('RES.valor_abonado_rt', '>', '0');
+
+            return query;
+        }else{
+            console.log('Sin facturas!!!');
+            return false;
+        }
+    }).then(function(data) {
+        var total_credito = data[0].total_credito;
+        response.credito = total_credito;
+
+        console.log('All fine total is: ', total_credito);
+        callback(false, response);
+    }).catch(function(err){
+        console.log('Hubo un error: ', err);
+        callback(err);
+    });
+};
+
+SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function(obj, callback){
+    console.log('In Model "obtenerEncabezadoBonificacion"');
+
+    var query = G.knex.select()
+        .from('inv_bodegas_movimiento_prestamos as a')
+
+        .innerJoin('terceros as b', function(){
+            this.on('a.tipo_id_tercer')
+                .on('b.tipo_id_tercero')
+        })
+        .innerJoin('inv_bodegas_tipos_prestamos as c', 'a.tipo_prestamo_id', 'c.tipo_prestamo_id')
+        .innerJoin('inv_bodegas_movimiento as d', function(){
+            this.on('a.prefijo', 'd.prefijo')
+                .on('a.numero', 'd.numero')
+        })
+        .where('a.empresa_id', obj.empresa)
+        .andWhere('a.prefijo', obj.prefijo)
+        .andWhere('a.numero', obj.numero);
+
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    })
+};
+
+SincronizacionDocumentosModel.prototype.obtenerPrefijoFI = function(obj, callback){
+    console.log('In model "obtenerPrefijoFI"');
+
+    var query = G.knex.column(G.knex.raw("COALESCE(b.prefijo, '') as prefijo_fi")
+        .from('documentos as a')
+        .innerJoin('prefijos_financiero as b', 'a.prefijos_financiero_id', 'b.id')
+        .where('a.prefijo', obj.tipo_documento)
+        .andWhere('a.empresa_id', obj.empresa)
+    );
+};
+
+SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function(obj, callback) {
+    console.log('In Model "obtenerDetalleBonificacion"');
+
+    var query = G.knex.column(
+        'a.*',
+        'b.descripcion',
+        'b.unidad_id',
+        'b.contenido_unidad_venta',
+        'c.descripcion as descripcion_unidad',
+        G.knex.raw('fc_descripcion_producto(b.codigo_producto) as nombre'),
+        G.knex.raw('(a.valor_unitario * a.cantidad) as subtotal'),
+        G.knex.raw('(a.valor_unitario*(a.porcentaje_gravamen/100)) as iva'),
+        G.knex.raw('((a.valor_unitario * a.cantidad) * (a.porcentaje_gravamen/100)) as iva_total'),
+        G.knex.raw('((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as total'),
+        d.sw_insumo,
+        d.sw_medicamento)
+        .from('inv_bodegas_movimiento_d as a')
+        .innerJoin('inventarios_productos as b', 'a.codigo_producto', 'b.codigo_producto')
+        .innerJoin('unidades as c', 'b.unidad_id', 'c.unidad_id')
+        .innerJoin('inv_grupos_inventarios as d', 'b.grupo_id', 'd.grupo_id')
+        .where('a.empresa_id', obj.empresa_id)
+        .andWhere('a.prefijo', obj.prefijo)
+        .andWhere('a.numero', obj.numero)
+        .orderBy('a.codigo_producto');
+
+    query.then(function(resultado){
+        if(resultado && resultado.length > 0){
+            callback(false, resultado);
+        }else{
+            throw {error: 1, status: 500, mensaje: 'Result empty in "obtenerDetalleBonificacion"'};
+        }
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
+SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function(obj, callback){
+    console.log('In model "listarDetalleRCWSFI"');
+    var credito = parseFloat('0');
+    var debito = parseFloat('0');
+    var response = {};
+
+    var query = G.knex.distinct(
+        G.knex.raw("'0' AS codcentrocostoasiento"),
+        G.knex.raw("'0' AS codcentroutilidadasiento"),
+        'RCT.cuenta as codcuentaasiento',
+        G.knex.raw("'0' AS codlineacostoasiento"),
+        G.knex.raw("'"+obj.terceroId+"' AS identerceroasiento"),
+        G.knex.raw("'ASIENTO PARA EL CONCEPTO' AS observacionasiento"),
+        G.knex.raw("'0' AS valorbaseasiento"),
+        G.knex.raw("CASE WHEN \"RCT\".\"sw_naturaleza\" = 'D' THEN '0' ELSE \"RDTC\".\"valor\" END AS valorcreditoasiento"),
+        G.knex.raw("CASE WHEN \"RCT\".\"sw_naturaleza\" = 'D' THEN \"RDTC\".\"valor\" ELSE '0' END AS valordebitoasiento"),
+        G.knex.raw("'0' AS valortasaasiento"))
+        .from('facturas_rc_detalles as RDTF')
+        .leftJoin('fac_facturas as FF',
+            function(){
+                this.on('FF.empresa_id', 'RDTF.empresa_id')
+                    .on('FF.prefijo', 'RDTF.prefijo_factura')
+                    .on('FF.factura_fiscal', 'RDTF.factura_fiscal')
+            })
+        .leftJoin('rc_detalle_tesoreria_conceptos as RDTC',
+            function(){
+                this.on('RDTC.empresa_id', 'RDTF.empresa_id')
+                    .on('RDTC.centro_utilidad', 'RDTF.centro_utilidad')
+                    .on('RDTC.prefijo', 'RDTF.rc_prefijo_tras')
+                    .on('RDTC.recibo_caja', 'RDTF.rc_id_tras')
+            })
+        .leftJoin('rc_conceptos_tesoreria as RCT',
+            function(){
+                this.on('RCT.concepto_id', 'RDTC.concepto_id')
+                    .on('RCT.empresa_id', 'RDTC.empresa_id')
+            })
+        .leftJoin('rc_detalle_tesoreria_conceptos as RDTC1',
+            function(){
+                this.on('RDTC1.prefijo', 'RDTF.prefijo_rc')
+                    .on('RDTC1.recibo_caja', 'RDTF.recibo_caja')
+            })
+        .leftJoin('rc_conceptos_tesoreria as RCT1',
+            function(){
+                this.on('RCT1.concepto_id', 'RDTC1.concepto_id')
+                    .on('RCT1.empresa_id', 'RDTC1.empresa_id')
+            })
+        .where('RDTF.rc_prefijo_tras', obj.prefijo)
+        .andWhere('RDTF.rc_id_tras', obj.facturaFiscal);
+
+    console.log('SQL en listarDetalleRCWSFIIIII ',G.sqlformatter.format(query.toString()));
+
+    query.then(function(resultado) {
+        for(var detalle of resultado){
+            if(detalle.valorcreditoasiento && detalle.valorcreditoasiento !== '0'){
+                detalle.valorcreditoasiento = parseFloat(detalle.valorcreditoasiento);
+                credito += detalle.valorcreditoasiento;
+            }
+            if(detalle.valordebitoasiento && detalle.valordebitoasiento !== '0'){
+                detalle.valordebitoasiento = parseFloat(detalle.valordebitoasiento);
+                debito += detalle.valordebitoasiento;
+            }
+        }
+        response.detalle = resultado;
+        response.credito = credito;
+        response.debito = debito;
+        callback(false, response);
+    }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
     });
 };
 
@@ -263,7 +534,7 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function(obj, callb
 };
 
 SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = function(obj, callback) {
-    console.log('entro en el modelo de "obtener_prefijo_fi"!');
+    console.log('entro en el modelo de "obtener_prefijo_fi"!: ', obj);
 
     var query = G.knex.select(G.knex.raw("COALESCE(b.prefijo ,'') as prefijo_fi"))
                 .from('documentos as a')
@@ -271,7 +542,9 @@ SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = function(obj, callbac
                 .where(function(){
                 }).andWhere('a.prefijo', obj.prefijo)
                   .andWhere('a.empresa_id', obj.empresaId);
-    
+
+    console.log(G.sqlformatter.format(query.toString()));
+
     query.then(function(resultado) {
        callback(false, resultado);
      }).catch (function(err) {
@@ -381,7 +654,7 @@ SincronizacionDocumentosModel.prototype.insertTiposCuentas = function(obj, callb
     var select = G.knex('documentos_cuentas')
         .select('documentos_cuentas_id')
         .where({
-            prefijo: obj.prefijoId,
+            prefijo: obj.prefijo,
             empresa_id: obj.empresaId,
             centro_id: obj.centroId,
             bodega_id: obj.bodegaId,
@@ -398,7 +671,7 @@ SincronizacionDocumentosModel.prototype.insertTiposCuentas = function(obj, callb
             //console.log('Entro en el if!!!');
             var query = G.knex('documentos_cuentas')
                 .insert({
-                    prefijo: obj.prefijoId,
+                    prefijo: obj.prefijo,
                     empresa_id: obj.empresaId,
                     centro_id: obj.centroId,
                     bodega_id: obj.bodegaId,

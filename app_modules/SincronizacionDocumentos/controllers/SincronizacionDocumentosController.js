@@ -203,18 +203,24 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     var servicio = args.data.servicio;
     var funcion_ws = '';
 
-    console.log(args);
+    console.log('Usuario: ', req.session.user);
 
     var obj = {
-        bodega: req.session.user.bodega,
         wsFi: servicio,
+        parametrizacion: servicio,
         facturaFiscal: args.data.facturaFiscal,
         factura_fiscal: args.data.facturaFiscal,
-        empresaId: args.data.empresaId,
-        empresa_id: args.data.empresaId,
+        empresaId: req.session.user.empresa,
+        empresa_id: req.session.user.empresa,
+        centro: req.session.user.centro_utilidad,
+        centroId: req.session.user.centro_utilidad,
+        bodega: req.session.user.bodega,
+        bodegaId: req.session.user.bodega,
+        prefijo: args.data.prefijo.prefijo,
         prefijoId: args.data.prefijo.prefijo,
-        usuario: req.session.user.usuario_id
+        usuarioId: req.session.user.usuario_id
     };
+
     console.log("Objeto para sincronizacion: ", obj);
 
     switch (servicio) {
@@ -223,6 +229,12 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
             break;
         case 2:
             funcion_ws = __facturasTalonarioFi;
+            break;
+        case 5:
+            funcion_ws = __ingresoBonificaciones;
+            break;
+        case 7:
+            funcion_ws = __enviarReciboRCC;
             break;
         case 8:
             funcion_ws = __enviarReciboRCD;
@@ -235,11 +247,10 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
 
     G.Q.nfcall(funcion_ws, obj, that).then(function (result) {
         console.log('Funcion: "'+funcion_ws+'"');
- //   G.Q.nfcall(__facturasTalonarioFi, obj, that).then(function (result) {
-
         param = result;
 
-        if (sincronizar === 1) {
+        // if (sincronizar === 1) {    CONDICIONAL ORIGI9NAL DE ANDRES
+        if (false) {
             var obj = {
                 url: G.constants.WS().FINANCIERO.DUANA,
                 funcion: "crearInformacionContable",
@@ -273,7 +284,7 @@ function __facturasTalonarioFi(obj, that, callback) {
     var facturaTalonario;
     var contrato;
     var enacabezado;
-//    funcionWs = "crearInformacionContable";
+    //    funcionWs = "crearInformacionContable";
 
     G.Q.ninvoke(that.m_caja_general, 'listarFacturaTalonario', obj).then(function (result) {
         if (result.length > 0) {
@@ -380,6 +391,7 @@ function __facturasVentaFi(obj, that, callback) {
     var totalesFactura;
 
     G.Q.ninvoke(that.m_notas, 'listarFacturas', obj).then(function (result) {
+        console.log('listarFacturas in controller!!');
 
         if (result.length > 0) {
             listarFacturas = result;
@@ -388,6 +400,7 @@ function __facturasVentaFi(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro la Factura'};
         }
     }).then(function (result) {
+        console.log('funcion "consultaDetalleFacturaGenerada" fine!!');
         if (result.length > 0) {
             listarFacturasDetalle = result;
             obj.terceroId = listarFacturas[0].tercero_id;
@@ -398,14 +411,15 @@ function __facturasVentaFi(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro el Detalle de la Factura'};
         }
     }).then(function (result) {
+        console.log('funcion "consultarTerceroContrato" fine!!');
         if (result.length > 0) {
             contrato = result;
             return G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
         } else {
             throw {error: 1, status: 404, mensaje: 'No se econtro el Contrato del tercero'};
         }
-
     }).then(function (result) {
+        console.log('funcion "listarParametrosRetencion" fine!!');
         if (result.length > 0) {
             empuestos = result;
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFi', obj);
@@ -414,6 +428,7 @@ function __facturasVentaFi(obj, that, callback) {
         }
 
     }).then(function (result) {
+        console.log('funcion "obtenerPrefijoFi" fine!!');
         if (result.length > 0) {
             parametro.fechaFactura = listarFacturas[0].fecha_factura;
             parametro.usuarioId = obj.usuario;
@@ -509,141 +524,201 @@ function __facturasVentaFi(obj, that, callback) {
     }).done();
 }
 
+function __enviarReciboRCC(obj, that, callback){
+    console.log('In __enviarReciboRCC!!!');
+    var documento = {};
+    var totalDebito = 0;
+    var totalCredito = 0;
+    var total = 0;
+    var prefijoFI = 'CC';
+    var cuenta = 0;
+    var lineaCosto = 0;
 
-
-
-
-
-
-
-
-function __enviarReciboRCD(obj, that, callback) {
-    console.log('In __enviarReciboRCD!!!');
-    var parametro = {};
-    var listarFacturas;
-    var listarFacturasDetalle;
-    var contrato;
-    var empuestos;
-    var encabezado;
-    var totalesFactura;
-
-    // return 'Eyyy';         //  recibos_caja
-    console.log('Before function listarFacturas, obj: ', obj);
-
-    G.Q.ninvoke(that.m_caja_general, 'listarRecibosCajaPorPrefijo', obj).then(function (result) {
-        console.log('listarFacturas fine!!');
-
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarEncabezadoRCD', obj).then(function (result) {
         if (result.length > 0) {
-            listarFacturas = result;
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultaDetalleFacturaGenerada', obj, 0);
+            console.log('\n\n\n\n\n\n\n\n\n');
+            console.log('Encabezado: ', result[0]);
+            documento.encabezadofactura = result[0];
+            obj.empresaRecibo = result[0].empresa_recibo;
+            obj.cuentaContable = documento.encabezadofactura.cuenta_contable;
+            obj.terceroId = documento.encabezadofactura.tercero_id;
+            obj.terceroTipoId = documento.encabezadofactura.tipotercero;
+            delete documento.encabezadofactura.cuenta_contable;
+            delete documento.encabezadofactura.tercero_id;
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarEncabezadoRCD', obj);
         } else {
             throw {error: 1, status: 404, mensaje: 'No se encontro la Factura'};
         }
     }).then(function (result) {
         if (result.length > 0) {
-            listarFacturasDetalle = result;
-            obj.terceroId = listarFacturas[0].tercero_id;
-            obj.tipoIdTercero = listarFacturas[0].tipo_id_tercero;
-            obj.anio = listarFacturas[0].anio_factura;
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj);
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarFacturasDFIN1121', obj);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'No se encontro la parametrizacion de la cabecera'};
+        }
+    }).then(function (result) {
+        console.log('listarFacturasDFIN1121: ', result);
+
+        if (result.facturas !== undefined && result.facturas.length > 0) {
+            documento.asientoscontables = result.facturas;
+            totalCredito += parseFloat(result.credito);
+
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarDetalleRCWSFI', obj);
         } else {
             throw {error: 1, status: 404, mensaje: 'No se encontro el Detalle de la Factura'};
         }
     }).then(function (result) {
-        if (result.length > 0) {
-            contrato = result;
-            return G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
-        } else {
-            throw {error: 1, status: 404, mensaje: 'No se econtro el Contrato del tercero'};
+        console.log('listarDetalleRCWSFI: ', result);
+
+        if(result.debito !== undefined){
+            totalDebito += parseFloat(result.debito);
+        }
+        if(result.credito !== undefined){
+            totalCredito += parseFloat(result.credito);
+        }
+        if(result.detalle !== undefined && result.detalle.length > 0 && result.detalle[0].linea_costo){
+            lineaCosto = result.detalle[0].linea_costo;
         }
 
+        console.log('Fine1!!');
+
+        total = parseFloat(totalCredito - totalDebito);
+
+        console.log('Fine2!!');
+
+        if(obj.empresaRecibo == '0'){
+            cuenta = "28050510";
+        }else if(obj.empresaRecibo == '1'){
+            cuenta = "13101005";
+        }
+        console.log('Fine3!!');
+
+        var ultimoAsiento = [{
+            codcentrocostoasiento: "0",
+            codcentroutilidadasiento: "0",
+            codcuentaasiento: cuenta, // cuentaTercero,
+            codlineacostoasiento: lineaCosto,
+            identerceroasiento: obj.terceroId,
+            observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
+            valorbaseasiento: '0',
+            valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
+            valordebitoasiento: total, // Falta este: "$total_saldo"
+            valortasaasiento: '0'
+        }];
+
+        console.log('Fine4!!');
+
+        if(result.detalle != undefined && result.detalle.length > 0){
+            documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
+        }else{
+            documento.asientoscontables = documento.asientoscontables.concat(ultimoAsiento);
+        }
+
+        console.log('Fine5!!');
+
+        //console.log('\n\n\n\n\n\n\n\n\n-----------------------------------11', (JSON.stringify(documento)));
+        // res.send(G.utils.r(req.url, 'sincronizacionDocumentos!!!!', 200, {sincronizacionDocumentos: true, result: result, parametro: param}));
+
+        callback(false, documento);
+    }).fail(function (err) {
+        var mensaje = {};
+        if (err.error !== undefined) {
+            mensaje.status = err.status;
+            mensaje.mensaje = err.mensaje;
+            mensaje.respuesta = {sincronizacionDocumentos: false, error: err};
+        } else {
+            mensaje.mensaje = 'Error sincronizacionDocumentos';
+            mensaje.status = 500;
+            mensaje.respuesta = {sincronizacionDocumentos: false, error: err};
+        }
+
+        callback(mensaje);
+    }).done();
+}
+
+function __enviarReciboRCD(obj, that, callback) {
+    console.log('In __enviarReciboRCD!!!');
+    var documento = {};
+    var totalDebito = 0;
+    var totalCredito = 0;
+    var total = 0;
+    var prefijoFI = 'NTC';
+
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarEncabezadoRCD', obj).then(function (result) {
+        if (result.length > 0) {
+            console.log('\n\n\n\n\n\n\n\n\n');
+            console.log('Encabezado: ', result[0]);
+            documento.encabezadofactura = result[0];
+            obj.cuentaContable = documento.encabezadofactura.cuenta_contable;
+            obj.terceroId = documento.encabezadofactura.tercero_id;
+            obj.terceroTipoId = documento.encabezadofactura.tipotercero;
+            delete documento.encabezadofactura.cuenta_contable;
+            delete documento.encabezadofactura.tercero_id;
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarEncabezadoRCD', obj);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'No se encontro la Factura'};
+        }
     }).then(function (result) {
         if (result.length > 0) {
-            empuestos = result;
-            return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFi', obj);
+
+            /*
+            result.prefijo = obj.prefijo;
+            result.facturaFiscal = obj.facturaFiscal;
+            result.terceroId = facturaTalonario[0].tercero_id;
+//          parametro.parametrizacionCabeceraFi=result[0].parametrizacionCabeceraFi;
+//          parametro.nombre=result[0].nombre;
+            result.estadoencabezado = result[0].estadoencabezado;
+            result.tipotercero = result[0].tipotercero;
+//          parametro.plazotercero=result[0].plazotercero;
+//          parametro.numeroradicacion=result[0].numeroradicacion;
+            result.codempresa = result[0].codempresa;
+            result.coddocumentoencabezado = result[0].coddocumentoencabezado;
+            result.observaciones = "Factura " + obj.prefijo + " #" + obj.facturaFiscal;
+            */
+
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarFacturasDFIN1121', obj);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'No se encontro la parametrizacion de la cabecera'};
+        }
+    }).then(function (result) {
+        console.log('listarFacturasDFIN1121: ', result);
+
+        if (result.facturas !== undefined && result.facturas.length > 0) {
+            documento.asientoscontables = result.facturas;
+
+            totalCredito += parseFloat(result.credito);
+
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarDetalleRCWSFI', obj);
+        } else {
+            throw {error: 1, status: 404, mensaje: 'No se encontro el Detalle de la Factura'};
+        }
+    }).then(function (result) {
+        console.log('listarDetalleRCWSFI: ', result);
+
+        if (result.detalle !== undefined && result.detalle.length > 0) {
+            totalDebito += parseFloat(result.debito);
+            totalCredito += parseFloat(result.credito);
+            total = parseFloat(totalCredito - totalDebito);
+
+            var ultimoAsiento = [{
+                codcentrocostoasiento: "0",
+                codcentroutilidadasiento: "0",
+                codcuentaasiento: '28059510', // cuentaTercero,
+                codlineacostoasiento: '0',
+                identerceroasiento: obj.terceroId,
+                observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
+                valorbaseasiento: '0',
+                valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
+                valordebitoasiento: total, // Falta este: "$total_saldo"
+                valortasaasiento: '0'
+            }];
+
+            documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
+            //console.log('\n\n\n\n\n\n\n\n\n-----------------------------------11', (JSON.stringify(documento)));
+            // res.send(G.utils.r(req.url, 'sincronizacionDocumentos!!!!', 200, {sincronizacionDocumentos: true, result: result, parametro: param}));
+
+            callback(false, documento);
         } else {
             throw {error: 1, status: 404, mensaje: 'No se encontro la parametrizacion de los impuestos'};
-        }
-
-    }).then(function (result) {
-        if (result.length > 0) {
-            parametro.fechaFactura = listarFacturas[0].fecha_factura;
-            parametro.usuarioId = obj.usuario;
-            parametro.prefijo = result[0].prefijo_fi;
-            obj.parametrizacion = '1';
-            return G.Q.ninvoke(that.m_SincronizacionDoc, 'parametrizacionCabeceraFi', obj);
-        } else {
-            throw {error: 1, status: 404, mensaje: 'No se encontro el prefijo de FI'};
-        }
-
-    }).then(function (result) {
-        if (result.length > 0) {
-            parametro.facturaFiscal = listarFacturas[0].factura_fiscal;
-            parametro.terceroId = listarFacturas[0].tercero_id;
-            parametro.parametrizacionCabeceraFi = result[0].parametrizacionCabeceraFi;
-            parametro.nombre = result[0].nombre;
-            parametro.estadoencabezado = result[0].estadoencabezado;
-            parametro.tipotercero = result[0].tipotercero;
-            parametro.plazotercero = result[0].plazotercero;
-            parametro.numeroradicacion = result[0].numeroradicacion;
-            parametro.codempresa = result[0].codempresa;
-            parametro.coddocumentoencabezado = result[0].coddocumentoencabezado;
-            parametro.observaciones = listarFacturas[0].observaciones;
-            return G.Q.nfcall(__JsonFacturaEncabezado, parametro);
-        } else {
-            throw {error: 1, status: 404, mensaje: 'Se produjo un error al consultar la parametrizacion de la cabecera'};
-        }
-
-    }).then(function (result) {
-
-        if (result !== undefined) {
-            encabezado = result;
-            //identerceroencabezado
-            var separacion = {
-                medicamentosGravados: 0,
-                costoMedicamentosGravados: 0,
-                medicamentosNoGravados: 0,
-                costoMedicamentosNoGravados: 0,
-                insumosGravados: 0,
-                costoInsumosGravados: 0,
-                insumosNoGravados: 0,
-                costoInsumosNoGravados: 0,
-                porc_iva: 0,
-                subtotal: 0,
-                iva: 0,
-                total: 0
-            };
-            return G.Q.nfcall(__SeparacionMedicamentosInsumos, listarFacturasDetalle, 0, separacion);
-        } else {
-            throw {error: 1, status: 404, mensaje: 'Se produjo un error al crear la cabecera'};
-        }
-    }).then(function (result) {
-        if (result !== undefined) {
-            totalesFactura = result;
-            return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarCuentasDetalle', obj);
-        } else {
-            throw {error: 1, status: 404, mensaje: 'Se produjo un error al crear los totales'};
-        }
-
-    }).then(function (result) {
-        console.log("listarCuentasDetalle", result);
-        if (result.length > 0) {
-            empuestos.retencion_ica = 0;
-            empuestos.retencion_fuente = 0;
-            empuestos.impusto_cree = 0;
-            totalesFactura.identercero = listarFacturas[0].tercero_id;
-            totalesFactura.cuenta = contrato[0].cuenta_contable;
-            return G.Q.nfcall(__EncabezadoFacturaDetalle, result, totalesFactura, [], 0, contrato, empuestos);
-        } else {
-            throw {error: 1, status: 404, mensaje: 'Se produjo un error al consultar las cuentas de la factura'};
-        }
-
-    }).then(function (result) {
-        if (result !== undefined > 0) {
-            param = {'encabezadofactura': encabezado, 'asientoscontables': result};
-            callback(false, param);
-        } else {
-            throw {error: 1, status: 404, mensaje: 'Se produjo un error al crear los asientos contables'};
         }
     }).fail(function (err) {
         var mensaje = {};
@@ -658,12 +733,33 @@ function __enviarReciboRCD(obj, that, callback) {
         }
 
         callback(mensaje);
+    }).done();
+}
+
+function __ingresoBonificaciones(obj, that, callback) {
+    console.log('In "__ingresoBonificaciones"');
+
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerEncabezadoBonificacion', obj).then(function (result) {
+        console.log('"obtenerEncabezadoBonificacion" fine!!');
+
+        return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerDetalleBonificacion', obj);
+    }).then(function(result){
+        console.log('"obtenerDetalleBonificacion" fine!!');
+
+        return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFI', obj);
+    }).then(function (result) {
+        console.log('Finish all function!!');
+
+        callback(false, result)
+    })
+    .fail(function(){
+        callback('Hubo un error!!!');
     }).done();
 }
 
 function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, contrato, empuestos, callback) {
 
-    var cuentas = detalle[index];//categoria_id
+    var cuentas = detalle[index]; //categoria_id
 
     if (!cuentas) {
         callback(false, arreglo);

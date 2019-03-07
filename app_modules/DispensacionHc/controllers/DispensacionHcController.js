@@ -2475,11 +2475,7 @@ function __generarPdf(datos, callback) {
             engine: 'jsrender',
             phantom: {
                 margin: "10px",
-                width: '700px',
-                header: '\
-                             <link href="{{:serverUrl}}stylesheets/DispensacionHc/style.css" rel=stylesheet type=text/css > \
-                             <link href="{{:serverUrl}}stylesheets/DispensacionHc/style-print.css" rel=stylesheet type=text/css media="print"> Duana\
-                        '
+                width: '700px'
             }
         },
         data: datos

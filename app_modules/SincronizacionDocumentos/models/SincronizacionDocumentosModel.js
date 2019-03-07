@@ -251,8 +251,8 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function(ob
         G.knex.raw('(a.valor_unitario*(a.porcentaje_gravamen/100)) as iva'),
         G.knex.raw('((a.valor_unitario * a.cantidad) * (a.porcentaje_gravamen/100)) as iva_total'),
         G.knex.raw('((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as total'),
-        d.sw_insumo,
-        d.sw_medicamento)
+        'd.sw_insumo',
+        'd.sw_medicamento')
         .from('inv_bodegas_movimiento_d as a')
         .innerJoin('inventarios_productos as b', 'a.codigo_producto', 'b.codigo_producto')
         .innerJoin('unidades as c', 'b.unidad_id', 'c.unidad_id')

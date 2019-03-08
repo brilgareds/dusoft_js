@@ -236,7 +236,16 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
         case 2:
             funcion_ws = __facturasTalonarioFi;
             break;
+        case 3:
+            funcion_ws = __notasCreditoClientesFi;
+            break;
+        case 4:
+            funcion_ws = __notasDebitoClientesFi;
+            break;
         case 5:
+            funcion_ws = __notasProveedor;
+            break;
+        case 6:
             funcion_ws = __ingresoBonificaciones;
             break;
         case 7:
@@ -244,6 +253,9 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
             break;
         case 8:
             funcion_ws = __enviarReciboRCD;
+            break;
+        case 9:
+            funcion_ws = __cuentasPorPagar;
             break;
         default:
             console.log('Error, funcion no asignada!!');
@@ -993,9 +1005,6 @@ function __facturasTalonarioFi(obj, that, callback) {
     }).done();
 }
 
-
-
-
 function __facturasVentaFi(obj, that, callback) {
     var parametro = {};
     var listarFacturas;
@@ -1351,7 +1360,6 @@ function __enviarReciboRCD(obj, that, callback) {
     }).done();
 }
 
-/*
 function __ingresoBonificaciones(obj, that, callback) {
     console.log('In "__ingresoBonificaciones"');
     var documento = {};
@@ -1407,10 +1415,8 @@ function __ingresoBonificaciones(obj, that, callback) {
 
             console.log('Objeto "Documento": ', documento);
 
-            /* =============================== Estructura WS de Bonificaciones =============================== */
+            // =============================== Estructura WS de Bonificaciones =============================== //
             // $encabezado['codempresa'] = $codigo_empresa;
-
-            /*
 
             if (documento.encabezadofactura.codempresa) {
                 error.contador++;
@@ -1457,9 +1463,10 @@ function __ingresoBonificaciones(obj, that, callback) {
     }).fail(function(){
         callback('Hubo un error!!!');
     }).done();
+
+
 }
 
-*/
 
 function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, contrato, empuestos, callback) {
 

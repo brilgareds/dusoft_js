@@ -3,9 +3,7 @@ var SincronizacionDocumentosModel = function() {
 };
 
 SincronizacionDocumentosModel.prototype.listarPrefijos = function(obj, callback) {
-    console.log('entro en el modelo!',obj);
-    console.log('entro en el modelo!',obj.empresaId);
-    
+       
     var query = G.knex.select(['a.prefijo', 'a.tipo_doc_general_id', 'a.texto1'])
             .from('documentos as a')
             .where(function(){
@@ -102,7 +100,7 @@ SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = function(obj, callbac
                 .where(function(){
                 }).andWhere('a.prefijo', obj.prefijo)
                   .andWhere('a.empresa_id', obj.empresaId);
-    
+    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
        callback(false, resultado);
      }).catch (function(err) {
@@ -128,7 +126,7 @@ SincronizacionDocumentosModel.prototype.parametrizacionCabeceraFi = function(obj
                         ]
                     ).from('parametrizacion_ws_fi as a')
                      .andWhere('a.parametrizacion_ws_fi_id', obj.parametrizacion);
-    
+    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
        callback(false, resultado);
      }).catch (function(err) {
@@ -157,7 +155,8 @@ SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function(obj, cal
             'categoria_descripcion',
             'parametrizacion_ws_fi',
             'ica_porcentaje',
-            'cree_porcentaje'
+            'cree_porcentaje',
+            'rtf_porcentaje'
             ])
         .from('documentos_cuentas as doc_cu')            
         .innerJoin('tipos_cuentas_categorias as tipos_cate', 'doc_cu.cuenta_categoria', 'tipos_cate.categoria_id')
@@ -168,8 +167,8 @@ SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function(obj, cal
                     .andWhere('parametrizacion_ws_fi', obj.wsFi);
             }).orderBy("cuenta_categoria","asc");
 
-//        console.log("listarCuentasDetalle",G.sqlformatter.format(query.toString())); 
-console.log(G.sqlformatter.format(query.toString())); 
+        console.log("listarCuentasDetalle",G.sqlformatter.format(query.toString())); 
+//console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
        callback(false, resultado);
      }).catch (function(err) {
@@ -260,7 +259,7 @@ SincronizacionDocumentosModel.prototype.insertTiposCuentasCategorias = function(
 };
 
 SincronizacionDocumentosModel.prototype.sincronizarFinaciero=function(obj, callback) {
-
+console.log("*********sincronizarFinaciero*************");
 //    var url = G.constants.WS().FI.DUSOFT_FI;
     var url = obj.url;
     obj.error = false;
@@ -286,7 +285,7 @@ console.log("result crearInformacionContableResult---",result.crearInformacionCo
         callback(false, obj.obj);
 
     }).fail(function(err) {
-        console.log("Error __sincronizarCuentasXpagarFi ", err);
+        console.log("Error sincronizarFinaciero ", err);
         obj.error = true;
         obj.tipo = '0';
         callback(err);

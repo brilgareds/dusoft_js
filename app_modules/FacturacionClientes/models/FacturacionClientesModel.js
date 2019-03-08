@@ -214,7 +214,8 @@ FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (ob
             G.knex.raw("sum(cantidad) as cantidad"),
             G.knex.raw("to_char(round(sum(valor_unitario2),2),'LFM9,999,999.00') as valor_unitario"),
             G.knex.raw("to_char(round(sum(subtotal2),2),'LFM9,999,999.00') as subtotal"),
-            G.knex.raw("sum(porc_iva) as porc_iva")
+            G.knex.raw("sum(porc_iva) as porc_iva"),
+            G.knex.raw("round(sum(subtotal2),2) as subtotal_detalle")
         ];
 
     }
@@ -926,7 +927,7 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
         this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
                 .andWhere("a.tercero_id", obj.terceroId)
     });
-console.log(G.sqlformatter.format(query.toString())); 
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

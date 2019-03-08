@@ -178,6 +178,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "T.tercero_id",
         "T.nombre_tercero",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
+        G.knex.raw("to_char(ifd.fecha_registro, 'yyyy') as anio_factura"),
         "ifd.valor_total",
         "ifd.saldo",
         "nddc.nota_debito_despacho_cliente_id AS numero",
@@ -187,7 +188,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "a.estado",
         G.knex.raw("'D' AS tipo_nota_impresion"),
         G.knex.raw("CASE WHEN a.estado = 0 THEN\
-	'Sincronizado' ELSE'NO sincronizado'\
+	'Sincronizado' ELSE' NO sincronizado'\
 	END AS descripcion_estado"),
         G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=nddc.nota_debito_despacho_cliente_id and prefijo= 'ND' and sw_factura_dian ='1') as sincronizacion")
     ];
@@ -199,6 +200,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "T.tercero_id",
         "T.nombre_tercero",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
+        G.knex.raw("to_char(ifd.fecha_registro, 'yyyy') as anio_factura"),
         "ifd.valor_total",
         "ifd.saldo",
         "nddc.nota_debito_despacho_cliente_id AS numero",
@@ -208,14 +210,13 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "a.estado",
         G.knex.raw("'D' AS tipo_nota_impresion"),
         G.knex.raw("CASE WHEN a.estado = 0 THEN\
-	'Sincronizado' ELSE'NO sincronizado'\
+	'Sincronizado' ELSE 'NO sincronizado'\
 	END AS descripcion_estado"),
         G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=nddc.nota_debito_despacho_cliente_id and prefijo= 'ND' and sw_factura_dian ='1') as sincronizacion")
     ];
 
     var query = G.knex.select(columna_a)
-//    .from(G.knex.raw("inv_facturas_despacho ifd"))
-            .from(G.knex.raw("( SELECT estado, factura_fiscal, prefijo, numero_nota FROM logs_facturacion_clientes_ws_fi WHERE estado = '0' LIMIT 1 ) AS a, inv_facturas_despacho ifd"))
+    .from(G.knex.raw("inv_facturas_despacho ifd"))            
             .innerJoin('terceros as T', function () {
 
                 this.on("T.tipo_id_tercero", "ifd.tipo_id_tercero")
@@ -229,6 +230,11 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
                         .on("nddc.prefijo", "ifd.prefijo");
 
             })
+            .leftJoin('logs_facturacion_clientes_ws_fi AS a',function(){
+                     this.on("a.factura_fiscal", "ifd.factura_fiscal")
+                         .on("a.prefijo", "ifd.prefijo")
+                         .on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id");
+            })
 //            .leftJoin('logs_facturacion_clientes_ws_fi as a', function () {
 //
 //                this.on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id")
@@ -238,7 +244,9 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
 //            })
             .where(function () {
 
-                this.andWhere('ifd.empresa_id', obj.empresa_id);
+                    if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
+                       this.andWhere('ifd.empresa_id', obj.empresa_id);
+                    }
 
 //                if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'F') {
 //                    this.andWhere('ifd.factura_fiscal', obj.numero);
@@ -253,8 +261,8 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
     query.unionAll(function () {
 
         this.select(columna_b)
-//        .from(G.knex.raw("inv_facturas_agrupadas_despacho ifd"))
-                .from(G.knex.raw("( SELECT estado, factura_fiscal, prefijo, numero_nota FROM logs_facturacion_clientes_ws_fi WHERE estado = '0' LIMIT 1 ) AS a, inv_facturas_agrupadas_despacho ifd"))
+        .from(G.knex.raw("inv_facturas_agrupadas_despacho ifd"))
+                //.from(G.knex.raw("( SELECT estado, factura_fiscal, prefijo, numero_nota FROM logs_facturacion_clientes_ws_fi WHERE estado = '0' LIMIT 1 ) AS a, inv_facturas_agrupadas_despacho ifd"))
                 .innerJoin('terceros as T', function () {
 
                     this.on("T.tipo_id_tercero", "ifd.tipo_id_tercero")
@@ -268,16 +276,16 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
                             .on("nddc.prefijo", "ifd.prefijo");
 
                 })
-//                .leftJoin('logs_facturacion_clientes_ws_fi as a', function () {
-//
-//                    this.on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id")
-//                            .on("a.factura_fiscal", "ifd.factura_fiscal")
-//                            .on("a.prefijo", "ifd.prefijo");
-//
-//                })
+                .leftJoin('logs_facturacion_clientes_ws_fi AS a',function(){
+                     this.on("a.factura_fiscal", "ifd.factura_fiscal")
+                         .on("a.prefijo", "ifd.prefijo")
+                         .on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id");
+                })
                 .where(function () {
 
-                    this.andWhere('ifd.empresa_id', obj.empresa_id);
+                    if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
+                       this.andWhere('ifd.empresa_id', obj.empresa_id);
+                    }
 
 //                    if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'F') {
 //                        this.andWhere('ifd.factura_fiscal', obj.numero);
@@ -322,6 +330,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "ncdc.valor AS valor_nota",
         "ncdc.tipo AS tipo_nota",
         G.knex.raw("TO_CHAR(ncdc.fecha_registro,'YYYY-MM-DD') as fecha_registro_nota"),
+        G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY') as anio_factura"),
         G.knex.raw("0 AS tipo_factura"),
         "a.estado",
         G.knex.raw("'C' AS tipo_nota_impresion"),
@@ -332,6 +341,8 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "ncdc.concepto_id",
         "ncdc.descripcion",
         "ncdc.prefijo_devolucion",
+        "b.naturaleza",
+        "b.cuenta",
         G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=ncdc.nota_credito_despacho_cliente_id and prefijo= 'NC' and sw_factura_dian ='1') as sincronizacion")
     ];
 
@@ -348,6 +359,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "ncdc.valor AS valor_nota",
         "ncdc.tipo AS tipo_nota",
         G.knex.raw("TO_CHAR(ncdc.fecha_registro,'YYYY-MM-DD') as fecha_registro_nota"),
+        G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY') as anio_factura"),
         G.knex.raw("1 AS tipo_factura"),
         "a.estado",
         G.knex.raw("'C' AS tipo_nota_impresion"),
@@ -358,6 +370,8 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "ncdc.concepto_id",
         "ncdc.descripcion",
         "ncdc.prefijo_devolucion",
+        "b.naturaleza",
+        "b.cuenta",
         G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=ncdc.nota_credito_despacho_cliente_id and prefijo= 'NC' and sw_factura_dian ='1') as sincronizacion")
     ];
 
@@ -385,9 +399,11 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
 
             })
             .where(function () {
-
-                this.andWhere('ifd.empresa_id', obj.empresa_id);
-
+               
+                    if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
+                        this.andWhere('ifd.empresa_id', obj.empresa_id);
+                    }
+            
 //                if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'F') {
 //                    this.andWhere('ifd.factura_fiscal', obj.numero);
 //                }
@@ -424,14 +440,17 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
 
                 })
                 .where(function () {
-
-                    this.andWhere('ifd.empresa_id', obj.empresa_id);
-
+                    
+                    if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
+                         this.andWhere('ifd.empresa_id', obj.empresa_id);
+                    }
+                                      
 //                    if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'F') {
 //                        this.andWhere('ifd.factura_fiscal', obj.numero);
 //                    }
 //
 //                    if (obj.tipoConsulta !== undefined && obj.tipoConsulta === 'NC') {
+                    
                     this.andWhere('ncdc.nota_credito_despacho_cliente_id', obj.numero);
 //                    }
                 });
@@ -918,6 +937,7 @@ NotasModel.prototype.consultarProductosNotasDebito = function (parametros, callb
         G.knex.raw("(dnddc.valor * (ifdd.porc_iva/100)) AS iva_total"),
         G.knex.raw("trunc((dnddc.valor/ ifdd.cantidad),2) AS valor_unitario"),
         "dnddc.valor as subtotal",
+        "dnddc.valor as total1",
         "b.sw_medicamento",
         "b.sw_insumos",
         "dnddc.valor_iva",
@@ -967,6 +987,7 @@ NotasModel.prototype.consultarProductosNotasCredito = function (parametros, call
         trunc((dncdc.valor / ifdd.cantidad ),2) ELSE trunc((dncdc.valor / ibmd.cantidad ),2) END AS valor_unitario"),
         G.knex.raw("(dncdc.valor * (ifdd.porc_iva/100)) AS iva_total"),
         "dncdc.valor as subtotal",
+        "dncdc.valor as total1",
         "b.sw_medicamento",
         "b.sw_insumos",
         "dncdc.valor_iva",

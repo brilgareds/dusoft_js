@@ -171,7 +171,7 @@ Reportes.prototype.rotacionZonas = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0').then(function (rotacionZonas) {
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'}).then(function (rotacionZonas) {
                   
         return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
 
@@ -189,8 +189,13 @@ Reportes.prototype.rotacionZonas = function (req, res) {
 Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var that = this;
     var args = req.body.data;
+    console.log("---------rotacionZonasMovil---------",args)
+    var filtro="";
+    if(args.filtro!==undefined && args.filtro!== ""){
+        filtro = args.filtro; 
+    }
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas','1').then(function (rotacionZonas) {
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'1',filtro: filtro}).then(function (rotacionZonas) {
          
         res.send(rotacionZonas);
     }).fail(function (err) {
@@ -453,7 +458,7 @@ function __rotacionesBodegas(that, bodega, callback) {
 
     }).then(function (respuesta) {
         
-        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0');
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'});
         
     }).then(function (respuesta) {
         
@@ -568,7 +573,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
 
     }).then(function (respuesta) {
         
-        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0');
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'});
         
     }).then(function (respuesta) {
         
@@ -1029,7 +1034,8 @@ function sortJSON(data, key, orden) {
 // Funcion para enviar correos electronicos usando nodemailer
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
-
+console.log("__enviar_correo_electronico");
+console.log("__enviar_correo_electronico",to);
     var smtpTransport = that.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname
         secureConnection: true, // use SSL
@@ -1041,9 +1047,9 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     });
 
     var settings = {
-        from: G.settings.email_desarrollo1,
+        from: G.settings.email_mauricio_barrios,
         to: to,
-        cc: "amgonzalez80@hotmail.com",
+        cc: G.settings.email_desarrollo1,
         subject: subject,
         html: message
     };
@@ -1053,6 +1059,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     }
     smtpTransport.sendMail(settings, function (error, response) {
         if (error !== null) {
+            console.log("Error :: ",error);
             callback({estado: 505, mensaje: error});
             return;
         } else {

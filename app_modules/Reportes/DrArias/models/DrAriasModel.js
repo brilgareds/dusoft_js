@@ -123,10 +123,10 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
  * @param {type} callback
  * @returns {undefined}
  */
-DrAriasModel.prototype.rotacionZonas = function (sw,callback) {
+DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
     var filtro;
     var orden;
-    if(sw==='0'){
+    if(obj.sw==='0'){
     filtro='b.descripcion';
     orden='asc';
     }else{
@@ -176,6 +176,11 @@ DrAriasModel.prototype.rotacionZonas = function (sw,callback) {
                     .andWhere("a.estado","1")
                     .andWhere(G.knex.raw("a.bodega not in (42,77,50,65,63,81)"))
                     .andWhere(G.knex.raw("c.fecha_registro is not null"))
+
+                    if(obj.filtro!== undefined && obj.filtro !== "" ){
+                     this.andWhere(G.knex.raw("a.descripcion ilike '%"+obj.filtro+"%'"))    
+                    }
+
             }).orderBy(filtro, orden);
 
     query.then(function (resultado) {

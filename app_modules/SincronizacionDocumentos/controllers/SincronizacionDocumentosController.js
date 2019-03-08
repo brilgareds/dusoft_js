@@ -738,6 +738,7 @@ function __enviarReciboRCD(obj, that, callback) {
     }).done();
 }
 
+/*
 function __ingresoBonificaciones(obj, that, callback) {
     console.log('In "__ingresoBonificaciones"');
     var documento = {};
@@ -796,6 +797,8 @@ function __ingresoBonificaciones(obj, that, callback) {
             /* =============================== Estructura WS de Bonificaciones =============================== */
             // $encabezado['codempresa'] = $codigo_empresa;
 
+            /*
+
             if (documento.encabezadofactura.codempresa) {
                 error.contador++;
                 error.msj += 'El Codigo de la Empresa no esta definido';
@@ -842,6 +845,8 @@ function __ingresoBonificaciones(obj, that, callback) {
         callback('Hubo un error!!!');
     }).done();
 }
+
+*/
 
 function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, contrato, empuestos, callback) {
 

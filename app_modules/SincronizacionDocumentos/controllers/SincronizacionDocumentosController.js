@@ -7,7 +7,6 @@ var SincronizacionDocumentos = function (sincronizacion, m_notas, m_facturacion_
     this.m_caja_general = m_caja_general;
 };
 
-
 SincronizacionDocumentos.prototype.buscarServicio = function (req, res) {
     var that = this;
     var args = req.body.data;
@@ -86,7 +85,6 @@ SincronizacionDocumentos.prototype.insertTiposCuentas = function (req, res) {
     }).
     done();
 };
-
 
 SincronizacionDocumentos.prototype.listarTiposCuentas = function (req, res) {
     //    console.log('Entro en el controlador, listarTiposCuentas!!!');
@@ -221,7 +219,8 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
         prefijo: args.data.prefijo.prefijo,
         prefijoFI: '',
         prefijoId: args.data.prefijo.prefijo,
-        usuarioId: req.session.user.usuario_id
+        usuarioId: req.session.user.usuario_id,
+        fechaActual: fechaActual()
     };
     console.log("Objeto para sincronizacion: ", obj);
 //    console.log("--->>> ", obj);
@@ -264,7 +263,7 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     //console.log('Funcion: "'+funcion_ws+'"');
 
     G.Q.nfcall(funcion_ws, obj, that).then(function (result) {
-        console.log('Funcion: "'+funcion_ws+'"');
+        //console.log('Funcion: "'+funcion_ws+'"');
         param = result;
 
         // if (sincronizar === 1) {    CONDICIONAL ORIGI9NAL DE ANDRES
@@ -276,18 +275,22 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
             };
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'sincronizarFinaciero', obj);
         } else {
+            console.log('All fine!!!');
             return param;
         }
     }).then(function (result) {
-//        console.log("result ", result);
+    //  console.log("result ", result);
         res.send(G.utils.r(req.url, 'sincronizacionDocumentos!!!!', 200, {sincronizacionDocumentos: true, result: result, parametro: param}));
 
     }).fail(function (err) {
-        if (err.mensaje !== undefined) {
-            res.send(G.utils.r(req.url, err.respuesta.error.mensaje, err.respuesta.error.status, {sincronizacionDocumentos: false, error: err.err}));
-        } else {
-            res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
-        }
+        /*
+            if (err.mensaje !== undefined) {
+                res.send(G.utils.r(req.url, err.respuesta.error.mensaje, err.respuesta.error.status, {sincronizacionDocumentos: false, error: err.err}));
+            } else {
+                res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
+            }
+        */
+        res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
 
     }).done();
 };
@@ -1308,7 +1311,6 @@ function __enviarReciboRCD(obj, that, callback) {
 
         if (result.facturas !== undefined && result.facturas.length > 0) {
             documento.asientoscontables = result.facturas;
-
             totalCredito += parseFloat(result.credito);
 
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarDetalleRCWSFI', obj);
@@ -1361,112 +1363,46 @@ function __enviarReciboRCD(obj, that, callback) {
 }
 
 function __ingresoBonificaciones(obj, that, callback) {
-    console.log('In "__ingresoBonificaciones"');
+    console.log('In "__ingresoBonificaciones"');           // Prefijo  IBV
     var documento = {};
+    var resultado_sincronizacion = false;
 
     G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerEncabezadoBonificacion', obj).then(function (result) {
         console.log('"obtenerEncabezadoBonificacion" fine!!');
-        if(result !== undefined && result.length > 0){
-            documento.encabezadofactura = result[0];
+        if(result.length > 0){
+            documento.encabezadofactura = jsonIngresoBonificaciones(result[0], obj);
+            obj.tercero_id = result[0].tercero_id;
 
-            return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerDetalleBonificacion', obj);
+            console.log('Objeto "Documento": ', documento);
+            let errorValidacion = validacionEncabezadoBonificacion(documento.encabezadofactura);
+
+            if(errorValidacion.contador === 0){
+                resultado_sincronizacion = true;
+                console.log('Validate fine!!');
+
+                return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerDetalleBonificacion', obj);
+            }else{
+                console.log('Validate bad!! ', errorValidacion.msj);
+                throw {error: 1, status: 404, mensaje: 'error en validacion: "'+ errorValidacion.msj + '" '};
+            }
         }else{
             throw {error: 1, status: 404, mensaje: 'No se encontro el Encabezado!!'};
         }
     }).then(function(result){
         console.log('"obtenerDetalleBonificacion" fine!!');
 
-        if(result !== undefined && result.facturas !== undefined && result.facturas.length > 0){
-            documento.asientoscontables = result.facturas;
-            documento.medicamentos_gravados = result.medicamentos_gravados;
-            documento.medicamentos_no_gravados = result.medicamentos_no_gravados;
-            documento.insumos_gravados = result.insumos_gravados;
-            documento.insumos_no_gravados = result.insumos_no_gravados;
-            documento.iva = result.iva;
-            documento.subtotal = result.subtotal;
-            documento.total = result.total;
+        if(result.asientos !== undefined && result.asientos.length > 0) {
+            console.log('In If controller of obtenerDetalleBonificacion');
+            documento.asientoscontables = result.asientos;
 
-            return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFI', obj);
+            callback(false, documento);
         }else{
             throw {error: 1, status: 404, mensaje: 'No se encontro el detalle de la bonificacion!!'};
         }
-    }).then(function (result) {
-        console.log('Finish all function!!');
-
-        if(result !== undefined && result.length > 0){
-            obj.prefijoFI = result[0].prefijo_fi; // codigo_documento
-            obj.estado = 3;
-
-            //var $encabezado['numerodocumentoencabezado'] = documento.encabezadofactura.numero;
-            var date = new Date();
-            var mes = String(parseInt(date.getMonth())+1);
-            if(mes.length === 1){ mes = '0'+mes; }
-
-            var fecha_documento = date.getDate()+'/'+mes+'/'+date.getFullYear();
-            var identificacion_tercero = documento.encabezadofactura.tercero_id;
-            var observacion_encabezado = documento.encabezadofactura.observacion;
-            var error = { contador: 0, msj: '' };
-            var resultado_sincronizacion = false;
-
-            //var usuario_creacion = UserGetUID();
-
-            documento.encabezadofactura.codempresa = "DUA";
-            documento.encabezadofactura.coddocumentoencabezado = obj.prefijoFI;
-
-            console.log('Objeto "Documento": ', documento);
-
-            // =============================== Estructura WS de Bonificaciones =============================== //
-            // $encabezado['codempresa'] = $codigo_empresa;
-
-            if (documento.encabezadofactura.codempresa) {
-                error.contador++;
-                error.msj += 'El Codigo de la Empresa no esta definido';
-            }
-
-            if (documento.encabezadofactura.coddocumentoencabezado) {
-                error.contador++;
-                error.msj += 'El Prefijo FI, no esta parametrizado para ese documento';
-            }
-
-            if (documento.encabezadofactura.numero) {
-                error.contador++;
-                error.msj = 'El numero de factura es obligatorio';
-            }
-
-            if (documento.encabezadofactura.tercero_id) {
-                error.contador++;
-                error.msj = 'El proveedor no posee una identificacion valid';
-            }
-
-            if (documento.encabezadofactura.observacion) {
-                error.contador++;
-                error.msj = 'Debe Ingresar una observacion';
-            }
-
-            if(error.contador === 0){
-                resultado_sincronizacion = true;
-            }
-
-            documento.encabezadofactura.estadoencabezado = 3;
-            documento.encabezadofactura.fecharegistroencabezado = fecha_documento;
-            documento.encabezadofactura.usuariocreacion = 1350;
-            documento.encabezadofactura.tipotercero = 3;
-
-            return G.Q.ninvoke(that.m_SincronizacionDoc, 'cuentasFiltradas', obj);
-        }else{
-            throw {error: 1, status: 404, mensaje: 'No se encontro el Prefijo del Fi'};
-        }
-    }).then(function(result){
-        console.log('In "cuentasFiltradas"');
-
-        callback(false, result);
-    }).fail(function(){
-        callback('Hubo un error!!!');
+    }).fail(function(err){
+        callback(err);
     }).done();
-
-
 }
-
 
 function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, contrato, empuestos, callback) {
 
@@ -1852,6 +1788,22 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
     }, 0);
 }
 
+function jsonIngresoBonificaciones(encabezado, obj){
+    let encabezadoFormatiado = {
+        codempresa: 'DUA',
+        coddocumentoencabezado: encabezado.coddocumentoencabezado,
+        numerodocumentoencabezado: String(encabezado.numero),
+        identerceroencabezado: encabezado.tercero_id,
+        observacionencabezado: encabezado.observacion,
+        estadoencabezado: '3',
+        fecharegistroencabezado: obj.fechaActual,
+        usuariocreacion: obj.usuarioId,
+        tipotercero: 3
+    };
+
+    return encabezadoFormatiado;
+}
+
 function __JsonFacturaDetalle(obj, callback) {
     var detalle = {
         codcentrocostoasiento: obj.centro_costos_asientos,
@@ -1899,6 +1851,51 @@ function __JsonFacturaEncabezadoCliente(obj, callback) {
         usuariocreacion: 0 //obj.usuarioId,
     }; //cabecera notas proveedor aplica mas campos y se quita el campo tipotercero - cuentas_x_pagar_fi igual que anterior
     callback(false, encabezado);
+}
+
+function fechaActual(){
+    let date = new Date();
+    let day = String(date.getDate());
+    let month = String(parseInt(date.getMonth())+1);
+    let year = String(date.getFullYear());
+    if(day.length === 1){ day = '0'+day; }
+    if(month.length === 1){ month = '0'+month; }
+
+    return day+'/'+month+'/'+year;
+}
+
+function validacionEncabezadoBonificacion(encabezado){
+
+    let error = { contador: 0, msj: '' };
+
+    console.log('Obj que entro a validacion: ', encabezado.codempresa);
+
+    if (!encabezado.codempresa) {
+        error.contador++;
+        error.msj += 'El Codigo de la Empresa no esta definido';
+    }
+
+    if (!encabezado.coddocumentoencabezado) {
+        error.contador++;
+        error.msj += 'El Prefijo FI no esta parametrizado para ese documento';
+    }
+
+    if (!encabezado.numerodocumentoencabezado) {
+        error.contador++;
+        error.msj = 'El numero de factura es obligatorio';
+    }
+
+    if (!encabezado.identerceroencabezado) {
+        error.contador++;
+        error.msj = 'El proveedor no posee una identificacion valid';
+    }
+
+    if (!encabezado.observacionencabezado) {
+        error.contador++;
+        error.msj = 'Debe Ingresar una observacion';
+    }
+
+    return error;
 }
 
 /*

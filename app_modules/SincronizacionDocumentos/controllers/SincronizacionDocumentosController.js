@@ -1788,22 +1788,6 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
     }, 0);
 }
 
-function jsonIngresoBonificaciones(encabezado, obj){
-    let encabezadoFormatiado = {
-        codempresa: 'DUA',
-        coddocumentoencabezado: encabezado.coddocumentoencabezado,
-        numerodocumentoencabezado: String(encabezado.numero),
-        identerceroencabezado: encabezado.tercero_id,
-        observacionencabezado: encabezado.observacion,
-        estadoencabezado: '3',
-        fecharegistroencabezado: obj.fechaActual,
-        usuariocreacion: obj.usuarioId,
-        tipotercero: 3
-    };
-
-    return encabezadoFormatiado;
-}
-
 function __JsonFacturaDetalle(obj, callback) {
     var detalle = {
         codcentrocostoasiento: obj.centro_costos_asientos,
@@ -1851,6 +1835,22 @@ function __JsonFacturaEncabezadoCliente(obj, callback) {
         usuariocreacion: 0 //obj.usuarioId,
     }; //cabecera notas proveedor aplica mas campos y se quita el campo tipotercero - cuentas_x_pagar_fi igual que anterior
     callback(false, encabezado);
+}
+
+function jsonIngresoBonificaciones(encabezado, obj){
+    let encabezadoFormatiado = {
+        codempresa: 'DUA',
+        coddocumentoencabezado: encabezado.coddocumentoencabezado,
+        numerodocumentoencabezado: String(encabezado.numero),
+        identerceroencabezado: encabezado.tercero_id,
+        observacionencabezado: encabezado.observacion,
+        estadoencabezado: '3',
+        fecharegistroencabezado: obj.fechaActual,
+        usuariocreacion: obj.usuarioId,
+        tipotercero: 3
+    };
+
+    return encabezadoFormatiado;
 }
 
 function fechaActual(){

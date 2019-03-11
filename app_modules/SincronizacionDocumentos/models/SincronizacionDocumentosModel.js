@@ -201,53 +201,67 @@ SincronizacionDocumentosModel.prototype.listarFacturasDFIN1121 = function(obj, c
 };
 
 SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function(obj, callback){
-    console.log('In Model "obtenerEncabezadoBonificacion"');
+    console.log('In Model "obtenerEncabezadoBonificacion": ', obj);
+    var response = {};
 
-    var query = G.knex.select()
+    var query = G.knex.column(
+            'a.numero',
+            'a.tercero_id',
+            'observacion'
+        )
+        .select()
         .from('inv_bodegas_movimiento_prestamos as a')
 
         .innerJoin('terceros as b', function(){
-            this.on('a.tipo_id_tercer')
-                .on('b.tipo_id_tercero')
+            this.on('a.tipo_id_tercero', 'b.tipo_id_tercero')
+                .on('a.tercero_id', 'b.tercero_id')
         })
         .innerJoin('inv_bodegas_tipos_prestamos as c', 'a.tipo_prestamo_id', 'c.tipo_prestamo_id')
         .innerJoin('inv_bodegas_movimiento as d', function(){
             this.on('a.prefijo', 'd.prefijo')
                 .on('a.numero', 'd.numero')
         })
-        .where('a.empresa_id', obj.empresa)
+        .where('a.empresa_id', obj.empresa_id)
         .andWhere('a.prefijo', obj.prefijo)
-        .andWhere('a.numero', obj.numero);
+        .andWhere('a.numero', obj.factura_fiscal);
 
-    query.then(function(resultado){
-        callback(false, resultado);
+    console.log('SQL en obtenerEncabezadoBonificacion ', G.sqlformatter.format(query.toString()));
+
+    query.then(function(resultado) {
+        response = resultado;
+        console.log('First function in "obtenerEncabezadoBonificacion" is fine');
+
+        var query2 = G.knex.column(G.knex.raw("COALESCE(b.prefijo, '') as prefijo_fi"))
+            .from('documentos as a')
+            .innerJoin('prefijos_financiero as b', 'a.prefijos_financiero_id', 'b.id')
+            .where('a.prefijo', obj.prefijo)
+            .andWhere('a.empresa_id', obj.empresa_id);
+        //.andWhere('a.empresa_id', obj.empresa_id);
+
+        console.log('sql in "obtenerPrefijoFI": ', G.sqlformatter.format(query2.toString()));
+
+        return query2;
+    }).then(function(resultado2){
+        console.log('Second function in "obtenerEncabezadoBonificacion" is fine');
+
+        if(resultado2.length > 0 && resultado2[0].prefijo_fi !== undefined){
+            response[0].coddocumentoencabezado = resultado2[0].prefijo_fi.trim();
+            callback(false, response);
+        }else{
+            callback('Error!!!');
+        }
     }).catch(function(err){
+        console.log('Function in Model is broken!!');
         callback(err);
     })
 };
 
-SincronizacionDocumentosModel.prototype.obtenerPrefijoFI = function(obj, callback){
-    console.log('In model "obtenerPrefijoFI"');
-
-    var query = G.knex.column(G.knex.raw("COALESCE(b.prefijo, '') as prefijo_fi")
-        .from('documentos as a')
-        .innerJoin('prefijos_financiero as b', 'a.prefijos_financiero_id', 'b.id')
-        .where('a.prefijo', obj.tipo_documento)
-        .andWhere('a.empresa_id', obj.empresa)
-    );
-
-    query.then(function(resultado){
-        callback(false, resultado);
-    }).catch(function(err){
-        callback(err);
-    });
-};
 
 SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function(obj, callback) {
-    console.log('In Model "obtenerDetalleBonificacion"');
+    console.log('In Model "obtenerDetalleBonificacion": ', obj);
 
-    var response = {
-        facturas: [],
+    let response = {
+        asientos: [],
         medicamentos_gravados: 0,
         medicamentos_no_gravados: 0,
         insumos_gravados: 0,
@@ -257,7 +271,28 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function(ob
         total: 0
     };
 
-    var query = G.knex.column(
+    const asientoDefault = {
+        codcentrocostoasiento: '0',
+        codcentroutilidadasiento: '0',
+        codconcepto: '',
+        codcuentaasiento: '14352010',
+        codlineacostoasiento: '0',
+        identerceroasiento: obj.tercero_id,
+        observacionasiento: 'No Aplica Observacion Asiento',
+        valorbaseasiento: '0',
+        valorcreditoasiento: '0',
+        valordebitoasiento: '0',
+        valortasaasiento: '0'
+    };
+
+    let asientoMedicamentosGravados = JSON.parse(JSON.stringify(asientoDefault));
+    let asientoMedicamentosNoGravados = JSON.parse(JSON.stringify(asientoDefault));
+    let asientoInsumosGravados = JSON.parse(JSON.stringify(asientoDefault));
+    let asientoInsumosNoGravados = JSON.parse(JSON.stringify(asientoDefault));
+    let asientoIva = JSON.parse(JSON.stringify(asientoDefault));
+    let asientoTotal = JSON.parse(JSON.stringify(asientoDefault));
+
+    let query = G.knex.column(
         'a.*',
         'b.descripcion',
         'b.unidad_id',
@@ -268,7 +303,7 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function(ob
         G.knex.raw('(a.valor_unitario*(a.porcentaje_gravamen/100)) as iva'),
         G.knex.raw('((a.valor_unitario * a.cantidad) * (a.porcentaje_gravamen/100)) as iva_total'),
         G.knex.raw('((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as total'),
-        'd.sw_insumo',
+        'd.sw_insumos',
         'd.sw_medicamento')
         .from('inv_bodegas_movimiento_d as a')
         .innerJoin('inventarios_productos as b', 'a.codigo_producto', 'b.codigo_producto')
@@ -276,14 +311,15 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function(ob
         .innerJoin('inv_grupos_inventarios as d', 'b.grupo_id', 'd.grupo_id')
         .where('a.empresa_id', obj.empresa_id)
         .andWhere('a.prefijo', obj.prefijo)
-        .andWhere('a.numero', obj.numero)
+        .andWhere('a.numero', obj.factura_fiscal)
         .orderBy('a.codigo_producto');
 
-    query.then(function(resultado){
-        if(resultado && resultado.length > 0){
-            response.facturas = resultado;
+    console.log('Sql in "obtenerDetalleBonificacion" is: ', G.sqlformatter.format(query.toString()));
 
-            for(let factura of response.facturas){
+    query.then(function(facturas){
+        if(facturas && facturas.length > 0){
+
+            for(let factura of facturas){
                 if (factura.sw_medicamento == "1") {
                     if (factura.iva > 0) {
                         response.medicamentos_gravados += factura.subtotal;
@@ -297,15 +333,46 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function(ob
                         response.insumos_no_gravados += factura.subtotal;
                     }
                 }
+
                 response.subtotal += factura.subtotal;
                 response.iva += factura.iva_total;
                 response.total += factura.total;
             }
+
+            if(response.medicamentos_gravados > 0) {
+                asientoMedicamentosGravados.valordebitoasiento = response.medicamentos_gravados;
+                response.asientos.push(asientoMedicamentosGravados);
+            }
+            if(response.medicamentos_no_gravados > 0){
+                asientoMedicamentosNoGravados.valordebitoasiento = response.medicamentos_no_gravados;
+                response.asientos.push(asientoMedicamentosNoGravados);
+            }
+            if(response.insumos_gravados > 0){
+                asientoInsumosGravados.valordebitoasiento = response.insumos_gravados;
+                response.asientos.push(asientoInsumosGravados);
+            }
+            if(response.insumos_no_gravados > 0){
+                asientoInsumosNoGravados.valordebitoasiento = response.insumos_no_gravados;
+                response.asientos.push(asientoInsumosNoGravados);
+            }
+
+            if(response.iva > 0){
+                asientoIva.valordebitoasiento = response.iva;
+                asientoIva.valorbaseasiento = response.medicamentos_gravados + response.insumos_gravados;
+                response.asientos.push(asientoIva);
+            }
+
+            // Total
+            asientoTotal.codcuentaasiento = '42950505';
+            asientoTotal.valorcreditoasiento = response.total;
+            response.asientos.push(asientoTotal);
+
             callback(false, response);
         }else{
             throw {error: 1, status: 500, mensaje: 'Result empty in "obtenerDetalleBonificacion"'};
         }
     }).catch(function(err){
+        console.log('Error in query!!!', err);
         callback(err);
     });
 };

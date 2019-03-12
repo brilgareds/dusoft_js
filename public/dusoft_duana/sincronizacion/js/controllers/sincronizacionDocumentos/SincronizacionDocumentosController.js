@@ -75,21 +75,18 @@ define(["angular", "js/controllers"
                     }
                 };
 
-                ServerServiceDoc.buscarServicio(obj, function (data) {
-                    $scope.root.servicio = data.obj.servicio.id;
-                    console.log('Servicio: ', $scope.root.servicio);
+                //ServerServiceDoc.buscarServicio(obj, function (data) {
+                console.log('Servicio: ', $scope.servicio);
 
-                    var servicio = $scope.root.servicio;
-
-                    var numero = $scope.root.numero;
-                    var obj = {
-                        prefijo: prefijo,
-                        facturaFiscal: numero,
-                        sincronizar: sw,
-                        servicio: $scope.servicio
-                    };
-                    that.sincronizacionDocumentos(obj);
-                });
+                var numero = $scope.root.numero;
+                var obj = {
+                    prefijo: prefijo,
+                    facturaFiscal: numero,
+                    sincronizar: sw,
+                    servicio: $scope.servicio
+                };
+                that.sincronizacionDocumentos(obj);
+                //});
             };
 
             that.listarTiposServicios = function(){

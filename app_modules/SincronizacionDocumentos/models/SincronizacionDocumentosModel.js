@@ -46,8 +46,7 @@ SincronizacionDocumentosModel.prototype.buscarServicio = function(obj, callback)
         .where('dc.empresa_id', obj.empresaId)
             .andWhere('dc.centro_id', obj.centroId)
             .andWhere('dc.bodega_id', obj.bodegaId)
-            .andWhere('dc.prefijo', obj.prefijoId)
-            .andWhere('dc.centro_id', obj.centroId);
+            .andWhere('dc.prefijo', obj.prefijoId);
 
     console.log('SQL en buscarServicio ', G.sqlformatter.format(query.toString()));
 
@@ -61,29 +60,65 @@ SincronizacionDocumentosModel.prototype.buscarServicio = function(obj, callback)
     });
 };
 
-SincronizacionDocumentosModel.prototype.encabezadoReciboRCC = function(obj, callback){
+SincronizacionDocumentosModel.prototype.listarEncabezadoReciboRCC = function(obj, callback){
+    console.log('In model "listarEncabezadoReciboRCC" : ', obj);
 
-    var query = G.knex.column('RC.*',
-        G.knex.raw("TO_CHAR(RC.fecha_registro, 'DD-MM-YYYY') as fecha_registro"))
+    let query = G.knex.column('RC.*',
+        G.knex.raw("TO_CHAR(\"RC\".\"fecha_registro\", 'DD-MM-YYYY') as fecha_registro"))
         .select()
         .from('recibos_caja as RC')
         .where('RC.recibo_caja', obj.facturaFiscal)
         .andWhere('RC.prefijo', obj.prefijo);
 
+    console.log('Query is: ', G.sqlformatter.format(query.toString()));
+
     query.then(function(resultado) {
-        callback(false, resultado);
+        console.log('encabezado fine!!');
+
+        if(resultado[0] !== undefined){
+            let encabezado = resultado[0];
+
+            let query = G.knex.select()
+                .from('parametrizacion_ws_fi')
+                .where({
+                    parametrizacion_ws_fi_id: obj.wsFi
+                });
+            query.then(function(result) {
+                console.log('Consulta encabezado parametrizado fine: ', result);
+
+                let encabezadoParametrizado = result[0];
+
+                let response = [{
+                    coddocumentoencabezado: encabezadoParametrizado.coddocumentoencabezado,
+                    codempresa: encabezadoParametrizado.codempresa,
+                    estadoencabezado: encabezadoParametrizado.estadoencabezado,
+                    fecharegistroencabezado: encabezado.fecha_registro,
+                    identerceroencabezado: encabezado.documento_id,
+                    numerodocumentoencabezado: encabezado.numerodocumentoencabezado,
+                    observacionencabezado: encabezado.observacion,
+                    usuariocreacion: encabezado.usuariocreacion,
+                    tipotercero: encabezadoParametrizado.tipotercero,
+                    tercero_id: encabezado.tercero_id,
+                    empresa_recibo: encabezado.empresa_recibo,
+                    cuenta_contable: encabezado.cuenta_contable
+                }];
+
+                console.log('Encabezado finish is: ', response);
+
+                callback(false, response);
+            });
+        }else{
+            callback(false);
+        }
     }).catch(function(err){
         callback(err);
     });
 };
 
 SincronizacionDocumentosModel.prototype.listarEncabezadoRCD = function(obj, callback){
-    // console.log('In listarEncabezadoRCD of Model!! obj is: ', obj);
+    console.log('In listarEncabezadoRCD of Model!! obj is: ', obj);
 
-    var query = G.knex.column(
-            G.knex.raw("'NTC' as coddocumentoencabezado"), // Codigo de Documento Encabezado
-            G.knex.raw("'DUA' as codempresa"),
-            G.knex.raw("'3' as estadoencabezado"),
+    let query = G.knex.column(
             G.knex.raw("TO_CHAR(rc.fecha_registro, 'DD-MM-YYYY') as fecharegistroencabezado"),
             'rc.tercero_id as identerceroencabezado',
             'rc.recibo_caja as numerodocumentoencabezado',
@@ -100,21 +135,54 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoRCD = function(obj, call
                 this.on('rc.tipo_id_tercero', 'tc.tipo_id_tercero')
                     .on('rc.tercero_id', 'tc.tercero_id')
             })
-        .where('rc.recibo_caja', obj.facturaFiscal)
-            .andWhere('rc.prefijo', obj.prefijoId);
+        .where('rc.recibo_caja', obj.factura_fiscal)
+            .andWhere('rc.prefijo', obj.prefijo);
 
-    //console.log('SQL en listarEncabezadoRCD: ', G.sqlformatter.format(query.toString()));
+    console.log('SQL en listarEncabezadoRCD: ', G.sqlformatter.format(query.toString()));
 
     query.then(function(resultado) {
         if(resultado[0] !== undefined){
-            if(resultado[0].numerodocumentoencabezado !== undefined){
-                resultado[0].numerodocumentoencabezado = String(resultado[0].numerodocumentoencabezado);
-            }
-            if(resultado[0].usuariocreacion !== undefined){
-                resultado[0].usuariocreacion = String(resultado[0].usuariocreacion);
-            }
+            let encabezado = resultado[0];
 
-            callback(false, resultado);
+            let query = G.knex.select()
+                .from('parametrizacion_ws_fi')
+                .where({
+                    parametrizacion_ws_fi_id: obj.wsFi
+                });
+
+            query.then(function(result){
+                console.log('Consulta encabezado parametrizado fine: ', result);
+
+                if(result.length > 0){
+                    let encabezadoParametrizado = result[0];
+
+                    if(encabezado.numerodocumentoencabezado !== undefined){
+                        encabezado.numerodocumentoencabezado = String(encabezado.numerodocumentoencabezado);
+                    }
+                    if(encabezado.usuariocreacion !== undefined){
+                        encabezado.usuariocreacion = String(encabezado.usuariocreacion);
+                    }
+
+                    let response = [{
+                        coddocumentoencabezado: encabezadoParametrizado.coddocumentoencabezado,
+                        codempresa: encabezadoParametrizado.codempresa,
+                        estadoencabezado: encabezadoParametrizado.estadoencabezado,
+                        fecharegistroencabezado: encabezado.fecharegistroencabezado,
+                        identerceroencabezado: encabezado.identerceroencabezado,
+                        numerodocumentoencabezado: encabezado.numerodocumentoencabezado,
+                        observacionencabezado: encabezado.observacionencabezado,
+                        usuariocreacion: encabezado.usuariocreacion,
+                        tipotercero: encabezadoParametrizado.tipotercero,
+                        tercero_id: encabezado.tercero_id,
+                        empresa_recibo: encabezado.empresa_recibo,
+                        cuenta_contable: encabezado.cuenta_contable
+                    }];
+
+                    callback(false, response);
+                }else{
+                    callback(false);
+                }
+            });
         }else{
             callback(false);
         }
@@ -156,7 +224,7 @@ SincronizacionDocumentosModel.prototype.listarFacturasDFIN1121 = function(obj, c
                 G.knex.raw("SUM(valor_abonado) AS valor_abonado_rt"))
                 .from('rc_detalle_tesoreria_facturas as u')
                 .where('u.prefijo', obj.prefijo)
-                .andWhere('u.recibo_caja', obj.facturaFiscal)
+                .andWhere('u.recibo_caja', obj.factura_fiscal)
                 .groupBy(G.knex.raw("1, 2, 3")).as('RES')
         })
         .where('RES.valor_abonado_rt', '>', '0');
@@ -386,7 +454,7 @@ SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function(obj, call
     var query = G.knex.distinct(
         G.knex.raw("'0' AS codcentrocostoasiento"),
         G.knex.raw("'0' AS codcentroutilidadasiento"),
-        'RCT.cuenta as codcuentaasiento',
+        G.knex.raw("CASE WHEN \"RCT\".\"cuenta\" IS NULL THEN '0' ELSE \"RCT\".\"cuenta\" END AS codcuentaasiento"),
         G.knex.raw("'0' AS codlineacostoasiento"),
         G.knex.raw("'"+obj.terceroId+"' AS identerceroasiento"),
         G.knex.raw("'ASIENTO PARA EL CONCEPTO' AS observacionasiento"),
@@ -424,24 +492,29 @@ SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function(obj, call
                     .on('RCT1.empresa_id', 'RDTC1.empresa_id')
             })
         .where('RDTF.rc_prefijo_tras', obj.prefijo)
-        .andWhere('RDTF.rc_id_tras', obj.facturaFiscal);
+        .andWhere('RDTF.rc_id_tras', obj.factura_fiscal);
 
     console.log('SQL en listarDetalleRCWSFIIIII ',G.sqlformatter.format(query.toString()));
 
     query.then(function(resultado) {
         for(var detalle of resultado){
-            if(detalle.valorcreditoasiento && detalle.valorcreditoasiento !== '0'){
-                detalle.valorcreditoasiento = parseFloat(detalle.valorcreditoasiento);
-                credito += detalle.valorcreditoasiento;
+            if(!detalle.valorcreditoasiento) {
+                detalle.valorcreditoasiento = 0;
             }
-            if(detalle.valordebitoasiento && detalle.valordebitoasiento !== '0'){
-                detalle.valordebitoasiento = parseFloat(detalle.valordebitoasiento);
-                debito += detalle.valordebitoasiento;
+            if(!detalle.valordebitoasiento){
+                detalle.valordebitoasiento = 0;
             }
+
+            detalle.valorcreditoasiento = parseFloat(detalle.valorcreditoasiento);
+            credito += detalle.valorcreditoasiento;
+            detalle.valordebitoasiento = parseFloat(detalle.valordebitoasiento);
+            debito += detalle.valordebitoasiento;
         }
         response.detalle = resultado;
-        response.credito = credito;
-        response.debito = debito;
+        response.credito = parseFloat(credito);
+        response.debito = parseFloat(debito);
+
+        console.log('Response is: ', response);
         callback(false, response);
     }).catch (function(err) {
         console.log("error sql",err);

@@ -171,7 +171,7 @@ Reportes.prototype.rotacionZonas = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0').then(function (rotacionZonas) {
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'}).then(function (rotacionZonas) {
                   
         return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
 
@@ -189,8 +189,13 @@ Reportes.prototype.rotacionZonas = function (req, res) {
 Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var that = this;
     var args = req.body.data;
+    console.log("---------rotacionZonasMovil---------",args)
+    var filtro="";
+    if(args.filtro!==undefined && args.filtro!== ""){
+        filtro = args.filtro; 
+    }
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas','1').then(function (rotacionZonas) {
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'1',filtro: filtro}).then(function (rotacionZonas) {
          
         res.send(rotacionZonas);
     }).fail(function (err) {
@@ -453,7 +458,7 @@ function __rotacionesBodegas(that, bodega, callback) {
 
     }).then(function (respuesta) {
         
-        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0');
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'});
         
     }).then(function (respuesta) {
         
@@ -568,7 +573,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
 
     }).then(function (respuesta) {
         
-        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0');
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'});
         
     }).then(function (respuesta) {
         

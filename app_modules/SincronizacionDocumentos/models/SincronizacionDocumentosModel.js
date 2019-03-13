@@ -34,7 +34,7 @@ SincronizacionDocumentosModel.prototype.listarPrefijos = function(obj, callback)
     });
 };
 
-SincronizacionDocumentosModel.prototype.buscarServicio = function(obj, callback) {
+SincronizacionDocumentosModel.prototype.listarFacturas = function(obj, callback) {
     console.log('In model of "buscarServicio"');
 
     var query = G.knex.distinct([
@@ -233,6 +233,7 @@ SincronizacionDocumentosModel.prototype.listarFacturasDFIN1121 = function(obj, c
 
     query.then(function(facturas) {
         if (facturas.length > 0) {
+            facturas[0].valordebitoasiento = String(facturas[0].valordebitoasiento);
             facturas[0].valorcreditoasiento = parseFloat(facturas[0].valorcreditoasiento);
             response.facturas = facturas;
 
@@ -511,8 +512,17 @@ SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function(obj, call
             debito += detalle.valordebitoasiento;
         }
         response.detalle = resultado;
-        response.credito = parseFloat(credito);
-        response.debito = parseFloat(debito);
+
+        if(credito){
+            response.credito = parseFloat(credito);
+        }else{
+            response.credito = String(0);
+        }
+        if(debito){
+            response.debito = parseFloat(debito);
+        }else{
+            response.debito = String(0);
+        }
 
         console.log('Response is: ', response);
         callback(false, response);

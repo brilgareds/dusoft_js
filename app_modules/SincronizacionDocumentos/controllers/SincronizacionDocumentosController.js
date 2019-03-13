@@ -297,10 +297,6 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     }).done();
 };
 
-function __ajustes(){
-
-}
-
 function __cuentasPorPagar(obj, that, callback) {
     var parametro = {};
     var facturasProveedores;
@@ -1595,7 +1591,13 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             if (parseFloat(totalesFactura.iva) > 0) {
                 cuentas.valorcreditoasiento = totalesFactura.iva;
                 cuentas.valordebitoasiento = 0;
-                cuentas.valortasaasiento = totalesFactura.porc_iva;
+
+                if(cuentas.parametrizacion_ws_fi === 1){
+                    cuentas.valortasaasiento = 0;
+                }else{
+                    cuentas.valortasaasiento = totalesFactura.porc_iva;
+                }
+
                 if (cuentas.parametrizacion_ws_fi === 2) {
 
                     var subtotal = totalesFactura.total - totalesFactura.iva;
@@ -1649,18 +1651,27 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             }
             break;
         case 7://ICA
-            empuestos.retencion_ica = 0;          
           if (empuestos[0].sw_ica === '2' || empuestos[0].sw_ica === '3' && (parseFloat(contrato[0].porcentaje_ica) === parseFloat(cuentas.ica_porcentaje))) {
-             
+              empuestos.retencion_ica = 0;
+              console.log('Entro en ICA!!');
+
                 if (totalesFactura.subtotal >= empuestos[0].base_ica) {
 //                    empuestos.retencion_ica = parseInt(totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000));
                     empuestos.retencion_ica = parseFloat(totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000));
+
+                    console.log('ICA original: ', empuestos.retencion_ica);
                  
                     if (empuestos.retencion_ica > 0) {
                         cuentas.valorcreditoasiento = 0;
                         cuentas.valordebitoasiento = empuestos.retencion_ica;
                         cuentas.valorbaseasiento = totalesFactura.subtotal;
-                        cuentas.valortasaasiento = contrato[0].porcentaje_ica;
+
+                        if (cuentas.parametrizacion_ws_fi === 1) {
+                            cuentas.valortasaasiento = 0;
+                        }else{
+                            cuentas.valortasaasiento = contrato[0].porcentaje_ica;
+                        }
+
                         __JsonFacturaDetalle(cuentas, function (data) {
                             arreglo.push(data);
                         });
@@ -1685,7 +1696,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
 
             break;
         case 10: //CREE DEBITO
-            empuestos.impusto_cree = Math.round(totalesFactura.subtotal * cuentas.cree_porcentaje);
+            empuestos.impusto_cree = parseInt(totalesFactura.subtotal * cuentas.cree_porcentaje);
             if (empuestos.impusto_cree > 0) {
                 if (cuentas.sw_cuenta === '0') {
                     cuentas.valorcreditoasiento = 0;
@@ -1694,8 +1705,14 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                     cuentas.valorcreditoasiento = empuestos.impusto_cree;
                     cuentas.valordebitoasiento = 0;
                 }
-                cuentas.valorbaseasiento = totalesFactura.subtotal;
-                cuentas.valortasaasiento = cuentas.cree_porcentaje;
+                if(cuentas.parametrizacion_ws_fi === 1){
+                    cuentas.valorbaseasiento = 0;
+                    cuentas.valortasaasiento = 0;
+                }else{
+                    cuentas.valortasaasiento = cuentas.cree_porcentaje;
+                    cuentas.valorbaseasiento = totalesFactura.subtotal;
+                }
+
                 __JsonFacturaDetalle(cuentas, function (data) {
                     arreglo.push(data);
                 });
@@ -1706,6 +1723,10 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             var total = 0;
 
             total = ((((totalesFactura.medicamentosGravados + totalesFactura.medicamentosNoGravados + totalesFactura.insumosGravados + totalesFactura.insumosNoGravados + totalesFactura.iva) - empuestos.retencion_fuente) - empuestos.retencion_ica));
+
+            if (cuentas.parametrizacion_ws_fi === 1) {
+                total = parseInt((((parseInt(totalesFactura.medicamentosGravados) + parseInt(totalesFactura.medicamentosNoGravados) + parseInt(totalesFactura.insumosGravados) + parseInt(totalesFactura.insumosNoGravados + parseInt(totalesFactura.iva))) - parseInt(empuestos.retencion_fuente)) - parseInt(empuestos.retencion_ica)));
+            }
 
             if (cuentas.parametrizacion_ws_fi === 2) {
                 var subtotal = totalesFactura.total - totalesFactura.iva;

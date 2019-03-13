@@ -1047,7 +1047,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     var settings = {
         from: G.settings.email_rotaciones,
         to: to,
-        cc: G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
+        cc:G.settings.email_desarrollo1, //G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
         subject: subject,
         html: message
     };

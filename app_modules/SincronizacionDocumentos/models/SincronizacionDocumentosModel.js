@@ -666,7 +666,7 @@ SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = function(obj, callbac
                 }).andWhere('a.prefijo', obj.prefijo)
                   .andWhere('a.empresa_id', obj.empresaId);
 
-    console.log(G.sqlformatter.format(query.toString()));
+//    console.log(G.sqlformatter.format(query.toString()));
 
     query.then(function(resultado) {
        callback(false, resultado);
@@ -693,7 +693,7 @@ SincronizacionDocumentosModel.prototype.parametrizacionCabeceraFi = function(obj
                         ]
                     ).from('parametrizacion_ws_fi as a')
                      .andWhere('a.parametrizacion_ws_fi_id', obj.parametrizacion);
-    console.log(G.sqlformatter.format(query.toString())); 
+//    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
        callback(false, resultado);
      }).catch (function(err) {

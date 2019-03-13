@@ -1357,5 +1357,150 @@ NotasModel.prototype.ConsultarSubtotalFactura = function (obj, callback) {
     });
 };
 
+NotasModel.prototype.deltalleNotasFacturaProveedor = function (obj, callback) {
+     var columnas = [
+        "a.codigo_producto",
+	G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
+	"a.valor_concepto",
+	"a.porc_iva",
+	"a.observacion",
+	"c.descripcion_concepto_general",
+	"d.descripcion_concepto_especifico",
+	"a.cantidad",
+	"a.valor_unitario",
+	G.knex.raw("((a.porc_iva/100)*a.valor_concepto) as iva"),
+	G.knex.raw("((a.valor_unitario * a.cantidad) * (a.porc_iva/100)) as iva_total"),
+	G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal"),
+        G.knex.raw("((1-(a.porc_iva/100))*a.valor_concepto) as costo"),
+        G.knex.raw("((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))))) as total1"),
+	"f.sw_insumos",
+	"f.sw_medicamento"
+    ];
+    
+     var query = G.knex.select(columnas)
+            .from("inv_notas_credito_proveedor_d as a")
+            .innerJoin("glosas_concepto_general_especifico as b", function () {
+                this.on("a.concepto", "b.codigo_concepto_general")
+                    .on("a.concepto_especifico", "b.codigo_concepto_especifico");
+            })
+            .innerJoin("glosas_concepto_general as c", function () {
+                this.on("c.codigo_concepto_general", "b.codigo_concepto_general");
+            })
+            .innerJoin("glosas_concepto_especifico as d", function () {
+                this.on("d.codigo_concepto_especifico", "b.codigo_concepto_especifico");
+            })
+            .innerJoin("inventarios_productos as e", function () {
+                this.on("e.codigo_producto", "a.codigo_producto");
+            })
+            .innerJoin("inv_grupos_inventarios as f", function () {
+                this.on("f.grupo_id", "e.grupo_id");
+            })
+            .where('a.empresa_id', obj.empresa_id)
+            .andWhere('a.prefijo', obj.prefijo)
+            .andWhere('a.numero', obj.numero);
+    
+        query.unionAll(function () {
+            
+        this.select(columnas)
+            .from("inv_notas_debito_proveedor_d as a")
+            .innerJoin("glosas_concepto_general_especifico as b", function () {
+                this.on("a.concepto", "b.codigo_concepto_general")
+                    .on("a.concepto_especifico", "b.codigo_concepto_especifico");
+            })
+            .innerJoin("glosas_concepto_general as c", function () {
+                this.on("c.codigo_concepto_general", "b.codigo_concepto_general");
+            })
+            .innerJoin("glosas_concepto_especifico as d", function () {
+                this.on("d.codigo_concepto_especifico", "b.codigo_concepto_especifico");
+            })
+            .innerJoin("inventarios_productos as e", function () {
+                this.on("e.codigo_producto", "a.codigo_producto");
+            })
+            .innerJoin("inv_grupos_inventarios as f", function () {
+                this.on("f.grupo_id", "e.grupo_id");
+            })
+            .where('a.empresa_id', obj.empresa_id)
+            .andWhere('a.prefijo', obj.prefijo)
+            .andWhere('a.numero', obj.numero);
+    });
+    
+    query.then(function (resultado) {
+
+        callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [DeltalleNotasFacturaProveedor]:", err);
+        callback(err);
+    });
+}
+
+NotasModel.prototype.consultarNotasFacturaProveedor = function (obj, callback) {
+
+    var columnas = [
+        G.knex.raw("to_char(a.fecha_registro,'YYYY') as anio"),
+        'a.codigo_proveedor_id',
+        'a.numero_factura',
+        'a.fecha_registro',
+        'a.observaciones',
+        'a.empresa_id',
+        'centro_utilidad',
+        'bodega',
+        'valor_descuento',
+        'porc_rtf',
+        'porc_ica',
+        'porc_rtf as porcentaje_rtf',
+        'porc_ica as porcentaje_ica',
+        'sw_verificado',
+        'observacion_verificacion',
+        'calificacion_verificacion',
+        'usuario_id_verificador',
+        'sw_estado',
+        'valor_factura',
+        'saldo',
+        'valor_notas_credito',
+        'porc_rtiva',
+        'consecutivo',
+        'porc_cree',
+        'fecha_radicacion_factura',
+        'fecha_factura',
+        'fecha_vencimiento',
+        'prefijo',
+        'numero',
+        G.knex.raw("to_char(b.fecha_registro,'DD-MM-YYYY') as fecha_nota"),
+        'valor_nota',
+        'documento_id' 
+    ];
+  
+    var query = G.knex.select(columnas)
+            .from("inv_facturas_proveedores as a")
+            .innerJoin("inv_notas_credito_proveedor as b", function () {
+                this.on("a.numero_factura", "b.numero_factura")
+                    .on("a.empresa_id", "b.empresa_id");
+            })
+            .where('a.empresa_id', obj.empresa_id)
+            .andWhere('b.prefijo', obj.prefijo)
+            .andWhere('b.numero', obj.numero);
+    
+        query.unionAll(function () {
+            
+        this.select(columnas)
+            .from("inv_facturas_proveedores as a")
+            .innerJoin("inv_notas_debito_proveedor as b", function () {
+                this.on("a.numero_factura", "b.numero_factura")
+                    .on("a.empresa_id", "b.empresa_id");
+            })
+            .where('a.empresa_id', obj.empresa_id)
+            .andWhere('b.prefijo', obj.prefijo)
+            .andWhere('b.numero', obj.numero);
+    });
+    console.log(G.sqlformatter.format(query.toString())); 
+    query.then(function (resultado) {
+
+        callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [ConsultarSubtotalFactura]:", err);
+        callback(err);
+    });
+};
+
 NotasModel.$inject = [];
 module.exports = NotasModel;

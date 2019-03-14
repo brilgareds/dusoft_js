@@ -232,7 +232,7 @@ SincronizacionDocumentosModel.prototype.listarFacturasDFIN1121 = function(obj, c
     console.log("Queryyyy listarFacturasDFIN1121: ", G.sqlformatter.format(query.toString()));
 
     query.then(function(facturas) {
-        if (facturas.length > 0) {
+        if (facturas.length > 0 && facturas[0].valorcreditoasiento !== undefined) {
             facturas[0].valordebitoasiento = String(facturas[0].valordebitoasiento);
             facturas[0].valorcreditoasiento = parseFloat(facturas[0].valorcreditoasiento);
             response.facturas = facturas;
@@ -493,7 +493,8 @@ SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function(obj, call
                     .on('RCT1.empresa_id', 'RDTC1.empresa_id')
             })
         .where('RDTF.rc_prefijo_tras', obj.prefijo)
-        .andWhere('RDTF.rc_id_tras', obj.factura_fiscal);
+        .andWhere('RDTF.rc_id_tras', obj.factura_fiscal)
+        .andWhere('RDTC.valor', '>', '0');
 
     console.log('SQL en listarDetalleRCWSFIIIII ',G.sqlformatter.format(query.toString()));
 

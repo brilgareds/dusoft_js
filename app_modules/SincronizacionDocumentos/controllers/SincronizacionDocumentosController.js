@@ -1306,30 +1306,32 @@ function __enviarReciboRCD(obj, that, callback) {
     }).then(function (result) {
         console.log('listarDetalleRCWSFI: ', result);
 
-        if (result.detalle !== undefined && result.detalle.length > 0) {
+        if(result !== undefined && result.length > 0){
             totalDebito += parseFloat(result.debito);
             totalCredito += parseFloat(result.credito);
-            total = parseFloat(totalCredito - totalDebito);
-
-            var ultimoAsiento = [{
-                codcentrocostoasiento: "0",
-                codcentroutilidadasiento: "0",
-                codcuentaasiento: '28059510', // cuentaTercero,
-                codlineacostoasiento: '0',
-                identerceroasiento: obj.terceroId,
-                observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
-                valorbaseasiento: '0',
-                valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
-                valordebitoasiento: total, // Falta este: "$total_saldo"
-                valortasaasiento: '0'
-            }];
-
-            documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
-
-            callback(false, documento);
-        } else {
-            throw {error: 1, status: 404, mensaje: 'No se encontro la parametrizacion de los impuestos'};
         }
+        total = parseFloat(totalCredito - totalDebito);
+
+        var ultimoAsiento = [{
+            codcentrocostoasiento: "0",
+            codcentroutilidadasiento: "0",
+            codcuentaasiento: '28059510', // cuentaTercero,
+            codlineacostoasiento: '0',
+            identerceroasiento: obj.terceroId,
+            observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
+            valorbaseasiento: '0',
+            valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
+            valordebitoasiento: total, // Falta este: "$total_saldo"
+            valortasaasiento: '0'
+        }];
+
+        if (result.detalle !== undefined && result.detalle.length > 0) {
+            documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
+        }else{
+            documento.asientoscontables = documento.asientoscontables.concat(ultimoAsiento);
+        }
+
+        callback(false, documento);
     }).fail(function (err) {
         var mensaje = {};
         if (err.error !== undefined) {

@@ -619,7 +619,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
         }
 
         if (bodega.remitente === 1) {
-            remitente = G.settings.email_miguel_duarte;//+","+sistemas;
+            remitente = G.settings.email_miguel_duarte;
         }
 
         if (bodega.remitentes.trim() !== "") {
@@ -1034,22 +1034,20 @@ function sortJSON(data, key, orden) {
 // Funcion para enviar correos electronicos usando nodemailer
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
-console.log("__enviar_correo_electronico");
-console.log("__enviar_correo_electronico",to);
     var smtpTransport = that.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname
         secureConnection: true, // use SSL
         port: G.settings.email_port, // port for secure SMTP
         auth: {
-            user: G.settings.email_user,
-            pass: G.settings.email_password
+            user: G.settings.email_rotaciones,
+            pass:  G.settings.email_rotaciones_pass
         }
     });
 
     var settings = {
-        from: G.settings.email_mauricio_barrios,
+        from: G.settings.email_rotaciones,
         to: to,
-        cc: G.settings.email_desarrollo1,
+        cc: G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
         subject: subject,
         html: message
     };
@@ -1062,8 +1060,9 @@ console.log("__enviar_correo_electronico",to);
             console.log("Error :: ",error);
             callback({estado: 505, mensaje: error});
             return;
-        } else {
+        } else {            
             smtpTransport.close();
+            console.log("Correo enviado");
             callback(false, {estado: 200, mensaje: "Correo Enviado"});
             return;
         }

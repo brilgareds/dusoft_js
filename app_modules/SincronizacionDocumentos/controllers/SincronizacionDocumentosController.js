@@ -223,7 +223,8 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
         prefijoFI: '',
         prefijoId: args.data.prefijo.prefijo,
         usuarioId: req.session.user.usuario_id,
-        fechaActual: fechaActual()
+        fechaActual: fechaActual(),
+        codigoProveedor : args.data.codigoProveedor
     };
     
     if(req.session.user.bodega === '03'){
@@ -481,7 +482,7 @@ function __cuentasPorPagar(obj, that, callback) {
     var empuestos;
     var encabezado;
     var totalesFactura;
-    obj.codigoProveedor='1683';
+    
     G.Q.ninvoke(that.m_facturacion_proveedores, 'facturaProveedorCabecera', obj).then(function (result) {
          
         if (result.length > 0) {

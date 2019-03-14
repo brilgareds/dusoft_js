@@ -20,7 +20,18 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-12 col-lg-12">
+                            <div ng-if="servicioProveedor" class="col-md-12">
+                                <div class="form-group">
+                                    <label  class="col-form-label">Proveedor:</label>
+                                    <ui-select ng-model="recepcion.proveedor" theme="select2" class="ui-select-z-index-11 form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(recepcion)">
+                                        <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
+                                        <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
+                                            {{ proveedor.get_nombre() }}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div ng-if="servicioPrefijo" class="col-md-12 col-lg-12">
                                 <div class="form-group">
                                     <label  class="col-form-label">Prefijo:</label>
                                     <ui-select ng-model="root.prefijo2"

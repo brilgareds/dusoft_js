@@ -81,18 +81,7 @@ define(["angular", "js/controllers"
             
             that.consulta = function (sw) {
                 var prefijo = $scope.root.prefijo2;
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        prefijoId: prefijo.prefijo
-//                    }
-//                };
-
-//                ServerServiceDoc.buscarServicio(obj, function (data) {
-//                    $scope.root.servicio = data.obj.servicio.id;
-//                    console.log('Servicio: ', $scope.root.servicio);
-//
-//                    var servicio = $scope.root.servicio;
+                  var servicio = $scope.root.servicio;
 
                     var numero = $scope.root.numero;
                     var obj = {
@@ -102,7 +91,7 @@ define(["angular", "js/controllers"
                         servicio: $scope.servicio
                     };
                     that.sincronizacionDocumentos(obj);
-//                });
+
             };
 
             that.listarTiposServicios = function(){

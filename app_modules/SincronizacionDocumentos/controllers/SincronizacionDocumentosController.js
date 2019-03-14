@@ -275,6 +275,8 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
         case 10:
             funcion_ws = __ajustes;
             break;
+        case 10:
+            funcion_ws = __ajustes;
         default:
             console.log('Error, funcion no asignada!!');
             break;
@@ -485,7 +487,7 @@ function __cuentasPorPagar(obj, that, callback) {
     
     G.Q.ninvoke(that.m_facturacion_proveedores, 'facturaProveedorCabecera', obj).then(function (result) {
          
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             facturasProveedores = result;
             return G.Q.ninvoke(that.m_facturacion_proveedores, 'consultarFacturaProveedorDetalle', facturasProveedores[0]);
         } else {
@@ -493,7 +495,7 @@ function __cuentasPorPagar(obj, that, callback) {
         }
     }).then(function (result) {
         
-        if (result.length > 0) { 
+        if (result !== undefined && result.length > 0) {
             facturasProveedoresDetalle=result;
             return G.Q.ninvoke(that.m_facturacion_proveedores, 'consultarTerceroProveedor', facturasProveedores[0]);
         } else {
@@ -501,7 +503,7 @@ function __cuentasPorPagar(obj, that, callback) {
         }
     }).then(function (result) {
        
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             contrato = result;
             console.log("*-*-*-*--*-*----",facturasProveedores[0]);
             contrato[0].porcentaje_rtf = facturasProveedores[0].porcentajertf;
@@ -515,7 +517,7 @@ function __cuentasPorPagar(obj, that, callback) {
 
     }).then(function (result) {
         
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             empuestos = result;
             obj.prefijo=facturasProveedoresDetalle[0].prefijo;
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFi', obj);
@@ -525,7 +527,7 @@ function __cuentasPorPagar(obj, that, callback) {
 
     }).then(function (result) {
         console.log("obtenerPrefijoFi",result);
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             prefijo=result;     
             parametro.usuarioId = obj.usuario;
             parametro.prefijo = prefijo[0].prefijo_fi;
@@ -537,7 +539,7 @@ function __cuentasPorPagar(obj, that, callback) {
 
     }).then(function (result) {
         
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             var today = new Date();
             var formato = 'DD-MM-YYYY';
             var fechaToday = G.moment(today).format(formato);
@@ -595,7 +597,7 @@ function __cuentasPorPagar(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             empuestos.retencion_ica = 0;
             empuestos.retencion_fuente = 0;
             empuestos.impusto_cree = 0;
@@ -627,6 +629,7 @@ function __cuentasPorPagar(obj, that, callback) {
 
         callback(mensaje);
     }).done();
+
 }
 
 function __notasDebitoClientesFi(obj, that, callback) {
@@ -646,7 +649,7 @@ function __notasDebitoClientesFi(obj, that, callback) {
 
     G.Q.ninvoke(that.m_notas, 'ConsultarNotasDebito', param).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             notaDebito = result;
             obj.terceroId = notaDebito[0].tercero_id;
             obj.tipoIdTercero = notaDebito[0].tipo_id_tercero;
@@ -683,7 +686,7 @@ function __notasDebitoClientesFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             contrato = result;
            
             return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTerceroContrato', obj);
@@ -694,7 +697,7 @@ function __notasDebitoClientesFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             console.log("result cuenta:: ",result);
             cuenta = result;
             var consult = {factura_fiscal: notaDebito[0].factura_fiscal, prefijo: notaDebito[0].prefijo, empresa_id: obj.empresaId};
@@ -706,7 +709,7 @@ function __notasDebitoClientesFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
 
             detalleProductos = result;
             return G.Q.nfcall(__subTotalFactura, result, 0, 0);
@@ -727,7 +730,7 @@ function __notasDebitoClientesFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             empuestos = result;
             obj.parametrizacion = obj.wsFi;
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'parametrizacionCabeceraFi', obj);
@@ -737,7 +740,7 @@ function __notasDebitoClientesFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             parametro.prefijo = obj.prefijo;
             parametro.facturaFiscal = obj.facturaFiscal;
             parametro.terceroId = notaDebito[0].tercero_id;
@@ -839,7 +842,7 @@ function __notasDebitoClientesFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
 
             empuestos.retencion_ica = 0;
             empuestos.retencion_fuente = 0;
@@ -909,7 +912,7 @@ function __notasCreditoClientesFi(obj, that, callback) {
 
     G.Q.ninvoke(that.m_notas, 'ConsultarNotasCredito', param).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             notaCredito = result;
             obj.terceroId = notaCredito[0].tercero_id;
             obj.tipoIdTercero = notaCredito[0].tipo_id_tercero;
@@ -924,7 +927,7 @@ function __notasCreditoClientesFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             contrato = result;
             var consult = {factura_fiscal: notaCredito[0].factura_fiscal, prefijo: notaCredito[0].prefijo, empresa_id: obj.empresaId};
 
@@ -938,7 +941,7 @@ function __notasCreditoClientesFi(obj, that, callback) {
         return G.Q.nfcall(__subTotalFactura, result, 0, 0);
 
     }).then(function (result) {
-        if (result > 0) {
+        if (result !== undefined && result > 0) {
 
             detalle = result;
             return G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
@@ -948,7 +951,7 @@ function __notasCreditoClientesFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             empuestos = result;
             obj.parametrizacion = obj.wsFi;
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'parametrizacionCabeceraFi', obj);
@@ -958,7 +961,7 @@ function __notasCreditoClientesFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             parametro.prefijo = obj.prefijo;
             parametro.facturaFiscal = obj.facturaFiscal;
             parametro.terceroId = notaCredito[0].tercero_id;
@@ -1095,7 +1098,7 @@ function __facturasTalonarioFi(obj, that, callback) {
     //    funcionWs = "crearInformacionContable";
 
     G.Q.ninvoke(that.m_caja_general, 'listarFacturaTalonario', obj).then(function (result) {
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             facturaTalonario = result;
             obj.terceroId = facturaTalonario[0].tercero_id;
             obj.tipoIdTercero = facturaTalonario[0].tipo_id_tercero;
@@ -1108,7 +1111,7 @@ function __facturasTalonarioFi(obj, that, callback) {
         }
 
     }).then(function (result) {
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             contrato = result;
             return G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
         } else {
@@ -1116,7 +1119,7 @@ function __facturasTalonarioFi(obj, that, callback) {
         }
 
     }).then(function (result) {
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             empuestos = result;
             obj.parametrizacion = obj.wsFi;
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'parametrizacionCabeceraFi', obj);
@@ -1126,7 +1129,7 @@ function __facturasTalonarioFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             parametro.prefijo = obj.prefijo;
             parametro.facturaFiscal = obj.facturaFiscal;
             parametro.terceroId = facturaTalonario[0].tercero_id;
@@ -1198,7 +1201,7 @@ function __facturasVentaFi(obj, that, callback) {
     G.Q.ninvoke(that.m_notas, 'listarFacturas', obj).then(function (result) {
         console.log('listarFacturas in controller!!');
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             listarFacturas = result;
             return G.Q.ninvoke(that.m_facturacion_clientes, 'consultaDetalleFacturaGenerada', obj, 0);
         } else {
@@ -1206,7 +1209,7 @@ function __facturasVentaFi(obj, that, callback) {
         }
     }).then(function (result) {
         console.log('funcion "consultaDetalleFacturaGenerada" fine!!');
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             listarFacturasDetalle = result;
             obj.terceroId = listarFacturas[0].tercero_id;
             obj.tipoIdTercero = listarFacturas[0].tipo_id_tercero;
@@ -1217,7 +1220,7 @@ function __facturasVentaFi(obj, that, callback) {
         }
     }).then(function (result) {
         console.log('funcion "consultarTerceroContrato" fine!!');
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             contrato = result;
             return G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
         } else {
@@ -1225,7 +1228,7 @@ function __facturasVentaFi(obj, that, callback) {
         }
     }).then(function (result) {
         console.log('funcion "listarParametrosRetencion" fine!!');
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             empuestos = result;
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFi', obj);
         } else {
@@ -1234,7 +1237,7 @@ function __facturasVentaFi(obj, that, callback) {
 
     }).then(function (result) {
         console.log('funcion "obtenerPrefijoFi" fine!!');
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             parametro.fechaFactura = listarFacturas[0].fecha_factura;
             parametro.usuarioId = obj.usuario;
             parametro.prefijo = result[0].prefijo_fi;
@@ -1245,7 +1248,7 @@ function __facturasVentaFi(obj, that, callback) {
         }
 
     }).then(function (result) {
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             parametro.facturaFiscal = listarFacturas[0].factura_fiscal;
             parametro.terceroId = listarFacturas[0].tercero_id;
             parametro.parametrizacionCabeceraFi = result[0].parametrizacionCabeceraFi;
@@ -1295,7 +1298,7 @@ function __facturasVentaFi(obj, that, callback) {
 
     }).then(function (result) {
 
-        if (result.length > 0) {
+        if (result !== undefined && result.length > 0) {
             empuestos.retencion_ica = 0;
             empuestos.retencion_fuente = 0;
             empuestos.impusto_cree = 0;
@@ -1340,7 +1343,9 @@ function __enviarReciboRCC(obj, that, callback){
     var lineaCosto = 0;
 
     G.Q.ninvoke(that.m_SincronizacionDoc, 'listarEncabezadoRCD', obj).then(function (result) {
-        if (result.length > 0) {
+        console.log('function "listarEncabezadoRCC"');
+
+        if (result && result.length > 0) {
             console.log('\n\n\n\n\n\n\n\n\n');
             console.log('Encabezado: ', result[0]);
             documento.encabezadofactura = result[0];
@@ -1350,15 +1355,9 @@ function __enviarReciboRCC(obj, that, callback){
             obj.terceroTipoId = documento.encabezadofactura.tipotercero;
             delete documento.encabezadofactura.cuenta_contable;
             delete documento.encabezadofactura.tercero_id;
-            return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarEncabezadoRCD', obj);
-        } else {
-            throw {error: 1, status: 404, mensaje: 'No se encontro la Factura'};
-        }
-    }).then(function (result) {
-        if (result.length > 0) {
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarFacturasDFIN1121', obj);
         } else {
-            throw {error: 1, status: 404, mensaje: 'No se encontro la parametrizacion de la cabecera'};
+            throw {error: 1, status: 404, mensaje: 'No se encontro la Factura'};
         }
     }).then(function (result) {
         console.log('listarFacturasDFIN1121: ', result);
@@ -1384,18 +1383,12 @@ function __enviarReciboRCC(obj, that, callback){
             lineaCosto = result.detalle[0].linea_costo;
         }
 
-        console.log('Fine1!!');
-
-        total = parseFloat(totalCredito - totalDebito);
-
-        console.log('Fine2!!');
-
         if(obj.empresaRecibo == '0'){
             cuenta = "28050510";
         }else if(obj.empresaRecibo == '1'){
             cuenta = "13101005";
         }
-        console.log('Fine3!!');
+        total = parseFloat(totalCredito - totalDebito);
 
         var ultimoAsiento = [{
             codcentrocostoasiento: "0",
@@ -1410,18 +1403,11 @@ function __enviarReciboRCC(obj, that, callback){
             valortasaasiento: '0'
         }];
 
-        console.log('Fine4!!');
-
         if(result.detalle != undefined && result.detalle.length > 0){
             documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
         }else{
             documento.asientoscontables = documento.asientoscontables.concat(ultimoAsiento);
         }
-
-        console.log('Fine5!!');
-
-        //console.log('\n\n\n\n\n\n\n\n\n-----------------------------------11', (JSON.stringify(documento)));
-        // res.send(G.utils.r(req.url, 'sincronizacionDocumentos!!!!', 200, {sincronizacionDocumentos: true, result: result, parametro: param}));
 
         callback(false, documento);
     }).fail(function (err) {
@@ -1449,7 +1435,7 @@ function __enviarReciboRCD(obj, that, callback) {
     var prefijoFI = 'NTC';
 
     G.Q.ninvoke(that.m_SincronizacionDoc, 'listarEncabezadoRCD', obj).then(function (result) {
-        if (result.length > 0) {
+        if (result && result.length > 0) {
             console.log('\n\n\n\n\n\n\n\n\n');
             console.log('Encabezado: ', result[0]);
             documento.encabezadofactura = result[0];
@@ -1517,8 +1503,6 @@ function __enviarReciboRCD(obj, that, callback) {
             }];
 
             documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
-            //console.log('\n\n\n\n\n\n\n\n\n-----------------------------------11', (JSON.stringify(documento)));
-            // res.send(G.utils.r(req.url, 'sincronizacionDocumentos!!!!', 200, {sincronizacionDocumentos: true, result: result, parametro: param}));
 
             callback(false, documento);
         } else {
@@ -1785,7 +1769,13 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             if (parseFloat(totalesFactura.iva) > 0) {
                 cuentas.valorcreditoasiento = totalesFactura.iva;
                 cuentas.valordebitoasiento = 0;
-                cuentas.valortasaasiento = totalesFactura.porc_iva;
+
+                if(cuentas.parametrizacion_ws_fi === 1){
+                    cuentas.valortasaasiento = 0;
+                }else{
+                    cuentas.valortasaasiento = totalesFactura.porc_iva;
+                }
+
                 if (cuentas.parametrizacion_ws_fi === 2) {
 
                     var subtotal = totalesFactura.total - totalesFactura.iva;
@@ -1834,18 +1824,27 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             }
             break;
         case 7://ICA
-            empuestos.retencion_ica = 0;          
           if (empuestos[0].sw_ica === '2' || empuestos[0].sw_ica === '3' && (parseFloat(contrato[0].porcentaje_ica) === parseFloat(cuentas.ica_porcentaje))) {
-             
+              empuestos.retencion_ica = 0;
+              console.log('Entro en ICA!!');
+
                 if (totalesFactura.subtotal >= empuestos[0].base_ica) {
 //                    empuestos.retencion_ica = parseInt(totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000));
                     empuestos.retencion_ica = parseFloat(totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000));
+
+                    console.log('ICA original: ', empuestos.retencion_ica);
                  
                     if (empuestos.retencion_ica > 0) {
                         cuentas.valorcreditoasiento = 0;
                         cuentas.valordebitoasiento = empuestos.retencion_ica;
                         cuentas.valorbaseasiento = totalesFactura.subtotal;
-                        cuentas.valortasaasiento = contrato[0].porcentaje_ica;
+
+                        if (cuentas.parametrizacion_ws_fi === 1) {
+                            cuentas.valortasaasiento = 0;
+                        }else{
+                            cuentas.valortasaasiento = contrato[0].porcentaje_ica;
+                        }
+
                         __JsonFacturaDetalle(cuentas, function (data) {
                             arreglo.push(data);
                         });
@@ -1881,8 +1880,14 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                     cuentas.valorcreditoasiento = empuestos.impusto_cree;
                     cuentas.valordebitoasiento = 0;
                 }
-                cuentas.valorbaseasiento = totalesFactura.subtotal;
-                cuentas.valortasaasiento = cuentas.cree_porcentaje;
+                if(cuentas.parametrizacion_ws_fi === 1){
+                    cuentas.valorbaseasiento = 0;
+                    cuentas.valortasaasiento = 0;
+                }else{
+                    cuentas.valortasaasiento = cuentas.cree_porcentaje;
+                    cuentas.valorbaseasiento = totalesFactura.subtotal;
+                }
+
                 __JsonFacturaDetalle(cuentas, function (data) {
                     arreglo.push(data);
                 });
@@ -1893,6 +1898,10 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             var total = 0;
 
             total = ((((totalesFactura.medicamentosGravados + totalesFactura.medicamentosNoGravados + totalesFactura.insumosGravados + totalesFactura.insumosNoGravados + totalesFactura.iva) - empuestos.retencion_fuente) - empuestos.retencion_ica));
+
+            if (cuentas.parametrizacion_ws_fi === 1) {
+                total = parseInt((((parseInt(totalesFactura.medicamentosGravados) + parseInt(totalesFactura.medicamentosNoGravados) + parseInt(totalesFactura.insumosGravados) + parseInt(totalesFactura.insumosNoGravados + parseInt(totalesFactura.iva))) - parseInt(empuestos.retencion_fuente)) - parseInt(empuestos.retencion_ica)));
+            }
 
             if (cuentas.parametrizacion_ws_fi === 2) {
                 var subtotal = totalesFactura.total - totalesFactura.iva;

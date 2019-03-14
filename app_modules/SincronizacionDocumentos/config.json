@@ -33,6 +33,11 @@
                     "module": "CajaGeneral",
                     "model": "CajaGeneralModel",
                     "alias": "m_caja_general"
+                },
+                "movimientos_bodegas_model": {
+                    "module": "MovimientosBodega/MovBodegas",
+                    "model": "MovBodegasModel",
+                    "alias": "m_movimientos_bodegas"
                 }
             }],
         "events": [],

@@ -671,7 +671,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                      */
                                     $scope.calcularValor = function (producto) {
                                         var suma;
-                                        suma = (parseInt(producto.cantidad) * parseInt(producto.cantidad_ingresada));
+                                        suma = (parseFloat(producto.cantidad) * parseFloat(producto.cantidad_ingresada));
 
                                         producto.setTotalNota(suma);
 
@@ -724,7 +724,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             {field: 'Lote', width: "6%", displayName: 'Lote', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getLote()}}</p></div>'},
                                             {field: 'Valor Unitario', width: "10%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()}}</p></div>'},
                                             {field: 'Valor Nota', width: "10%", displayName: 'Valor Nota', cellClass: "ngCellText",
-                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
+                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-decimal  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
                                             {field: 'Total Nota', width: "10%", displayName: 'Total Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()}}</p></div>'},
                                             {field: 'Observacion', width: "20%", displayName: 'Observacion', cellClass: "ngCellText",
                                                 cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-model="row.entity.observacion" class="form-control grid-inline-input" name="observacion" id="observacion" /> </div>'},
@@ -1073,7 +1073,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             {field: 'Lote', width: "6%", displayName: 'Lote', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getLote()}}</p></div>'},
                                             {field: 'Valor Unitario', width: "10%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()}}</p></div>'},
                                             {field: 'Valor Nota', width: "10%", displayName: 'Valor Nota', cellClass: "ngCellText",
-                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-hide="ocultarValor()" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
+                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-hide="ocultarValor()" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-decimal  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
                                             {field: 'Total Nota', width: "10%", displayName: 'Total Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()}}</p></div>'},
                                             {field: 'Observacion', width: "20%", displayName: 'Observacion', cellClass: "ngCellText",
                                                 cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-model="row.entity.observacion" class="form-control grid-inline-input" name="observacion" id="observacion" /> </div>'},

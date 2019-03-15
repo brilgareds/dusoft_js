@@ -1,4 +1,3 @@
-
 define(["angular", "js/controllers"
 ], function (angular, controllers) {
 
@@ -7,16 +6,16 @@ define(["angular", "js/controllers"
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
         "Usuario", "socket", "$timeout",
-        "EmpresaOrdenCompra", "ServerServiceDoc","ProveedorOrdenCompra",
+        "EmpresaOrdenCompra", "ServerServiceDoc", "ProveedorOrdenCompra",
         function ($scope, $rootScope, Request,
-                $filter, $state, $modal,
-                API, AlertService, localStorageService,
-                Usuario, socket, $timeout,
-                Empresa, ServerServiceDoc,Proveedor) {
+                  $filter, $state, $modal,
+                  API, AlertService, localStorageService,
+                  Usuario, socket, $timeout,
+                  Empresa, ServerServiceDoc, Proveedor) {
 
             var that = this;
             $scope.servicioProveedor = false;
-            $scope.servicioPrefijo = true; 
+            $scope.servicioPrefijo = true;
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
             $scope.servicio = '';
             $scope.cod_proveedor = '';
@@ -26,7 +25,7 @@ define(["angular", "js/controllers"
             };
             $scope.root = {
                 prefijo: {},
-                estado:true,
+                estado: true,
                 listarTiposServicios: {}
             };
 
@@ -50,67 +49,64 @@ define(["angular", "js/controllers"
             };
 
 
-            $scope.prefijo_actualizado = function(prefijo){
+            $scope.prefijo_actualizado = function (prefijo) {
                 console.log('prefijo es:', prefijo);
                 $scope.root.prefijo = prefijo;
             };
-            
-            
+
 
             $scope.sincronizar = function () {
                 that.consulta(1);
             };
-            
+
             $scope.buscar = function () {
-               that.consulta(0); 
+                that.consulta(0);
             };
 
-            $scope.servicio_actualizado = function(servicio){
-                if(servicio === 9){
-                  $scope.servicioProveedor = true; 
-                  $scope.servicioPrefijo = false; 
-                  $scope.root.prefijo2 = {prefijo:''}
-                }else{
-                  $scope.servicioProveedor = false;
-                  $scope.servicioPrefijo = true; 
+            $scope.servicio_actualizado = function (servicio) {
+                if (servicio === 9) {
+                    $scope.servicioProveedor = true;
+                    $scope.servicioPrefijo = false;
+                    $scope.root.prefijo2 = {prefijo: ''}
+                } else {
+                    $scope.servicioProveedor = false;
+                    $scope.servicioPrefijo = true;
                 }
-                
+
                 $scope.servicio = servicio;
-                
             };
-            
+
             that.consulta = function (sw) {
                 var prefijo = $scope.root.prefijo2;
-                  var servicio = $scope.root.servicio;
+                var servicio = $scope.root.servicio;
 
-                    var numero = $scope.root.numero;
-                    var obj = {
-                        prefijo: prefijo.prefijo,
-                        facturaFiscal: numero,
-                        sincronizar: sw,
-                        servicio: $scope.servicio
-                    };
-                    that.sincronizacionDocumentos(obj);
-
+                var numero = $scope.root.numero;
+                var obj = {
+                    prefijo: prefijo.prefijo,
+                    facturaFiscal: numero,
+                    sincronizar: sw,
+                    servicio: $scope.servicio
+                };
+                that.sincronizacionDocumentos(obj);
             };
 
-            that.listarTiposServicios = function(){
+            that.listarTiposServicios = function () {
                 var obj = {
                     session: $scope.session,
                     data: {}
                 };
-                ServerServiceDoc.listarTiposServicios(obj, function(data){
+                ServerServiceDoc.listarTiposServicios(obj, function (data) {
                     console.log('Servicios: ', data);
                     $scope.root.listarTiposServicios = data.obj.listarTiposServicios.servicios;
                 });
             };
 
             that.sincronizacionDocumentos = function (parametros) {
-                $scope.root.estado=false;
-                $scope.color_boton="";
-                $scope.iconos="";
-                $scope.encabezado={};
-                $scope.root.asientosContables={};
+                $scope.root.estado = false;
+                $scope.color_boton = "";
+                $scope.iconos = "";
+                $scope.encabezado = {};
+                $scope.root.asientosContables = {};
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -126,24 +122,24 @@ define(["angular", "js/controllers"
 
                 ServerServiceDoc.sincronizacionDocumentos(obj, function (data) {
                     if (data.status === 200) {
-                        $scope.root.estado=true;
+                        $scope.root.estado = true;
                         $scope.root.asientosContables = data.obj.result;
-                        $scope.encabezado= data.obj.result.encabezadofactura;
-                        
-                        if($scope.root.asientosContables.estado===true){
-                            $scope.root.asientosContables=data.obj.parametro;
-                            $scope.encabezado=data.obj.parametro.encabezadofactura;
-                            $scope.root.asientosContables.descripcion=data.obj.result.descripcion;
-                            $scope.color_boton="btn-danger";
-                            $scope.iconos="glyphicon glyphicon-asterisk";
-                        }else{  
-                           if(parametros.sincronizar===1){
-                            $scope.root.asientosContables.descripcion="";
-                            $scope.color_boton="btn-success";
-                            $scope.iconos="";
-                           }
+                        $scope.encabezado = data.obj.result.encabezadofactura;
+
+                        if ($scope.root.asientosContables.estado === true) {
+                            $scope.root.asientosContables = data.obj.parametro;
+                            $scope.encabezado = data.obj.parametro.encabezadofactura;
+                            $scope.root.asientosContables.descripcion = data.obj.result.descripcion;
+                            $scope.color_boton = "btn-danger";
+                            $scope.iconos = "glyphicon glyphicon-asterisk";
+                        } else {
+                            if (parametros.sincronizar === 1) {
+                                $scope.root.asientosContables.descripcion = "";
+                                $scope.color_boton = "btn-success";
+                                $scope.iconos = "";
+                            }
                         }
-                        console.log("$scope.root.asientosContables:: ",$scope.root.asientosContables );
+                        console.log("$scope.root.asientosContables:: ", $scope.root.asientosContables);
                     } else {
                         console.log(" data.mensaje", data.msj);
                         console.log(" data.mensaje", data);
@@ -151,68 +147,107 @@ define(["angular", "js/controllers"
                     }
                 });
             };
-            
-             $scope.lista_reportesGenerados = {
+
+            $scope.lista_reportesGenerados = {
                 data: 'root.asientosContables.asientoscontables',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'codcentrocostoasiento', displayName: "C. Costos", cellClass: "txt-center dropdown-button", width: "5%"},
-                    {field: 'C. Utilidad', displayName: "C. Utilidad", cellClass: "txt-center dropdown-button", width: "6%",
+                    {
+                        field: 'codcentrocostoasiento',
+                        displayName: "C. Costos",
+                        cellClass: "txt-center dropdown-button",
+                        width: "5%"
+                    },
+                    {
+                        field: 'C. Utilidad',
+                        displayName: "C. Utilidad",
+                        cellClass: "txt-center dropdown-button",
+                        width: "6%",
                         cellTemplate: ' <div class="row">\
                                                {{row.entity.codcentroutilidadasiento}} \
                                             </div>'
                     },
-                     {field: 'L. Costos', displayName: "Linea Costos", cellClass: "txt-center dropdown-button", width: "7%",
+                    {
+                        field: 'L. Costos',
+                        displayName: "Linea Costos",
+                        cellClass: "txt-center dropdown-button",
+                        width: "7%",
                         cellTemplate: ' <div class="row">\
                                                {{row.entity.codlineacostoasiento}} \
                                             </div>'
                     },
-                    {field: 'Cuenta', displayName: "Cuenta", cellClass: "txt-center dropdown-button", width: "8%",
+                    {
+                        field: 'Cuenta', displayName: "Cuenta", cellClass: "txt-center dropdown-button", width: "8%",
                         cellTemplate: ' <div class="row">\
                                                {{row.entity.codcuentaasiento}} \
                                             </div>'
                     },
-                    {field: 'Identificacion', displayName: "Identificacion", cellClass: "txt-center dropdown-button", width: "8%",
+                    {
+                        field: 'Identificacion',
+                        displayName: "Identificacion",
+                        cellClass: "txt-center dropdown-button",
+                        width: "8%",
                         cellTemplate: ' <div class="row">\
                                                {{row.entity.identerceroasiento}} \
                                             </div>'
-                    },                    
-                    {field: 'Valor Base', displayName: "Valor Base", cellClass: "txt-center dropdown-button", width: "10%",
+                    },
+                    {
+                        field: 'Valor Base',
+                        displayName: "Valor Base",
+                        cellClass: "txt-center dropdown-button",
+                        width: "10%",
                         cellTemplate: ' <div class="row">\
                                                {{row.entity.valorbaseasiento}} \
                                             </div>'
                     },
-                    {field: 'Valor Credito', displayName: "Valor Credito", cellClass: "txt-center dropdown-button", width: "10%",
+                    {
+                        field: 'Valor Credito',
+                        displayName: "Valor Credito",
+                        cellClass: "txt-center dropdown-button",
+                        width: "10%",
                         cellTemplate: ' <div class="row">\
                                                {{row.entity.valorcreditoasiento}} \
                                             </div>'
                     },
-                    {field: 'Valor Debito', displayName: "Valor Debito", cellClass: "txt-center dropdown-button", width: "10%",
+                    {
+                        field: 'Valor Debito',
+                        displayName: "Valor Debito",
+                        cellClass: "txt-center dropdown-button",
+                        width: "10%",
                         cellTemplate: ' <div class="row">\
                                                {{row.entity.valordebitoasiento}} \
                                             </div>'
                     },
-                    {field: 'V. Tasa', displayName: "Valor Tasa", cellClass: "txt-center dropdown-button", width: "6%",
+                    {
+                        field: 'V. Tasa',
+                        displayName: "Valor Tasa",
+                        cellClass: "txt-center dropdown-button",
+                        width: "6%",
                         cellTemplate: ' <div class="row">\
                                                {{row.entity.valortasaasiento}} \
                                             </div>'
                     },
-                    {field: 'observacionasiento', displayName: "Observacion", cellClass: "txt-left dropdown-button", width: "30%"}
+                    {
+                        field: 'observacionasiento',
+                        displayName: "Observacion",
+                        cellClass: "txt-left dropdown-button",
+                        width: "30%"
+                    }
                 ]
 
             };
-            
+
             $scope.Empresa = Empresa;
-            
+
             $scope.datos_view = {
                 termino_busqueda_proveedores: '',
                 lista_productos: []
             };
 
-            
-            $scope.listar_proveedores = function(termino_busqueda) {
+
+            $scope.listar_proveedores = function (termino_busqueda) {
 
                 if (termino_busqueda.length < 3) {
                     return;
@@ -220,13 +255,13 @@ define(["angular", "js/controllers"
 
                 $scope.datos_view.termino_busqueda_proveedores = termino_busqueda;
 
-                that.buscar_proveedores(function(proveedores) {
+                that.buscar_proveedores(function (proveedores) {
 
                     that.render_proveedores(proveedores);
                 });
             };
 
-            that.buscar_proveedores = function(callback) {
+            that.buscar_proveedores = function (callback) {
 
                 var obj = {
                     session: $scope.session,
@@ -237,26 +272,26 @@ define(["angular", "js/controllers"
                     }
                 };
 
-                Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, function(data) {
+                Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, function (data) {
                     if (data.status === 200) {
                         callback(data.obj.proveedores);
                     }
                 });
             };
-            
-            that.render_proveedores = function(proveedores) {
-               $scope.Empresa.limpiar_proveedores();
-                proveedores.forEach(function(data) {
+
+            that.render_proveedores = function (proveedores) {
+                $scope.Empresa.limpiar_proveedores();
+                proveedores.forEach(function (data) {
                     var proveedor = Proveedor.get(data.tipo_id_tercero, data.tercero_id, data.codigo_proveedor_id, data.nombre_proveedor, data.direccion, data.telefono);
                     $scope.Empresa.set_proveedores(proveedor);
                 });
             };
-            
-            $scope.seleccionar_proveedor = function(recepcion) {
-               $scope.cod_proveedor = recepcion.proveedor.codigo_proveedor_id;
+
+            $scope.seleccionar_proveedor = function (recepcion) {
+                $scope.cod_proveedor = recepcion.proveedor.codigo_proveedor_id;
             };
-            
-            
+
+
             that.init = function () {
                 $scope.root = {};
                 that.listarTiposServicios();

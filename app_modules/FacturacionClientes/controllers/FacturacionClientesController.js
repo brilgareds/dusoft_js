@@ -2549,6 +2549,27 @@ function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFa
 }
 ;
 
+function __verificarEFCFacturado(that, documentos,index,facturadas,callback){
+    var documento = documentos[index];
+    if(!documento){
+     callback(false,facturadas);
+     return;
+    }
+    G.Q.ninvoke(that.m_facturacion_clientes, 'despachoClientes', documento).then(function (resultado) {
+        index++;
+        if(resultado.length > 0 ){
+           __verificarEFCFacturado(that, documentos,index,facturadas,callback);
+        }else{
+           facturadas += " - # "+documento.prefijo+" - "+documento.numero;
+           __verificarEFCFacturado(that, documentos,index,facturadas,callback);
+        }
+        
+    }).fail(function (err) {
+       callback(err);
+       return;
+    }).done();
+}
+
 
 /*
  * @author Cristian Ardila
@@ -2608,8 +2629,17 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
     var consultarParametrosRetencion;
     var def = G.Q.defer();
 
-    G.Q.ninvoke(that.m_dispensacion_hc, 'estadoParametrizacionReformular', parametroBodegaDocId).then(function (resultado) {
+    G.Q.nfcall(__verificarEFCFacturado,that, args.generar_factura_individual.documentos,0,"").then(function (resultado) {
 
+        if (resultado.length === 0) {
+            
+        return G.Q.ninvoke(that.m_dispensacion_hc, 'estadoParametrizacionReformular', parametroBodegaDocId);
+        
+        } else {
+            throw {msj: "Ya se encuentra facturado : \n"+resultado, status: 404};
+        }
+    }).then(function (resultado) {
+        
         parametros.documentoId = resultado[0].valor;
 
         if (resultado.length > 0) {

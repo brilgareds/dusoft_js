@@ -2245,6 +2245,30 @@ function __guardarDespachoIndividual(that, index, documentos, consultaCompleta, 
 
 }
 ;
+/*
+ * 
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionClientesModel.prototype.despachoClientes = function (obj, callback) {
+    var columnas =  [
+                        "prefijo",
+                        "numero"
+                    ];
+    var query = G.knex.distinct(columnas)
+            .from('inv_bodegas_movimiento_despachos_clientes')
+            .where('prefijo', obj.prefijo).
+             andWhere('numero', obj.numero).
+             andWhere("factura_gener", '0');
+     
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarDocumentoTemporal_d", err);
+        callback(err);
+    });
+}
 
 /**
  * +Descripcion Metodo encargado de generar las facturas agrupadas 

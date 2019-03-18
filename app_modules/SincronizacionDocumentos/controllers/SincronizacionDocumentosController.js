@@ -286,12 +286,12 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
 
     }).fail(function (err) {
         /*
-            if (err.mensaje !== undefined) {
-                res.send(G.utils.r(req.url, err.respuesta.error.mensaje, err.respuesta.error.status, {sincronizacionDocumentos: false, error: err.err}));
-            } else {
-                res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
-            }
-        */
+         if (err.mensaje !== undefined) {
+         res.send(G.utils.r(req.url, err.respuesta.error.mensaje, err.respuesta.error.status, {sincronizacionDocumentos: false, error: err.err}));
+         } else {
+         res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
+         }
+         */
         res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
 
     }).done();
@@ -471,7 +471,7 @@ function __cuentasPorPagar(obj, that, callback) {
     G.Q.ninvoke(that.m_facturacion_proveedores, 'facturaProveedorCabecera', obj).then(function (result) {
 
         if (result !== undefined && result.length > 0) {
-            if(result[0].anio_factura !== undefined){
+            if (result[0].anio_factura !== undefined) {
                 obj.anio = result[0].anio_factura;
             }
             facturasProveedores = result;
@@ -847,6 +847,7 @@ function __notasDebitoClientesFi(obj, that, callback) {
             totalesFactura.cuentaNaturaleza = notaDebito[0].cuenta;
             totalesFactura.cuenta = cuenta[0].cuenta_contable;
             contrato[0].cuenta_contable = cuenta[0].cuenta_contable;
+            console.log("total   totalesFactura ",totalesFactura);
             return G.Q.nfcall(__EncabezadoFacturaDetalle, result, totalesFactura, [], 0, contrato, empuestos);
         } else {
             throw {error: 1, status: 404, mensaje: 'Se produjo un error al consultar las cuentas de la factura'};
@@ -1057,7 +1058,7 @@ function __notasCreditoClientesFi(obj, that, callback) {
             totalesFactura.naturaleza = notaCredito[0].naturaleza;
             totalesFactura.cuentaNaturaleza = notaCredito[0].cuenta;
             totalesFactura.cuenta = contrato[0].cuenta_contable;
-
+            totalesFactura.subtotal = detalle;
             return G.Q.nfcall(__EncabezadoFacturaDetalle, result, totalesFactura, [], 0, contrato, empuestos);
         } else {
             throw {error: 1, status: 404, mensaje: 'Se produjo un error al consultar las cuentas de la factura'};
@@ -1170,7 +1171,7 @@ function __facturasTalonarioFi(obj, that, callback) {
             identercero: facturaTalonario[0].tercero_id,
             cuenta: contrato[0].cuenta_contable
         };
-
+        empuestos.retencion_fuente = 0;
 
         return G.Q.nfcall(__EncabezadoFacturaDetalle, result, totalesFactura, [], 0, contrato, empuestos);
 
@@ -1395,17 +1396,17 @@ function __enviarReciboRCC(obj, that, callback) {
         total = parseFloat(totalCredito - totalDebito);
 
         var ultimoAsiento = [{
-            codcentrocostoasiento: "0",
-            codcentroutilidadasiento: "0",
-            codcuentaasiento: cuenta, // cuentaTercero,
-            codlineacostoasiento: lineaCosto,
-            identerceroasiento: obj.terceroId,
-            observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
-            valorbaseasiento: '0',
-            valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
-            valordebitoasiento: total, // Falta este: "$total_saldo"
-            valortasaasiento: '0'
-        }];
+                codcentrocostoasiento: "0",
+                codcentroutilidadasiento: "0",
+                codcuentaasiento: cuenta, // cuentaTercero,
+                codlineacostoasiento: lineaCosto,
+                identerceroasiento: obj.terceroId,
+                observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
+                valorbaseasiento: '0',
+                valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
+                valordebitoasiento: total, // Falta este: "$total_saldo"
+                valortasaasiento: '0'
+            }];
 
         if (result.detalle != undefined && result.detalle.length > 0) {
             documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
@@ -1456,19 +1457,19 @@ function __enviarReciboRCD(obj, that, callback) {
         if (result.length > 0) {
 
             /*
-            result.prefijo = obj.prefijo;
-            result.facturaFiscal = obj.facturaFiscal;
-            result.terceroId = facturaTalonario[0].tercero_id;
-//          parametro.parametrizacionCabeceraFi=result[0].parametrizacionCabeceraFi;
-//          parametro.nombre=result[0].nombre;
-            result.estadoencabezado = result[0].estadoencabezado;
-            result.tipotercero = result[0].tipotercero;
-//          parametro.plazotercero=result[0].plazotercero;
-//          parametro.numeroradicacion=result[0].numeroradicacion;
-            result.codempresa = result[0].codempresa;
-            result.coddocumentoencabezado = result[0].coddocumentoencabezado;
-            result.observaciones = "Factura " + obj.prefijo + " #" + obj.facturaFiscal;
-            */
+             result.prefijo = obj.prefijo;
+             result.facturaFiscal = obj.facturaFiscal;
+             result.terceroId = facturaTalonario[0].tercero_id;
+             //          parametro.parametrizacionCabeceraFi=result[0].parametrizacionCabeceraFi;
+             //          parametro.nombre=result[0].nombre;
+             result.estadoencabezado = result[0].estadoencabezado;
+             result.tipotercero = result[0].tipotercero;
+             //          parametro.plazotercero=result[0].plazotercero;
+             //          parametro.numeroradicacion=result[0].numeroradicacion;
+             result.codempresa = result[0].codempresa;
+             result.coddocumentoencabezado = result[0].coddocumentoencabezado;
+             result.observaciones = "Factura " + obj.prefijo + " #" + obj.facturaFiscal;
+             */
 
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarFacturasDFIN1121', obj);
         } else {
@@ -1495,17 +1496,17 @@ function __enviarReciboRCD(obj, that, callback) {
         total = parseFloat(totalCredito - totalDebito);
 
         var ultimoAsiento = [{
-            codcentrocostoasiento: "0",
-            codcentroutilidadasiento: "0",
-            codcuentaasiento: '28059510', // cuentaTercero,
-            codlineacostoasiento: '0',
-            identerceroasiento: obj.terceroId,
-            observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
-            valorbaseasiento: '0',
-            valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
-            valordebitoasiento: total, // Falta este: "$total_saldo"
-            valortasaasiento: '0'
-        }];
+                codcentrocostoasiento: "0",
+                codcentroutilidadasiento: "0",
+                codcuentaasiento: '28059510', // cuentaTercero,
+                codlineacostoasiento: '0',
+                identerceroasiento: obj.terceroId,
+                observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
+                valorbaseasiento: '0',
+                valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
+                valordebitoasiento: total, // Falta este: "$total_saldo"
+                valortasaasiento: '0'
+            }];
 
         if (result.detalle !== undefined && result.detalle.length > 0) {
             documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
@@ -1589,9 +1590,8 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
     cuentas.valortasaasiento = 0;
     cuentas.valorbaseasiento = 0;
 
-    //console.log('Acount is: ', cuentas);
-
-    console.log('category is: '+cuentas.categoria_id);
+    //  console.log('Acount is: ', cuentas);
+    //  console.log('category is: '+cuentas.categoria_id);
 
     switch (cuentas.categoria_id) {
 
@@ -1741,9 +1741,13 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                     cuentas.valorcreditoasiento = totalesFactura.insumosNoGravados;
                     cuentas.valordebitoasiento = 0;
                 }
-                __JsonFacturaDetalle(cuentas, function (data) {
-                    arreglo.push(data)
-                });
+                if (cuentas.parametrizacion_ws_fi === 3) {
+                    break;
+                } else {
+                    __JsonFacturaDetalle(cuentas, function (data) {
+                        arreglo.push(data)
+                    });
+                }
             }
             break;
         case 20://COSTO INSUMOS NO GRAVADO
@@ -1777,10 +1781,10 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             break;
         case 5://IVA
             if (parseFloat(totalesFactura.iva) > 0) {
-                if(cuentas.parametrizacion_ws_fi === 9){
+                if (cuentas.parametrizacion_ws_fi === 9) {
                     cuentas.valorcreditoasiento = 0;
                     cuentas.valordebitoasiento = Math.round(totalesFactura.iva);
-                }else{
+                } else {
                     cuentas.valorcreditoasiento = totalesFactura.iva;
                     cuentas.valordebitoasiento = 0;
                 }
@@ -1821,25 +1825,29 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             break;
         case 6://RETEFUENTE
 
-            empuestos.retencion_fuente = 0;
-
             if (empuestos[0].sw_rtf === '2' || empuestos[0].sw_rtf === '3' && (parseFloat(contrato[0].porcentaje_rtf) === parseFloat(cuentas.rtf_porcentaje))) {
+                empuestos.retencion_fuente = 0;
                 console.log('First If ');
 
                 //Subtotal is:831894.48 and base_rtf is: 742000.0000
 
-                console.log('Subtotal is: '+totalesFactura.subtotal+' and base_rtf is: '+parseInt(empuestos[0].base_rtf));
+                console.log('Subtotal is: ' + totalesFactura.subtotal + ' and base_rtf is: ' + parseInt(empuestos[0].base_rtf));
 
                 if (totalesFactura.subtotal >= parseInt(empuestos[0].base_rtf)) {
                     console.log('Second If ');
-                    empuestos.retencion_fuente = parseInt(totalesFactura.subtotal * (contrato[0].porcentaje_rtf / 100));
+                    if (cuentas.parametrizacion_ws_fi === 3) {
+                        empuestos.retencion_fuente = parseInt(totalesFactura.total * (contrato[0].porcentaje_rtf / 100));
+                    } else {
+                        empuestos.retencion_fuente = parseInt(totalesFactura.subtotal * (contrato[0].porcentaje_rtf / 100));
+                    }
+
                     if (empuestos.retencion_fuente > 0) {
                         console.log('third If ');
-                        if(cuentas.parametrizacion_ws_fi === 9){
+                        if (cuentas.parametrizacion_ws_fi === 9) {
                             console.log('fourth If ');
                             cuentas.valorcreditoasiento = empuestos.retencion_fuente;
                             cuentas.valordebitoasiento = 0;
-                        }else{
+                        } else {
                             cuentas.valorcreditoasiento = 0;
                             cuentas.valordebitoasiento = empuestos.retencion_fuente;
                         }
@@ -1850,36 +1858,47 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                         cuentas.valortasaasiento = contrato[0].porcentaje_rtf;
 
                         console.log('Acount Before Function JSON is: ', cuentas);
+                        if (cuentas.parametrizacion_ws_fi === 3 || cuentas.parametrizacion_ws_fi === 4) {
+                            break;
+                        } else {
+                            __JsonFacturaDetalle(cuentas, function (data) {
+                                arreglo.push(data);
+                            });
+                        }
 
-                        __JsonFacturaDetalle(cuentas, function (data) {
-                            arreglo.push(data);
-                        });
-                    }else{
+                    } else {
                         console.log('Else 3');
                     }
-                }else{
+                } else {
                     console.log('Else 2');
                 }
-            }else{
+            } else {
                 console.log('Else 1');
             }
             break;
         case 7://ICA
+
+            console.log("ica0");
+
             if (empuestos[0].sw_ica === '2' || empuestos[0].sw_ica === '3' && (parseFloat(contrato[0].porcentaje_ica) === parseFloat(cuentas.ica_porcentaje))) {
+
                 empuestos.retencion_ica = 0;
-                console.log('Entro en ICA!!');
-
+                console.log('Entro en ICA!!1');
+                console.log("subtotal:: ", totalesFactura.subtotal);
+                console.log("empuestos[0].base_ica:: ", empuestos[0].base_ica);
                 if (totalesFactura.subtotal >= empuestos[0].base_ica) {
-//                    empuestos.retencion_ica = parseInt(totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000));
-                    empuestos.retencion_ica = parseFloat(totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000));
-
-                    console.log('ICA original: ', empuestos.retencion_ica);
+                    if (cuentas.parametrizacion_ws_fi === 3) {
+                        empuestos.retencion_ica = parseFloat(totalesFactura.total * (contrato[0].porcentaje_ica / 1000));
+                    } else {
+                        empuestos.retencion_ica = parseFloat(totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000));
+                    }
+                    console.log('empuestos.retencion_ica: ', empuestos.retencion_ica);
 
                     if (empuestos.retencion_ica > 0) {
-                        if(cuentas.parametrizacion_ws_fi === 9){
+                        if (cuentas.parametrizacion_ws_fi === 9) {
                             cuentas.valorcreditoasiento = Math.round(empuestos.retencion_ica);
                             cuentas.valordebitoasiento = 0;
-                        }else{
+                        } else {
                             cuentas.valorcreditoasiento = 0;
                             cuentas.valordebitoasiento = empuestos.retencion_ica;
                         }
@@ -1890,10 +1909,13 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                         } else {
                             cuentas.valortasaasiento = contrato[0].porcentaje_ica;
                         }
-
-                        __JsonFacturaDetalle(cuentas, function (data) {
-                            arreglo.push(data);
-                        });
+                         if (cuentas.parametrizacion_ws_fi === 3 || cuentas.parametrizacion_ws_fi === 4) {
+                            break;
+                        } else {
+                            __JsonFacturaDetalle(cuentas, function (data) {
+                                arreglo.push(data);
+                            });
+                        }
                     }
                 }
             }
@@ -1942,27 +1964,33 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
 
         case 23://TOTAL
             var total = 0;
-
+console.log("------------TOTAL----------------");
             total = ((((totalesFactura.medicamentosGravados + totalesFactura.medicamentosNoGravados + totalesFactura.insumosGravados + totalesFactura.insumosNoGravados + totalesFactura.iva) - empuestos.retencion_fuente) - empuestos.retencion_ica));
-
+console.log("------------TOTAL 1----------------",total);
             if (cuentas.parametrizacion_ws_fi === 1) {
                 total = parseInt((((parseInt(totalesFactura.medicamentosGravados) + parseInt(totalesFactura.medicamentosNoGravados) + parseInt(totalesFactura.insumosGravados) + parseInt(totalesFactura.insumosNoGravados + parseInt(totalesFactura.iva))) - parseInt(empuestos.retencion_fuente)) - parseInt(empuestos.retencion_ica)));
             }
-
+console.log("------------TOTAL 2----------------",total);
             if (cuentas.parametrizacion_ws_fi === 2) {
+                 
                 var subtotal = totalesFactura.total - totalesFactura.iva;
                 var porc = (totalesFactura.total / subtotal) - 1;
                 cuentas.valortasaasiento = porc;
                 total = parseFloat(totalesFactura.subtotal) + parseFloat(totalesFactura.iva) - parseFloat(empuestos.retencion_fuente) - parseFloat(empuestos.retencion_ica);
-
+                console.log("------------subtotal 2----------------",parseFloat(totalesFactura.subtotal));
+                console.log("------------iva 2----------------",parseFloat(totalesFactura.iva));
+                console.log("------------retencion_fuente 2----------------",parseFloat(empuestos.retencion_fuente));
+                console.log("------------retencion_ica 2----------------",parseFloat(empuestos.retencion_ica));
             }
+console.log("------------TOTAL 3----------------",total);   
             if (cuentas.parametrizacion_ws_fi === 3) {
                 //total = totalesFactura.total;
                 //console.log('Before total is: ', totalesFactura.total);
                 total = parseFloat(totalesFactura.total) + parseFloat(totalesFactura.iva) - parseFloat(empuestos.retencion_ica) - parseFloat(empuestos.retencion_fuente);
-                //console.log('Eyyyy el total es: ', total);
+            }else{
+               cuentas.cuenta = contrato[0].cuenta_contable;
             }
-
+console.log("------------TOTAL 4----------------",total);   
             if (cuentas.parametrizacion_ws_fi === 4) {
                 total = totalesFactura.total;
             }
@@ -1976,18 +2004,20 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             }
             cuentas.valorbaseasiento = 0;
 //            cuentas.cuenta = totalesFactura.cuenta;
-            cuentas.cuenta = contrato[0].cuenta_contable;
+            
+            
             __JsonFacturaDetalle(cuentas, function (data) {
                 arreglo.push(data);
             });
             break;
 
-        case 28://TALONARIO 
+        case 22://TALONARIO 
             var base = 0;
             var entrar = false;
 //            if(totalesFactura.porc_iva!==0){
 //              base=(totalesFactura.iva / totalesFactura.porc_iva);
 //            }
+
             base = (totalesFactura.iva / 0.19);
             var valor = parseInt(totalesFactura.subtotal) - parseInt(base);
 
@@ -2013,8 +2043,8 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             }
             break;
     }
-    if(cuentas.cuenta === '23680505'){
-        console.log('Eyyyyy Cuenta es: ',cuentas);
+    if (cuentas.cuenta === '23680505') {
+        console.log('Eyyyyy Cuenta es: ', cuentas);
     }
 
 
@@ -2028,7 +2058,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
 }
 
 function __JsonFacturaDetalle(obj, callback) {
-    if(obj.parametrizacion_ws_fi === 9 && obj.categoria_id === 7){
+    if (obj.parametrizacion_ws_fi === 9 && obj.categoria_id === 7) {
         var detalle = {
             codcentrocostoasiento: obj.centro_costos_asientos,
             codcentroutilidadasiento: obj.centro_utilidad_asiento,
@@ -2041,7 +2071,7 @@ function __JsonFacturaDetalle(obj, callback) {
             valordebitoasiento: parseFloat(obj.valordebitoasiento),
             valortasaasiento: obj.valortasaasiento
         };
-    }else{
+    } else {
         var detalle = {
             codcentrocostoasiento: obj.centro_costos_asientos,
             codcentroutilidadasiento: obj.centro_utilidad_asiento,

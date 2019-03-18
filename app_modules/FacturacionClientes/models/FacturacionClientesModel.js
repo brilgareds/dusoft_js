@@ -242,7 +242,7 @@ FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (ob
                 )
     }
 
-    console.log('SQL en consultaDetalleFacturaGenerada: ', G.sqlformatter.format(query.toString()));
+//    console.log('SQL en consultaDetalleFacturaGenerada: ', G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         callback(false, resultado);

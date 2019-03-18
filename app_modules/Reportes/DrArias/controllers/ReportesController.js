@@ -48,10 +48,10 @@ Reportes.prototype.listarDrArias = function (req, res) {
             return 0;
         }
 
-    }).then(function (tamaño) {
+    }).then(function (tamanio) {
 
         datos.fecha_fin = G.moment().format();
-        if (tamaño > 0) {
+        if (tamanio > 0) {
             datos.estado = '1';
             return G.Q.nfcall(__generarDetalle, resultado, datos, that);
         } else {
@@ -96,9 +96,9 @@ Reportes.prototype.listarDrArias0 = function (req, res) {
     G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro).then(function (resultado) {
         if (resultado !== -1) {
 
-            __generarCsvDrArias(resultado, filtro, function (tamaño) {
+            __generarCsvDrArias(resultado, filtro, function (tamanio) {
                 datos.fecha_fin = G.moment().format();
-                if (tamaño > 0) {
+                if (tamanio > 0) {
                     datos.estado = '1';
                     __generarDetalle(resultado, datos, that, function () {
                     });
@@ -171,7 +171,7 @@ Reportes.prototype.rotacionZonas = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0').then(function (rotacionZonas) {
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'}).then(function (rotacionZonas) {
                   
         return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
 
@@ -189,8 +189,13 @@ Reportes.prototype.rotacionZonas = function (req, res) {
 Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var that = this;
     var args = req.body.data;
+    console.log("---------rotacionZonasMovil---------",args)
+    var filtro="";
+    if(args.filtro!==undefined && args.filtro!== ""){
+        filtro = args.filtro; 
+    }
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas','1').then(function (rotacionZonas) {
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'1',filtro: filtro}).then(function (rotacionZonas) {
          
         res.send(rotacionZonas);
     }).fail(function (err) {
@@ -453,7 +458,7 @@ function __rotacionesBodegas(that, bodega, callback) {
 
     }).then(function (respuesta) {
         
-        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0');
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'});
         
     }).then(function (respuesta) {
         
@@ -568,7 +573,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
 
     }).then(function (respuesta) {
         
-        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0');
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'});
         
     }).then(function (respuesta) {
         
@@ -1035,15 +1040,15 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
         secureConnection: true, // use SSL
         port: G.settings.email_port, // port for secure SMTP
         auth: {
-            user: G.settings.email_user,
-            pass: G.settings.email_password
+            user: G.settings.email_rotaciones,
+            pass:  G.settings.email_rotaciones_pass
         }
     });
 
     var settings = {
-        from: G.settings.email_desarrollo1,
+        from: G.settings.email_rotaciones,
         to: to,
-        cc: "amgonzalez80@hotmail.com",
+        cc: G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
         subject: subject,
         html: message
     };

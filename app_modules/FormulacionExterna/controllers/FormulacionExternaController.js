@@ -31,7 +31,7 @@ FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
     }).then(function(estructurasPlanes){
 
         if(estructurasPlanes.length > 0){
-            console.log('entra a if estructurasPlanes');
+//            console.log('entra a if estructurasPlanes');
             //tmp.afiliado = resultado[0];
             return G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliadosExternos',estructurasPlanes, args.tipoIdentificacion, args.identificacion);
         }

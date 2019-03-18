@@ -229,7 +229,7 @@ SincronizacionDocumentosModel.prototype.listarFacturasDFIN1121 = function (obj, 
         })
         .where('RES.valor_abonado_rt', '>', '0');
 
-    console.log("Queryyyy listarFacturasDFIN1121: ", G.sqlformatter.format(query.toString()));
+//    console.log("Queryyyy listarFacturasDFIN1121: ", G.sqlformatter.format(query.toString()));
 
     query.then(function (facturas) {
         if (facturas.length > 0 && facturas[0].valorcreditoasiento !== undefined) {
@@ -294,7 +294,7 @@ SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function
         .andWhere('a.prefijo', obj.prefijo)
         .andWhere('a.numero', obj.factura_fiscal);
 
-    console.log('SQL en obtenerEncabezadoBonificacion ', G.sqlformatter.format(query.toString()));
+//    console.log('SQL en obtenerEncabezadoBonificacion ', G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         response = resultado;
@@ -307,7 +307,7 @@ SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function
             .andWhere('a.empresa_id', obj.empresa_id);
         //.andWhere('a.empresa_id', obj.empresa_id);
 
-        console.log('sql in "obtenerPrefijoFI": ', G.sqlformatter.format(query2.toString()));
+//        console.log('sql in "obtenerPrefijoFI": ', G.sqlformatter.format(query2.toString()));
 
         return query2;
     }).then(function (resultado2) {
@@ -383,7 +383,7 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function (o
         .andWhere('a.numero', obj.factura_fiscal)
         .orderBy('a.codigo_producto');
 
-    console.log('Sql in "obtenerDetalleBonificacion" is: ', G.sqlformatter.format(query.toString()));
+//    console.log('Sql in "obtenerDetalleBonificacion" is: ', G.sqlformatter.format(query.toString()));
 
     query.then(function (facturas) {
         if (facturas && facturas.length > 0) {
@@ -496,7 +496,7 @@ SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function (obj, cal
         .andWhere('RDTF.rc_id_tras', obj.factura_fiscal)
         .andWhere('RDTC.valor', '>', '0');
 
-    console.log('SQL en listarDetalleRCWSFIIIII ', G.sqlformatter.format(query.toString()));
+//    console.log('SQL en listarDetalleRCWSFIIIII ', G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         for (var detalle of resultado) {
@@ -525,7 +525,7 @@ SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function (obj, cal
             response.debito = String(0);
         }
 
-        console.log('Response is: ', response);
+//        console.log('Response is: ', response);
         callback(false, response);
     }).catch(function (err) {
         console.log("error sql", err);
@@ -535,7 +535,7 @@ SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function (obj, cal
 
 SincronizacionDocumentosModel.prototype.listarTiposServicios = function (obj, callback) {
     console.log('Entro en el modelo de "listarTiposServicios"!');
-    console.log('Objeto en modelo: ', obj);
+//    console.log('Objeto en modelo: ', obj);
     var data = {servicios: '', serviciosFiltrados: ''};
 
     var query = G.knex.distinct([
@@ -645,7 +645,7 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function (obj, callback
                     parametrizacion_ws_fi: obj.parametrizacion_ws_fi,
                     cuenta_categoria: obj.categoria_id
                 });
-            console.log('Insert: ', G.sqlformatter.format(insert.toString()));
+//            console.log('Insert: ', G.sqlformatter.format(insert.toString()));
 
             insert.then(function (resultado) {
                 callback(false, true);
@@ -674,7 +674,7 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function (obj, callback
                     id_tercero_asiento: obj.id_tercero_asiento,
                     observacion_asiento: obj.observacion_asiento
                 });
-            console.log('Update: ', G.sqlformatter.format(update.toString()));
+//            console.log('Update: ', G.sqlformatter.format(update.toString()));
             update.then(function (resultado) {
                 callback(false, true);
             }).catch(function (err) {
@@ -818,7 +818,7 @@ SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function (obj, ca
                 .andWhere('parametrizacion_ws_fi', obj.wsFi);
         }).orderBy("cuenta_categoria", "asc");
 
-    console.log("listarCuentasDetalle", G.sqlformatter.format(query.toString()));
+//    console.log("listarCuentasDetalle", G.sqlformatter.format(query.toString()));
 //console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -871,7 +871,7 @@ SincronizacionDocumentosModel.prototype.insertTiposCuentas = function (obj, call
             cuenta_categoria: obj.cuentaCategoriaId,
             parametrizacion_ws_fi: obj.cuentaServicio
         });
-    console.log('Select en insertTiposCuentas ', G.sqlformatter.format(select.toString()));
+//    console.log('Select en insertTiposCuentas ', G.sqlformatter.format(select.toString()));
 
     select.then(function (resultado) {
         console.log('Resultado en modelo es: ', resultado);
@@ -957,8 +957,8 @@ SincronizacionDocumentosModel.prototype.sincronizarFinaciero = function (obj, ca
 
     }).spread(function (result, raw, soapHeader) {
         obj.obj = result.crearInformacionContableResult;
-        console.log("result crearInformacionContableResult---", result);
-        console.log("result crearInformacionContableResult---", result.crearInformacionContableResult.descripcion);
+//        console.log("result crearInformacionContableResult---", result);
+//        console.log("result crearInformacionContableResult---", result.crearInformacionContableResult.descripcion);
 //console.log("result.return---",result.return);
 //console.log("raw---",raw);
 //console.log("soapHeader---",soapHeader);

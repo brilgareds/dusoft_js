@@ -1171,6 +1171,7 @@ function __facturasTalonarioFi(obj, that, callback) {
             cuenta: contrato[0].cuenta_contable
         };
 
+
         return G.Q.nfcall(__EncabezadoFacturaDetalle, result, totalesFactura, [], 0, contrato, empuestos);
 
     }).then(function (result) {
@@ -1588,7 +1589,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
     cuentas.valortasaasiento = 0;
     cuentas.valorbaseasiento = 0;
 
-    console.log('Acount is: ', cuentas);
+    //console.log('Acount is: ', cuentas);
 
     console.log('category is: '+cuentas.categoria_id);
 
@@ -1925,7 +1926,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                     cuentas.valorcreditoasiento = empuestos.impusto_cree;
                     cuentas.valordebitoasiento = 0;
                 }
-                if (cuentas.parametrizacion_ws_fi === 1) {
+                if (cuentas.parametrizacion_ws_fi === 1 || cuentas.parametrizacion_ws_fi === 2) {
                     cuentas.valorbaseasiento = 0;
                     cuentas.valortasaasiento = 0;
                 } else {
@@ -1957,10 +1958,9 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             }
             if (cuentas.parametrizacion_ws_fi === 3) {
                 //total = totalesFactura.total;
-                console.log('Before total is: ', totalesFactura.total);
+                //console.log('Before total is: ', totalesFactura.total);
                 total = parseFloat(totalesFactura.total) + parseFloat(totalesFactura.iva) - parseFloat(empuestos.retencion_ica) - parseFloat(empuestos.retencion_fuente);
-
-                console.log('Eyyyy el total es: ', total);
+                //console.log('Eyyyy el total es: ', total);
             }
 
             if (cuentas.parametrizacion_ws_fi === 4) {

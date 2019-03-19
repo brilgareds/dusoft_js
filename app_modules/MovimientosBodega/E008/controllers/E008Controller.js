@@ -46,7 +46,7 @@ function __documentoTemporalClientes(req, that, callback) {
 
     var args = req.body.data;
     var send = {};
-
+console.log("documentoTemporalClientes:::",args);
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.tipo_tercero_id === undefined || args.documento_temporal.tercero_id === undefined || args.documento_temporal.observacion === undefined) {
 //        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         send.msj = 'Algunos Datos Obligatorios Estan Vacíos';
@@ -113,6 +113,7 @@ function __documentoTemporalClientes(req, that, callback) {
 }
 ;
 
+//esto se hace desde la table
 // Finalizar Documento Temporal Clientes
 E008Controller.prototype.finalizarDocumentoTemporalClientes = function (req, res) {
 
@@ -422,7 +423,7 @@ function __detalleDocumentoTemporalConValidacionCantidadIngresada(req, that, cal
 //    var that = this;
     var send = {};
     var args = req.body.data;
-
+console.log("detalleDocumentoTemporalConValidacionCantidadIngresada",args);
 
     var validacion = __validarParametrosDetalleTemporal(args);
     if (!validacion.valido) {
@@ -492,6 +493,7 @@ function __detalleDocumentoTemporalConValidacionCantidadIngresada(req, that, cal
         callback(false, send);
         return;
     }).fail(function (err) {
+        console.log("err __detalleDocumentoTemporalConValidacionCantidadIngresada::",err);
         if (err.status) {
 //            res.send(G.utils.r(req.url, err.msj, 500, {documento_temporal: {item_id: 0}}));
             send.msj = err.msj;
@@ -2891,7 +2893,7 @@ function __validarCajaProducto(req, that, callback) {
 
     var send = {};
     var args = req.body.data;
-
+console.log("validarCajaProductoAutomatico:: ",args);
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
             args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined || !args.documento_temporal.tipo_pedido) {
 //        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja, tipo de pedido o tipo no estan definidos', 404, {}));
@@ -3078,7 +3080,7 @@ E008Controller.prototype.actualizarCajaDeTemporales = function (req, res) {
     var that = this;
 
     var args = req.body.data;
-
+console.log("actualizarCajaDeTemporales",args);
     if (args.documento_temporal === undefined || args.documento_temporal.temporales === undefined
             || args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
         res.send(G.utils.r(req.url, 'documento_temporal, temporales, numero_caja o tipo no estan definidos', 404, {}));

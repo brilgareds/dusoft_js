@@ -46,7 +46,7 @@ function __documentoTemporalClientes(req, that, callback) {
 
     var args = req.body.data;
     var send = {};
-
+console.log("documentoTemporalClientes:::",args);
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.tipo_tercero_id === undefined || args.documento_temporal.tercero_id === undefined || args.documento_temporal.observacion === undefined) {
 //        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         send.msj = 'Algunos Datos Obligatorios Estan Vacíos';
@@ -113,6 +113,7 @@ function __documentoTemporalClientes(req, that, callback) {
 }
 ;
 
+//esto se hace desde la table
 // Finalizar Documento Temporal Clientes
 E008Controller.prototype.finalizarDocumentoTemporalClientes = function (req, res) {
 
@@ -422,7 +423,7 @@ function __detalleDocumentoTemporalConValidacionCantidadIngresada(req, that, cal
 //    var that = this;
     var send = {};
     var args = req.body.data;
-
+console.log("detalleDocumentoTemporalConValidacionCantidadIngresada",args);
 
     var validacion = __validarParametrosDetalleTemporal(args);
     if (!validacion.valido) {
@@ -492,6 +493,7 @@ function __detalleDocumentoTemporalConValidacionCantidadIngresada(req, that, cal
         callback(false, send);
         return;
     }).fail(function (err) {
+        console.log("err __detalleDocumentoTemporalConValidacionCantidadIngresada::",err);
         if (err.status) {
 //            res.send(G.utils.r(req.url, err.msj, 500, {documento_temporal: {item_id: 0}}));
             send.msj = err.msj;
@@ -1894,10 +1896,12 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
 
     var args = req.body.data;
 
+
     if (args.documento_temporal.bodega_seleccionada !== '03' && args.documento_temporal.bodega_seleccionada !== '06' && args.documento_temporal.bodega_seleccionada !== 'BQ') {
         res.send(G.utils.r(req.url, 'No llega la bodega de session (Comunicarse con Sistemas)', 404, {}));
         return;
     }
+
 
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined
             || args.documento_temporal.usuario_id === undefined) {
@@ -2306,6 +2310,7 @@ function __validarDumian(identificacion_cliente, tipo_id_cliente) {
             (identificacion_cliente === '10119' && tipo_id_cliente === "CE") || //UCI MARIO CORREA- LOS CHORROS+
             (identificacion_cliente === '10368' && tipo_id_cliente === "CC") || //LABORATORIO CLINICA SAN RAFAEL DUMIAN GIRARDOT+
             (identificacion_cliente === '900775143' && tipo_id_cliente === "NIT")|| //UNION TEMPORAL DUCOT 
+            (identificacion_cliente === '890303461' && tipo_id_cliente === "NIT")|| //HOSPITAL UNIVERSITARIO DEL VALLE EVARISTO GARCIA E.S.E
             (identificacion_cliente === '900617997' && tipo_id_cliente === "NIT")|| //VIVESSALUD EJE CAFETERO 
                     (identificacion_cliente === '900112820' && tipo_id_cliente === "NIT") || //CMS LTDA MANIZALEZ+
                     (identificacion_cliente === '900112820' && tipo_id_cliente === "PA") || //CMS - CLINICA AMAN+
@@ -2368,6 +2373,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                         (tipoPedido === 1 && __validarDumian(pedido.identificacion_cliente, pedido.tipo_id_cliente))) {
 
 
+
             if (tipoPedido === 1) {
                 if ((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")) {//Clinica las peñitas
                     bodega = "BD";
@@ -2388,6 +2394,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                 } else if ((pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")) {//cucuta
                     bodega = "FG";
                     documentoId = 51;
+
                 }/* else if ((pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE")) {//cartagena
                  bodega = "BD";
                  documentoId = 445;
@@ -2496,6 +2503,10 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
             } else if (pedido.identificacion_cliente === '900617997') {
 
                 $tercero = '900617997';
+                
+            } else if (pedido.identificacion_cliente === '890303461') {
+
+                $tercero = '890303461';
 
             } else {
 
@@ -2612,10 +2623,12 @@ function __sincronizarEncabezadoDocumento(obj, callback) {
 
     } else {
 
+
         /* if (obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE") { //Cartagena
          url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
          
          } else*/ if ((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+
                 (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")) {
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
@@ -2739,11 +2752,13 @@ function __sincronizarDetalleDocumento(obj, callback) {
 
     } else {
 
+
         /* if (obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE") { //Cartagena 
          url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
          soloPrecioVenta = false;
          
          } else */if ((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+
                 (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")) {
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
@@ -2878,7 +2893,7 @@ function __validarCajaProducto(req, that, callback) {
 
     var send = {};
     var args = req.body.data;
-
+console.log("validarCajaProductoAutomatico:: ",args);
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
             args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined || !args.documento_temporal.tipo_pedido) {
 //        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja, tipo de pedido o tipo no estan definidos', 404, {}));
@@ -3065,7 +3080,7 @@ E008Controller.prototype.actualizarCajaDeTemporales = function (req, res) {
     var that = this;
 
     var args = req.body.data;
-
+console.log("actualizarCajaDeTemporales",args);
     if (args.documento_temporal === undefined || args.documento_temporal.temporales === undefined
             || args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
         res.send(G.utils.r(req.url, 'documento_temporal, temporales, numero_caja o tipo no estan definidos', 404, {}));

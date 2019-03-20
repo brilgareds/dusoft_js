@@ -178,9 +178,8 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
                     .andWhere(G.knex.raw("c.fecha_registro is not null"))
 
                     if(obj.filtro!== undefined && obj.filtro !== "" ){
-                     this.andWhere(G.knex.raw("a.descripcion ilike '%"+obj.filtro+"%'"))    
+                     this.andWhere(G.knex.raw("a.descripcion ilike '%"+obj.filtro+"%'"))
                     }
-
             }).orderBy(filtro, orden);
 
     query.then(function (resultado) {

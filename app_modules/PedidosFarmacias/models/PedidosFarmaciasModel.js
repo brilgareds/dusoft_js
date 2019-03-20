@@ -1340,13 +1340,14 @@ PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function (nume
         G.knex.raw("COALESCE(a.sw_terminado,'0') as sw_terminado")
     ];
 
-    G.knex.column(columnas).
+   var query=G.knex.column(columnas).
             from("solicitud_productos_a_bodega_principal_estado as a").
             innerJoin("system_usuarios as c", "a.usuario_id", "c.usuario_id").
             leftJoin("operarios_bodega as b", "a.responsable_id", "b.operario_id").
             where("a.solicitud_prod_a_bod_ppal_id", numero_pedido).
-            orderBy("a.fecha_registro", "desc").
-            then(function (rows) {
+            orderBy("a.fecha_registro", "desc");
+
+            query.then(function (rows) {
                 callback(false, rows);
             }).
             catch (function (err) {

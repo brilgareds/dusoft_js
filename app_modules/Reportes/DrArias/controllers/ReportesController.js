@@ -48,10 +48,10 @@ Reportes.prototype.listarDrArias = function (req, res) {
             return 0;
         }
 
-    }).then(function (tamaño) {
+    }).then(function (tamanio) {
 
         datos.fecha_fin = G.moment().format();
-        if (tamaño > 0) {
+        if (tamanio > 0) {
             datos.estado = '1';
             return G.Q.nfcall(__generarDetalle, resultado, datos, that);
         } else {
@@ -96,9 +96,9 @@ Reportes.prototype.listarDrArias0 = function (req, res) {
     G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro).then(function (resultado) {
         if (resultado !== -1) {
 
-            __generarCsvDrArias(resultado, filtro, function (tamaño) {
+            __generarCsvDrArias(resultado, filtro, function (tamanio) {
                 datos.fecha_fin = G.moment().format();
-                if (tamaño > 0) {
+                if (tamanio > 0) {
                     datos.estado = '1';
                     __generarDetalle(resultado, datos, that, function () {
                     });
@@ -1048,7 +1048,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     var settings = {
         from: G.settings.email_rotaciones,
         to: to,
-        cc:G.settings.email_desarrollo1, //G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
+        cc: G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
         subject: subject,
         html: message
     };

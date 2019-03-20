@@ -9,4 +9,3 @@
     insertRequire: ['app'],
    // optimize:'none'
 })
-

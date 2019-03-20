@@ -10,7 +10,6 @@ var SincronizacionDocumentos = function (sincronizacion, m_notas, m_facturacion_
 SincronizacionDocumentos.prototype.buscarServicio = function (req, res) {
     var that = this;
     var args = req.body.data;
-    console.log('In Controller backend of "buscarServicio", body is: ', req.body);
     args.empresaId = req.body.session.empresaId;
     args.centroId = req.body.session.centroUtilidad;
     args.bodegaId = req.body.session.bodega;
@@ -23,7 +22,6 @@ SincronizacionDocumentos.prototype.buscarServicio = function (req, res) {
 };
 
 SincronizacionDocumentos.prototype.listarPrefijos = function (req, res) {
-//    console.log('Entro en el controlador, listarPrefijos!!!');
     var that = this;
     var args = req.body.data;
 
@@ -35,7 +33,6 @@ SincronizacionDocumentos.prototype.listarPrefijos = function (req, res) {
 };
 
 SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = function (req, res) {
-//    console.log('Entro en el controlador, listarTipoCuentascategoria!!!');
     var that = this;
     var args = req.body.data;
 
@@ -47,7 +44,6 @@ SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = function (req, re
 };
 
 SincronizacionDocumentos.prototype.listarDocumentosCuentas = function (req, res) {
-//    console.log('Entro en el controlador, listarDocumentosCuentas!!!');
     var that = this;
     var args = req.body.data;
 
@@ -60,12 +56,10 @@ SincronizacionDocumentos.prototype.listarDocumentosCuentas = function (req, res)
 };
 
 SincronizacionDocumentos.prototype.insertTiposCuentas = function (req, res) {
-//    console.log('Entro en el controlador, insertTiposCuentas!!!');
     var that = this;
     var args = req.body.data;
 
     G.Q.ninvoke(this.m_SincronizacionDoc, 'insertTiposCuentas', args).then(function (tiposCuentas) {
-        console.log('Respuesta del modelo en el controlador: ', tiposCuentas);
         if (tiposCuentas[0] === 'repetido') {
             res.send(G.utils.r(req.url, 'Error: esos valores ya existen en la base de datos!!"', 500, {}));
         } else {
@@ -77,7 +71,6 @@ SincronizacionDocumentos.prototype.insertTiposCuentas = function (req, res) {
 };
 
 SincronizacionDocumentos.prototype.listarTiposCuentas = function (req, res) {
-    //    console.log('Entro en el controlador, listarTiposCuentas!!!');
     var that = this;
     var args = req.body.data;
 
@@ -89,7 +82,6 @@ SincronizacionDocumentos.prototype.listarTiposCuentas = function (req, res) {
 };
 
 SincronizacionDocumentos.prototype.insertDocumentosCuentas = function (req, res) {
-    //console.log('Entro en el controlador, insertDocumentosCuentas!!!');
 
     var that = this;
     var args = req.body.data;
@@ -102,7 +94,6 @@ SincronizacionDocumentos.prototype.insertDocumentosCuentas = function (req, res)
 };
 
 SincronizacionDocumentos.prototype.listarTiposServicios = function (req, res) {
-    //console.log('In Controller!!');
     var that = this;
     var args = req.body.data;
 
@@ -114,18 +105,15 @@ SincronizacionDocumentos.prototype.listarTiposServicios = function (req, res) {
 };
 
 SincronizacionDocumentos.prototype.guardarCuentas = function (req, res) {
-//    console.log('In Controller backend - guardarCuentas!!');
     var that = this;
     var args = req.body;
     var categorias = args.data;
     var cuentas = {};
     var error_count = 0;
     var sw_cuenta = 0;
-    console.log('args Entry is: ', args);
 
     for (var tipo_cuenta in categorias) {
         for (var index in categorias[tipo_cuenta]) {
-            console.log('For in Controller: ', categorias[tipo_cuenta]);
             if (categorias[tipo_cuenta][index] !== undefined) {
                 if (tipo_cuenta === 'debito') {
                     sw_cuenta = 0;
@@ -139,13 +127,10 @@ SincronizacionDocumentos.prototype.guardarCuentas = function (req, res) {
                 cuentas.centro_id = args.session.centroUtilidad;
                 cuentas.bodega_id = args.session.bodega;
                 cuentas.prefijo_id = categorias.prefijo_id;
-                console.log('Array final: ', cuentas);
 
                 G.Q.ninvoke(that.m_SincronizacionDoc, 'guardarCuentas', cuentas).then(function (resultado) {
-                    console.log('All fine in "guardarCuentas"');
                 }).fail(function (err) {
                     error_count++;
-                    console.log('Error en "guardarCuentas"');
                 });
             }
         }
@@ -158,7 +143,6 @@ SincronizacionDocumentos.prototype.guardarCuentas = function (req, res) {
 };
 
 SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function (req, res) {
-//    console.log('Entro en el controlador, insertTiposCuentasCategorias!!!');
     var that = this;
     var args = req.body.data;
 
@@ -170,7 +154,6 @@ SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function (req,
 };
 
 SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
-    console.log('Entro en el controlador, sincronizacionDocumentos!!!');
     var that = this;
     var args = req.body.data;
     var param;
@@ -181,9 +164,6 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     var funcionServicio = '';
     var prefijo_fi = '';
 
-    console.log('El prefijo al iniciar es: ', args.data.prefijo);
-
-    console.log('Usuario: ', req.session.user);
 
     var obj = {
         wsFi: servicio,
@@ -209,9 +189,9 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     } else if (req.session.user.bodega === '06') {
         url = G.constants.WS().FINANCIERO.COSMITET;
     } else {
-        res.send(G.utils.r(req.url, "No se encuantra creado url para esta bodega", '500', {
+        res.send(G.utils.r(req.url, "No se encuantra creado url para esta bodega: "+req.session.user.bodega, '500', {
             sincronizacionDocumentos: false,
-            error: err.err
+            error: ''
         }));
     }
 
@@ -256,10 +236,9 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
             funcion_ws = __ajustes;
             break;
         default:
-            console.log('Error, funcion no asignada!!');
+          
             break;
     }
-    //console.log('Funcion: "'+funcion_ws+'"');
 
     G.Q.nfcall(funcion_ws, obj, that).then(function (result) {
 
@@ -273,11 +252,9 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
             };
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'sincronizarFinaciero', obj);
         } else {
-            console.log('All fine!!!');
             return param;
         }
     }).then(function (result) {
-        //  console.log("result ", result);
         res.send(G.utils.r(req.url, 'sincronizacionDocumentos!!!!', 200, {
             sincronizacionDocumentos: true,
             result: result,
@@ -313,7 +290,6 @@ function __notasProveedor(obj, that, callback) {
     G.Q.ninvoke(that.m_notas, 'consultarNotasFacturaProveedor', obj).then(function (result) {
 
         if (result.length > 0) {
-            console.log("ConsultarNotasFacturaProveedor ::: ", result);
             notas = result;
             nota = result[0];
 
@@ -323,7 +299,6 @@ function __notasProveedor(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro la Nota Factura Proveedor'};
         }
     }).then(function (result) {
-        console.log("parametros retencion ", result);
 
         if (result.length > 0) {
             empuestos = result;
@@ -340,7 +315,6 @@ function __notasProveedor(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro el prefijo de FI'};
         }
     }).then(function (result) {
-        console.log("consultarTerceroProveedor", result);
         if (result.length > 0) {
             proveedor = result[0];
             obj.parametrizacion = obj.wsFi;
@@ -373,7 +347,6 @@ function __notasProveedor(obj, that, callback) {
             parametro.usuariocreacion = obj.usuarioId;
             parametro.numerodocumentoencabezado = obj.factura_fiscal;
             encabezado = parametro;
-            console.log("encabezado::::", encabezado);
 
             // return G.Q.ninvoke(that.m_movimientos_bodegas, 'consultar_detalle_documento_despacho',obj.factura_fiscal,obj.prefijo, obj.empresa_id);
             return G.Q.ninvoke(that.m_notas, 'deltalleNotasFacturaProveedor', obj);
@@ -385,7 +358,6 @@ function __notasProveedor(obj, that, callback) {
             };
         }
     }).then(function (result) {
-        console.log("deltalleNotasFacturaProveedor ----- ", result);
         if (result.length > 0) {
             facturasProveedoresDetalle = result;
             var separacion = {
@@ -415,7 +387,6 @@ function __notasProveedor(obj, that, callback) {
         } else {
             throw {error: 1, status: 404, mensaje: 'Se produjo un error al crear los totales'};
         }
-        console.log("Separacion ", result);
 
     }).then(function (result) {
 
@@ -442,7 +413,6 @@ function __notasProveedor(obj, that, callback) {
         }
 
     }).fail(function (err) {
-        console.log("errerr ", err);
         var mensaje = {};
         if (err.error !== undefined) {
             mensaje.status = err.status;
@@ -491,10 +461,8 @@ function __cuentasPorPagar(obj, that, callback) {
 
         if (result !== undefined && result.length > 0) {
             contrato = result;
-            console.log("*-*-*-*--*-*----", facturasProveedores[0]);
             contrato[0].porcentaje_rtf = facturasProveedores[0].porcentajertf;
             contrato[0].porcentaje_ica = facturasProveedores[0].porcentajeica;
-            console.log("*-*-*-*--*-*----contrato:::", contrato[0]);
 //            contrato[0].porcentaje_rtf = facturasProveedores[0].porcentajereteiva;
             return G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
         } else {
@@ -502,7 +470,6 @@ function __cuentasPorPagar(obj, that, callback) {
         }
 
     }).then(function (result) {
-        console.log('After of "listarParametrosRetencion"');
 
         if (result !== undefined && result.length > 0) {
             empuestos = result;
@@ -513,7 +480,6 @@ function __cuentasPorPagar(obj, that, callback) {
         }
 
     }).then(function (result) {
-        console.log("obtenerPrefijoFi", result);
         if (result !== undefined && result.length > 0) {
             prefijo = result;
             parametro.usuarioId = obj.usuario;
@@ -555,7 +521,6 @@ function __cuentasPorPagar(obj, that, callback) {
         }//coddocumento
 
     }).then(function (result) {
-        console.log("Fecha Cabecera", result);
         if (result !== undefined) {
             encabezado = result;
             //identerceroencabezado
@@ -689,7 +654,6 @@ function __notasDebitoClientesFi(obj, that, callback) {
     }).then(function (result) {
 
         if (result !== undefined && result.length > 0) {
-            console.log("result cuenta:: ", result);
             cuenta = result;
             var consult = {
                 factura_fiscal: notaDebito[0].factura_fiscal,
@@ -847,7 +811,6 @@ function __notasDebitoClientesFi(obj, that, callback) {
             totalesFactura.cuentaNaturaleza = notaDebito[0].cuenta;
             totalesFactura.cuenta = cuenta[0].cuenta_contable;
             contrato[0].cuenta_contable = cuenta[0].cuenta_contable;
-            console.log("total   totalesFactura ",totalesFactura);
             return G.Q.nfcall(__EncabezadoFacturaDetalle, result, totalesFactura, [], 0, contrato, empuestos);
         } else {
             throw {error: 1, status: 404, mensaje: 'Se produjo un error al consultar las cuentas de la factura'};
@@ -857,7 +820,6 @@ function __notasDebitoClientesFi(obj, that, callback) {
         param = {'encabezadofactura': encabezado, 'asientoscontables': result};
         callback(false, param);
     }).fail(function (err) {
-        console.log("err----", err);
         var mensaje = {
             mensaje: 'Error sincronizacionDocumentos',
             status: 500,
@@ -872,13 +834,8 @@ function __impuestos(empuestos, totalesFactura, contrato, total, callback) {
         retencion_fuente: 0,
         retencion_ica: 0
     };
-    console.log("impuesto ", empuestos);
-    console.log("totalesFactura.subtotal ", totalesFactura);
-    console.log("total.total ", total);
     if (empuestos[0].sw_rtf === '2' || empuestos[0].sw_rtf === '3') {
         if (totalesFactura >= parseInt(empuestos[0].base_rtf)) {
-            console.log("total.total", total.total);
-            console.log("contrato[0].porcentaje_rtf", contrato[0].porcentaje_rtf);
             parmetro.retencion_fuente = parseInt(total.total * (contrato[0].porcentaje_rtf / 100));
         }
     }
@@ -1068,7 +1025,6 @@ function __notasCreditoClientesFi(obj, that, callback) {
         param = {'encabezadofactura': encabezado, 'asientoscontables': result};
         callback(false, param);
     }).fail(function (err) {
-        console.log("err----", err);
         var mensaje = {
             mensaje: 'Error sincronizacionDocumentos',
             status: 500,
@@ -1200,7 +1156,6 @@ function __facturasVentaFi(obj, that, callback) {
     var totalesFactura;
 
     G.Q.ninvoke(that.m_notas, 'listarFacturas', obj).then(function (result) {
-        console.log('listarFacturas in controller!!');
 
         if (result !== undefined && result.length > 0) {
             listarFacturas = result;
@@ -1209,7 +1164,6 @@ function __facturasVentaFi(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro la Factura'};
         }
     }).then(function (result) {
-        console.log('funcion "consultaDetalleFacturaGenerada" fine!!');
         if (result !== undefined && result.length > 0) {
             listarFacturasDetalle = result;
             obj.terceroId = listarFacturas[0].tercero_id;
@@ -1220,7 +1174,6 @@ function __facturasVentaFi(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro el Detalle de la Factura'};
         }
     }).then(function (result) {
-        console.log('funcion "consultarTerceroContrato" fine!!');
         if (result !== undefined && result.length > 0) {
             contrato = result;
             return G.Q.ninvoke(that.m_facturacion_proveedores, 'listarParametrosRetencion', obj);
@@ -1228,7 +1181,6 @@ function __facturasVentaFi(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se econtro el Contrato del tercero'};
         }
     }).then(function (result) {
-        console.log('funcion "listarParametrosRetencion" fine!!');
         if (result !== undefined && result.length > 0) {
             empuestos = result;
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerPrefijoFi', obj);
@@ -1237,7 +1189,6 @@ function __facturasVentaFi(obj, that, callback) {
         }
 
     }).then(function (result) {
-        console.log('funcion "obtenerPrefijoFi" fine!!');
         if (result !== undefined && result.length > 0) {
             parametro.fechaFactura = listarFacturas[0].fecha_factura;
             parametro.usuarioId = obj.usuario;
@@ -1338,7 +1289,6 @@ function __facturasVentaFi(obj, that, callback) {
 }
 
 function __enviarReciboRCC(obj, that, callback) {
-    console.log('In __enviarReciboRCC!!!');
     var documento = {};
     var totalDebito = 0;
     var totalCredito = 0;
@@ -1348,11 +1298,8 @@ function __enviarReciboRCC(obj, that, callback) {
     var lineaCosto = 0;
 
     G.Q.ninvoke(that.m_SincronizacionDoc, 'listarEncabezadoRCD', obj).then(function (result) {
-        console.log('function "listarEncabezadoRCC"');
 
         if (result && result.length > 0) {
-            console.log('\n\n\n\n\n\n\n\n\n');
-            console.log('Encabezado: ', result[0]);
             documento.encabezadofactura = result[0];
             obj.empresaRecibo = result[0].empresa_recibo;
             obj.cuentaContable = documento.encabezadofactura.cuenta_contable;
@@ -1365,7 +1312,6 @@ function __enviarReciboRCC(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro la Factura'};
         }
     }).then(function (result) {
-        console.log('listarFacturasDFIN1121: ', result);
 
         if (result.facturas !== undefined && result.facturas.length > 0) {
             documento.asientoscontables = result.facturas;
@@ -1376,7 +1322,6 @@ function __enviarReciboRCC(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro el Detalle de la Factura'};
         }
     }).then(function (result) {
-        console.log('listarDetalleRCWSFI: ', result);
 
         if (result.debito !== undefined) {
             totalDebito += parseFloat(result.debito);
@@ -1432,7 +1377,6 @@ function __enviarReciboRCC(obj, that, callback) {
 }
 
 function __enviarReciboRCD(obj, that, callback) {
-    console.log('In __enviarReciboRCD!!!');
     var documento = {};
     var totalDebito = 0;
     var totalCredito = 0;
@@ -1441,8 +1385,6 @@ function __enviarReciboRCD(obj, that, callback) {
 
     G.Q.ninvoke(that.m_SincronizacionDoc, 'listarEncabezadoRCD', obj).then(function (result) {
         if (result && result.length > 0) {
-            console.log('\n\n\n\n\n\n\n\n\n');
-            console.log('Encabezado: ', result[0]);
             documento.encabezadofactura = result[0];
             obj.cuentaContable = documento.encabezadofactura.cuenta_contable;
             obj.terceroId = documento.encabezadofactura.tercero_id;
@@ -1455,29 +1397,11 @@ function __enviarReciboRCD(obj, that, callback) {
         }
     }).then(function (result) {
         if (result.length > 0) {
-
-            /*
-             result.prefijo = obj.prefijo;
-             result.facturaFiscal = obj.facturaFiscal;
-             result.terceroId = facturaTalonario[0].tercero_id;
-             //          parametro.parametrizacionCabeceraFi=result[0].parametrizacionCabeceraFi;
-             //          parametro.nombre=result[0].nombre;
-             result.estadoencabezado = result[0].estadoencabezado;
-             result.tipotercero = result[0].tipotercero;
-             //          parametro.plazotercero=result[0].plazotercero;
-             //          parametro.numeroradicacion=result[0].numeroradicacion;
-             result.codempresa = result[0].codempresa;
-             result.coddocumentoencabezado = result[0].coddocumentoencabezado;
-             result.observaciones = "Factura " + obj.prefijo + " #" + obj.facturaFiscal;
-             */
-
             return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarFacturasDFIN1121', obj);
         } else {
             throw {error: 1, status: 404, mensaje: 'No se encontro la parametrizacion de la cabecera'};
         }
     }).then(function (result) {
-        console.log('listarFacturasDFIN1121: ', result);
-
         if (result.facturas !== undefined && result.facturas.length > 0) {
             documento.asientoscontables = result.facturas;
             totalCredito += parseFloat(result.credito);
@@ -1487,7 +1411,6 @@ function __enviarReciboRCD(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro el Detalle de la Factura'};
         }
     }).then(function (result) {
-        console.log('listarDetalleRCWSFI: ', result);
 
         if (result !== undefined && result.length > 0) {
             totalDebito += parseFloat(result.debito);
@@ -1532,36 +1455,29 @@ function __enviarReciboRCD(obj, that, callback) {
 }
 
 function __ingresoBonificaciones(obj, that, callback) {
-    console.log('In "__ingresoBonificaciones"');           // Prefijo  IBV
     var documento = {};
     var resultado_sincronizacion = false;
 
     G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerEncabezadoBonificacion', obj).then(function (result) {
-        console.log('"obtenerEncabezadoBonificacion" fine!!');
         if (result.length > 0) {
             documento.encabezadofactura = jsonIngresoBonificaciones(result[0], obj);
             obj.tercero_id = result[0].tercero_id;
 
-            console.log('Objeto "Documento": ', documento);
             let errorValidacion = validacionEncabezadoBonificacion(documento.encabezadofactura);
 
             if (errorValidacion.contador === 0) {
                 resultado_sincronizacion = true;
-                console.log('Validate fine!!');
 
                 return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerDetalleBonificacion', obj);
             } else {
-                console.log('Validate bad!! ', errorValidacion.msj);
                 throw {error: 1, status: 404, mensaje: 'error en validacion: "' + errorValidacion.msj + '" '};
             }
         } else {
             throw {error: 1, status: 404, mensaje: 'No se encontro el Encabezado!!'};
         }
     }).then(function (result) {
-        console.log('"obtenerDetalleBonificacion" fine!!');
 
         if (result.asientos !== undefined && result.asientos.length > 0) {
-            console.log('In If controller of obtenerDetalleBonificacion');
             documento.asientoscontables = result.asientos;
 
             callback(false, documento);
@@ -1590,8 +1506,6 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
     cuentas.valortasaasiento = 0;
     cuentas.valorbaseasiento = 0;
 
-    //  console.log('Acount is: ', cuentas);
-    //  console.log('category is: '+cuentas.categoria_id);
 
     switch (cuentas.categoria_id) {
 
@@ -1827,14 +1741,8 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
 
             if (empuestos[0].sw_rtf === '2' || empuestos[0].sw_rtf === '3' && (parseFloat(contrato[0].porcentaje_rtf) === parseFloat(cuentas.rtf_porcentaje))) {
                 empuestos.retencion_fuente = 0;
-                console.log('First If ');
-
-                //Subtotal is:831894.48 and base_rtf is: 742000.0000
-
-                console.log('Subtotal is: ' + totalesFactura.subtotal + ' and base_rtf is: ' + parseInt(empuestos[0].base_rtf));
 
                 if (totalesFactura.subtotal >= parseInt(empuestos[0].base_rtf)) {
-                    console.log('Second If ');
                     if (cuentas.parametrizacion_ws_fi === 3) {
                         empuestos.retencion_fuente = parseInt(totalesFactura.total * (contrato[0].porcentaje_rtf / 100));
                     } else {
@@ -1842,9 +1750,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                     }
 
                     if (empuestos.retencion_fuente > 0) {
-                        console.log('third If ');
                         if (cuentas.parametrizacion_ws_fi === 9) {
-                            console.log('fourth If ');
                             cuentas.valorcreditoasiento = empuestos.retencion_fuente;
                             cuentas.valordebitoasiento = 0;
                         } else {
@@ -1852,12 +1758,9 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                             cuentas.valordebitoasiento = empuestos.retencion_fuente;
                         }
 
-                        console.log('Credito: ', cuentas.valorcreditoasiento, 'Debito: ', cuentas.valordebitoasiento);
-
                         cuentas.valorbaseasiento = totalesFactura.subtotal;
                         cuentas.valortasaasiento = contrato[0].porcentaje_rtf;
 
-                        console.log('Acount Before Function JSON is: ', cuentas);
                         if (cuentas.parametrizacion_ws_fi === 3 || cuentas.parametrizacion_ws_fi === 4) {
                             break;
                         } else {
@@ -1867,32 +1770,24 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                         }
 
                     } else {
-                        console.log('Else 3');
                     }
                 } else {
-                    console.log('Else 2');
                 }
             } else {
-                console.log('Else 1');
             }
             break;
         case 7://ICA
 
-            console.log("ica0");
 
             if (empuestos[0].sw_ica === '2' || empuestos[0].sw_ica === '3' && (parseFloat(contrato[0].porcentaje_ica) === parseFloat(cuentas.ica_porcentaje))) {
 
                 empuestos.retencion_ica = 0;
-                console.log('Entro en ICA!!1');
-                console.log("subtotal:: ", totalesFactura.subtotal);
-                console.log("empuestos[0].base_ica:: ", empuestos[0].base_ica);
                 if (totalesFactura.subtotal >= empuestos[0].base_ica) {
                     if (cuentas.parametrizacion_ws_fi === 3) {
                         empuestos.retencion_ica = parseFloat(totalesFactura.total * (contrato[0].porcentaje_ica / 1000));
                     } else {
                         empuestos.retencion_ica = parseFloat(totalesFactura.subtotal * (contrato[0].porcentaje_ica / 1000));
                     }
-                    console.log('empuestos.retencion_ica: ', empuestos.retencion_ica);
 
                     if (empuestos.retencion_ica > 0) {
                         if (cuentas.parametrizacion_ws_fi === 9) {
@@ -1964,33 +1859,28 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
 
         case 23://TOTAL
             var total = 0;
-console.log("------------TOTAL----------------");
+
             total = ((((totalesFactura.medicamentosGravados + totalesFactura.medicamentosNoGravados + totalesFactura.insumosGravados + totalesFactura.insumosNoGravados + totalesFactura.iva) - empuestos.retencion_fuente) - empuestos.retencion_ica));
-console.log("------------TOTAL 1----------------",total);
+
             if (cuentas.parametrizacion_ws_fi === 1) {
                 total = parseInt((((parseInt(totalesFactura.medicamentosGravados) + parseInt(totalesFactura.medicamentosNoGravados) + parseInt(totalesFactura.insumosGravados) + parseInt(totalesFactura.insumosNoGravados + parseInt(totalesFactura.iva))) - parseInt(empuestos.retencion_fuente)) - parseInt(empuestos.retencion_ica)));
             }
-console.log("------------TOTAL 2----------------",total);
+
             if (cuentas.parametrizacion_ws_fi === 2) {
                  
                 var subtotal = totalesFactura.total - totalesFactura.iva;
                 var porc = (totalesFactura.total / subtotal) - 1;
                 cuentas.valortasaasiento = porc;
                 total = parseFloat(totalesFactura.subtotal) + parseFloat(totalesFactura.iva) - parseFloat(empuestos.retencion_fuente) - parseFloat(empuestos.retencion_ica);
-                console.log("------------subtotal 2----------------",parseFloat(totalesFactura.subtotal));
-                console.log("------------iva 2----------------",parseFloat(totalesFactura.iva));
-                console.log("------------retencion_fuente 2----------------",parseFloat(empuestos.retencion_fuente));
-                console.log("------------retencion_ica 2----------------",parseFloat(empuestos.retencion_ica));
-            }
-console.log("------------TOTAL 3----------------",total);   
+
+            } 
             if (cuentas.parametrizacion_ws_fi === 3) {
                 //total = totalesFactura.total;
                 //console.log('Before total is: ', totalesFactura.total);
                 total = parseFloat(totalesFactura.total) + parseFloat(totalesFactura.iva) - parseFloat(empuestos.retencion_ica) - parseFloat(empuestos.retencion_fuente);
             }else{
                cuentas.cuenta = contrato[0].cuenta_contable;
-            }
-console.log("------------TOTAL 4----------------",total);   
+            }  
             if (cuentas.parametrizacion_ws_fi === 4) {
                 total = totalesFactura.total;
             }
@@ -2044,7 +1934,6 @@ console.log("------------TOTAL 4----------------",total);
             break;
     }
     if (cuentas.cuenta === '23680505') {
-        console.log('Eyyyyy Cuenta es: ', cuentas);
     }
 
 
@@ -2169,7 +2058,6 @@ function validacionEncabezadoBonificacion(encabezado) {
 
     let error = {contador: 0, msj: ''};
 
-    console.log('Obj que entro a validacion: ', encabezado.codempresa);
 
     if (!encabezado.codempresa) {
         error.contador++;

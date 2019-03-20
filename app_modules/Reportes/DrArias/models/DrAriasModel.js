@@ -124,16 +124,16 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
  * @returns {undefined}
  */
 DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
-     var filtro;
+    var filtro;
     var orden;
     if(obj.sw==='0'){
-    filtro='b.descripcion';
+    filtro='zona';
     orden='asc';
     }else{
       filtro = 'diferencia' ;
       orden ='desc';
     }
-    var columna = [ 
+    var columna2 = [ 
         "b.descripcion as zona",
         "a.descripcion as nombre_bodega",
         "a.empresa_id",
@@ -147,8 +147,22 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
         "c.log_error",
         "c.meses"
     ];
-
-    var query = G.knex.select(columna)
+    var columna = [ 
+        "a.zona",
+        "a.nombre_bodega",
+        "a.empresa_id",
+        "a.centro_utilidad",
+        "a.bodega",
+        G.knex.raw("to_char(c.fecha_registro,'dd-MM-yyyy') as fecha_registro"),       
+        G.knex.raw("extract(days from (now() - c.fecha_registro )) as diferencia"),
+        "c.sw_remitente",
+        "c.remitentes",
+        "c.sw_estado_correo",
+        "c.log_error",
+        "c.meses"
+    ];
+    
+    var query = G.knex.select(columna2)
             .from('bodegas as a')
             .innerJoin('zonas_bodegas as b',
                     function () {
@@ -156,15 +170,15 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
                     })
             .leftJoin(G.knex.raw('(\
                         SELECT \
-      t1.control_rotacion_id ,t1.fecha_registro,empresa_id,centro_utilidad,t1.bodega,t1.sw_remitente,t1.remitentes,t1.sw_estado_correo,\
-      t1.log_error,t1.meses\
-      FROM control_rotaciones as t1 \
-      INNER JOIN ( \
-      SELECT \
-      bodega,MAX(fecha_registro)as fecha_registro \
-      FROM control_rotaciones GROUP BY bodega\
-      )as t2 ON t1.fecha_registro = t2.fecha_registro AND t1.bodega = t2.bodega\
-      ORDER BY t1.control_rotacion_id\
+                        t1.control_rotacion_id ,t1.fecha_registro,empresa_id,centro_utilidad,t1.bodega,t1.sw_remitente,t1.remitentes,t1.sw_estado_correo,\
+                        t1.log_error,t1.meses\
+                        FROM control_rotaciones as t1 \
+                        INNER JOIN ( \
+                        SELECT \
+                        bodega,MAX(fecha_registro)as fecha_registro \
+                        FROM control_rotaciones GROUP BY bodega\
+                        )as t2 ON t1.fecha_registro = t2.fecha_registro AND t1.bodega = t2.bodega\
+                        ORDER BY t1.control_rotacion_id\
                         ) as c'),
                     function () {
                         this.on("a.empresa_id", "c.empresa_id")
@@ -180,9 +194,37 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
                     if(obj.filtro!== undefined && obj.filtro !== "" ){
                      this.andWhere(G.knex.raw("a.descripcion ilike '%"+obj.filtro+"%'"))    
                     } 
-               
-            }).orderBy(filtro, orden);
+            }).union(function () {
+             this.select(columna)
+            .from('bodegas_medipol as a')
+            .leftJoin(G.knex.raw('(\
+                        SELECT \
+                        t1.control_rotacion_id ,t1.fecha_registro,empresa_id,centro_utilidad,t1.bodega,t1.sw_remitente,t1.remitentes,t1.sw_estado_correo,\
+                        t1.log_error,t1.meses\
+                        FROM control_rotaciones as t1 \
+                        INNER JOIN ( \
+                        SELECT \
+                        bodega,MAX(fecha_registro)as fecha_registro \
+                        FROM control_rotaciones GROUP BY bodega\
+                        )as t2 ON t1.fecha_registro = t2.fecha_registro AND t1.bodega = t2.bodega\
+                        ORDER BY t1.control_rotacion_id\
+                        ) as c'),
+                    function () {
+                        this.on("a.empresa_id", "c.empresa_id")
+                            .on("a.centro_utilidad", "c.centro_utilidad")
+                            .on("a.bodega", "c.bodega");
+                    })
+            .where(function () {
+                this.andWhere(G.knex.raw("a.empresa_id in ('99')"))
+                    .andWhere(G.knex.raw("c.fecha_registro is not null"))
 
+                    if(obj.filtro!== undefined && obj.filtro !== "" ){
+                     this.andWhere(G.knex.raw("a.descripcion ilike '%"+obj.filtro+"%'"))    
+                    } 
+             }) 
+           }).as("b").orderBy(filtro, orden);
+           
+//console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -339,9 +381,9 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
             and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0) \
             order by 1,5 \
             ) as a   \
-             \
-";
+";//rotacion_diaria_medipol
     var query = G.knex.raw(sql);
+    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
       callback(false, resultado.rows);
     }). catch (function(err) {
@@ -352,10 +394,11 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
 }
 /**
  * @author Andres M Gonzalez
- * +Descripcion: listado de planes
+ * +Descripcion: listado de rotacion farmacia
  * @fecha 2016-06-17
  */
 DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
+    console.log("rotacionFarmaciasDuana");
     var sql=" \
                     select \
                 r.codigo_producto, \
@@ -486,6 +529,7 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
                 order by 1,3 ;";
     
      var query = G.knex.raw(sql);
+     console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
         G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);

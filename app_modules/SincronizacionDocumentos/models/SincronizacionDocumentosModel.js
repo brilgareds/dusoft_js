@@ -269,6 +269,75 @@ SincronizacionDocumentosModel.prototype.listarFacturasDFIN1121 = function (obj, 
     });
 };
 
+SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
+    console.log('In Model "insertLogsClientesWs"');
+    var query;
+
+    if(obj.tipoLogsWs !== undefined){
+        if(obj.tipoLogsWs === 'Clientes'){
+
+            console.log('Function Logs of "Clients"');
+            query = G.knex('logs_facturacion_clientes_ws_fi')
+                .insert({
+                    prefijo: obj.prefijo,
+                    factura_fiscal: obj.factura_fiscal,
+                    mensaje: obj.mensaje,
+                    //numero_documento_fi: obj.numeroDocumentoFi,
+                    estado: obj.estado,
+                    //prefijo_nota: obj.prefijoNota,
+                    //numero_nota: obj.numeroNota
+                });
+        }else if(obj.tipoLogsWs === 'Proveedores'){
+
+            console.log('En funcion Proveedores');
+            query = G.knex('logs_facturacion_proveedores_ws_fi')
+                .insert({
+                    codigo_proveedor_id: obj.proveedor_id,
+                    numero_factura: obj.factura_fiscal,
+                    mensaje: obj.mensaje,
+                    estado: obj.estado,
+                    //prefijo_nota: obj.prefijo_nota,
+                    //numero_nota: obj.numero_nota
+                });
+        }else if(obj.tipoLogsWs === 'Bonificaciones'){
+
+            console.log('En funcion Bonificaciones');
+            query = G.knex('logs_bonificaciones_ws_fi')
+                .insert({
+                    prefijo: obj.prefijo,
+                    numero: obj.factura_fiscal,
+                    //numero_documento_fi: obj.numeroDocumentoFi,
+                    mensaje: obj.mensaje,
+                    estado: obj.estado
+                });
+        }else if(obj.tipoLogsWs === 'Recibos'){
+
+            console.log('En funcion Recibos');
+            query = G.knex('logs_recibos_ws_fi')
+                .insert({
+                    prefijo: obj.prefijo,
+                    numero_documento: obj.factura_fiscal,
+                    mensaje: obj.mensaje,
+                    //numero_fi: obj.numero_fi,
+                    estado: obj.estado
+                });
+        }else{
+            console.log('El tipo de Logs "'+obj.tipoLogsWs+'" no existe!!');
+            callback('El tipo de Logs "'+obj.tipoLogsWs+'" no existe!!');
+        }
+    }else{
+        callback('Tipo Logs vacio!!');
+    }
+
+    // console.log('Query is: ', G.sqlformatter.format(query.toString()));
+
+    query.then(function(response){
+        callback(false, response);
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
 SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function (obj, callback) {
     console.log('In Model "obtenerEncabezadoBonificacion": ', obj);
     var response = {};
@@ -741,7 +810,7 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function (obj, call
 };
 
 SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = function (obj, callback) {
-    console.log('entro en el modelo de "obtener_prefijo_fi"!: ', obj);
+    console.log('In Model "obtenerPrefijoFi"');
 
     var query = G.knex.select(G.knex.raw("COALESCE(b.prefijo ,'') as prefijo_fi"))
         .from('documentos as a')
@@ -761,7 +830,7 @@ SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = function (obj, callba
 };
 
 SincronizacionDocumentosModel.prototype.parametrizacionCabeceraFi = function (obj, callback) {
-    console.log('entro en el modelo de "obtener_prefijo_fi"!');
+    console.log('In model "parametrizacionCabeceraFi"!');
 
     var query = G.knex.select(
         [
@@ -787,7 +856,7 @@ SincronizacionDocumentosModel.prototype.parametrizacionCabeceraFi = function (ob
 };
 
 SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function (obj, callback) {
-    console.log('entro en el modelo de "listarCuentasDetalle"!');
+    console.log('In model "listarCuentasDetalle"!');
 
     var query = G.knex.select([
         'documentos_cuentas_id',
@@ -813,13 +882,14 @@ SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function (obj, ca
         .innerJoin('tipos_cuentas_categorias as tipos_cate', 'doc_cu.cuenta_categoria', 'tipos_cate.categoria_id')
         .where(function () {
             this.andWhere('prefijo', obj.prefijo)
-                .andWhere('empresa_id', obj.empresaId)
+                .andWhere('empresa_id', obj.empresa_id)
                 .andWhere('bodega_id', obj.bodega)
                 .andWhere('parametrizacion_ws_fi', obj.wsFi);
         }).orderBy("cuenta_categoria", "asc");
 
 //    console.log("listarCuentasDetalle", G.sqlformatter.format(query.toString()));
-//console.log(G.sqlformatter.format(query.toString())); 
+//console.log(G.sqlformatter.format(query.toString()));
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -946,7 +1016,7 @@ SincronizacionDocumentosModel.prototype.insertTiposCuentasCategorias = function 
 };
 
 SincronizacionDocumentosModel.prototype.sincronizarFinaciero = function (obj, callback) {
-    console.log("*********sincronizarFinaciero*************");
+    console.log("\n*********sincronizarFinaciero*************\n");
 //    var url = G.constants.WS().FI.DUSOFT_FI;
     var url = obj.url;
     obj.error = false;
@@ -957,18 +1027,20 @@ SincronizacionDocumentosModel.prototype.sincronizarFinaciero = function (obj, ca
 
     }).spread(function (result, raw, soapHeader) {
         obj.obj = result.crearInformacionContableResult;
-//        console.log("result crearInformacionContableResult---", result);
-//        console.log("result crearInformacionContableResult---", result.crearInformacionContableResult.descripcion);
-//console.log("result.return---",result.return);
-//console.log("raw---",raw);
-//console.log("soapHeader---",soapHeader);
-//        if (!result.return.msj["$value"]) {
-//            throw {msj: "Se ha generado un error", status: 403, obj: {}};
-//        } else {
-//            obj.resultado = JSON.parse(result.return.msj["$value"]);
-//        }
+//      console.log("result crearInformacionContableResult---", result);
+//      console.log("result crearInformacionContableResult---", result.crearInformacionContableResult.descripcion);
+
+//      console.log("result.return---",result.return);
+//      console.log("raw---",raw);
+//      console.log("soapHeader---",soapHeader);
+//      if (!result.return.msj["$value"]) {
+//          throw {msj: "Se ha generado un error", status: 403, obj: {}};
+//      } else {
+//          obj.resultado = JSON.parse(result.return.msj["$value"]);
+//      }
 
     }).then(function () {
+        console.log('Sincronizacion finalizada!');
         callback(false, obj.obj);
 
     }).fail(function (err) {

@@ -11,6 +11,7 @@ var NotasModel = function () {
  * @returns {callback}
  */
 NotasModel.prototype.listarFacturas = function (obj, callback) {
+    console.log('In model "listarFacturas"');
 
     var columna_a = [
         "ifd.factura_fiscal",
@@ -151,10 +152,9 @@ NotasModel.prototype.listarFacturas = function (obj, callback) {
                 });
     });
 
-    console.log('SQL en listarFacturas: ', G.sqlformatter.format(query.toString()));
+    // console.log('SQL en listarFacturas: ', G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
-        console.log('All fine in "listarFacturas"');
         callback(false, resultado);
     }).catch(function (err) {
         console.log('Error in "listarFacturas"');

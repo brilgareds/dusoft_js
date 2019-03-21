@@ -153,6 +153,7 @@ SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function (req,
     }).done();
 };
 
+
 SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     var that = this;
     var args = req.body.data;
@@ -162,8 +163,9 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     var servicio = args.data.servicio;
     var funcion_ws = '';
     var funcionServicio = '';
+    var servicioContable = 'crearInformacionContable';
+    var servicioCuentasPorPagar = 'crearCuentaxPagar';
     var prefijo_fi = '';
-
 
     var obj = {
         wsFi: servicio,
@@ -178,6 +180,7 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
         bodegaId: req.session.user.bodega,
         prefijo: args.data.prefijo,
         prefijoFI: '',
+        tipoLogsWs: '',
         prefijoId: args.data.prefijo,
         usuarioId: req.session.user.usuario_id,
         fechaActual: fechaActual(),
@@ -189,75 +192,102 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     } else if (req.session.user.bodega === '06') {
         url = G.constants.WS().FINANCIERO.COSMITET;
     } else {
-        res.send(G.utils.r(req.url, "No se encuantra creado url para esta bodega: "+req.session.user.bodega, '500', {
+        res.send(G.utils.r(req.url, "No se encuentra creado url para esta bodega: " + req.session.user.bodega, '500', {
             sincronizacionDocumentos: false,
             error: ''
         }));
     }
 
-
     switch (servicio) {
         case 1:
             funcion_ws = __facturasVentaFi;
-            funcionServicio = 'crearInformacionContable';
+            funcionServicio = servicioContable;
+            obj.tipoLogsWs = 'Clientes';
             break;
         case 2:
             funcion_ws = __facturasTalonarioFi;
-            funcionServicio = 'crearInformacionContable';
+            funcionServicio = servicioContable;
+            obj.tipoLogsWs = 'Clientes';
             break;
         case 3:
             funcion_ws = __notasCreditoClientesFi;
-            funcionServicio = 'crearInformacionContable';
+            funcionServicio = servicioContable;
+            obj.tipoLogsWs = 'Clientes';
             break;
         case 4:
             funcion_ws = __notasDebitoClientesFi;
-            funcionServicio = 'crearInformacionContable';
+            funcionServicio = servicioContable;
+            obj.tipoLogsWs = 'Clientes';
             break;
         case 5:
             funcion_ws = __notasProveedor;
+            obj.tipoLogsWs = 'Proveedores';
             break;
         case 6:
             funcion_ws = __ingresoBonificaciones;
-            funcionServicio = 'crearInformacionContable';
+            funcionServicio = servicioContable;
+            obj.tipoLogsWs = 'Bonificaciones';
             break;
         case 7:
             funcion_ws = __enviarReciboRCC;
-            funcionServicio = 'crearInformacionContable';
+            funcionServicio = servicioContable;
+            obj.tipoLogsWs = 'Recibos';
             break;
         case 8:
             funcion_ws = __enviarReciboRCD;
-            funcionServicio = 'crearInformacionContable';
+            funcionServicio = servicioContable;
+            obj.tipoLogsWs = 'Recibos';
             break;
         case 9:
             funcion_ws = __cuentasPorPagar;
-            funcionServicio = 'crearCuentaxPagar';
+            funcionServicio = servicioCuentasPorPagar;
+            obj.tipoLogsWs = 'Proveedores';
             break;
         case 10:
             funcion_ws = __ajustes;
+            obj.tablaLogs = '';
             break;
         default:
-          
             break;
     }
 
     G.Q.nfcall(funcion_ws, obj, that).then(function (result) {
 
         param = result;
+        console.log('URL: ', url);
+        //console.log('Sincronizar es: ', sincronizar);
 
         if (sincronizar === 1) {
-            var obj = {
+            var objSincronizar = {
                 url: url,
                 funcion: funcionServicio,
                 parametros: param
             };
-            return G.Q.ninvoke(that.m_SincronizacionDoc, 'sincronizarFinaciero', obj);
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'sincronizarFinaciero', objSincronizar);
         } else {
             return param;
         }
     }).then(function (result) {
+
+        if (sincronizar === 1) {
+            obj.result = result;
+            obj.mensaje = result.descripcion;
+            if(result.estado){
+                obj.estado = 1;
+            }else{
+                obj.estado = 0;
+            }
+            // console.log('Antes del insertLogsWs!!!');
+
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'insertLogsWs', obj);
+        }else{
+            return result;
+        }
+
+    }).then(function (result) {
         res.send(G.utils.r(req.url, 'sincronizacionDocumentos!!!!', 200, {
             sincronizacionDocumentos: true,
-            result: result,
+            result: obj.result,
             parametro: param
         }));
 
@@ -1104,7 +1134,6 @@ function __facturasTalonarioFi(obj, that, callback) {
             throw {error: 1, status: 404, mensaje: 'No se encontro la parametrizacion de la cabecera'};
         }
 
-
     }).then(function (result) {
         encabezado = result;
         return G.Q.ninvoke(that.m_SincronizacionDoc, 'listarCuentasDetalle', obj);
@@ -1266,6 +1295,7 @@ function __facturasVentaFi(obj, that, callback) {
         }
 
     }).then(function (result) {
+
         if (result !== undefined > 0) {
             param = {'encabezadofactura': encabezado, 'asientoscontables': result};
             callback(false, param);
@@ -1341,17 +1371,17 @@ function __enviarReciboRCC(obj, that, callback) {
         total = parseFloat(totalCredito - totalDebito);
 
         var ultimoAsiento = [{
-                codcentrocostoasiento: "0",
-                codcentroutilidadasiento: "0",
-                codcuentaasiento: cuenta, // cuentaTercero,
-                codlineacostoasiento: lineaCosto,
-                identerceroasiento: obj.terceroId,
-                observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
-                valorbaseasiento: '0',
-                valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
-                valordebitoasiento: total, // Falta este: "$total_saldo"
-                valortasaasiento: '0'
-            }];
+            codcentrocostoasiento: "0",
+            codcentroutilidadasiento: "0",
+            codcuentaasiento: cuenta, // cuentaTercero,
+            codlineacostoasiento: lineaCosto,
+            identerceroasiento: obj.terceroId,
+            observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
+            valorbaseasiento: '0',
+            valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
+            valordebitoasiento: total, // Falta este: "$total_saldo"
+            valortasaasiento: '0'
+        }];
 
         if (result.detalle != undefined && result.detalle.length > 0) {
             documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
@@ -1419,17 +1449,17 @@ function __enviarReciboRCD(obj, that, callback) {
         total = parseFloat(totalCredito - totalDebito);
 
         var ultimoAsiento = [{
-                codcentrocostoasiento: "0",
-                codcentroutilidadasiento: "0",
-                codcuentaasiento: '28059510', // cuentaTercero,
-                codlineacostoasiento: '0',
-                identerceroasiento: obj.terceroId,
-                observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
-                valorbaseasiento: '0',
-                valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
-                valordebitoasiento: total, // Falta este: "$total_saldo"
-                valortasaasiento: '0'
-            }];
+            codcentrocostoasiento: "0",
+            codcentroutilidadasiento: "0",
+            codcuentaasiento: '28059510', // cuentaTercero,
+            codlineacostoasiento: '0',
+            identerceroasiento: obj.terceroId,
+            observacionasiento: 'SIN OBSERVACION PARA EL ASIENTO',
+            valorbaseasiento: '0',
+            valorcreditoasiento: '0', // (int)($encabezado['total_abono']),
+            valordebitoasiento: total, // Falta este: "$total_saldo"
+            valortasaasiento: '0'
+        }];
 
         if (result.detalle !== undefined && result.detalle.length > 0) {
             documento.asientoscontables = documento.asientoscontables.concat(result.detalle).concat(ultimoAsiento);
@@ -1804,7 +1834,7 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
                         } else {
                             cuentas.valortasaasiento = contrato[0].porcentaje_ica;
                         }
-                         if (cuentas.parametrizacion_ws_fi === 3 || cuentas.parametrizacion_ws_fi === 4) {
+                        if (cuentas.parametrizacion_ws_fi === 3 || cuentas.parametrizacion_ws_fi === 4) {
                             break;
                         } else {
                             __JsonFacturaDetalle(cuentas, function (data) {
@@ -1867,20 +1897,20 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             }
 
             if (cuentas.parametrizacion_ws_fi === 2) {
-                 
+
                 var subtotal = totalesFactura.total - totalesFactura.iva;
                 var porc = (totalesFactura.total / subtotal) - 1;
                 cuentas.valortasaasiento = porc;
                 total = parseFloat(totalesFactura.subtotal) + parseFloat(totalesFactura.iva) - parseFloat(empuestos.retencion_fuente) - parseFloat(empuestos.retencion_ica);
 
-            } 
+            }
             if (cuentas.parametrizacion_ws_fi === 3) {
                 //total = totalesFactura.total;
                 //console.log('Before total is: ', totalesFactura.total);
                 total = parseFloat(totalesFactura.total) + parseFloat(totalesFactura.iva) - parseFloat(empuestos.retencion_ica) - parseFloat(empuestos.retencion_fuente);
-            }else{
-               cuentas.cuenta = contrato[0].cuenta_contable;
-            }  
+            } else {
+                cuentas.cuenta = contrato[0].cuenta_contable;
+            }
             if (cuentas.parametrizacion_ws_fi === 4) {
                 total = totalesFactura.total;
             }
@@ -1894,8 +1924,8 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
             }
             cuentas.valorbaseasiento = 0;
 //            cuentas.cuenta = totalesFactura.cuenta;
-            
-            
+
+
             __JsonFacturaDetalle(cuentas, function (data) {
                 arreglo.push(data);
             });
@@ -1935,8 +1965,6 @@ function __EncabezadoFacturaDetalle(detalle, totalesFactura, arreglo, index, con
     }
     if (cuentas.cuenta === '23680505') {
     }
-
-
 
 
     var timer = setTimeout(function () {

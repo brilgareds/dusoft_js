@@ -468,12 +468,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 <carousel interval="myInterval" active="true">\
                                     <slide ng-repeat="slide in documentoDespachoAprobado.obtenerImagenes()" index="$index" class="carouselSlide">\
                                         <button class="btn btn-sm btn-danger btnImagen" ng-disabled="datos_view.estadoRegistro == 1" ng-click="onBtnBorrarImagen(slide)"><i class="glyphicon glyphicon-trash"></i></button>\
-                                        <img ng-src="/ValidacionDespachos/{{slide.getPath()}}" class="imagenAprobacion" onerror="this.src=\'/images/noImage.gif\'" />\
-                                        <div class="carousel-caption">\
-                                            <h4>{{slide.text}}</h4>\
-                                        </div>\
-                                    </slide>\
-                                </carousel>',
+                                        <img ng-src="http://10.0.2.117:8080/images/desarrollo/ValidacionDespachos/{{slide.getPath()}}" class="imagenAprobacion" onerror="this.src=\'/images/noImage.gif\'" />\
+                                                                <div class="carousel-caption">\
+                                                                    <h4>{{slide.text}}</h4>\
+                                                                </div>\
+                                                            </slide>\
+                                                        </carousel>',
                     controller: ["$modalInstance", "imagen", function($modalInstance, imagen){
                         $scope.imagen = imagen;
                         

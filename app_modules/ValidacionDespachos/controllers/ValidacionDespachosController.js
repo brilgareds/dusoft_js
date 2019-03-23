@@ -156,7 +156,8 @@ ValidacionDespachos.prototype.adjuntarImagen = function(req, res) {
     var numero = args.validacionDespachos.numero;
     var file = req.files.file;
     var rutaTmp = file.path;
-    var rutaNueva = G.dirname + G.settings.carpeta_aprobacion_despachos + prefijo + "-" + numero  + "/" + file.name;
+    var rutaNueva = G.dirname + G.settings.carpeta_aprobacion_despachos + prefijo + "-" + numero  + "/" +prefijo + "-" + numero  + "/" + file.name;
+    var rutaFile = G.dirname + G.settings.carpeta_aprobacion_despachos + prefijo + "-" + numero;
 
     if (G.fs.existsSync(rutaTmp)) {
         G.Q.nfcall(G.fs.copy, rutaTmp, rutaNueva).then(function() {
@@ -168,12 +169,23 @@ ValidacionDespachos.prototype.adjuntarImagen = function(req, res) {
             };
             return G.Q.ninvoke(that.m_ValidacionDespachos, 'agregarImagen', obj)
         }).then(function(){
+
+            return G.Q.nfcall(__scp,rutaFile);
+
+        }).then(function(respuesta){
+            console.log(" contesta scp ",respuesta);
+            if(respuesta){
+                G.fs.unlinkSync(rutaNueva);
+            }
             res.send(G.utils.r(req.url, 'Imagen guardada', 200, {validacionDespachos: {}}));
+
         }).fail(function(err) {
+            console.log("Error",err);
             G.fs.unlinkSync(rutaNueva);
             res.send(G.utils.r(req.url, 'Error guardando la imagen', 500, {validacionDespachos: {}}));
         }).done();
     } else {
+        console.log("Error ---");
         res.send(G.utils.r(req.url, 'Error guardando la imagen', 500, {validacionDespachos: {}}));
     }
 };
@@ -183,6 +195,7 @@ ValidacionDespachos.prototype.adjuntarImagen = function(req, res) {
  * @fecha  26/12/2016
  * +Descripcion Metodo para eliminar una imagen de la aprobacion
  */
+
 ValidacionDespachos.prototype.eliminarImagen = function(req, res) {
     var that = this;
     var args = req.body.data;
@@ -196,15 +209,49 @@ ValidacionDespachos.prototype.eliminarImagen = function(req, res) {
     }
     var id = args.validacionDespachos.id;
     var path = args.validacionDespachos.path;
-    G.Q.ninvoke(that.m_ValidacionDespachos, 'eliminarImagen', {id:id}).then(function(resultado) {
-        var rutaNueva = G.dirname + G.settings.carpeta_aprobacion_despachos + path;
-        G.fs.unlinkSync(rutaNueva);
+    var arrayPath = path.split('/');
+    var resultado="";
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'eliminarImagen', {id:id}).then(function(resultados) {
+        resultado = resultados;
+
+        return G.Q.nfcall(__borrarArchivoSSH,G.settings.imagePath+path);
+
+    }).then(function(respuesta){
         return res.send(G.utils.r(req.url, 'Eliminacion exitosa', 200, {imagenes: resultado}));
     }).fail(function(err) {
         console.log("error generado ", err);
         res.send(G.utils.r(req.url, 'Error al eliminar la imagen', 500, {validacionDespachos: {}}));
     }).done();
 };
+
+function __scp(file,callback){
+    var resp = false;
+    G.scp.scp(file, {
+        host: G.settings.imageHost,
+        username: G.settings.imageUser,
+        password: G.settings.imagePass,
+        path: G.settings.imagePath
+    }, function(err) {
+        if(err === undefined){
+            resp = true;
+        }
+        callback(false,resp);
+
+    });
+}
+
+function __borrarArchivoSSH(file,callback){
+    var resp = false;
+    var host = G.settings.imageUser+"@"+G.settings.imageHost;
+    var seq = G.sequest.connect(host,{username : G.settings.imageUser, password : G.settings.imagePass})
+    seq('rm '+file, function (err, stdout) {
+        if(err === undefined){
+            resp = true;
+        }
+        seq.end() // will keep process open if you don't end it
+    })
+    callback(false,resp);
+}
 
 /*
  * funcion para consultar empresas

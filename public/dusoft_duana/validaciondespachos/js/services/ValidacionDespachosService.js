@@ -27,8 +27,9 @@ define(["angular", "js/services"], function (angular, services) {
                         fechaInicial: obj.fechaInicial,
                         fechaFinal: obj.fechaFinal,
                         paginaActual: obj.paginaactual,
-                        registroUnico: obj.registroUnico
-
+                        registroUnico: obj.registroUnico,
+                        idPlantilla: (obj.idPlantilla === undefined ? 0 : obj.idPlantilla)
+                         
                     }
                 }
             };
@@ -91,7 +92,7 @@ define(["angular", "js/services"], function (angular, services) {
             var obj = {
                 session: session,
                 data: {
-                    listar_empresas: {
+                    listar_empresas: { 
                         pagina: 1,
                         empresaName: termino_busqueda_empresa
                     }

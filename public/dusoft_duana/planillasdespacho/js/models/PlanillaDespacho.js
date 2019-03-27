@@ -16,6 +16,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.cantidad_cajas = '';
                 this.cantidad_neveras = '';
                 this.numero_guia_externo = '';
+                this.numero_placa_externo = '';
                 this.documento = '';
                 this.documentos = [];
                 this.empresa = "";
@@ -65,6 +66,10 @@ define(["angular", "js/models"], function(angular, models) {
 
             PlanillaDespacho.prototype.set_numero_guia_externo = function(numero_guia_externo) {
                 this.numero_guia_externo = numero_guia_externo || '';
+            };
+
+            PlanillaDespacho.prototype.set_numero_placa_externo = function(numero_placa_externo) {
+                this.numero_placa_externo = numero_placa_externo || '';
             };
             
             PlanillaDespacho.prototype.set_empresa = function(empresa) {
@@ -132,6 +137,10 @@ define(["angular", "js/models"], function(angular, models) {
 
             PlanillaDespacho.prototype.get_numero_guia_externo = function() {
                 return this.numero_guia_externo;
+            };
+
+            PlanillaDespacho.prototype.get_numero_placa_externo = function() {
+                return this.numero_placa_externo;
             };
             
             PlanillaDespacho.prototype.get_empresa = function() {

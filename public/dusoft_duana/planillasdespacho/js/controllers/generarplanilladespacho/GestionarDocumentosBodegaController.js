@@ -284,8 +284,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 $scope.datos_view.tercero_seleccionado.limpiar_documentos();
 
                 documentos.forEach(function(data) {
-
-                    var documento = Documento.get(0, data.empresa_id, data.prefijo, data.numero, data.numero_pedido);
+                    
+                    var documento = Documento.get(data.id_aprobacion_planillas, data.empresa_id, data.prefijo, data.numero, data.numero_pedido);
                     
                     if($scope.datos_view.despachoPorLios){
                         var _documento = that.obtenerDocumentoSeleccionado(documento);
@@ -323,9 +323,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
                 if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
                     disabled = false;
-                    if (documento.get_temperatura_neveras() === '') {
-                        disabled = true;
-                    }
+//                    if (documento.get_temperatura_neveras() === '') {
+//                        disabled = true;
+//                    }
                 }
 
                 return disabled;
@@ -357,7 +357,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
                             that.gestionar_planilla_despacho();
                         }else{
-                            AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
+                            AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas; Nro cajas Auditadas: " + data.obj.planillas_despachos.totalCajas + ", Nro neveras Auditadas: "+data.obj.planillas_despachos.totalNeveras);
                         }
                         
                     }
@@ -517,12 +517,13 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 data: 'datos_view.tercero_seleccionado.get_documentos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
-                columnDefs: [
+                columnDefs: [                 
                     {field:'lios', displayName:"", width:"40", cellClass: "txt-center dropdown-button", cellTemplate:"<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
+                    {field: 'get_id()', displayName: 'Grupo', width: "10%"},  
                     {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "30%"},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'temperatura_neveras', displayName: '°C Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
+//                    {field: 'temperatura_neveras', displayName: '°C Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
@@ -664,7 +665,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                             transportador_id: $scope.planilla.get_transportadora().get_id(),
                             nombre_conductor: $scope.planilla.get_nombre_conductor(),
                             observacion: $scope.planilla.get_observacion(),
-                            numero_guia_externo: $scope.planilla.get_numero_guia_externo()
+                            numero_guia_externo: $scope.planilla.get_numero_guia_externo(),
+                            numero_placa_externo: $scope.planilla.get_numero_placa_externo()
                         }
                     }
                 };
@@ -694,7 +696,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                             numero: $scope.planilla.get_documento().get_numero(),
                             cantidad_cajas: $scope.planilla.get_documento().get_cantidad_cajas(),
                             cantidad_neveras: $scope.planilla.get_documento().get_cantidad_neveras(),
-                            temperatura_neveras: $scope.planilla.get_documento().get_temperatura_neveras(),
+                            temperatura_neveras: $scope.planilla.get_documento().get_cantidad_neveras()>0?'3.2':'', //$scope.planilla.get_documento().get_temperatura_neveras(),
                             observacion: $scope.planilla.get_documento().get_observacion(),
                             tipo: $scope.datos_view.opcion_predeterminada
                         }

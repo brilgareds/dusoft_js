@@ -18,7 +18,16 @@ define(["angular"], function (angular) {
                 'ADJUNTAR_IMAGEN': BASE_URL + '/ValidacionDespachos/adjuntarImagen',
                 'LISTAR_IMAGENES': BASE_URL + '/ValidacionDespachos/listarImagenes',
                 'ELIMINAR_IMAGEN': BASE_URL + '/ValidacionDespachos/eliminarImagen',
+                'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/PlanillasDespachos/documentosDespachosPorFarmacia',
+                'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/PlanillasDespachos/documentosDespachosPorCliente',
+            },
+            'CENTROS_UTILIDAD': {
+                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
+            },
+            'CLIENTES':{
+                'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
             }
+            
         }
 
     };

@@ -30,7 +30,7 @@
                                 <div class="row">
                                     <div class="col-md-7">  
                                         <ui-select   ng-model="datos_view.empresaSeleccionada" 
-                                                     ng-disabled="datos_view.estadoRegistro == 1"
+                                                     ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"  
                                                      theme="select2" 
                                                      class="form-control selectgeneral pull-left" >
 
@@ -42,7 +42,8 @@
                                             </ui-select-choices>
                                         </ui-select> 
 
-                                    </div></div>
+                                    </div>
+                                </div>
                             </fieldset>
                         </div>    
 
@@ -53,15 +54,13 @@
                                 <legend>Prefijo</legend>   
                                 <div class="row">
                                     <div class="col-md-7">  
-                                        <input type="text" ng-disabled="datos_view.estadoRegistro == 1"  
+                                        <input type="text" 
+                                               ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"  
                                                class="form-control"  
                                                ng-model="documentoDespachoAprobado.prefijo" 
                                                placeholder="Prefijo" 
                                                name="" id=""
-                                               ng-show ="datos_view.seleccionarOtros"/>
-
-
-
+                                               ng-show ="datos_view.seleccionarOtros" maxlength="4"/>
 
                                         <ui-select  ng-model="datos_view.prefijoList"
                                                     theme="select2" 
@@ -74,32 +73,36 @@
                                             </ui-select-choices>
                                         </ui-select>
 
-
-
-
-
                                     </div></div>
                             </fieldset>
                         </div>       
-
-
                         <div class="col-md-4">
                             <fieldset>
                                 <legend>Numero</legend>
                                 <div class="row">
                                     <div class="col-md-7">
-
-                                        <input type="text" 
-                                               ng-disabled="datos_view.estadoRegistro == 1"  
+                                         <div class="input-group">
+                                            <input type="text" 
+                                               ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0 || documentoDespachoAprobado.cantidadCajas == 0 && documentoDespachoAprobado.cantidadNeveras == 0"  
                                                class="form-control"  
                                                ng-model="documentoDespachoAprobado.numero" 
                                                placeholder="Numero" 
                                                name="" 
                                                id="" 
-                                               validacion-numero-entero 
+                                               validacion-numero-entero-coma
                                                ng-blur="validarExistenciaDocumento()"/>
-
-                                    </div></div>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default pull-right" 
+                                                        title="Multiples EFC" 
+                                                        ng-disabled ="despachoId > 0"
+                                                        type="submit" 
+                                                        ng-click ="ventanaMultiplesEFC()">
+                                                    <i class="glyphicon glyphicon-new-window"></i>
+                                                </button>
+                                            </span>
+                                        </div>                                      
+                                    </div>
+                                </div>
                             </fieldset>
                         </div> 
 
@@ -113,7 +116,10 @@
                                 <legend>Cantidad Cajas</legend>      
                                 <div class="row">
                                     <div class="col-md-7">  
-                                        <input type="text" ng-disabled="datos_view.estadoRegistro == 1"  class="form-control"  ng-model="documentoDespachoAprobado.cantidadCajas" placeholder="Cantidad Cajas" name="" id="" validacion-numero-entero />
+                                        <input type="text" ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"  
+                                               class="form-control"  
+                                               ng-model="documentoDespachoAprobado.cantidadCajas"
+                                               placeholder="Cantidad Cajas" name="" id="" validacion-numero-entero />
                                     </div>
                                 </div>
                             </fieldset>
@@ -123,7 +129,10 @@
                                 <legend>Cantidad Neveras</legend> 
                                 <div class="row">
                                     <div class="col-md-7">  
-                                        <input type="text" ng-disabled="datos_view.estadoRegistro == 1"  class="form-control"  ng-model="documentoDespachoAprobado.cantidadNeveras" placeholder="Cantidad Neveras" name="" id="" validacion-numero-entero />
+                                        <input type="text" ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"  
+                                               class="form-control"  
+                                               ng-model="documentoDespachoAprobado.cantidadNeveras" 
+                                               placeholder="Cantidad Neveras" name="" id="" validacion-numero-entero />
                                     </div>
                                 </div>
                             </fieldset>
@@ -134,7 +143,12 @@
                                 <legend>Observación</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">                                          
-                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" ng-disabled="datos_view.estadoRegistro == 1"  rows="4" name="" ng-model="documentoDespachoAprobado.observacion" placeholder="Ingresar Observación"></textarea>
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" 
+                                            ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"  
+                                            rows="4" 
+                                            name="" 
+                                            ng-model="documentoDespachoAprobado.observacion" 
+                                            placeholder="Ingresar Observación"></textarea>
                                     </div>
                                 </div>
                             </fieldset>
@@ -149,38 +163,24 @@
                 <div class="col-md-3" ng-if="documentoDespachoAprobado.obtenerImagenes().length > 0">
                    
                     <button class="btn btn-sm btn-success" ng-click="onBtnPreview(imagen)"><i class="glyphicon glyphicon-zoom-in"></i> Imagenes adjuntas {{documentoDespachoAprobado.obtenerImagenes().length}}</button>
-                    
-                    <!--table class="table">
-                        <thead>
-
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="imagen in documentoDespachoAprobado.obtenerImagenes()">
-                                <td>
-                                    {{$index + 1}}
-                                    <i class="glyphicon glyphicon-paperclip btnImagen"></i>
-                                    <button class="btn btn-sm btn-danger pull-right btnImagen" ng-disabled="datos_view.estadoRegistro == 1" ng-click="onBtnBorrarImagen(imagen)"><i class="glyphicon glyphicon-trash"></i></button>
-                                    <button class="btn btn-sm btn-success pull-right btnImagen" ng-click="onBtnPreview(imagen)"><i class="glyphicon glyphicon-zoom-in"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table-->
+                     
                 </div>
+                
+                <div class="modal-footer col-md-12">                                
 
-                <div class="modal-footer col-md-12">
                     <button class="btn btn-default" ng-click="regresarListaDespachosAprobados()">
                         <span class="glyphicon glyphicon-ok" ></span> Regresar
-                    </button>
-                    <button class="btn btn-default" ng-disabled="despachoId != 0 || datos_view.estadoRegistro == 1 || datos_view.existenciaDocumento == true" ng-click="aprobarDespacho()">
-                        <span class="glyphicon glyphicon-ok" ></span> Guardar
-                    </button>
-                    <span >
-                        <label for="files" class="btn btn-default" ng-disabled="despachoId == 0 || datos_view.estadoRegistro == 1" onchange="angular.element(this).scope().subirArchivo(this.files)"><i class="glyphicon glyphicon-paperclip"></i> Adjuntar imagen</label>
-                        <!-- <input type="file" id="files" style="display: none;" accept="image/*"  class="btn btn-default pull-right" onchange="angular.element(this).scope().subirArchivo(this.files)"  capture/> -->
-                        <input type="file" id="files" style="display: none;" accept="image/*"  class="btn btn-default pull-right" ng-disabled="despachoId == 0 || datos_view.estadoRegistro == 1" onchange="angular.element(this).scope().subirArchivo(this.files)" capture/>
-                    </span>
-                </div>
+                    </button>  
 
+                    <button class="btn btn-default" ng-disabled="despachoId > 0 || datos_view.disabledBtnGuardar == true || datos_view.existenciaDocumento == true" ng-click="aprobarDespacho()">
+                        <span class="glyphicon glyphicon-ok" ></span> Guardar  
+                    </button>  
+                    
+                    <span >
+                        <label for="files" class="btn btn-default"><i class="glyphicon glyphicon-paperclip"></i> Adjuntar imagen</label>
+                        <input type="file" id="files" style="display: none;" accept="image/*"  class="btn btn-default pull-right" ng-disabled="despachoId == 0 || documentoDespachoAprobado.obtenerImagenes().length == 4 || datos_view.estadoRegistro == 1" onchange="angular.element(this).scope().subirArchivo(this.files)"  />
+                    </span>
+                </div>  
             </div>
         </div>
     </div>         

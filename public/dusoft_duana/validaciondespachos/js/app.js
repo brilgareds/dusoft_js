@@ -31,8 +31,12 @@ define([
     "models/BodegaInduccion",
     "models/ProductoInduccion",
     "models/AprobacionDespacho",
+    "models/DocumentoDespacho",
+    "models/FarmaciaPlanillaDespacho",
+    "models/ClienteDocumento",
     "controllers/ValidacionDespachosController",
     "controllers/ValidacionDespachoDetalleController",
+    "controllers/VentanaValidarEgresosController",
     "services/ValidacionDespachosService",
     "webNotification"
 ], function(angular) {

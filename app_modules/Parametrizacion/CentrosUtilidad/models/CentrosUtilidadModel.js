@@ -16,7 +16,17 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_empresa = function(empres
     });
 };
 
-CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad= function(pais_id, departamento_id, ciudad_id, termino_busqueda, callback) {
+CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad= function(obj, callback) {
+    
+    var where = "";
+    var parametros = {};
+    if(obj.estado === '0'){
+        where = "where a.tipo_pais_id = :1 and a.tipo_dpto_id= :2 and a.tipo_mpio_id= :3 and estado = '1' and a.descripcion "+G.constants.db().LIKE+" :4 ";
+        parametros = {1:obj.pais_id, 2:obj.departamento_id, 3:obj.ciudad_id, 4:"%"+obj.termino_busqueda+"%"};
+    }else{
+        where = "where a.descripcion "+G.constants.db().LIKE+" :1 ";
+        parametros = {1:"%"+obj.termino_busqueda+"%"};
+    }
 
     var sql = " select \
                 a.tipo_pais_id,\
@@ -27,13 +37,14 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad= function(pais_id,
                 a.descripcion,\
                 a.ubicacion,\
                 a.telefono\
-                from centros_utilidad a\
-                where a.tipo_pais_id = :1 and a.tipo_dpto_id= :2 and a.tipo_mpio_id= :3 and estado = '1' and a.descripcion "+G.constants.db().LIKE+" :4 ";
+                from centros_utilidad a "+where;
 
-    G.knex.raw(sql, {1:pais_id, 2:departamento_id, 3:ciudad_id, 4:"%"+termino_busqueda+"%"}).
-    then(function(resultado){
+   var query = G.knex.raw(sql, parametros);
+
+            query.then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("err [listar_centros_utilidad_ciudad]:: ", err)
        callback(err);
     });
 };

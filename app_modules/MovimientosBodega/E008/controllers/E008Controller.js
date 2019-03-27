@@ -1769,7 +1769,8 @@ E008Controller.prototype.imprimirRotuloClientes = function (req, res) {
         }
 
         var obj = {
-            detalle: detalleDepurado,
+//            detalle: detalleDepurado,
+            detalle: rows,
             serverUrl: req.protocol + '://' + req.get('host') + "/"
         };
 
@@ -1846,7 +1847,8 @@ E008Controller.prototype.imprimirRotuloFarmacias = function (req, res) {
         }
 
         var obj = {
-            detalle: detalleDepurado,
+//            detalle: detalleDepurado,
+            detalle: rows,
             serverUrl: req.protocol + '://' + req.get('host') + "/"
         };
 

@@ -129,7 +129,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         if (data.status === 200) {
 
                             $scope.datos_view.items = data.obj.validacionDespachos.length;
-
+                     
                             that.renderListarDespachosAprobados(data);
 
                         } else {
@@ -145,17 +145,17 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.documentosAprobados = [];
                     for (var i in data.obj.validacionDespachos) {
                         var _documento = data.obj.validacionDespachos[i];
-                        var documento = AprobacionDespacho.get(1, _documento.prefijo, _documento.numero, _documento.fecha_registro);
+                        var documento = AprobacionDespacho.get(_documento.id_aprobacion_planillas, _documento.prefijo, _documento.numero, _documento.fecha_registro);
+                       
                         documento.setCantidadCajas(_documento.cantidad_cajas);
-                        documento.setCantidadNeveras(_documento.cantidad_neveras);
                         documento.setCantidadNeveras(_documento.cantidad_neveras);
                         documento.setObservacion(_documento.observacion);
                         documento.setRazonSocial(_documento.razon_social);
                         documento.setEmpresaId(_documento.empresa_id);
                         documento.setUsuario(_documento.nombre);
+                       
                         $scope.documentosAprobados.push(documento);
                     }
-
                 };
 
                 /**
@@ -239,12 +239,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                  *              de datos
                  */
                 $scope.detalleDespachoAprobado = function (documentoAprobado) {
-
+                    
+                   
                     localStorageService.add("validacionEgresosDetalle",
                             {empresa: documentoAprobado.getEmpresaId(),
-                                prefijo: documentoAprobado.getPrefijo(),
-                                numero: documentoAprobado.getNumero(),
-                                estado: 1});
+                            id_plantilla: documentoAprobado.bodegas_doc_id,
+                            estado: 1});
                     $state.go('ValidacionEgresosDetalle');
                 };
 
@@ -271,9 +271,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     enableCellSelection: true,
                     enableHighlighting: true,
                     columnDefs: [
-                        {field: 'getPrefijo()', displayName: 'prefijo', width: "25%"},
-                        {field: 'getNumero()', displayName: 'Numero', width: "25%"},
-                        {field: 'fecha_registro', displayName: 'Fecha Registro', width: "40%"},
+                        {field: 'getObservacion()', displayName: 'Observacion', width: "60%"},
+                        {field: 'getCantidadCajas()', displayName: 'Cant Cajas', width: "5%"},
+                        {field: 'getCantidadNeveras()', displayName: 'Cant Neveras', width: "5%"},
+                        {field: 'fecha_registro', displayName: 'Fecha Registro'},
                         {field: 'detalle', width: "10%",
                             displayName: "Opciones",
                             cellClass: "txt-center",

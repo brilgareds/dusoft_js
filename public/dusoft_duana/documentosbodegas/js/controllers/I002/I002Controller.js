@@ -448,7 +448,8 @@ define([
                         $scope.valorRetIca = 0;
                     }
                 if (parametros[0].sw_reteiva === '2' || parametros[0].sw_reteiva === '3')
-                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_reteiva)) {
+//                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_reteiva)) {
+                    if ($scope.gravamen >= parseFloat(parametros[0].base_reteiva)) {
                         $scope.valorRetIva = $scope.gravamen * ($scope.valorRetIva / 100);
                     } else {
                         $scope.valorRetIva = 0;

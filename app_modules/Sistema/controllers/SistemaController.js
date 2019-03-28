@@ -51,5 +51,9 @@ Sistema.prototype.verificarSincronizacion = function(req, res) {
     });
 };
 
+Sistema.prototype.jasperReport = function(req, res) {
+    
+}
+
 Sistema.$inject = ["m_sistema", "socket"];
 module.exports = Sistema;

@@ -215,7 +215,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
                             .on("a.bodega", "c.bodega");
                     })
             .where(function () {
-                this.andWhere(G.knex.raw("a.empresa_id in ('99')"))
+                this.andWhere(G.knex.raw("a.empresa_id in ('M6','H2')"))
                     .andWhere(G.knex.raw("c.fecha_registro is not null"))
 
                     if(obj.filtro!== undefined && obj.filtro !== "" ){
@@ -224,7 +224,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
              }) 
            }).as("b").orderBy(filtro, orden);
            
-//console.log(G.sqlformatter.format(query.toString())); 
+
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -306,15 +306,15 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
                 periodo as mes, stock_bodega as existencia_bd,laboratorio,molecula,cantidad_total_despachada as sum,    \
                 case when  tipo_producto = 'Normales' then nivel else '' end  as nivel, \
                 tipo_producto   \
-                from   \
-(select    \
+                from  ( \
+            (select    \
             'salida 1' as periodo,   \
             cc.descripcion as farmacia,   \
             aa.codigo_producto,   \
             fc_descripcion_producto(aa.codigo_producto) as descripcion_producto,   \
             ee.descripcion as molecula,   \
             ff.descripcion as laboratorio,   \
-           gg.descripcion  as tipo_producto,   \
+            gg.descripcion  as tipo_producto,   \
             aa.existencia::integer as stock_farmacia,   \
             (   \
               select sum(aaa.existencia)::integer from existencias_bodegas aaa    \
@@ -380,8 +380,64 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
             where aa.empresa_id =  '"+obj.empresa+"' and aa.centro_utilidad=  '"+obj.centroUtilidad+"' and aa.bodega =  '"+obj.bodega+"'   \
             and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0) \
             order by 1,5 \
+            )union(\
+                      select\
+                            periodo,\
+                            farmacia,\
+                            codigo_producto,\
+                            descripcion_producto,\
+                            molecula,\
+                            laboratorio,\
+                            tipo_producto,\
+                            (select\
+                             existencia_farmacia\
+                         from\
+                             rotacion_diaria_medipol as c\
+                         where\
+                             c.codigo_producto=a.codigo_producto\
+                             and c.empresa_id= '"+obj.empresa+"'\
+                             and c.centro_utilidad= '"+obj.centroUtilidad+"'\
+                             and c.bodega =  '"+obj.bodega+"' and  cast (c.fecha as date) between (current_date - interval '"+obj.meses+" month') and now()\
+                         order by\
+                             fecha desc limit 1) as stock_farmacia,\
+                         (select\
+                             existencia_bd\
+                         from\
+                             rotacion_diaria_medipol as c\
+                         where\
+                             c.codigo_producto=a.codigo_producto\
+                             and c.empresa_id = '"+obj.empresa+"'\
+                             and c.centro_utilidad= '"+obj.centroUtilidad+"'\
+                             and c.bodega =  '"+obj.bodega+"' and  cast (c.fecha as date) between (current_date - interval '"+obj.meses+" month') and now()\
+                         order by\
+                             fecha desc limit 1)::integer as stock_bodega,\
+                         cantidad_total_despachada,\
+                         nivel\
+                    from (\
+                      select\
+                            mes::text as periodo,\
+                            nombre_bodega as farmacia,\
+                            codigo_producto,\
+                            producto as descripcion_producto,\
+                            molecula,\
+                            laboratorio,\
+                            tipo_producto,\
+                            sum(cantidad_total_despachada)::integer as cantidad_total_despachada,\
+                             nivel\
+                      from\
+                      rotacion_diaria_medipol as a\
+                      inner join bodegas_medipol as b on (a.empresa_id=b.empresa_id and a.centro_utilidad=b.centro_utilidad and a.bodega=b.bodega)\
+                      where\
+                      cast (a.fecha as date) between (current_date - interval '"+obj.meses+" month') and now()\
+                      and a.empresa_id = '"+obj.empresa+"'\
+                      and a.centro_utilidad = '"+obj.centroUtilidad+"'\
+                      and a.bodega =  '"+obj.bodega+"'\
+                      group by 1,2,3,4,5,6,7,9\
+                    ) as a\
+                )\
             ) as a   \
 ";//rotacion_diaria_medipol
+    
     var query = G.knex.raw(sql);
     console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
@@ -1319,6 +1375,45 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
   callback(err);
     });
 
+};
+
+DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
+    
+  
+   if (datos.producto.search("�") !== -1){
+       datos.producto = datos.producto.replace(/�/g, "A");
+       console.log("entrpo pro",datos.producto);
+   }
+   if (datos.molecula.search("�") !== -1){
+        datos.molecula = datos.molecula.replace(/�/g, "A");
+       console.log("entrpo mole",datos.molecula);
+   }
+
+    var query = G.knex("rotacion_diaria_medipol").insert({
+                    empresa_id : datos.empresa_id,
+                    bodega : datos.bodega,
+                    codigo_producto : datos.codigo_producto,
+                    producto : datos.producto,
+                    laboratorio : datos.laboratorio,
+                    molecula : datos.molecula,
+                    cantidad_total_despachada : datos.cantidad_total_despachada,
+                    existencia_farmacia : datos.existencia_farmacia,
+                    existencia_bd : datos.existencia_bd,
+                    mes : datos.mes,
+                    fecha : datos.fecha,
+                    centro_utilidad : datos.centro_utilidad,
+                    nivel : datos.nivel,
+                    tipo_producto : datos.tipo_producto
+                });
+
+    query.then(function(resultado) {
+
+     callback(false, resultado);
+
+    }). catch (function(err) {
+        
+      callback(err);
+    }).done();
 };
 
 

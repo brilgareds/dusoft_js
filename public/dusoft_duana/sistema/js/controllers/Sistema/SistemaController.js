@@ -88,6 +88,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     return d3.time.format('%x-%H:%M')(new Date(d*1000));
                 }
             }
+            
+            $scope.inicio = function(estado){
+                switch (estado){
+                    case 1: console.log("Estado");
+                    break;
+                    case 2: console.log("Inicio");
+                    break;
+                    case 3: console.log("detener");
+                    break;
+                }
+            }
 
         }]);
 });

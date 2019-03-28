@@ -1896,10 +1896,12 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function (req, res) 
 
     var args = req.body.data;
 
+
     if (args.documento_temporal.bodega_seleccionada !== '03' && args.documento_temporal.bodega_seleccionada !== '06' && args.documento_temporal.bodega_seleccionada !== 'BQ') {
         res.send(G.utils.r(req.url, 'No llega la bodega de session (Comunicarse con Sistemas)', 404, {}));
         return;
     }
+
 
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined
             || args.documento_temporal.usuario_id === undefined) {
@@ -2371,6 +2373,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                         (tipoPedido === 1 && __validarDumian(pedido.identificacion_cliente, pedido.tipo_id_cliente))) {
 
 
+
             if (tipoPedido === 1) {
                 if ((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")) {//Clinica las peñitas
                     bodega = "BD";
@@ -2391,6 +2394,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                 } else if ((pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")) {//cucuta
                     bodega = "FG";
                     documentoId = 51;
+
                 }/* else if ((pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE")) {//cartagena
                  bodega = "BD";
                  documentoId = 445;
@@ -2619,10 +2623,12 @@ function __sincronizarEncabezadoDocumento(obj, callback) {
 
     } else {
 
+
         /* if (obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE") { //Cartagena
          url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
          
          } else*/ if ((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+
                 (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")) {
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
@@ -2746,11 +2752,13 @@ function __sincronizarDetalleDocumento(obj, callback) {
 
     } else {
 
+
         /* if (obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE") { //Cartagena 
          url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
          soloPrecioVenta = false;
          
          } else */if ((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+
                 (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")) {
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;

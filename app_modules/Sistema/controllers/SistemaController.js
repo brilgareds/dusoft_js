@@ -52,7 +52,39 @@ Sistema.prototype.verificarSincronizacion = function(req, res) {
 };
 
 Sistema.prototype.jasperReport = function(req, res) {
+    var parametros = {
+        host : "duana@10.0.2.216",
+        user : "duana",
+        password : "301206."
+    };
     
+    parametros.sentencia="date";
+    
+    G.Q.nfcall(__asistenteSSH,parametros).then(function(resultados) {
+        
+      res.send(G.utils.r(req.url, 'Verificar sincronizacion DB', 200, {jasperReport: resultados}));
+      
+    }).fail(function(err) {
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, 'Error al eliminar la imagen', 500, {jasperReport: err}));
+    }).done();
+   
+    
+}
+
+function __asistenteSSH(parametros,callback){
+    var resp = false;
+    var host = parametros.host;
+    var seq = G.sequest.connect(host,{username : parametros.user, password : parametros.password})
+    seq(parametros.sentencia, function (err, stdout) {
+        console.log("error ",err);
+        console.log("dato",stdout);
+        if(err === undefined){
+            resp = true;
+        }
+        seq.end() // will keep process open if you don't end it
+    })
+    callback(false,resp);
 }
 
 Sistema.$inject = ["m_sistema", "socket"];

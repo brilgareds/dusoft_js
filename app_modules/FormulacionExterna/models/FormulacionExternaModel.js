@@ -82,7 +82,7 @@ FormulacionExternaModel.prototype.obtenerAfiliadosExternos = function(estructura
     var query = G.knex.raw(queryText);
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
-        console.log(resultado.rows[0]);
+//        console.log(resultado.rows[0]);
         callback(false,  resultado.rows);
     }).catch(function(err){
         G.logError("err FormulacionExternaModel [obtenerAfiliado]: " + err);

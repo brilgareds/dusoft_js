@@ -10,7 +10,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "Usuario", "socket", "$timeout",
         "Empresa", 
         function($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa) {
-
+ 
+            var that = this;
             $scope.promedio1Min = 0;
             $scope.promedio5Min = 0;
             $scope.promedio15Min = 0;
@@ -90,15 +91,36 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             }
             
             $scope.inicio = function(estado){
+                var parametros = {};
                 switch (estado){
-                    case 1: console.log("Estado");
+                    case 1: that.sshJasper(1);
                     break;
-                    case 2: console.log("Inicio");
+                    case 2: that.sshJasper(2);
                     break;
-                    case 3: console.log("detener");
+                    case 3: that.sshJasper(3);
                     break;
                 }
-            }
+            };
+            
+            that.sshJasper = function(parametros) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                            estado:parametros.estado
+                          }
+                };
+
+                Request.realizarRequest(API.LOGS.JASPER_REPORT, "POST", obj, function(data) {
+                    console.log("data",data);
+                    if (data.status === 200) {
+                        return;
+                    }
+                });
+            };
+            
+            
+            
 
         }]);
 });

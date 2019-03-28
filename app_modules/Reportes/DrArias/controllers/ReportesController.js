@@ -360,7 +360,7 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
     var today = new Date();
     var formato = 'DD-MM-YYYY hh:mm:ss a';
     var fechaToday = G.moment(today).format(formato);
-
+console.log("Bodegas:::::::: ",args.data.bodegas);
     var idsRemitentes = usuarioId + ',';
     remitentes.forEach(function(item, index){
         idsRemitentes += item.id_usuario + ',';
@@ -368,6 +368,7 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
 
     idsRemitentes = idsRemitentes.substring(0, idsRemitentes.length - 1);
     idsRemitentes = idsRemitentes.split(",");
+
 
 
     G.Q.ninvoke(that.m_drArias, 'consultarCorreoUsuario', idsRemitentes).then(function (correos) {
@@ -424,7 +425,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     var controlRotacionId;
     var listarPlanes;
     var farmacias;
-
+console.log("bodega:::  ",bodega);
     G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion', bodega).then(function (respuesta) {
 
         bodega.controlRotacionId = respuesta[0]; 
@@ -619,7 +620,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
         }
 
         if (bodega.remitente === 1) {
-            remitente = G.settings.email_miguel_duarte;//+","+sistemas;
+            remitente = G.settings.email_miguel_duarte;
         }
 
         if (bodega.remitentes.trim() !== "") {
@@ -1034,7 +1035,6 @@ function sortJSON(data, key, orden) {
 // Funcion para enviar correos electronicos usando nodemailer
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
-
     var smtpTransport = that.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname
         secureConnection: true, // use SSL
@@ -1058,10 +1058,12 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     }
     smtpTransport.sendMail(settings, function (error, response) {
         if (error !== null) {
+            console.log("Error :: ",error);
             callback({estado: 505, mensaje: error});
             return;
-        } else {
+        } else {            
             smtpTransport.close();
+            console.log("Correo enviado");
             callback(false, {estado: 200, mensaje: "Correo Enviado"});
             return;
         }

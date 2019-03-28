@@ -31,7 +31,7 @@ FormulacionExterna.prototype.obtenerAfiliado = function(req, res){
     }).then(function(estructurasPlanes){
 
         if(estructurasPlanes.length > 0){
-            console.log('entra a if estructurasPlanes');
+//            console.log('entra a if estructurasPlanes');
             //tmp.afiliado = resultado[0];
             return G.Q.ninvoke(that.m_formulacionExterna,'obtenerAfiliadosExternos',estructurasPlanes, args.tipoIdentificacion, args.identificacion);
         }
@@ -126,7 +126,6 @@ FormulacionExterna.prototype.insertarDiagnosticoTmp = function(req, res){
 FormulacionExterna.prototype.insertarFormulaTmp = function(req, res){
     var that = this;
     var args = req.body.data;
-
     var usuario_id = req.session.user.usuario_id;
 
     G.Q.ninvoke(that.m_formulacionExterna,'insertarFormulaTmp', args.formula_papel, args.empresa_id, args.fecha_formula, args.tipo_formula, args.tipo_id_tercero, args.tercero_id, args.tipo_id_paciente, args.paciente_id, args.plan_id, args.rango, args.tipo_afiliado_id, usuario_id, args.centro_utilidad, args.bodega, args.tipo_pais_id, args.tipo_dpto_id, args.tipo_mpio_id).then(function(formula_id){

@@ -10,7 +10,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "Usuario", "socket", "$timeout",
         "Empresa", 
         function($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa) {
-
+ 
+            var that = this;
             $scope.promedio1Min = 0;
             $scope.promedio5Min = 0;
             $scope.promedio15Min = 0;
@@ -86,8 +87,53 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.xAxisTickFormatFunction = function(){
                 return function(d){
                     return d3.time.format('%x-%H:%M')(new Date(d*1000));
+                };
+            };
+            
+            socket.on("cpu216", function(datos) {
+                if (datos.status === 200) {
+                       console.log(datos.obj);
+                       $scope.item=datos.obj;
+                    }
+               
+            });
+            
+            
+            $scope.inicio = function(estado){
+                switch (estado){
+                    case 1: that.sshJasper({estado:estado});
+                    break;
+                    case 2: that.sshJasper({estado:estado});
+                    break;
+                    case 3: that.sshJasper({estado:estado});
+                    break;
+                    case 4: that.sshJasper({estado:estado});
+//                        ,function(result){
+//                              
+//                              $scope.cpu = result.split("\n");
+//                            });
+                    break;
                 }
-            }
+            };
+            
+            that.sshJasper = function(parametros) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                            estado : parametros.estado
+                          }
+                };
+
+                Request.realizarRequest(API.LOGS.JASPER_REPORT, "POST", obj, function(data) {
+                   
+                    if (data.status === 200) {
+                       return;
+                    }
+                });
+            };
+            
+            
+            
 
         }]);
 });

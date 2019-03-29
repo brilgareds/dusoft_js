@@ -1,6 +1,7 @@
-var Sistema = function(m_sistema, socket) {
+var Sistema = function(m_sistema, socket,e_sistema) {
     this.m_sistema = m_sistema;
     this.io = socket;
+    this.e_sistema = e_sistema;
 };
 
 Sistema.prototype.listarLogs = function(req, res) {
@@ -51,5 +52,82 @@ Sistema.prototype.verificarSincronizacion = function(req, res) {
     });
 };
 
-Sistema.$inject = ["m_sistema", "socket"];
+Sistema.prototype.jasperReport = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuario = req.session.user.usuario_id;
+    var retorno;
+    res.send(G.utils.r(req.url, 'jasperReport', 200, {jasperReport: {}}));
+
+    var parametros = {
+        host : "duana@10.0.2.216",
+        user : "duana",
+        password : "301206."
+    };
+    
+    parametros.sentencia="echo 301206. | sudo -S /opt/jasperreports-server-cp-6.2.1/./ctlscript_public.sh ";
+    
+    switch(args.estado){
+        case 1: parametros.sentencia = parametros.sentencia+"status";
+        break;
+        case 2: parametros.sentencia = parametros.sentencia+"start";
+        break;
+        case 3: parametros.sentencia = parametros.sentencia+"stop";
+        break;
+        case 4:
+               parametros.sentencia="echo 301206. | sudo -S free -m -h"; 
+        break;
+    }
+    
+    G.Q.nfcall(__asistenteSSH,parametros).then(function(resultados) {
+      retorno ={
+         usuario : usuario,
+         status : 200,
+         result : resultados,
+         estado : args.estado
+      };
+      
+      switch(args.estado){
+        case 1:
+        break;
+        case 2: 
+        break;
+        case 3:
+        break;
+        case 4:
+              retorno.funcion = "cpu216";
+        break;
+     }
+     return true;
+         
+    }).then(function(result) {
+        that.e_sistema.enviarInformacion(retorno);
+        
+    }).fail(function(err) {
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, 'Error jasperReport', 500, {jasperReport: err}));
+    }).done();
+   
+    
+}
+
+function __asistenteSSH(parametros,callback){
+    console.log("parametros ",parametros);
+    var respuesta = "";
+    var resp = false;
+    var host = parametros.host;
+    var seq = G.sequest.connect(host,{username : parametros.user, password : parametros.password})
+    seq(parametros.sentencia, function (err, stdout) {
+        console.log("respuesta:: ",stdout);
+        if(err !== undefined){
+           callback(true,stdout);
+        }else{
+           callback(false,stdout);
+        }
+        seq.end() // will keep process open if you don't end it
+    });
+    
+}
+
+Sistema.$inject = ["m_sistema", "socket","e_sistema"];
 module.exports = Sistema;

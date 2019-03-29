@@ -45486,7 +45486,7 @@ define('url',["angular"], function (angular) {
                 'LISTAR_PRODUCTOS': BASE_URL + '/OrdenesCompra/listarProductos',
             },
             'FACTURACIONPROVEEDOR': {
-                'INSERTAR_FACTURA': BASE_URL + "/FacturacionProveedores/ingresarFactura"
+                'INSERTAR_FACTURA': BASE_URL + "/NotasProveedores/ingresarFactura"
             },
             'PRODUCTOS': {
                 'SUBE_COSTO': BASE_URL + '/Productos/subeCosto',

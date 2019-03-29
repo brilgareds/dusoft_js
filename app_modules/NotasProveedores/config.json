@@ -1,0 +1,21 @@
+{
+    "module": "NotasProveedores",
+    "dependency": {
+        "controllers": [{
+                "NotasProveedoresController": {
+                    "module": "NotasProveedores",
+                    "controller": "NotasProveedoresController",
+                    "alias": "c_notasProveedores"
+                }
+            }],
+        "models": [{
+                "NotasProveedoresModel": {
+                    "module": "NotasProveedores",
+                    "model": "NotasProveedoresModel",
+                    "alias": "m_notasProveedores"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

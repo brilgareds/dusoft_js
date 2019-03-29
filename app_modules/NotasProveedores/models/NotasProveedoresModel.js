@@ -87,7 +87,7 @@ NotasProveedoresModel.prototype.GuardarTemporal_Detalle = function(obj, callback
         sube_baja_costo: obj.sube_baja_costo,
 
     });
-    $rst->Close();
+    // $rst->Close();
 
     callback(false, {});
 };

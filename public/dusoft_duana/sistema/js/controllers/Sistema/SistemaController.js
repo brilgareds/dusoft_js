@@ -87,34 +87,47 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.xAxisTickFormatFunction = function(){
                 return function(d){
                     return d3.time.format('%x-%H:%M')(new Date(d*1000));
-                }
-            }
+                };
+            };
+            
+            socket.on("cpu216", function(datos) {
+                if (datos.status === 200) {
+                       console.log(datos.obj);
+                       $scope.item=datos.obj;
+                    }
+               
+            });
+            
             
             $scope.inicio = function(estado){
-                var parametros = {};
                 switch (estado){
-                    case 1: that.sshJasper(1);
+                    case 1: that.sshJasper({estado:estado});
                     break;
-                    case 2: that.sshJasper(2);
+                    case 2: that.sshJasper({estado:estado});
                     break;
-                    case 3: that.sshJasper(3);
+                    case 3: that.sshJasper({estado:estado});
+                    break;
+                    case 4: that.sshJasper({estado:estado});
+//                        ,function(result){
+//                              
+//                              $scope.cpu = result.split("\n");
+//                            });
                     break;
                 }
             };
             
             that.sshJasper = function(parametros) {
-
                 var obj = {
                     session: $scope.session,
                     data: {
-                            estado:parametros.estado
+                            estado : parametros.estado
                           }
                 };
 
                 Request.realizarRequest(API.LOGS.JASPER_REPORT, "POST", obj, function(data) {
-                    console.log("data",data);
+                   
                     if (data.status === 200) {
-                        return;
+                       return;
                     }
                 });
             };

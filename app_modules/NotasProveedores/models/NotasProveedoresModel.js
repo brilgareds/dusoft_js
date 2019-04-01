@@ -60,16 +60,14 @@ NotasProveedoresModel.prototype.listarNotasProveedor = function(obj, callback) {
     });
 };
 
-NotasProveedoresModel.prototype.GuardarTemporal_Detalle = function(obj, callback){
+NotasProveedoresModel.prototype.guardarTemporalDetalle = function(obj, callback){
     if(obj.nota_mayor_valor === undefined){
         obj.nota_mayor_valor = '0';
     }
-
     if(obj.sube_baja_costo === undefined){
         obj.sube_baja_costo = '0';
     }
-    /*$this->debug=true;*/
-    //print_r($Datos);
+
     var query = G.knex('inv_notas_facturas_proveedor_d_tmp').insert({
         codigo_proveedor_id: obj.codigoProveedorId,
         numero_factura: obj.numeroFactura,
@@ -87,7 +85,9 @@ NotasProveedoresModel.prototype.GuardarTemporal_Detalle = function(obj, callback
         sube_baja_costo: obj.sube_baja_costo,
 
     });
-    // $rst->Close();
+    // query.then(function(response){
+    //
+    // });
 
     callback(false, {});
 };

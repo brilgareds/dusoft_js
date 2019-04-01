@@ -64,61 +64,76 @@
     <div class="panel-heading"><b>Server 216</b></div>
     <div class="panel-body">
         <div class="row">
-            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <h5><b>CPU</b></h5>
-                        <div class="row text-center">
-                            <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-info" ng-click="inicio(4)">Estado</button>
+            <div class="col-sm-12">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h5><b>CPU</b></h5>
+                            <div class="row text-center">
+                                <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
+                                    <button type="button" class="btn btn-info" ng-click="inicio(4)">Estado</button>
+                                </div>
+                                <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
+                                    <button type="button" class="btn btn-primary" ng-click="inicio(2)">Iniciar</button>
+                                </div>
+                                <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
+                                    <button type="button" class="btn btn-danger" ng-click="inicio(3)">Detener</button>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                </div>
                             </div>
-                            <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-primary" ng-click="inicio(2)">Iniciar</button>
-                            </div>
-                            <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-danger" ng-click="inicio(3)">Detener</button> 
-                            </div>
-                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <!--<div class="panel panel-default" >-->
-                                    <!--<div class="panel-body">-->
-                                        <textarea style="background: #000000; color: #ffff;" class="form-control  text-light bg-dark" rows="5" cols="550">{{item}}</textarea>                                   
-                                    <!--</div>-->
-                                <!--</div>-->
+                            <br>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="col-sm-12 console-format">
+                                        <table class="tablePc">
+                                            <tr style="height: 20px;"><td colspan="7" style="text-align: center; padding-top: 0px; padding-bottom: 6px;" ng-if="memory.header[1]">Memoria Ram & Swap</td></tr>
+                                            <tr>
+                                                <th class="header" ng-repeat="palabra in memory.header track by $index">{{palabra}} </th>
+                                            </tr>
+                                            <tr ng-repeat="items in memory.rows track by $index">
+                                                <td ng-repeat="item in items track by $index">{{item}}</td>
+                                            </tr>
+                                            <tr style="height: 30px;"><td colspan="7" style="text-align: center; padding-top: 8px;" ng-if="hdd.header[1]">Disco Duro</td></tr>
+                                            <tr>
+                                                <th class="header" ng-repeat="palabra in hdd.header track by $index">{{palabra}} </th>
+                                            </tr>
+                                            <tr ng-repeat="items in hdd.rows track by $index">
+                                                <td ng-repeat="item in items track by $index">{{item}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-         
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <h3>JasperServer</h3>
-                        <div class="row text-center">
-                            <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-info" ng-click="inicio(1)">Estado</button>
+
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3>JasperServer</h3>
+                            <div class="row text-center">
+                                <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
+                                    <button type="button" class="btn btn-info" ng-click="inicio(1)">Estado</button>
+                                </div>
+                                <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
+                                    <button type="button" class="btn btn-primary" ng-click="inicio(2)">Iniciar</button>
+                                </div>
+                                <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
+                                    <button type="button" class="btn btn-danger" ng-click="inicio(3)">Detener</button>
+                                </div>
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                </div>
                             </div>
-                            <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-primary" ng-click="inicio(2)">Iniciar</button>
-                            </div>
-                            <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-danger" ng-click="inicio(3)">Detener</button> 
-                            </div>
-                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <div class="panel panel-default" style="background: #000000; color: #ffff;">
-                                    <div class="panel-body">
-                                        <div  ng-repeat="item in respuesta">
-                                            <p class="text-light bg-dark" ng-if="item !== ''" > # {{item}}</p>
+                            <br>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="panel panel-default" style="background: #000000; color: #ffff;">
+                                        <div class="panel-body">
+                                            <div  ng-repeat="item in respuesta">
+                                                <p class="text-light bg-dark" ng-if="item !== ''" > # {{item}}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -127,10 +142,13 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+
+         
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <h3>JasperServer</h3>
+                        <h3>PM2</h3>
                         <div class="row text-center">
                             <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
                                 <button type="button" class="btn btn-info" ng-click="inicio(1)">Estado</button>

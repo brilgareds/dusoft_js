@@ -72,23 +72,11 @@
                             <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
                                 <button type="button" class="btn btn-info" ng-click="inicio(4)">Estado</button>
                             </div>
-                            <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-primary" ng-click="inicio(2)">Iniciar</button>
-                            </div>
-                            <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-danger" ng-click="inicio(3)">Detener</button> 
-                            </div>
-                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                            </div>
                         </div>
                         <br>
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <!--<div class="panel panel-default" >-->
-                                    <!--<div class="panel-body">-->
-                                        <textarea style="background: #000000; color: #ffff;" class="form-control  text-light bg-dark" rows="5" cols="550">{{item}}</textarea>                                   
-                                    <!--</div>-->
-                                <!--</div>-->
+                                <textarea style="background: #000000; color: #ffff;" class="form-control  text-light bg-dark" rows="5" cols="550">{{item}}</textarea>
                             </div>
                         </div>
                     </div>
@@ -98,7 +86,7 @@
             <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <h3>JasperServer</h3>
+                        <h5><b>JasperServer</b></h5>
                         <div class="row text-center">
                             <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
                                 <button type="button" class="btn btn-info" ng-click="inicio(1)">Estado</button>
@@ -127,19 +115,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <h3>JasperServer</h3>
+                        <h5><b>PM2 - 229</b></h5>
                         <div class="row text-center">
                             <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-info" ng-click="inicio(1)">Estado</button>
+                                <button type="button" class="btn btn-info" ng-click="inicio(5)">Estado</button>
                             </div>
                             <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-primary" ng-click="inicio(2)">Iniciar</button>
+                                <button type="button" class="btn btn-primary" ng-click="inicio(6)">Reload</button>
                             </div>
                             <div class="col-xs-2 col-sm-2 col-md-4 col-lg-4">
-                                <button type="button" class="btn btn-danger" ng-click="inicio(3)">Detener</button> 
+                                <button type="button" class="btn btn-danger" ng-click="inicio(7)">Resurrect</button> 
                             </div>
                             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                             </div>
@@ -147,13 +135,14 @@
                         <br>
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <div class="panel panel-default" style="background: #000000; color: #ffff;">
-                                    <div class="panel-body">
+                                <textarea style="background: #000000; color: #ffffff;" class="form-control  text-light bg-dark" rows="5" cols="550">{{pm2}}</textarea>
+                                <!--<div class="panel panel-default" style="background: #000000; color: #ffff;">-->
+<!--                                    <div class="panel-body">
                                         <div  ng-repeat="item in respuesta">
                                             <p class="text-light bg-dark" ng-if="item !== ''" > # {{item}}</p>
                                         </div>
-                                    </div>
-                                </div>
+                                    </div>-->
+                                <!--</div>-->
                             </div>
                         </div>
                     </div>

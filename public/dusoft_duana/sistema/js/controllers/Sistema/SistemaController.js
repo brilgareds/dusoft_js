@@ -92,10 +92,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             socket.on("cpu216", function(datos) {
                 if (datos.status === 200) {
-                       console.log(datos.obj);
                        $scope.item=datos.obj;
                     }
-               
+            });
+            
+            socket.on("jasper216", function(datos) {
+                if (datos.status === 200) {
+                    console.log("sadas",datos.obj);
+                       $scope.respuesta=datos.obj.split("\n");
+                    }
+            });
+            
+            socket.on("pm2216", function(datos) {
+                if (datos.status === 200) {
+                    console.log("sadas",datos.obj);
+                       $scope.pm2=datos.obj;
+                    }
             });
             
             
@@ -108,10 +120,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     case 3: that.sshJasper({estado:estado});
                     break;
                     case 4: that.sshJasper({estado:estado});
-//                        ,function(result){
-//                              
-//                              $scope.cpu = result.split("\n");
-//                            });
+                    break;
+                    case 5: that.sshJasper({estado:estado});
+                    break;
+                    case 6: that.sshJasper({estado:estado});
+                    break;
+                    case 7: that.sshJasper({estado:estado});
                     break;
                 }
             };

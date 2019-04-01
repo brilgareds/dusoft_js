@@ -59,9 +59,15 @@ Sistema.prototype.jasperReport = function(req, res) {
     var retorno;
     res.send(G.utils.r(req.url, 'jasperReport', 200, {jasperReport: {}}));
 
+//    var parametros = {
+//        host : "duana@10.0.2.216",
+//        user : "duana",
+//        password : "301206."
+//    };
+    
     var parametros = {
-        host : "duana@10.0.2.216",
-        user : "duana",
+        host : "dusoft@10.0.2.229",
+        user : "dusoft",
         password : "301206."
     };
     
@@ -77,6 +83,15 @@ Sistema.prototype.jasperReport = function(req, res) {
         case 4:
                parametros.sentencia="echo 301206. | sudo -S free -m -h"; 
         break;
+        case 5:
+               parametros.sentencia="node /var/www/projects/eDusoft/development_production/dusoft-server/pm2_script.js"; 
+        break;
+        case 6:
+               parametros.sentencia="pm2 reload server"; 
+        break;
+        case 7:
+               parametros.sentencia="pm2 resurrect"; 
+        break;
     }
     
     G.Q.nfcall(__asistenteSSH,parametros).then(function(resultados) {
@@ -89,13 +104,25 @@ Sistema.prototype.jasperReport = function(req, res) {
       
       switch(args.estado){
         case 1:
+            retorno.funcion = "jasper216";
         break;
         case 2: 
+            retorno.funcion = "jasper216";
         break;
         case 3:
+            retorno.funcion = "jasper216";
         break;
         case 4:
               retorno.funcion = "cpu216";
+        break;
+        case 5:
+              retorno.funcion = "pm2216";
+        break;
+        case 6:
+              retorno.funcion = "pm2216";
+        break;
+        case 7:
+              retorno.funcion = "pm2216";
         break;
      }
      return true;

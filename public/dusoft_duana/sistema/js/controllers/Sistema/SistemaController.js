@@ -112,26 +112,37 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     console.log('HDD is: ', $scope.hdd, '\n');
                 }
             });
-
-
-            $scope.inicio = function (estado) {
-                switch (estado) {
-                    case 1:
-                        that.sshJasper({estado: estado});
-                        break;
-                    case 2:
-                        that.sshJasper({estado: estado});
-                        break;
-                    case 3:
-                        that.sshJasper({estado: estado});
-                        break;
-                    case 4:
-                        that.sshJasper({estado: estado});
-//                        ,function(result){
-//                              
-//                              $scope.cpu = result.split("\n");
-//                            });
-                        break;
+            
+            socket.on("jasper216", function(datos) {
+                if (datos.status === 200) {
+                    console.log("sadas",datos.obj);
+                       $scope.respuesta=datos.obj.split("\n");
+                    }
+            });
+            
+            socket.on("pm2216", function(datos) {
+                if (datos.status === 200) {
+                    console.log("sadas",datos.obj);
+                       $scope.pm2=datos.obj;
+                    }
+            });
+            
+            $scope.inicio = function(estado){
+                switch (estado){
+                    case 1: that.sshJasper({estado:estado});
+                    break;
+                    case 2: that.sshJasper({estado:estado});
+                    break;
+                    case 3: that.sshJasper({estado:estado});
+                    break;
+                    case 4: that.sshJasper({estado:estado});
+                    break;
+                    case 5: that.sshJasper({estado:estado});
+                    break;
+                    case 6: that.sshJasper({estado:estado});
+                    break;
+                    case 7: that.sshJasper({estado:estado});
+                    break;
                 }
             };
 
@@ -150,7 +161,5 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 });
             };
-
-
         }]);
 });

@@ -83,7 +83,16 @@ Sistema.prototype.jasperReport = function (req, res) {
             parametros.sentencia = parametros.sentencia + "stop";
             break;
         case 4:
-            parametros.sentencia = "echo 301206. | sudo -S free -m -h && df -h";
+            parametros.sentencia = "echo 301206. | sudo -S free -m -h";
+            break;
+        case 5:
+            parametros.sentencia = "node /var/www/projects/eDusoft/development_production/dusoft-server/pm2_script.js";
+            break;
+        case 6:
+            parametros.sentencia = "pm2 reload server";
+            break;
+        case 7:
+            parametros.sentencia = "pm2 resurrect";
             break;
     }
 
@@ -103,33 +112,33 @@ Sistema.prototype.jasperReport = function (req, res) {
         var palabra = '';
         var palabrasFiltradas = [''];
 
-        for(var i = 0; i < cantidadLineas; i++){
+        for (var i = 0; i < cantidadLineas; i++) {
             var palabras = lineas[i].split(' ');
             var cantidadPalabras = palabras.length;
 
-            for(var j = 0; j < cantidadPalabras; j++){
+            for (var j = 0; j < cantidadPalabras; j++) {
                 if (palabras[j] !== '') {
                     palabra += palabras[j] + ' ';
 
-                    if(!(i === 2 && j === 0) && !(i === 4 && j === 17)){ // En caso de "false" concatenará la palabra
+                    if (!(i === 2 && j === 0) && !(i === 4 && j === 17)) { // En caso de "false" concatenará la palabra
                         palabra = palabra.trim();
-                        if(i > 4 && j === 0){
-                            palabra = palabra+':';
+                        if (i > 4 && j === 0) {
+                            palabra = palabra + ':';
                         }
                         palabrasFiltradas.push(palabra);
                         palabra = '';
                     }
                 }
             }
-            if(palabrasFiltradas.length > 0){
-                if(i !== 5 && i !== 9){
-                    if(i === 0){
+            if (palabrasFiltradas.length > 0) {
+                if (i !== 5 && i !== 9) {
+                    if (i === 0) {
                         resultadoArray.memory.header = palabrasFiltradas;
-                    } else if(i < 4){
+                    } else if (i < 4) {
                         resultadoArray.memory.rows.push(palabrasFiltradas);
-                    } else if(i === 4){
+                    } else if (i === 4) {
                         resultadoArray.hdd.header = palabrasFiltradas;
-                    }else if(i > 4){
+                    } else if (i > 4) {
                         resultadoArray.hdd.rows.push(palabrasFiltradas);
                     }
                     palabrasFiltradas = [];
@@ -146,26 +155,35 @@ Sistema.prototype.jasperReport = function (req, res) {
 
         switch (args.estado) {
             case 1:
+                retorno.funcion = "jasper216";
                 break;
             case 2:
+                retorno.funcion = "jasper216";
                 break;
             case 3:
+                retorno.funcion = "jasper216";
                 break;
             case 4:
                 retorno.funcion = "cpu216";
+                break;
+            case 5:
+                retorno.funcion = "pm2216";
+                break;
+            case 6:
+                retorno.funcion = "pm2216";
+                break;
+            case 7:
+                retorno.funcion = "pm2216";
                 break;
         }
         return true;
 
     }).then(function (result) {
         that.e_sistema.enviarInformacion(retorno);
-
     }).fail(function (err) {
         console.log("error generado ", err);
         res.send(G.utils.r(req.url, 'Error jasperReport', 500, {jasperReport: err}));
     }).done();
-
-
 };
 
 function __asistenteSSH(parametros, callback) {

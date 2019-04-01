@@ -77,7 +77,10 @@
                                         </div>
                                     </div>
 
-                                    <div class="" style="height: 500px" ng-grid="lista_remisiones_bodega" > </div>
+                                    <div ng-switch on="datos_view.mostrarTercero">
+                                    <div ng-switch-when="true" class="" style="height: 500px" ng-grid="lista_remisiones_bodega"> </div>
+                                    <div ng-switch-when="false" class="" style="height: 500px" ng-grid="lista_remisiones_bodega_1"> </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer col-md-12">                                         

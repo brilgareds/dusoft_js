@@ -17,6 +17,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             that.documentosStorage = localStorageService.get("documentosSeleccionados");
             $scope.datosView = {
                 terminoBusquedaFarmacia: '',
+                terminoBusquedaEfc: '',
                 terceroSeleccionado: FarmaciaPlanillaDespacho.get(),
                 documentosSeleccionados: [],
                 cantidadCajas: 0,
@@ -281,7 +282,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
                         var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
                         centroUtilidad.agregarBodega(bodega);
-                        $scope.seleccionarCentroUtilidad(centroUtilidad);
+                        $scope.seleccionarCentroUtilidad(centroUtilidad, '');
                     }
 
                     if (!$scope.datosView.seleccionarClienteFarmacia && $scope.clienteEgresos) {
@@ -290,7 +291,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 $scope.clienteEgresos.tipo_id_tercero,
                                 $scope.clienteEgresos.id,
                                 $scope.clienteEgresos.telefono);
-                        $scope.seleccionarCliente(clienteDocumento);
+                        $scope.seleccionarCliente(clienteDocumento, '');
                     }
 
                     $state.go('ValidacionEgresosDetalle');
@@ -363,7 +364,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
                         var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
                         centroUtilidad.agregarBodega(bodega);
-                        $scope.seleccionarCentroUtilidad(centroUtilidad);
+                        $scope.seleccionarCentroUtilidad(centroUtilidad, '');
                     }
 
                     if ($scope.clienteEgresos) {
@@ -372,7 +373,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 $scope.clienteEgresos.tipo_id_tercero,
                                 $scope.clienteEgresos.id,
                                 $scope.clienteEgresos.telefono);
-                        $scope.seleccionarCliente(clienteDocumento);
+                        $scope.seleccionarCliente(clienteDocumento, '');
                     }
 
                     $state.go('ValidacionEgresosDetalle');
@@ -420,10 +421,33 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 });
             };
 
+            $scope.buscador_cliente_farmacia = function (ev) {
+
+                if (ev.which == 13) {
+
+                    if ($scope.centroUtilidad) {
+                        var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
+                        var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
+                        centroUtilidad.agregarBodega(bodega);
+                        $scope.seleccionarCentroUtilidad(centroUtilidad,$scope.datosView.terminoBusquedaEfc);
+                    }
+
+                    if ($scope.clienteEgresos) {
+                        var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
+                                $scope.clienteEgresos.direccion,
+                                $scope.clienteEgresos.tipo_id_tercero,
+                                $scope.clienteEgresos.id,
+                                $scope.clienteEgresos.telefono);
+                        $scope.seleccionarCliente(clienteDocumento, $scope.datosView.terminoBusquedaEfc);
+                    }
+
+                }
+            };
+
             /**
              * +Descripcion Metodo que se invoca al seleccionar un centro de utilidad
              */
-            $scope.seleccionarCentroUtilidad = function (centroUtilidad) {
+            $scope.seleccionarCentroUtilidad = function (centroUtilidad,terminoBusqueda) {
 
                 $scope.centroUtilidad = CentroUtilidadInduccion.get(centroUtilidad.getNombre(), centroUtilidad.getCodigo());
                 var bodega = BodegaInduccion.get('', centroUtilidad.getCentrosBodega()[0].getCodigo());
@@ -436,7 +460,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             farmacia_id: centroUtilidad.getCentrosBodega()[0].getCodigo(),
                             centro_utilidad_id: centroUtilidad.getCodigo(),
-                            termino_busqueda: '',
+                            termino_busqueda: terminoBusqueda,//'',
                             estadoValidarDespachos: 1
                         }
                     }
@@ -454,7 +478,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             /**
              * +Descripcion Metodo que se invoca al seleccionar un cliente
              */
-            $scope.seleccionarCliente = function (cliente) {
+            $scope.seleccionarCliente = function (cliente, terminoBusqueda) {
 
                 $scope.clienteEgresos = ClienteDocumento.get(cliente.getNombre(), cliente.getDireccion, cliente.getTipoId(), cliente.getId(), cliente.getTelefono());
 
@@ -465,7 +489,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             tipo_id: cliente.getTipoId(),
                             tercero_id: cliente.getId(),
-                            termino_busqueda: '',
+                            termino_busqueda: terminoBusqueda, // '',
                             estadoValidarDespachos: 1
                         }
                     }

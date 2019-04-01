@@ -251,7 +251,7 @@ ValidacionDespachos.prototype.registrarAprobacion = function (req, res) {
 
     G.Q.ninvoke(that.m_ValidacionDespachos, 'transaccionRegistrarAprobacion', args.validacionDespachos).then(function (resultado) {
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {validacionDespachos: resultado}));
-
+        
     }).fail(function (err) {
 
         res.send(G.utils.r(req.url, 'Error en el registro', 500, {validacionDespachos: {}}));

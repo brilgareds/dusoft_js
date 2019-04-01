@@ -208,17 +208,17 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
     }
 
 
-var parametros ={
-     pais_id : args.planillas_despachos.pais_id,
-     departamento_id : args.planillas_despachos.departamento_id,
-     ciudad_id : args.planillas_despachos.ciudad_id,
-     transportador_id : args.planillas_despachos.transportador_id,
-     nombre_conductor : args.planillas_despachos.nombre_conductor,
-     observacion : args.planillas_despachos.observacion,
-     numero_guia_externo : args.planillas_despachos.numero_guia_externo,
-     numero_placa_externo : args.planillas_despachos.numero_placa_externo,
-     usuario_id : req.session.user.usuario_id
-};
+    var parametros = {
+        pais_id: args.planillas_despachos.pais_id,
+        departamento_id: args.planillas_despachos.departamento_id,
+        ciudad_id: args.planillas_despachos.ciudad_id,
+        transportador_id: args.planillas_despachos.transportador_id,
+        nombre_conductor: args.planillas_despachos.nombre_conductor,
+        observacion: args.planillas_despachos.observacion,
+        numero_guia_externo: args.planillas_despachos.numero_guia_externo,
+        numero_placa_externo: args.planillas_despachos.numero_placa_externo,
+        usuario_id: req.session.user.usuario_id
+    };
 
 
     that.m_planillas_despachos.ingresar_planilla_despacho(parametros, function (err, result) {
@@ -284,21 +284,34 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function (req,
         return;
     }
 
-    var planilla_id = args.planillas_despachos.planilla_id;
-    var empresa_id = args.planillas_despachos.empresa_id;
-    var prefijo = args.planillas_despachos.prefijo;
-    var numero = args.planillas_despachos.numero;
-    var cantidad_cajas = args.planillas_despachos.cantidad_cajas;
-    var cantidad_neveras = (args.planillas_despachos.cantidad_neveras === '') ? 0 : args.planillas_despachos.cantidad_neveras;
-    var temperatura_neveras = (args.planillas_despachos.temperatura_neveras === '') ? null : args.planillas_despachos.temperatura_neveras;
-    var observacion = args.planillas_despachos.observacion;
-    var estado_pedido = ''; // 3 => En zona despacho, 9 => en zona con pdtes
-    var responsable = null;
-    var usuario_id = req.session.user.usuario_id;
+     var empresa_id = args.planillas_despachos.empresa_id;
+     var prefijo = args.planillas_despachos.prefijo;
+     var numero = args.planillas_despachos.numero;
+     var estado_pedido = ''; // 3 => En zona despacho, 9 => en zona con pdtes
+     var responsable = null;
+     var usuario_id = req.session.user.usuario_id;
 
+    var parametros = {
+        planilla_id: args.planillas_despachos.planilla_id,
+        empresa_id: args.planillas_despachos.empresa_id,
+        prefijo: args.planillas_despachos.prefijo,
+        numero: args.planillas_despachos.numero,
+        cantidad_cajas: args.planillas_despachos.cantidad_cajas,
+        cantidad_neveras: (args.planillas_despachos.cantidad_neveras === '') ? 0 : args.planillas_despachos.cantidad_neveras,
+        temperatura_neveras: (args.planillas_despachos.temperatura_neveras === '') ? null : args.planillas_despachos.temperatura_neveras,
+        observacion: args.planillas_despachos.observacion,
+        tipo: tipo,
+        usuario_id: req.session.user.usuario_id
+    };
+
+    if (tipo === '2') {
+        parametros.empresa_cliente = args.planillas_despachos.empresa_cliente;
+        parametros.centro_cliente = args.planillas_despachos.centro_cliente;
+        parametros.bodega_cliente = args.planillas_despachos.bodega_cliente;
+    }
 
     // Ingresar el documento a la planilla de despacho
-    that.m_planillas_despachos.ingresar_documentos_planilla(tabla, planilla_id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id, function (err, rows, result) {
+    that.m_planillas_despachos.ingresar_documentos_planilla(tabla, parametros, function (err, result) {
 
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
@@ -920,7 +933,7 @@ PlanillasDespachos.prototype.gestionarLios = function (req, res) {
     args.planillas_despachos.usuario_id = req.session.user.usuario_id;
     var totalCajas = parseInt(args.planillas_despachos.totalCaja);
     var totalNeveras = parseInt(args.planillas_despachos.cantidadNeveras);
-    var temperatura = parseInt(args.planillas_despachos.cantidadNeveras)>0?'3.2':'0';
+    var temperatura = parseInt(args.planillas_despachos.cantidadNeveras) > 0 ? '3.2' : '0';
     var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
 
     args.planillas_despachos.temperatura = temperatura;

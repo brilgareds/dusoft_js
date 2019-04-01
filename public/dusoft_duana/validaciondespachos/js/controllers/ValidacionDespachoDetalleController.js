@@ -406,6 +406,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             var res =0;
             var totalDecimal = 0;
             var cantidadCajas = 0;
+            var totalDecimalNeveras = 0;
+            var cantidadNeveras = 0;
             var pos = "";
             /**
              * +Descripcion Contar las veces que aparece el caracter [COMA] en la cadena String
@@ -441,7 +443,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             var index =0;
             res =0;
             totalDecimal = 0;
+            totalDecimalNeveras = 0;
             cantidadCajas = 0;
+            cantidadNeveras = 0;
             numeroArray.forEach(function(rowNumero){
                 
                 index++;               
@@ -452,13 +456,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     totalDecimal += parseFloat("0."+res);                  
                 }
                 
+                cantidadNeveras = parseInt($scope.documentoDespachoAprobado.cantidadNeveras) / numeroArray.length;              
+                pos = cantidadNeveras.toString().indexOf(".");     
+                if(pos >0){
+                    res = String(cantidadNeveras).substring((pos+1), cantidadNeveras.length);
+                    totalDecimalNeveras += parseFloat("0."+res);                  
+                }
+               
                 if(index === numeroArray.length-1){
                      
                         multiplesDocumentosOtros.push({
                         prefijo: prefijoDocumento,
                         numero: rowNumero,
                         cantidadCajas: parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)),
-                        cantidadNeveras: parseInt($scope.documentoDespachoAprobado.cantidadNeveras),
+                        cantidadNeveras: parseInt(cantidadNeveras) + parseInt(Math.ceil(totalDecimalNeveras)),
+//                        cantidadNeveras: parseInt($scope.documentoDespachoAprobado.cantidadNeveras),
                         estado: estado
                     });                 
                     return multiplesDocumentosOtros;
@@ -467,7 +479,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     prefijo: prefijoDocumento,
                     numero: rowNumero,
                     cantidadCajas: parseInt(cantidadCajas),
-                    cantidadNeveras: parseInt($scope.documentoDespachoAprobado.cantidadNeveras),
+                    cantidadNeveras: parseInt(cantidadNeveras),
                     estado: estado
                 });
                 
@@ -511,21 +523,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
 
-                    //that.llenarObservacion(0);
-                    that.observacionValidacion = "";
-                    that.documentosSeleccionados.documentos.forEach(function(row){
-                       
-                        var observacion="";
-                        if(row.cantidadCajas>0){
-                            var s=row.cantidadCajas>1?"S":"";
-                            observacion=" | CAJA"+s+": " + row.cantidadCajas;
-                        }
-                        if(row.cantidadNeveras>0){
-                            var s=row.cantidadNeveras>1?"S":"";
-                            observacion+=" | NEVERA"+s+": " + row.cantidadNeveras; 
-                        }
-                        that.observacionValidacion += "("+row.prefijo +"-"+ row.numero +" "+observacion+") ";
-                    });
+//                    that.observacionValidacion = "";
+                    that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined?$scope.documentoDespachoAprobado.observacion + " ":"";
+//                    that.documentosSeleccionados.documentos.forEach(function(row){
+//                       
+//                        var observacion="";
+//                        if(row.cantidadCajas>0){
+//                            var s=row.cantidadCajas>1?"S":"";
+//                            observacion=" | CAJA"+s+": " + row.cantidadCajas;
+//                        }
+//                        if(row.cantidadNeveras>0){
+//                            var s=row.cantidadNeveras>1?"S":"";
+//                            observacion+=" | NEVERA"+s+": " + row.cantidadNeveras; 
+//                        }
+//                        that.observacionValidacion += "("+row.prefijo +"-"+ row.numero +" "+observacion+") ";
+//                    });
                     obj = {
                         session: $scope.session,
                         data: {                        
@@ -582,7 +594,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 detalle:multiplesDocumentosOtros
                             }                        
                         }
-                    };     
+                    };
                     that.ejecutarServicioRegistroAprobacion(obj);
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
@@ -876,7 +888,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          */
         that.llenarObservacion = function(estado){
 
-            that.observacionValidacion = "";
+//            that.observacionValidacion = "";
+            that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ?$scope.documentoDespachoAprobado.observacion + " ":""; 
 
             if(estado === 1){
                 that.documentosSeleccionados = __multiplesDocumentosOtros(estado);

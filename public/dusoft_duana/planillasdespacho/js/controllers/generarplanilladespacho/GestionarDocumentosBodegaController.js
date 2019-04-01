@@ -30,6 +30,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     opcion_predeterminada: "0", // 0 = farmacias 1 = clientes 2 = Otras Empresas
                     termino_busqueda: '',
                     termino_busqueda_documentos: '',
+                    mostrarTercero:false,
                     tercero_seleccionado: FarmaciaPlanilla.get(), // tercero_seleccionado es una Farmacia por ser la opcion_predeterminada = 0
                     documento_seleccionado: Documento.get()
                 };
@@ -73,14 +74,17 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 $scope.datos_view.documento_seleccionado = Documento.get();
 
                 if ($scope.datos_view.opcion_predeterminada === "0") {
+                    $scope.datos_view.mostrarTercero = false;
                     that.buscar_farmacias();
                 }
 
                 if ($scope.datos_view.opcion_predeterminada === "1") {
+                    $scope.datos_view.mostrarTercero = false;
                     that.buscar_clientes();
                 }
                 
                 if($scope.datos_view.opcion_predeterminada === "2"){
+                    $scope.datos_view.mostrarTercero = true;
                     that.listarDocumentosOtrasSalidas();
                 }
 
@@ -211,11 +215,50 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 }
                 
                 if ($scope.datos_view.opcion_predeterminada === "2") {
+                    that.listarFarmaciasMedipol(function(result) {
                     that.documentosOtrasSalidas();
+                });
                 }
             };
 
             
+                        that.listarFarmaciasMedipol = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        centro_utilidad: {
+                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+                            termino_busqueda: $scope.datos_view.termino_busqueda
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.CENTROS_UTILIDAD.LISTAR_FARMACIAS_TERCEROS, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_tercero(data.obj.centros_utilidad,callback);
+
+                    }
+                });
+            };
+
+            that.render_tercero = function(farmacias,callback) {
+
+                $scope.Empresa.limpiar_farmacias();
+
+                farmacias.forEach(function(data) {
+
+                    var farmacia = FarmaciaPlanilla.get(data.empresa_id, data.bodega, data.descripcion);
+                    farmacia.set_centro_utilidad(data.centro_utilidad_id);
+                    $scope.Empresa.set_farmacias(farmacia);
+                });
+
+                $scope.datos_farmacias_terceros = $scope.Empresa.get_farmacias();
+                callback(true);
+            };
+          
             that.documentosOtrasSalidas = function(){
                 var obj = {
                     session: $scope.session,
@@ -517,13 +560,44 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 data: 'datos_view.tercero_seleccionado.get_documentos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
+                columnDefs: [                 
+                    {field:'lios', displayName:"", width:"40", cellClass: "txt-center dropdown-button", cellTemplate:"<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
+                    {field: 'get_id()', displayName: 'Grupo', width: "10%"},  
+                    {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "25%"},
+                    {field: 'get_tercero()', displayName: 'Cliente', width: "25%", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                     <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >{{row.entity.tercero.nombre}}<span class="caret"></span></button>\
+                     <ul class="dropdown-menu dropdown-options">\
+                     <li ng-repeat="farmacia in datos_farmacias_terceros">\
+                     <a href="javascript:void(0)" ng-click="onSeleccionTercero(row.entity,farmacia)">{{farmacia.nombre}}</a>\
+                     </li>\
+                     </ul>\
+                     </div>'},
+                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="onMostrarVentanaDescripcion(row.entity)" ng-show="datos_view.opcion_predeterminada == 2" ng-disabled="datos_view.despachoPorLios" ><span class="glyphicon glyphicon-pencil"></span></button>\
+                                        </div>'
+                    }
+                ]
+            };
+
+            $scope.lista_remisiones_bodega_1 = {
+                data: 'datos_view.tercero_seleccionado.get_documentos()',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [                 
                     {field:'lios', displayName:"", width:"40", cellClass: "txt-center dropdown-button", cellTemplate:"<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
                     {field: 'get_id()', displayName: 'Grupo', width: "10%"},  
                     {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "30%"},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-//                    {field: 'temperatura_neveras', displayName: '°C Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
@@ -533,6 +607,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 ]
             };
             
+            $scope.onSeleccionTercero = function (fila, farmacia) {
+                fila.tercero = farmacia;
+            };
+             
             $scope.onMostrarVentanaDescripcion = function(documento){
                  $scope.opts = {
                     backdrop: 'static',
@@ -702,6 +780,12 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                         }
                     }
                 };
+                
+                if($scope.datos_view.opcion_predeterminada === '2'){
+                    obj.data.planillas_despachos.empresa_cliente = $scope.planilla.get_documento().get_tercero().empresa_id;
+                    obj.data.planillas_despachos.centro_cliente = $scope.planilla.get_documento().get_tercero().centro_utilidad;
+                    obj.data.planillas_despachos.bodega_cliente = $scope.planilla.get_documento().get_tercero().codigo;
+                }
 
                 Request.realizarRequest(API.PLANILLAS.INGRESAR_DOCUMENTOS, "POST", obj, function(data) {
 

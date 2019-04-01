@@ -59,7 +59,7 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
                       union\
                       select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
                       from inv_planillas_detalle_clientes a\
-                      union \
+                      union all\
                       select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
@@ -153,7 +153,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
     }
 
     query.where(function () {
-        this.andWhere(G.knex.raw("a.fecha_registro >= '2018-01-30 00:00:00'"));
+        this.andWhere(G.knex.raw("a.fecha_registro >= '2019-01-30 00:00:00'"));
         this.andWhere('a.empresa_id', obj.empresa_id);
         this.andWhere('b.farmacia_id', obj.farmacia_id);
         this.andWhere('b.centro_utilidad', obj.centro_utilidad_id);
@@ -297,7 +297,7 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
                       union\
                       select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
                       from inv_planillas_detalle_clientes a\
-                      union \
+                      union all \
                       select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
@@ -421,13 +421,13 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     ) as ciudad,\
                     a.inv_planillas_despacho_id as planilla_id,\
                     a.empresa_id,\
-                    '' as descripcion_destino,\
-                    '' as direccion_destino,\
+                    d.descripcion as descripcion_destino,\
+                    d.ubicacion as direccion_destino,\
                     a.prefijo,\
                     a.numero,\
                     0 as numero_pedido,\
-                    b.cantidad_cajas,\
-                    b.cantidad_neveras,\
+                    a.cantidad_cajas,\
+                    a.cantidad_neveras,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     '' as factura,\
@@ -438,10 +438,10 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                         FROM aprobacion_despacho_planillas f \
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as b ON (b.prefijo = a.prefijo AND b.numero = a.numero)\
+                    inner join bodegas d on a.empresa_destino = d.empresa_id and a.centro_utilidad = d.centro_utilidad and a.bodega = d.bodega\
                 ) as a where a.planilla_id = :1 and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 );";
     var query = G.knex.raw(sql, {1: planilla_id, 2: '%' + termino_busqueda + '%'});
     query.then(function (resultado) {
-        //console.log("resultado [consultar_documentos_planilla_despacho]::: ", resultado.rows);
         callback(false, resultado.rows);
     }).catch(function (err) {
         console.log("error generado ", err);
@@ -460,7 +460,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
  * @param {type} usuario_id
  * @param {type} callback
  * @returns {undefined} */
-PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function (parametros,callback) {
+PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function (parametros, callback) {
 
     var query = G.knex('inv_planillas_despacho').
             returning('id').
@@ -475,15 +475,34 @@ PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function (paramet
         console.log("Error ingresar_planilla_despacho", err);
         callback(err);
     }).done();
-    
-};
-PlanillasDespachosModel.prototype.ingresar_documentos_planilla = function (tabla, planilla_id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id, callback) {
 
-    var sql = " insert into " + tabla + " (inv_planillas_despacho_id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id) \
-                values ( :1, :2, :3, :4, :5, :6, :7, :8, :9 )";
-    var parametros = {1: planilla_id, 2: empresa_id, 3: prefijo, 4: numero, 5: cantidad_cajas, 6: cantidad_neveras, 7: temperatura_neveras, 8: observacion, 9: usuario_id};
-    G.knex.raw(sql, parametros).then(function (resultado) {
-        callback(false, resultado.rows, resultado);
+};
+/**
+ * @author Cristian 
+ * +Modifico German Galvis
+ * +Descripcion ingresa los documentos a la planilla 
+ * @fecha 2019-03-29 YYYY-MM-DD
+ * @returns {callback}
+ */
+PlanillasDespachosModel.prototype.ingresar_documentos_planilla = function (tabla, obj, callback) {
+
+    var query = G.knex(G.knex.raw("" + tabla));
+
+    if (obj.tipo === '2') {
+        query.insert({inv_planillas_despacho_id: obj.planilla_id, empresa_id: obj.empresa_id, prefijo: obj.prefijo,
+            numero: obj.numero, cantidad_cajas: obj.cantidad_cajas, cantidad_neveras: obj.cantidad_neveras,
+            temperatura_neveras: obj.temperatura_neveras, observacion: obj.observacion, usuario_id: obj.usuario_id,
+            empresa_destino: obj.empresa_cliente, centro_utilidad: obj.centro_cliente, bodega: obj.bodega_cliente
+        });
+    } else {
+        query.insert({inv_planillas_despacho_id: obj.planilla_id, empresa_id: obj.empresa_id, prefijo: obj.prefijo,
+            numero: obj.numero, cantidad_cajas: obj.cantidad_cajas, cantidad_neveras: obj.cantidad_neveras,
+            temperatura_neveras: obj.temperatura_neveras, observacion: obj.observacion, usuario_id: obj.usuario_id
+        });
+    }
+
+    query.then(function (resultado) {
+        callback(false, resultado);
     }).catch(function (err) {
         callback(err);
     });
@@ -667,28 +686,34 @@ function __insertarLioDocumento(obj, callback) {
                 observacion, \
                 usuario_id,\
                 fecha_registro,\
+                empresa_destino, \
+                centro_utilidad,\
+                bodega,\
                 numero_lios\
                 )\
                 (select " + obj.numeroGuia + " as inv_planillas_despacho_id,\
                 aa.empresa_id,\
                 bb.prefijo,\
                 bb.numero,\
-                aa.cantidad_cajas as totalCajas,\
-                aa.cantidad_neveras as cantidad_neveras,\
-                0 as temperatura_neveras,\
+                bb.cantidad_cajas as totalCajas,\
+                bb.cantidad_neveras as cantidad_neveras,\
+                " + obj.temperatura + " as temperatura_neveras,\
                 " + observacion + " as observacion,\
                 " + parseInt(obj.usuario_id) + " as usuario_id,\
                 now() as fecha_registro,\
+                :4 as empresa_destino,\
+                :5 as centro_utilidad,\
+                :6 as bodega,\
                 " + obj.cantidadLios + " as numero_lios \
                  FROM aprobacion_despacho_planillas as aa \
                  INNER JOIN aprobacion_despacho_planillas_d as bb ON aa.id_aprobacion_planillas = bb.id_aprobacion_planillas\
                  WHERE  aa.empresa_id = :1\
                  AND bb.prefijo= :2\
                  AND bb.numero = :3\
-                 GROUP BY 1,2,3,4,6,7,8,9,10,1)";
+                 GROUP BY 1,2,3,4,5,6,7,8,9,10,1)";
     }
 
-    var query = G.knex.raw(sql, {1: documento.empresa_id, 2: documento.prefijo, 3: documento.numero});
+    var query = G.knex.raw(sql, {1: documento.empresa_id, 2: documento.prefijo, 3: documento.numero,4: documento.tercero.empresa_id, 5: documento.tercero.centro_utilidad, 6: documento.tercero.codigo});
 
     if (obj.transaccion)
         query.transacting(obj.transaccion);

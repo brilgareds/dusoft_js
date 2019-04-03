@@ -60,122 +60,151 @@ Sistema.prototype.jasperReport = function (req, res) {
     console.log('En "jasperReport"');
     var that = this;
     var args = req.body.data;
+    var accion = args.accion ;
+    var modulo = args.modulo;
+    var server = args.server;
     var usuario = req.session.user.usuario_id;
-    var retorno;
+    var resultadoArray = [];
+    var cantidadObjetos = 1;
+    var urlJasper = '/opt/jasperreports-server-cp-6.2.1/./ctlscript_public.sh';
+    // var urlPM2 = '/var/www/projects/eDusoft/development_production/dusoft-server/pm2_script.js';
     res.send(G.utils.r(req.url, 'jasperReport', 200, {jasperReport: {}}));
 
-    var parametros = {
-        host: "duana@10.0.2.216",
-        user: "duana",
-        password: "301206."
+    console.log('Modulo es: ', modulo, '');
+
+    if(server === 216){
+        var credentialRoot = 'echo 301206. | sudo -S ';
+        var parametros = {
+            host: "10.0.2.216",
+            user: "duana",
+            password: "301206.",
+            credentialSSH: 'echo 301206. | sudo -S '
+        };
+    }else if(server === 229){
+        var credentialRoot = 'echo 301206. | sudo -S ';
+        var parametros = {
+            host: "10.0.2.229",
+            user: "dusoft",
+            password: "301206."
+        };
+    }
+
+    var retorno = {
+        usuario: usuario,
+        status: '500',
+        result: {},
+        estado: accion,
+        funcion: modulo.toLowerCase()+server
     };
 
-    parametros.sentencia="echo 301206. | sudo -S /opt/jasperreports-server-cp-6.2.1/./ctlscript_public.sh ";
-    
-    switch(args.estado){
-        case 1: parametros.sentencia = parametros.sentencia+"status";
-        break;
-        case 2: parametros.sentencia = parametros.sentencia+"start";
-        break;
-        case 3: parametros.sentencia = parametros.sentencia+"stop";
-        break;
-        case 4:
-               parametros.sentencia="echo 301206. | sudo -S free -m -h"; 
-        break;
-        case 5:
-//               parametros.sentencia="node ./var/www/projects/eDusoft/development_production/dusoft-server/pm2_script.js"; 
-               parametros.sentencia="bash /var/www/projects/eDusoft/development_production/dusoft-server/./andres.sh"; 
-        break;
-        case 6:
-               parametros.sentencia="pm2 reload server"; 
-        break;
-        case 7:
-               parametros.sentencia="pm2 resurrect"; 
-        break;
+
+    if(modulo === 'PC'){
+        cantidadObjetos = 2;
+        if(accion !== undefined){
+            if(accion === 'status'){
+                parametros.sentencia = 'free -m -h && df -h';
+            }else{
+                console.log('Error en modulo "PC", accion: '+ accion +' no existe!!');
+            }
+        }
+    }else if(modulo === 'JASPER'){
+        if(accion !== undefined && (accion === 'status' || accion === 'start' || accion === 'stop')){
+            parametros.sentencia = credentialRoot + urlJasper + ' ' + accion;
+        }else{
+            console.log('Error en modulo "Jasper", accion: '+ accion +' no existe!!');
+        }
+    }else if(modulo === 'PM2'){
+        if(accion !== undefined){
+            if(accion === 'status'){
+                parametros.sentencia = "pm2 status";
+            }else if(accion === 'reload'){
+                parametros.sentencia = "pm2 reload server";
+            }else if(accion === 'resurrect'){
+                parametros.sentencia = "pm2 resurrect";
+            }else{
+                console.log('Error en modulo "PM2", accion: '+ accion +' no existe!!');
+            }
+        }
+
     }
 
     G.Q.nfcall(__asistenteSSH, parametros).then(function (resultados) {
-        var resultadoArray = {
-            memory: {
-                header: [],
-                rows: []
-            },
-            hdd: {
-                header: [],
-                rows: []
-            }
-        };
         var lineas = resultados.split('\n');
         var cantidadLineas = lineas.length;
+        var palabrasFiltradas = [];
         var palabra = '';
-        var palabrasFiltradas = [''];
+        var headerDefault = ['App', 'Status'];
 
-        for (var i = 0; i < cantidadLineas; i++) {
-            var palabras = lineas[i].split(' ');
+        for(var i = 0; i < cantidadObjetos; i++){  // Declarar propiedades del objeto a responder
+            resultadoArray[i] = { header: [], title: modulo, rows: [] };
+        }
+
+        for (var j = 0; j < cantidadLineas; j++) {
+            var palabras = lineas[j].split(' ');
             var cantidadPalabras = palabras.length;
 
-            for (var j = 0; j < cantidadPalabras; j++) {
-                if (palabras[j] !== '') {
-                    palabra += palabras[j] + ' ';
+            for (var k = 0; k < cantidadPalabras; k++) {
+                palabras[k] = palabras[k].trim();
+                if (palabras[k].length > 0) {
+                    palabra += palabras[k] + ' '; // El espacio agregado es para luego poder concatenar
 
-                    if (!(i === 2 && j === 0) && !(i === 4 && j === 17)) { // En caso de "false" concatenará la palabra
-                        palabra = palabra.trim();
-                        if (i > 4 && j === 0) {
-                            palabra = palabra + ':';
+                    if(modulo === 'PC'){
+                        if (!(j === 2 && k === 0) && !(j === 4 && k === 17)) { // En caso de "false" concatenará la palabra
+                            palabra = palabra.trim();
+                            if (j > 4 && k === 0) {
+                                palabra = palabra + ':';
+                            }
+                            if(j === 0 && palabrasFiltradas.length === 0){
+                                palabrasFiltradas.push('');
+                            }
+                            palabrasFiltradas.push(palabra);
+                            palabra = '';
                         }
-                        palabrasFiltradas.push(palabra);
-                        palabra = '';
+                    }else if(modulo === 'JASPER'){
+                        if (k !== 1) { // En caso de "false" concatenará la palabra
+                            palabra = palabra.trim();
+                            if (k === 0) {
+                                palabra = palabra + ':';
+                            }
+                            // console.log('Palabra ESSSSSS: ', palabra);
+                            palabrasFiltradas.push(palabra);
+                            palabra = '';
+                        }
                     }
                 }
             }
+
             if (palabrasFiltradas.length > 0) {
-                if (i !== 5 && i !== 9) {
-                    if (i === 0) {
-                        resultadoArray.memory.header = palabrasFiltradas;
-                    } else if (i < 4) {
-                        resultadoArray.memory.rows.push(palabrasFiltradas);
-                    } else if (i === 4) {
-                        resultadoArray.hdd.header = palabrasFiltradas;
-                    } else if (i > 4) {
-                        resultadoArray.hdd.rows.push(palabrasFiltradas);
+                if (modulo === 'PC') {
+                    if (j !== 5 && j !== 9) { // En caso de false concatenará la fila actual con la fila proxima
+                        if (j === 0) {
+                            resultadoArray[0].title = 'Memoria Ram & Swap';
+                            resultadoArray[0].header = palabrasFiltradas;
+                        } else if (j < 4) {
+                            resultadoArray[0].rows.push(palabrasFiltradas);
+                        } else if (j === 4) {
+                            resultadoArray[1].title = 'Disco Duro';
+                            resultadoArray[1].header = palabrasFiltradas;
+                        } else if (j > 4) {
+                            resultadoArray[1].rows.push(palabrasFiltradas);
+                        }
+                        palabrasFiltradas = [];
                     }
+                } else {
+                    if (j === 0) {
+                        resultadoArray[0].header = headerDefault;
+                    }
+                    resultadoArray[0].rows.push(palabrasFiltradas);
                     palabrasFiltradas = [];
                 }
+
             }
-        }
 
-        retorno = {
-            usuario: usuario,
-            status: 200,
-            result: resultadoArray,
-            estado: args.estado
-        };
-
-        switch (args.estado) {
-            case 1:
-                retorno.funcion = "jasper216";
-                break;
-            case 2:
-                retorno.funcion = "jasper216";
-                break;
-            case 3:
-                retorno.funcion = "jasper216";
-                break;
-            case 4:
-                retorno.funcion = "cpu216";
-                break;
-            case 5:
-                retorno.funcion = "pm2216";
-                break;
-            case 6:
-                retorno.funcion = "pm2216";
-                break;
-            case 7:
-                retorno.funcion = "pm2216";
-                break;
         }
+        retorno.status = 200;
+        retorno.result = resultadoArray;
+
         return true;
-
     }).then(function (result) {
         that.e_sistema.enviarInformacion(retorno);
     }).fail(function (err) {

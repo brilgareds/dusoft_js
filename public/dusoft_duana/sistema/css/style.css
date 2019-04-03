@@ -13,6 +13,7 @@
 }
 
 .tablePc{
+    width: 100%;
     margin-top: 20px;
     margin-bottom: 25px;
 }
@@ -34,4 +35,8 @@
 .console-format{
     background-color: #000;
     color: #FFF;
+}
+.contenedor-modulos-btns{
+    display: flex;
+    justify-content: space-between;
 }

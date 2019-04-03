@@ -84,7 +84,8 @@ Sistema.prototype.jasperReport = function(req, res) {
                parametros.sentencia="echo 301206. | sudo -S free -m -h"; 
         break;
         case 5:
-               parametros.sentencia="node /var/www/projects/eDusoft/development_production/dusoft-server/pm2_script.js"; 
+//               parametros.sentencia="node ./var/www/projects/eDusoft/development_production/dusoft-server/pm2_script.js"; 
+               parametros.sentencia="bash /var/www/projects/eDusoft/development_production/dusoft-server/./andres.sh"; 
         break;
         case 6:
                parametros.sentencia="pm2 reload server"; 
@@ -143,7 +144,7 @@ function __asistenteSSH(parametros,callback){
     var respuesta = "";
     var resp = false;
     var host = parametros.host;
-    var seq = G.sequest.connect(host,{username : parametros.user, password : parametros.password})
+    var seq = G.sequest.connect(host,{username : parametros.user, password : parametros.password});
     seq(parametros.sentencia, function (err, stdout) {
         console.log("respuesta:: ",stdout);
         if(err !== undefined){

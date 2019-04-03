@@ -216,10 +216,8 @@ function __asistenteSSH(parametros, callback) {
     console.log("parametros ", parametros);
     var respuesta = "";
     var resp = false;
-    var host = parametros.host;
-
-    var seq = G.sequest.connect(host,{username : parametros.user, password : parametros.password});
-
+    var host = parametros.user + '@' + parametros.host;
+    var seq = G.sequest.connect(host, {username: parametros.user, password: parametros.password});
     seq(parametros.sentencia, function (err, stdout) {
         console.log("respuesta:: ", stdout);
         if (err !== undefined) {

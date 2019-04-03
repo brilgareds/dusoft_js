@@ -95,8 +95,7 @@ Sistema.prototype.jasperReport = function (req, res) {
         result: {},
         estado: accion,
         funcion: modulo.toLowerCase()+server
-    };
-
+    }; // Comentario
 
     if(modulo === 'PC'){
         cantidadObjetos = 2;

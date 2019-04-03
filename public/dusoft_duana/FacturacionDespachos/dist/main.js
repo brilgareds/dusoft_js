@@ -45332,12 +45332,12 @@ define('url',["angular"], function(angular) {
                  "GENERAR_SINCRONIZACION_DIAN" : BASE_URL + "/FacturacionClientes/generarSincronizacionDian"
             },   
             'FACTURACIONPROVEEDOR': {
-                "LISTAR_ORDENES_COMPRA_PROVEEDORES": BASE_URL + "/FacturacionProveedores/listarOrdenesCompraProveedor",
-                "DETALLE_RECEPCION_PARCIAL": BASE_URL + "/FacturacionProveedores/detalleRecepcionParcial",
-                "INSERTAR_FACTURA": BASE_URL + "/FacturacionProveedores/ingresarFactura",
-                "LISTAR_FACTURA_PROVEEDOR": BASE_URL + "/FacturacionProveedores/listarFacturaProveedor",
-                "REPORTE_FACTURA_PROVEEDOR": BASE_URL + "/FacturacionProveedores/reporteFacturaProveedor",
-                "SINCRONIZAR_FI": BASE_URL + "/FacturacionProveedores/sincronizarFi",
+                "LISTAR_ORDENES_COMPRA_PROVEEDORES": BASE_URL + "/NotasProveedores/listarOrdenesCompraProveedor",
+                "DETALLE_RECEPCION_PARCIAL": BASE_URL + "/NotasProveedores/detalleRecepcionParcial",
+                "INSERTAR_FACTURA": BASE_URL + "/NotasProveedores/ingresarFactura",
+                "LISTAR_FACTURA_PROVEEDOR": BASE_URL + "/NotasProveedores/listarFacturaProveedor",
+                "REPORTE_FACTURA_PROVEEDOR": BASE_URL + "/NotasProveedores/reporteFacturaProveedor",
+                "SINCRONIZAR_FI": BASE_URL + "/NotasProveedores/sincronizarFi",
 
             },
             'CAJA_GENERAL': {
@@ -67479,7 +67479,7 @@ define('app',[
                     controller: "PedidosClientesController",
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {
-                    url: "/FacturacionProveedores",
+                    url: "/NotasProveedores",
                     text: "Facturacion Proveedores", 
                     templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",

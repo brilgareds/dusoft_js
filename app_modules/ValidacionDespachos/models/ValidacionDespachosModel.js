@@ -27,7 +27,7 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, call
                     a.numero  :: varchar "+G.constants.db().LIKE+"  :numero  \
                    \
                 ) "+subfijo+" a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa_id";
-    // paginaActual 
+    // paginaActual
    
     var parametros = {
         fechaInicial: obj.fechaInicial, 

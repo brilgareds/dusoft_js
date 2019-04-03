@@ -1,3 +1,37 @@
 .contenedorfiltrocombobox{
     width: 100%;
 }
+.header{
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.items{
+    margin-right: 10px;
+    margin-bottom: 10px;
+    width: 70px;
+}
+
+.tablePc{
+    margin-top: 20px;
+    margin-bottom: 25px;
+}
+
+.tablePc th{
+    text-transform: uppercase;
+}
+
+.tablePc th, .tablePc td{
+    width: 10%;
+}
+
+.tablePc th:first-child, .tablePc td:first-child{
+    width: 28%;
+}
+.tablePc td:first-child{
+    font-weight: bolder;
+}
+.console-format{
+    background-color: #000;
+    color: #FFF;
+}

@@ -75,7 +75,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             // Creando servidores
             $scope.crearServer(216); // Creando servidor 216
             $scope.crearServer(229); // Creando servidor 229
-
+           
+            $scope.crearServer(117); // Creando servidor 216
+            
             // Agregando Modulos a los servidores
             $scope.agregarModulo(216, 'PC');
             $scope.agregarModulo(216, 'JASPER');
@@ -83,6 +85,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.agregarModulo(229, 'PC');
             $scope.agregarModulo(229, 'PM2');
+            
+            $scope.agregarModulo(117, 'PC');
+            $scope.agregarModulo(117, 'PM2');
 
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
             $scope.session = {
@@ -160,7 +165,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             socket.on("pc216", function (datos) {
                 console.log('pc216');
                 if (datos.status === 200) { $scope.monitoreo[216].PC.obj = datos.obj; }
-                console.log('$scope.monitoreo: ', $scope.monitoreo);
+                
             });
             socket.on("jasper216", function (datos) {
                 if (datos.status === 200) { $scope.monitoreo[216].JASPER.obj = datos.obj; }
@@ -179,6 +184,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             });
             socket.on("pm2229", function (datos) {
                 if (datos.status === 200) { $scope.monitoreo[229].PM2.obj = datos.obj; }
+            });
+           
+            socket.on("pc117", function (datos) {
+                if (datos.status === 200) { $scope.monitoreo[117].PC.obj = datos.obj; }
+            });
+            socket.on("pm2117", function (datos) {
+                console.log("Datos ",datos);
+                if (datos.status === 200) { $scope.monitoreo[117].PM2.obj = datos.obj; }
             });
 
             $scope.sshConnection = function (modulo, accion, server) {

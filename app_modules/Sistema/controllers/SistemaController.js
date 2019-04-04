@@ -87,6 +87,13 @@ Sistema.prototype.jasperReport = function (req, res) {
             user: "dusoft",
             password: "301206."
         };
+    }else if(server === 117){
+        var credentialRoot = 'echo 301206. | sudo -S ';
+        var parametros = {
+            host: "10.0.2.117",
+            user: "duana",
+            password: "301206."
+        };
     }
 
     var retorno = {
@@ -115,7 +122,7 @@ Sistema.prototype.jasperReport = function (req, res) {
     }else if(modulo === 'PM2'){
         if(accion !== undefined){
             if(accion === 'status'){
-                parametros.sentencia = "pm2 status";
+                parametros.sentencia = 'echo 301206. | su - '+"pm2 status";
             }else if(accion === 'reload'){
                 parametros.sentencia = "pm2 reload server";
             }else if(accion === 'resurrect'){
@@ -169,6 +176,9 @@ Sistema.prototype.jasperReport = function (req, res) {
                             palabrasFiltradas.push(palabra);
                             palabra = '';
                         }
+                    }else if(modulo === 'PM2'){
+                        palabrasFiltradas.push(palabra);
+                        palabra = '';
                     }
                 }
             }

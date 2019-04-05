@@ -10,7 +10,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     var that = this;
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-       
+         
                     var fecha_actual = new Date();
                     $scope.paginaactual = 1;
                     $scope.session = {
@@ -25,6 +25,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             modificarButton : false,
                             prefijo: "Prefijo",
                             registrosLength :0,
+                            termino_busqueda_clientes:"",
                             pref: {},
                             operario: {},
                             cliente: {},
@@ -36,7 +37,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         that.listarOperarios();
                         that.limpiar();
                     };
-
+                   
                     $scope.onColumnaSize = function (tipo) {
 
                         if (tipo === "AS" || tipo === "MS" || tipo === "CD") {
@@ -311,17 +312,18 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     that.buscar_clientes = function (callback) {
                         var obj = {
                             session: $scope.session,
-                            data: {
-                                clientes: {
+                            data: {//tercero.empresa_id
+                                tercero: {
                                     empresa_id: empresa.codigo,
-                                    termino_busqueda: $scope.root.termino_busqueda_clientes,
+                                    busquedaDocumento: [],
+                                    terminoBusqueda:$scope.root.termino_busqueda_clientes,
                                     paginacion: false
                                 }
                             }
                         };
                         Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function (data) {
                             if (data.status === 200) {
-                                callback(data.obj.listado_clientes);
+                                callback(data.obj.terceros);
                             }
                         });
                     };

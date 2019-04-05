@@ -26,7 +26,7 @@ define(["angular"], function (angular) {
                 "LISTAR_PREFIJOS": BASE_URL + "/SincronizacionDocumentos/listarPrefijosEspecial"
             },
             'TERCEROS': {
-                'LISTAR_CLIENTES': BASE_URL + "/Terceros/Clientes/listarClientes",
+                'LISTAR_CLIENTES': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",
                 'LISTAR_OPERARIOS': BASE_URL + "/Terceros/operariosBodega/listarOperarios",
             },
             'TRANSPORTADORAS': {

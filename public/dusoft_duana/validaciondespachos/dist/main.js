@@ -42380,7 +42380,7 @@ define('url',["angular"], function (angular) {
                 "LISTAR_PREFIJOS": BASE_URL + "/SincronizacionDocumentos/listarPrefijosEspecial"
             },
             'TERCEROS': {
-                'LISTAR_CLIENTES': BASE_URL + "/Terceros/Clientes/listarClientes",
+                'LISTAR_CLIENTES': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",
                 'LISTAR_OPERARIOS': BASE_URL + "/Terceros/operariosBodega/listarOperarios",
             },
             'TRANSPORTADORAS': {
@@ -48277,7 +48277,7 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
 
                     var that = this;
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-       
+         
                     var fecha_actual = new Date();
                     $scope.paginaactual = 1;
                     $scope.session = {
@@ -48292,6 +48292,7 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                             modificarButton : false,
                             prefijo: "Prefijo",
                             registrosLength :0,
+                            termino_busqueda_clientes:"",
                             pref: {},
                             operario: {},
                             cliente: {},
@@ -48303,7 +48304,7 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                         that.listarOperarios();
                         that.limpiar();
                     };
-
+                   
                     $scope.onColumnaSize = function (tipo) {
 
                         if (tipo === "AS" || tipo === "MS" || tipo === "CD") {
@@ -48578,17 +48579,18 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                     that.buscar_clientes = function (callback) {
                         var obj = {
                             session: $scope.session,
-                            data: {
-                                clientes: {
+                            data: {//tercero.empresa_id
+                                tercero: {
                                     empresa_id: empresa.codigo,
-                                    termino_busqueda: $scope.root.termino_busqueda_clientes,
+                                    busquedaDocumento: [],
+                                    terminoBusqueda:$scope.root.termino_busqueda_clientes,
                                     paginacion: false
                                 }
                             }
                         };
                         Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function (data) {
                             if (data.status === 200) {
-                                callback(data.obj.listado_clientes);
+                                callback(data.obj.terceros);
                             }
                         });
                     };

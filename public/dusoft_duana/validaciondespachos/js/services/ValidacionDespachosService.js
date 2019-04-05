@@ -102,6 +102,83 @@ define(["angular", "js/services"], function (angular, services) {
                 callback(data);
             });
         };
+        
+        /*
+         * @Author: Andres Mauricio Gonzalez
+         * @fecha 04/04/2019
+         * +Descripcion: registra las guias que ingresan a bodega
+         */
+        self.registroEntradaBodega = function (obj, callback) {
+            var obj = {
+                session: obj.session,
+                data: {
+                    obj
+                }
+            };
+            Request.realizarRequest(API.VALIDACIONDESPACHOS.REGISTRO_ENTRADA_BODEGA, "POST", obj, function (data) {
+
+                callback(data);
+            });
+        };
+        /*
+         * @Author: Andres Mauricio Gonzalez
+         * @fecha 04/04/2019
+         * +Descripcion: registra las guias que ingresan a bodega
+         */
+        self.modificaRegistroEntradaBodega = function (obj, callback) {
+            var obj = {
+                session: obj.session,
+                data: {
+                    obj
+                }
+            };
+            Request.realizarRequest(API.VALIDACIONDESPACHOS.MODIFICAR_REGISTRO_ENTRADA_BODEGA, "POST", obj, function (data) {
+
+                callback(data);
+            });
+        };
+        /*
+         * @Author: Andres Mauricio Gonzalez
+         * @fecha 04/04/2019
+         * +Descripcion: listar las guias que ingresan a bodega
+         */
+        self.listarRegistroEntrada = function (obj, callback) {
+            var obj = {
+                session: obj.session,
+                data: {
+                    obj
+                }
+            };
+            Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_REGISTRO_ENTRADA, "POST", obj, function (data) {
+
+                callback(data);
+            });
+        };
+        
+        /**
+        * @author Andres Mauricio Gonzalez
+        * @fecha  31/05/2017 DD/MM/YYYYY
+        * +Descripcion
+        */
+       self.listarPrefijos = function (parametros, callback) {
+
+           Request.realizarRequest(API.SINCRONIZACION_DOCUMENTOS.LISTAR_PREFIJOS, "POST", parametros, function (data) {
+               callback(data);
+
+           });
+       };
+        /**
+        * @author Andres Mauricio Gonzalez
+        * @fecha  31/05/2017 DD/MM/YYYYY
+        * +Descripcion
+        */
+       self.listarOperarios = function (parametros, callback) {
+
+           Request.realizarRequest(API.TERCEROS.LISTAR_OPERARIOS, "POST", parametros, function (data) {
+               callback(data);
+
+           });
+       };
 
         return this;
     }]);

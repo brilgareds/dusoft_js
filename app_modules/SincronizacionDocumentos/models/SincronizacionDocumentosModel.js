@@ -42,7 +42,7 @@ SincronizacionDocumentosModel.prototype.listarPrefijosEspecial = function (obj, 
         .distinct('a.prefijo', 'a.tipo_doc_general_id', 'a.texto1')
         .select()
         .from('documentos as a')
-        .where('a.empresa_id', obj.empresaId)
+        .where(G.knex.raw("a.empresa_id in ('03','FD')"))
         //.orderBy('a.prefijo')
         .union(function(){
               this.select('a.prefijo',G.knex.raw("'' as tipo_doc_general_id"),'a.texto1')

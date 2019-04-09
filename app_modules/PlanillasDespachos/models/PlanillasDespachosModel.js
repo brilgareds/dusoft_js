@@ -121,6 +121,13 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                 ) is null then '0'\
                 ELSE '1' end as estado_documento")
     ];
+
+    if (obj.estadoListarValidacionDespachos !== 1) {
+        columnas.push("h.cantidad_cajas");
+        columnas.push("h.cantidad_neveras");
+    }
+
+
     var query = G.knex.select(columnas)
             .from("inv_bodegas_movimiento_despachos_farmacias as a")
             .innerJoin("solicitud_productos_a_bodega_principal as b", "b.solicitud_prod_a_bod_ppal_id", "a.solicitud_prod_a_bod_ppal_id")
@@ -144,8 +151,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                     .on("h.numero", "a.numero");
         });
     } else {
-        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero FROM aprobacion_despacho_planillas_d f\
-                                           UNION SELECT g.prefijo, g.numero FROM aprobacion_despacho_planillas g) as h"), function () {
+        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero, f.cantidad_cajas, f.cantidad_neveras FROM aprobacion_despacho_planillas_d f\
+                                           UNION SELECT g.prefijo, g.numero, g.cantidad_cajas, g.cantidad_neveras FROM aprobacion_despacho_planillas g) as h"), function () {
 
             this.on("h.prefijo", "a.prefijo")
                     .on("h.numero", "a.numero");
@@ -200,6 +207,13 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                 ) is null then '0'\
                 ELSE '1' end as estado_documento")
     ];
+
+
+    if (obj.estadoListarValidacionDespachos !== 1) {
+        columnas.push("h.cantidad_cajas");
+        columnas.push("h.cantidad_neveras");
+    }
+
     var query = G.knex.select(columnas)
             .from("inv_bodegas_movimiento_despachos_clientes as a")
             .innerJoin("ventas_ordenes_pedidos as b", "b.pedido_cliente_id", "a.pedido_cliente_id");
@@ -211,8 +225,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                     .on("h.numero", "a.numero");
         });
     } else {
-        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero FROM aprobacion_despacho_planillas_d f\
-                                           UNION SELECT g.prefijo, g.numero FROM aprobacion_despacho_planillas g) as h"), function () {
+        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero, f.cantidad_cajas, f.cantidad_neveras FROM aprobacion_despacho_planillas_d f\
+                                           UNION SELECT g.prefijo, g.numero, g.cantidad_cajas, g.cantidad_neveras FROM aprobacion_despacho_planillas g) as h"), function () {
 
             this.on("h.prefijo", "a.prefijo")
                     .on("h.numero", "a.numero");
@@ -342,6 +356,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     f.cantidad_neveras,\
                     a.temperatura_neveras,\
                     a.observacion,\
+                    '' as descripcion_sede,\
+                    '' as direccion_sede,\
                     ( select a.prefijo||'-'||a.factura_fiscal\
                     from( \
                     SELECT a.prefijo,a.factura_fiscal\
@@ -386,6 +402,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     e.cantidad_neveras,\
                     a.temperatura_neveras,\
                     a.observacion,\
+                    f.nombre_tercero as descripcion_sede,\
+                    f.direccion as direccion_sede,\
                     ( select a.prefijo||'-'||a.factura_fiscal\
                     from( \
                     SELECT a.prefijo,a.factura_fiscal\
@@ -403,6 +421,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     inner join inv_bodegas_movimiento_despachos_clientes b on a.empresa_id = b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
                     inner join ventas_ordenes_pedidos c on b.pedido_cliente_id = c.pedido_cliente_id\
                     inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id\
+                    inner join terceros f on c.tipo_id_sede = f.tipo_id_tercero and c.sede_id = f.tercero_id\
                     inner join (\n\
                         SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo\
                         FROM aprobacion_despacho_planillas f \
@@ -430,6 +449,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.cantidad_neveras,\
                     a.temperatura_neveras,\
                     a.observacion,\
+                    '' as descripcion_sede,\
+                    '' as direccion_sede,\
                     '' as factura,\
                     a.usuario_id\
                     from inv_planillas_detalle_empresas a\
@@ -713,7 +734,7 @@ function __insertarLioDocumento(obj, callback) {
                  GROUP BY 1,2,3,4,5,6,7,8,9,10,1)";
     }
 
-    var query = G.knex.raw(sql, {1: documento.empresa_id, 2: documento.prefijo, 3: documento.numero,4: documento.tercero.empresa_id, 5: documento.tercero.centro_utilidad, 6: documento.tercero.codigo});
+    var query = G.knex.raw(sql, {1: documento.empresa_id, 2: documento.prefijo, 3: documento.numero, 4: documento.tercero.empresa_id, 5: documento.tercero.centro_utilidad, 6: documento.tercero.codigo});
 
     if (obj.transaccion)
         query.transacting(obj.transaccion);

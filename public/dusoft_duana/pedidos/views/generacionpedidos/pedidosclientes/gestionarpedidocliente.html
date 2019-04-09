@@ -3,8 +3,8 @@
 
 
     <div ng-controller="PedidosClienteController">
-        
-        
+
+
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
@@ -14,11 +14,11 @@
                         </div>
                         <h3 class="text-center col-sm-4"  ><u><strong ng-bind="datos_view.usuario.getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()"></u></strong></h3>
                         <div class="col-sm-4">
-                            <h3 class="text-center" ng-if='Pedido.get_numero_cotizacion() >0 '><strong>Cotizacion #{{ Pedido.get_numero_cotizacion() }}</strong></h3>
-                            <h3 class="text-right-responsive-center" ng-if='Pedido.get_numero_pedido() >0 '><strong>Pedido #{{ Pedido.get_numero_pedido() }}</strong></h3>
-                            
+                            <h3 class="text-center" ng-if='Pedido.get_numero_cotizacion() > 0'><strong>Cotizacion #{{ Pedido.get_numero_cotizacion()}}</strong></h3>
+                            <h3 class="text-right-responsive-center" ng-if='Pedido.get_numero_pedido() > 0'><strong>Pedido #{{ Pedido.get_numero_pedido()}}</strong></h3>
+
                         </div>
-                      
+
                     </div>
                     <div class="panel-body">                    
                         <div class="row">
@@ -26,14 +26,14 @@
 
                                 <fieldset>
                                     <legend class="icon-search icon-large icon-white">Cliente</legend>  
-                                    <ui-select ng-model="Pedido.cliente" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_cliente()">
-                                        <ui-select-match  placeholder="Seleccionar cliente">{{ $select.selected.get_descripcion() }}</ui-select-match>
+                                    <ui-select ng-model="Pedido.cliente" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_cliente()">
+                                        <ui-select-match  placeholder="Seleccionar cliente">{{ $select.selected.get_descripcion()}}</ui-select-match>
                                         <ui-select-choices ui-disable-choice="cliente.getTipoBloqueoId() != 1 || cliente.getEstadoContrato() != 1" refresh="listar_clientes($select.search)" refresh-delay="0" repeat="cliente in Empresa.get_clientes() | filter:$select.search">
-                                            
-                                          <i ng-if='cliente.getTipoBloqueoId() != 1' class="glyphicon glyphicon-ban-circle"></i> {{ cliente.get_descripcion() }}
-                                          <span ng-if="cliente.getEstadoContrato() != 1" style="color:orange"> - SIN CONTRATO</span>
-                                              
-                                            
+
+                                            <i ng-if='cliente.getTipoBloqueoId() != 1' class="glyphicon glyphicon-ban-circle"></i> {{ cliente.get_descripcion()}}
+                                            <span ng-if="cliente.getEstadoContrato() != 1" style="color:orange"> - SIN CONTRATO</span>
+
+
                                         </ui-select-choices>
                                     </ui-select>                                   
                                 </fieldset>
@@ -43,7 +43,8 @@
                                     <legend>Dirección</legend> 
                                     <div class="row">  
                                         <div class="col-md-12">                                          
-                                            <input type="text" ng-value="Pedido.getCliente().get_ubicacion()" ng-disabled="true" class="form-control" />
+                                            <input ng-if='!Pedido.sede' type="text" ng-value="Pedido.getCliente().get_ubicacion()" ng-disabled="true" class="form-control" />
+                                            <input ng-if='Pedido.sede' type="text" ng-value="Pedido.sede.get_ubicacion()" ng-disabled="true" class="form-control" />
                                         </div>
                                     </div>
                                 </fieldset>
@@ -53,7 +54,7 @@
                                     <legend>Tipo Pedido</legend> 
                                     <div class="row">
                                         <div class="col-md-7" style="margin-top: -14px">  
-                                            <h4><strong>{{ Pedido.get_descripcion_tipo_producto() }}</strong></h4>
+                                            <h4><strong>{{ Pedido.get_descripcion_tipo_producto()}}</strong></h4>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -70,14 +71,33 @@
                             </div>
                         </div>
                         <br>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <fieldset>
+                                    <legend>Sede Destino</legend> 
+                                    <div class="row">
+                                        <div class="col-md-12"> 
+                                            <ui-select ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() > 0"  ng-model="Pedido.sede" theme="select2" class="form-control selectgeneral pull-left">
+                                                <ui-select-match  placeholder="Seleccionar Sede">{{ $select.selected.get_descripcion()}}</ui-select-match>
+                                                <ui-select-choices refresh="listar_clientes($select.search)" refresh-delay="0" 
+                                                                   repeat="sede in Empresa.get_clientes() | filter:$select.search">
+                                                    {{ sede.get_descripcion()}}
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <br>
                         <div class="row"> 
                             <div class="col-md-4">
                                 <fieldset>
                                     <legend>Vendedor</legend>                                 
-                                    <ui-select ng-model="Pedido.vendedor" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_vendedor()">
-                                        <ui-select-match  placeholder="Seleccionar vendedor">{{ $select.selected.getNombre() }}</ui-select-match>
+                                    <ui-select ng-model="Pedido.vendedor" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_vendedor()">
+                                        <ui-select-match  placeholder="Seleccionar vendedor">{{ $select.selected.getNombre()}}</ui-select-match>
                                         <ui-select-choices repeat="vendedor in Empresa.get_vendedores() | filter:$select.search">
-                                            {{ vendedor.getNombre() }}
+                                            {{ vendedor.getNombre()}}
                                         </ui-select-choices>
                                     </ui-select>
                                 </fieldset>
@@ -87,7 +107,7 @@
                                     <legend>Observación</legend>                                 
                                     <div class="row">  
                                         <div class="col-md-12">                                          
-                                            <textarea  ng-model="Pedido.observacion" ng-disabled="Pedido.get_numero_pedido() >0 || Pedido.get_estado_cotizacion() ==5 || Pedido.get_estado_cotizacion() ==3" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
+                                            <textarea  ng-model="Pedido.observacion" ng-disabled="Pedido.get_numero_pedido() > 0 || Pedido.get_estado_cotizacion() == 5 || Pedido.get_estado_cotizacion() == 3" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -102,11 +122,11 @@
                                     </div>
                                 </fieldset>
                             </div>   
-                      
+
                         </div>     
                         <br>                    
                         <br>                      
-                         
+
                         <div class="row">  
                             <div class="col-md-12">
                                 <tabset>
@@ -119,21 +139,21 @@
                                                     <div class="">
                                                         <div class="col-md-3">
                                                             <p class="input-group">
-                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos() || Pedido.get_aprobado_cartera() ==5 || Pedido.getEstadoSolicitud () ==8" ng-click="buscar_productos(Pedido)" > 
+                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos() || Pedido.get_aprobado_cartera() == 5 || Pedido.getEstadoSolicitud () == 8" ng-click="buscar_productos(Pedido)" > 
                                                                     <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                                 </button>
                                                             </p>
                                                         </div>
 
-                                                       
+
                                                     </div>
 
                                                 </div>
-                                                
+
                                                 <div class="table-responsive" >
                                                     <div class="defaultGrid grid-responsive" ng-grid="lista_productos" style="clear:both; " > </div>
-                                               </div>
-   
+                                                </div>
+
                                             </div>
                                         </div>   
                                     </tab>                        
@@ -156,7 +176,7 @@
                                                     </div>
                                                     <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
                                                         Nombre Archivo : <label>{{file.name}}</label>   
-                                                        
+
                                                         <div class="progress progress-striped" ng-class="{active: file.isUploading()}">
                                                             <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
                                                                  aria-valuemax="100" ng-style="{width: datos_view.progresoArchivo + '%'}">
@@ -176,7 +196,7 @@
                                                     <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="" ng-show="$flow.files.length">
                                                         <span class="glyphicon glyphicon-minus" ></span> Remover
                                                     </button>
-                                                    <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="validacion_buscar_productos() || Pedido.get_numero_pedido() > 0 " ng-show="$flow.files.length">
+                                                    <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="validacion_buscar_productos() || Pedido.get_numero_pedido() > 0" ng-show="$flow.files.length">
                                                         <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
                                                     </button>
                                                 </div>
@@ -184,47 +204,47 @@
                                         </div>
                                     </tab>                                
                                 </tabset>
-                               
-                               
+
+
                                 <div class="modal-footer col-md-12" ng-if="!datos_view.cartera">
-                                    
-                                    
-                                     <button class="btn btn-default" ng-click="cancelar_cotizacion()" ng-if="Pedido.get_estado_cotizacion() ==1">
+
+
+                                    <button class="btn btn-default" ng-click="cancelar_cotizacion()" ng-if="Pedido.get_estado_cotizacion() == 1">
                                         <span class="glyphicon glyphicon-remove" ></span> Cancelar cotizacion
                                     </button>
-                                    
+
                                     <button class="btn btn-default" ng-click="volver_cotizacion()" >
                                         <span class="glyphicon glyphicon-ok" ></span> Volver
                                     </button>
-                                    <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
+                                    <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte()}}" ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() > 0">
                                         <span class="glyphicon glyphicon-cog" ></span> Generar reporte
                                     </button>
-                                    
-                                     <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="registrarProductoModificado()" ng-if="Pedido.get_numero_pedido() >0" >  
+
+                                    <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte()}}" ng-click="registrarProductoModificado()" ng-if="Pedido.get_numero_pedido() > 0" >  
                                         <span class="glyphicon glyphicon-cog" ></span> Solicitar autorizacion cartera 
                                     </button>
-                                   <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_estado_cotizacion() ==1 || Pedido.get_estado_cotizacion() ==2 || Pedido.get_estado_cotizacion() ==4 || Pedido.get_estado_cotizacion() ==6" >
-                                        
-                                   
-                                   <span class="glyphicon glyphicon-ok" ></span> Aceptar 
+                                    <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_estado_cotizacion() == 1 || Pedido.get_estado_cotizacion() == 2 || Pedido.get_estado_cotizacion() == 4 || Pedido.get_estado_cotizacion() == 6" >
+
+
+                                        <span class="glyphicon glyphicon-ok" ></span> Aceptar 
                                     </button>                                
                                     <!--<button class="btn btn-default" ng-click="gestionar_pedido()" ng-if="Pedido.get_numero_cotizacion() > 0 && Pedido.get_aprobado_cartera() === '1'" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
                                         <span class="glyphicon glyphicon-ok" ></span> Generar Pedido
                                     </button>                    //-->
-                                     <button class="btn btn-default" ng-click="generarPedidoAutomaticoCliente()" ng-if="Pedido.get_numero_cotizacion() > 0 && false" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
+                                    <button class="btn btn-default" ng-click="generarPedidoAutomaticoCliente()" ng-if="Pedido.get_numero_cotizacion() > 0 && false" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
                                         <span class="glyphicon glyphicon-ok" ></span> Generar Pedido
                                     </button>    
                                 </div> 
-                                
+
                                 <div class="modal-footer col-md-12" ng-if="datos_view.cartera">                                                             
-                                    <button class="btn btn-default" ng-click="gestion_cartera(4,1)" >  
+                                    <button class="btn btn-default" ng-click="gestion_cartera(4, 1)" >  
                                         <span class="glyphicon glyphicon-remove" ></span> Denegado Cartera 
                                     </button>
-                               
-                                     <button class="btn btn-default" ng-click="gestion_cartera(1,0)"  ng-disabled="!(Pedido.observacion_cartera.length > 0)">  
+
+                                    <button class="btn btn-default" ng-click="gestion_cartera(1, 0)"  ng-disabled="!(Pedido.observacion_cartera.length > 0)">  
                                         <span class="glyphicon glyphicon-ok" ></span> Aprobado Cartera  
                                     </button>
-                                    
+
                                 </div>                              
                             </div>
                         </div>
@@ -239,4 +259,3 @@
     <visualizar-reporte></visualizar-reporte>
 </div>
 
- 

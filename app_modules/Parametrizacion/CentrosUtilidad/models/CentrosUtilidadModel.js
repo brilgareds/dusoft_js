@@ -40,8 +40,6 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad = function (obj, c
                 from centros_utilidad a " + where;
 
     var query = G.knex.raw(sql, parametros);
-console.log("Query resultado", G.sqlformatter.format(
-               query.toString()));
 
     query.then(function (resultado) {
         callback(false, resultado.rows, resultado);

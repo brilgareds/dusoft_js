@@ -237,6 +237,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 cliente.set_contrato(data.contrato_cliente_id);
                 var vendedor = Vendedor.get(data.nombre_vendendor, data.tipo_id_vendedor, data.vendedor_id, data.telefono_vendedor);
                 $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
+                if (data.sede_id) {
+                    var sede = Cliente.get(data.nombre_sede, data.direccion_sede, data.tipo_id_sede, data.sede_id, data.telefono_sede);
+                    $scope.Pedido.set_sede(sede);
+                }
                 $scope.Pedido.set_observacion(data.observaciones);
                 $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
@@ -356,6 +360,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 var vendedor = Vendedor.get(data.nombre_vendedor, data.tipo_id_vendedor, data.idetificacion_vendedor/*, data.telefono_vendedor*/);
                 $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
+                if (data.sede_id) {
+                    var sede = Cliente.get(data.nombre_sede, data.direccion_sede, data.tipo_id_sede, data.sede_id, data.telefono_sede);
+                    $scope.Pedido.set_sede(sede);
+                }
                 $scope.Pedido.set_observacion(data.observacion);
                 $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
@@ -525,64 +533,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.buscar_productos = function (Pedido) {
 
-                // console.log("Pedido [buscar_productos]::: ", Pedido);
-                /* var pedido =  {                 
-                 empresa_id: '03', 
-                 centro_utilidad_id: '1 ',
-                 bodega_id: '03',
-                 numero_cotizacion: 0,
-                 observacion: 'NUEVA PRUEBA ',
-                 productos: [
-                 {codigo_producto: '041A0604797', cantidad_solicitada: '1', empresaIdProducto: '03', centroUtilidadProducto: '1 ',bodegaProducto:'03'},
-                 
-                 /*{codigo_producto: '1101G0222238',cantidad_solicitada: '10'},
-                 {codigo_producto: '1101M0443248',cantidad_solicitada: '1'},	
-                 {codigo_producto: '1101D0471598',cantidad_solicitada: '1'},
-                 {codigo_producto: '1101E0381868',cantidad_solicitada: '1'} */
-                /*   ],
-                 tipo_producto: '1',                  
-                 observacion_cartera: '',
-                 aprobado_cartera: '0',
-                 estado_cotizacion: '',                   
-                 estado: '0',
-                 vendedor: {tipo_id_tercero: 'CC ',id: '67039648'},
-                 cliente: {
-                 tipo_id_tercero: 'NIT',
-                 id: '800024390'
-                 },
-                 fecha_registro: '30/01/2017',
-                 usuario_id: 1350
-                 }; 
-                 
-                 var obj = {
-                 session: $scope.session,
-                 data: {
-                 pedidos_clientes: {
-                 cotizacion: pedido
-                 }
-                 }
-                 };
-                 
-                 var mensaje = "";
-                 var url = API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA;
-                 Request.realizarRequest(url, "POST", obj, function(data) {
-                 
-                 if(data.status === 200){                       
-                 mensaje = data.msj;                       
-                 }
-                 
-                 if(data.status === 403){
-                 data.obj.pedidos_clientes.productos_invalidos.forEach(function(producto){
-                 mensaje += producto.mensajeError+ " para el codigo ("+ producto.codigo_producto+") Precio venta ("+producto.precio_venta+") \n";
-                 });
-                 }
-                 
-                 if(data.status === 500){                       
-                 mensaje = data.msj;                       
-                 }
-                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);    
-                 
-                 });*/
+                //console.log("Pedido [buscar_productos]::: ", Pedido);
                 $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
                 $scope.$emit('gestionar_productos_clientes');
             };
@@ -1231,18 +1182,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     localStorageService.add("terminoBusqueda", parametros);
                 }
 
-                /*var pedido = localStorageService.get("pedido");
-                 
-                 if (pedido) {
-                 localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.busqueda, activar: true, filtro_actual_pedido: pedido.filtro_actual_pedido});
-                 
-                 }*/
-//                that.actualizarCabeceraPedidoCliente();
                 that.actualizarCabeceraPedidoCliente(function (respuesta) {
-                    if(respuesta){
-                $state.go('ListarPedidosClientes');
+                    if (respuesta) {
+                        $state.go('ListarPedidosClientes');
                     }
-                       
+
                 });
             };
 
@@ -2094,6 +2038,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         //$scope.volver_cotizacion();
                     }
                 });
+            };
+
+            /**
+             * @author German Galvis
+             * +Descripcion Metodo encargado de limpiar la Sede
+             * @fecha 09/04/2019
+             */
+            $scope.seleccionar_cliente = function () {
+
+                $scope.Pedido.sede = null;
+
             };
 
             /**

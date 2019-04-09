@@ -185,7 +185,15 @@ define(["angular", "js/services"], function(angular, services) {
                         
                         //Se hace un set del cliente o la farmacia dependiendo del tipo de pedido
                         if(tipoPedido === '1'){
-                            var cliente = Cliente.get(_pedido.nombre_cliente, _pedido.direccion_cliente, _pedido.tipo_id_cliente, _pedido.identificacion_cliente);
+                            var direccion='';
+                            if(_pedido.direccion_sede){
+                                direccion = _pedido.direccion_sede;
+                                pedido.nombreSede = _pedido.nombre_sede;
+                            }else{
+                                direccion = _pedido.direccion_cliente;
+                            }
+                            
+                            var cliente = Cliente.get(_pedido.nombre_cliente, direccion, _pedido.tipo_id_cliente, _pedido.identificacion_cliente);
                             pedido.setCliente(cliente);
                         } else {
                             var farmacia = Farmacia.get(

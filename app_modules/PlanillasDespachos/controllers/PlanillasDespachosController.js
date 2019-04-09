@@ -611,18 +611,30 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
                     // Lista Documentos
                     var datos = [];
                     lista_documentos.forEach(function (documento) {
+                        
+                        var clienteSede = documento.descripcion_destino ;
+                        if(documento.descripcion_sede !== '') {
+                            clienteSede = documento.descripcion_sede;
+                        }
+                        
 
-                        if (datos[documento.descripcion_destino]) {
-                            datos[documento.descripcion_destino].push(documento);
+                        if (datos[clienteSede]) {
+                            datos[clienteSede].push(documento);
                         } else {
-                            datos[documento.descripcion_destino] = [documento];
+                            datos[clienteSede] = [documento];
                         }
                     });
 
                     var documentos = [];
                     for (var z in datos) {
+                        var direccion = datos[z][0].direccion_destino ;
+                        if(datos[z][0].direccion_sede !== '') {
+                            direccion = datos[z][0].direccion_sede;
+                        }
+                        
+                        
 //                        documentos.push({tercero: z, detalle: datos[z]});
-                        documentos.push({tercero: z, ciudad: datos[z][0].ciudad, detalle: datos[z]});
+                        documentos.push({tercero: z, ciudad: datos[z][0].ciudad, direccion:direccion, detalle: datos[z]});
                     }
 
                     _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function (nombre_reporte) {

@@ -79,8 +79,8 @@
                                         <div class="col-md-12"> 
                                             <ui-select ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() > 0"  ng-model="Pedido.sede" theme="select2" class="form-control selectgeneral pull-left">
                                                 <ui-select-match  placeholder="Seleccionar Sede">{{ $select.selected.get_descripcion()}}</ui-select-match>
-                                                <ui-select-choices refresh="listar_clientes($select.search)" refresh-delay="0" 
-                                                                   repeat="sede in Empresa.get_clientes() | filter:$select.search">
+                                                <ui-select-choices refresh="listar_sedes($select.search)" refresh-delay="0" 
+                                                                   repeat="sede in Empresa.get_sedes() | filter:$select.search">
                                                     {{ sede.get_descripcion()}}
                                                 </ui-select-choices>
                                             </ui-select>

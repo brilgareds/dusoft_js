@@ -466,6 +466,55 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             };
+            // Sedes
+            $scope.listar_sedes = function (termino_busqueda) {
+
+                if (termino_busqueda.length < 3) {
+                    return;
+                }
+
+                $scope.datos_view.termino_busqueda_clientes = termino_busqueda;
+                that.buscar_sedes(function (clientes) {
+                    that.render_sedes(clientes);
+                });
+            };
+            that.buscar_sedes = function (callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        clientes: {
+                            empresa_id: $scope.Pedido.get_empresa_id(),
+                            termino_busqueda: $scope.datos_view.termino_busqueda_clientes,
+                            paginacion: false
+                        }
+                    }
+                };
+                Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function (data) {
+
+
+                    if (data.status === 200) {
+                        callback(data.obj.listado_clientes);
+                    }
+                });
+            };
+            that.render_sedes = function (clientes) {
+
+                $scope.Empresa.limpiar_sedes();
+                clientes.forEach(function (data) {
+
+                    var sedes = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
+                    sedes.setDepartamento(data.departamento);
+                    sedes.setMunicipio(data.municipio);
+//                    cliente.set_contrato(data.contrato_cliente_id);
+//                    cliente.setTipoBloqueoId(data.tipo_bloqueo_id);
+//                    cliente.setEstadoContrato(data.estado_contrato);
+                    $scope.Empresa.set_sedes(sedes);
+
+                });
+
+
+            };
             // Vendedores
             that.buscar_vendedores = function (callback) {
 

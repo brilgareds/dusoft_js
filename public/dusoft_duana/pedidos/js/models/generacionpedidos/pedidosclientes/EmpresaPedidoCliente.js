@@ -5,6 +5,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             var EmpresaPedidoCliente = Object.create(Empresa.getClass().prototype)
 
             EmpresaPedidoCliente.clientes = [];
+            EmpresaPedidoCliente.sedes = [];
             EmpresaPedidoCliente.vendedores = [];
             EmpresaPedidoCliente.cotizaciones = [];
             EmpresaPedidoCliente.pedidos = [];
@@ -24,6 +25,18 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             EmpresaPedidoCliente.limpiar_clientes = function() {
                 this.clientes = [];
+            };
+            // sedes
+            EmpresaPedidoCliente.set_sedes = function(sedes) {
+                this.sedes.push(sedes);
+            };
+
+            EmpresaPedidoCliente.get_sedes = function() {
+                return this.sedes;
+            };
+
+            EmpresaPedidoCliente.limpiar_sedes = function() {
+                this.sedes = [];
             };
             
             // Vendedores

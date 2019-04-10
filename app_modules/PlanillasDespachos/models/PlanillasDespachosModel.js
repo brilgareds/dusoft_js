@@ -92,6 +92,10 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
  */
 PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = function (obj, callback) {
 
+var fecha = new Date();
+var formato = 'YYYY-MM-DD';
+fecha.setMonth(fecha.getMonth() - 1);
+
     var columnas = [
         G.knex.raw("'0' as tipo"),
         G.knex.raw("'FARMACIAS' as descripcion_tipo"),
@@ -160,7 +164,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
     }
 
     query.where(function () {
-        this.andWhere(G.knex.raw("a.fecha_registro >= '2019-01-30 00:00:00'"));
+        this.andWhere(G.knex.raw("a.fecha_registro >= '"+G.moment(fecha).format(formato)+"'"));
         this.andWhere('a.empresa_id', obj.empresa_id);
         this.andWhere('b.farmacia_id', obj.farmacia_id);
         this.andWhere('b.centro_utilidad', obj.centro_utilidad_id);

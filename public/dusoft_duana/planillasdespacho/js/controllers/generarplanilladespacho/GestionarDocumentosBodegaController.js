@@ -101,7 +101,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                             pais_id: $scope.planilla.get_ciudad().get_pais_id(),
                             departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
                             ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
-                            estado:1,
+                            estado: 1,
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
                     }
@@ -596,14 +596,19 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
             $scope.onSeleccionTercero = function (fila, farmacia) {
 
-                var documentos = $scope.datos_view.documentosSeleccionados;
 
-                for (var i in documentos) {
-                    var _documento = documentos[i];
-                    _documento.tercero=farmacia;
+                if ($scope.datos_view.documentosSeleccionados.length > 0) {
+
+                    var documentos = $scope.datos_view.documentosSeleccionados;
+
+                    for (var i in documentos) {
+                        var _documento = documentos[i];
+                        _documento.tercero = farmacia;
+                    }
+                } else {
+                    fila.tercero = farmacia;
                 }
 
-               // fila.tercero = farmacia;
             };
 
             $scope.onMostrarVentanaDescripcion = function (documento) {

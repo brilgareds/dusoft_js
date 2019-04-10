@@ -8,7 +8,8 @@ define(["angular"], function(angular) {
             'BASE_URL': BASE_URL,
             'NOTAS_PROVEEDORES': {
                 'TIPOS_DOC': BASE_URL + '/notasProveedores/tiposDoc',
-                'LISTAR_NOTAS': BASE_URL + '/notasProveedores/listarNotasProveedores'
+                'LISTAR_NOTAS': BASE_URL + '/notasProveedores/listarNotasProveedores',
+                'GUARDAR_TEMPORAL_DETALLE': BASE_URL + '/notasProveedores/guardarTemporalDetalle'
             }
         }
 

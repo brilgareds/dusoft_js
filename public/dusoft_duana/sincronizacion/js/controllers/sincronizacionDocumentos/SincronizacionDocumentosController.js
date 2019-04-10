@@ -117,7 +117,6 @@ define(["angular", "js/controllers"
                         codigoProveedor: $scope.cod_proveedor
                     }
                 };
-
                 console.log('Objeto antes de Ajax: ', obj);
 
                 ServerServiceDoc.sincronizacionDocumentos(obj, function (data) {
@@ -238,7 +237,6 @@ define(["angular", "js/controllers"
                 ]
 
             };
-
             $scope.Empresa = Empresa;
 
             $scope.datos_view = {

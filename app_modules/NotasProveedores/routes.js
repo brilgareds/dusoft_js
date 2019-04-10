@@ -8,4 +8,8 @@ module.exports = function(app, di_container) {
     app.post('/api/notasProveedores/listarNotasProveedores', function(req, res) {
         c_notasProveedores.listarNotasProveedor(req, res);
     });
+
+    app.post('/api/notasProveedores/guardarTemporalDetalle', function(req, res) {
+        c_notasProveedores.temporalDetalle(req, res);
+    });
 };

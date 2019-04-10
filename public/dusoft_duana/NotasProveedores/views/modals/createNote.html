@@ -1,0 +1,22 @@
+<div class="modal-header btn-primary">
+    <button type="button" class="close" style="opacity: 0.5;" ng-click="cerrarVentana()">&times;</button>
+    <h4 class="modal-title">Notas Proveedor</h4>
+</div>
+<div class="modal-body">
+    <div class="container-table">
+        <div class="table-responsive">
+            <div class="defaultGrid grid-responsive col-sm-12" style="padding: 0px;" ng-grid="itemsFactura">
+            </div>
+        </div>
+    </div>
+    <h4 align="center">Items agrupados Factura - (Valores Incluyen Iva)</h4>
+    <span>Concepto General: </span>
+    <select>
+        <option ng-repeat="glosa in NotaTemporal.glosasConceptoGeneral" value={{glosa.codigo_concepto_general}}>{{glosa.descripcion_concepto_general}}</option>
+    </select>
+    <span></span>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-danger" ng-click="cerrarVentana()" ng-disabled="">Cancelar</button>
+    <button class="btn btn-primary" ng-disabled="">Aceptar</button>
+</div>

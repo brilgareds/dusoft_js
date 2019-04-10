@@ -16,6 +16,19 @@ define(["angular", "js/services"], function (angular, services) {
                         callback(data);
                     });
                 };
+
+                self.listarNotasProveedores = function (obj, callback) {
+                    Request.realizarRequest(API.NOTAS_PROVEEDORES.LISTAR_NOTAS, "POST", obj, function (data) {
+                        callback(data);
+                    });
+                };
+
+                self.guardarTemporalDetalle = function(obj, callback) {
+                    Request.realizarRequest(API.NOTAS_PROVEEDORES.GUARDAR_TEMPORAL_DETALLE, 'POST', obj, function(data){
+                        callback(data);
+                    })
+                };
+
                 return this;
             }
         ]

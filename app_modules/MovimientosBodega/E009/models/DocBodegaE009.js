@@ -13,7 +13,7 @@ DocumentoBodegaE009.prototype.listarBodegas = function (callback) {
             .select()
             .from('bodegas')
             .where('bodega', '06')
-            .andWhere('empresa_id', '03');
+            
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

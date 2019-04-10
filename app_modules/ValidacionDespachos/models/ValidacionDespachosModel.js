@@ -323,6 +323,7 @@ ValidacionDespachosModel.prototype.validarExistenciaMultiplesDocumentos = functi
     }).done();
 };
 
+
 function __validarExistenciaMultiplesDocumentos(contexto, index, documentos, empresa, documentosAprobados, documentosNoAprobados, callback) {
 
     var documento = documentos[index];
@@ -369,5 +370,121 @@ ValidacionDespachosModel.prototype.validarExistenciaDocumento = function (obj, c
                 callback(error);
             }).done();
 };
+ValidacionDespachosModel.prototype.modificarRegistroEntradaBodega = function (obj, callback) {
 
+    var query = G.knex("registro_entrada_bodega").
+            where('registro_entrada_bodega_id', obj.registro_entrada_bodega_id).
+            update(
+                    {
+                        "prefijo_id": obj.prefijo,
+                        "numero": obj.numero,
+                        "numero_guia": obj.numeroGuia,
+                        "tipo_id_tercero": obj.tipoIdtercero,
+                        "tercero_id": obj.terceroId,
+                        "cantidad_caja": obj.cantidadCaja,
+                        "cantidad_nevera": obj.cantidadNevera,
+                        "cantidad_bolsa": obj.cantidadBolsa,
+                        "transportadora_id ": obj.transportadoraId,
+                        "observacion": obj.observacion,
+                        "operario_id": obj.operario_id
+                    });
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql registroEntrada", err);
+        callback(err);
+    });
+};
+
+ValidacionDespachosModel.prototype.registroEntrada = function (obj, callback) {
+
+    var query = G.knex("registro_entrada_bodega").
+            insert(
+                    {
+                        "prefijo_id": obj.prefijo,
+                        "numero": obj.numero,
+                        "numero_guia": obj.numeroGuia,
+                        "tipo_id_tercero": obj.tipoIdtercero,
+                        "tercero_id": obj.terceroId,
+                        "cantidad_caja": obj.cantidadCaja,
+                        "cantidad_nevera": obj.cantidadNevera,
+                        "cantidad_bolsa": obj.cantidadBolsa,
+                        "transportadora_id ": obj.transportadoraId,
+                        "usuario_id": obj.usuarioId,
+                        "fecha_registro": 'now()',
+                        "observacion": obj.observacion,
+                        "operario_id": obj.operario_id
+                    });
+
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql registroEntrada", err);
+        callback(err);
+    });
+};
+
+ValidacionDespachosModel.prototype.listarRegistroEntrada = function (obj, callback) {
+
+    var column = ["a.prefijo_id",
+        "a.numero",
+        "a.numero_guia",
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "a.cantidad_caja",
+        "a.cantidad_nevera",
+        "a.cantidad_bolsa",
+        "a.transportadora_id",
+        "a.usuario_id",
+        "a.observacion",
+        "c.descripcion as nombre_transportadora",
+        "d.nombre as nombre_usuario",
+        "b.nombre_tercero",
+        "a.registro_entrada_bodega_id",
+        "a.operario_id",
+        "e.nombre as nombre_operario",
+        "a.fecha_registro"];
+
+    var query = G.knex.column(column)
+            .select()
+            .from('registro_entrada_bodega as a')
+            .innerJoin('terceros as b', function () {
+                this.on("b.tipo_id_tercero", "a.tipo_id_tercero")
+                        .on("b.tercero_id", "a.tercero_id");
+            })
+            .leftJoin('inv_transportadoras as c', function () {
+                this.on("c.transportadora_id", "a.transportadora_id")
+            })
+            .innerJoin('system_usuarios as d', function () {
+                this.on("d.usuario_id", "a.usuario_id")
+            })
+            .innerJoin('operarios_bodega as e', function () {
+                this.on("e.operario_id", "a.operario_id")
+            })
+            .where(function () {
+                if (obj.busqueda !== undefined && obj.busqueda.trim() !== "") {
+                    this.orWhere("numero_guia", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("numero", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("d.nombre", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("c.descripcion", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("e.nombre", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("b.nombre_tercero", 'ilike', '%' + obj.busqueda + '%');
+                }
+            }).limit(G.settings.limit).
+            offset((obj.pagina - 1) * G.settings.limit);
+
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql registroEntrada", err);
+        callback(err);
+    });
+
+};
 module.exports = ValidacionDespachosModel;

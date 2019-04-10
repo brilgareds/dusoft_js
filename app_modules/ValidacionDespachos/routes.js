@@ -44,6 +44,21 @@ module.exports = function(app, di_container) {
        c_ValidacionDespachos.eliminarImagen(req, res); 
     });
     
+    app.post('/api/ValidacionDespachos/modificarRegistroEntradaBodega', function(req, res){
+       c_ValidacionDespachos.modificarRegistroEntradaBodega(req, res); 
+    });
+    app.post('/api/ValidacionDespachos/registroEntradaBodega', function(req, res){
+       c_ValidacionDespachos.registroEntradaBodega(req, res); 
+    });
+    app.post('/api/ValidacionDespachos/listarRegistroEntrada', function(req, res){
+       c_ValidacionDespachos.listarRegistroEntrada(req, res); 
+    });
+    
+    app.post('/api/ValidacionDespachos/listarPrefijos', function(req, res){
+        console.log("--------/api/ValidacionDespachos/listarPrefijos");
+       c_ValidacionDespachos.listarPrefijos(req, res); 
+    });
+    
     
     
 };

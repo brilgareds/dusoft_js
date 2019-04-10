@@ -32,6 +32,7 @@ module.exports = function(app, di_container) {
     });
     
     app.post('/api/Reportes/DrArias/rotacionZonasMovil', function(req, res) {
+        console.log("****rotacionZonasMovil*** ");
         c_Reportes.rotacionZonasMovil(req, res);
     });
 

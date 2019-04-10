@@ -131,7 +131,8 @@ ValidacionDespachos.prototype.adjuntarImagen = function (req, res) {
     var numero = args.validacionDespachos.numero;
     var file = req.files.file;
     var rutaTmp = file.path;
-    var rutaNueva = G.dirname + G.settings.carpeta_aprobacion_despachos + prefijo + "-" + numero + "/" + file.name;
+    var rutaNueva = G.dirname + G.settings.carpeta_aprobacion_despachos + prefijo + "-" + numero + "/" + prefijo + "-" + numero + "/" + file.name;
+    var rutaFile = G.dirname + G.settings.carpeta_aprobacion_despachos + prefijo + "-" + numero;
 
     if (G.fs.existsSync(rutaTmp)) {
         G.Q.nfcall(G.fs.copy, rutaTmp, rutaNueva).then(function () {
@@ -145,13 +146,23 @@ ValidacionDespachos.prototype.adjuntarImagen = function (req, res) {
             return G.Q.ninvoke(that.m_ValidacionDespachos, 'agregarImagen', obj)
 
         }).then(function () {
+
+            return G.Q.nfcall(__scp, rutaFile);
+
+        }).then(function (respuesta) {
+            console.log(" contesta scp ", respuesta);
+            if (respuesta) {
+                G.fs.unlinkSync(rutaNueva);
+            }
             res.send(G.utils.r(req.url, 'Imagen guardada', 200, {validacionDespachos: {}}));
 
         }).fail(function (err) {
+            console.log("Error", err);
             G.fs.unlinkSync(rutaNueva);
             res.send(G.utils.r(req.url, 'Error guardando la imagen', 500, {validacionDespachos: {}}));
         }).done();
     } else {
+        console.log("Error ---");
         res.send(G.utils.r(req.url, 'Error guardando la imagen', 500, {validacionDespachos: {}}));
     }
 };
@@ -178,10 +189,15 @@ ValidacionDespachos.prototype.eliminarImagen = function (req, res) {
 
     var id = args.validacionDespachos.id;
     var path = args.validacionDespachos.path;
+    var arrayPath = path.split('/');
+    var resultado = "";
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'eliminarImagen', {id: id}).then(function (resultados) {
+        resultado = resultados;
 
-    G.Q.ninvoke(that.m_ValidacionDespachos, 'eliminarImagen', {id: id}).then(function (resultado) {
-        var rutaNueva = G.dirname + G.settings.carpeta_aprobacion_despachos + path;
-        G.fs.unlinkSync(rutaNueva);
+        return G.Q.nfcall(__borrarArchivoSSH, G.settings.imagePath + path);
+
+    }).then(function (respuesta) {
+
         return res.send(G.utils.r(req.url, 'Eliminacion exitosa', 200, {imagenes: resultado}));
 
     }).fail(function (err) {
@@ -190,6 +206,35 @@ ValidacionDespachos.prototype.eliminarImagen = function (req, res) {
 
     }).done();
 };
+
+function __scp(file, callback) {
+    var resp = false;
+    G.scp.scp(file, {
+        host: G.settings.imageHost,
+        username: G.settings.imageUser,
+        password: G.settings.imagePass,
+        path: G.settings.imagePath
+    }, function (err) {
+        if (err === undefined) {
+            resp = true;
+        }
+        callback(false, resp);
+
+    });
+}
+
+function __borrarArchivoSSH(file, callback) {
+    var resp = false;
+    var host = G.settings.imageUser + "@" + G.settings.imageHost;
+    var seq = G.sequest.connect(host, {username: G.settings.imageUser, password: G.settings.imagePass})
+    seq('rm ' + file, function (err, stdout) {
+        if (err === undefined) {
+            resp = true;
+        }
+        seq.end() // will keep process open if you don't end it
+    })
+    callback(false, resp);
+}
 
 /*
  * funcion para consultar empresas
@@ -251,7 +296,7 @@ ValidacionDespachos.prototype.registrarAprobacion = function (req, res) {
 
     G.Q.ninvoke(that.m_ValidacionDespachos, 'transaccionRegistrarAprobacion', args.validacionDespachos).then(function (resultado) {
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {validacionDespachos: resultado}));
-        
+
     }).fail(function (err) {
 
         res.send(G.utils.r(req.url, 'Error en el registro', 500, {validacionDespachos: {}}));
@@ -360,7 +405,95 @@ ValidacionDespachos.prototype.validarExistenciaDocumento = function (req, res) {
 
         res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
 
-    }).done();  
+    }).done();
+};
+
+ValidacionDespachos.prototype.registroEntradaBodega = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data.obj;
+
+    var obj = {
+        "prefijo": args.prefijo,
+        "numero": args.numero,
+        "numeroGuia": args.numeroGuia,
+        "cantidadCaja": args.tipoEmpaque.cantidadCaja,
+        "cantidadNevera": args.tipoEmpaque.cantidadNevera,
+        "cantidadBolsa": args.tipoEmpaque.cantidadBolsa,
+        "tipoIdtercero": args.tipoIdtercero,
+        "terceroId": args.terceroId,
+        "transportadoraId": args.transportadoraId,
+        "usuarioId": req.session.user.usuario_id,
+        "observacion": args.observacion,
+        "operario_id": args.operario_id,
+        that: that
+    };
+
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'registroEntrada', obj).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, "ingreso Correcto", 200, {validacionDespachos: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
+
+    }).done();
+};
+
+ValidacionDespachos.prototype.modificarRegistroEntradaBodega = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data.obj;
+    console.log("args", args);
+    var obj = {
+        "prefijo": args.prefijo,
+        "numero": args.numero,
+        "numeroGuia": args.numeroGuia,
+        "cantidadCaja": args.tipoEmpaque.cantidadCaja,
+        "cantidadNevera": args.tipoEmpaque.cantidadNevera,
+        "cantidadBolsa": args.tipoEmpaque.cantidadBolsa,
+        "tipoIdtercero": args.tipoIdtercero,
+        "terceroId": args.terceroId,
+        "transportadoraId": args.transportadoraId,
+        "usuarioId": req.session.user.usuario_id,
+        "observacion": args.observacion,
+        "operario_id": args.operario_id,
+        "registro_entrada_bodega_id": args.registro_entrada_bodega_id,
+        that: that
+    };
+    console.log("obj::: ", obj);
+
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'modificarRegistroEntradaBodega', obj).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, "modificacion Correcta", 200, {validacionDespachos: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
+
+    }).done();
+};
+
+ValidacionDespachos.prototype.listarRegistroEntrada = function (req, res) {
+
+    var that = this;
+    var args = req.body.data.obj;
+    var obj = {
+        "busqueda": args.busqueda,
+        "pagina": args.pagina
+    };
+
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'listarRegistroEntrada', obj).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, "listar Registro Entrada", 200, {listarRegistroEntrada: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
+
+    }).done();
 };
 
 

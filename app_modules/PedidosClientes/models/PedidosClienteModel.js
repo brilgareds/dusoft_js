@@ -2402,8 +2402,12 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
      *              de busqueda por estado de cotizacion
      */
     if (estadoCotizacion) {
-        filtroEstadoCotizacion = " AND (a.estado " + G.constants.db().LIKE + " :4)";
-        parametros["4"] = '%' + estadoCotizacion + '%';
+        filtroEstadoCotizacion = " AND (a.estado " + G.constants.db().LIKE + " :7)";
+        if(estadoCotizacion === 6){
+            parametros["7"] = estadoCotizacion + '%';
+        }else{
+            parametros["7"] = '%' + estadoCotizacion + '%';
+        }
     }
     /**
      * +Descripcion El criterio de busqueda para una cotizacion sera dependiento

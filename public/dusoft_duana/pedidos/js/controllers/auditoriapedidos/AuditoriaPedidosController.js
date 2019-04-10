@@ -594,8 +594,7 @@ define(["angular", "js/controllers",
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
                     url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
                 }
-                
-                
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -688,11 +687,13 @@ define(["angular", "js/controllers",
                         });
 
 
+
                     }  else if(parseInt(data.status) !== 500 ) { 
                         
                      if(parseInt(data.status) === 404 ) {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                      }
+
                        
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];

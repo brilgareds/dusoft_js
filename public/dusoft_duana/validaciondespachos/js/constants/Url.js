@@ -25,13 +25,25 @@ define(["angular"], function (angular) {
                 'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
             },
             'CLIENTES':{
-                'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
+                'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad',
+                'REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/registroEntradaBodega',
+                'MODIFICAR_REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/modificarRegistroEntradaBodega',
+                'LISTAR_REGISTRO_ENTRADA': BASE_URL + '/ValidacionDespachos/listarRegistroEntrada',
+            },
+            'SINCRONIZACION_DOCUMENTOS': {
+                "LISTAR_PREFIJOS": BASE_URL + "/SincronizacionDocumentos/listarPrefijosEspecial"
+            },
+            'TERCEROS': {
+                'LISTAR_CLIENTES': BASE_URL + "/Terceros/GestionTerceros/listarTerceros",
+                'LISTAR_OPERARIOS': BASE_URL + "/Terceros/operariosBodega/listarOperarios",
+            },
+            'TRANSPORTADORAS': {
+                'LISTAR_TRANSPORTADORAS': BASE_URL + '/Transportadoras/listar'
             }
             
         }
 
     };
-
     angular.forEach(data, function (key, value) {
         Url.constant(value, key);
     });

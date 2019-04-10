@@ -395,6 +395,46 @@ CajaGeneralModel.prototype.listarFacConceptosNotas = function (obj, callback) {
 };
 /**
  * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de consultar fac_facturas
+ * @fecha 2019-02-13 YYYY-MM-DD
+ */
+CajaGeneralModel.prototype.listarFacturaTalonario = function (obj, callback) {
+
+    var columna = [
+        G.knex.raw("to_char(a.fecha_registro,'YYYY') as anio_factura"),
+        "a.empresa_id",
+        "a.prefijo",
+        "a.factura_fiscal",
+        "a.documento_id",
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "a.porcentaje_rtf",
+        "a.porcentaje_ica",
+        "a.porcentaje_reteiva",
+        G.knex.raw("cast(a.total_factura as double precision ) as total_factura"),
+        "a.fecha_registro",
+        G.knex.raw("to_char(a.fecha_registro, 'dd/mm/yyyy') as fecha_factura"),
+        "a.gravamen",
+    ];
+
+    var query = G.knex.select(columna)
+            .from('fac_facturas as a')
+            .where(function () {
+                this.andWhere('a.factura_fiscal', obj.facturaFiscal)
+                    .andWhere('a.prefijo', obj.prefijo)
+                    .andWhere('a.empresa_id', obj.empresa_id)
+            });
+
+    query.then(function (resultado) {
+        callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [listarFacConceptosNotas]:", query.toSQL());
+        console.log("err [listarFacConceptosNotas]:", err);
+        callback(err);
+    });
+};
+/**
+ * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar RECIBOS CAJA
  * @fecha 2017-06-02 YYYY-MM-DD
  * @returns {callback}
@@ -447,6 +487,62 @@ CajaGeneralModel.prototype.listarRecibosCaja = function (obj, callback) {
 
     }).catch(function (err) {
         console.log("err [listarPrefijos]:", query.toSQL());
+        console.log("err [listarPrefijos]:", err);
+        callback(err);
+    });
+};
+
+CajaGeneralModel.prototype.listarRecibosCajaPorPrefijo = function (obj, callback) {
+    var empresa = obj.empresaId;
+    var prefijo = obj.prefijoId;
+
+    console.log('obj.empresaId: ', empresa);
+    console.log('obj.prefijoId: ', prefijo);
+
+    var columna = [
+        "a.empresa_id",
+        "a.centro_utilidad",
+        "a.factura_fiscal as recibo_caja",
+        "a.fecha_registro as fecha_ingcaja",
+        "b.caja_id",
+        "b.descripcion as caja",
+        "a.total_efectivo",
+        "a.total_cheques",
+        "a.total_bonos",
+        "a.total_tarjetas",
+        "a.usuario_id",
+        "a.prefijo",
+        G.knex.raw("(a.total_efectivo + a.total_cheques + a.total_tarjetas + a.total_bonos) as suma"),
+        G.knex.raw("CASE WHEN b.estado ='0' THEN a.total_abono ELSE -1 END AS total_abono")
+    ];
+
+    console.log('Despues de columna!!');
+
+    var query = G.knex.select(columna)
+        .from('fac_facturas as b')
+        .leftJoin('fac_facturas_contado as a',
+            function () {
+                this.on("a.documento_id", "b.documento_id")
+            })
+        .leftJoin('fac_facturas_conceptos as c',
+            function () {
+                this.on("b.factura_fiscal", "c.factura_fiscal")
+                    .on("b.prefijo", "c.prefijo")
+            })
+        .leftJoin('cajas_rapidas as d',
+            function () {
+                this.on("c.caja_id", "d.caja_id")
+            })
+        .where('a.empresa_id', empresa)
+        .andWhere('a.prefijo', prefijo);
+
+    console.log("Query resultado: ", G.sqlformatter.format(query.toString()));
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        //console.log("err [listarPrefijos]:", query.toSQL());
         console.log("err [listarPrefijos]:", err);
         callback(err);
     });

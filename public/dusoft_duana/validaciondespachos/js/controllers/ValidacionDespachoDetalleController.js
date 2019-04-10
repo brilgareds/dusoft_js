@@ -825,29 +825,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     backdrop: 'static',
                     scope: $scope,
                     template: '<div class="modal-header" style="text-align:center;">\
-                            <button type="button" class="close" ng-click="close()">&times;</button>\
-                              <h4 class="modal-title" >Imagenes adjuntas</h4>\
-                          </div>\
-                          <!--div class="modal-body">\
-                            <img ng-src="/ValidacionDespachos/{{imagen.getPath()}}" onerror="onImageError(this)" class="imagenAprobacion" />\
-                          </div -->\
-                            <carousel interval="myInterval" active="true">\
-                                <slide ng-repeat="slide in documentoDespachoAprobado.obtenerImagenes()" index="$index" class="carouselSlide">\
-                                    <button class="btn btn-sm btn-danger btnImagen" ng-disabled="datos_view.estadoRegistro == 1" ng-click="onBtnBorrarImagen(slide)"><i class="glyphicon glyphicon-trash"></i></button>\
-                                    <img ng-src="/ValidacionDespachos/{{slide.getPath()}}" class="imagenAprobacion" onerror="this.src=\'/images/noImage.gif\'" />\
-                                    <div class="carousel-caption">\
-                                        <h4>{{slide.text}}</h4>\
-                                    </div>\
-                                </slide>\
-                            </carousel>',
-                    controller: ["$modalInstance", "imagen", function ($modalInstance, imagen) {
-                            $scope.imagen = imagen;
+                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                  <h4 class="modal-title" >Imagenes adjuntas</h4>\
+                              </div>\
+                              <!--div class="modal-body">\
+                                <img ng-src="/ValidacionDespachos/{{imagen.getPath()}}" onerror="onImageError(this)" class="imagenAprobacion" />\
+                              </div -->\
+                                <carousel interval="myInterval" active="true">\
+                                    <slide ng-repeat="slide in documentoDespachoAprobado.obtenerImagenes()" index="$index" class="carouselSlide">\
+                                        <button class="btn btn-sm btn-danger btnImagen" ng-disabled="datos_view.estadoRegistro == 1" ng-click="onBtnBorrarImagen(slide)"><i class="glyphicon glyphicon-trash"></i></button>\
+                                        <img ng-src="http://10.0.2.117:8080/images/produccion/ValidacionDespachos/{{slide.getPath()}}" class="imagenAprobacion" onerror="this.src=\'/images/noImage.gif\'" />\
+                                                                <div class="carousel-caption">\
+                                                                    <h4>{{slide.text}}</h4>\
+                                                                </div>\
+                                                            </slide>\
+                                                        </carousel>',
+                    controller: ["$modalInstance", "imagen", function($modalInstance, imagen){
+                        $scope.imagen = imagen;
+                        
+                        $scope.close = function(){
+                            $modalInstance.close();
+                        };
+                        
+                    }],
 
-                            $scope.close = function () {
-                                $modalInstance.close();
-                            };
-
-                        }],
                     resolve: {
                         imagen: function () {
                             return imagen;

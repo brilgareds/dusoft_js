@@ -472,6 +472,46 @@ MovimientosBodegasModel.prototype.crear_documento = function (documento_temporal
     });
 };
 
+
+MovimientosBodegasModel.prototype.movimientos = function(obj, callback) {
+    
+    var columna = [
+            'documento_id', 
+            'empresa_id',
+            'centro_utilidad',
+            'bodega',
+            'prefijo',
+            'numero',
+            'observacion',
+            'sw_estado',
+            'usuario_id',
+            'fecha_registro',
+            'total_costo',
+            'abreviatura',
+            'empresa_destino',
+            'sw_verificado',
+            'porcentaje_rtf',
+            'porcentaje_ica',
+            'porcentaje_reteiva',
+            'porcentaje_cree'
+    ];
+
+    var query = G.knex.select(columna)
+            .from('inv_bodegas_movimiento')
+            .where(function () {
+                this.andWhere('prefijo', obj.prefijo)
+                    .andWhere('numero', obj.numero)
+                    .andWhere('empresa_id', obj.empresa_id)
+            });
+            
+    query.then(function(resultado) {
+       callback(false, resultado);
+     }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+     });
+};
+
 MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = function (numero, prefijo, empresa, callback) {
     var sql = "SELECT\
                a.codigo_producto,\
@@ -495,17 +535,18 @@ MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = functio
                 ((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total_1,\
                 (((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total_1,\
                 a.valor_unitario,\
-                a.numero_caja\
+                a.numero_caja,\
+                d.sw_insumos,\
+                d.sw_medicamento\
                 FROM\
-                inv_bodegas_movimiento_d as a,\
-                inventarios_productos as b,\
-                unidades as c\
+                    inv_bodegas_movimiento_d as a \
+                    inner join inventarios_productos as b on b.codigo_producto = a.codigo_producto\
+                    inner join unidades as c on c.unidad_id = b.unidad_id\
+                    inner join inv_grupos_inventarios as d on  d.grupo_id = b.grupo_id\
                 WHERE\
                 a.empresa_id = :3\
                 AND a.prefijo = :2\
                 AND a.numero = :1\
-                AND b.codigo_producto = a.codigo_producto\
-                AND c.unidad_id = b.unidad_id\
                 ORDER BY a.codigo_producto";
 
     var query=G.knex.raw(sql, {1: numero, 2: prefijo, 3: empresa});

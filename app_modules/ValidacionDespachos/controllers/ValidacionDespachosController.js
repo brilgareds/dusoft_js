@@ -111,13 +111,8 @@ ValidacionDespachos.prototype.listarImagenes = function (req, res) {
  * +Descripcion Metodo encargado de invocar el modelo para listar los despachos
  * aprobados
  */
-<<<<<<< HEAD
-ValidacionDespachos.prototype.adjuntarImagen = function(req, res) {
-    var that = this;
-    var args = req.body.data;
-=======
+
 ValidacionDespachos.prototype.adjuntarImagen = function (req, res) {
->>>>>>> da60f62fb38317802fb1b3fd6dc4cdedb435f42c
 
     var that = this;
 
@@ -155,14 +150,8 @@ ValidacionDespachos.prototype.adjuntarImagen = function (req, res) {
 
             return G.Q.nfcall(__scp, rutaFile);
 
-<<<<<<< HEAD
         }).then(function(respuesta){
             if(respuesta){
-=======
-        }).then(function (respuesta) {
-            console.log(" contesta scp ", respuesta);
-            if (respuesta) {
->>>>>>> da60f62fb38317802fb1b3fd6dc4cdedb435f42c
                 G.fs.unlinkSync(rutaNueva);
             }
             res.send(G.utils.r(req.url, 'Imagen guardada', 200, {validacionDespachos: {}}));
@@ -457,7 +446,6 @@ ValidacionDespachos.prototype.modificarRegistroEntradaBodega = function (req, re
     var that = this;
 
     var args = req.body.data.obj;
-<<<<<<< HEAD
     
     var obj = {
                  "prefijo":args.prefijo, 
@@ -478,29 +466,6 @@ ValidacionDespachos.prototype.modificarRegistroEntradaBodega = function (req, re
     
      G.Q.ninvoke(that.m_ValidacionDespachos, 'modificarRegistroEntradaBodega', obj).then(function(resultado) {
        
-=======
-    console.log("args", args);
-    var obj = {
-        "prefijo": args.prefijo,
-        "numero": args.numero,
-        "numeroGuia": args.numeroGuia,
-        "cantidadCaja": args.tipoEmpaque.cantidadCaja,
-        "cantidadNevera": args.tipoEmpaque.cantidadNevera,
-        "cantidadBolsa": args.tipoEmpaque.cantidadBolsa,
-        "tipoIdtercero": args.tipoIdtercero,
-        "terceroId": args.terceroId,
-        "transportadoraId": args.transportadoraId,
-        "usuarioId": req.session.user.usuario_id,
-        "observacion": args.observacion,
-        "operario_id": args.operario_id,
-        "registro_entrada_bodega_id": args.registro_entrada_bodega_id,
-        that: that
-    };
-    console.log("obj::: ", obj);
-
-    G.Q.ninvoke(that.m_ValidacionDespachos, 'modificarRegistroEntradaBodega', obj).then(function (resultado) {
-
->>>>>>> da60f62fb38317802fb1b3fd6dc4cdedb435f42c
         res.send(G.utils.r(req.url, "modificacion Correcta", 200, {validacionDespachos: resultado}));
 
     }).fail(function (err) {

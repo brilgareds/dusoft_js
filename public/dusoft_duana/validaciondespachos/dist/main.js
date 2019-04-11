@@ -42374,18 +42374,18 @@ define('url',["angular"], function (angular) {
                 'ELIMINAR_IMAGEN': BASE_URL + '/ValidacionDespachos/eliminarImagen',
                 'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/PlanillasDespachos/documentosDespachosPorFarmacia',
                 'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/PlanillasDespachos/documentosDespachosPorCliente',
-            },
-            'CENTROS_UTILIDAD': {
-                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
-            },
-            'CLIENTES':{
-                'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad',
                 'REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/registroEntradaBodega',
                 'REGISTRO_SALIDA_BODEGA': BASE_URL + '/ValidacionDespachos/registroSalidaBodega',
                 'MODIFICAR_REGISTRO_SALIDA_BODEGA': BASE_URL + '/ValidacionDespachos/modificarRegistroSalidaBodega',
                 'MODIFICAR_REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/modificarRegistroEntradaBodega',
                 'LISTAR_REGISTRO_ENTRADA': BASE_URL + '/ValidacionDespachos/listarRegistroEntrada',
                 'LISTAR_REGISTRO_SALIDA': BASE_URL + '/ValidacionDespachos/listarRegistroSalida',
+            },
+            'CENTROS_UTILIDAD': {
+                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
+            },
+            'CLIENTES':{
+                'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
             },
             'SINCRONIZACION_DOCUMENTOS': {
                 "LISTAR_PREFIJOS": BASE_URL + "/SincronizacionDocumentos/listarPrefijosEspecial"
@@ -49527,6 +49527,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         };
 
                         ValidacionDespachosService.listarRegistroSalida(obj, function (data) {
+                            console.log("data",data);
                             if (data.status === 200) {
                                 $scope.root.registrosLength = data.obj.listarRegistroSalida.length;
                                 $scope.root.listarRegistros = data.obj.listarRegistroSalida;
@@ -49658,7 +49659,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         $scope.root.observacion = "";
                         $scope.root.registro_entrada_bodega_id = "";
                         $scope.root.operario = "";
-                        that.listarRegistroSalidaBodega();
+//                        that.listarRegistroSalidaBodega();
                     };
 
                     $scope.cancelar = function () {

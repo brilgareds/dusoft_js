@@ -613,7 +613,7 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
                     lista_documentos.forEach(function (documento) {
                         
                         var clienteSede = documento.descripcion_destino ;
-                        if(documento.descripcion_sede !== '') {
+                        if(documento.descripcion_sede !== null && documento.descripcion_sede !== '') {
                             clienteSede = documento.descripcion_sede;
                         }
                         

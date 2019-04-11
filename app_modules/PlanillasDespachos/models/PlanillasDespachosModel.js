@@ -56,7 +56,7 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
                           from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
                       from inv_planillas_detalle_farmacias a\
-                      union\
+                      union all\
                       select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
                       from inv_planillas_detalle_clientes a\
                       union all\
@@ -312,7 +312,7 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
                           from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
                       from inv_planillas_detalle_farmacias a\
-                      union\
+                      union all\
                       select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
                       from inv_planillas_detalle_clientes a\
                       union all \

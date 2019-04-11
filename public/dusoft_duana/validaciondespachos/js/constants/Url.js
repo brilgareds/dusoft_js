@@ -19,8 +19,11 @@ define(["angular"], function (angular) {
                 'LISTAR_IMAGENES': BASE_URL + '/ValidacionDespachos/listarImagenes',
                 'ELIMINAR_IMAGEN': BASE_URL + '/ValidacionDespachos/eliminarImagen',
                 'REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/registroEntradaBodega',
+                'REGISTRO_SALIDA_BODEGA': BASE_URL + '/ValidacionDespachos/registroSalidaBodega',
+                'MODIFICAR_REGISTRO_SALIDA_BODEGA': BASE_URL + '/ValidacionDespachos/modificarRegistroSalidaBodega',
                 'MODIFICAR_REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/modificarRegistroEntradaBodega',
                 'LISTAR_REGISTRO_ENTRADA': BASE_URL + '/ValidacionDespachos/listarRegistroEntrada',
+                'LISTAR_REGISTRO_SALIDA': BASE_URL + '/ValidacionDespachos/listarRegistroSalida',
             },
             'SINCRONIZACION_DOCUMENTOS': {
                 "LISTAR_PREFIJOS": BASE_URL + "/SincronizacionDocumentos/listarPrefijosEspecial"
@@ -31,6 +34,9 @@ define(["angular"], function (angular) {
             },
             'TRANSPORTADORAS': {
                 'LISTAR_TRANSPORTADORAS': BASE_URL + '/Transportadoras/listar'
+            },
+            'CIUDADES': {
+                'LISTAR_CIUDADES_PAIS': BASE_URL + '/Ciudades/listarCiudadesPais'
             }
         }
 

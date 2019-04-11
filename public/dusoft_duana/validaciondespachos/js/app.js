@@ -33,6 +33,7 @@ define([
     "models/AprobacionDespacho",
     "controllers/ValidacionDespachosController",
     "controllers/EntradaSalidaController",
+    "controllers/SalidaController",
     "controllers/ValidacionDespachoDetalleController",
     "services/ValidacionDespachosService",
     "webNotification"
@@ -89,6 +90,12 @@ define([
                     controller: "EntradaSalidaController",
                     templateUrl: "views/validaciondespachos/entrada_salida.html",
                     parent_name : "EntradaSalida"
+                }).state('Salida', {
+                    url: "/Salida",
+                    text: "Salida ",
+                    controller: "SalidaController",
+                    templateUrl: "views/validaciondespachos/salida.html",
+                    parent_name : "Salida"
                 });
                     
 

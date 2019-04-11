@@ -125,7 +125,6 @@ FacturacionClientesModel.prototype.procesosDetalleFacturacion = function (obj, c
 };
 
 function __consultaDetalleFacturaGenerada(parametros, tabla1, tabla2, campo) {
-    console.log('in model "__consultaDetalleFacturaGenerada"');
 
     var columnas = [
         "a.empresa_id",

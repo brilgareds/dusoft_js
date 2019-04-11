@@ -1,0 +1,170 @@
+
+<div ng-controller="EntradaSalidaController">
+    <div id="wrapper" class="container">
+
+        <div class="panel panel-default">                  
+            <div class="panel-body">
+                <form id="form-work" class="" name="form-work" action="#">
+                    <fieldset>
+
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <label class="control-label" for="surname">Transportadora</label>
+                                    <ui-select ng-model="root.transportadora"  theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionarTransportadora()">
+                                        <ui-select-match  placeholder="Seleccionar Transportadora" >{{ $select.selected.descripcion}}</ui-select-match>
+                                        <ui-select-choices refresh="listarTransportadoras($select.search)" refresh-delay="0" repeat="transportadora in root.transportadoras | filter:$select.search">                                            
+                                            {{transportadora.descripcion}}                                            
+                                        </ui-select-choices>
+                                    </ui-select> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <label class="control-label" for="surname">Numero Guía</label>
+                                    <input name="surname" class="form-control" placeholder="" ng-model="root.guia" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"> 
+                            <div class="form-group">
+                                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                                    <label class="control-label" for="surname">Factura/Documento</label>
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <ui-select ng-model="root.pref"  theme="select2" class="form-control selectgeneral" ng-change="seleccionarPrefijo()">
+                                                <ui-select-match  placeholder="Prefijo" >{{ $select.selected.prefijo}}</ui-select-match>
+                                                <ui-select-choices  refresh-delay="0" repeat="prefijo in root.prefijos | filter:$select.search">                                            
+                                                    {{ prefijo.prefijo}}                                            
+                                                </ui-select-choices>
+                                            </ui-select> 
+                                        </div>                                        
+                                    </div>
+                                </div>
+                                <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+                                    <label class="control-label" for="surname">&nbsp;</label>
+                                    <input 
+                                        type="text"
+                                        class="form-control col-sm-12" ng-model="root.factura"
+                                        ng-model="root.factura"
+                                        placeholder="No."/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <label class="control-label" for="surname">Cliente</label>
+                                    <ui-select ng-model="root.cliente"  theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_cliente()">
+                                        <ui-select-match  placeholder="Seleccionar cliente">{{ $select.selected.nombre_tercero}}</ui-select-match>
+                                        <ui-select-choices refresh="listar_clientes($select.search)" refresh-delay="0" repeat="cliente in root.clientes | filter:$select.search">                                            
+                                            {{ cliente.nombre_tercero}}                                            
+                                        </ui-select-choices>
+                                    </ui-select> 
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                            <label class="control-label" for="surname">Tipo Empaque</label>
+                            <div class="panel panel-default">                  
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                            <!--                                            <label class="control-label" for="surname">Tipo Empaque</label>-->
+                                            <div class="custom-control custom-checkbox" >
+                                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                                    <div class="col-xs-4 col-sm-6 col-md-4 col-lg-4">
+                                                        <label class="custom-control-label" for="defaultUnchecked">Caja:</label>
+                                                    </div>
+                                                    <div class="col-xs-8 col-sm-6 col-md-8 col-lg-8">
+                                                        <input type="text" class="form-control col-sm-12" ng-model="root.empaque.cantidadCaja" placeholder="Cantidad" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                                    <div class="col-xs-4 col-sm-6 col-md-4 col-lg-4">
+                                                        <label class="custom-control-label" for="defaultUnchecked">Nevera:</label>
+                                                    </div>
+                                                    <div class="col-xs-8 col-sm-6 col-md-8 col-lg-8">
+                                                        <input type="text" class="form-control col-sm-12" ng-model="root.empaque.cantidadNevera" placeholder="Cantidad" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                                    <div class="col-xs-4 col-sm-6 col-md-4 col-lg-4">
+                                                        <label class="custom-control-label" for="defaultUnchecked">Bolsa:</label>
+                                                    </div>
+                                                    <div class="col-xs-8 col-sm-6 col-md-8 col-lg-8">
+                                                        <input type="text" class="form-control col-sm-12" ng-model="root.empaque.cantidadBolsa" placeholder="Cantidad" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                            <div class="form-group">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <label class="control-label" for="surname">Recibe</label>
+                                    <ui-select ng-model="root.operario"  theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_operario()" >
+                                        <ui-select-match  placeholder="Seleccionar Operarios">{{ $select.selected.nombre_operario}}</ui-select-match>
+                                        <ui-select-choices refresh-delay="0" repeat="operario in root.operarios | filter:$select.search">                                            
+                                            {{ operario.nombre_operario}}                                            
+                                        </ui-select-choices>
+                                    </ui-select> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <label class="control-label" for="surname">Observación</label>
+                            <textarea class="form-control" rows="2" id="comment" ng-model="root.observacion"></textarea>
+                            <br>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+                            <button type="button" class="btn btn-primary " ng-if="root.guardarButton" ng-click="guardar()" >Guardar</button>
+                            <button type="button" class="btn btn-warning" ng-if="root.modificarButton" ng-click="modificar()" >Modificar</button>
+                            <button type="button" class="btn btn-danger" ng-click="cancelar()" >Cancelar</button>
+                        </div>
+                    </fieldset> 
+                </form>
+            </div>
+        </div>   
+    </div>
+    <div class="row text-center">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right-responsive-center">
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 text-right-responsive-center">
+            </div>    
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-right-responsive-center">
+                <label class="control-label" for="surname">Busqueda</label> 
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-center">
+                <input type="text" class="form-control col-sm-5" ng-model="root.filtro" placeholder="" />
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-left-responsive-center">
+                <button type="button" class="btn btn-primary "  ng-click="filtro()" >Buscar</button>            
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 text-right-responsive-center">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <br>
+            <div class="table-responsive" style="clear:both;">
+                <div class="defaultGrid grid-responsive" ng-grid="listaRegistros"></div>
+            </div>
+        </div>
+         <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="root.registrosLength <25" ng-click="paginaSiguiente()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+    </div>
+</div>
+

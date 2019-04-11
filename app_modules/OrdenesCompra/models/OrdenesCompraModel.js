@@ -1469,7 +1469,7 @@ OrdenesCompraModel.prototype.listarLogsOrdenesCompras = function(parametros, cal
         G.knex.raw("case when accion=0 then 'DELETE' when accion=1 then 'INSERT' when accion=2 then 'UPDATE' end as accion"),
 	"detalle",
 	"b.nombre",
-	G.knex.raw("to_char(fecha,'dd-MM-yyyy HH:MM:ss')as fecha"),
+	G.knex.raw("to_char(fecha,'dd-MM-yyyy HH:MI:ss')as fecha"),
 	"tabla",
 	"anterior",
 	"actual"

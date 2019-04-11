@@ -109,7 +109,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                   
                     $scope.activar = function(obj){
                         that.limpiar();
-                        console.log("obj.operario",obj);
                         $scope.root.guardarButton = false;
                         $scope.root.modificarButton = true;
                         $scope.root.pref = {prefijo:obj.prefijo_id};
@@ -247,17 +246,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         });
                     };
                     
-                    $scope.seleccionar_cliente = function(){
-                      console.log("---> ",$scope.root.cliente);  
+                    $scope.seleccionar_cliente = function(){ 
                     };
-                    $scope.seleccionarTransportadora = function(){
-                      console.log("---> ",$scope.root.transportadora);  
+                    $scope.seleccionarTransportadora = function(){ 
                     };
-                    $scope.seleccionarPrefijo = function(){
-                      console.log("---> ",$scope.root.pref);  
+                    $scope.seleccionarPrefijo = function(){ 
                     };
-                    $scope.seleccionar_operario = function(){
-                      console.log("---> ",$scope.root.operario);  
+                    $scope.seleccionar_operario = function(){ 
                     };
                     
                     $scope.guardar = function(){

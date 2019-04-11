@@ -50220,8 +50220,9 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                      *              que contendra los documentos seleccionados y agregara el numero
                      *              de cajas
                      */
-                    if (numeroDocumento === 0 || numeroDocumento === undefined) {
+                    if (numeroDocumento === 0 || numeroDocumento === undefined || numeroDocumento === '' ) {
                         $scope.documentoDespachoAprobado.numero = $scope.datos_view.documentosMedipol[0].numero;
+                        $scope.documentoDespachoAprobado.prefijo = $scope.datos_view.documentosMedipol[0].prefijo;
                         numeroDocumento = $scope.datos_view.documentosMedipol[0].numero;
                         $scope.documentoDespachoAprobado.cantidadCajas = totalCajas;
                         $scope.documentoDespachoAprobado.cantidadNeveras = totalNeveras;

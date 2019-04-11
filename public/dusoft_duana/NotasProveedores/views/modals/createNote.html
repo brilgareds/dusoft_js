@@ -4,16 +4,44 @@
 </div>
 <div class="modal-body">
     <div class="container-table">
-        <div class="table-responsive">
-            <div class="defaultGrid grid-responsive col-sm-12" style="padding: 0px;" ng-grid="itemsFactura">
-            </div>
-        </div>
-    </div>
+        <table class="table-responsive2 col-sm-12" style="padding: 0px;">
+            <thead>
+                <tr>
+                    <th width="15%">Codigo Producto</th>
+                    <th width="15%">Descripcion</th>
+                    <th width="15%">Cantidad</th>
+                    <th width="15%">Valor</th>
+                    <th width="10%">Iva</th>
+                    <th width="15%">Valor total</th>
+                    <th width="10%">Op</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="nota in NotaTemporal.buscarDetalle">
+                    <td>{{nota.codigo_producto}}</td>
+                    <td>{{nota.descripcion}}</td>
+                    <td>{{nota.cantidad}}</td>
+                    <td>{{nota.valor}}</td>
+                    <td>{{nota.porc_iva}}</td>
+                    <td>{{nota.valorTotalString}}</td>
+                    <td><input type="radio"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span>Concepto General: </span>
+                        <select>
+                            <option ng-repeat="glosa in NotaTemporal.glosasConceptoGeneral" value={{glosa.codigo_concepto_general}}>{{glosa.descripcion_concepto_general}}</option>
+                        </select>
+                    </td>
+                    <td>
+                        <label for="">Valor Concepto</label><input type="number" placeholder="Agregar valor">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><br>
     <h4 align="center">Items agrupados Factura - (Valores Incluyen Iva)</h4>
-    <span>Concepto General: </span>
-    <select>
-        <option ng-repeat="glosa in NotaTemporal.glosasConceptoGeneral" value={{glosa.codigo_concepto_general}}>{{glosa.descripcion_concepto_general}}</option>
-    </select>
+
     <span></span>
 </div>
 <div class="modal-footer">

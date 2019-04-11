@@ -1,45 +1,82 @@
-#search_provider{
+#search_provider {
 
 }
 
-#search_provider div{
+#search_provider div {
     display: inline-block;
 }
 
-.title-container-nota{
+.title-container-nota {
     text-align: center;
     font-size: 14px;
     text-transform: uppercase;
 }
 
-.container-table{
+.container-table {
     padding-top: 15px;
 }
 
-.cyan{
+.cyan {
     color: #fff;
     background-color: #28a3c7;
     border-color: #28a3c7;
 }
-.cyan:active{
+
+.cyan:active {
     color: #fff;
     background: #1c7f9c;
 }
 
-.cyan:hover{
+.cyan:hover {
     color: #fff;
 }
 
-.cyan:focus{
+.cyan:focus {
     color: #fff;
 }
 
-div < .option-notes{
-
-}
-
-.modal-dialog{
+.modal-dialog {
     width: 90%;
+}
+
+.table-responsive2 {
+    height: auto;
+    border: 1px solid #dedede;
+}
+
+.table-responsive2 thead tr {
+    background-color: #eaeaea;
+}
+
+.table-responsive2 tbody tr:nth-child(even) {
+    background-color: #fdfdfd;
+}
+
+.table-responsive2 tbody tr:nth-child(odd) {
+    background-color: #f3f3f3;
+}
+
+.table-responsive2 tbody tr:hover {
+    background-color: #E5E5E5;
+}
+
+.table-responsive2 th:not(:first-child), .table-responsive2 td:not(:first-child) {
+    border-left: 2px solid #dedede;
+}
+
+.table-responsive2 td {
+    white-space: nowrap;
+}
+
+.table-responsive2 input[type=radio] {
+    position: relative;
+}
+
+.table-responsive2 th, .table-responsive2 td {
+    padding: 5px;
+    height: 35px;
+    min-height: 35px;
+    max-height: 35px;
 }
 
 @media (max-width: 1010px) {

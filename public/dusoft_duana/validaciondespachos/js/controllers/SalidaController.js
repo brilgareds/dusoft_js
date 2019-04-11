@@ -91,6 +91,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         };
 
                         ValidacionDespachosService.listarRegistroSalida(obj, function (data) {
+                            console.log("data",data);
                             if (data.status === 200) {
                                 $scope.root.registrosLength = data.obj.listarRegistroSalida.length;
                                 $scope.root.listarRegistros = data.obj.listarRegistroSalida;
@@ -222,7 +223,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.observacion = "";
                         $scope.root.registro_entrada_bodega_id = "";
                         $scope.root.operario = "";
-                        that.listarRegistroSalidaBodega();
+//                        that.listarRegistroSalidaBodega();
                     };
 
                     $scope.cancelar = function () {

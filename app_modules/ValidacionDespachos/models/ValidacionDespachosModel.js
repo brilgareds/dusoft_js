@@ -400,7 +400,7 @@ ValidacionDespachosModel.prototype.validarExistenciaDocumento = function (obj, c
 };
 ValidacionDespachosModel.prototype.modificarRegistroEntradaBodega = function (obj, callback) {
 
-    var query = G.knex("registro_entrada_bodega").
+    var query = G.knex("inv_registro_entrada_bodega").
             where('registro_entrada_bodega_id', obj.registro_entrada_bodega_id).
             update(
                     {
@@ -557,7 +557,6 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
                         this.orWhere("numero_guia",'ilike', '%' +obj.busqueda + '%');
                         this.orWhere("numero",'ilike', '%' +obj.busqueda + '%');
                         this.orWhere("d.nombre",'ilike', '%' +obj.busqueda + '%');
-                       
                         this.orWhere("e.nombre",'ilike', '%' +obj.busqueda + '%');
                         this.orWhere("f.municipio",'ilike', '%' +obj.busqueda + '%');
                         this.orWhere("a.placa",'ilike', '%' +obj.busqueda + '%');
@@ -568,8 +567,9 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
                     }
                 }).limit(G.settings.limit).
                    offset((obj.pagina - 1) * G.settings.limit);    
+           
     query.then(function(resultado){
-        
+     
         callback(false, resultado);
         
     }).catch(function(err){
@@ -634,7 +634,7 @@ ValidacionDespachosModel.prototype.listarRegistroEntrada = function (obj, callba
     var query = G.knex.column(column)
 
             .select()
-            .from('registro_entrada_bodega as a')
+            .from('inv_registro_entrada_bodega as a')
             .innerJoin('terceros as b', function () {
                 this.on("b.tipo_id_tercero", "a.tipo_id_tercero")
                         .on("b.tercero_id", "a.tercero_id");

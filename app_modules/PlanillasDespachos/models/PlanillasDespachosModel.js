@@ -425,7 +425,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     inner join inv_bodegas_movimiento_despachos_clientes b on a.empresa_id = b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
                     inner join ventas_ordenes_pedidos c on b.pedido_cliente_id = c.pedido_cliente_id\
                     inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id\
-                    inner join terceros f on c.tipo_id_sede = f.tipo_id_tercero and c.sede_id = f.tercero_id\
+                    left join terceros f on c.tipo_id_sede = f.tipo_id_tercero and c.sede_id = f.tercero_id\
                     inner join (\n\
                         SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo\
                         FROM aprobacion_despacho_planillas f \

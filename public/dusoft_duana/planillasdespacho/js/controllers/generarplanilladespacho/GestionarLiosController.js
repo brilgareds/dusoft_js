@@ -38,7 +38,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
                 if(isNaN(cantidadCajas) || isNaN(cantidadLios) || isNaN(cantidadNeveras) || cantidadLios === 0 || cantidadCajas < 0 || cantidadNeveras < 0
                    || (cantidadCajas === 0 && cantidadNeveras === 0)){
-                   
                     return false;
                 } else if(!isNaN(cantidadCajas) && !isNaN(cantidadLios) &&
                          ((cantidadCajas > 0 && cantidadLios  > cantidadCajas) || (cantidadNeveras > 0 && cantidadLios > cantidadNeveras))) {
@@ -51,7 +50,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $modalInstance.opened.then(function() {
-               
+                console.log("documentos ", documentos);
+
 
             });
 
@@ -70,15 +70,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 enableRowSelection: false,
                 columnDefs: [
                     {field:'lios', displayName:"", width:"40", cellClass: "txt-center dropdown-button", cellTemplate:"<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
-                    {field: 'get_descripcion()', displayName: 'Documento Bodega'},
-                    //{field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    //{field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    //{field: 'temperatura_neveras', displayName: '°C Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    /*{displayName: "Opciones", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
-                                        </div>'
-                    }*/
+                    {field: 'get_descripcion()', displayName: 'Documento Bodega'}
                 ]
             };
             

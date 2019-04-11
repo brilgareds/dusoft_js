@@ -256,18 +256,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <h4 class="modal-title">Mensaje del Sistema</h4>\
                                     </div>\
                                     <div class="modal-body">\
-                                        <h4 ng-if="planilla.get_documentos().length === 1" ><b>¡Operacion Invalida!</b> La planilla no puede quedar sin documentos.</h4>\
-                                        <h4 ng-if="planilla.get_documentos().length > 1">¿Eliminar documento <b>{{ planilla.get_documento().get_prefijo_numero() }}</b>?</h4>\
+                                        <h4>¿Eliminar documento <b>{{ planilla.get_documento().get_prefijo_numero() }}</b>?</h4>\
                                     </div>\
                                     <div class="modal-footer">\
                                         <button class="btn btn-warning" ng-click="cancelar_eliminacion_documento()">Cancelar</button>\
-                                        <button class="btn btn-primary" ng-disabled="planilla.get_documentos().length === 1" ng-click="aceptar_eliminacion_documento()">Aceptar</button>\
+                                        <button class="btn btn-primary" ng-click="aceptar_eliminacion_documento(planilla.get_documentos().length)">Aceptar</button>\
                                     </div>',
                     scope: $scope,
                     controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
-                        $scope.aceptar_eliminacion_documento = function() {
-                            $scope.eliminar_documento_planilla_despacho();
+                        $scope.aceptar_eliminacion_documento = function(elementos) {                           
+                            $scope.eliminar_documento_planilla_despacho(elementos);
                             $modalInstance.close();
                         };
 
@@ -280,7 +279,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-            $scope.eliminar_documento_planilla_despacho = function() {
+            $scope.eliminar_documento_planilla_despacho = function(elementos) {
 
                 var obj = {
                     session: $scope.session,
@@ -290,7 +289,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             empresa_id: $scope.planilla.get_documento().get_empresa_id(),
                             prefijo: $scope.planilla.get_documento().get_prefijo(),
                             numero: $scope.planilla.get_documento().get_numero(),
-                            tipo: $scope.planilla.get_documento().get_tipo()
+                            tipo: $scope.planilla.get_documento().get_tipo(),
+                            elementos:elementos
                         }
                     }
                 };

@@ -42372,6 +42372,14 @@ define('url',["angular"], function (angular) {
                 'ADJUNTAR_IMAGEN': BASE_URL + '/ValidacionDespachos/adjuntarImagen',
                 'LISTAR_IMAGENES': BASE_URL + '/ValidacionDespachos/listarImagenes',
                 'ELIMINAR_IMAGEN': BASE_URL + '/ValidacionDespachos/eliminarImagen',
+                'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/PlanillasDespachos/documentosDespachosPorFarmacia',
+                'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/PlanillasDespachos/documentosDespachosPorCliente',
+            },
+            'CENTROS_UTILIDAD': {
+                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
+            },
+            'CLIENTES':{
+                'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad',
                 'REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/registroEntradaBodega',
                 'REGISTRO_SALIDA_BODEGA': BASE_URL + '/ValidacionDespachos/registroSalidaBodega',
                 'MODIFICAR_REGISTRO_SALIDA_BODEGA': BASE_URL + '/ValidacionDespachos/modificarRegistroSalidaBodega',
@@ -42392,6 +42400,7 @@ define('url',["angular"], function (angular) {
             'CIUDADES': {
                 'LISTAR_CIUDADES_PAIS': BASE_URL + '/Ciudades/listarCiudadesPais'
             }
+            
         }
 
     };
@@ -46072,7 +46081,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
-console.log("key",key);
+//console.log("key",key);
                     if (llavesPermanentes.indexOf(key) === -1) {
                         localStorageService.remove(key);
                     }
@@ -46122,7 +46131,7 @@ console.log("key",key);
             };
             
             self.irAlHome = function(mensaje){
-                console.log("ir al home");
+//                console.log("ir al home");
                 var moduloActual = $scope.Usuario.getModuloActual();
                 localStorageService.set("mensajeDashboard", null);
                 
@@ -47859,7 +47868,7 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
             };
         
             AprobacionDespacho.prototype.setObservacion = function (observacion) {
-                 this.observacion = observacion;
+                this.observacion = observacion;
             };
             
             AprobacionDespacho.prototype.getObservacion = function () {
@@ -47915,6 +47924,762 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
 });
 
 
+define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Documento"], function(angular, models) {
+
+    models.factory('DocumentoDespacho', ["Documento", function(Documento, $filter) {
+
+            function DocumentoDespacho(bodegas_doc_id, prefijo, numero, empresaId) {
+
+                this.bodegas_doc_id = bodegas_doc_id;
+                this.prefijo = prefijo || "";
+                this.numero = numero || "";
+                this.fechaRegistro;
+                this.numeroPedido;
+                this.seleccionado = false;
+                this.cantidadCajas = 0;
+                this.cantidadNeveras = 0;
+                this.empresaId = empresaId;
+                this.estado = 0;
+                this.estadoDocumento;
+            }
+
+            this.get = function(bodegas_doc_id, prefijo, numero, empresaId) {
+                return new DocumentoDespacho(bodegas_doc_id, prefijo, numero, empresaId);
+            };
+            
+            DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
+            
+            
+            DocumentoDespacho.prototype.getEstadoDocumento = function() {
+                return this.estadoDocumento;
+            };
+            
+            DocumentoDespacho.prototype.setEstadoDocumento = function(estadoDocumento) {
+                this.estadoDocumento = estadoDocumento ;
+            };
+            
+            DocumentoDespacho.prototype.getEstado = function() {
+                return this.estado;
+            };
+            
+            DocumentoDespacho.prototype.setEstado = function(estado) {
+                this.estado = estado;
+            };
+            
+            DocumentoDespacho.prototype.getFechaRegistro = function() {
+                return this.fechaRegistro;
+            };
+            
+            DocumentoDespacho.prototype.setFechaRegistro = function(fechaRegistro) {
+                this.fechaRegistro = fechaRegistro;
+            };
+            
+            
+            DocumentoDespacho.prototype.getCantidadCajas = function() {
+                return this.cantidadCajas;
+            };
+            
+            DocumentoDespacho.prototype.setCantidadCajas = function(cantidadCajas) {
+                this.cantidadCajas = cantidadCajas;
+            };
+            
+            DocumentoDespacho.prototype.getCantidadNeveras = function() {
+                return this.cantidadNeveras;
+            };
+            
+            DocumentoDespacho.prototype.setCantidadNeveras = function(cantidadNeveras) {
+                this.cantidadNeveras = cantidadNeveras;
+            };
+            
+            DocumentoDespacho.prototype.getNumeroPedido = function() {
+                return this.numeroPedido;
+            };
+            
+            DocumentoDespacho.prototype.setNumeroPedido = function(numeroPedido) {
+                this.numeroPedido = numeroPedido;
+            };
+            
+            DocumentoDespacho.prototype.get_empresa_id = function() {
+                return this.empresaId;
+            };
+            
+            DocumentoDespacho.prototype.set_documentos = function(documento) {
+                this.documentos.push(documento);
+            };
+            
+            DocumentoDespacho.prototype.get_documentos = function() {
+                return this.documentos;
+            };
+            
+            DocumentoDespacho.prototype.limpiar_documentos = function() {
+                return this.documentos = [];
+            };
+            
+            DocumentoDespacho.prototype.getSeleccionado = function() {
+                return this.seleccionado;
+            };
+            
+            DocumentoDespacho.prototype.setSeleccionado = function(seleccionado) {
+                this.seleccionado = seleccionado ;
+            };
+            
+            
+           
+                        
+            return this;
+        }]);
+});
+define('models/FarmaciaPlanillaDespacho',["angular", "js/models", "includes/classes/CentroUtilidad"], function(angular, models) {
+
+    models.factory('FarmaciaPlanillaDespacho', ["CentroUtilidad", "$filter", function(CentroUtilidad, $filter) {
+
+            function FarmaciaPlanillaDespacho(empresa_id, codigo, nombre) {
+                CentroUtilidad.getClass().call(this, nombre, codigo);               
+                
+                this.empresa_id = empresa_id;
+                this.documentos = [];
+            }
+
+            this.get = function(empresa_id, codigo, nombre) {
+                return new FarmaciaPlanillaDespacho(empresa_id, codigo, nombre);
+            };
+
+            FarmaciaPlanillaDespacho.prototype = Object.create(CentroUtilidad.getClass().prototype);
+
+            FarmaciaPlanillaDespacho.prototype.get_empresa_id = function() {
+                return this.empresa_id;
+            };
+            
+            FarmaciaPlanillaDespacho.prototype.set_documentos = function(documento) {
+                this.documentos.push(documento);
+            };
+
+            FarmaciaPlanillaDespacho.prototype.get_documentos = function() {
+                return this.documentos;
+            };
+            
+            FarmaciaPlanillaDespacho.prototype.limpiar_documentos = function() {
+                return this.documentos = [];
+            };
+                        
+            return this;
+        }]);
+});
+
+define('includes/classes/Tercero',["angular", "js/models"], function(angular, models) {
+
+    models.factory('Tercero', function() {
+
+        function Tercero(nombre, tipo_id_tercero, id, direccion, telefono) {
+
+            this.nombre_tercero = nombre || "";
+            this.tipo_id_tercero = tipo_id_tercero || "";
+            this.id = id || "";
+            this.direccion = direccion || "";
+            this.telefono = telefono || "";
+            this.tipo_pais_id = "";
+            this.tipo_departamento_id = "";
+            this.tipo_municipio_id = "";
+            this.pais = "";
+            this.departamento = "";
+            this.municipio = "";
+            
+            /*** Gestion terceros se optimiza propiedades atravez de clases eje pais, departamento ***/
+            this.genero = null;
+            this.tipoDocumento = null;
+            this.estadoCivil = null;
+            this.nacionalidad = null;
+            this.tipoOrganizacion = null;
+            this.tipoDireccion = null;
+            this.nomenclaturaDireccion1 = null;
+            this.nomenclaturaDireccion2 = null;
+            this.tipoCorreo = null;
+            this.tipoRedSocial = null;
+            this.contacto = null;
+            this.contactos = [];
+            this.pais = null;
+            this.fechaExpedicion = "";
+            this.fechaExpiracion = "";
+            this.fechaNacimiento = "";
+            this.tipoNaturaleza = null;
+            this.primerNombre = "";
+            this.segundoNombre = "";
+            this.primerApellido = "";
+            this.segundoApellido = "";
+            this.razonSocial = "";
+            this.descripcion = "";
+            this.nombreComercial = "";
+            this.nomenclaturaDescripcion1 = "";
+            this.nomenclaturaDescripcion2 = "";
+            this.numeroPredio = "";
+            this.barrio = "";
+            this.email = "";
+            this.descripcionRedSocial = "";
+            this.telefonos = [];
+            this.telefonoSeleccionado = null;
+            
+        };
+        
+        //Operaciones Get de parámetros iniciales de creación de Tercero
+        Tercero.prototype.getNombre = function(){
+            return this.nombre_tercero;
+        };
+        
+        Tercero.prototype.setNombre = function(nombre){
+            this.nombre_tercero = nombre;
+            return this;
+        };
+        
+        Tercero.prototype.getNombreComercial = function(){
+            return this.nombreComercial;
+        };
+        
+        Tercero.prototype.setNombreComercial = function(nombreComercial){
+            this.nombreComercial = nombreComercial;
+            return this;
+        };
+        
+        Tercero.prototype.getTipoNaturaleza = function(){
+            return this.tipoNaturaleza;
+        };
+        
+        Tercero.prototype.setTipoNaturaleza = function(tipoNaturaleza){
+            this.tipoNaturaleza = tipoNaturaleza;
+            return this;
+        };
+        
+        
+        Tercero.prototype.getPrimerNombre = function(){
+            return this.primerNombre;
+        };
+        
+        Tercero.prototype.setPrimerNombre = function(primerNombre){
+            this.primerNombre = primerNombre;
+            return this;
+        };
+        
+        Tercero.prototype.getSegundoNombre = function(){
+            return this.segundoNombre;
+        };
+        
+        Tercero.prototype.setSegundoNombre = function(segundoNombre){
+            this.segundoNombre = segundoNombre;
+            return this;
+        };
+        
+        Tercero.prototype.getPrimerApellido = function(){
+            return this.primerApellido;
+        };
+        
+        Tercero.prototype.setPrimerApellido = function(primerApellido){
+            this.primerApellido = primerApellido;
+            return this;
+        };
+        
+        Tercero.prototype.getSegundoApellido = function(){
+            return this.segundoApellido;
+        };
+        
+        Tercero.prototype.setSegundoApellido = function(segundoApellido){
+            this.segundoApellido = segundoApellido;
+            return this;
+        };
+        
+        Tercero.prototype.getGenero = function(){
+            return this.genero;
+        };
+        
+        Tercero.prototype.setGenero = function(genero){
+            
+            if(genero.getId().length === 0){
+                genero = null;
+            }
+            
+            this.genero = genero;
+            return this;
+        };
+            
+        Tercero.prototype.getFechaExpedicion = function(){
+            return this.fechaExpedicion;
+        };
+        
+        Tercero.prototype.setFechaExpedicion = function(fechaExpedicion){
+            this.fechaExpedicion = fechaExpedicion;
+            return this;
+        };
+        
+        Tercero.prototype.getFechaExpiracion = function(){
+            return this.fechaExpiracion;
+        };
+        
+        Tercero.prototype.setFechaExpiracion = function(fechaExpiracion){
+            this.fechaExpiracion = fechaExpiracion;
+            return this;
+        };
+        
+        Tercero.prototype.getFechaNacimiento = function(){
+            return this.fechaNacimiento;
+        };
+        
+        Tercero.prototype.setFechaNacimiento = function(fechaNacimiento){
+            this.fechaNacimiento = fechaNacimiento;
+            return this;
+        };    
+        
+        Tercero.prototype.getEstadoCivil = function(){
+            return this.estadoCivil;
+        };
+        
+        Tercero.prototype.setEstadoCivil = function(estadoCivil){
+            
+            if(estadoCivil.getId().length === 0){
+                estadoCivil = null;
+            }
+            
+            this.estadoCivil = estadoCivil;
+            return this;
+        };    
+         
+        Tercero.prototype.getNacionalidad = function(){
+            return this.nacionalidad;
+        };
+        
+        Tercero.prototype.setNacionalidad = function(nacionalidad){
+            
+            if(nacionalidad.getId().length === 0){
+                nacionalidad = null;
+            }
+            
+            this.nacionalidad = nacionalidad;
+            return this;
+        };
+        
+        Tercero.prototype.getRazonSocial = function(){
+            return this.razonSocial;
+        };
+        
+        Tercero.prototype.setRazonSocial = function(razonSocial){
+            this.razonSocial = razonSocial;
+            return this;
+        };
+        
+        Tercero.prototype.getDescripcion = function(){
+            return this.descripcion;
+        };
+        
+        Tercero.prototype.setDescripcion = function(descripcion){
+            this.descripcion = descripcion;
+            return this;
+        };
+        
+        Tercero.prototype.getTipoDireccion = function(){
+            return this.tipoDireccion;
+        };
+        
+        Tercero.prototype.setTipoDireccion = function(tipoDireccion){
+            
+            if(tipoDireccion.getId().length === 0){
+                tipoDireccion = null;
+            }
+            
+            this.tipoDireccion = tipoDireccion;
+            return this;
+        };
+        
+        Tercero.prototype.getTipoId = function(){
+            return this.tipo_id_tercero;
+        };
+        
+        Tercero.prototype.getId = function(){
+            return this.id;
+        };
+        
+        Tercero.prototype.setId = function(id){
+           this.id = id;
+           return this;
+        };
+        
+        Tercero.prototype.getIdentificacion = function(){
+          
+            return this.tipo_id_tercero + " " +this.id;
+        };
+        
+        Tercero.prototype.getDireccion = function(){
+            return this.direccion;
+        };
+        
+        Tercero.prototype.setDireccion = function(direccion){
+            this.direccion = direccion;
+            return this;
+        };
+        
+        Tercero.prototype.getTelefono = function(){
+            return this.telefono;
+        };
+        
+        //Operaciones Set y Get de atributos adicionales
+        Tercero.prototype.setTipoPaisId = function(tipo_pais_id) {
+            this.tipo_pais_id = tipo_pais_id;
+        };
+
+        Tercero.prototype.getTipoPaisId = function() {
+            return this.tipo_pais_id;
+        };
+
+        Tercero.prototype.setTipoDepartamentoId = function(tipo_departamento_id) {
+            this.tipo_departamento_id = tipo_departamento_id;
+        };
+
+        Tercero.prototype.getTipoDepartamentoId = function() {
+            return this.tipo_departamento_id;
+        };
+        
+        Tercero.prototype.setTipoMunicipioId = function(tipo_municipio_id) {
+            this.tipo_municipio_id = tipo_municipio_id;
+        };
+
+        Tercero.prototype.getTipoMunicipioId = function() {
+            return this.tipo_municipio_id;
+        };
+        
+        Tercero.prototype.setPais = function(pais) {
+            this.pais = pais;
+        };
+
+        Tercero.prototype.getPais = function() {
+            return this.pais;
+        };
+
+        Tercero.prototype.setDepartamento = function(departamento) {
+            this.departamento = departamento;
+        };
+
+        Tercero.prototype.getDepartamento = function() {
+            return this.departamento;
+        };
+        
+        Tercero.prototype.setMunicipio = function(municipio) {
+            this.municipio = municipio;
+        };
+
+        Tercero.prototype.getMunicipio = function() {
+            return this.municipio;
+        };    
+        
+        //GestionTerceros
+        Tercero.prototype.setTipoDocumento = function(tipoDocumento) {
+            this.tipoDocumento = tipoDocumento;
+            return this;
+        };
+
+        Tercero.prototype.getTipoDocumento = function() {
+            return this.tipoDocumento;
+        };  
+        
+        
+        Tercero.prototype.setTipoOrganizacion = function(tipoOrganizacion) {
+            this.tipoOrganizacion = tipoOrganizacion;
+            return this;
+        };
+
+        Tercero.prototype.getTipoOrganizacion = function() {
+            return this.tipoOrganizacion;
+        }; 
+        
+        Tercero.prototype.setContacto = function(contacto) {
+            this.contacto = contacto;
+            return this;
+        };
+
+        Tercero.prototype.getContacto = function() {
+            return this.contacto;
+        };  
+        
+        Tercero.prototype.setPais = function(pais) {
+            this.pais = pais;
+            return this;
+        };
+
+        Tercero.prototype.getPais = function() {
+            return this.pais;
+        };  
+        
+        Tercero.prototype.setTelefonoSeleccionado = function(telefonoSeleccionado) {
+            this.telefonoSeleccionado = telefonoSeleccionado;
+            return this;
+        };
+
+        Tercero.prototype.getTelefonoSeleccionado = function() {
+            return this.telefonoSeleccionado;
+        }; 
+        
+        Tercero.prototype.setNomenclaturaDescripcion1 = function(nomenclaturaDescripcion1) {
+            
+            if(!nomenclaturaDescripcion1){
+                nomenclaturaDescripcion1 = "";
+            }
+            
+            this.nomenclaturaDescripcion1 = nomenclaturaDescripcion1;
+            return this;
+        };
+
+        Tercero.prototype.getNomenclaturaDescripcion1 = function() {
+            return this.nomenclaturaDescripcion1;
+        }; 
+        
+        Tercero.prototype.setNomenclaturaDescripcion2 = function(nomenclaturaDescripcion2) {
+            
+            if(!nomenclaturaDescripcion2){
+                nomenclaturaDescripcion2 = "";
+            }
+            
+            this.nomenclaturaDescripcion2 = nomenclaturaDescripcion2;
+            return this;
+        };
+
+        Tercero.prototype.getNomenclaturaDescripcion2 = function() {
+            return this.nomenclaturaDescripcion2;
+        }; 
+               
+        Tercero.prototype.setNomenclaturaDireccion1 = function(nomenclaturaDireccion1) {
+            
+            if(nomenclaturaDireccion1.getId().length === 0){
+                nomenclaturaDireccion1 = null;
+            }
+            
+            this.nomenclaturaDireccion1 = nomenclaturaDireccion1;
+            return this;
+        };
+
+        Tercero.prototype.getNomenclaturaDireccion1 = function() {
+            return this.nomenclaturaDireccion1;
+        }; 
+        
+        
+        Tercero.prototype.setNomenclaturaDireccion2 = function(nomenclaturaDireccion2) {
+            if(nomenclaturaDireccion2.getId().length === 0){
+                nomenclaturaDireccion2 = null;
+            }
+            this.nomenclaturaDireccion2 = nomenclaturaDireccion2;
+            return this;
+        };
+
+        Tercero.prototype.getNomenclaturaDireccion2 = function() {
+            return this.nomenclaturaDireccion2;
+        }; 
+        
+        Tercero.prototype.setNumeroPredio = function(numeroPredio) {
+            
+            if(!numeroPredio){
+                numeroPredio = "";
+            }
+            
+            this.numeroPredio = numeroPredio;
+            return this;
+        };
+
+        Tercero.prototype.getNumeroPredio = function() {
+            return this.numeroPredio;
+        }; 
+        
+        Tercero.prototype.setBarrio = function(barrio) {
+            
+            if(!barrio){
+                barrio = "";
+            }
+            
+            this.barrio = barrio;
+            return this;
+        };
+
+        Tercero.prototype.getBarrio = function() {
+            return this.barrio;
+        }; 
+        
+        Tercero.prototype.setTipoCorreo = function(tipoCorreo) {
+            if(tipoCorreo.getId().length === 0){
+                tipoCorreo = null;
+            }
+            this.tipoCorreo = tipoCorreo;
+            return this;
+        };
+
+        Tercero.prototype.getTipoCorreo = function() {
+            return this.tipoCorreo;
+        };
+        
+        Tercero.prototype.setCorreo = function(correo) {
+            this.email = correo;
+            return this;
+        };
+
+        Tercero.prototype.getCorreo = function() {
+            return this.email;
+        };
+        
+        Tercero.prototype.setTipoRedSocial = function(tipoRedSocial) {
+            
+            if(tipoRedSocial.getId().length === 0){
+                tipoRedSocial = null;
+            }
+            
+            this.tipoRedSocial = tipoRedSocial;
+            return this;
+        };
+
+        Tercero.prototype.getTipoRedSocial = function() {
+            return this.tipoRedSocial;
+        };
+        
+        Tercero.prototype.setDescripcionRedSocial = function(descripcionRedSocial) {
+            this.descripcionRedSocial = descripcionRedSocial;
+            return this;
+        };
+
+        Tercero.prototype.getDescripcionRedSocial = function() {
+            return this.descripcionRedSocial;
+        };
+        
+                
+        Tercero.prototype.agregarTelefono = function(telefono){
+            if(telefono.getNumero().length === 0 || telefono.getTipoLineaTelefonica().getId().length === 0 ||
+               telefono.getTipoTelefono().getId().length === 0){
+                
+                return false;
+            }
+            
+          
+            for(var i in this.telefonos){
+                var _telefono = this.telefonos[i];
+                
+                if(_telefono.getNumero() === telefono.getNumero() && _telefono.getTipoLineaTelefonica().getId() === telefono.getTipoLineaTelefonica().getId()){
+                    this.telefonos[i] = telefono;
+                    return true;
+                }
+                
+            }
+            
+            this.telefonos.push(telefono);
+            return true;
+            
+        };
+        
+        Tercero.prototype.agregarContacto = function(contacto){
+            for(var i in this.contactos){
+                var _contacto = this.contactos[i];
+                
+                
+                if(_contacto.getId() === contacto.getId()){
+                    _contacto.setNombre(contacto.getNombre()).
+                    setTipoContacto(contacto.getTipoContacto()).
+                    setTelefono(contacto.getTelefono()).
+                    setEmail(contacto.getEmail()).
+                    setDescripcion(contacto.getDescripcion());
+
+                    return;
+                }
+                
+                if(_contacto.getEmail().length > 0 && (contacto.getEmail() === _contacto.getEmail())){
+                    
+                    return;
+                }
+
+                if(_contacto.getTelefono().length > 0 && (_contacto.getTelefono() === contacto.getTelefono())){
+                    
+                    return;
+                }
+            }
+            
+            this.contactos.push(contacto);
+            
+        };
+        
+        Tercero.prototype.getContactos = function(){
+            return this.contactos;
+        };
+        
+        Tercero.prototype.getTelefonos = function() {
+            return this.telefonos;
+        }; 
+
+        this.get = function(nombre, tipo_id_tercero, id, direccion, telefono, pais, departamento, municipio) {
+            return new Tercero(nombre, tipo_id_tercero, id, direccion, telefono, pais, departamento, municipio);
+        };
+
+        this.getClass = function() {
+            return Tercero;
+        };
+
+        return this;
+
+    });
+});
+
+define('includes/classes/Cliente',["angular", "js/models","includes/classes/Tercero"], function(angular, models) {
+
+    models.factory('Cliente', ["Tercero", function(Tercero) {
+
+        function Cliente(nombre, direccion, tipo_id, id, telefono) {
+            
+            Tercero.getClass().call(this,nombre, tipo_id, id, direccion, telefono);
+           
+        };
+
+        this.get = function(nombre, direccion, tipo_id, id, telefono) {
+
+            return new Cliente(nombre, direccion, tipo_id, id, telefono);
+        };
+
+
+        Cliente.prototype = Object.create(Tercero.getClass().prototype);
+
+        this.getClass = function(){
+            return Cliente;
+        };
+
+        return this;
+
+    }]);
+});
+define('models/ClienteDocumento',["angular", "js/models", "includes/classes/Cliente"], function(angular, models) {
+
+    models.factory('ClienteDocumento', ["Cliente", "$filter", function(Cliente, $filter) {
+
+            function ClienteDocumento(nombre, direccion, tipo_id, id, telefono) {
+                Cliente.getClass().call(this, nombre, direccion, tipo_id, id, telefono);               
+                
+            }
+
+            this.get = function(nombre, direccion, tipo_id, id, telefono) {
+                return new ClienteDocumento(nombre, direccion, tipo_id, id, telefono);
+            };
+            
+            this.getClass = function(){
+                return ClienteDocumento;
+            };
+
+            ClienteDocumento.prototype = Object.create(Cliente.getClass().prototype);
+
+            ClienteDocumento.documentos = [];
+
+            ClienteDocumento.prototype.set_documentos = function(documento) {
+                this.documentos.push(documento);
+            };
+
+            ClienteDocumento.prototype.get_documentos = function() {
+                return this.documentos;
+            };
+            
+            ClienteDocumento.prototype.limpiar_documentos = function() {
+                return this.documentos = [];
+            };
+            
+            
+            return this;
+        }]);
+});
+
+
 define('controllers/ValidacionDespachosController',["angular", "js/controllers"], function (angular, controllers) {
 
     controllers.controller('ValidacionDespachosController',
@@ -47925,181 +48690,164 @@ define('controllers/ValidacionDespachosController',["angular", "js/controllers"]
                         EmpresaAprobacionDespacho, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
                         $timeout, $filter, localStorageService, $state, ValidacionDespachosService) {
 
-                var that = this;
-                $scope.paginaactual = 1;
-                var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
+                    var that = this;
+                    $scope.paginaactual = 1;
+                    var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
 
-                var fecha_actual = new Date();
+                    var fecha_actual = new Date();
 
-                $scope.datos_view = {
-                    termino_busqueda_proveedores: "",
-                    fecha_inicial_aprobaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
-                    fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),
-                    prefijo: "",
-                    numero: "",
-                    items: 0,
-                    empresaSeleccionada: '',
-                    termino_busqueda: '',
+                    $scope.datos_view = {
+                        termino_busqueda_proveedores: "",
+                        fecha_inicial_aprobaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
+                        fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+                        prefijo: "",
+                        numero: "",
+                        items: 0,
+                        empresaSeleccionada: '',
+                        termino_busqueda: '',
                     estadoSesion: true
 
-                };
-                /*
-                 * Inicializacion de variables
-                 * @param {type} empresa
-                 * @param {type} callback
-                 * @returns {void}
-                 */
-                that.init = function (empresa, callback) {
-                    $scope.root = {};
-                    $scope.root.empresaSeleccionada = EmpresaAprobacionDespacho.get("TODAS LAS EMPRESAS", -1);
-                    $scope.root.empresaNombre;
-                    $scope.session = {
-                        usuario_id: Usuario.getUsuarioActual().getId(),
-                        auth_token: Usuario.getUsuarioActual().getToken()
                     };
-                    $scope.documentosAprobados = [];
-                    that.centroUtilidad = [];
+                    /*
+                     * Inicializacion de variables
+                     * @param {type} empresa
+                     * @param {type} callback
+                     * @returns {void}
+                     */
+                    that.init = function (empresa, callback) {
+                        $scope.root = {};
+                        $scope.root.empresaSeleccionada = EmpresaAprobacionDespacho.get("TODAS LAS EMPRESAS", -1);
+                        $scope.root.empresaNombre;
+                        $scope.session = {
+                            usuario_id: Usuario.getUsuarioActual().getId(),
+                            auth_token: Usuario.getUsuarioActual().getToken()
+                        };
+                        $scope.documentosAprobados = [];
+                        that.centroUtilidad = [];
 
-                    $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
+                        $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
 
-                    $scope.filtros = [
-                        {nombre: "Prefijo", filtroPrefijo: true},
-                        {nombre: "Numero", filtroNombre: true}
+                        $scope.filtros = [
+                            {nombre: "Prefijo", filtroPrefijo: true},
+                            {nombre: "Numero", filtroNombre: true}
 
-                    ];
-                    $scope.filtro = $scope.filtros[0];
-                    //Deja en estado visible el buscador
-                    $scope.visibleBuscador = true;
-                    $scope.visibleBotonBuscador = true;
+                        ];
+                        $scope.filtro = $scope.filtros[0];
+                        //Deja en estado visible el buscador
+                        $scope.visibleBuscador = true;
+                        $scope.visibleBotonBuscador = true;
 
-                    callback();
-                };
+                        callback();
+                    };
 
-                $scope.onSeleccionFiltro = function (filtro) {
+                    $scope.onSeleccionFiltro = function (filtro) {
 
-                    $scope.filtro = filtro;
-                    $scope.datos_view.termino_busqueda = '';
+                        $scope.filtro = filtro;
+                        $scope.datos_view.termino_busqueda = '';
 
-                    $scope.visibleBuscador = true;
-                    $scope.visibleListaEstados = false;
-                    $scope.visibleBotonBuscador = true;
+                        $scope.visibleBuscador = true;
+                        $scope.visibleListaEstados = false;
+                        $scope.visibleBotonBuscador = true;
 
-
-                };
-
-
-                /*
-                 * @author Cristian Ardila
-                 * @fecha 05/02/2016
-                 * +Descripcion funcion obtiene las empresas del servidor invocando
-                 *              el servicio listarEmpresas de 
-                 *              (ValidacionDespachosSerivice.js)
-                 * @returns {json empresas}
-                 */
-                that.listarEmpresas = function (callback) {
-
-                    ValidacionDespachosService.listarEmpresas($scope.session, $scope.datos_view.termino_busqueda_empresa, function (data) {
-
-                        $scope.empresas = [];
-                        if (data.status === 200) {
-
-                            that.render_empresas(data.obj.listar_empresas);
-                            callback(true);
-                        } else {
-                            callback(false);
-                        }
-                    });
-                };
-
-
-                that.render_empresas = function (empresas) {
-                    for (var i in empresas) {
-                        var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
-                        $scope.empresas.push(_empresa);
-                    }
-                };
-
-
-                /**
-                 * @author Cristian Ardila
-                 * @fecha 04/02/2016
-                 * +Descripcion Metodo encargado de invocar el servicio que
-                 *              listara todos los despachos aprobados por parte
-                 *              de la persona de seguridad
-                 */
-
-                that.listarDespachosAprobados = function () {
-
-                    var obj = {
-                        session: $scope.session,
-                        prefijo: $scope.datos_view.prefijo,
-                        numero: $scope.datos_view.numero, //$scope.datos_view.numero,
-                        empresa_id: $scope.datos_view.empresaSeleccionada,
-                        fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                        fechaFinal: $filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                        paginaactual: $scope.paginaactual,
-                        registroUnico: false
 
                     };
 
-                    ValidacionDespachosService.listarDespachosAprobados(obj, function (data) {
-                        if (data.status === 200) {
 
-                            $scope.datos_view.items = data.obj.validacionDespachos.length;
+                    /*
+                     * @author Cristian Ardila
+                     * @fecha 05/02/2016
+                     * +Descripcion funcion obtiene las empresas del servidor invocando
+                     *              el servicio listarEmpresas de 
+                     *              (ValidacionDespachosSerivice.js)
+                     * @returns {json empresas}
+                     */
+                    that.listarEmpresas = function (callback) {
 
-                            that.renderListarDespachosAprobados(data);
+                        ValidacionDespachosService.listarEmpresas($scope.session, $scope.datos_view.termino_busqueda_empresa, function (data) {
 
-                        } else {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            $scope.empresas = [];
+                            if (data.status === 200) {
+
+                                that.render_empresas(data.obj.listar_empresas);
+                                callback(true);
+                            } else {
+                                callback(false);
+                            }
+                        });
+                    };
+
+
+                    that.render_empresas = function (empresas) {
+                        for (var i in empresas) {
+                            var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
+                            $scope.empresas.push(_empresa);
                         }
-                    });
-                };
+                    };
+
+
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha 04/02/2016
+                     * +Descripcion Metodo encargado de invocar el servicio que
+                     *              listara todos los despachos aprobados por parte
+                     *              de la persona de seguridad
+                     */
+
+                    that.listarDespachosAprobados = function () {
+
+                        var obj = {
+                            session: $scope.session,
+                            prefijo: $scope.datos_view.prefijo,
+                            numero: $scope.datos_view.numero, //$scope.datos_view.numero,
+                            empresa_id: $scope.datos_view.empresaSeleccionada,
+                            fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                            fechaFinal: $filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                            paginaactual: $scope.paginaactual,
+                            registroUnico: false
+
+                        };
+
+                        ValidacionDespachosService.listarDespachosAprobados(obj, function (data) {
+                            if (data.status === 200) {
+
+                                $scope.datos_view.items = data.obj.validacionDespachos.length;
+
+                                that.renderListarDespachosAprobados(data);
+
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        });
+                    };
 
 
 
-                that.renderListarDespachosAprobados = function (data) {
+                    that.renderListarDespachosAprobados = function (data) {
 
-                    $scope.documentosAprobados = [];
-                    for (var i in data.obj.validacionDespachos) {
-                        var _documento = data.obj.validacionDespachos[i];
-                        var documento = AprobacionDespacho.get(1, _documento.prefijo, _documento.numero, _documento.fecha_registro);
-                        documento.setCantidadCajas(_documento.cantidad_cajas);
-                        documento.setCantidadNeveras(_documento.cantidad_neveras);
-                        documento.setCantidadNeveras(_documento.cantidad_neveras);
-                        documento.setObservacion(_documento.observacion);
-                        documento.setRazonSocial(_documento.razon_social);
-                        documento.setEmpresaId(_documento.empresa_id);
-                        documento.setUsuario(_documento.nombre);
-                        $scope.documentosAprobados.push(documento);
-                    }
+                        $scope.documentosAprobados = [];
+                        for (var i in data.obj.validacionDespachos) {
+                            var _documento = data.obj.validacionDespachos[i];
+                            var documento = AprobacionDespacho.get(_documento.id_aprobacion_planillas, _documento.prefijo, _documento.numero, _documento.fecha_registro);
 
-                };
+                            documento.setCantidadCajas(_documento.cantidad_cajas);
+                            documento.setCantidadNeveras(_documento.cantidad_neveras);
+                            documento.setObservacion(_documento.observacion);
+                            documento.setRazonSocial(_documento.razon_social);
+                            documento.setEmpresaId(_documento.empresa_id);
+                            documento.setUsuario(_documento.nombre);
 
-                /**
-                 * @author Cristian Ardila
-                 * @fecha 04/02/2016
-                 * +Descripcion Metodo invocado desde los texfield de EFC y numero
-                 * @param {type} event
-                 */
-                $scope.cargarListarDespachosAprobados = function (event) {
+                            $scope.documentosAprobados.push(documento);
+                        }
+                    };
 
-                    if ($scope.filtro.nombre === "Prefijo") {
-                        $scope.datos_view.numero = "";
-                        $scope.datos_view.prefijo = $scope.datos_view.termino_busqueda;
-                    }
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha 04/02/2016
+                     * +Descripcion Metodo invocado desde los texfield de EFC y numero
+                     * @param {type} event
+                     */
+                    $scope.cargarListarDespachosAprobados = function (event) {
 
-                    if ($scope.filtro.nombre === "Numero") {
-                        $scope.datos_view.prefijo = "";
-                        $scope.datos_view.numero = $scope.datos_view.termino_busqueda;
-                    }
-                    that.listarDespachosAprobados()
-
-                };
-
-
-                $scope.buscarDespachosAprobados = function (event) {
-
-                    if (event.which === 13) {
                         if ($scope.filtro.nombre === "Prefijo") {
                             $scope.datos_view.numero = "";
                             $scope.datos_view.prefijo = $scope.datos_view.termino_busqueda;
@@ -48110,165 +48858,183 @@ define('controllers/ValidacionDespachosController',["angular", "js/controllers"]
                             $scope.datos_view.numero = $scope.datos_view.termino_busqueda;
                         }
                         that.listarDespachosAprobados()
-                    }
-                };
 
-                /*
-                 * funcion ejecuta listarCentroUtilidad
-                 * @returns {lista CentroUtilidad}
-                 */
-                $scope.onSeleccionarEmpresa = function (empresa_Nombre) {
-                    if (empresa_Nombre.length < 3) {
-                        return;
-                    }
-                    $scope.datos_view.termino_busqueda_empresa = empresa_Nombre;
-                    that.listarEmpresas(function () {
-                    });
-                };
+                    };
 
 
-                /*
-                 * funcion para paginar anterior
-                 * @returns {lista datos}
-                 */
-                $scope.paginaAnterior = function () {
-                    if ($scope.paginaactual === 1)
-                        return;
-                    $scope.paginaactual--;
-                    that.listarDespachosAprobados();
-                };
+                    $scope.buscarDespachosAprobados = function (event) {
 
+                        if (event.which === 13) {
+                            if ($scope.filtro.nombre === "Prefijo") {
+                                $scope.datos_view.numero = "";
+                                $scope.datos_view.prefijo = $scope.datos_view.termino_busqueda;
+                            }
 
-                /*
-                 * funcion para paginar siguiente
-                 * @returns {lista datos}
-                 */
-                $scope.paginaSiguiente = function () {
-                    $scope.paginaactual++;
-                    that.listarDespachosAprobados();
-                };
-
-                /*
-                 * @author Cristian Ardila
-                 * @fecha 04/02/2016
-                 * +Descripcion Funcion encargada de cambiar de GUI cuando 
-                 *              se presiona el boton de detalle de la tabla
-                 *              de datos
-                 */
-                $scope.detalleDespachoAprobado = function (documentoAprobado) {
-
-                    localStorageService.add("validacionEgresosDetalle",
-                            {empresa: documentoAprobado.getEmpresaId(),
-                                prefijo: documentoAprobado.getPrefijo(),
-                                numero: documentoAprobado.getNumero(),
-                                estado: 1});
-                    $state.go('ValidacionEgresosDetalle');
-                };
-
-                /*
-                 * @author Cristian Ardila
-                 * @fecha 04/02/2016
-                 * +Descripcion Funcion encarhada de cambiar de GUI cuando 
-                 *              se presiona el boton Aprobar despacho
-                 */
-                $scope.formularioAprobarDespacho = function () {
-                    localStorageService.add("validacionEgresosDetalle", {estado: 2});
-                    $state.go('ValidacionEgresosDetalle');
-                };
-
-
-                /**
-                 * +Descripcion Se visualiza la tabla con todas las aprobaciones
-                 *              por parte del personal de seguridad
-                 */
-                $scope.listaAprobaciones = {
-                    data: 'documentosAprobados',
-                    enableColumnResize: true,
-                    enableRowSelection: false,
-                    enableCellSelection: true,
-                    enableHighlighting: true,
-                    columnDefs: [
-                        {field: 'getPrefijo()', displayName: 'prefijo', width: "25%"},
-                        {field: 'getNumero()', displayName: 'Numero', width: "25%"},
-                        {field: 'fecha_registro', displayName: 'Fecha Registro', width: "40%"},
-                        {field: 'detalle', width: "10%",
-                            displayName: "Opciones",
-                            cellClass: "txt-center",
-                            cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleDespachoAprobado(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
-
+                            if ($scope.filtro.nombre === "Numero") {
+                                $scope.datos_view.prefijo = "";
+                                $scope.datos_view.numero = $scope.datos_view.termino_busqueda;
+                            }
+                            that.listarDespachosAprobados()
                         }
-                    ]
-                };
+                    };
+
+                    /*
+                     * funcion ejecuta listarCentroUtilidad
+                     * @returns {lista CentroUtilidad}
+                     */
+                    $scope.onSeleccionarEmpresa = function (empresa_Nombre) {
+                        if (empresa_Nombre.length < 3) {
+                            return;
+                        }
+                        $scope.datos_view.termino_busqueda_empresa = empresa_Nombre;
+                        that.listarEmpresas(function () {
+                        });
+                    };
 
 
-                /**
-                 * @author Cristian Ardila
-                 * @fecha 04/02/2016
-                 * +Descripcion Funcion que permitira desplegar el popup datePicker
-                 *               de la fecha iniciañ
-                 * @param {type} $event
-                 */
-                $scope.abrir_fecha_inicial = function ($event) {
+                    /*
+                     * funcion para paginar anterior
+                     * @returns {lista datos}
+                     */
+                    $scope.paginaAnterior = function () {
+                        if ($scope.paginaactual === 1)
+                            return;
+                        $scope.paginaactual--;
+                        that.listarDespachosAprobados();
+                    };
 
-                    $event.preventDefault();
-                    $event.stopPropagation();
-                    $scope.datos_view.datepicker_fecha_inicial = true;
-                    $scope.datos_view.datepicker_fecha_final = false;
 
-                };
+                    /*
+                     * funcion para paginar siguiente
+                     * @returns {lista datos}
+                     */
+                    $scope.paginaSiguiente = function () {
+                        $scope.paginaactual++;
+                        that.listarDespachosAprobados();
+                    };
 
-                /**
-                 * @author Cristian Ardila
-                 * @fecha 04/02/2016
-                 * +Descripcion Funcion que permitira desplegar el popup datePicker
-                 *               de la fecha final
-                 * @param {type} $event
-                 */
-                $scope.abrir_fecha_final = function ($event) {
-                    $event.preventDefault();
-                    $event.stopPropagation();
-                    $scope.datos_view.datepicker_fecha_inicial = false;
-                    $scope.datos_view.datepicker_fecha_final = true;
+                    /*
+                     * @author Cristian Ardila
+                     * @fecha 04/02/2016
+                     * +Descripcion Funcion encargada de cambiar de GUI cuando 
+                     *              se presiona el boton de detalle de la tabla
+                     *              de datos
+                     */
+                    $scope.detalleDespachoAprobado = function (documentoAprobado) {
 
-                };
 
-                that.init(empresa, function () {
+                        localStorageService.add("validacionEgresosDetalle",
+                                {empresa: documentoAprobado.getEmpresaId(),
+                                    id_plantilla: documentoAprobado.bodegas_doc_id,
+                                    estado: 1});
+                        $state.go('ValidacionEgresosDetalle');
+                    };
 
-                    if (!Usuario.getUsuarioActual().getEmpresa()) {
-                        AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
-                    } else {
+                    /*
+                     * @author Cristian Ardila
+                     * @fecha 04/02/2016
+                     * +Descripcion Funcion encarhada de cambiar de GUI cuando 
+                     *              se presiona el boton Aprobar despacho
+                     */
+                    $scope.formularioAprobarDespacho = function () {
+                        localStorageService.add("validacionEgresosDetalle", {estado: 2});
+                        $state.go('ValidacionEgresosDetalle');
+                    };
 
-                        if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
-                                Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
 
-                            AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+                    /**
+                     * +Descripcion Se visualiza la tabla con todas las aprobaciones
+                     *              por parte del personal de seguridad
+                     */
+                    $scope.listaAprobaciones = {
+                        data: 'documentosAprobados',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+                        columnDefs: [
+                            {field: 'getObservacion()', displayName: 'Observacion', width: "60%"},
+                            {field: 'getCantidadCajas()', displayName: 'Cant Cajas', width: "5%"},
+                            {field: 'getCantidadNeveras()', displayName: 'Cant Neveras', width: "5%"},
+                            {field: 'fecha_registro', displayName: 'Fecha Registro'},
+                            {field: 'detalle', width: "10%",
+                                displayName: "Opciones",
+                                cellClass: "txt-center",
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleDespachoAprobado(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
 
+                            }
+                        ]
+                    };
+
+
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha 04/02/2016
+                     * +Descripcion Funcion que permitira desplegar el popup datePicker
+                     *               de la fecha iniciañ
+                     * @param {type} $event
+                     */
+                    $scope.abrir_fecha_inicial = function ($event) {
+
+                        $event.preventDefault();
+                        $event.stopPropagation();
+                        $scope.datos_view.datepicker_fecha_inicial = true;
+                        $scope.datos_view.datepicker_fecha_final = false;
+
+                    };
+
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha 04/02/2016
+                     * +Descripcion Funcion que permitira desplegar el popup datePicker
+                     *               de la fecha final
+                     * @param {type} $event
+                     */
+                    $scope.abrir_fecha_final = function ($event) {
+                        $event.preventDefault();
+                        $event.stopPropagation();
+                        $scope.datos_view.datepicker_fecha_inicial = false;
+                        $scope.datos_view.datepicker_fecha_final = true;
+
+                    };
+
+                    that.init(empresa, function () {
+
+                        if (!Usuario.getUsuarioActual().getEmpresa()) {
+                            AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
                         } else {
 
-                            if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                            if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
+                                    Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
 
-                                AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+
                             } else {
-                                $scope.datos_view.estadoSesion = false;
-                                that.listarEmpresas(function (estado) {
-                                    that.listarDespachosAprobados();
-                                });
+
+                                if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+
+                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                                } else {
+                                    $scope.datos_view.estadoSesion = false;
+                                    that.listarEmpresas(function (estado) {
+                                        that.listarDespachosAprobados();
+                                    });
+                                }
                             }
                         }
-                    }
-                });
+                    });
 
 
-                $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+                    $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 
-                    $scope.$$watchers = null;
-                    // set localstorage
+                        $scope.$$watchers = null;
+                        // set localstorage
 
-                    $scope.datos_view = null;
+                        $scope.datos_view = null;
 
-                });
+                    });
 
-            }]);
+                }]);
 });
 
 define('controllers/EntradaSalidaController',["angular", "js/controllers"], function (angular, controllers) {
@@ -49275,17 +50041,19 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
         "localStorageService",
         "$state",
         "$filter",
-        "Usuario", "AprobacionDespacho", "EmpresaAprobacionDespacho", "ValidacionDespachosService","ImagenAprobacion",
+        "Usuario", "AprobacionDespacho", "EmpresaAprobacionDespacho", "ValidacionDespachosService", "ImagenAprobacion", "DocumentoDespacho",
         function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Sesion, AprobacionDespacho, EmpresaAprobacionDespacho, ValidacionDespachosService, ImagenAprobacion) {
+                Sesion, AprobacionDespacho, EmpresaAprobacionDespacho, ValidacionDespachosService, ImagenAprobacion, DocumentoDespacho) {
 
             var that = this;
+            that.observacionValidacion = "";
+            that.documentosSeleccionados;
             // Definicion Variables de Sesion
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),
                 auth_token: Sesion.getUsuarioActual().getToken()
             };
-
+            $scope.listaCentrosUtilidad = [];
             // Definicion variables del View
 
             $scope.datos_view = {
@@ -49299,14 +50067,15 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 btnSolicitarAutorizacionCartera: true,
                 estadoRegistro: 0,
                 prefijoList: '',
-                existenciaDocumento: true
-
+                existenciaDocumento: true,
+                disabledBtnGuardar: false,
+                documentosMedipol: []
 
             };
 
             $scope.documentoDespachoAprobado = AprobacionDespacho.get();
             $scope.despachoId = 0;
-            
+
             $scope.cargarEmpresaSession = function () {
 
                 if ($scope.datos_view.seleccionarOtros) {
@@ -49326,7 +50095,6 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
              * 
              */
             that.traerListadoDocumentosUsuario = function (callback) {
-                // var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());	
 
                 var obj = {
                     session: $scope.session,
@@ -49362,24 +50130,77 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
              * @author Cristian Ardila
              * @fecha 10/02/2016
              * +Descripcion Funcion que se acciona al presionar el boton guardar
-             *              de la vista Detalle de despacho aprobado
+             *              de la vista Detalle de despacho aprobado,
+             *              si el documento ya fue aprobado, o el numero del documento
+             *              contiene comas se mostrar un mensaje de alerta por pantalla
+             *              restringiendo la accion al usuario
              */
             $scope.aprobarDespacho = function () {
-            
-                if ($scope.documentoDespachoAprobado.getPrefijo().length === 0 || $scope.documentoDespachoAprobado.getNumero().length === 0) {
 
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
+                if ($scope.datos_view.disabledBtnGuardar === true || $scope.datos_view.existenciaDocumento === true) {
+
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Algunas restricciones no se estan cumpliendo");
+                    return;
+                }
+
+                if ($scope.datos_view.seleccionarOtros === true) {
+
+                    if ($scope.datos_view.documentosMedipol.length > 0) {
+                        that.registrarAprobacionTabla(1);
+                    } else {
+                        that.registrarAprobacion(1);
+                    }
+
                 } else {
 
-                    if ($scope.datos_view.seleccionarOtros === true) {
+                    that.validarCantidadCajasNeveras();
 
-                        that.registrarAprobacion(1);
+                }
 
-                    } else {
+            };
 
-                        that.validarCantidadCajasNeveras();
+            /**
+             * +Descripcion Metodo encargado de desplegar una ventana con los documentos
+             *              que ya han sido aprobados
+             */
+            that.ventanaDocumentosAprobados = function (documentos) {
 
-                    }
+                if (documentos) {
+                    $scope.documentos = documentos;
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template:
+                                '<div class="modal-header">\
+                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                        <h4 class="modal-title">Lista de documentos aprobados</h4>\
+                    </div>\
+                    <div class="modal-body row">\
+                        <div class="col-md-12">\
+                            <h4 >Lista Documentos ya aprobados.</h4>\
+                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                <div class="list-group">\
+                                    <a ng-repeat="documento in documentos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                        {{ documento.prefijo}} - {{ documento.numero }}\
+                                    </a>\
+                                </div>\
+                            </div>\
+                        </div>\
+                    </div>\
+                    <div class="modal-footer">\
+                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                    </div>',
+                        scope: $scope,
+                        controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                                $scope.close = function () {
+                                    $scope.datos_view.progresoArchivo = 0;
+                                    $modalInstance.close();
+                                };
+                            }]
+                    };
+                    var modalInstance = $modal.open($scope.opts);
                 }
             };
 
@@ -49392,30 +50213,78 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
              */
             $scope.validarExistenciaDocumento = function () {
 
+                var prefijo = that.validarPrefijoEmpresasOtras();
+                $scope.documentoDespachoAprobado.setPrefijo(prefijo);
+
+                /**
+                 * +Descripcion validar que el campo de texto (Numero documento)
+                 *              no contenga caracteres de COMA al inicio de la cadena
+                 *              se limpiara el campo a CERO y se bloqueara el boton GUARDAR
+                 */
+                if ($scope.documentoDespachoAprobado.numero[0] === ",") {
+                    $scope.datos_view.disabledBtnGuardar = true;
+                    $scope.documentoDespachoAprobado.numero = 0;
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Caracter invalido");
+                    return;
+                } else {
+                    $scope.datos_view.disabledBtnGuardar = false;
+                }
+
                 if ($scope.datos_view.seleccionarOtros) {
 
-                    that.validarExistenciaDocumentoAprobado(function (data) {
+                    var multiplesDocumentosOtros = __multiplesDocumentosOtros(1);
+                    that.validarExistenciaDocumentoAprobado(prefijo, multiplesDocumentosOtros, function (data) {
 
                         if (data.status === 200) {
-                            $scope.datos_view.existenciaDocumento = true;
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            if (data.obj.validacionDespachos.documentosAprobados.length > 0) {
+                                $scope.datos_view.existenciaDocumento = true;
+                                that.ventanaDocumentosAprobados(data.obj.validacionDespachos.documentosAprobados);
+                            } else {
+                                $scope.datos_view.existenciaDocumento = false;
+                            }
                         } else {
-                            $scope.datos_view.existenciaDocumento = false;
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
-
                     });
                 } else {
-                    that.validarExistenciaDocumentoAprobado(function (data) {
 
-                        if (data.status === 403) {
-                            that.obtenerDocumento(function (estado) {
-                                $scope.datos_view.existenciaDocumento = true;
-                                if (estado) {
-                                    $scope.datos_view.existenciaDocumento = false;
-                                }
-                            });
-                        }
+                    var numeroLastIndex = $scope.documentoDespachoAprobado.numero.toString().lastIndexOf(",");
+
+                    /**
+                     * +Descripcion Si el campo de texto en el cual se ingresa el numero del documento
+                     *              contiene una coma se bloquea el boton guardar y se muestra un mensaje
+                     *              de alerta al usuario
+                     */
+                    if (numeroLastIndex > 0) {
+
+                        $scope.datos_view.disabledBtnGuardar = true;
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El numero no debe contener Comas");
+                        return;
+
+                    } else {
+
+                        $scope.datos_view.disabledBtnGuardar = false;
+
+                    }
+                    var documentoUnico = [];
+                    documentoUnico.push({numero: $scope.documentoDespachoAprobado.numero, prefijo: prefijo})
+                    that.validarExistenciaDocumentoAprobado(prefijo, documentoUnico, function (data) {
+
                         if (data.status === 200) {
+                            if (data.obj.validacionDespachos.documentosAprobados.length > 0) {
+                                $scope.datos_view.existenciaDocumento = true;
+                                that.ventanaDocumentosAprobados(data.obj.validacionDespachos.documentosAprobados);
+
+                            } else {
+
+                                that.obtenerDocumento(function (estado) {
+                                    $scope.datos_view.existenciaDocumento = true;
+                                    if (estado) {
+                                        $scope.datos_view.existenciaDocumento = false;
+                                    }
+                                });
+                            }
+                        } else {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
                     });
@@ -49448,10 +50317,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
              * @param {type} callback
              * @returns {undefined}
              */
-            that.validarExistenciaDocumentoAprobado = function (callback) {
-
-                var prefijo = that.validarPrefijoEmpresasOtras();
-                $scope.documentoDespachoAprobado.setPrefijo(prefijo);
+            that.validarExistenciaDocumentoAprobado = function (prefijo, numeroDocumentos, callback) {
 
                 var obj = {
                     session: $scope.session,
@@ -49459,7 +50325,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         validacionDespachos: {
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
                             prefijo: prefijo,
-                            numero: $scope.documentoDespachoAprobado.numero
+                            numero: numeroDocumentos//$scope.documentoDespachoAprobado.numero
                         }
                     }
                 };
@@ -49511,11 +50377,11 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
              *              de un despacho
              */
             that.validarCantidadCajasNeveras = function () {
-                
+
                 that.registrarAprobacion(0);
                 //Se inactiva la validacion temporalmente 26/12/2016 hasta verificar el requerimiento
                 return;
-                
+
                 var prefijo = that.validarPrefijoEmpresasOtras();
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
 
@@ -49535,7 +50401,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                     if (data.status === 200) {
 
                         if (parseInt($scope.documentoDespachoAprobado.cantidadCajas) === data.obj.planillas_despachos.totalCajas &&
-                                parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === data.obj.planillas_despachos.totalNeveras) {
+                                parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === parseInt(data.obj.planillas_despachos.totalNeveras)) {
                             that.registrarAprobacion(0);
                         } else {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
@@ -49550,6 +50416,111 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
 
             /**
              * @author Cristian Ardila
+             * +Descripcion Funcion que convierte en arreglo una cadena de numeros
+             *              separada por comas
+             * @fecha 18/10/2017
+             */
+
+            function __multiplesDocumentosOtros(estado) {
+
+                var prefijoDocumento = that.validarPrefijoEmpresasOtras();
+                var multiplesDocumentosOtros = [];
+                var numeroIngresado = $scope.documentoDespachoAprobado.numero.toString();
+                if (numeroIngresado === 0) {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
+                }
+                var numeroLastIndex = numeroIngresado.lastIndexOf(",");
+                var numero;
+                var caracter = ","
+                var i = 0;
+                var counter = 0;
+                var res = 0;
+                var totalDecimal = 0;
+                var cantidadCajas = 0;
+                var totalDecimalNeveras = 0;
+                var cantidadNeveras = 0;
+                var pos = "";
+                /**
+                 * +Descripcion Contar las veces que aparece el caracter [COMA] en la cadena String
+                 */
+                while (i !== -1) {
+                    var i = numeroIngresado.indexOf(caracter, i);
+                    if (i !== -1) {
+                        i++;
+                        counter++;
+                    }
+                }
+
+                /**
+                 * +Descripcion (numeroLastIndex >0) que posicion ocupa la COMA en la cadena String
+                 *              se validara si la coma se encuentra al final de la cadena
+                 *              y posteriormente se substraera toda la cadena excepto la coma
+                 */
+                if (numeroLastIndex > 0) {
+
+                    if (numeroLastIndex === numeroIngresado.length - 1) {
+                        numero = numeroIngresado.substr(0, numeroIngresado.length - 1);
+
+                    } else {
+                        numero = numeroIngresado;
+                    }
+
+                } else {
+                    numero = numeroIngresado;
+                }
+
+                var numeroArray = numero.split(",");
+
+                var index = 0;
+                res = 0;
+                totalDecimal = 0;
+                totalDecimalNeveras = 0;
+                cantidadCajas = 0;
+                cantidadNeveras = 0;
+                numeroArray.forEach(function (rowNumero) {
+
+                    index++;
+                    cantidadCajas = parseInt($scope.documentoDespachoAprobado.cantidadCajas) / numeroArray.length;
+                    pos = cantidadCajas.toString().indexOf(".");
+                    if (pos > 0) {
+                        res = String(cantidadCajas).substring((pos + 1), cantidadCajas.length);
+                        totalDecimal += parseFloat("0." + res);
+                    }
+
+                    cantidadNeveras = parseInt($scope.documentoDespachoAprobado.cantidadNeveras) / numeroArray.length;
+                    pos = cantidadNeveras.toString().indexOf(".");
+                    if (pos > 0) {
+                        res = String(cantidadNeveras).substring((pos + 1), cantidadNeveras.length);
+                        totalDecimalNeveras += parseFloat("0." + res);
+                    }
+
+                    if (index === numeroArray.length - 1) {
+
+                        multiplesDocumentosOtros.push({
+                            prefijo: prefijoDocumento,
+                            numero: rowNumero,
+                            cantidadCajas: parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)),
+                            cantidadNeveras: parseInt(cantidadNeveras) + parseInt(Math.ceil(totalDecimalNeveras)),
+                            estado: estado
+                        });
+                        return multiplesDocumentosOtros;
+                    }
+                    multiplesDocumentosOtros.push({
+                        prefijo: prefijoDocumento,
+                        numero: rowNumero,
+                        cantidadCajas: parseInt(cantidadCajas),
+                        cantidadNeveras: parseInt(cantidadNeveras),
+                        estado: estado
+                    });
+
+                });
+
+                return multiplesDocumentosOtros;
+
+            }
+            ;
+            /**
+             * @author Cristian Ardila
              * @fecha 04/02/2016
              * +Descripcion Metodo encargado de registrar la aprobacion por parte
              *              del personal de seguridad sobre un despacho
@@ -49557,30 +50528,201 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
              */
             that.registrarAprobacion = function (estado) {
 
+                var obj = {};
                 var prefijo = that.validarPrefijoEmpresasOtras();
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
+                var multiplesDocumentosOtros = __multiplesDocumentosOtros(estado);
+                that.documentosSeleccionados = localStorageService.get("documentosSeleccionados");
+                var numeroDocumento = $scope.documentoDespachoAprobado.numero;
+                var cantidadCajas = $scope.documentoDespachoAprobado.cantidadCajas;
+                var cantidadNeveras = parseInt($scope.documentoDespachoAprobado.cantidadNeveras);
 
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        validacionDespachos: {
-                            empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
-                            prefijo: prefijo,
-                            numero: $scope.documentoDespachoAprobado.numero,
-                            cantidad_cajas: $scope.documentoDespachoAprobado.cantidadCajas,
-                            cantidad_neveras: $scope.documentoDespachoAprobado.cantidadNeveras,
-                            observacion: $scope.documentoDespachoAprobado.observacion,
-                            estado: estado
+                if (that.documentosSeleccionados) {
+
+                    if (that.documentosSeleccionados.documentos.length > 0) {
+
+                        if (multiplesDocumentosOtros.length > 1) {
+
+                            multiplesDocumentosOtros.forEach(function (row) {
+                                that.documentosSeleccionados.documentos.push(row);
+                            });
+
+                        } else {
+
+                            if (multiplesDocumentosOtros[0].numero > 0) {
+                                that.documentosSeleccionados.documentos.push(multiplesDocumentosOtros[0]);
+                            }
                         }
+
+//                    that.observacionValidacion = "";
+                        that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ? $scope.documentoDespachoAprobado.observacion + " " : "";
+//                    that.documentosSeleccionados.documentos.forEach(function(row){
+//                       
+//                        var observacion="";
+//                        if(row.cantidadCajas>0){
+//                            var s=row.cantidadCajas>1?"S":"";
+//                            observacion=" | CAJA"+s+": " + row.cantidadCajas;
+//                        }
+//                        if(row.cantidadNeveras>0){
+//                            var s=row.cantidadNeveras>1?"S":"";
+//                            observacion+=" | NEVERA"+s+": " + row.cantidadNeveras; 
+//                        }
+//                        that.observacionValidacion += "("+row.prefijo +"-"+ row.numero +" "+observacion+") ";
+//                    });
+                        obj = {
+                            session: $scope.session,
+                            data: {
+                                validacionDespachos: {
+                                    empresaId: $scope.datos_view.empresaSeleccionada.codigo,
+                                    observacion: that.observacionValidacion, //+ " - No Cajas: "+ that.documentosSeleccionados.totalCajas
+                                    detalle: that.documentosSeleccionados.documentos
+                                }
+                            }
+                        };
+
+                        /**
+                         * +Descripcion Si el campo de texto NUMERO no contiene valor,
+                         *              este se diligenciara con el primer elemento del arreglo
+                         *              que contendra los documentos seleccionados y agregara el numero
+                         *              de cajas
+                         */
+                        if (numeroDocumento === 0 || numeroDocumento === undefined) {
+                            $scope.documentoDespachoAprobado.numero = that.documentosSeleccionados.documentos[0].numero;
+                            numeroDocumento = that.documentosSeleccionados.documentos[0].numero;
+                            $scope.documentoDespachoAprobado.cantidadCajas = that.documentosSeleccionados.totalCajas;
+                            $scope.documentoDespachoAprobado.cantidadNeveras = that.documentosSeleccionados.totalNeveras;
+                            cantidadCajas = that.documentosSeleccionados.totalCajas;
+                            cantidadNeveras = parseInt(that.documentosSeleccionados.totalNeveras);
+                        }
+
+                        /**
+                         * +Descripcion Si el campo de texto contiene un numero de documento,
+                         *              se validara que obligatoriamente tenga unidad de caja o de nevera
+                         *              diligenciada
+                         */
+                        if (numeroDocumento.toString().length > 0 && cantidadCajas.toString() === "0" && cantidadNeveras.toString() === "0") {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe agregar la cantidad correspondiente de Cajas/Neveras");
+                            return;
+                        }
+
+                        that.ejecutarServicioRegistroAprobacion(obj);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
                     }
-                };
+
+                } else {
+
+                    if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 && (cantidadCajas > 0 || cantidadNeveras > 0)) {
+                        that.llenarObservacion(1);
+                        obj = {
+                            session: $scope.session,
+                            data: {
+                                validacionDespachos: {
+                                    empresaId: $scope.datos_view.empresaSeleccionada.codigo,
+                                    observacion: that.observacionValidacion,
+                                    estado: estado,
+                                    detalle: multiplesDocumentosOtros
+                                }
+                            }
+                        };
+                        that.ejecutarServicioRegistroAprobacion(obj);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
+                    }
+                }
+            };
+
+            /**
+             * @author German Galvis
+             * @fecha 01/04/2019 DD/MM/YYYY
+             * +Descripcion Metodo encargado de registrar la aprobacion por parte
+             *              del personal de seguridad sobre un despacho desde la tabla
+             * @returns {undefined}
+             */
+            that.registrarAprobacionTabla = function (estado) {
+
+                var obj = {};
+                var prefijo = that.validarPrefijoEmpresasOtras();
+                var totalCajas = 0;
+                var totalNeveras = 0;
+                var documentos = $scope.datos_view.documentosMedipol;
+                $scope.documentoDespachoAprobado.setPrefijo(prefijo);
+                var numeroDocumento = $scope.documentoDespachoAprobado.numero;
+                if (documentos.length > 0) {
+
+                    that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ? $scope.documentoDespachoAprobado.observacion + " " : "";
+
+
+                    documentos.forEach(function (data) {
+
+                        var observacion = "";
+                        if (data.cantidadCajas > 0) {
+                            var s = data.cantidadCajas > 1 ? "S" : "";
+                            observacion = " | CAJA" + s + ": " + data.cantidadCajas;
+                        }
+                        if (data.cantidadNeveras > 0) {
+                            var s = data.cantidadNeveras > 1 ? "S" : "";
+                            observacion += " | NEVERA" + s + ": " + data.cantidadNeveras;
+                        }
+                        that.observacionValidacion += "(" + data.prefijo + "-" + data.numero + " " + observacion + ") ";
+
+
+                        totalCajas = totalCajas + data.cantidadCajas;
+                        totalNeveras = totalNeveras + data.cantidadNeveras;
+
+
+                    });
+
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            validacionDespachos: {
+                                empresaId: $scope.datos_view.empresaSeleccionada.codigo,
+                                observacion: that.observacionValidacion,
+                                estado: estado,
+                                detalle: documentos
+                            }
+                        }
+                    };
+
+                    /**
+                     * +Descripcion Si el campo de texto NUMERO no contiene valor,
+                     *              este se diligenciara con el primer elemento del arreglo
+                     *              que contendra los documentos seleccionados y agregara el numero
+                     *              de cajas
+                     */
+                    if (numeroDocumento === 0 || numeroDocumento === undefined || numeroDocumento === '' ) {
+                        $scope.documentoDespachoAprobado.numero = $scope.datos_view.documentosMedipol[0].numero;
+                        $scope.documentoDespachoAprobado.prefijo = $scope.datos_view.documentosMedipol[0].prefijo;
+                        numeroDocumento = $scope.datos_view.documentosMedipol[0].numero;
+                        $scope.documentoDespachoAprobado.cantidadCajas = totalCajas;
+                        $scope.documentoDespachoAprobado.cantidadNeveras = totalNeveras;
+                        $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;
+                    }
+
+
+
+                    that.ejecutarServicioRegistroAprobacion(obj);
+                } else {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
+                }
+
+            };
+
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que registrara
+             *              la aprobacion del usuario de seguridad
+             */
+            that.ejecutarServicioRegistroAprobacion = function (obj) {
 
                 Request.realizarRequest(API.VALIDACIONDESPACHOS.REGISTRAR_APROBACION, "POST", obj, function (data) {
-             
+
                     if (data.status === 200) {
                         $scope.despachoId = data.obj.validacionDespachos.id_aprobacion_planillas;
+                        $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;
+
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                        //$state.go('ValidacionEgresos');
+
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
@@ -49594,7 +50736,6 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
             if ($state.is("ValidacionEgresosDetalle") === true) {
 
                 var documento = localStorageService.get("validacionEgresosDetalle");
-
                 $scope.datos_view.estadoRegistro = 1;
                 if (documento) {
 
@@ -49609,14 +50750,13 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                             fechaInicial: "",
                             fechaFinal: "",
                             paginaactual: 1,
-                            registroUnico: true
+                            registroUnico: true,
+                            idPlantilla: documento.id_plantilla
                         };
-
                         ValidacionDespachosService.listarDespachosAprobados(obj, function (data) {
 
                             if (data.status === 200) {
-                                var resultado = data.obj.validacionDespachos[0];
-                            
+                                var resultado = data.obj.validacionDespachos[data.obj.validacionDespachos.length - 1];
                                 var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
                                 $scope.datos_view.empresaSeleccionada = empresa;
                                 $scope.despachoId = resultado.id_aprobacion_planillas;
@@ -49624,8 +50764,8 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                                 $scope.documentoDespachoAprobado.setCantidadCajas(resultado.cantidad_cajas);
                                 $scope.documentoDespachoAprobado.setCantidadNeveras(resultado.cantidad_neveras);
                                 $scope.documentoDespachoAprobado.setObservacion(resultado.observacion);
-                                that.listarImagenes(function(){
-                                    
+                                that.listarImagenes(function () {
+
                                 });
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -49634,91 +50774,84 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         });
                     }
                 }
-                console.log("documento ",documento);
-                if (documento !== null){
                 if (documento.estado === 2) {
-                    // $scope.datos_view.seleccionarOtros = false;
                     $scope.datos_view.estadoRegistro = 2;
                 }
-               }else{
-                   $scope.datos_view.estadoRegistro=1;
-               }
-            };
-            
-          /**
-            * @author Eduar Garcia
-            * +Descripcion Handler del boton de subir archivo
-            * @fecha 2016-12-26
-            */
-            $scope.subirArchivo = function(files) {
-                console.log('Inicio funcion "subirArchivo"');
+            }
+            ;
+
+            /**
+             * @author Eduar Garcia
+             * +Descripcion Handler del boton de subir archivo
+             * @fecha 2016-12-26
+             */
+            $scope.subirArchivo = function (files) {
+
+                var multiplesDocumentosOtros = __multiplesDocumentosOtros(1);
                 var fd = new FormData();
                 fd.append("file", files[0]);
                 fd.append("session", JSON.stringify($scope.session));
-                fd.append("data", JSON.stringify( 
-                    {
-                        validacionDespachos: {
-                            id_aprobacion: $scope.despachoId,
-                            prefijo: $scope.documentoDespachoAprobado.prefijo,
-                            numero: $scope.documentoDespachoAprobado.numero
+                fd.append("data", JSON.stringify(
+                        {
+                            validacionDespachos: {
+                                id_aprobacion: $scope.despachoId,
+                                prefijo: multiplesDocumentosOtros[0].prefijo,
+                                numero: multiplesDocumentosOtros[0].numero
+                            }
                         }
-                    }
                 ));
 
-                //console.log('Objeto enviado por ajax: ', fd);
-                
-                Request.subirArchivo(API.VALIDACIONDESPACHOS.ADJUNTAR_IMAGEN, fd, function(respuesta) {
 
-                    console.log('Ajax response: '+ respuesta.status + '!!! respuesta es: ',respuesta);
+                Request.subirArchivo(API.VALIDACIONDESPACHOS.ADJUNTAR_IMAGEN, fd, function (respuesta) {
 
-                    if(respuesta.status === 200){
-                        that.listarImagenes(function(){
-                            
+                    if (respuesta.status === 200) {
+                        that.listarImagenes(function () {
+
                         });
                     } else {
-                        alert(respuesta.msj);
+
                     }
+
                 });
             };
-            
+
             /*
              * @author Eduar Garcia
              * @fecha 26/12/2016
              * +Descripcion Permite listar las imagenes de una aprobacion
              */
             that.listarImagenes = function (callback) {
-                console.log('entry in function "listarImagenes"');
                 $scope.documentoDespachoAprobado.vaciarImagenes();
                 ValidacionDespachosService.listarImagenes($scope.session, $scope.despachoId, function (data) {
 
                     if (data.status === 200) {
                         var imagenes = data.obj.imagenes;
-                        
-                        for(var i in imagenes){
+
+                        for (var i in imagenes) {
                             var _imagen = imagenes[i];
                             var imagen = ImagenAprobacion.get(_imagen.id, _imagen.path);
-                            
+
                             $scope.documentoDespachoAprobado.agregarImagen(imagen);
-                            
+
                         }
-                        
+
                         callback(true);
                     } else {
                         callback(false);
                     }
                 });
             };
-            
+
             /*
              * @author Eduar Garcia
              * @fecha 26/12/2016
              * +Descripcion Modal para mostrar el preview de una imagen
              */
-            $scope.onBtnPreview = function(imagen){
+            $scope.onBtnPreview = function (imagen) {
                 $scope.opts = {
                     size: 'lg',
                     backdrop: 'static',
-                    scope:$scope,
+                    scope: $scope,
                     template: '<div class="modal-header" style="text-align:center;">\
                                 <button type="button" class="close" ng-click="close()">&times;</button>\
                                   <h4 class="modal-title" >Imagenes adjuntas</h4>\
@@ -49743,8 +50876,9 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         };
                         
                     }],
+
                     resolve: {
-                        imagen: function() {
+                        imagen: function () {
                             return imagen;
                         }
                     }
@@ -49752,28 +50886,28 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
 
                 var modalInstance = $modal.open($scope.opts);
             };
-            
-            
+
+
             /*
              * @author Eduar Garcia
              * @fecha 26/12/2016
              * +Descripcion Permite borrar una imagen
              */
-            $scope.onBtnBorrarImagen = function(imagen){
-                
-                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Seguro desea borrar la imagen?", function(confirma){
-                    if(confirma){                        
+            $scope.onBtnBorrarImagen = function (imagen) {
+
+                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Seguro desea borrar la imagen?", function (confirma) {
+                    if (confirma) {
                         ValidacionDespachosService.eliminarImagen($scope.session, imagen, function (data) {
 
                             if (data.status === 200) {
-                                that.listarImagenes(function(){
+                                that.listarImagenes(function () {
 
                                 });
-                            } 
+                            }
                         });
                     }
                 });
-                
+
             };
 
             /*
@@ -49804,11 +50938,11 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 for (var i in empresas) {
                     var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
                     $scope.empresas.push(_empresa);
-                }   
-                
-                
+                }
+
+
             };
-                   
+
             /*
              * funcion ejecuta listarCentroUtilidad
              * @returns {lista CentroUtilidad}
@@ -49828,46 +50962,917 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
              *              inicial
              */
             $scope.regresarListaDespachosAprobados = function () {
-                if($scope.documentoDespachoAprobado.obtenerImagenes().length === 0 && parseInt($scope.datos_view.estadoRegistro) !== 1){
-                    
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Aun no se adjuntan imagenes, si termina el documento no podra modificarse para adjuntar nuevas imagnes. ¿Seguro desea salir?", function(confirmo){
-                        if(confirmo){
+                if ($scope.documentoDespachoAprobado.obtenerImagenes().length === 0 && parseInt($scope.datos_view.estadoRegistro) !== 1) {
+
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Aun no se adjuntan imagenes, si termina el documento no podra modificarse para adjuntar nuevas imagnes. ¿Seguro desea salir?", function (confirmo) {
+                        if (confirmo) {
                             $state.go('ValidacionEgresos');
                         }
                     });
-                    
+
                 } else {
                     $state.go('ValidacionEgresos');
                 }
-                
-                
+
+
             };
 
             that.init = function () {
-                
+
                 var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());
-                var empresaSeleccionadas = EmpresaAprobacionDespacho.get(session.nombre, session.codigo);           
-                    $scope.datos_view.empresaSeleccionada = empresaSeleccionadas;
+                var empresaSeleccionadas = EmpresaAprobacionDespacho.get(session.nombre, session.codigo);
+                $scope.datos_view.empresaSeleccionada = empresaSeleccionadas;
                 var prefijoSeleccionados = AprobacionDespacho.get(1, "EFC", "0", "");
-                    prefijoSeleccionados.set_descripcion("-DESPACHOS A FARMACIAS Y CLIENTES");
-                    $scope.datos_view.prefijoList = prefijoSeleccionados;
-                   
+                prefijoSeleccionados.set_descripcion("-DESPACHOS A FARMACIAS Y CLIENTES");
+                $scope.datos_view.prefijoList = prefijoSeleccionados;
+
             };
+
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de llenar el campo de texto de la observacion
+             *              con los documentos seleccionados
+             * @fecha 12/10/2017
+             */
+            that.llenarObservacion = function (estado) {
+
+                that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ? $scope.documentoDespachoAprobado.observacion + " " : "";
+
+                if (estado === 1) {
+                    that.documentosSeleccionados = __multiplesDocumentosOtros(estado);
+                } else {
+                    if (localStorageService.get("documentosSeleccionados")) {
+                        that.documentosSeleccionados = localStorageService.get("documentosSeleccionados").documentos;
+
+                    } else {
+                        return;
+                    }
+                }
+                var cantidadCajas = 0;
+                var cantidadNeveras = 0;
+                that.documentosSeleccionados.forEach(function (row) {
+                    var observacion = "";
+
+
+                    if (parseInt(row.cantidadCajas) > 0) {
+                        cantidadCajas += row.cantidadCajas;
+                        var s = parseInt(row.cantidadCajas) > 1 ? "S" : "";
+                        observacion = " | CAJA" + s + ": " + row.cantidadCajas + " ";
+                    }
+                    if (parseInt(row.cantidadNeveras) > 0) {
+                        cantidadNeveras += row.cantidadNeveras;
+                        var s = parseInt(row.cantidadNeveras) > 1 ? "S" : "";
+                        observacion += " | NEVERA" + s + ": " + row.cantidadNeveras + " ";
+                    }
+                    that.observacionValidacion += "(" + row.prefijo + "-" + row.numero + " " + observacion + ") "
+
+                });
+                $scope.documentoDespachoAprobado.cantidadCajas = cantidadCajas;
+                $scope.documentoDespachoAprobado.cantidadNeveras = cantidadNeveras;
+                $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;//+ " - Total Cajas: "+ that.documentosSeleccionados.totalCajas
+
+            };
+
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Ventana encargada de desplegar el grid de datos con
+             *              los documentos segun la empresa seleccionada para 
+             *              validarlos por parte de la persona encargada de la
+             *              seguridad de la bodega
+             * @fecha 18/10/2017
+             */
+            $scope.ventanaMultiplesEFC = function () {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    templateUrl: 'views/validaciondespachos/ventanaValidarEgresos.html',
+                    scope: $scope,
+                    controller: "VentanaValidarEgresosController",
+
+                };
+                var modalInstance = $modal.open($scope.opts);
+
+                modalInstance.result.then(function () {
+
+                    if (localStorageService.get("documentosSeleccionados")) {
+
+                        if (localStorageService.get("documentosSeleccionados").documentos.length > 0) {
+                            $scope.datos_view.disabledBtnGuardar = false;
+                            $scope.datos_view.existenciaDocumento = false;
+                            $scope.despachoId = 0;
+                        }
+                    }
+
+                    that.llenarObservacion(0);
+
+                }, function () {
+
+                    if (localStorageService.get("documentosSeleccionados")) {
+                        if (localStorageService.get("documentosSeleccionados").documentos.length > 0) {
+                            $scope.datos_view.disabledBtnGuardar = false;
+                            $scope.datos_view.existenciaDocumento = false;
+                            $scope.despachoId = 0;
+                        }
+                    }
+                    that.llenarObservacion(0);
+
+                });
+            };
+
+            $scope.lista_remisiones_bodega = {
+                data: 'datos_view.documentosMedipol',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'get_prefijo()', displayName: 'Prefijo', width: "10%"},
+                    {field: 'get_numero()', displayName: 'Nro Documento', width: "20%"},
+                    {field: 'cantidadCajas', displayName: 'Cajas', width: "15%"},
+                    {field: 'cantidadNeveras', displayName: 'Nevera', width: "15%"},
+                    {field: 'temperatura_neveras', displayName: 'Temperatura', width: "15%"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs" ng-click="eliminar_documento_tabla(row.entity)" ng-disabled="despachoId > 0" style="margin-right:5px;" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                        </div>'
+                    }
+                ]
+            };
+
+            /**
+             * @author German Galvis
+             * @fecha 01/04/2019 DD/MM/YYYY
+             * +Descripcion Agrega un documento al array de seleccionados y selecciona el objeto
+             * @returns {undefined}
+             */
+            $scope.agregarDocumento = function () {
+
+                var prefijo = that.validarPrefijoEmpresasOtras();
+                $scope.documentoDespachoAprobado.setPrefijo(prefijo);
+                var multiplesDocumentosOtros = __multiplesDocumentosOtros(1);
+
+                if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 /*&& (cantidadCajas > 0 || cantidadNeveras > 0)*/) {
+
+                    multiplesDocumentosOtros.forEach(function (data) {
+
+                        var documento = DocumentoDespacho.get(0, data.prefijo, data.numero, $scope.datos_view.empresaSeleccionada.codigo);
+
+                        documento.setSeleccionado(true);
+                        documento.setCantidadCajas(data.cantidadCajas);
+                        documento.setCantidadNeveras(data.cantidadNeveras);
+                        documento.setEstado(1);
+                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
+
+                        $scope.datos_view.documentosMedipol.push(documento);
+
+                    });
+                    that.limpiarVariables();
+                } else {
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
+                }
+            };
+
+
+            /**
+             * @author German Galvis
+             * @fecha 02/04/2019 DD/MM/YYYY
+             * +Descripcion Metodo encargado de eliminar un doc de la tabla
+             * @returns {undefined}
+             */
+            $scope.eliminar_documento_tabla = function (documento) {
+
+                for (i = 0; i < $scope.datos_view.documentosMedipol.length; i++) {
+
+                    if ($scope.datos_view.documentosMedipol[i].prefijo === documento.prefijo && $scope.datos_view.documentosMedipol[i].numero === documento.numero) {
+
+                        $scope.datos_view.documentosMedipol.splice(i, 1);
+                    }
+                }
+
+            };
+
+            /**
+             * @author German Galvis
+             * @fecha 09/04/2019 DD/MM/YYYY
+             * +Descripcion Metodo encargado de activar o desactivar el checkbox para seleccionar otras salidas
+             * @returns {undefined}
+             */
+            $scope.validarCheck = function () {
+                var resul = false;
+
+                if ($scope.datos_view.documentosMedipol.length > 0 || $scope.datos_view.estadoRegistro === 1) {
+                    resul = true;
+                }
+
+                if (localStorageService.get("documentosSeleccionados")) {
+                    if (localStorageService.get("documentosSeleccionados").documentos.length > 0) {
+                        resul = true;
+                    }
+                }
+
+
+                return resul;
+            };
+
+            that.limpiarVariables = function () {
+                $scope.documentoDespachoAprobado.prefijo = '';
+                $scope.documentoDespachoAprobado.numero = '';
+                $scope.documentoDespachoAprobado.cantidadCajas = 0;
+                $scope.documentoDespachoAprobado.cantidadNeveras = 0;
+            };
+
             that.init();
 
             $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-
                 $scope.$$watchers = null;
-                // set localstorage
+                localStorageService.add("documentosSeleccionados", null);
                 localStorageService.add("validacionEgresosDetalle", null);
                 localStorageService.add("pedido", null);
                 $scope.datos_view = null;
                 $scope.documentoDespachoAprobado = AprobacionDespacho.get();
-
-
             });
         }]);
 });
+define('controllers/VentanaValidarEgresosController',["angular", "js/controllers"], function (angular, controllers) {
+
+    controllers.controller('VentanaValidarEgresosController', ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
+        "$timeout", "$filter", "localStorageService", "$state", "$modalInstance",
+        "socket", "webNotification", "CentroUtilidadInduccion", "BodegaInduccion", "DocumentoDespacho", "FarmaciaPlanillaDespacho", "ClienteDocumento",
+        function ($scope, $rootScope, Request, API, AlertService, Usuario,
+                $timeout, $filter, localStorageService, $state, $modalInstance,
+                socket, webNotification, CentroUtilidadInduccion, BodegaInduccion, DocumentoDespacho, FarmaciaPlanillaDespacho, ClienteDocumento) {
+
+
+            var that = this;
+            var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
+            $scope.session = {
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
+            };
+            that.documentosStorage = localStorageService.get("documentosSeleccionados");
+            $scope.datosView = {
+                terminoBusquedaFarmacia: '',
+                terminoBusquedaEfc: '',
+                terceroSeleccionado: FarmaciaPlanillaDespacho.get(),
+                documentosSeleccionados: [],
+                cantidadCajas: 0,
+                centroUtilidad: 0,
+                clienteDocumento: 0,
+                documentosSeleccionadosPreparados: '',
+                seleccionarClienteFarmacia: true,
+                tituloLista: "FARMACIAS"
+            };
+
+
+            $scope.seleccionarClienteFarmacia = function () {
+
+                if ($scope.datosView.seleccionarClienteFarmacia) {
+                    $scope.datosView.tituloLista = "FARMACIAS";
+                } else {
+                    $scope.datosView.tituloLista = "CLIENTES";
+                }
+            };
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de listar los centros de utilidad
+             * @fecha 2017/09/20
+             */
+            that.buscarCentroUtilidad = function () {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        centro_utilidad: {
+                            estado: '1',
+                            pais_id: '1',
+                            departamento_id: '1',
+                            ciudad_id: '1',
+                            termino_busqueda: $scope.datosView.terminoBusquedaFarmacia
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.CENTROS_UTILIDAD.LISTAR_CENTROS_UTILIDAD, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        that.renderCentroUtilidad(data.obj.centros_utilidad);
+
+                    }
+                });
+            };
+
+
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de listar los clientes a los cuales se les ha generado
+             *              despachos
+             * @fecha 2017/09/20
+             */
+            that.buscarClientes = function () {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        clientes: {
+                            ciudad_id: '001',
+                            pais_id: 'CO',
+                            empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                            departamento_id: '76',
+                            estado: '1',
+                            termino_busqueda: $scope.datosView.terminoBusquedaFarmacia
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.CLIENTES.LISTAR_CLIENTES, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        that.renderClientes(data.obj.listado_clientes);
+
+                    }
+                });
+            };
+
+
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del checkbox de la lista
+             */
+            $scope.onAgregarDocumentoALio = function (documento) {
+
+                if (documento.getSeleccionado()) {
+                    that.agregarDocumentoSeleccionado(documento);
+                } else {
+                    that.removerDocumentoSeleccionado(documento);
+                }
+                // $scope.distribuirCajas();
+            };
+
+            $scope.numeroCaja = false;
+            $scope.numeroNevera = false;
+
+            $scope.pulsar = function (check, tipo) {
+
+                if (check) {
+                    if (tipo === 'nevera') {
+                        $scope.numeroCaja = false;
+                        $scope.numeroNevera = true;
+                    } else {
+                        $scope.numeroCaja = true;
+                        $scope.numeroNevera = false;
+                    }
+                } else {
+                    $scope.numeroCaja = false;
+                    $scope.numeroNevera = false;
+                }
+            };
+
+
+            /*
+             * @Author: Eduar
+             * +Descripcion: Agrega un documento al array de seleccionados y selecciona el objeto
+             */
+            that.agregarDocumentoSeleccionado = function (documento) {
+                var documentos;
+
+                if (that.documentosStorage) {
+                    documentos = that.documentosStorage.documentos;
+                } else {
+                    documentos = $scope.datosView.documentosSeleccionados;
+                }
+
+                for (var i in documentos) {
+
+                    var _documento = documentos[i];
+
+                    if (that.documentosStorage) {
+                        _documento = DocumentoDespacho.get(0, _documento.prefijo, _documento.numero, _documento.empresaId);
+                        _documento.setCantidadCajas(parseInt(documento.cantidadCajas));
+                        _documento.setCantidadNeveras(parseInt(documento.cantidadNeveras));
+                    }
+                    if (_documento.get_prefijo() === documento.get_prefijo() && _documento.get_numero() === documento.get_numero()) {
+                        return false;
+                    }
+                }
+                if (that.documentosStorage) {
+                    that.documentosStorage.documentos.push(documento);
+                }
+                $scope.datosView.documentosSeleccionados.push(documento);
+
+            };
+
+
+            /*
+             * @Author: Eduar
+             * +Descripcion: Remueve un documento especifico
+             */
+            that.removerDocumentoSeleccionado = function (documento) {
+                var documentos = $scope.datosView.documentosSeleccionados;
+
+                for (var i in documentos) {
+                    var _documento = documentos[i];
+                    if (_documento.get_prefijo() === documento.get_prefijo() && _documento.get_numero() === documento.get_numero()) {
+                        documentos.splice(i, 1);
+                    }
+                }
+
+
+                if (that.documentosStorage) {
+                    //var documentosStorage = localStorageService.get("documentosSeleccionados").documentos;
+                    for (var i in that.documentosStorage.documentos) {
+                        var _documento = that.documentosStorage.documentos[i];
+                        if (_documento.prefijo === documento.get_prefijo() && _documento.numero === documento.get_numero() && documento.getSeleccionado() === false) {
+                            that.documentosStorage.documentos.splice(i, 1);
+                        }
+                    }
+                }
+            };
+
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de distribuir la cantidad de cajas
+             *              por cada Documento seleccionado 
+             * @fecha 03/10/2017
+             */
+            var res = 0;
+            var totalDecimal = 0;
+            var cantidadCajas = 0;
+            var cantidadNeveras = 0;
+            var pos = "";
+            that.documentosStorageActual = [];
+            that.distribuirCajas = function (index, documentoSeleccionadoPreparado, callback) {
+
+                var _documento = documentoSeleccionadoPreparado[index];
+
+                cantidadCajas = parseInt($scope.datosView.cantidadCajas) / parseInt(documentoSeleccionadoPreparado.length);
+
+                if (!_documento) {
+
+                    res = 0;
+                    totalDecimal = 0;
+                    cantidadCajas = 0;
+
+                    callback(false);
+                    return;
+                }
+                index++;
+                if (that.documentosStorage) {
+                    _documento = DocumentoDespacho.get(0, _documento.prefijo, _documento.numero, _documento.empresaId);
+                    _documento.setSeleccionado(true);
+                }
+
+                pos = cantidadCajas.toString().indexOf(".");
+                if (pos > 0) {
+                    res = String(cantidadCajas).substring((pos + 1), cantidadCajas.length);
+                    totalDecimal += parseFloat("0." + res);
+                }
+
+                if ($scope.numeroCaja) {
+                    _documento.setCantidadCajas(Math.floor(cantidadCajas));
+                }
+
+                if ($scope.numeroNevera) {
+                    _documento.setCantidadNeveras(Math.floor(cantidadCajas));
+                }
+
+                if (index === documentoSeleccionadoPreparado.length - 1) {
+                    if ($scope.numeroCaja) {
+                        _documento.setCantidadCajas(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
+                    }
+                    if ($scope.numeroNevera) {
+                        _documento.setCantidadNeveras(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
+                    }
+                }
+
+                that.documentosStorageActual.push(_documento);
+
+                setTimeout(function () {
+                    that.distribuirCajas(index, documentoSeleccionadoPreparado, callback);
+                }, 300);
+
+            };
+
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo invocado al presionar CLICK del boton (DISTRIBUIR)
+             * @fecha 03/10/2017              
+             */
+            $scope.distribuirCajas = function () {
+                that.documentosStorageActual = [];
+                if ($scope.numeroCaja === $scope.numeroNevera) {
+                    AlertService.mostrarMensaje("warning", "Debe chequear Caja o Nevera");
+                    return;
+                }
+                if (!$scope.centroUtilidad && !$scope.clienteEgresos) {
+                    AlertService.mostrarMensaje("warning", "Debe seleccionar la farmacia");
+                    return;
+                }
+                var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
+
+                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
+
+                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: $scope.datosView.cantidadCajas, totalNeveras: $scope.datosView.cantidadNeveras});
+
+                    if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
+                        var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
+                        var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
+                        centroUtilidad.agregarBodega(bodega);
+                        $scope.seleccionarCentroUtilidad(centroUtilidad, '');
+                    }
+
+                    if (!$scope.datosView.seleccionarClienteFarmacia && $scope.clienteEgresos) {
+                        var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
+                                $scope.clienteEgresos.direccion,
+                                $scope.clienteEgresos.tipo_id_tercero,
+                                $scope.clienteEgresos.id,
+                                $scope.clienteEgresos.telefono);
+                        $scope.seleccionarCliente(clienteDocumento, '');
+                    }
+
+                    $state.go('ValidacionEgresosDetalle');
+                    $modalInstance.close();
+
+                });
+
+            };
+
+
+            that.guardarCantidadCajas = 0;
+            that.guardarCantidadNeveras = 0;
+            var documentoDespachoStorage;
+            /**
+             * +Descripcion Metodo que recorrera los documentos seleccionados
+             *              a los cuales se les agrego el numero de caja de forma
+             *              individual
+             */
+            that.guardarDocumentosSeleccionados = function (index, documentoSeleccionadoPreparado, callback) {
+
+                var _documento = documentoSeleccionadoPreparado[index];
+
+                if (!_documento) {
+
+                    callback(false);
+                    return;
+                }
+
+                index++;
+                if (that.documentosStorage) {
+                    documentoDespachoStorage = DocumentoDespacho.get(0, _documento.prefijo, _documento.numero, _documento.empresaId);
+                    documentoDespachoStorage.setSeleccionado(true);
+                    documentoDespachoStorage.setCantidadCajas(parseInt(_documento.cantidadCajas));
+                    documentoDespachoStorage.setCantidadNeveras(parseInt(_documento.cantidadNeveras));
+                    that.documentosStorageActual.push(_documento);
+                } else {
+                    _documento.setCantidadCajas(parseInt(_documento.cantidadCajas));
+                    _documento.setCantidadNeveras(parseInt(_documento.cantidadNeveras));
+                    that.documentosStorageActual.push(_documento);
+                }
+
+                that.guardarCantidadCajas += parseInt(_documento.cantidadCajas);
+                that.guardarCantidadNeveras += parseInt(_documento.cantidadNeveras);
+
+                setTimeout(function () {
+                    that.guardarDocumentosSeleccionados(index, documentoSeleccionadoPreparado, callback);
+                }, 300);
+
+            };
+
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo invocado cuando se guardan los documentos a los cuales
+             *              se les asigno el numero de caja de manera individual
+             * @fecha 14/10/2017
+             */
+            $scope.guardarDocumentosSeleccionados = function () {
+
+                that.documentosStorageActual = [];
+                if (!$scope.centroUtilidad && !$scope.clienteEgresos) {
+                    AlertService.mostrarMensaje("warning", "Debe seleccionar la farmacia");
+                    return;
+                }
+                var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
+                that.guardarDocumentosSeleccionados(0, documentoSeleccionadoPreparado, function (estado) {
+
+                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: that.guardarCantidadCajas, totalNeveras: that.guardarCantidadNeveras});
+
+                    if ($scope.centroUtilidad) {
+                        var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
+                        var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
+                        centroUtilidad.agregarBodega(bodega);
+                        $scope.seleccionarCentroUtilidad(centroUtilidad, '');
+                    }
+
+                    if ($scope.clienteEgresos) {
+                        var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
+                                $scope.clienteEgresos.direccion,
+                                $scope.clienteEgresos.tipo_id_tercero,
+                                $scope.clienteEgresos.id,
+                                $scope.clienteEgresos.telefono);
+                        $scope.seleccionarCliente(clienteDocumento, '');
+                    }
+
+                    $state.go('ValidacionEgresosDetalle');
+                    $modalInstance.close();
+
+                });
+
+            };
+
+            /**
+             * @author Cristian Ardila
+             * @fecha 02/10/2017
+             * +Descripcion Metodo encargado de mappear el arreglo de centro de 
+             *              utilidad con el modelo correspondiente [CentroUtilidadInduccion]
+             */
+            that.renderCentroUtilidad = function (farmacias) {
+
+                $scope.listaCentrosUtilidad = [];
+
+                farmacias.forEach(function (data) {
+
+                    var centroUtilidad = CentroUtilidadInduccion.get(data.descripcion, data.centro_utilidad_id);
+                    var bodega = BodegaInduccion.get('', data.empresa_id);
+                    centroUtilidad.agregarBodega(bodega);
+                    $scope.listaCentrosUtilidad.push(centroUtilidad);
+
+                });
+
+            };
+
+
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de mapear los datos del Servicio contra el model
+             *              y de esta forma garantizar instancias el objeto
+             */
+            that.renderClientes = function (clientes) {
+
+                $scope.listaClientes = [];
+
+                clientes.forEach(function (data) {
+
+                    var cliente = ClienteDocumento.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
+                    $scope.listaClientes.push(cliente);
+                });
+            };
+
+            $scope.buscador_cliente_farmacia = function (ev) {
+
+                if (ev.which == 13) {
+
+                    if ($scope.centroUtilidad) {
+                        var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
+                        var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
+                        centroUtilidad.agregarBodega(bodega);
+                        $scope.seleccionarCentroUtilidad(centroUtilidad,$scope.datosView.terminoBusquedaEfc);
+                    }
+
+                    if ($scope.clienteEgresos) {
+                        var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
+                                $scope.clienteEgresos.direccion,
+                                $scope.clienteEgresos.tipo_id_tercero,
+                                $scope.clienteEgresos.id,
+                                $scope.clienteEgresos.telefono);
+                        $scope.seleccionarCliente(clienteDocumento, $scope.datosView.terminoBusquedaEfc);
+                    }
+
+                }
+            };
+
+            /**
+             * +Descripcion Metodo que se invoca al seleccionar un centro de utilidad
+             */
+            $scope.seleccionarCentroUtilidad = function (centroUtilidad,terminoBusqueda) {
+
+                $scope.centroUtilidad = CentroUtilidadInduccion.get(centroUtilidad.getNombre(), centroUtilidad.getCodigo());
+                var bodega = BodegaInduccion.get('', centroUtilidad.getCentrosBodega()[0].getCodigo());
+                $scope.centroUtilidad.agregarBodega(bodega);
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+                            empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                            farmacia_id: centroUtilidad.getCentrosBodega()[0].getCodigo(),
+                            centro_utilidad_id: centroUtilidad.getCodigo(),
+                            termino_busqueda: terminoBusqueda,//'',
+                            estadoValidarDespachos: 1
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_DOCUMENTOS_FARMACIAS, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+
+                        that.render_documentos(data.obj.planillas_despachos);
+                    }
+                });
+            };
+
+            /**
+             * +Descripcion Metodo que se invoca al seleccionar un cliente
+             */
+            $scope.seleccionarCliente = function (cliente, terminoBusqueda) {
+
+                $scope.clienteEgresos = ClienteDocumento.get(cliente.getNombre(), cliente.getDireccion, cliente.getTipoId(), cliente.getId(), cliente.getTelefono());
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+                            empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                            tipo_id: cliente.getTipoId(),
+                            tercero_id: cliente.getId(),
+                            termino_busqueda: terminoBusqueda, // '',
+                            estadoValidarDespachos: 1
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_DOCUMENTOS_CLIENTES, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        that.render_documentos(data.obj.planillas_despachos);
+                    }
+                });
+            };
+
+            that.obtenerDocumentoSeleccionado = function (documento) {
+                var documentos = $scope.datos_view.documentosSeleccionados;
+
+                for (var i in documentos) {
+                    var _documento = documentos[i];
+                    if (_documento.get_prefijo() === documento.get_prefijo() && _documento.get_numero() === documento.get_numero()) {
+                        return _documento;
+                    }
+                }
+
+                return null;
+            };
+
+            /**
+             * +Descripcion Metodo encargado de mapear los registros de los documentos 
+             *              que posteriormente se visualizaran en el grid de datos
+             */
+            that.render_documentos = function (documentos) {
+
+                $scope.datosView.terceroSeleccionado.limpiar_documentos();
+
+                documentos.forEach(function (data) {
+
+                    var documento = DocumentoDespacho.get(0, data.prefijo, data.numero, data.empresa_id);
+                    documento.setNumeroPedido(data.numero_pedido);
+                    documento.setFechaRegistro(data.fecha_registro);
+                    documento.setEstadoDocumento(data.estado_documento);
+
+                    if (that.documentosStorage) {
+
+                        that.documentosStorage.documentos.forEach(function (row) {
+
+                            if (row.prefijo === documento.get_prefijo() && row.numero === documento.get_numero()) {
+                                documento.setSeleccionado(true);
+                                documento.setCantidadCajas(row.cantidadCajas);
+                                documento.setCantidadNeveras(row.cantidadNeveras);
+
+                                $scope.datosView.documentosSeleccionados.push(documento);
+
+                            }
+                        });
+
+                    } else {
+
+                        $scope.datosView.documentosSeleccionados.forEach(function (row) {
+
+                            if (row.prefijo === documento.get_prefijo() && row.numero === documento.get_numero()) {
+                                documento.setSeleccionado(true);
+                                documento.setCantidadCajas(row.cantidadCajas);
+                                documento.setCantidadNeveras(row.cantidadNeveras);
+
+                            }
+                        });
+                    }
+
+                    if (data.estado_documento === "0") {
+                        $scope.datosView.terceroSeleccionado.set_documentos(documento);
+                    }
+
+                });
+
+            };
+
+            $scope.desCheckearDocumento = function (entity) {
+                entity.seleccionado = false;
+                $scope.onAgregarDocumentoALio(entity);
+            };
+
+            $scope.lista_remisiones_bodega = {
+                data: 'datosView.terceroSeleccionado.get_documentos()',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'lios', displayName: "", width: "35",
+                        cellClass: "txt-center dropdown-button",
+                        cellTemplate: "<div><input-check \
+                        ng-model='row.entity.seleccionado' \
+                        ng-change='onAgregarDocumentoALio(row.entity)' \
+                        ng-disabled='row.entity.cantidadNeveras == 0 && row.entity.cantidadCajas == 0 && datosView.cantidadCajas ==0 || row.entity.estadoDocumento == \"1\" '  /></div>"},
+                    {
+                        displayName: 'Documento Bodega',
+                        cellTemplate: '<div class="ngCellText">\
+                                        <span > {{row.entity.get_prefijo()}} - {{row.entity.get_numero()}} - (No Pedido {{row.entity.getNumeroPedido()}} )</span>\
+                                      </div>'
+                    },
+                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%",
+                        cellTemplate: '<div class="col-xs-12"> \n\
+                        <input type="text"\
+                        ng-model="row.entity.cantidadCajas"\
+                        validacion-numero-entero\
+                        class="form-control grid-inline-input" ng-focus="desCheckearDocumento(row.entity)"\
+                        name="" id="" /> </div>'},
+                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%",
+                        cellTemplate: '<div class="col-xs-12"> \n\
+                        <input type="text"\
+                        ng-model="row.entity.cantidadNeveras"\
+                        validacion-numero-entero\
+                        class="form-control grid-inline-input" ng-focus="desCheckearDocumento(row.entity)"\
+                        name="" id="" /> </div>'},
+//                    {field: 'temperatura_neveras', displayName: '°C Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                ]
+            };
+
+            /**
+             * @author Cristian Ardila
+             * @fecha 02/10/2017
+             * +Descripcion Metodo invocado cada vez que se escriba en el dropdown
+             *              el cual cargara los centros de utilidad 
+             */
+            $scope.listarCentrosUtilidad = function (termino_busqueda) {
+
+                if (termino_busqueda.length < 4) {
+                    return;
+                }
+
+                $scope.datosView.terminoBusquedaFarmacia = termino_busqueda;
+
+                that.buscarCentroUtilidad();
+            };
+
+
+            /**
+             * @author Cristian Ardila
+             * @fecha 02/10/2017
+             * +Descripcion Metodo invocado cada vez que se escriba en el dropdown
+             *              el cual cargara los clientes
+             */
+            $scope.listarClientes = function (termino_busqueda) {
+
+                if (termino_busqueda.length < 3) {
+                    return;
+                }
+
+                $scope.datosView.terminoBusquedaFarmacia = termino_busqueda;
+
+                that.buscarClientes();
+            };
+
+            $scope.cerrarVentana = function () {
+                $modalInstance.close();
+            };
+            /*
+             * Inicializacion de variables
+             * @param {type} empresa
+             * @param {type} callback
+             * @returns {void}
+             */
+            that.init = function (empresa, callback) {
+
+                $scope.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
+
+                callback();
+
+            };
+
+            that.init(empresa, function () {
+
+            });
+
+            $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+
+                $scope.$$watchers = null;
+                that.documentosStorage = [];
+                $scope.datos_view = null;
+            });
+
+        }]);
+
+});
+
+
 define('services/ValidacionDespachosService',["angular", "js/services"], function (angular, services) {
 
 
@@ -49897,8 +51902,9 @@ define('services/ValidacionDespachosService',["angular", "js/services"], functio
                         fechaInicial: obj.fechaInicial,
                         fechaFinal: obj.fechaFinal,
                         paginaActual: obj.paginaactual,
-                        registroUnico: obj.registroUnico
-
+                        registroUnico: obj.registroUnico,
+                        idPlantilla: (obj.idPlantilla === undefined ? 0 : obj.idPlantilla)
+                         
                     }
                 }
             };
@@ -49961,7 +51967,7 @@ define('services/ValidacionDespachosService',["angular", "js/services"], functio
             var obj = {
                 session: session,
                 data: {
-                    listar_empresas: {
+                    listar_empresas: { 
                         pagina: 1,
                         empresaName: termino_busqueda_empresa
                     }
@@ -50573,10 +52579,14 @@ define('app',[
     "models/BodegaInduccion",
     "models/ProductoInduccion",
     "models/AprobacionDespacho",
+    "models/DocumentoDespacho",
+    "models/FarmaciaPlanillaDespacho",
+    "models/ClienteDocumento",
     "controllers/ValidacionDespachosController",
     "controllers/EntradaSalidaController",
     "controllers/SalidaController",
     "controllers/ValidacionDespachoDetalleController",
+    "controllers/VentanaValidarEgresosController",
     "services/ValidacionDespachosService",
     "webNotification"
 ], function(angular) {

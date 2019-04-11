@@ -31,10 +31,14 @@ define([
     "models/BodegaInduccion",
     "models/ProductoInduccion",
     "models/AprobacionDespacho",
+    "models/DocumentoDespacho",
+    "models/FarmaciaPlanillaDespacho",
+    "models/ClienteDocumento",
     "controllers/ValidacionDespachosController",
     "controllers/EntradaSalidaController",
     "controllers/SalidaController",
     "controllers/ValidacionDespachoDetalleController",
+    "controllers/VentanaValidarEgresosController",
     "services/ValidacionDespachosService",
     "webNotification"
 ], function(angular) {

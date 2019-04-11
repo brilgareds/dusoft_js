@@ -6,7 +6,6 @@ define(["angular", "js/models", "includes/classes/CentroUtilidad"], function(ang
                 CentroUtilidad.getClass().call(this, nombre, codigo);               
                 
                 this.empresa_id = empresa_id;
-                this.centro_utilidad;
                 this.documentos = [];
             }
 
@@ -18,12 +17,6 @@ define(["angular", "js/models", "includes/classes/CentroUtilidad"], function(ang
 
             FarmaciaPlanillaDespacho.prototype.get_empresa_id = function() {
                 return this.empresa_id;
-            };
-            FarmaciaPlanillaDespacho.prototype.set_centro_utilidad = function(centro_utilidad) {
-                this.centro_utilidad = centro_utilidad;
-            };
-            FarmaciaPlanillaDespacho.prototype.get_centro_utilidad = function() {
-                return this.centro_utilidad;
             };
             
             FarmaciaPlanillaDespacho.prototype.set_documentos = function(documento) {

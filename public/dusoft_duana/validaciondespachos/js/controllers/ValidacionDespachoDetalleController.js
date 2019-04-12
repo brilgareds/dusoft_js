@@ -621,6 +621,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var documentos = $scope.datos_view.documentosMedipol;
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
                 var numeroDocumento = $scope.documentoDespachoAprobado.numero;
+
+                that.documentosSeleccionados = localStorageService.get("documentosSeleccionados");
+
                 if (documentos.length > 0) {
 
                     that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ? $scope.documentoDespachoAprobado.observacion + " " : "";
@@ -646,6 +649,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     });
 
+                    if (that.documentosSeleccionados) {
+                        if (that.documentosSeleccionados.documentos.length > 0) {
+
+                            that.documentosSeleccionados.documentos.forEach(function (row) {
+                                documentos.push(row);
+                            });
+                        }
+                    }
+                    
                     obj = {
                         session: $scope.session,
                         data: {
@@ -664,7 +676,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                      *              que contendra los documentos seleccionados y agregara el numero
                      *              de cajas
                      */
-                    if (numeroDocumento === 0 || numeroDocumento === undefined || numeroDocumento === '' ) {
+                    if (numeroDocumento === 0 || numeroDocumento === undefined || numeroDocumento === '') {
                         $scope.documentoDespachoAprobado.numero = $scope.datos_view.documentosMedipol[0].numero;
                         $scope.documentoDespachoAprobado.prefijo = $scope.datos_view.documentosMedipol[0].prefijo;
                         numeroDocumento = $scope.datos_view.documentosMedipol[0].numero;
@@ -841,14 +853,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                                                 </div>\
                                                             </slide>\
                                                         </carousel>',
-                    controller: ["$modalInstance", "imagen", function($modalInstance, imagen){
-                        $scope.imagen = imagen;
-                        
-                        $scope.close = function(){
-                            $modalInstance.close();
-                        };
-                        
-                    }],
+                    controller: ["$modalInstance", "imagen", function ($modalInstance, imagen) {
+                            $scope.imagen = imagen;
+
+                            $scope.close = function () {
+                                $modalInstance.close();
+                            };
+
+                        }],
 
                     resolve: {
                         imagen: function () {

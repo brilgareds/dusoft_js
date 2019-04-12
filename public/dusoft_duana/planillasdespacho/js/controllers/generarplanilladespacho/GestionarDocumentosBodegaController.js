@@ -66,7 +66,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
             };
 
             $scope.seleccionar_cliente_farmacia = function () {
-                that.removerDocumentos();
+//                that.removerDocumentos();
 
                 $scope.datos_view.tercero_seleccionado.limpiar_documentos();
 

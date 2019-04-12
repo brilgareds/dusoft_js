@@ -1192,7 +1192,7 @@ PedidosFarmacias.prototype.ingresarDetallePedidoTemporal = function(req, res) {
     G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_detalle_pedido_farmacia_temporal", numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto,
                 cantidadSolicitada, tipo_producto_id, cantidad_pendiente,
                 usuario_id,empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,nombreBodega).then(function() {
-        res.send(G.utils.r(req.url, 'InserciÃ³n de detalle del pedido Exitosa!', 200, {}));
+        res.send(G.utils.r(req.url, 'Inserción de detalle del pedido Exitosa!', 200, {}));
     }).fail(function(err) {
         
         console.log("PedidosFarmaciasController => ingresarDetallePedidoTemporal ", err);
@@ -2717,7 +2717,7 @@ PedidosFarmacias.prototype.consultarProductoEnFarmacia = function(req, res) {
 function __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback) {
 
     var productoAgrupado = productosAgrupados[index];
-
+    var dosBodegas;
     if (!productoAgrupado) {
 
         callback(false, productosValidadosArchivo, productosInvalidosArchivo);
@@ -2759,6 +2759,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                 };
                 /*valida si la empresa,c_u, bod llegan en cero es porque se debe consultar como bodega multiple*/
                 if (datos.empresa_origen_id !== '0' && datos.centro_utilidad_origen_id !== '0' && datos.bodega_origen_id !== '0') {
+                   dosBodegas=1;
                     var bodegas = {
                         empresa_id: datos.empresa_origen_id,
                         centro_utilidad_id: datos.centro_utilidad_origen_id,
@@ -2766,13 +2767,15 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                     };
                     var bodegasPedidos = [];
                     bodegasPedidos.push(bodegas);
+                }else{
+                    dosBodegas=0;
                 }
 
                 __bodegasPedidos(that, 0, bodegasPedidos, [], parametros, function(err, _productoStock) {
 
                     __productosBodegas(that, 0, _productoStock, [], function(err, _productoStock2) {
 
-                        var control = {cantidad_solicitada: productoAgrupado.cantidad_solicitada, sumaTotalExis: 0, diferenciaExis: productoAgrupado.cantidad_solicitada, dosBodegas: 0};
+                        var control = {cantidad_solicitada: productoAgrupado.cantidad_solicitada, sumaTotalExis: 0, diferenciaExis: productoAgrupado.cantidad_solicitada, dosBodegas: dosBodegas};
                         __productosSeleccionado(that, 0, _productoStock2, [], datos, control, function(err, productos) {
                           
                               var _producto = (productos.length > 0) ? productos[0] : null;
@@ -2829,7 +2832,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                                                 return;
                                             } else {
                                                 
-                                             __productosGuardarTemporal(that, 0, datos, productoAgrupado, productos, control, productosValidadosArchivo,function(err, rows) {
+                                             __productosGuardarTemporal(that, 0, datos, productoAgrupado, productos, control, productosValidadosArchivo,productosInvalidosArchivo,function(err, productosInvalidosArchivo) {
                                                     
                                                    if (err) {
                                                        callback(err);
@@ -2852,41 +2855,43 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
     });
 
 }
-                   
-function __productosGuardarTemporal(that, index, datos, productoAgrupado, productos, control, productosValidadosArchivo, callback) {
+
+function __productosGuardarTemporal(that, index, datos, productoAgrupado, productos, control, productosValidadosArchivo,productosInvalidosArchivo, callback) {
   
-    var _producto = productos[index];
-        
-    if (!_producto) {  
-      
-        callback(false,productos);
+    var _producto = productos[index];   
+    if (!_producto) {        
+        callback(false,productosInvalidosArchivo);
         return; 
-    }  
-                var numeroPedido = datos.empresa_destino_id + datos.centro_utilidad_destino_id + productoAgrupado.codigo_producto+
-                                   productos[index].empresa_id+productos[index].centro_utilidad+productos[index].bodega;
-                var cantidadPendiente = 0;//productoAgrupado.cantidad_solicitada - _producto.disponibilidad_bodega;
-                cantidadPendiente = (cantidadPendiente > 0) ? cantidadPendiente : 0;
-                productoAgrupado.cantidadPendiente = cantidadPendiente;
-                productoAgrupado.disponible = _producto.disponibilidad_bodega;
+    }      
+    var numeroPedido = datos.empresa_destino_id + datos.centro_utilidad_destino_id + productoAgrupado.codigo_producto+
+                       productos[index].empresa_id+productos[index].centro_utilidad+productos[index].bodega;             
+    var cantidadPendiente = 0;//productoAgrupado.cantidad_solicitada - _producto.disponibilidad_bodega;
+    cantidadPendiente = (cantidadPendiente > 0) ? cantidadPendiente : 0;
+    productoAgrupado.cantidadPendiente = cantidadPendiente;
+    productoAgrupado.disponible = _producto.disponibilidad_bodega;
 //                //Inserta el producto validado en el detalle del pedido
-                productoAgrupado.cantidad_solicitada=productos[index].cantidad_en_bodega;   
+    productoAgrupado.cantidad_solicitada=productos[index].cantidad_en_bodega;   
+
+    G.Q.ninvoke(that.m_pedidos_farmacias, "guardarDetalleTemporal", numeroPedido, datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id, productoAgrupado.codigo_producto,
+            productoAgrupado.cantidad_solicitada, productoAgrupado.tipoProductoId, cantidadPendiente, datos.usuario_id,
+            productos[index].empresa_id, productos[index].centro_utilidad, productos[index].bodega, productos[index].nombre_bodega).then(function (resultado) {
+
+        productosValidadosArchivo.push(productos[index]);                                
+        index++;
+        setTimeout(function() {   
+            __productosGuardarTemporal(that, index, datos, productoAgrupado, productos, control, productosValidadosArchivo,productosInvalidosArchivo,callback);
+        },0);
+
+    }).catch(function (err) {
+        productoAgrupado.mensajeError = err.msj;
+        productosInvalidosArchivo.push(productoAgrupado);
+        index++;
+        setTimeout(function() {   
+            __productosGuardarTemporal(that, index, datos, productoAgrupado, productos, control, productosValidadosArchivo,productosInvalidosArchivo,callback);
+        },0);
+        return;
+    }).done();
             
-                that.m_pedidos_farmacias.guardarDetalleTemporal(
-                        numeroPedido, datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id, productoAgrupado.codigo_producto,
-                        productoAgrupado.cantidad_solicitada, productoAgrupado.tipoProductoId, cantidadPendiente, datos.usuario_id,
-                        productos[index].empresa_id, productos[index].centro_utilidad, productos[index].bodega, productos[index].nombre_bodega,
-                        function(err, rows, result) {
-                                if (err) {
-                                callback(err);
-                                return;
-                            }
-                            productosValidadosArchivo.push(productos[index]);                                
-                            index++;
-                        });
-    
-    setTimeout(function() {        
-       __productosGuardarTemporal(that, index, datos, productoAgrupado, productos, control, productosValidadosArchivo,callback);
-   }, 300);
 };
 
 /*
@@ -2905,7 +2910,6 @@ function __productosGuardarTemporal(that, index, datos, productoAgrupado, produc
 function __productosSeleccionado(that, index, productos,listaProductos, datos,control,callback) {
   
     var producto = productos[index];
-     
     if (!producto) {  
         if(control.cantidad_solicitada>control.sumaTotalExis){
             listaProductos=[];

@@ -241,13 +241,13 @@ PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = func
 
             var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, \
                         tipo_producto, cantidad_pendiente, usuario_id,empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,nombre_bodega) \
-            VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 , :10, :11, :12 , :13) ;";
+            VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 , :10, :11, :12 , :13);";
 
             return  G.knex.raw(sql, {1: numero_pedido, 2: empresa_id, 3: centro_utilidad_id, 4: bodega_id, 5: codigo_producto,
                 6: cantidad_solicitada, 7: tipo_producto_id, 8: cantidad_pendiente, 9: usuario_id, 10: empresa_origen_producto,
                 11: centro_utilidad_origen_producto, 12: bodega_origen_producto, 13: nombreBodega});
         } else {
-            throw {msj: "La cantidad ingresada del producto no es valida", status: 403};
+            throw {msj: "La cantidad ingresada o existente es "+cantidad_solicitada+" no se admite por la Unidad de Medida: "+resultado[0].resultado, status: 403};           
         }
 
     }).then(function (resultado) {

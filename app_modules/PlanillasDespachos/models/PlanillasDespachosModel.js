@@ -54,13 +54,13 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
             .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
-                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
+                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 1\
                       from inv_planillas_detalle_farmacias a\
-                      union all\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
+                      union\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 2\
                       from inv_planillas_detalle_clientes a\
                       union all\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g "), function () {
@@ -310,13 +310,13 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
             .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
-                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
+                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 1\
                       from inv_planillas_detalle_farmacias a\
-                      union all\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
+                      union \
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 2\
                       from inv_planillas_detalle_clientes a\
                       union all \
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g "), function () {

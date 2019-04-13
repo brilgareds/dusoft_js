@@ -48,7 +48,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     session: $scope.session,
                     data: {
                         centro_utilidad: {
-                            estado: '1',
+                            estado: '3',
                             pais_id: '1',
                             departamento_id: '1',
                             ciudad_id: '1',

@@ -23,6 +23,9 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad = function (obj, c
     if (obj.estado === '0') {
         where = "where a.tipo_pais_id = :1 and a.tipo_dpto_id= :2 and a.tipo_mpio_id= :3 and estado = '1' and a.descripcion " + G.constants.db().LIKE + " :4 ";
         parametros = {1: obj.pais_id, 2: obj.departamento_id, 3: obj.ciudad_id, 4: "%" + obj.termino_busqueda + "%"};
+    } else if(obj.estado === '3'){
+        where = "where a.empresa_id in ('FD','99','01') AND a.descripcion " + G.constants.db().LIKE + " :1 ";
+        parametros = {1: "%" + obj.termino_busqueda + "%"};
     } else {
         where = "where a.descripcion " + G.constants.db().LIKE + " :1 ";
         parametros = {1: "%" + obj.termino_busqueda + "%"};

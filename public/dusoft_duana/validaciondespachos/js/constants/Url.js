@@ -20,15 +20,18 @@ define(["angular"], function (angular) {
                 'ELIMINAR_IMAGEN': BASE_URL + '/ValidacionDespachos/eliminarImagen',
                 'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/PlanillasDespachos/documentosDespachosPorFarmacia',
                 'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/PlanillasDespachos/documentosDespachosPorCliente',
+                'REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/registroEntradaBodega',
+                'REGISTRO_SALIDA_BODEGA': BASE_URL + '/ValidacionDespachos/registroSalidaBodega',
+                'MODIFICAR_REGISTRO_SALIDA_BODEGA': BASE_URL + '/ValidacionDespachos/modificarRegistroSalidaBodega',
+                'MODIFICAR_REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/modificarRegistroEntradaBodega',
+                'LISTAR_REGISTRO_ENTRADA': BASE_URL + '/ValidacionDespachos/listarRegistroEntrada',
+                'LISTAR_REGISTRO_SALIDA': BASE_URL + '/ValidacionDespachos/listarRegistroSalida',
             },
             'CENTROS_UTILIDAD': {
                 'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
             },
             'CLIENTES':{
-                'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad',
-                'REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/registroEntradaBodega',
-                'MODIFICAR_REGISTRO_ENTRADA_BODEGA': BASE_URL + '/ValidacionDespachos/modificarRegistroEntradaBodega',
-                'LISTAR_REGISTRO_ENTRADA': BASE_URL + '/ValidacionDespachos/listarRegistroEntrada',
+                'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
             },
             'SINCRONIZACION_DOCUMENTOS': {
                 "LISTAR_PREFIJOS": BASE_URL + "/SincronizacionDocumentos/listarPrefijosEspecial"
@@ -39,6 +42,9 @@ define(["angular"], function (angular) {
             },
             'TRANSPORTADORAS': {
                 'LISTAR_TRANSPORTADORAS': BASE_URL + '/Transportadoras/listar'
+            },
+            'CIUDADES': {
+                'LISTAR_CIUDADES_PAIS': BASE_URL + '/Ciudades/listarCiudadesPais'
             }
             
         }

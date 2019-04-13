@@ -404,7 +404,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
                 var numeroLastIndex = numeroIngresado.lastIndexOf(",");
                 var numero;
-                var caracter = ","
+                var caracter = ",";
                 var i = 0;
                 var counter = 0;
                 var res = 0;
@@ -657,7 +657,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             });
                         }
                     }
-                    
+
                     obj = {
                         session: $scope.session,
                         data: {
@@ -1097,21 +1097,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
                 var multiplesDocumentosOtros = __multiplesDocumentosOtros(1);
 
-                if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 /*&& (cantidadCajas > 0 || cantidadNeveras > 0)*/) {
+                if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0) {
 
                     multiplesDocumentosOtros.forEach(function (data) {
 
                         var documento = DocumentoDespacho.get(0, data.prefijo, data.numero, $scope.datos_view.empresaSeleccionada.codigo);
 
                         documento.setSeleccionado(true);
-                        documento.setCantidadCajas(data.cantidadCajas);
-                        documento.setCantidadNeveras(data.cantidadNeveras);
+                        documento.setCantidadCajas(0);
+                        documento.setCantidadNeveras(0);
+                        documento.temperatura_neveras = '';
+//                        documento.setCantidadCajas(data.cantidadCajas);
+//                        documento.setCantidadNeveras(data.cantidadNeveras);
+//                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
                         documento.setEstado(1);
-                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
 
                         $scope.datos_view.documentosMedipol.push(documento);
 
                     });
+                        var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
+                        var cantidadNeveras = ( parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
+                                            
+                    $scope.datos_view.documentosMedipol[0].setCantidadCajas(cantidadCajas);
+                    $scope.datos_view.documentosMedipol[0].setCantidadNeveras(cantidadNeveras);
+                    $scope.datos_view.documentosMedipol[0].temperatura_neveras = cantidadNeveras > 0 ? '3,2' : '';
                     that.limpiarVariables();
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");

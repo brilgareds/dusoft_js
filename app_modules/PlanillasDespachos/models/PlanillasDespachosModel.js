@@ -667,10 +667,19 @@ function __insertarLioDocumento(obj, callback) {
         callback(false);
         return;
     }
-    var observacion = obj.observacion.lenght === 0 ? documento.prefijo + " - " + documento.numero : "'" + obj.observacion + "'";
-    if (obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes") {
+    
+    var tabla;
+    if(documento.tipo === '0'){
+        tabla = "inv_planillas_detalle_farmacias";
+    }else if(documento.tipo === '1'){
+        tabla = "inv_planillas_detalle_clientes";
+    }
 
-        sql = "INSERT INTO " + obj.tabla + " (\n\
+    var observacion = obj.observacion.lenght === 0 ? documento.prefijo + " - " + documento.numero : "'" + obj.observacion + "'";
+//    if ((obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes") && documento.tipo !== '2') {
+    if (documento.tipo !== '2') {
+
+        sql = "INSERT INTO " + tabla + " (\n\
                 inv_planillas_despacho_id, \n\
                 empresa_id, \
                 prefijo,\

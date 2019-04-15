@@ -284,12 +284,12 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function (req,
         return;
     }
 
-     var empresa_id = args.planillas_despachos.empresa_id;
-     var prefijo = args.planillas_despachos.prefijo;
-     var numero = args.planillas_despachos.numero;
-     var estado_pedido = ''; // 3 => En zona despacho, 9 => en zona con pdtes
-     var responsable = null;
-     var usuario_id = req.session.user.usuario_id;
+    var empresa_id = args.planillas_despachos.empresa_id;
+    var prefijo = args.planillas_despachos.prefijo;
+    var numero = args.planillas_despachos.numero;
+    var estado_pedido = ''; // 3 => En zona despacho, 9 => en zona con pdtes
+    var responsable = null;
+    var usuario_id = req.session.user.usuario_id;
 
     var parametros = {
         planilla_id: args.planillas_despachos.planilla_id,
@@ -611,12 +611,12 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
                     // Lista Documentos
                     var datos = [];
                     lista_documentos.forEach(function (documento) {
-                        
-                        var clienteSede = documento.descripcion_destino ;
-                        if(documento.descripcion_sede !== null && documento.descripcion_sede !== '') {
+
+                        var clienteSede = documento.descripcion_destino;
+                        if (documento.descripcion_sede !== null && documento.descripcion_sede !== '') {
                             clienteSede = documento.descripcion_sede;
                         }
-                        
+
 
                         if (datos[clienteSede]) {
                             datos[clienteSede].push(documento);
@@ -627,14 +627,14 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
 
                     var documentos = [];
                     for (var z in datos) {
-                        var direccion = datos[z][0].direccion_destino ;
-                        if(datos[z][0].direccion_sede !== '') {
+                        var direccion = datos[z][0].direccion_destino;
+                        if (datos[z][0].direccion_sede !== '') {
                             direccion = datos[z][0].direccion_sede;
                         }
-                        
-                        
+
+
 //                        documentos.push({tercero: z, detalle: datos[z]});
-                        documentos.push({tercero: z, ciudad: datos[z][0].ciudad, direccion:direccion, detalle: datos[z]});
+                        documentos.push({tercero: z, ciudad: datos[z][0].ciudad, direccion: direccion, detalle: datos[z]});
                     }
 
                     _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function (nombre_reporte) {
@@ -950,39 +950,9 @@ PlanillasDespachos.prototype.gestionarLios = function (req, res) {
 
     args.planillas_despachos.temperatura = temperatura;
 
-    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
+    G.Q.ninvoke(that.m_planillas_despachos, 'insertarLioDocumento', args.planillas_despachos).then(function (resultado) {
 
-    tabla = tabla[tipo];
-
-    if (tabla === undefined) {
-        res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
-        return;
-    }
-    var status = {};
-
-    G.Q.ninvoke(that.m_planillas_despachos, 'gestionarLios', args.planillas_despachos).then(function (resultado) {
-
-        var def = G.Q.defer();
-
-        if (parseInt(resultado[0].totalcajas) === totalCajas && parseInt(resultado[0].totalneveras) === totalNeveras) {
-
-            status.codigo = 200;
-            status.mensaje = 'Se insertan satisfactoriamente los lios';
-            args.planillas_despachos.tabla = tabla;
-
-            return G.Q.ninvoke(that.m_planillas_despachos, 'insertarLioDocumento', args.planillas_despachos);
-
-        } else {
-
-            status.codigo = 403;
-            status.mensaje = 'El número de cajas o neveras es diferente al auditado.\n Nro cajas auditadas: ' + resultado[0].totalcajas + ', Nro Neveras auditadas: ' + resultado[0].totalneveras;
-            def.resolve();
-        }
-        //  return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
-
-    }).then(function (resultado) {
-
-        res.send(G.utils.r(req.url, status.mensaje, status.codigo, {planillas_despachos: resultado}));
+        res.send(G.utils.r(req.url, 'Se insertan satisfactoriamente los lios', 200, {planillas_despachos: resultado}));
 
     }).fail(function (err) {
 

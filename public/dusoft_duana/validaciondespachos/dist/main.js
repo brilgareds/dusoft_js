@@ -49348,7 +49348,7 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                             session: $scope.session,
                             data: {//tercero.empresa_id
                                 tercero: {
-                                    empresa_id: empresa.codigo,
+//                                    empresa_id: empresa.codigo,
                                     busquedaDocumento: [],
                                     terminoBusqueda:$scope.root.termino_busqueda_clientes,
                                     paginacion: false
@@ -49855,7 +49855,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             session: $scope.session,
                             data: {//tercero.empresa_id
                                 tercero: {
-                                    empresa_id: empresa.codigo,
+//                                    empresa_id: empresa.codigo,
                                     busquedaDocumento: [],
                                     terminoBusqueda: $scope.root.termino_busqueda_clientes,
                                     paginacion: false

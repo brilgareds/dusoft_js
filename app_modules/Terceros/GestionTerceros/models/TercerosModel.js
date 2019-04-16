@@ -89,8 +89,12 @@ TercerosModel.prototype.listarTerceros = function(parametros, callback) {
     ];
 
     var query = G.knex.select(columnas).
-            from('terceros').
-            where("empresa_id", parametros.tercero.empresa_id);
+            from('terceros')
+            .where(function () {
+            if (parametros.tercero.empresa_id !== undefined) {
+                this.andWhere('empresa_id', parametros.tercero.empresa_id);
+            }
+        });
 
     if (parametros.tercero.terminoBusqueda.length > 0) {
         if (parametros.tercero.busquedaDocumento.length > 0) {
@@ -103,7 +107,9 @@ TercerosModel.prototype.listarTerceros = function(parametros, callback) {
     }
 
     query.limit(G.settings.limit).
-            offset((parametros.tercero.paginaActual - 1) * G.settings.limit).then(function(resultado) {
+            offset((parametros.tercero.paginaActual - 1) * G.settings.limit);
+
+    query.then(function(resultado) {
 	
         callback(false, resultado);
     }). catch (function(err) {

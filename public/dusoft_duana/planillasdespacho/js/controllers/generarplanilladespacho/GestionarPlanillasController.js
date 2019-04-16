@@ -37,8 +37,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 termino_busqueda_documentos: ''
             };
             $scope.datos_view.prefijosPlanilla = [
-                {prefijo: 'I', descripcion: "Insumos"},
-                {prefijo: 'M', descripcion: "Medicamentos"}
+                {prefijo: 'I', descripcion: "INSUMOS"},
+                {prefijo: 'M', descripcion: "MEDICAMENTOS"}
             ];
 
             $scope.datos_planilla = [];
@@ -142,7 +142,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.seleccionar_transportadora = function () {
-
+            $scope.planilla.set_numero_placa_externo($scope.planilla.transportadora.placa);
             };
 
             $scope.buscador_documentos_planillas = function (ev) {
@@ -179,10 +179,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var ciudad = Ciudad.get(datos.pais_id, datos.nombre_pais, datos.departamento_id, datos.nombre_departamento, datos.ciudad_id, datos.nombre_ciudad);
                 var transportadora = Transportadora.get(datos.transportadora_id, datos.nombre_transportadora, datos.placa_vehiculo, datos.estado_transportadora);
                 var usuario = UsuarioPlanilla.get(datos.usuario_id, datos.nombre_usuario);
-                $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, ciudad, datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
+                var tipo_planilla = {};
+
+                if (datos.tipo_planilla === 'M') {
+                    tipo_planilla = {prefijo: 'M', descripcion: "MEDICAMENTOS"};
+                } else if (datos.tipo_planilla === 'I') {
+                    tipo_planilla = {prefijo: 'I', descripcion: "INSUMOS"};
+                }
+                $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, ciudad, datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro,
+                        datos.fecha_despacho, datos.estado, datos.descripcion_estado, tipo_planilla);
                 $scope.planilla.set_cantidad_cajas(datos.total_cajas);
                 $scope.planilla.set_cantidad_neveras(datos.total_neveras);
                 $scope.planilla.set_numero_guia_externo(datos.numero_guia_externo);
+                $scope.planilla.set_numero_placa_externo(datos.numero_placa_externo);
             };
 
             $scope.consultar_documentos_planilla_despacho = function () {

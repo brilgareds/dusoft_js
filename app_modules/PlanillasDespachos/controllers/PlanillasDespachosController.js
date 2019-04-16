@@ -217,6 +217,7 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
         observacion: args.planillas_despachos.observacion,
         numero_guia_externo: args.planillas_despachos.numero_guia_externo,
         numero_placa_externo: args.planillas_despachos.numero_placa_externo,
+        tipo_planilla: args.planillas_despachos.tipo_planilla,
         usuario_id: req.session.user.usuario_id
     };
 

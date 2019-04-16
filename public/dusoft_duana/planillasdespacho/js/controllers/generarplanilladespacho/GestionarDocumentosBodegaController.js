@@ -731,7 +731,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                             nombre_conductor: $scope.planilla.get_nombre_conductor(),
                             observacion: $scope.planilla.get_observacion(),
                             numero_guia_externo: $scope.planilla.get_numero_guia_externo(),
-                            numero_placa_externo: $scope.planilla.get_numero_placa_externo()
+                            numero_placa_externo: $scope.planilla.get_numero_placa_externo(),
+                            tipo_planilla:$scope.planilla.tipo_planilla.prefijo
                         }
                     }
                 };

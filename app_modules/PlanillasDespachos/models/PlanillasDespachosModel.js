@@ -113,7 +113,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
         "a.solicitud_prod_a_bod_ppal_id as numero_pedido",
         "a.fecha_registro",
         G.knex.raw("(SELECT id_aprobacion_planillas FROM aprobacion_despacho_planillas_d as bb WHERE bb.prefijo = a.prefijo AND bb.numero = a.numero and (bb.cantidad_cajas > 0 or bb.cantidad_neveras > 0) ) as id_aprobacion_planillas"),
-         G.knex.raw("'0' as estado_documento")
+        G.knex.raw("'0' as estado_documento")
 //        G.knex.raw("case when (\n\
 //                    SELECT j.numero\
 //                    FROM (\
@@ -274,6 +274,7 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
         "a.id as numero_guia",
         "a.numero_guia_externo",
         "a.numero_placa_externo",
+        "a.tipo_planilla",
         "b.transportadora_id",
         "b.descripcion as nombre_transportadora",
         "b.placa_vehiculo",
@@ -493,7 +494,7 @@ PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function (paramet
 
     var query = G.knex('inv_planillas_despacho').
             returning('id').
-            insert({pais_id: parametros.pais_id, departamento_id: parametros.departamento_id, ciudad_id: parametros.ciudad_id,
+            insert({pais_id: parametros.pais_id, departamento_id: parametros.departamento_id, ciudad_id: parametros.ciudad_id, tipo_planilla: parametros.tipo_planilla,
                 inv_transportador_id: parametros.transportador_id, nombre_conductor: parametros.nombre_conductor, observacion: parametros.observacion,
                 numero_guia_externo: parametros.numero_guia_externo, usuario_id: parametros.usuario_id, numero_placa_externo: parametros.numero_placa_externo
             });

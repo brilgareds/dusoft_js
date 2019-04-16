@@ -28,12 +28,13 @@
                                 </div>                        
                                 <div class="col-md-6">
                                     <fieldset>
-                                        <legend>Tipo Guia</legend>      
-                                        <ul class="dropdown-menu" ng-disabled="planilla.get_numero_guia() > 0">
-                                            <li ng-repeat="prefijo in datos_view.prefijosPlanilla">
-                                                <a  href="javascript:void(0)">{{prefijo.descripcion}}</a>
-                                            </li>
-                                        </ul>
+                                        <legend>Tipo Guia</legend>    
+                                        <ui-select ng-model="planilla.tipo_planilla" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" >
+                                            <ui-select-match  placeholder="Seleccionar Tipo">{{ $select.selected.descripcion}}</ui-select-match>
+                                            <ui-select-choices repeat="prefijo in datos_view.prefijosPlanilla">
+                                                {{prefijo.descripcion}}
+                                            </ui-select-choices>
+                                        </ui-select> 
                                     </fieldset>
                                 </div>                        
                             </div>  

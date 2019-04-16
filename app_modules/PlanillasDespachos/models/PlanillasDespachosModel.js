@@ -54,13 +54,13 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
             .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
-                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
+                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 1\
                       from inv_planillas_detalle_farmacias a\
-                      union all\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
+                      union\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 2\
                       from inv_planillas_detalle_clientes a\
                       union all\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g "), function () {
@@ -164,7 +164,8 @@ fecha.setMonth(fecha.getMonth() - 1);
     }
 
     query.where(function () {
-        this.andWhere(G.knex.raw("a.fecha_registro >= '"+G.moment(fecha).format(formato)+"'"));
+//        this.andWhere(G.knex.raw("a.fecha_registro >= '"+G.moment(fecha).format(formato)+"'"));
+        this.andWhere(G.knex.raw("a.fecha_registro >= '2019-03-22'"));
         this.andWhere('a.empresa_id', obj.empresa_id);
         this.andWhere('b.farmacia_id', obj.farmacia_id);
         this.andWhere('b.centro_utilidad', obj.centro_utilidad_id);
@@ -310,13 +311,13 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
             .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
-                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
+                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 1\
                       from inv_planillas_detalle_farmacias a\
-                      union all\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
+                      union \
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 2\
                       from inv_planillas_detalle_clientes a\
                       union all \
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g "), function () {
@@ -667,10 +668,19 @@ function __insertarLioDocumento(obj, callback) {
         callback(false);
         return;
     }
-    var observacion = obj.observacion.lenght === 0 ? documento.prefijo + " - " + documento.numero : "'" + obj.observacion + "'";
-    if (obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes") {
+    
+    var tabla;
+    if(documento.tipo === '0'){
+        tabla = "inv_planillas_detalle_farmacias";
+    }else if(documento.tipo === '1'){
+        tabla = "inv_planillas_detalle_clientes";
+    }
 
-        sql = "INSERT INTO " + obj.tabla + " (\n\
+    var observacion = obj.observacion.lenght === 0 ? documento.prefijo + " - " + documento.numero : "'" + obj.observacion + "'";
+//    if ((obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes") && documento.tipo !== '2') {
+    if (documento.tipo !== '2') {
+
+        sql = "INSERT INTO " + tabla + " (\n\
                 inv_planillas_despacho_id, \n\
                 empresa_id, \
                 prefijo,\

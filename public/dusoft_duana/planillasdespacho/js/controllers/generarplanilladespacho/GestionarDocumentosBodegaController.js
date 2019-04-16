@@ -66,7 +66,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
             };
 
             $scope.seleccionar_cliente_farmacia = function () {
-                that.removerDocumentos();
+//                that.removerDocumentos();
 
                 $scope.datos_view.tercero_seleccionado.limpiar_documentos();
 
@@ -332,6 +332,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     var documento = Documento.get(data.id_aprobacion_planillas, data.empresa_id, data.prefijo, data.numero, data.numero_pedido);
                     documento.set_cantidad_cajas_auditadas(data.cantidad_cajas);
                     documento.set_cantidad_neveras_auditadas(data.cantidad_neveras);
+                    documento.tipo = data.tipo;
 
                     if ($scope.datos_view.despachoPorLios) {
                         var _documento = that.obtenerDocumentoSeleccionado(documento);
@@ -438,17 +439,6 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     $scope.cerrar_gestion_documentos_bodega();
                 }
 
-                //testing
-                /* if ($scope.datos_view.opcion_predeterminada === "2") {
-                 $scope.datos_view.documento_seleccionado.set_empresa_id(Sesion.getUsuarioActual().getEmpresa().getCodigo());
-                 
-                 that.gestionar_planilla_despacho(function(continuar) {
-                 if (continuar)
-                 $scope.cerrar_gestion_documentos_bodega();
-                 });
-                 } else {
-                 $scope.cerrar_gestion_documentos_bodega();
-                 }*/
             };
 
             that.mostrarVentanaLios = function (documentos) {
@@ -472,11 +462,6 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
                 var modalInstance = $modal.open($scope.opts);
 
-                /*modalInstance.result.then(function() {
-                 
-                 $scope.buscar_documentos_bodega();
-                 }, function() {
-                 });*/
             };
 
             that.onLiosRegistrados = $rootScope.$on("onLiosRegistrados", function () {
@@ -603,7 +588,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
                     for (var i in documentos) {
                         var _documento = documentos[i];
+                        if(_documento.tipo === '2'){
                         _documento.tercero = farmacia;
+                        }
                     }
                 } else {
                     fila.tercero = farmacia;

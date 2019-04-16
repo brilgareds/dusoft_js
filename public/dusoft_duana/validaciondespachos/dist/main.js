@@ -50432,7 +50432,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 }
                 var numeroLastIndex = numeroIngresado.lastIndexOf(",");
                 var numero;
-                var caracter = ","
+                var caracter = ",";
                 var i = 0;
                 var counter = 0;
                 var res = 0;
@@ -50649,6 +50649,9 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 var documentos = $scope.datos_view.documentosMedipol;
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
                 var numeroDocumento = $scope.documentoDespachoAprobado.numero;
+
+                that.documentosSeleccionados = localStorageService.get("documentosSeleccionados");
+
                 if (documentos.length > 0) {
 
                     that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ? $scope.documentoDespachoAprobado.observacion + " " : "";
@@ -50674,6 +50677,15 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
 
                     });
 
+                    if (that.documentosSeleccionados) {
+                        if (that.documentosSeleccionados.documentos.length > 0) {
+
+                            that.documentosSeleccionados.documentos.forEach(function (row) {
+                                documentos.push(row);
+                            });
+                        }
+                    }
+
                     obj = {
                         session: $scope.session,
                         data: {
@@ -50692,7 +50704,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                      *              que contendra los documentos seleccionados y agregara el numero
                      *              de cajas
                      */
-                    if (numeroDocumento === 0 || numeroDocumento === undefined || numeroDocumento === '' ) {
+                    if (numeroDocumento === 0 || numeroDocumento === undefined || numeroDocumento === '') {
                         $scope.documentoDespachoAprobado.numero = $scope.datos_view.documentosMedipol[0].numero;
                         $scope.documentoDespachoAprobado.prefijo = $scope.datos_view.documentosMedipol[0].prefijo;
                         numeroDocumento = $scope.datos_view.documentosMedipol[0].numero;
@@ -50869,14 +50881,14 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                                                                 </div>\
                                                             </slide>\
                                                         </carousel>',
-                    controller: ["$modalInstance", "imagen", function($modalInstance, imagen){
-                        $scope.imagen = imagen;
-                        
-                        $scope.close = function(){
-                            $modalInstance.close();
-                        };
-                        
-                    }],
+                    controller: ["$modalInstance", "imagen", function ($modalInstance, imagen) {
+                            $scope.imagen = imagen;
+
+                            $scope.close = function () {
+                                $modalInstance.close();
+                            };
+
+                        }],
 
                     resolve: {
                         imagen: function () {
@@ -51113,21 +51125,30 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
                 var multiplesDocumentosOtros = __multiplesDocumentosOtros(1);
 
-                if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 /*&& (cantidadCajas > 0 || cantidadNeveras > 0)*/) {
+                if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0) {
 
                     multiplesDocumentosOtros.forEach(function (data) {
 
                         var documento = DocumentoDespacho.get(0, data.prefijo, data.numero, $scope.datos_view.empresaSeleccionada.codigo);
 
                         documento.setSeleccionado(true);
-                        documento.setCantidadCajas(data.cantidadCajas);
-                        documento.setCantidadNeveras(data.cantidadNeveras);
+                        documento.setCantidadCajas(0);
+                        documento.setCantidadNeveras(0);
+                        documento.temperatura_neveras = '';
+//                        documento.setCantidadCajas(data.cantidadCajas);
+//                        documento.setCantidadNeveras(data.cantidadNeveras);
+//                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
                         documento.setEstado(1);
-                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
 
                         $scope.datos_view.documentosMedipol.push(documento);
 
                     });
+                        var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
+                        var cantidadNeveras = ( parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
+                                            
+                    $scope.datos_view.documentosMedipol[0].setCantidadCajas(cantidadCajas);
+                    $scope.datos_view.documentosMedipol[0].setCantidadNeveras(cantidadNeveras);
+                    $scope.datos_view.documentosMedipol[0].temperatura_neveras = cantidadNeveras > 0 ? '3,2' : '';
                     that.limpiarVariables();
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
@@ -51245,7 +51266,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     session: $scope.session,
                     data: {
                         centro_utilidad: {
-                            estado: '1',
+                            estado: '3',
                             pais_id: '1',
                             departamento_id: '1',
                             ciudad_id: '1',
@@ -51470,31 +51491,48 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     return;
                 }
                 var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
+                /*---------parte nueva----------*/
+//                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
 
-                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
+                if (documentoSeleccionadoPreparado.length <= 0) {
+                    AlertService.mostrarMensaje("warning", "Debe seleccionar documentos");
+                    return;
+                }
 
-                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: $scope.datosView.cantidadCajas, totalNeveras: $scope.datosView.cantidadNeveras});
+                cantidadCajas = parseInt($scope.datosView.cantidadCajas);
+                if ($scope.numeroCaja) {
+                    documentoSeleccionadoPreparado[0].setCantidadCajas(Math.floor(cantidadCajas));
+                }
 
-                    if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
-                        var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
-                        var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
-                        centroUtilidad.agregarBodega(bodega);
-                        $scope.seleccionarCentroUtilidad(centroUtilidad, '');
-                    }
+                if ($scope.numeroNevera) {
+                    documentoSeleccionadoPreparado[0].setCantidadNeveras(Math.floor(cantidadCajas));
+                }
 
-                    if (!$scope.datosView.seleccionarClienteFarmacia && $scope.clienteEgresos) {
-                        var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
-                                $scope.clienteEgresos.direccion,
-                                $scope.clienteEgresos.tipo_id_tercero,
-                                $scope.clienteEgresos.id,
-                                $scope.clienteEgresos.telefono);
-                        $scope.seleccionarCliente(clienteDocumento, '');
-                    }
+                that.documentosStorageActual = documentoSeleccionadoPreparado;
+                /*---------fin parte nueva----------*/
 
-                    $state.go('ValidacionEgresosDetalle');
-                    $modalInstance.close();
+                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: $scope.datosView.cantidadCajas, totalNeveras: $scope.datosView.cantidadNeveras});
 
-                });
+                if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
+                    var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
+                    var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
+                    centroUtilidad.agregarBodega(bodega);
+                    $scope.seleccionarCentroUtilidad(centroUtilidad, '');
+                }
+
+                if (!$scope.datosView.seleccionarClienteFarmacia && $scope.clienteEgresos) {
+                    var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
+                            $scope.clienteEgresos.direccion,
+                            $scope.clienteEgresos.tipo_id_tercero,
+                            $scope.clienteEgresos.id,
+                            $scope.clienteEgresos.telefono);
+                    $scope.seleccionarCliente(clienteDocumento, '');
+                }
+
+                $state.go('ValidacionEgresosDetalle');
+                $modalInstance.close();
+
+//                });
 
             };
 
@@ -51626,7 +51664,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                         var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
                         var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
                         centroUtilidad.agregarBodega(bodega);
-                        $scope.seleccionarCentroUtilidad(centroUtilidad,$scope.datosView.terminoBusquedaEfc);
+                        $scope.seleccionarCentroUtilidad(centroUtilidad, $scope.datosView.terminoBusquedaEfc);
                     }
 
                     if ($scope.clienteEgresos) {
@@ -51644,7 +51682,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
             /**
              * +Descripcion Metodo que se invoca al seleccionar un centro de utilidad
              */
-            $scope.seleccionarCentroUtilidad = function (centroUtilidad,terminoBusqueda) {
+            $scope.seleccionarCentroUtilidad = function (centroUtilidad, terminoBusqueda) {
 
                 $scope.centroUtilidad = CentroUtilidadInduccion.get(centroUtilidad.getNombre(), centroUtilidad.getCodigo());
                 var bodega = BodegaInduccion.get('', centroUtilidad.getCentrosBodega()[0].getCodigo());
@@ -51657,7 +51695,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                             empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             farmacia_id: centroUtilidad.getCentrosBodega()[0].getCodigo(),
                             centro_utilidad_id: centroUtilidad.getCodigo(),
-                            termino_busqueda: terminoBusqueda,//'',
+                            termino_busqueda: terminoBusqueda, //'',
                             estadoValidarDespachos: 1
                         }
                     }

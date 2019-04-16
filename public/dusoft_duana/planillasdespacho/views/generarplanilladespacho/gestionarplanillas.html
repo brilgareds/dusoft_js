@@ -13,20 +13,31 @@
                     </div>
                     <div class="panel-body">                    
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-5">
+                                <div class="col-md-6">
+                                    <fieldset>
+                                        <legend>Ciudad</legend>      
 
-                                <fieldset>
-                                    <legend>Ciudad</legend>      
-
-                                    <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
-                                        <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.get_nombre_ciudad()}}</ui-select-match>
-                                        <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
-                                            {{ ciudad.get_nombre_ciudad()}}
-                                        </ui-select-choices>
-                                    </ui-select>                                   
-                                </fieldset>
-                            </div>                        
-                            <div class="col-md-4">
+                                        <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
+                                            <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.get_nombre_ciudad()}}</ui-select-match>
+                                            <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
+                                                {{ ciudad.get_nombre_ciudad()}}
+                                            </ui-select-choices>
+                                        </ui-select>                                   
+                                    </fieldset>
+                                </div>                        
+                                <div class="col-md-6">
+                                    <fieldset>
+                                        <legend>Tipo Guia</legend>      
+                                        <ul class="dropdown-menu" ng-disabled="planilla.get_numero_guia() > 0">
+                                            <li ng-repeat="prefijo in datos_view.prefijosPlanilla">
+                                                <a  href="javascript:void(0)">{{prefijo.descripcion}}</a>
+                                            </li>
+                                        </ul>
+                                    </fieldset>
+                                </div>                        
+                            </div>  
+                            <div class="col-md-5">
                                 <div class="col-md-6">
                                     <fieldset>
                                         <legend>Transportador</legend> 
@@ -40,18 +51,6 @@
                                 </div>
                                 <div class="col-md-6">
                                     <fieldset>
-                                        <legend>Numero Placa</legend>                                 
-                                        <div class="row">  
-                                            <div class="col-md-12">                                          
-                                                <input type="text" ng-model="planilla.numero_placa_externo" ng-disabled="planilla.get_numero_guia() > 0 || planilla.get_transportadora() == undefined || planilla.get_transportadora().get_id() != '38'" class="form-control"  placeholder="Ingrese Numero Placa" name="" id="" />
-                                            </div>
-                                        </div>
-                                    </fieldset>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="col-md-6">
-                                    <fieldset>
                                         <legend>Numero Guia</legend>                                 
                                         <div class="row">  
                                             <div class="col-md-12">                                          
@@ -60,6 +59,8 @@
                                         </div>
                                     </fieldset>
                                 </div>
+                            </div>
+                            <div class="col-md-2">
                                 <fieldset>
                                     <legend>Fecha</legend> 
                                     <div class="row">
@@ -83,8 +84,17 @@
                                     </div>
                                 </fieldset>
                             </div>
-                            <div class="col-md-4">
-
+                            <div class="col-md-5">
+                                <div class="col-md-6">
+                                    <fieldset>
+                                        <legend>Numero Placa</legend>                                 
+                                        <div class="row">  
+                                            <div class="col-md-12">                                          
+                                                <input type="text" ng-model="planilla.numero_placa_externo" ng-disabled="planilla.get_numero_guia() > 0 || planilla.get_transportadora() == undefined || planilla.get_transportadora().get_id() != '38'" class="form-control"  placeholder="Ingrese Numero Placa" name="" id="" />
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
                                 <fieldset>
                                     <legend>Conductor</legend>                                 
                                     <div class="row">  
@@ -94,7 +104,7 @@
                                     </div>
                                 </fieldset>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <fieldset>
                                     <legend>Estado</legend> 
                                     <div class="row">

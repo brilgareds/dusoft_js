@@ -42,6 +42,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         that.listarOperarios();
                         that.limpiar();
                         that.listarCiudadesPais();
+                        $scope.filtro();
                     };
 
                     $scope.horaDespacho = {

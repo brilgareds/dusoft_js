@@ -565,7 +565,8 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
                         this.orWhere("a.fecha_envio",'ilike', '%' +obj.busqueda + '%');
                         this.orWhere("b.nombre_tercero",'ilike', '%' +obj.busqueda + '%');
                     }
-                }).limit(G.settings.limit).
+                }).orderBy("a.fecha_registro","desc")
+                  .limit(G.settings.limit).
                    offset((obj.pagina - 1) * G.settings.limit);    
            
     query.then(function(resultado){
@@ -657,9 +658,8 @@ ValidacionDespachosModel.prototype.listarRegistroEntrada = function (obj, callba
                     this.orWhere("e.nombre", 'ilike', '%' + obj.busqueda + '%');
                     this.orWhere("b.nombre_tercero", 'ilike', '%' + obj.busqueda + '%');
                 }
-            }).limit(G.settings.limit).
+            }).orderBy("a.fecha_registro","desc").limit(G.settings.limit).
             offset((obj.pagina - 1) * G.settings.limit);
-
     query.then(function (resultado) {
 
         callback(false, resultado);

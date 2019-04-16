@@ -164,7 +164,8 @@ fecha.setMonth(fecha.getMonth() - 1);
     }
 
     query.where(function () {
-        this.andWhere(G.knex.raw("a.fecha_registro >= '"+G.moment(fecha).format(formato)+"'"));
+//        this.andWhere(G.knex.raw("a.fecha_registro >= '"+G.moment(fecha).format(formato)+"'"));
+        this.andWhere(G.knex.raw("a.fecha_registro >= '2019-03-22'"));
         this.andWhere('a.empresa_id', obj.empresa_id);
         this.andWhere('b.farmacia_id', obj.farmacia_id);
         this.andWhere('b.centro_utilidad', obj.centro_utilidad_id);

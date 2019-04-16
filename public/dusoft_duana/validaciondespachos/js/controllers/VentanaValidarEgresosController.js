@@ -281,19 +281,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     return;
                 }
 
-                cantidadCajas = parseInt($scope.datosView.cantidadCajas);
                 if ($scope.numeroCaja) {
+                    cantidadCajas = parseInt($scope.datosView.cantidadCajas);
                     documentoSeleccionadoPreparado[0].setCantidadCajas(Math.floor(cantidadCajas));
                 }
 
                 if ($scope.numeroNevera) {
-                    documentoSeleccionadoPreparado[0].setCantidadNeveras(Math.floor(cantidadCajas));
+                    cantidadNeveras = parseInt($scope.datosView.cantidadCajas);
+                    documentoSeleccionadoPreparado[0].setCantidadNeveras(Math.floor(cantidadNeveras));
                 }
 
                 that.documentosStorageActual = documentoSeleccionadoPreparado;
                 /*---------fin parte nueva----------*/
 
-                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: $scope.datosView.cantidadCajas, totalNeveras: $scope.datosView.cantidadNeveras});
+                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: cantidadCajas, totalNeveras: cantidadNeveras});
 
                 if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
                     var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);

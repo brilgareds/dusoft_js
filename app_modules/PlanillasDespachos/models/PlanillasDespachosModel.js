@@ -92,9 +92,9 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
  */
 PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = function (obj, callback) {
 
-var fecha = new Date();
-var formato = 'YYYY-MM-DD';
-fecha.setMonth(fecha.getMonth() - 1);
+    var fecha = new Date();
+    var formato = 'YYYY-MM-DD';
+    fecha.setMonth(fecha.getMonth() - 1);
 
     var columnas = [
         G.knex.raw("'0' as tipo"),
@@ -113,17 +113,18 @@ fecha.setMonth(fecha.getMonth() - 1);
         "a.solicitud_prod_a_bod_ppal_id as numero_pedido",
         "a.fecha_registro",
         G.knex.raw("(SELECT id_aprobacion_planillas FROM aprobacion_despacho_planillas_d as bb WHERE bb.prefijo = a.prefijo AND bb.numero = a.numero and (bb.cantidad_cajas > 0 or bb.cantidad_neveras > 0) ) as id_aprobacion_planillas"),
-        G.knex.raw("case when (\n\
-                    SELECT j.numero\
-                    FROM (\
-                        SELECT f.prefijo, f.numero, f.id_aprobacion_planillas FROM aprobacion_despacho_planillas_d f \
-                        WHERE f.prefijo = a.prefijo AND f.numero = a.numero\
-                        UNION\
-                        SELECT g.prefijo, g.numero, g.id_aprobacion_planillas FROM aprobacion_despacho_planillas g\
-                        WHERE g.prefijo = a.prefijo AND g.numero = a.numero\
-                    ) as j\
-                ) is null then '0'\
-                ELSE '1' end as estado_documento")
+         G.knex.raw("'0' as estado_documento")
+//        G.knex.raw("case when (\n\
+//                    SELECT j.numero\
+//                    FROM (\
+//                        SELECT f.prefijo, f.numero, f.id_aprobacion_planillas FROM aprobacion_despacho_planillas_d f \
+//                        WHERE f.prefijo = a.prefijo AND f.numero = a.numero\
+//                        UNION\
+//                        SELECT g.prefijo, g.numero, g.id_aprobacion_planillas FROM aprobacion_despacho_planillas g\
+//                        WHERE g.prefijo = a.prefijo AND g.numero = a.numero\
+//                    ) as j\
+//                ) is null then '0'\
+//                ELSE '1' end as estado_documento")
     ];
 
     if (obj.estadoListarValidacionDespachos !== 1) {
@@ -164,13 +165,15 @@ fecha.setMonth(fecha.getMonth() - 1);
     }
 
     query.where(function () {
-//        this.andWhere(G.knex.raw("a.fecha_registro >= '"+G.moment(fecha).format(formato)+"'"));
-        this.andWhere(G.knex.raw("a.fecha_registro >= '2019-03-22'"));
+        this.andWhere(G.knex.raw("a.fecha_registro >= '" + G.moment(fecha).format(formato) + "'"));
         this.andWhere('a.empresa_id', obj.empresa_id);
         this.andWhere('b.farmacia_id', obj.farmacia_id);
         this.andWhere('b.centro_utilidad', obj.centro_utilidad_id);
         this.whereIn('b.estado', [2, 3, 8, 9]);
         this.andWhere(G.knex.raw("a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_farmacias b )"));
+        if (obj.estadoListarValidacionDespachos === 1) {
+            this.andWhere(G.knex.raw("a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from aprobacion_despacho_planillas_d b )"));
+        }
         this.andWhere(G.knex.raw("( a.prefijo || ' ' || a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%' or \
                     a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%' or \
                     a.solicitud_prod_a_bod_ppal_id :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%')"));
@@ -668,11 +671,11 @@ function __insertarLioDocumento(obj, callback) {
         callback(false);
         return;
     }
-    
+
     var tabla;
-    if(documento.tipo === '0'){
+    if (documento.tipo === '0') {
         tabla = "inv_planillas_detalle_farmacias";
-    }else if(documento.tipo === '1'){
+    } else if (documento.tipo === '1') {
         tabla = "inv_planillas_detalle_clientes";
     }
 

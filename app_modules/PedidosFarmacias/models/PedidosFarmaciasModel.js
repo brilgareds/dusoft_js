@@ -175,7 +175,9 @@ PedidosFarmaciasModel.prototype.existe_registro_detalle_temporal = function (emp
                farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and codigo_producto = :4 and usuario_id = :5\
                and empresa_origen_producto = :6 and centro_utilidad_origen_producto = :7 and bodega_origen_producto = :8 ";
 
-    G.knex.raw(sql, {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: codigo_producto, 5: usuario_id, 6: empresa_origen_producto, 7: centro_utilidad_origen_producto, 8: bodega_origen_producto}).then(function (resultado) {
+    var query = G.knex.raw(sql, {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: codigo_producto, 5: usuario_id, 6: empresa_origen_producto, 7: centro_utilidad_origen_producto, 8: bodega_origen_producto});
+  
+        query.then(function (resultado) {
         callback(false, resultado.rows);
     }).catch(function (err) {
         console.log("existe_registro_detalle_temporal error  ", err);
@@ -1832,17 +1834,19 @@ PedidosFarmaciasModel.prototype.listarBodegasPedidos = function (objBodegaPedido
         "a.bodega as bodega_id",
         "a.orden"
     ];
-    G.knex.column(columnas).
-            from("bodegas_pedidos as a").
-            where("a.estado", estado).
-            andWhere("a.sw_modulo", objBodegaPedido.sw_modulo).
-            orderByRaw("orden desc").
-            then(function (rows) {
-                callback(false, rows);
-            }).
-            catch (function (err) {
-                callback(err);
-            }).done();
+    var query =  G.knex.column(columnas).
+                from("bodegas_pedidos as a").
+                where("a.estado", estado).
+                andWhere("a.sw_modulo", objBodegaPedido.sw_modulo).
+                orderByRaw("orden desc");
+//        console.log("listarBodegasPedidos",G.sqlformatter.format(query.toString())); 
+        query.then(function (rows) {
+//            console.log("okkk",rows);
+            callback(false, rows);
+        }).
+        catch (function (err) {
+            callback(err);
+        }).done();
 
 };
 

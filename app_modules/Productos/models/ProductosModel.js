@@ -396,6 +396,19 @@ ProductosModel.prototype.validarUnidadMedidaProducto = function(obj, callback) {
        callback(err);
    });
 };
+
+ProductosModel.prototype.validarUnidadMedidaDescipcionProducto = function(obj, callback) {
+
+    var sql = "select case when ( :1 % coalesce(unidad_medida, 1)) = 0 then '1' else '0' end as valido, unidad_medida,tipo_producto_id,fc_descripcion_producto(codigo_producto) as descripcion_producto  from\
+               inventarios_productos where codigo_producto = :2 ";
+   
+   var query = G.knex.raw(sql, {1 : parseInt(obj.cantidad), 2 : obj.codigo_producto});
+   query.then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+};
           
 /*
 * @Author: Eduar

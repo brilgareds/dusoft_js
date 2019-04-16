@@ -151,10 +151,10 @@ Terceros.prototype.listarTerceros = function(req, res){
         return;
     }
     
-    if (!args.tercero.empresa_id  || args.tercero.empresa_id.length === 0){
-        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
-        return;
-    }
+//    if (!args.tercero.empresa_id  || args.tercero.empresa_id.length === 0){
+//        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
+//        return;
+//    }
     
     G.Q.ninvoke(that.mTerceros,'listarTerceros', args).then(function(resultado) {
         

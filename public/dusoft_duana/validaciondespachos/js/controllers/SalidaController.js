@@ -419,7 +419,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             session: $scope.session,
                             data: {//tercero.empresa_id
                                 tercero: {
-                                    empresa_id: empresa.codigo,
+                                   // empresa_id: empresa.codigo,
                                     busquedaDocumento: [],
                                     terminoBusqueda: $scope.root.termino_busqueda_clientes,
                                     paginacion: false

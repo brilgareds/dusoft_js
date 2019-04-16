@@ -182,6 +182,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             if (data.status === 200) {
                                 that.limpiar();
+                                $scope.filtro();
                                 $scope.root.guardarButton = true;
                                 $scope.root.modificarButton = false;
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Modificado Correctamente");
@@ -192,7 +193,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         });
                     };
 
-                    that.registroSalidaBodega = function (obj) {
+                    that.   registroSalidaBodega = function (obj) {
 
                         obj.session = $scope.session;
 
@@ -200,6 +201,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             if (data.status === 200) {
                                 that.limpiar();
+                                $scope.filtro();
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Almacenado Correctamente");
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);

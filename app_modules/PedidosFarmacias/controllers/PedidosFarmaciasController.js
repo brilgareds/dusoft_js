@@ -2976,9 +2976,9 @@ function __validarProductoArchivoPlanoMod(that, datos, productosAgrupados, produ
         return;
     }
     
-     if(productoAgrupado.codigo_producto==='168C0650002'){
-        console.log("productoAgrupado",productoAgrupado);
-    } 
+//     if(productoAgrupado.codigo_producto==='168C0650002'){
+//        console.log("productoAgrupado",productoAgrupado);
+//    } 
 
     var codigo_temporal = datos.empresa_destino_id + datos.centro_utilidad_destino_id + productoAgrupado.codigo_producto;
 
@@ -3226,9 +3226,13 @@ function __productosSeleccionado(that, index, productos,listaProductos, datos,co
               }else{
 		  console.log("-------------dosBodegas3");
                    if(productos[index].disponibilidad_bodega >= productos[index].unidad_medida){
+                       if(producto.codigo_producto==='168C0650002'){
                        console.log("-------------0-----------------------");
+                      }
                        if(productos[index].disponibilidad_bodega % productos[index].unidad_medida === 0){
+                           if(producto.codigo_producto==='168C0650002'){
                            console.log("-------------1-----------------------");
+                            }
                             control.dosBodegas=1;
                             var cantidadBodega = productos[index].disponibilidad_bodega-(productos[index].disponibilidad_bodega%productos[index].unidad_medida)
                             control.diferenciaExis=control.diferenciaExis-cantidadBodega;
@@ -3236,7 +3240,9 @@ function __productosSeleccionado(that, index, productos,listaProductos, datos,co
                             listaProductos.push(productos[index]);
                             control.sumaTotalExis+=cantidadBodega;
                        }else{
+                           if(producto.codigo_producto==='168C0650002'){
                           console.log("-------------2-----------------------");
+                           }
                           control.dosBodegas=1;
                           var cantidadBodega = parseInt(productos[index].disponibilidad_bodega/productos[index].unidad_medida)*productos[index].unidad_medida;
                           control.diferenciaExis=control.diferenciaExis-cantidadBodega;

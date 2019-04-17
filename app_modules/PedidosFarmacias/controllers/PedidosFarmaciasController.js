@@ -919,7 +919,7 @@ function dynamicMultiSort() {
 function __bodegasPedidos(that, index, bodegasPedidos, listaProductos, obj, callback) {
     var bodegas = bodegasPedidos[index];
     obj.filtro.existenciaCero = (bodegasPedidos.length > 1) ? true : false;
-    obj.filtro.tipo_busqueda=5;
+   // obj.filtro.tipo_busqueda=5;
     if (!bodegas) {
         callback(false, listaProductos);
         return;
@@ -2853,7 +2853,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
             }
 
             var filtro = {
-                tipo_busqueda: 2,
+                tipo_busqueda: 5,
                 tipo_producto: productoAgrupado.tipoProductoId,
                 termino_busqueda: productoAgrupado.codigo_producto
             };

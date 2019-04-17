@@ -496,8 +496,6 @@ CajaGeneralModel.prototype.listarRecibosCajaPorPrefijo = function (obj, callback
     var empresa = obj.empresaId;
     var prefijo = obj.prefijoId;
 
-    console.log('obj.empresaId: ', empresa);
-    console.log('obj.prefijoId: ', prefijo);
 
     var columna = [
         "a.empresa_id",
@@ -536,7 +534,6 @@ CajaGeneralModel.prototype.listarRecibosCajaPorPrefijo = function (obj, callback
         .where('a.empresa_id', empresa)
         .andWhere('a.prefijo', prefijo);
 
-    console.log("Query resultado: ", G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         callback(false, resultado);

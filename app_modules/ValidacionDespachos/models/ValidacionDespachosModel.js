@@ -295,14 +295,14 @@ ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj,
 
 ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (obj, callback) {
 
-    var sql = "SELECT a.numero, a.prefijo, b.observacion, b.empresa_id FROM aprobacion_despacho_planillas_d as a\
+    var sql = "SELECT '2' as tipo, a.numero, a.prefijo, b.observacion, b.empresa_id,a.cantidad_cajas,a.cantidad_neveras FROM aprobacion_despacho_planillas_d as a\
                inner join aprobacion_despacho_planillas as b on a.id_aprobacion_planillas = b.id_aprobacion_planillas \
                WHERE a.prefijo = :1\
                AND a.numero NOT IN( SELECT numero FROM inv_planillas_detalle_empresas WHERE prefijo = :1)\
                ORDER BY numero";
 
-    G.knex.raw(sql, {1: obj.prefijo})
-            .then(function (resultado) {
+    var query =G.knex.raw(sql, {1: obj.prefijo});
+            query.then(function (resultado) {
                 callback(false, resultado.rows);
             })
             .catch(function (error) {
@@ -565,7 +565,8 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
                         this.orWhere("a.fecha_envio",'ilike', '%' +obj.busqueda + '%');
                         this.orWhere("b.nombre_tercero",'ilike', '%' +obj.busqueda + '%');
                     }
-                }).limit(G.settings.limit).
+                }).orderBy("a.fecha_registro","desc")
+                  .limit(G.settings.limit).
                    offset((obj.pagina - 1) * G.settings.limit);    
            
     query.then(function(resultado){
@@ -657,9 +658,8 @@ ValidacionDespachosModel.prototype.listarRegistroEntrada = function (obj, callba
                     this.orWhere("e.nombre", 'ilike', '%' + obj.busqueda + '%');
                     this.orWhere("b.nombre_tercero", 'ilike', '%' + obj.busqueda + '%');
                 }
-            }).limit(G.settings.limit).
+            }).orderBy("a.fecha_registro","desc").limit(G.settings.limit).
             offset((obj.pagina - 1) * G.settings.limit);
-
     query.then(function (resultado) {
 
         callback(false, resultado);

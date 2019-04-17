@@ -49041,24 +49041,21 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
 
     controllers.controller('EntradaSalidaController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
-                'EmpresaAprobacionDespacho', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion', 'AprobacionDespacho',
                 "$timeout", "$filter", "localStorageService", "$state", "ValidacionDespachosService",
                 function ($scope, $rootScope, Request, API, AlertService, Usuario,
-                        EmpresaAprobacionDespacho, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
                         $timeout, $filter, localStorageService, $state, ValidacionDespachosService) {
 
                     var that = this;
-                    var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-         
-                    var fecha_actual = new Date();
+                    
                     $scope.paginaactual = 1;
                     $scope.session = {
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
                     };
 
-                    that.init = function (empresa, callback) {                        
-                        
+                    that.init = function () {                        
+                        $scope.tabEntrada=true; 
+                        $scope.tabSalida=false; 
                         $scope.root = {
                             guardarButton : true,
                             modificarButton : false,
@@ -49066,16 +49063,44 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                             registrosLength :0,
                             termino_busqueda_clientes:"",
                             pref: {},
+                            tab : function(){},
                             operario: {},
                             cliente: {},
                             transportadora: {},
                             filtro: "",
                             empaques: [{id: 0, nombre: 'Caja'}, {id: 1, nombre: 'Nevera'}, {id: 2, nombre: 'Bolsa'}]
                         };
-                        that.listarPrefijos();
-                        that.listarOperarios();
+                        
+                        var datosFormulario = localStorageService.get("datosFormulario");
+                        if(datosFormulario){
+                          $scope.root.operarios = datosFormulario.operarios;
+                          $scope.root.prefijos = datosFormulario.prefijos;
+                        }else{
+                          that.listarPrefijos();
+                          that.listarOperarios();
+                        }
                         that.limpiar();
                     };
+                    
+                    $scope.tab = function(tab){                       
+                       if(tab === 0){
+                         $scope.tabEntrada=true;  
+                         $scope.tabSalida=false;                         
+                       }else
+                       if(tab === 1){
+                         localStrorage();
+                         $scope.tabSalida=true;  
+                         $scope.tabEntrada=false;  
+                       }
+                    }; 
+                    
+                    var localStrorage = function () {
+                        localStorageService.add("datosFormulario", {
+                            prefijos: $scope.root.prefijos,
+                            operarios: $scope.root.operarios
+                        });
+                    };
+            
                    
                     $scope.onColumnaSize = function (tipo) {
 
@@ -49226,7 +49251,7 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                         $scope.root.registro_entrada_bodega_id="";
                         $scope.root.transportadora="";
                         $scope.root.operario="";
-                        that.listarRegistroEntradaBodega();
+                       // that.listarRegistroEntradaBodega();
                     };
                     
                     $scope.cancelar=function(){
@@ -49344,12 +49369,16 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                      * @fecha 2019-04-04
                      */
                     that.buscar_clientes = function (callback) {
+                        var busquedaDocumento = [];
+                        if(!isNaN($scope.root.termino_busqueda_clientes)){
+                           busquedaDocumento = [{entra:0},{entra:0}];
+                        }
                         var obj = {
                             session: $scope.session,
                             data: {//tercero.empresa_id
                                 tercero: {
-                                    empresa_id: empresa.codigo,
-                                    busquedaDocumento: [],
+//                                  empresa_id: empresa.codigo,
+                                    busquedaDocumento: busquedaDocumento,
                                     terminoBusqueda:$scope.root.termino_busqueda_clientes,
                                     paginacion: false
                                 }
@@ -49437,18 +49466,14 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
 define('controllers/SalidaController',["angular", "js/controllers"], function (angular, controllers) {
 
     controllers.controller('SalidaController',
-            ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
-                "$timeout", "$filter", "localStorageService", "$state", "ValidacionDespachosService",
-                function ($scope, $rootScope, Request, API, AlertService, Usuario,
-                        $timeout, $filter, localStorageService, $state, ValidacionDespachosService) {
+            ['$scope', 'Request', 'API', 'AlertService', 'Usuario',
+                 "$filter",  "ValidacionDespachosService","localStorageService",
+                function ($scope,  Request, API, AlertService, Usuario,
+                         $filter, ValidacionDespachosService,localStorageService) {
 
                     var that = this;
-                    var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-
                     var fecha_actual = new Date();
                     $scope.date = $filter('date')(fecha_actual, "yyyy-MM-dd");
-
-                    var hora = fecha_actual.getHours() + ":" + fecha_actual.getMinutes() + ":" + fecha_actual.getSeconds();
                     $scope.paginaactual = 1;
                     $scope.format = 'yyyy/MM/dd';
 
@@ -49457,8 +49482,8 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
                     };
-
-                    that.init = function (empresa, callback) {
+                 
+                    that.init = function () {
 
                         $scope.root = {
                             guardarButton: true,
@@ -49467,21 +49492,44 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             registrosLength: 0,
                             termino_busqueda_clientes: "",
                             hora_envio: "",
+                            fechaEnvio : $scope.date,
                             pref: {},
                             operario: {},
                             cliente: {},
-                            fechaEnvio: "", //$filter('date')(fecha_actual, "yyyy-MM-dd"), 
                             filtro: "",
                             empaques: [{id: 0, nombre: 'Caja'}, {id: 1, nombre: 'Nevera'}, {id: 2, nombre: 'Bolsa'}]
                         };
-                        that.listarPrefijos();
-                        that.listarOperarios();
+                        
+                        var datosFormulario = localStorageService.get("datosFormulario");
+                        if(datosFormulario){
+                          $scope.root.operarios = datosFormulario.operarios;
+                          $scope.root.prefijos = datosFormulario.prefijos;
+                        }else{
+                          that.listarPrefijos();
+                          that.listarOperarios();
+                        }
+                        
                         that.limpiar();
-                        that.listarCiudadesPais();
+                        
+                        var datosCiudades = localStorageService.get("datosCiudades");
+                        console.log("datosCiudades",datosCiudades);
+                         if(datosCiudades){
+                          $scope.root.ciudades = datosCiudades.ciudades;
+                         }else{
+                         that.listarCiudadesPais();                         
+                         }
+                         
+                      //  $scope.filtro();
+                    };
+                    
+                    var localStrorage = function () {
+                        localStorageService.add("datosCiudades", {
+                            ciudades: $scope.root.ciudades
+                        });
                     };
 
                     $scope.horaDespacho = {
-                        value: new Date(fecha_actual.getFullYear(), fecha_actual.getMonth(), fecha_actual.getDate(), fecha_actual.getHours(), fecha_actual.getMinutes(), fecha_actual.getSeconds())
+                        value: new Date(fecha_actual.getFullYear(), fecha_actual.getMonth(), fecha_actual.getDate(), fecha_actual.getHours(), fecha_actual.getMinutes())
                     };
 
                     /**
@@ -49579,7 +49627,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         $scope.root.pref = {prefijo: obj.prefijo_id};
                         $scope.root.factura = obj.numero;
                         $scope.root.registro_salida_bodega_id = obj.registro_salida_bodega_id;
-                        $scope.root.fechaEnvio = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+                        $scope.root.fechaEnvio = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
                         $scope.horaDespacho = {
                             value: new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
                         };
@@ -49611,13 +49659,14 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             ayudante: $scope.root.ayudante.operario_id,
                             registro_salida_bodega_id: $scope.root.registro_salida_bodega_id,
                             placa: $scope.root.placa,
-                            fechaEnvio: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
+                            fechaEnvio: d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
                             ciudad: $scope.root.ciudad
                         };
                         ValidacionDespachosService.modificaRegistroSalidaBodega(obj, function (data) {
 
                             if (data.status === 200) {
                                 that.limpiar();
+                                $scope.filtro();
                                 $scope.root.guardarButton = true;
                                 $scope.root.modificarButton = false;
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Modificado Correctamente");
@@ -49636,6 +49685,12 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
 
                             if (data.status === 200) {
                                 that.limpiar();
+                                if(obj.numero !==""){
+                                $scope.root.filtro = obj.numero;
+                                }else{
+                                $scope.root.filtro = obj.numeroGuia; 
+                                }
+                                $scope.filtro();
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Almacenado Correctamente");
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -49653,8 +49708,6 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         $scope.root.conductor = "";
                         $scope.root.ayudante = "";
                         $scope.root.placa = "";
-                        //   $scope.root.fechaEnvio = fecha_actual;
-//                        $scope.root.horaDespacho = hora;
                         $scope.root.cliente = "";
                         $scope.root.observacion = "";
                         $scope.root.registro_entrada_bodega_id = "";
@@ -49724,11 +49777,21 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                     $scope.seleccionarTransportadora = function () {
 
                     };
-                    $scope.seleccionarPrefijo = function () {
-
+                    $scope.seleccionarPrefijo = function () {                        
+                        if($scope.root.pref.sw_ingreso_automatico_datos === '1'){
+//                           $scope.root.operario = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
+                           $scope.root.conductor = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
+                           $scope.root.ayudante = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
+                           $scope.root.ciudad = {departamento_id: "76",id: "001",nombre_ciudad: "CALI",nombre_departamento: "VALLE DEL CAUCA",nombre_pais: "COLOMBIA",pais_id: "CO"};
+                           $scope.root.placa = '000';
+                           console.log("prefijo::: ",$scope.root.pref); 
+                        }
                     };
                     $scope.seleccionar_operario = function () {
-
+console.log("despacha::: ",$scope.root.operario);
+                    };
+                    $scope.seleccionar_ciudad = function () {
+console.log("ciudad::: ",$scope.root.ciudad);
                     };
 
                     $scope.guardar = function () {
@@ -49799,7 +49862,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             conductor: $scope.root.conductor.operario_id,
                             ayudante: $scope.root.ayudante.operario_id,
                             placa: $scope.root.placa,
-                            fechaEnvio: $scope.root.fechaEnvio.getFullYear() + "/" + ($scope.root.fechaEnvio.getMonth() + 1) + "/" + $scope.root.fechaEnvio.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
+                            fechaEnvio: $scope.root.fechaEnvio,//.getFullYear() + "/" + ($scope.root.fechaEnvio.getMonth() + 1) + "/" + $scope.root.fechaEnvio.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
                             ciudad: $scope.root.ciudad
                         };
                         that.registroSalidaBodega(obj);
@@ -49837,6 +49900,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         ValidacionDespachosService.listarCiudadesPais(obj, function (respuesta) {
                             if (respuesta.status === 200) {
                                 $scope.root.ciudades = respuesta.obj.ciudades;
+                                localStrorage();
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", respuesta.msj);
                             }
@@ -49851,12 +49915,16 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                      * @fecha 2019-04-04
                      */
                     that.buscar_clientes = function (callback) {
+                        var busquedaDocumento = [];
+                        if(!isNaN($scope.root.termino_busqueda_clientes)){
+                           busquedaDocumento = [{entra:0},{entra:0}];
+                        }
                         var obj = {
                             session: $scope.session,
                             data: {//tercero.empresa_id
                                 tercero: {
-                                    empresa_id: empresa.codigo,
-                                    busquedaDocumento: [],
+//                                  empresa_id: empresa.codigo,
+                                    busquedaDocumento: busquedaDocumento,
                                     terminoBusqueda: $scope.root.termino_busqueda_clientes,
                                     paginacion: false
                                 }
@@ -50432,7 +50500,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 }
                 var numeroLastIndex = numeroIngresado.lastIndexOf(",");
                 var numero;
-                var caracter = ","
+                var caracter = ",";
                 var i = 0;
                 var counter = 0;
                 var res = 0;
@@ -50649,6 +50717,9 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 var documentos = $scope.datos_view.documentosMedipol;
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
                 var numeroDocumento = $scope.documentoDespachoAprobado.numero;
+
+                that.documentosSeleccionados = localStorageService.get("documentosSeleccionados");
+
                 if (documentos.length > 0) {
 
                     that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ? $scope.documentoDespachoAprobado.observacion + " " : "";
@@ -50674,6 +50745,15 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
 
                     });
 
+                    if (that.documentosSeleccionados) {
+                        if (that.documentosSeleccionados.documentos.length > 0) {
+
+                            that.documentosSeleccionados.documentos.forEach(function (row) {
+                                documentos.push(row);
+                            });
+                        }
+                    }
+
                     obj = {
                         session: $scope.session,
                         data: {
@@ -50692,7 +50772,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                      *              que contendra los documentos seleccionados y agregara el numero
                      *              de cajas
                      */
-                    if (numeroDocumento === 0 || numeroDocumento === undefined || numeroDocumento === '' ) {
+                    if (numeroDocumento === 0 || numeroDocumento === undefined || numeroDocumento === '') {
                         $scope.documentoDespachoAprobado.numero = $scope.datos_view.documentosMedipol[0].numero;
                         $scope.documentoDespachoAprobado.prefijo = $scope.datos_view.documentosMedipol[0].prefijo;
                         numeroDocumento = $scope.datos_view.documentosMedipol[0].numero;
@@ -50869,14 +50949,14 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                                                                 </div>\
                                                             </slide>\
                                                         </carousel>',
-                    controller: ["$modalInstance", "imagen", function($modalInstance, imagen){
-                        $scope.imagen = imagen;
-                        
-                        $scope.close = function(){
-                            $modalInstance.close();
-                        };
-                        
-                    }],
+                    controller: ["$modalInstance", "imagen", function ($modalInstance, imagen) {
+                            $scope.imagen = imagen;
+
+                            $scope.close = function () {
+                                $modalInstance.close();
+                            };
+
+                        }],
 
                     resolve: {
                         imagen: function () {
@@ -51113,21 +51193,30 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
                 var multiplesDocumentosOtros = __multiplesDocumentosOtros(1);
 
-                if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 /*&& (cantidadCajas > 0 || cantidadNeveras > 0)*/) {
+                if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0) {
 
                     multiplesDocumentosOtros.forEach(function (data) {
 
                         var documento = DocumentoDespacho.get(0, data.prefijo, data.numero, $scope.datos_view.empresaSeleccionada.codigo);
 
                         documento.setSeleccionado(true);
-                        documento.setCantidadCajas(data.cantidadCajas);
-                        documento.setCantidadNeveras(data.cantidadNeveras);
+                        documento.setCantidadCajas(0);
+                        documento.setCantidadNeveras(0);
+                        documento.temperatura_neveras = '';
+//                        documento.setCantidadCajas(data.cantidadCajas);
+//                        documento.setCantidadNeveras(data.cantidadNeveras);
+//                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
                         documento.setEstado(1);
-                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
 
                         $scope.datos_view.documentosMedipol.push(documento);
 
                     });
+                        var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
+                        var cantidadNeveras = ( parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
+                                            
+                    $scope.datos_view.documentosMedipol[0].setCantidadCajas(cantidadCajas);
+                    $scope.datos_view.documentosMedipol[0].setCantidadNeveras(cantidadNeveras);
+                    $scope.datos_view.documentosMedipol[0].temperatura_neveras = cantidadNeveras > 0 ? '3,2' : '';
                     that.limpiarVariables();
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
@@ -51245,7 +51334,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     session: $scope.session,
                     data: {
                         centro_utilidad: {
-                            estado: '1',
+                            estado: '3',
                             pais_id: '1',
                             departamento_id: '1',
                             ciudad_id: '1',
@@ -51470,31 +51559,49 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     return;
                 }
                 var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
+                /*---------parte nueva----------*/
+//                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
 
-                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
+                if (documentoSeleccionadoPreparado.length <= 0) {
+                    AlertService.mostrarMensaje("warning", "Debe seleccionar documentos");
+                    return;
+                }
 
-                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: $scope.datosView.cantidadCajas, totalNeveras: $scope.datosView.cantidadNeveras});
+                if ($scope.numeroCaja) {
+                    cantidadCajas = parseInt($scope.datosView.cantidadCajas);
+                    documentoSeleccionadoPreparado[0].setCantidadCajas(Math.floor(cantidadCajas));
+                }
 
-                    if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
-                        var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
-                        var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
-                        centroUtilidad.agregarBodega(bodega);
-                        $scope.seleccionarCentroUtilidad(centroUtilidad, '');
-                    }
+                if ($scope.numeroNevera) {
+                    cantidadNeveras = parseInt($scope.datosView.cantidadCajas);
+                    documentoSeleccionadoPreparado[0].setCantidadNeveras(Math.floor(cantidadNeveras));
+                }
 
-                    if (!$scope.datosView.seleccionarClienteFarmacia && $scope.clienteEgresos) {
-                        var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
-                                $scope.clienteEgresos.direccion,
-                                $scope.clienteEgresos.tipo_id_tercero,
-                                $scope.clienteEgresos.id,
-                                $scope.clienteEgresos.telefono);
-                        $scope.seleccionarCliente(clienteDocumento, '');
-                    }
+                that.documentosStorageActual = documentoSeleccionadoPreparado;
+                /*---------fin parte nueva----------*/
 
-                    $state.go('ValidacionEgresosDetalle');
-                    $modalInstance.close();
+                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: cantidadCajas, totalNeveras: cantidadNeveras});
 
-                });
+                if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
+                    var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
+                    var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
+                    centroUtilidad.agregarBodega(bodega);
+                    $scope.seleccionarCentroUtilidad(centroUtilidad, '');
+                }
+
+                if (!$scope.datosView.seleccionarClienteFarmacia && $scope.clienteEgresos) {
+                    var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
+                            $scope.clienteEgresos.direccion,
+                            $scope.clienteEgresos.tipo_id_tercero,
+                            $scope.clienteEgresos.id,
+                            $scope.clienteEgresos.telefono);
+                    $scope.seleccionarCliente(clienteDocumento, '');
+                }
+
+                $state.go('ValidacionEgresosDetalle');
+                $modalInstance.close();
+
+//                });
 
             };
 
@@ -51626,7 +51733,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                         var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
                         var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
                         centroUtilidad.agregarBodega(bodega);
-                        $scope.seleccionarCentroUtilidad(centroUtilidad,$scope.datosView.terminoBusquedaEfc);
+                        $scope.seleccionarCentroUtilidad(centroUtilidad, $scope.datosView.terminoBusquedaEfc);
                     }
 
                     if ($scope.clienteEgresos) {
@@ -51644,7 +51751,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
             /**
              * +Descripcion Metodo que se invoca al seleccionar un centro de utilidad
              */
-            $scope.seleccionarCentroUtilidad = function (centroUtilidad,terminoBusqueda) {
+            $scope.seleccionarCentroUtilidad = function (centroUtilidad, terminoBusqueda) {
 
                 $scope.centroUtilidad = CentroUtilidadInduccion.get(centroUtilidad.getNombre(), centroUtilidad.getCodigo());
                 var bodega = BodegaInduccion.get('', centroUtilidad.getCentrosBodega()[0].getCodigo());
@@ -51657,7 +51764,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                             empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             farmacia_id: centroUtilidad.getCentrosBodega()[0].getCodigo(),
                             centro_utilidad_id: centroUtilidad.getCodigo(),
-                            termino_busqueda: terminoBusqueda,//'',
+                            termino_busqueda: terminoBusqueda, //'',
                             estadoValidarDespachos: 1
                         }
                     }

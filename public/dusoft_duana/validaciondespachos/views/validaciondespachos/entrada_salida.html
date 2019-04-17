@@ -3,19 +3,23 @@
     <div class="row">        
         <div class="col-md-12">
             <tabset>
-                <tab>
+                <tab ng-click="tab(0)">
                     <tab-heading>
                         <i class="glyphicon glyphicon-list"></i> Registro Entrada
                     </tab-heading>
                      <br> 
+                     <div ng-if="tabEntrada">
                         <div ng-include="'views/validaciondespachos/entrada.html'"></div>
+                        </div>
                 </tab> 
-                <tab>
+                <tab ng-click="tab(1)">
                     <tab-heading>
                         <i class="glyphicon glyphicon-list"></i> Registro Salida
                     </tab-heading>
                     <br> 
-                        <div ng-include="'views/validaciondespachos/salida.html'"></div>
+                       <div ng-if="tabSalida">
+                         <div ng-include="'views/validaciondespachos/salida.html'"></div>
+                       </div>
                 </tab> 
             </tabset>
         </div>

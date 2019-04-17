@@ -169,7 +169,7 @@ Productos.prototype.subeCosto = function(req, res) {
        
         //console.log('Obj en el controlador es: ', parametros);
         G.Q.ninvoke(that.m_productos, "subeCosto_UpdateInventary", parametros).then(function (resultado) {
-            
+
             return G.Q.ninvoke(that.m_productos, "subeCosto_SelecInventario", parametros);
         }).then(function (resultado2) {
             parametros.descripcion = resultado2[0].descripcion;
@@ -180,14 +180,14 @@ Productos.prototype.subeCosto = function(req, res) {
             parametros.nueva_numeracion = parseInt(resultado3[0].numeracion) + 1;
             parametros.documento_id = resultado3[0].documento_id;
             parametros.prefijo = resultado3[0].prefijo;
-           
+      
             return G.Q.ninvoke(that.m_productos, "subeCosto_UpdateDocumentos", parametros);
         }).then(function (resultado4) {
-         
+          
             return G.Q.ninvoke(that.m_productos, "subeCosto_InsertInvBodAjusPrice", parametros);
         }).then(function (resultado5) {
             ajuste_precio_id = resultado5[0];
-          
+         
             //var date0 = new Date(resultado5[0].fecha);
             //parametros.fechaActual = date0.getFullYear() + '-' + ('0' + (date0.getMonth() + 1)).slice(-2) + '-' + ('0' + date0.getDate()).slice(-2) + ' '+('0' + date0.getHours()).slice(-2)+':'+('0' + date0.getMinutes()).slice(-2)+':'+('0' + date0.getSeconds()).slice(-2);
             //console.log('Fecha desde la base de datos es: ', parametros.fecha_actual);
@@ -227,7 +227,6 @@ Productos.prototype.subeCosto = function(req, res) {
             };
             return G.Q.ninvoke(that.m_productos, "subeCosto_UpdateUrlDocumento", parametro_actualizar_url);
         }).then(function (resultado7) {
-            
             res.send(G.utils.r(req.url, req.body, 200, {listarAgrupar: url_documento}));
         }).fail(function (err) {
             console.log(' error!!!',err);

@@ -48,7 +48,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     session: $scope.session,
                     data: {
                         centro_utilidad: {
-                            estado: '1',
+                            estado: '3',
                             pais_id: '1',
                             departamento_id: '1',
                             ciudad_id: '1',
@@ -273,31 +273,49 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     return;
                 }
                 var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
+                /*---------parte nueva----------*/
+//                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
 
-                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
+                if (documentoSeleccionadoPreparado.length <= 0) {
+                    AlertService.mostrarMensaje("warning", "Debe seleccionar documentos");
+                    return;
+                }
 
-                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: $scope.datosView.cantidadCajas, totalNeveras: $scope.datosView.cantidadNeveras});
+                if ($scope.numeroCaja) {
+                    cantidadCajas = parseInt($scope.datosView.cantidadCajas);
+                    documentoSeleccionadoPreparado[0].setCantidadCajas(Math.floor(cantidadCajas));
+                }
 
-                    if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
-                        var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
-                        var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
-                        centroUtilidad.agregarBodega(bodega);
-                        $scope.seleccionarCentroUtilidad(centroUtilidad, '');
-                    }
+                if ($scope.numeroNevera) {
+                    cantidadNeveras = parseInt($scope.datosView.cantidadCajas);
+                    documentoSeleccionadoPreparado[0].setCantidadNeveras(Math.floor(cantidadNeveras));
+                }
 
-                    if (!$scope.datosView.seleccionarClienteFarmacia && $scope.clienteEgresos) {
-                        var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
-                                $scope.clienteEgresos.direccion,
-                                $scope.clienteEgresos.tipo_id_tercero,
-                                $scope.clienteEgresos.id,
-                                $scope.clienteEgresos.telefono);
-                        $scope.seleccionarCliente(clienteDocumento, '');
-                    }
+                that.documentosStorageActual = documentoSeleccionadoPreparado;
+                /*---------fin parte nueva----------*/
 
-                    $state.go('ValidacionEgresosDetalle');
-                    $modalInstance.close();
+                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: cantidadCajas, totalNeveras: cantidadNeveras});
 
-                });
+                if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
+                    var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
+                    var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
+                    centroUtilidad.agregarBodega(bodega);
+                    $scope.seleccionarCentroUtilidad(centroUtilidad, '');
+                }
+
+                if (!$scope.datosView.seleccionarClienteFarmacia && $scope.clienteEgresos) {
+                    var clienteDocumento = ClienteDocumento.get($scope.clienteEgresos.nombre,
+                            $scope.clienteEgresos.direccion,
+                            $scope.clienteEgresos.tipo_id_tercero,
+                            $scope.clienteEgresos.id,
+                            $scope.clienteEgresos.telefono);
+                    $scope.seleccionarCliente(clienteDocumento, '');
+                }
+
+                $state.go('ValidacionEgresosDetalle');
+                $modalInstance.close();
+
+//                });
 
             };
 
@@ -429,7 +447,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
                         var bodega = BodegaInduccion.get('', $scope.centroUtilidad.bodegas[0].codigo);
                         centroUtilidad.agregarBodega(bodega);
-                        $scope.seleccionarCentroUtilidad(centroUtilidad,$scope.datosView.terminoBusquedaEfc);
+                        $scope.seleccionarCentroUtilidad(centroUtilidad, $scope.datosView.terminoBusquedaEfc);
                     }
 
                     if ($scope.clienteEgresos) {
@@ -447,7 +465,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             /**
              * +Descripcion Metodo que se invoca al seleccionar un centro de utilidad
              */
-            $scope.seleccionarCentroUtilidad = function (centroUtilidad,terminoBusqueda) {
+            $scope.seleccionarCentroUtilidad = function (centroUtilidad, terminoBusqueda) {
 
                 $scope.centroUtilidad = CentroUtilidadInduccion.get(centroUtilidad.getNombre(), centroUtilidad.getCodigo());
                 var bodega = BodegaInduccion.get('', centroUtilidad.getCentrosBodega()[0].getCodigo());
@@ -460,7 +478,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             farmacia_id: centroUtilidad.getCentrosBodega()[0].getCodigo(),
                             centro_utilidad_id: centroUtilidad.getCodigo(),
-                            termino_busqueda: terminoBusqueda,//'',
+                            termino_busqueda: terminoBusqueda, //'',
                             estadoValidarDespachos: 1
                         }
                     }

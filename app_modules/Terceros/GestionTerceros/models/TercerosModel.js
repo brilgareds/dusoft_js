@@ -98,8 +98,10 @@ TercerosModel.prototype.listarTerceros = function(parametros, callback) {
 
     if (parametros.tercero.terminoBusqueda.length > 0) {
         if (parametros.tercero.busquedaDocumento.length > 0) {
-            query.where("tipo_id_tercero", parametros.tercero.busquedaDocumento).
-                    andWhere("tercero_id", G.constants.db().LIKE, "%" + parametros.tercero.terminoBusqueda + "%");
+            if(parametros.tercero.busquedaDocumento[0].entra !== 0 || parametros.tercero.busquedaDocumento[0].entra === undefined){
+            query.where("tipo_id_tercero", parametros.tercero.busquedaDocumento);
+            }
+            query.andWhere("tercero_id", G.constants.db().LIKE, "%" + parametros.tercero.terminoBusqueda + "%");             
 
         } else {
             query.where("nombre_tercero", G.constants.db().LIKE, "%" + parametros.tercero.terminoBusqueda + "%");

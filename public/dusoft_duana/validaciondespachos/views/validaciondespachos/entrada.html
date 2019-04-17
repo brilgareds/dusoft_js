@@ -58,9 +58,9 @@
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <label class="control-label" for="surname">Cliente</label>
                                     <ui-select ng-model="root.cliente"  theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_cliente()">
-                                        <ui-select-match  placeholder="Seleccionar cliente">{{ $select.selected.nombre_tercero}}</ui-select-match>
+                                        <ui-select-match  placeholder="Seleccionar cliente">{{ $select.selected.nombre_tercero}} - {{ $select.selected.tipo_id_tercero}} {{ $select.selected.tercero_id}}</ui-select-match>
                                         <ui-select-choices refresh="listar_clientes($select.search)" refresh-delay="0" repeat="cliente in root.clientes | filter:$select.search">                                            
-                                            {{ cliente.nombre_tercero}}                                            
+                                            {{ cliente.nombre_tercero}} - {{cliente.tipo_id_tercero}}  {{cliente.tercero_id}}                                            
                                         </ui-select-choices>
                                     </ui-select> 
                                 </div>

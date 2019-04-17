@@ -49344,12 +49344,16 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                      * @fecha 2019-04-04
                      */
                     that.buscar_clientes = function (callback) {
+                        var busquedaDocumento = [];
+                        if(!isNaN($scope.root.termino_busqueda_clientes)){
+                           busquedaDocumento = [{entra:0},{entra:0}];
+                        }
                         var obj = {
                             session: $scope.session,
                             data: {//tercero.empresa_id
                                 tercero: {
 //                                    empresa_id: empresa.codigo,
-                                    busquedaDocumento: [],
+                                    busquedaDocumento: busquedaDocumento,
                                     terminoBusqueda:$scope.root.termino_busqueda_clientes,
                                     paginacion: false
                                 }
@@ -49448,7 +49452,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                     var fecha_actual = new Date();
                     $scope.date = $filter('date')(fecha_actual, "yyyy-MM-dd");
 
-                    var hora = fecha_actual.getHours() + ":" + fecha_actual.getMinutes() + ":" + fecha_actual.getSeconds();
+                    var hora = "0"+fecha_actual.getHours() + ":" + fecha_actual.getMinutes();// + ":" + fecha_actual.getSeconds();
                     $scope.paginaactual = 1;
                     $scope.format = 'yyyy/MM/dd';
 
@@ -49457,7 +49461,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
                     };
-
+                 
                     that.init = function (empresa, callback) {
 
                         $scope.root = {
@@ -49467,10 +49471,10 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             registrosLength: 0,
                             termino_busqueda_clientes: "",
                             hora_envio: "",
+                            fechaEnvio : $scope.date,
                             pref: {},
                             operario: {},
                             cliente: {},
-                            fechaEnvio: "", //$filter('date')(fecha_actual, "yyyy-MM-dd"), 
                             filtro: "",
                             empaques: [{id: 0, nombre: 'Caja'}, {id: 1, nombre: 'Nevera'}, {id: 2, nombre: 'Bolsa'}]
                         };
@@ -49478,10 +49482,11 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         that.listarOperarios();
                         that.limpiar();
                         that.listarCiudadesPais();
+                      //  $scope.filtro();
                     };
 
                     $scope.horaDespacho = {
-                        value: new Date(fecha_actual.getFullYear(), fecha_actual.getMonth(), fecha_actual.getDate(), fecha_actual.getHours(), fecha_actual.getMinutes(), fecha_actual.getSeconds())
+                        value: new Date(fecha_actual.getFullYear(), fecha_actual.getMonth(), fecha_actual.getDate(), fecha_actual.getHours(), fecha_actual.getMinutes())
                     };
 
                     /**
@@ -49579,7 +49584,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         $scope.root.pref = {prefijo: obj.prefijo_id};
                         $scope.root.factura = obj.numero;
                         $scope.root.registro_salida_bodega_id = obj.registro_salida_bodega_id;
-                        $scope.root.fechaEnvio = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+                        $scope.root.fechaEnvio = d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
                         $scope.horaDespacho = {
                             value: new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
                         };
@@ -49611,7 +49616,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             ayudante: $scope.root.ayudante.operario_id,
                             registro_salida_bodega_id: $scope.root.registro_salida_bodega_id,
                             placa: $scope.root.placa,
-                            fechaEnvio: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
+                            fechaEnvio: d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
                             ciudad: $scope.root.ciudad
                         };
                         ValidacionDespachosService.modificaRegistroSalidaBodega(obj, function (data) {
@@ -49629,7 +49634,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         });
                     };
 
-                    that.   registroSalidaBodega = function (obj) {
+                    that.registroSalidaBodega = function (obj) {
 
                         obj.session = $scope.session;
 
@@ -49637,6 +49642,11 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
 
                             if (data.status === 200) {
                                 that.limpiar();
+                                if(obj.numero !==""){
+                                $scope.root.filtro = obj.numero;
+                                }else{
+                                $scope.root.filtro = obj.numeroGuia; 
+                                }
                                 $scope.filtro();
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Almacenado Correctamente");
                             } else {
@@ -49726,11 +49736,21 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                     $scope.seleccionarTransportadora = function () {
 
                     };
-                    $scope.seleccionarPrefijo = function () {
-
+                    $scope.seleccionarPrefijo = function () {                        
+                        if($scope.root.pref.sw_ingreso_automatico_datos === '1'){
+//                           $scope.root.operario = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
+                           $scope.root.conductor = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
+                           $scope.root.ayudante = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
+                           $scope.root.ciudad = {departamento_id: "76",id: "001",nombre_ciudad: "CALI",nombre_departamento: "VALLE DEL CAUCA",nombre_pais: "COLOMBIA",pais_id: "CO"};
+                           $scope.root.placa = '000';
+                           console.log("prefijo::: ",$scope.root.pref); 
+                        }
                     };
                     $scope.seleccionar_operario = function () {
-
+console.log("despacha::: ",$scope.root.operario);
+                    };
+                    $scope.seleccionar_ciudad = function () {
+console.log("ciudad::: ",$scope.root.ciudad);
                     };
 
                     $scope.guardar = function () {
@@ -49801,7 +49821,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             conductor: $scope.root.conductor.operario_id,
                             ayudante: $scope.root.ayudante.operario_id,
                             placa: $scope.root.placa,
-                            fechaEnvio: $scope.root.fechaEnvio.getFullYear() + "/" + ($scope.root.fechaEnvio.getMonth() + 1) + "/" + $scope.root.fechaEnvio.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
+                            fechaEnvio: $scope.root.fechaEnvio,//.getFullYear() + "/" + ($scope.root.fechaEnvio.getMonth() + 1) + "/" + $scope.root.fechaEnvio.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
                             ciudad: $scope.root.ciudad
                         };
                         that.registroSalidaBodega(obj);
@@ -49853,12 +49873,16 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                      * @fecha 2019-04-04
                      */
                     that.buscar_clientes = function (callback) {
+                        var busquedaDocumento = [];
+                        if(!isNaN($scope.root.termino_busqueda_clientes)){
+                           busquedaDocumento = [{entra:0},{entra:0}];
+                        }
                         var obj = {
                             session: $scope.session,
                             data: {//tercero.empresa_id
                                 tercero: {
 //                                    empresa_id: empresa.codigo,
-                                    busquedaDocumento: [],
+                                    busquedaDocumento: busquedaDocumento,
                                     terminoBusqueda: $scope.root.termino_busqueda_clientes,
                                     paginacion: false
                                 }

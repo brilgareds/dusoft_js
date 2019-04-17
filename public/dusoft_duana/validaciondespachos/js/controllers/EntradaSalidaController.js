@@ -305,12 +305,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @fecha 2019-04-04
                      */
                     that.buscar_clientes = function (callback) {
+                        var busquedaDocumento = [];
+                        if(!isNaN($scope.root.termino_busqueda_clientes)){
+                           busquedaDocumento = [{entra:0},{entra:0}];
+                        }
                         var obj = {
                             session: $scope.session,
                             data: {//tercero.empresa_id
                                 tercero: {
 //                                    empresa_id: empresa.codigo,
-                                    busquedaDocumento: [],
+                                    busquedaDocumento: busquedaDocumento,
                                     terminoBusqueda:$scope.root.termino_busqueda_clientes,
                                     paginacion: false
                                 }

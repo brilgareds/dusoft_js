@@ -919,7 +919,7 @@ function dynamicMultiSort() {
 function __bodegasPedidos(that, index, bodegasPedidos, listaProductos, obj, callback) {
     var bodegas = bodegasPedidos[index];
     obj.filtro.existenciaCero = (bodegasPedidos.length > 1) ? true : false;
-    
+    obj.filtro.tipo_busqueda=5;
     if (!bodegas) {
         callback(false, listaProductos);
         return;
@@ -2162,9 +2162,7 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
     var productosAgrupados;
     var cantidad=0;
 
-    G.Q.ninvoke(G.utils, "subirArchivoPlano", req.files, ['codigo', 'cantidad']).then(function(contenido) {
-        console.log("contenido:: ",contenido);
-        console.log("args.pedidos_farmacias:: ",args.pedidos_farmacias);
+    G.Q.ninvoke(G.utils, "subirArchivoPlano", req.files, ['codigo', 'cantidad']).then(function(contenido) {       
         var tipo=true;
         return G.Q.nfcall(__validar_productos_archivo_plano_mod, that, contenido, 0, [], [],tipo,"");
 
@@ -2976,10 +2974,6 @@ function __validarProductoArchivoPlanoMod(that, datos, productosAgrupados, produ
         return;
     }
     
-//     if(productoAgrupado.codigo_producto==='168C0650002'){
-//        console.log("productoAgrupado",productoAgrupado);
-//    } 
-
     var codigo_temporal = datos.empresa_destino_id + datos.centro_utilidad_destino_id + productoAgrupado.codigo_producto;
 
     //Verifica que el producto no este siendo usado por otro usuario
@@ -3113,14 +3107,7 @@ function __productosGuardarTemporal(that, index, datos, productoAgrupado, produc
         callback(false,productosInvalidosArchivo);
         return; 
     }     
-    
-//    if(productoAgrupado.codigo_producto==='168C0650002'){
-//        console.log("cantidadPendiente",cantidadPendiente);
-//        console.log("productos[index].cantidad_en_bodega",productos[index].cantidad_en_bodega);
-//        console.log("productoAgrupado.cantidad_solicitada",productoAgrupado.cantidad_solicitada);
-//        console.log("_producto.disponibilidad_bodega",_producto.disponibilidad_bodega);
-//    }
-    
+ 
     var numeroPedido = datos.empresa_destino_id + datos.centro_utilidad_destino_id + productoAgrupado.codigo_producto+
                        productos[index].empresa_id+productos[index].centro_utilidad+productos[index].bodega;             
     var cantidadPendiente = 0;//productoAgrupado.cantidad_solicitada - _producto.disponibilidad_bodega;
@@ -3142,7 +3129,6 @@ function __productosGuardarTemporal(that, index, datos, productoAgrupado, produc
         },0);
 
     }).catch(function (err) {
-        console.log("Error:::",err);
         productoAgrupado.mensajeError = err.msj;
         productosInvalidosArchivo.push(productoAgrupado);
         index++;
@@ -3168,7 +3154,7 @@ function __productosGuardarTemporal(that, index, datos, productoAgrupado, produc
  *          principal del modulo. 
  */
 function __productosSeleccionado(that, index, productos,listaProductos, datos,control,callback) {
-//  console.log(index+"control",control)
+
     var producto = productos[index];
     if (!producto) {  
         if(control.cantidad_solicitada>control.sumaTotalExis){
@@ -3182,67 +3168,43 @@ function __productosSeleccionado(that, index, productos,listaProductos, datos,co
         callback(false,listaProductos);
         return; 
     }  
-//    console.log(index+"producto",producto)
-//                if(producto.codigo_producto==='168C0650002'){
-//                  console.log("control.sumaTotalExis",control.sumaTotalExis);
-//                }
-    
+ 
             productos[index].unidad_medida=productos[index].unidad_medida>0?productos[index].unidad_medida:1;
             if(productos[index].disponibilidad_bodega>=0 && productos[index].disponibilidad_bodega >= productos[index].unidad_medida){
 
               if(productos[index].disponibilidad_bodega>=control.diferenciaExis){                  
                   if(control.dosBodegas===1){  
-//		      console.log("----------dosBodegas1");
+
                     productos[index].cantidad_en_bodega=control.diferenciaExis;
                     listaProductos.push(productos[index]);
                     var cantidadBodega= productos[index].disponibilidad_bodega-(productos[index].disponibilidad_bodega%productos[index].unidad_medida);
                     control.sumaTotalExis+=cantidadBodega;
                     listaProductos[0].cantidad_total_bodegas=control.sumaTotalExis;
-//                if(producto.codigo_producto==='168C0650002'){
-//                    console.log("productos[index].disponibilidad_bodega",productos[index].disponibilidad_bodega);  
-//                    console.log("productos[index].unidad_medida",productos[index].unidad_medida);  
-//                    console.log("cantidadBodega",cantidadBodega);
-//                    console.log("control.sumaTotalExis",control.sumaTotalExis);
-//                    console.log("(productos[index].disponibilidad_bodega%productos[index].unidad_medida)",(productos[index].disponibilidad_bodega%productos[index].unidad_medida));
-//                }
+
                     callback(false,listaProductos);
                     return;
                   }else{
-//		      console.log("----------------dosBodegas2");
                     productos[index].cantidad_en_bodega=control.diferenciaExis;
                     listaProductos.push(productos[index]);
                     control.sumaTotalExis+=productos[index].disponibilidad_bodega;
                     listaProductos[0].cantidad_total_bodegas=control.sumaTotalExis;
-//                if(producto.codigo_producto==='168C0650002'){
-//                    console.log("productos[index].disponibilidad_bodega",productos[index].disponibilidad_bodega);  
-//                    console.log("productos[index].unidad_medida",productos[index].unidad_medida);  
-//                    console.log("cantidadBodega",cantidadBodega);
-//                    console.log("control.sumaTotalExis",control.sumaTotalExis);
-//                    console.log("(productos[index].disponibilidad_bodega%productos[index].unidad_medida)",(productos[index].disponibilidad_bodega%productos[index].unidad_medida))
-//                }
                     callback(false,listaProductos);
                     return;
                   }                                          
               }else{
-		  console.log("-------------dosBodegas3");
+
                    if(productos[index].disponibilidad_bodega >= productos[index].unidad_medida){
-                       if(producto.codigo_producto==='168C0650002'){
-                       console.log("-------------0-----------------------");
-                      }
+
                        if(productos[index].disponibilidad_bodega % productos[index].unidad_medida === 0){
-                           if(producto.codigo_producto==='168C0650002'){
-                           console.log("-------------1-----------------------");
-                            }
+
                             control.dosBodegas=1;
-                            var cantidadBodega = productos[index].disponibilidad_bodega-(productos[index].disponibilidad_bodega%productos[index].unidad_medida)
+                            var cantidadBodega = productos[index].disponibilidad_bodega-(productos[index].disponibilidad_bodega%productos[index].unidad_medida);
                             control.diferenciaExis=control.diferenciaExis-cantidadBodega;
                             productos[index].cantidad_en_bodega=cantidadBodega;
                             listaProductos.push(productos[index]);
                             control.sumaTotalExis+=cantidadBodega;
                        }else{
-                           if(producto.codigo_producto==='168C0650002'){
-                          console.log("-------------2-----------------------");
-                           }
+
                           control.dosBodegas=1;
                           var cantidadBodega = parseInt(productos[index].disponibilidad_bodega/productos[index].unidad_medida)*productos[index].unidad_medida;
                           control.diferenciaExis=control.diferenciaExis-cantidadBodega;
@@ -3251,15 +3213,6 @@ function __productosSeleccionado(that, index, productos,listaProductos, datos,co
                           control.sumaTotalExis+=cantidadBodega;
                        }
                    }
-                  
-                  if(producto.codigo_producto==='168C0650002'){
-                    console.log("productos[index].disponibilidad_bodega",productos[index].disponibilidad_bodega);  
-                    console.log("productos[index].unidad_medida",productos[index].unidad_medida);  
-                    console.log("cantidadBodega",cantidadBodega);
-                    console.log("control.sumaTotalExis",control.sumaTotalExis);
-                    console.log("(productos[index].disponibilidad_bodega%productos[index].unidad_medida)",(productos[index].disponibilidad_bodega%productos[index].unidad_medida))
-                    console.log("---------------------------------------------");
-                  }
               }
             }
 

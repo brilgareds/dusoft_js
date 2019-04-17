@@ -8,7 +8,7 @@ var PedidosFarmaciasEvents = function(socket, pedidos_farmacias, terceros) {
 
 // Notificacion en Real Time de los Pedidos Actualizados
 PedidosFarmaciasEvents.prototype.onNotificarPedidosActualizados = function(datos) {
-console.log("----->>>>>>",datos);
+
     var that = this;
 
     this.m_pedidos_farmacias.consultar_pedido(datos.numero_pedido, function(err, lista_pedidos_actualizados) {
@@ -52,7 +52,7 @@ PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosAsignados = functi
 
                                     //Se recorre cada una de las sesiones abiertas por el usuario
                                     sessions.forEach(function(session) {
-console.log("222----->>>>>>");
+
                                         //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
                                         that.io.to(session.socket_id).emit('onPedidosFarmaciasAsignados', {pedidos_farmacias: lista_pedidos});
                                     });
@@ -84,7 +84,7 @@ PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosReasignados = func
 
                 //Se recorre cada una de las sesiones abiertas por el usuario
                 sessions.forEach(function(session) {
-console.log("333----->>>>>>");
+
                     //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
                     that.io.to(session.socket_id).emit('onPedidosFarmaciasReasignados', {pedidos_farmacias: datos.numero_pedidos});
                 });
@@ -102,7 +102,6 @@ PedidosFarmaciasEvents.prototype.onNotificarProgresoArchivoPlanoFarmacias = func
 
          //Se recorre cada una de las sesiones abiertas por el usuario
          sessions.forEach(function(session) {
-            // console.log("444----->>>>>>");
              //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
              that.io.to(session.socket_id).emit('onNotificarProgresoArchivoPlanoFarmacias', {porcentaje: porcentaje});
          });

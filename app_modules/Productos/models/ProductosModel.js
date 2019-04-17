@@ -23,7 +23,7 @@ ProductosModel.prototype.subeCosto_UpdateInventary = function(obj, callback) {
                 costo_ultima_compra: nuevo_precio
             });
         // .orderBy('fecha_entrega', 'asc');
-        //  console.log(G.sqlformatter.format(query.toString()));
+
         queryUpdateCosto.then(function (resultado) {
             callback(false, resultado);
         }).catch(function (err) {
@@ -71,7 +71,7 @@ ProductosModel.prototype.subeCosto_SelectBodDocNum = function(obj, callback) {
         .andWhere('centro_utilidad', '=', centro_id)
         .andWhere('bodega', '=', bodega_id)
         .andWhere('tipo_doc_bodega_id', '=', obj.tipo_doc_general_id);
-    //console.log('Este es el SQL: ',G.sqlformatter.format(querySelecNumeracionDocumento.toString()));
+
     querySelecNumeracionDocumento.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

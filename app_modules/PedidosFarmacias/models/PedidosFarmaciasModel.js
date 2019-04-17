@@ -255,7 +255,7 @@ PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = func
     }).then(function (resultado) {
         callback(false, resultado.rows, resultado);
     }).fail(function (err) {
-        console.log("PedidosFarmaciasModel => insertar_detalle_pedido_farmacia_temporal ", err);
+        console.log("PedidosFarmaciasModel => insertar_detalle_pedido_farmacia_temporal ", err);        
         callback(err);
     });
 
@@ -373,7 +373,7 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function (empresa_id, c
     query.then(function (resultado) {
         callback(false, resultado.rows, resultado);
     }).catch(function (err) {
-        console.log(pedido_cliente + ") errorr >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", err);
+        console.log(pedido_cliente + ") error", err);
         callback(err);
     });
 
@@ -1205,7 +1205,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
         return registros;
 
     }).then(function (rows) {
-console.log(G.sqlformatter.format(query.toString()));
+
         callback(false, rows, query.totalRegistros);
     }).
             catch (function (err) {
@@ -1683,7 +1683,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function (empresa_id, centro_u
     var sql_aux = "";
     var noIncluir = "";
     var parametros = {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: empresa_destino,
-        5: centro_destino, 6: bodega_destino, 7: "%" + filtro.termino_busqueda + "%"};
+        5: centro_destino, 6: bodega_destino, 7: "%" + filtro.termino_busqueda + "%",8:filtro.termino_busqueda };
     var sql_filtro = "";
     var existe = bodega_id === '06' ? '03' : '06';
     // Se realiza este cambio para permitir buscar productos de un determiando tipo.
@@ -1695,6 +1695,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function (empresa_id, centro_u
         sql_filtro = " and fc_descripcion_producto(a.codigo_producto) " + G.constants.db().LIKE + "  :7 ";
     } else if (filtro.tipo_busqueda === 1) {
         sql_filtro = " and e.descripcion " + G.constants.db().LIKE + " :7 ";
+    } else if (filtro.tipo_busqueda === 5) {
+        sql_filtro = " and a.codigo_producto = :8 ";    
     } else {
         sql_filtro = " and a.codigo_producto " + G.constants.db().LIKE + " :7 ";
     }
@@ -1816,7 +1818,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function (empresa_id, centro_u
 
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
-            offset((pagina - 1) * G.settings.limit).orderBy("b.codigo_producto", "ASC").then(function (resultado) {
+            offset((pagina - 1) * G.settings.limit).orderBy("b.codigo_producto", "ASC");
+        query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
         console.log("error biscat ", err);
@@ -1838,10 +1841,8 @@ PedidosFarmaciasModel.prototype.listarBodegasPedidos = function (objBodegaPedido
                 from("bodegas_pedidos as a").
                 where("a.estado", estado).
                 andWhere("a.sw_modulo", objBodegaPedido.sw_modulo).
-                orderByRaw("orden desc");
-//        console.log("listarBodegasPedidos",G.sqlformatter.format(query.toString())); 
+                orderByRaw("orden desc"); 
         query.then(function (rows) {
-//            console.log("okkk",rows);
             callback(false, rows);
         }).
         catch (function (err) {

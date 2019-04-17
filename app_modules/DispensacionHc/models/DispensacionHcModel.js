@@ -983,8 +983,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                   "hc.evolucion_id").as("b")
                    
     
-    var query = G.knex.select(colSubQuery).from(subQueryB);
-   console.log(G.sqlformatter.format(query.toString()));            
+    var query = G.knex.select(colSubQuery).from(subQueryB);          
         query.then(function(resultado){       
 
             callback(false, resultado);

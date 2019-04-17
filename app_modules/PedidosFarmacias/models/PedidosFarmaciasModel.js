@@ -1203,7 +1203,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
         return registros;
 
     }).then(function (rows) {
-console.log(G.sqlformatter.format(query.toString()));
+
         callback(false, rows, query.totalRegistros);
     }).
             catch (function (err) {

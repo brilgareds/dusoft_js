@@ -944,21 +944,21 @@ PlanillasDespachos.prototype.gestionarLios = function (req, res) {
     }
 
     args.planillas_despachos.usuario_id = req.session.user.usuario_id;
-    var totalCajas = parseInt(args.planillas_despachos.totalCaja);
-    var totalNeveras = parseInt(args.planillas_despachos.cantidadNeveras);
     var temperatura = parseInt(args.planillas_despachos.cantidadNeveras) > 0 ? '3.2' : '0';
-    var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
 
     args.planillas_despachos.temperatura = temperatura;
 
-    G.Q.ninvoke(that.m_planillas_despachos, 'insertarLioDocumento', args.planillas_despachos).then(function (resultado) {
+    G.Q.ninvoke(that.m_planillas_despachos, 'consecutivoLio').then(function (resultado) {
+
+        args.planillas_despachos.consecutivoLio = resultado[0].nextval;
+
+        return G.Q.ninvoke(that.m_planillas_despachos, 'insertarLioDocumento', args.planillas_despachos);
+
+    }).then(function (resultado) {
 
         res.send(G.utils.r(req.url, 'Se insertan satisfactoriamente los lios', 200, {planillas_despachos: resultado}));
 
     }).fail(function (err) {
-
-        console.log("err ", err);
-
 
         res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
 

@@ -14,6 +14,7 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
         "a.id",
         "a.id as numero_guia",
         "a.numero_guia_externo",
+        "a.tipo_planilla",
         "b.transportadora_id",
         "b.descripcion as nombre_transportadora",
         "b.placa_vehiculo",
@@ -664,6 +665,27 @@ PlanillasDespachosModel.prototype.insertarLioDocumento = function (obj, callback
         callback(err);
     }).done();
 };
+
+/**
+ *@author German Galvis
+ *@fecha  17/04/2019
+ *+Descripcion Metodo encargado de traer el consecutivo de los lios
+ *              
+ *             
+ **/
+PlanillasDespachosModel.prototype.consecutivoLio = function (callback) {
+    var sql = " SELECT nextval('inv_planilla_despacho_lio_seq'::regclass); ";
+    G.knex.raw(sql).
+            then(function (resultado) {
+                callback(false, resultado.rows);
+            }).catch(function (error) {
+        console.log("error [consecutivoLio]: ", error);
+        callback(error);
+    });
+};
+
+
+
 function __insertarLioDocumento(obj, callback) {
 
     var documento = obj.documentos[0];
@@ -695,7 +717,8 @@ function __insertarLioDocumento(obj, callback) {
                 observacion, \
                 usuario_id,\
                 fecha_registro,\
-                numero_lios)\
+                numero_lios,\
+                lio_id)\
                 (select " + obj.numeroGuia + " as inv_planillas_despacho_id,\
                 empresa_id,\
                 prefijo,\
@@ -706,7 +729,8 @@ function __insertarLioDocumento(obj, callback) {
                 " + observacion + " as observacion,\
                 " + parseInt(obj.usuario_id) + " as usuario_id,\
                 now() as fecha_registro,\
-                " + obj.cantidadLios + " as numero_lios \
+                " + obj.cantidadLios + " as numero_lios, \
+                " + obj.consecutivoLio + " as lio_id \
                  FROM inv_bodegas_movimiento_d\
                  WHERE empresa_id = :1\
                  AND prefijo= :2\
@@ -728,7 +752,8 @@ function __insertarLioDocumento(obj, callback) {
                 empresa_destino, \
                 centro_utilidad,\
                 bodega,\
-                numero_lios\
+                numero_lios,\
+                lio_id\
                 )\
                 (select " + obj.numeroGuia + " as inv_planillas_despacho_id,\
                 aa.empresa_id,\
@@ -743,7 +768,8 @@ function __insertarLioDocumento(obj, callback) {
                 :4 as empresa_destino,\
                 :5 as centro_utilidad,\
                 :6 as bodega,\
-                " + obj.cantidadLios + " as numero_lios \
+                " + obj.cantidadLios + " as numero_lios, \
+                " + obj.consecutivoLio + " as lio_id \
                  FROM aprobacion_despacho_planillas as aa \
                  INNER JOIN aprobacion_despacho_planillas_d as bb ON aa.id_aprobacion_planillas = bb.id_aprobacion_planillas\
                  WHERE  aa.empresa_id = :1\

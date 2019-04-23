@@ -548,6 +548,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     documento.setNumeroPedido(data.numero_pedido);
                     documento.setFechaRegistro(data.fecha_registro);
                     documento.setEstadoDocumento(data.estado_documento);
+                    documento.setTipo(data.tipo);
+                    documento.setEstadoPedido(data.estado);
 
                     if (that.documentosStorage) {
 

@@ -103,6 +103,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
         "b.farmacia_id",
         "b.centro_utilidad",
         "b.bodega",
+        "b.estado as estado",
         "a.empresa_id",
         G.knex.raw("e.razon_social as nombre_empresa"),
         "d.centro_utilidad as centro_utilidad_id",
@@ -115,17 +116,6 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
         "a.fecha_registro",
         G.knex.raw("(SELECT id_aprobacion_planillas FROM aprobacion_despacho_planillas_d as bb WHERE bb.prefijo = a.prefijo AND bb.numero = a.numero and (bb.cantidad_cajas > 0 or bb.cantidad_neveras > 0) ) as id_aprobacion_planillas"),
         G.knex.raw("'0' as estado_documento")
-//        G.knex.raw("case when (\n\
-//                    SELECT j.numero\
-//                    FROM (\
-//                        SELECT f.prefijo, f.numero, f.id_aprobacion_planillas FROM aprobacion_despacho_planillas_d f \
-//                        WHERE f.prefijo = a.prefijo AND f.numero = a.numero\
-//                        UNION\
-//                        SELECT g.prefijo, g.numero, g.id_aprobacion_planillas FROM aprobacion_despacho_planillas g\
-//                        WHERE g.prefijo = a.prefijo AND g.numero = a.numero\
-//                    ) as j\
-//                ) is null then '0'\
-//                ELSE '1' end as estado_documento")
     ];
 
     if (obj.estadoListarValidacionDespachos !== 1) {
@@ -202,6 +192,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
         "a.empresa_id",
         "a.prefijo",
         "a.numero",
+        "b.estado_pedido as estado",
         G.knex.raw("a.pedido_cliente_id as numero_pedido"),
         "a.fecha_registro",
         G.knex.raw("case when (\

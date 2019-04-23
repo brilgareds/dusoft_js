@@ -47924,9 +47924,9 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
 });
 
 
-define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Documento"], function(angular, models) {
+define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Documento"], function (angular, models) {
 
-    models.factory('DocumentoDespacho', ["Documento", function(Documento, $filter) {
+    models.factory('DocumentoDespacho', ["Documento", function (Documento, $filter) {
 
             function DocumentoDespacho(bodegas_doc_id, prefijo, numero, empresaId) {
 
@@ -47941,91 +47941,109 @@ define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Doc
                 this.empresaId = empresaId;
                 this.estado = 0;
                 this.estadoDocumento;
+                this.estadoPedido;
+                this.tipo;
             }
 
-            this.get = function(bodegas_doc_id, prefijo, numero, empresaId) {
+            this.get = function (bodegas_doc_id, prefijo, numero, empresaId) {
                 return new DocumentoDespacho(bodegas_doc_id, prefijo, numero, empresaId);
             };
-            
+
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
-            
-            
-            DocumentoDespacho.prototype.getEstadoDocumento = function() {
+
+
+            DocumentoDespacho.prototype.getEstadoDocumento = function () {
                 return this.estadoDocumento;
             };
-            
-            DocumentoDespacho.prototype.setEstadoDocumento = function(estadoDocumento) {
-                this.estadoDocumento = estadoDocumento ;
+
+            DocumentoDespacho.prototype.setEstadoDocumento = function (estadoDocumento) {
+                this.estadoDocumento = estadoDocumento;
             };
-            
-            DocumentoDespacho.prototype.getEstado = function() {
+
+            DocumentoDespacho.prototype.getEstado = function () {
                 return this.estado;
             };
-            
-            DocumentoDespacho.prototype.setEstado = function(estado) {
+
+            DocumentoDespacho.prototype.setEstado = function (estado) {
                 this.estado = estado;
             };
-            
-            DocumentoDespacho.prototype.getFechaRegistro = function() {
+
+            DocumentoDespacho.prototype.getTipo = function () {
+                return this.tipo;
+            };
+
+            DocumentoDespacho.prototype.setTipo = function (tipo) {
+                this.tipo = tipo;
+            };
+
+            DocumentoDespacho.prototype.getEstadoPedido = function () {
+                return this.estadoPedido;
+            };
+
+            DocumentoDespacho.prototype.setEstadoPedido = function (estadoPedido) {
+                this.estadoPedido = estadoPedido;
+            };
+
+            DocumentoDespacho.prototype.getFechaRegistro = function () {
                 return this.fechaRegistro;
             };
-            
-            DocumentoDespacho.prototype.setFechaRegistro = function(fechaRegistro) {
+
+            DocumentoDespacho.prototype.setFechaRegistro = function (fechaRegistro) {
                 this.fechaRegistro = fechaRegistro;
             };
-            
-            
-            DocumentoDespacho.prototype.getCantidadCajas = function() {
+
+
+            DocumentoDespacho.prototype.getCantidadCajas = function () {
                 return this.cantidadCajas;
             };
-            
-            DocumentoDespacho.prototype.setCantidadCajas = function(cantidadCajas) {
+
+            DocumentoDespacho.prototype.setCantidadCajas = function (cantidadCajas) {
                 this.cantidadCajas = cantidadCajas;
             };
-            
-            DocumentoDespacho.prototype.getCantidadNeveras = function() {
+
+            DocumentoDespacho.prototype.getCantidadNeveras = function () {
                 return this.cantidadNeveras;
             };
-            
-            DocumentoDespacho.prototype.setCantidadNeveras = function(cantidadNeveras) {
+
+            DocumentoDespacho.prototype.setCantidadNeveras = function (cantidadNeveras) {
                 this.cantidadNeveras = cantidadNeveras;
             };
-            
-            DocumentoDespacho.prototype.getNumeroPedido = function() {
+
+            DocumentoDespacho.prototype.getNumeroPedido = function () {
                 return this.numeroPedido;
             };
-            
-            DocumentoDespacho.prototype.setNumeroPedido = function(numeroPedido) {
+
+            DocumentoDespacho.prototype.setNumeroPedido = function (numeroPedido) {
                 this.numeroPedido = numeroPedido;
             };
-            
-            DocumentoDespacho.prototype.get_empresa_id = function() {
+
+            DocumentoDespacho.prototype.get_empresa_id = function () {
                 return this.empresaId;
             };
-            
-            DocumentoDespacho.prototype.set_documentos = function(documento) {
+
+            DocumentoDespacho.prototype.set_documentos = function (documento) {
                 this.documentos.push(documento);
             };
-            
-            DocumentoDespacho.prototype.get_documentos = function() {
+
+            DocumentoDespacho.prototype.get_documentos = function () {
                 return this.documentos;
             };
-            
-            DocumentoDespacho.prototype.limpiar_documentos = function() {
+
+            DocumentoDespacho.prototype.limpiar_documentos = function () {
                 return this.documentos = [];
             };
-            
-            DocumentoDespacho.prototype.getSeleccionado = function() {
+
+            DocumentoDespacho.prototype.getSeleccionado = function () {
                 return this.seleccionado;
             };
-            
-            DocumentoDespacho.prototype.setSeleccionado = function(seleccionado) {
-                this.seleccionado = seleccionado ;
+
+            DocumentoDespacho.prototype.setSeleccionado = function (seleccionado) {
+                this.seleccionado = seleccionado;
             };
-            
-            
-           
-                        
+
+
+
+
             return this;
         }]);
 });
@@ -50781,8 +50799,6 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;
                     }
 
-
-
                     that.ejecutarServicioRegistroAprobacion(obj);
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
@@ -51211,9 +51227,9 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         $scope.datos_view.documentosMedipol.push(documento);
 
                     });
-                        var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
-                        var cantidadNeveras = ( parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
-                                            
+                    var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
+                    var cantidadNeveras = (parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
+
                     $scope.datos_view.documentosMedipol[0].setCantidadCajas(cantidadCajas);
                     $scope.datos_view.documentosMedipol[0].setCantidadNeveras(cantidadNeveras);
                     $scope.datos_view.documentosMedipol[0].temperatura_neveras = cantidadNeveras > 0 ? '3,2' : '';
@@ -51834,6 +51850,8 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     documento.setNumeroPedido(data.numero_pedido);
                     documento.setFechaRegistro(data.fecha_registro);
                     documento.setEstadoDocumento(data.estado_documento);
+                    documento.setTipo(data.tipo);
+                    documento.setEstadoPedido(data.estado);
 
                     if (that.documentosStorage) {
 

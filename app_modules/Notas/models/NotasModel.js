@@ -11,8 +11,7 @@ var NotasModel = function () {
  * @returns {callback}
  */
 NotasModel.prototype.listarFacturas = function (obj, callback) {
-    console.log('In model "listarFacturas"');
-
+    
     var columna_a = [
         "ifd.factura_fiscal",
         "ifd.prefijo",

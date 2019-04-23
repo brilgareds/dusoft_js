@@ -685,8 +685,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;
                     }
 
-
-
                     that.ejecutarServicioRegistroAprobacion(obj);
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar los campos del formulario");
@@ -1115,9 +1113,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.datos_view.documentosMedipol.push(documento);
 
                     });
-                        var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
-                        var cantidadNeveras = ( parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
-                                            
+                    var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
+                    var cantidadNeveras = (parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
+
                     $scope.datos_view.documentosMedipol[0].setCantidadCajas(cantidadCajas);
                     $scope.datos_view.documentosMedipol[0].setCantidadNeveras(cantidadNeveras);
                     $scope.datos_view.documentosMedipol[0].temperatura_neveras = cantidadNeveras > 0 ? '3,2' : '';

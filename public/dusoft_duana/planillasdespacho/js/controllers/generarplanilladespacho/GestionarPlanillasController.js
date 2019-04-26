@@ -471,32 +471,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
-                                            <button class="btn btn-default btn-xs" ng-click="modificar_documento_planilla(row.entity.lio_id)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-pencil"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="modificar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-pencil"></span></button>\
                                         </div>'
                     }
                 ]
             };
 
 
-            $scope.modificar_documento_planilla = function (lio_id) {
+            $scope.modificar_documento_planilla = function (docSelec) {
                 var documentos = $scope.planilla.get_documentos();
                 var DocsLio = [];
                 documentos.forEach(function (documento) {
 
-                    if (documento.lio_id !== null && documento.lio_id === lio_id) {
+                    if (documento.lio_id !== null && documento.lio_id === docSelec.lio_id) {
                         DocsLio.push(documento);
                     }
                 });
-
-                console.log("documentos lio", DocsLio);
 
                 if (DocsLio.length > 0) {
 
                     that.mostrarVentanaLiosModificar(DocsLio);
 
                 } else {
-                    console.log("NOP");
-//                    $scope.cerrar_gestion_documentos_bodega();
+                    console.log("NOP", docSelec);
+//                    $scope.verModificarUnico(docSelec);
                 }
 
 
@@ -514,7 +512,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             return documentos;
                         },
                         tipo: function () {
-                            return 0;
+                            return 4;
                         },
                         numeroGuia: function () {
                             return $scope.planilla.get_numero_guia();
@@ -526,7 +524,100 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
+            that.verModificarUnico = function (nota, datos) {
 
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    windowClass: 'app-modal-window-xlg-ls',
+                    keyboard: true,
+                    showFilter: true,
+                    cellClass: "ngCellText",
+                    templateUrl: 'views/generarplanilladespacho/modificarDocumentos.html',
+                    scope: $scope,
+                    controller: ['$scope', '$modalInstance', 'notasService', function ($scope, $modalInstance, notasService) {
+
+                            $scope.root.impuestosnota = {
+                                valorSubtotal: 0,
+                                iva: 0,
+                                retencionFuente: 0,
+                                retencionIca: 0,
+                                totalGeneral: 0
+                            };
+
+
+                            /**
+                             * +Descripcion Metodo encargado de invocar el servicio que consulta
+                             *              el detalle de la factura
+                             * @author German Galvis
+                             * @fecha 08/08/2018 DD/MM/YYYY
+                             * @returns {undefined}
+                             */
+                            that.listarDetalleFactura = function () {
+
+                                var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        empresa_id: datos.empresa,
+                                        facturaFiscal: datos.numeroFactura,
+                                        tipoFactura: nota
+                                    }
+                                };
+
+                                notasService.detalleFactura(obj, function (data) {
+                                    if (data.status === 200) {
+
+                                        $scope.root.listadoProductos = notasService.renderProductoFacturas(data.obj.ConsultarDetalleFactura);
+
+                                    } else {
+                                        $scope.root.listadoProductos = null;
+                                    }
+
+                                });
+                            };
+
+                            that.listarDetalleFactura();
+
+                            $scope.cerrar = function () {
+                                $modalInstance.close();
+                            };
+
+
+                            $scope.guardarNotas = function () {
+
+                                var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        empresaId: datos.empresa,
+                                        factura_fiscal: datos.numeroFactura,
+                                        prefijo: datos.prefijo,
+                                        valor: $scope.root.impuestosnota.valorSubtotal,
+                                        total: $scope.root.impuestosnota.totalGeneral,
+                                        tipo_factura: datos.tipoFactura
+                                    }
+                                };
+
+                                notasService.guardarNota(obj, function (data) {
+
+                                    if (data.status === 200) {
+                                        that.mensajeCreacion(data.obj.crearNota, data.obj.respuestaFI.resultado.mensaje_ws);
+                                        that.listarFacturasGeneradas();
+                                        $modalInstance.close();
+                                    } else {
+                                        AlertService.mostrarMensaje("warning", data.msj);
+                                    }
+
+                                });
+
+
+                            };
+                        }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+
+
+            };
 
 
             that.gestionar_consultas();

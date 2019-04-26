@@ -86,6 +86,26 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     return;
                 }
+
+                if (tipo === 4) {
+                    console.log("ingreso");
+//                    self.modificarLio();
+                } else {
+                    console.log("no");
+//                    self.crearLio();
+                }
+
+            };
+
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que creara
+             *              los lios
+             * @author German Galvis
+             * @fecha 26/04/2019 DD/MM/YYYY
+             * @returns {undefined}
+             */
+            self.crearLio = function () {
+
                 var totalCajas = 0;
                 var totalNeveras = 0;
 
@@ -108,7 +128,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             totalCaja: $scope.root.cantidadCajas,
                             cantidadLios: $scope.root.cantidadLios,
                             cantidadNeveras: $scope.root.cantidadNeveras,
-                            tipo: tipo,
                             numeroGuia: numeroGuia,
                             observacion: $scope.root.observacion
                         }
@@ -116,21 +135,59 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 };
 
 
-                Request.realizarRequest(API.PLANILLAS.GESTIONAR_LIOS, "POST", obj, function(data) {
-                    
-                    if(data.status === 200){
+                Request.realizarRequest(API.PLANILLAS.GESTIONAR_LIOS, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha guardado el registro correctamente");
                         $scope.cerrar();
-                    } else if(data.status === 403) {
-                        
+                    } else if (data.status === 403) {
+
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", data.msj);
                     } else {
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
                     }
-                   
+
                 });
             };
 
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que modificara
+             *              los lios
+             * @author German Galvis
+             * @fecha 26/04/2019 DD/MM/YYYY
+             * @returns {undefined}
+             */
+            self.modificarLio = function () {
+
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        planillas_despachos: {
+                            documentos: documentos,
+                            totalCaja: $scope.root.cantidadCajas,
+                            cantidadLios: $scope.root.cantidadLios,
+                            cantidadNeveras: $scope.root.cantidadNeveras,
+                            numeroGuia: numeroGuia,
+                            observacion: $scope.root.observacion
+                        }
+                    }
+                };
+
+
+//                Request.realizarRequest(API.PLANILLAS.GESTIONAR_LIOS, "POST", obj, function (data) {
+//
+//                    if (data.status === 200) {
+//                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha guardado el registro correctamente");
+//                        $scope.cerrar();
+//                    } else if (data.status === 403) {
+//
+//                        AlertService.mostrarVentanaAlerta("Alerta del sistema", data.msj);
+//                    } else {
+//                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
+//                    }
+//
+//                });
+            };
 
             self.init();
 

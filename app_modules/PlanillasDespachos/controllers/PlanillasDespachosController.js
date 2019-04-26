@@ -923,11 +923,6 @@ PlanillasDespachos.prototype.gestionarLios = function (req, res) {
         return;
     }
 
-    if (args.planillas_despachos.tipo === undefined) {
-        res.send(G.utils.r(req.url, 'el tipo no esta definido', 404, {}));
-        return;
-    }
-
     if (args.planillas_despachos.totalCaja === undefined || args.planillas_despachos.totalCaja === '' || args.planillas_despachos.totalCaja === '0') {
         res.send(G.utils.r(req.url, 'la cantidad de cajas debe estar definido y no puede estar en cero', 404, {}));
         return;

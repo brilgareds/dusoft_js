@@ -652,7 +652,6 @@ PlanillasDespachosModel.prototype.insertarLioDocumento = function (obj, callback
             transaccion.rollback(err);
         }).done();
     }).then(function (resultado) {
-        //console.log("resultado [insertarLioDocumento]:: ", resultado);
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [insertarLioDocumento]:: ", err);

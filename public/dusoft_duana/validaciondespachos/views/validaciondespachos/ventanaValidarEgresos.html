@@ -1,0 +1,99 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <h4 class="h4MarginTopBottom"><span >Multiple EFC</span> </h4>
+            </div>               
+            <br>
+            <div class="row">
+                <div class="col-md-12">  
+                    <div class="col-md-7">
+                        <fieldset>
+                            <legend class="icon-search icon-large icon-white">{{datosView.tituloLista}}</legend>  
+                            <ui-select ng-model="datosView.centroUtilidad" 
+                                       ng-disabled="" theme="select2" 
+                                       class="form-control selectgeneral pull-left" 
+                                       ng-change="seleccionarCentroUtilidad($select.selected,'')"
+                                       ng-show ="datosView.seleccionarClienteFarmacia" >
+                                <ui-select-match  placeholder="Seleccionar farmacia">{{ $select.selected.getNombre()}}</ui-select-match>
+                                <ui-select-choices ui-disable-choice="" 
+                                                   refresh="listarCentrosUtilidad($select.search)" 
+                                                   refresh-delay="0" 
+                                                   repeat="farmacia in listaCentrosUtilidad | filter:$select.search">                                            
+                                    <i ng-if='' class="glyphicon glyphicon-ban-circle"></i> {{ farmacia.getNombre()}}                                                                                        
+                                </ui-select-choices>
+                            </ui-select>    
+
+                            <ui-select ng-model="datosView.centroUtilidad" 
+                                       ng-disabled="" theme="select2" 
+                                       class="form-control selectgeneral pull-left" 
+                                       ng-change="seleccionarCliente($select.selected,'')"
+                                       ng-show ="!datosView.seleccionarClienteFarmacia" >
+                                <ui-select-match  placeholder="Seleccionar cliente">{{ $select.selected.getNombre()}}</ui-select-match>
+                                <ui-select-choices ui-disable-choice="" 
+                                                   refresh="listarClientes($select.search)" 
+                                                   refresh-delay="0" 
+                                                   repeat="cliente in listaClientes | filter:$select.search">                                            
+                                    <i ng-if='' class="glyphicon glyphicon-ban-circle"></i> {{ cliente.getNombre()}}                                                                                        
+                                </ui-select-choices>
+                            </ui-select>                                             
+
+                        </fieldset>   
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" 
+                                       ng-model="datosView.seleccionarClienteFarmacia" 
+                                       ng-disabled="datosView.estadoRegistro == 1"
+                                       ng-change ="seleccionarClienteFarmacia()">
+                                <h4>Seleccionar ({{datosView.tituloLista}})</h4>   
+                            </label>
+                        </div>
+                    </div> 
+                    <div class="col-md-5"> 
+                        <legend class="icon-search icon-large icon-white">Numero</legend> 
+                        <div class="panel panel-info ">
+                            <div class="panel-body">
+                                <fieldset>
+
+                                    <input type="checkbox" value="caja" ng-checked="numeroCaja" ng-click="pulsar($event.currentTarget.checked, 'caja')"> Cajas <br>
+                                    <input type="checkbox" value="nevera" ng-checked="numeroNevera" ng-click="pulsar($event.currentTarget.checked, 'nevera')"> Neveras 
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-primary" ng-disabled="(!numeroNevera && !numeroCaja)"  ng-click="distribuirCajas()" >Distribuir</button>
+                                            </span>
+                                            <input type="text" class="form-control"  placeholder="" ng-model="datosView.cantidadCajas">                                        
+                                        </div> 
+                                    </div> 
+                                    <br>
+                                </fieldset>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 pull-right" >
+                        <p class="input-group">
+
+                            <input type="text" class="form-control" ng-keypress="buscador_cliente_farmacia($event);"  ng-model="datosView.terminoBusquedaEfc" placeholder="Buscar" name="" id="" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit" ng-click="buscador_cliente_farmacia({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>                                                
+            <br>              
+            <br>              
+            <div class="table-responsive" style="height: 400px;">
+                <div class="gridStyle2" ng-grid="lista_remisiones_bodega" > </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">    
+            <button type="button" class="btn btn-warning" ng-click="cerrarVentana()">Cerrar</button>
+            <button type="button" class="btn btn-primary" ng-disabled="(numeroNevera || numeroCaja)" ng-click="guardarDocumentosSeleccionados()">Guardar</button>
+        </div>
+    </div>
+</div> 
+

@@ -31,7 +31,8 @@ define(["angular"], function(angular) {
                 'LISTAR_TRANSPORTADORAS': BASE_URL + '/Transportadoras/listar'
             },
             'CENTROS_UTILIDAD': {
-                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad'
+                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
+                'LISTAR_FARMACIAS_TERCEROS': BASE_URL + '/CentrosUtilidad/listarFarmaciasTerceros'
             },
             'CLIENTES': {
                 'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'

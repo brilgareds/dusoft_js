@@ -5,7 +5,6 @@ module.exports = function(app, di_container) {
     var c_sincronizacion = di_container.get("c_sincronizacion");
 
     app.get('/api/Sincronizacion/facturacionPrueba', function(req, res) {
-        console.log(c_sincronizacion+"Eyyyyyyyyyyyyy");
         c_sincronizacion.facturacionElectronica(req, res);
     });
   

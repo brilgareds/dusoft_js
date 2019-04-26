@@ -34,6 +34,30 @@ SincronizacionDocumentosModel.prototype.listarPrefijos = function (obj, callback
     });
 };
 
+SincronizacionDocumentosModel.prototype.listarPrefijosEspecial = function (obj, callback) {
+  
+    var data = {prefijos: ''};
+
+    var query = G.knex
+        .distinct('a.prefijo', 'a.tipo_doc_general_id', 'a.texto1','a.sw_ingreso_automatico_datos')
+        .select()
+        .from('documentos as a')
+        .where(G.knex.raw("a.empresa_id in ('03','FD')"))
+        //.orderBy('a.prefijo')
+        .union(function(){
+              this.select('a.prefijo',G.knex.raw("'' as tipo_doc_general_id"),'a.texto1','a.sw_ingreso_automatico_datos')
+             .from("prefijos_especiales as a");
+        });
+       
+    query.then(function (resultado){
+       data.prefijos = resultado;
+       callback(false, data);
+    }).catch(function (err) {
+        console.log("error listarPrefijosEspecial sql", err);
+        callback(err);
+    });
+};
+
 SincronizacionDocumentosModel.prototype.listarFacturas = function (obj, callback) {
     console.log('In model of "buscarServicio"');
 
@@ -48,10 +72,8 @@ SincronizacionDocumentosModel.prototype.listarFacturas = function (obj, callback
         .andWhere('dc.bodega_id', obj.bodegaId)
         .andWhere('dc.prefijo', obj.prefijoId);
 
-    console.log('SQL en buscarServicio ', G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
-        console.log('Sql fine in Model buscarServicio!');
         //data.serviciosFiltrados = resultado;
         callback(false, resultado[0]);
     }).catch(function (err) {
@@ -70,8 +92,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoReciboRCC = function (ob
         .where('RC.recibo_caja', obj.facturaFiscal)
         .andWhere('RC.prefijo', obj.prefijo);
 
-    console.log('Query is: ', G.sqlformatter.format(query.toString()));
-
     query.then(function (resultado) {
         console.log('encabezado fine!!');
 
@@ -84,8 +104,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoReciboRCC = function (ob
                     parametrizacion_ws_fi_id: obj.wsFi
                 });
             query.then(function (result) {
-                console.log('Consulta encabezado parametrizado fine: ', result);
-
                 let encabezadoParametrizado = result[0];
 
                 let response = [{
@@ -102,8 +120,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoReciboRCC = function (ob
                     empresa_recibo: encabezado.empresa_recibo,
                     cuenta_contable: encabezado.cuenta_contable
                 }];
-
-                console.log('Encabezado finish is: ', response);
 
                 callback(false, response);
             });
@@ -138,7 +154,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoRCD = function (obj, cal
         .where('rc.recibo_caja', obj.factura_fiscal)
         .andWhere('rc.prefijo', obj.prefijo);
 
-    console.log('SQL en listarEncabezadoRCD: ', G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         if (resultado[0] !== undefined) {
@@ -151,7 +166,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoRCD = function (obj, cal
                 });
 
             query.then(function (result) {
-                console.log('Consulta encabezado parametrizado fine: ', result);
 
                 if (result.length > 0) {
                     let encabezadoParametrizado = result[0];
@@ -261,7 +275,6 @@ SincronizacionDocumentosModel.prototype.listarFacturasDFIN1121 = function (obj, 
         var total_credito = data[0].total_credito;
         response.credito = total_credito;
 
-        console.log('All fine total is: ', total_credito);
         callback(false, response);
     }).catch(function (err) {
         console.log('Hubo un error: ', err);
@@ -376,7 +389,6 @@ SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function
             .andWhere('a.empresa_id', obj.empresa_id);
         //.andWhere('a.empresa_id', obj.empresa_id);
 
-//        console.log('sql in "obtenerPrefijoFI": ', G.sqlformatter.format(query2.toString()));
 
         return query2;
     }).then(function (resultado2) {
@@ -452,7 +464,6 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function (o
         .andWhere('a.numero', obj.factura_fiscal)
         .orderBy('a.codigo_producto');
 
-//    console.log('Sql in "obtenerDetalleBonificacion" is: ', G.sqlformatter.format(query.toString()));
 
     query.then(function (facturas) {
         if (facturas && facturas.length > 0) {
@@ -798,7 +809,6 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function (obj, call
         .andWhere('doc_cu.parametrizacion_ws_fi', obj.servicio)
         .orderBy('tipos_cate.categoria_descripcion');
 
-    //console.log(G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         //console.log('Cuentas desde modelo: ', resultado);
@@ -819,7 +829,6 @@ SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = function (obj, callba
         }).andWhere('a.prefijo', obj.prefijo)
         .andWhere('a.empresa_id', obj.empresaId);
 
-//    console.log(G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -846,7 +855,6 @@ SincronizacionDocumentosModel.prototype.parametrizacionCabeceraFi = function (ob
         ]
     ).from('parametrizacion_ws_fi as a')
         .andWhere('a.parametrizacion_ws_fi_id', obj.parametrizacion);
-//    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -887,8 +895,6 @@ SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function (obj, ca
                 .andWhere('parametrizacion_ws_fi', obj.wsFi);
         }).orderBy("cuenta_categoria", "asc");
 
-//    console.log("listarCuentasDetalle", G.sqlformatter.format(query.toString()));
-//console.log(G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -1040,7 +1046,6 @@ SincronizacionDocumentosModel.prototype.sincronizarFinaciero = function (obj, ca
 //      }
 
     }).then(function () {
-        console.log('Sincronizacion finalizada!');
         callback(false, obj.obj);
 
     }).fail(function (err) {

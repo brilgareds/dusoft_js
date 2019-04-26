@@ -32,6 +32,17 @@ SincronizacionDocumentos.prototype.listarPrefijos = function (req, res) {
     }).done();
 };
 
+SincronizacionDocumentos.prototype.listarPrefijosEspecial = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarPrefijosEspecial', args.data).then(function (prefijos) {
+        res.send(G.utils.r(req.url, 'Listado de Prefijos Especiales!!!!', 200, {listarPrefijos: prefijos}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error Listando Prefijos Especiales', 500, {listarPrefijos: {}}));
+    }).done();
+};
+
 SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = function (req, res) {
     var that = this;
     var args = req.body.data;

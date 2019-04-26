@@ -15,6 +15,7 @@ define(["angular", "js/controllers",
             self.respuestaPedidoBodegaFarmacia;
             $scope.numero_pedido_farmacia;
             self.generarPedidoFarmacia=true;
+            var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
                     
             self.init = function() {
                 $scope.rootPedidoFarmaciaTemporal = {};
@@ -705,6 +706,9 @@ define(["angular", "js/controllers",
                  var nombreArchivo = $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.files[0].name;
                  var extension = nombreArchivo.substr(nombreArchivo.indexOf("."),nombreArchivo.length);   
                  
+//                var empresa_id=empresa.codigo;
+//                var centro_utilidad_id=empresa.centroUtilidad.codigo;
+//                var bodega_id=empresa.centroUtilidad.bodega.codigo;
                 var empresa_id='0';
                 var centro_utilidad_id='0';
                 var bodega_id='0';
@@ -727,7 +731,8 @@ define(["angular", "js/controllers",
                                     centro_utilidad_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
                                     bodega_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                                     tipo_producto:pedido.getTipoPedido(),
-                                    extension: extension.trim()
+                                    extension: extension.trim(),
+                                    multiple:$scope.root.bodegaMultiple.bools
                                 }
                          });
                          

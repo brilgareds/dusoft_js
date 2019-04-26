@@ -31,8 +31,14 @@ define([
     "models/BodegaInduccion",
     "models/ProductoInduccion",
     "models/AprobacionDespacho",
+    "models/DocumentoDespacho",
+    "models/FarmaciaPlanillaDespacho",
+    "models/ClienteDocumento",
     "controllers/ValidacionDespachosController",
+    "controllers/EntradaSalidaController",
+    "controllers/SalidaController",
     "controllers/ValidacionDespachoDetalleController",
+    "controllers/VentanaValidarEgresosController",
     "services/ValidacionDespachosService",
     "webNotification"
 ], function(angular) {
@@ -82,6 +88,18 @@ define([
                     text: "Detalle de despacho aprobado",
                     templateUrl: "views/validaciondespachos/validaciondespachos.html",
                     parent_name : "ValidacionEgresos"
+                }).state('EntradaSalida', {
+                    url: "/EntradaSalida",
+                    text: "Entrada - Salida ",
+                    controller: "EntradaSalidaController",
+                    templateUrl: "views/validaciondespachos/entrada_salida.html",
+                    parent_name : "EntradaSalida"
+                }).state('Salida', {
+                    url: "/Salida",
+                    text: "Salida ",
+                    controller: "SalidaController",
+                    templateUrl: "views/validaciondespachos/salida.html",
+                    parent_name : "Salida"
                 });
                     
 

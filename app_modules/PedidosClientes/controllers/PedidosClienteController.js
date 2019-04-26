@@ -1077,9 +1077,10 @@ PedidosCliente.prototype.__insertarCotizacion = function (obj, cotizacion, callb
                     return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);
                 }
 
-            }).spread(function (rows, result) {
+            }).then(function (result) {
 
-        var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
+        var numero_cotizacion = result[0] ;
+//        var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
         callback(false, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}});
 
 

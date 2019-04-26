@@ -67482,9 +67482,9 @@ define('app',[
                     controller: "PedidosClientesController",
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {
-                    url: "/FacturacionProveedores",
-                    text: "Facturacion Proveedores", 
-                    templateUrl: "views/FacturacionProveedores/index.html",
+                    url: "/NotasProveedores",
+                    text: "Facturacion Proveedores",
+                    templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",
                     controller: "FacturacionProveedorController"
                 }).state('DetalleRecepcionParcial', {

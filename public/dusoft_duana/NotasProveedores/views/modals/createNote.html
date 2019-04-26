@@ -1,50 +1,198 @@
-<div class="modal-header btn-primary">
+<div class="modal-header">
     <button type="button" class="close" style="opacity: 0.5;" ng-click="cerrarVentana()">&times;</button>
-    <h4 class="modal-title">Notas Proveedor</h4>
+    <h4 class="modal-title" style="color: #1c59b5;">Creación de Nota Proveedor</h4>
 </div>
 <div class="modal-body">
-    <div class="container-table">
-        <table class="table-responsive2 col-sm-12" style="padding: 0px;">
-            <thead>
+    <div class="panel panel-primary">
+        <div class="panel-heading title-detalle" align="center">Información Factura</div>
+        <div class="panel-body">
+            <div class="col-sm-12 container-factura-info">
+                <div class="col-sm-12">
+                    <span>Factura: <label>{{NotaTemporal.temporal.encabezado.factura_proveedor}}</label></span>
+                    <span>Proveedor: <label>{{NotaTemporal.temporal.encabezado.nombre_tercero}}</label></span>
+                    <span>Usuario: <label>{{NotaTemporal.temporal.encabezado.usuario}}</label></span>
+                </div>
+                <div class="col-sm-12">
+                    <span>SUBTOTAL: <label>{{NotaTemporal.temporal.encabezado.subtotalString}}</label></span>
+                    <span>IVA: <label>{{NotaTemporal.temporal.encabezado.iva_totalString}}</label></span>
+                    <span>RET-FTE: <label>{{NotaTemporal.retencionAnual.retencionFuenteString}}</label></span>
+                    <span>RETE-ICA: <label>{{NotaTemporal.retencionAnual.retencionIcaString}}</label></span>
+                    <span>RETE-IVA: <label>{{NotaTemporal.retencionAnual.retencionIvaString}}</label></span>
+                    <span>DESCUENTO: <label>{{NotaTemporal.temporal.encabezado.valor_descuentoString}}</label></span>
+                    <span>VALOR TOTAL: <label>{{NotaTemporal.temporal.encabezado.totalConRetencionesString}}</label></span>
+                </div>
+                <div class="col-sm-12" style="padding: 0px;"><span class="col-sm-offset-10 col-sm-2 total-saldo">SALDO: <label>{{NotaTemporal.temporal.encabezado.totalSaldoString}}</label></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading title-detalle" align="center">Items Factura (Incluyen Iva)</div>
+        <form ng-submit="agregarDetalleTemporal()" ng-model="formulario" class="panel-body">
+            <table class="table-responsive2">
+                <thead>
                 <tr>
-                    <th width="15%">Codigo Producto</th>
-                    <th width="15%">Descripcion</th>
-                    <th width="15%">Cantidad</th>
-                    <th width="15%">Valor</th>
-                    <th width="10%">Iva</th>
-                    <th width="15%">Valor total</th>
-                    <th width="10%">Op</th>
+                    <th>Codigo Producto</th>
+                    <th>Descripcion</th>
+                    <th>Cantidad</th>
+                    <th>Valor</th>
+                    <th>Iva</th>
+                    <th>Valor total</th>
+                    <th>Op</th>
                 </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="nota in NotaTemporal.buscarDetalle">
+                </thead>
+                <tbody ng-repeat="nota in NotaTemporal.factura.detalle track by $index" ng-if="!nota.hidden">
+                <tr>
                     <td>{{nota.codigo_producto}}</td>
                     <td>{{nota.descripcion}}</td>
-                    <td>{{nota.cantidad}}</td>
-                    <td>{{nota.valor}}</td>
+                    <td>{{nota.cantidadString}}</td>
+                    <td>{{nota.valorString}}</td>
                     <td>{{nota.porc_iva}}</td>
                     <td>{{nota.valorTotalString}}</td>
-                    <td><input type="radio"></td>
+                    <td><input type="checkbox" ng-model="nota.available"></td>
                 </tr>
+                <tr class="tr-customer" ng-if="nota.available">
+                    <td colspan="100%">
+                        <div style="text-align: center">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="sr-only" for="exampleInputAmount">Concepto General</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">Concepto General</div>
+                                        <button ng-if="nota.conceptoGeneralNombre" type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={{nota.conceptoGeneralTitulo}}>{{nota.conceptoGeneralNombre}} <span class="caret"></span></button>
+                                        <button ng-if="!nota.conceptoGeneralNombre" type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title='Seleccione Un Concepto'>-Seleccione Un Concepto- <span class="caret"></span></button>
+                                        <ul class="dropdown-menu">
+                                            <li ng-repeat="conceptoGeneral in NotaTemporal.conceptosGenerales track by $index" class="ng-scope">
+                                                <a ng-click="updateConceptoGeneral(nota, conceptoGeneral.codigo, conceptoGeneral.nombre)" class="ng-binding">{{conceptoGeneral.nombre}}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group" style="display: inline-block; margin-right: auto; margin-left: auto;">
+                                    <label class="sr-only" for="exampleInputAmount">Valor Concepto</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">Valor Concepto</div>
+                                        <input ng-model="nota.valorConcepto" type="number" class="form-control" id="exampleInputAmount" placeholder="Ingrese valor" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group" style="width: auto;">
+                                    <label class="sr-only" for="exampleInputAmount">Observación</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">Observación</div>
+                                        <input ng-model="nota.observacion" type="text" class="form-control" id="exampleInputAmount2" placeholder="Ingresar Observación" min="5" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="tr-customer" ng-if="nota.available">
+                    <td colspan="100%">
+                        <div style="text-align: center;">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="sr-only" for="exampleInputAmount">Concepto Especifico</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">Concepto Especifico</div>
+                                        <button ng-if="nota.conceptoEspecificoNombre" type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={{nota.tituloConceptoEspecificoTitulo}}>{{nota.conceptoEspecificoNombre}} <span class="caret"></span></button>
+                                        <button ng-if="!nota.conceptoEspecificoNombre" type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title='Seleccione Un Concepto' ng-disabled="!nota.conceptoGeneralNombre">-Seleccione Un Concepto- <span class="caret"></span></button>
+                                        <ul class="dropdown-menu">
+                                            <li ng-repeat="conceptoEspecifico in nota.conceptosEspecificos track by $index">
+                                                <a ng-click="updateConceptoEspecifico(nota, conceptoEspecifico.codigo, conceptoEspecifico.nombre)">{{conceptoEspecifico.nombre}}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="has-warning">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input ng-model="nota.mayorValor" type="checkbox" id="checkboxWarning" value="option1" style="margin-top:1px;">
+                                            Nota Mayor Valor
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="has-warning">
+                                    <div class="checkbox">
+                                        <label ng-if="nota.mayorValor" class="btn btn-danger">Baja Costo (Debito)</label>
+                                        <label ng-if="!nota.mayorValor" class="btn" style="background: #399039; color: #FFF;">Sube Costo (Credito)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table><br>
+            <div class="cajaCentrada">
+                <button type="submit" class="col-sm-2 btn btn-primary cajaCentrada">
+                    <span class="btn-icon glyphicon glyphicon-time"></span>
+                    Guardar en Temporal
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading title-detalle" align="center">Items en el Documento Temporal</div>
+        <form ng-submit="crearNota()" ng-model="formulario" class="panel-body">
+            <table class="table-responsive2">
+                <tbody>
                 <tr>
-                    <td colspan="2">
-                        <span>Concepto General: </span>
-                        <select>
-                            <option ng-repeat="glosa in NotaTemporal.glosasConceptoGeneral" value={{glosa.codigo_concepto_general}}>{{glosa.descripcion_concepto_general}}</option>
-                        </select>
+                    <td width="15%">Producto</td>
+                    <td width="15%">Tipo de Nota</td>
+                    <td>Concepto General</td>
+                    <td>Concepto Especifico</td>
+                    <td>Cantidad</td>
+                    <td>Valor Unidad Concepto</td>
+                    <td>Valor Total Concepto</td>
+                    <td>Borrar</td>
+                </tr>
+                <tr ng-repeat="nota in NotaTemporal.temporal.detalle.all track by $index">
+                    <td style="white-space: nowrap;" title={{nota.descripcionConCodigo}}>
+                        <label>{{nota.codigo}}</label> - {{nota.descripcion}}
                     </td>
                     <td>
-                        <label for="">Valor Concepto</label><input type="number" placeholder="Agregar valor">
+                        {{nota.tipoNota}}
+                    </td>
+                    <td>
+                        {{nota.conceptoGeneral}}
+                    </td>
+                    <td>
+                        {{nota.conceptoEspecifico}}
+                    </td>
+                    <td>
+                        {{nota.cantidadString}}
+                    </td>
+                    <td>
+                        {{nota.valorConceptoString}}
+                    </td>
+                    <td>
+                        {{nota.totalConceptoString}}
+                    </td>
+                    <td>
+                        <span class="btn btn-danger" ng-click="eliminarProductoTemporal(nota)"><i class="glyphicon glyphicon-trash"></i></span>
                     </td>
                 </tr>
-            </tbody>
-        </table>
-    </div><br>
-    <h4 align="center">Items agrupados Factura - (Valores Incluyen Iva)</h4>
-
-    <span></span>
+                </tbody>
+            </table><br>
+            <span style="margin-right: 20px">Total Debito: <label>{{NotaTemporal.temporal.detalle.totalBajaCostoString}}</label></span>
+            <span>Total Credito: <label>{{NotaTemporal.temporal.detalle.totalSubeCostoString}}</label></span>
+            <div class="cajaCentrada">
+                <button class="col-sm-2 btn cajaCentrada" type="submit" style="background: #399039; color: #FFF;">
+                    <span class="btn-icon glyphicon glyphicon-floppy-disk"></span>
+                    Crear Documento
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-danger" ng-click="cerrarVentana()" ng-disabled="">Cancelar</button>
-    <button class="btn btn-primary" ng-disabled="">Aceptar</button>
+    <button class="btn btn-primary" ng-click="cerrarVentana()" ng-disabled="">Cerrar</button>
 </div>

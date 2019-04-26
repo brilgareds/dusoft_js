@@ -40,32 +40,93 @@
 }
 
 .table-responsive2 {
+    width: 100%;
     height: auto;
     border: 1px solid #dedede;
+    padding: 15px 0px 0px 0px;
+}
+
+.cajaCentrada {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-icon {
+    font-weight: bolder;
+    font-size: 16px;
+    margin-right: 4px;
 }
 
 .table-responsive2 thead tr {
     background-color: #eaeaea;
 }
 
-.table-responsive2 tbody tr:nth-child(even) {
+.table-responsive2 tbody tr td {
+    position: relative;
+}
+
+.table-responsive2 tr:not(.tr-customer):nth-child(even) {
     background-color: #fdfdfd;
 }
 
-.table-responsive2 tbody tr:nth-child(odd) {
+.table-responsive2 tr:not(.tr-customer):nth-child(odd) {
     background-color: #f3f3f3;
+}
+
+.table-responsive2 tbody .tr-customer {
+    background-color: #FFF;
+}
+
+.table-responsive2 tbody .tr-customer *{
+    text-transform: capitalize;
+}
+
+.checkbox label {
+    font-weight: bolder;
 }
 
 .table-responsive2 tbody tr:hover {
     background-color: #E5E5E5;
 }
 
+.table-responsive2 tbody tr input{
+    cursor: pointer;
+}
+
 .table-responsive2 th:not(:first-child), .table-responsive2 td:not(:first-child) {
     border-left: 2px solid #dedede;
 }
 
+.title-detalle {
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
 .table-responsive2 td {
     white-space: nowrap;
+}
+
+.table-responsive2 td:nth-child(1){
+    width: 20%;
+}
+.table-responsive2 td:nth-child(2){
+    width: 15%;
+}
+.table-responsive2 td:nth-child(3){
+    width: 15%;
+}
+.table-responsive2 td:nth-child(4){
+    width: 15%;
+}
+.table-responsive2 td:nth-child(5){
+    width: 10%;
+}
+.table-responsive2 td:nth-child(6){
+    width: 15%;
+}
+.table-responsive2 td:nth-child(7){
+    width: 5%;
 }
 
 .table-responsive2 input[type=radio] {
@@ -77,6 +138,60 @@
     height: 35px;
     min-height: 35px;
     max-height: 35px;
+}
+.table-responsive2 tbody button[type=button] {
+    max-width: max-content;
+    text-transform: capitalize;
+}
+
+.container-factura-info div {
+
+}
+
+.container-factura-info div:nth-child(1) {
+    display: flex;
+    justify-content: center;
+    text-transform: uppercase;
+    /* border: 2px solid #1d7896;
+    border-radius: 0px 0px 20px 20px; */
+    padding: 4px;
+}
+
+.container-factura-info div:nth-child(1) span{
+    border: 1px solid #1d7896;
+    border-radius: 2px;
+    padding: 5px 30px;
+}
+
+.container-factura-info div:nth-child(2) {
+    display: flex;
+    justify-content: space-around;
+    text-transform: uppercase;
+    border: 1px solid #98bae4;
+    padding: 20px;
+}
+
+.container-factura-info div:nth-child(2) label{
+    border: 1px solid #1d7896;
+    border-radius: 2px;
+    padding: 5px 20px;
+    margin-bottom: 0px;
+}
+
+.container-factura-info div:nth-child(2) span{
+    text-align: center;
+}
+
+.total-saldo {
+    background-color: #337ab7;
+    color: #FFF;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.dropdown-menu {
+    left: 18%;
 }
 
 @media (max-width: 1010px) {

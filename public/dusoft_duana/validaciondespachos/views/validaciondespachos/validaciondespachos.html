@@ -12,7 +12,7 @@
                                 <label>
                                     <input type="checkbox" 
                                            ng-model="datos_view.seleccionarOtros" 
-                                           ng-disabled="validarCheck()"
+                                           ng-disabled="datos_view.estadoRegistro === 1"
                                            ng-change ="cargarEmpresaSession()"><h4>Seleccionar otras salidas</h4>   
                                 </label>
                             </div>

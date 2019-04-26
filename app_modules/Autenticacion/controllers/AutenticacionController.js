@@ -383,8 +383,6 @@ function __cerrarSesiones(conexiones, callback){
 
 
 Autenticacion.prototype.logoutUsuario = function(req, res) {
-  console.log("req.session.user.usuario_id ",req.session.user.usuario_id);
-  console.log("req.session.user.auth_token ",req.session.user.auth_token);
     G.auth.logout(req.session.user.usuario_id, req.session.user.auth_token, function(err, rows) {
         if (err)
             res.send(G.utils.r(req.url, 'Se ha Generado un Error Cerrando la Sesion del Usuario', 500, {sesion: {}}));

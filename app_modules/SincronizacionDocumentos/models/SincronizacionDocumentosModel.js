@@ -39,13 +39,13 @@ SincronizacionDocumentosModel.prototype.listarPrefijosEspecial = function (obj, 
     var data = {prefijos: ''};
 
     var query = G.knex
-        .distinct('a.prefijo', 'a.tipo_doc_general_id', 'a.texto1')
+        .distinct('a.prefijo', 'a.tipo_doc_general_id', 'a.texto1','a.sw_ingreso_automatico_datos')
         .select()
         .from('documentos as a')
         .where(G.knex.raw("a.empresa_id in ('03','FD')"))
         //.orderBy('a.prefijo')
         .union(function(){
-              this.select('a.prefijo',G.knex.raw("'' as tipo_doc_general_id"),'a.texto1')
+              this.select('a.prefijo',G.knex.raw("'' as tipo_doc_general_id"),'a.texto1','a.sw_ingreso_automatico_datos')
              .from("prefijos_especiales as a");
         });
        

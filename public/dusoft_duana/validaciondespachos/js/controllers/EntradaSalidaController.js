@@ -2,24 +2,21 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
     controllers.controller('EntradaSalidaController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
-                'EmpresaAprobacionDespacho', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion', 'AprobacionDespacho',
                 "$timeout", "$filter", "localStorageService", "$state", "ValidacionDespachosService",
                 function ($scope, $rootScope, Request, API, AlertService, Usuario,
-                        EmpresaAprobacionDespacho, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
                         $timeout, $filter, localStorageService, $state, ValidacionDespachosService) {
 
                     var that = this;
-                    var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-         
-                    var fecha_actual = new Date();
+                    
                     $scope.paginaactual = 1;
                     $scope.session = {
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
                     };
 
-                    that.init = function (empresa, callback) {                        
-                        
+                    that.init = function () {                        
+                        $scope.tabEntrada=true; 
+                        $scope.tabSalida=false; 
                         $scope.root = {
                             guardarButton : true,
                             modificarButton : false,
@@ -27,16 +24,44 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             registrosLength :0,
                             termino_busqueda_clientes:"",
                             pref: {},
+                            tab : function(){},
                             operario: {},
                             cliente: {},
                             transportadora: {},
                             filtro: "",
                             empaques: [{id: 0, nombre: 'Caja'}, {id: 1, nombre: 'Nevera'}, {id: 2, nombre: 'Bolsa'}]
                         };
-                        that.listarPrefijos();
-                        that.listarOperarios();
+                        
+                        var datosFormulario = localStorageService.get("datosFormulario");
+                        if(datosFormulario){
+                          $scope.root.operarios = datosFormulario.operarios;
+                          $scope.root.prefijos = datosFormulario.prefijos;
+                        }else{
+                          that.listarPrefijos();
+                          that.listarOperarios();
+                        }
                         that.limpiar();
                     };
+                    
+                    $scope.tab = function(tab){                       
+                       if(tab === 0){
+                         $scope.tabEntrada=true;  
+                         $scope.tabSalida=false;                         
+                       }else
+                       if(tab === 1){
+                         localStrorage();
+                         $scope.tabSalida=true;  
+                         $scope.tabEntrada=false;  
+                       }
+                    }; 
+                    
+                    var localStrorage = function () {
+                        localStorageService.add("datosFormulario", {
+                            prefijos: $scope.root.prefijos,
+                            operarios: $scope.root.operarios
+                        });
+                    };
+            
                    
                     $scope.onColumnaSize = function (tipo) {
 
@@ -109,7 +134,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                   
                     $scope.activar = function(obj){
                         that.limpiar();
-                        console.log("obj.operario",obj);
                         $scope.root.guardarButton = false;
                         $scope.root.modificarButton = true;
                         $scope.root.pref = {prefijo:obj.prefijo_id};
@@ -188,7 +212,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.registro_entrada_bodega_id="";
                         $scope.root.transportadora="";
                         $scope.root.operario="";
-                        that.listarRegistroEntradaBodega();
+                       // that.listarRegistroEntradaBodega();
                     };
                     
                     $scope.cancelar=function(){
@@ -247,17 +271,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         });
                     };
                     
-                    $scope.seleccionar_cliente = function(){
-                      console.log("---> ",$scope.root.cliente);  
+                    $scope.seleccionar_cliente = function(){ 
                     };
-                    $scope.seleccionarTransportadora = function(){
-                      console.log("---> ",$scope.root.transportadora);  
+                    $scope.seleccionarTransportadora = function(){ 
                     };
-                    $scope.seleccionarPrefijo = function(){
-                      console.log("---> ",$scope.root.pref);  
+                    $scope.seleccionarPrefijo = function(){ 
                     };
-                    $scope.seleccionar_operario = function(){
-                      console.log("---> ",$scope.root.operario);  
+                    $scope.seleccionar_operario = function(){ 
                     };
                     
                     $scope.guardar = function(){
@@ -310,12 +330,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @fecha 2019-04-04
                      */
                     that.buscar_clientes = function (callback) {
+                        var busquedaDocumento = [];
+                        if(!isNaN($scope.root.termino_busqueda_clientes)){
+                           busquedaDocumento = [{entra:0},{entra:0}];
+                        }
                         var obj = {
                             session: $scope.session,
                             data: {//tercero.empresa_id
                                 tercero: {
-                                    empresa_id: empresa.codigo,
-                                    busquedaDocumento: [],
+//                                  empresa_id: empresa.codigo,
+                                    busquedaDocumento: busquedaDocumento,
                                     terminoBusqueda:$scope.root.termino_busqueda_clientes,
                                     paginacion: false
                                 }

@@ -1,4 +1,6 @@
 
+/* global G */
+
 var ValidacionDespachos = function (induccion, imprimir_productos) {
 
     this.m_ValidacionDespachos = induccion;
@@ -111,6 +113,7 @@ ValidacionDespachos.prototype.listarImagenes = function (req, res) {
  * +Descripcion Metodo encargado de invocar el modelo para listar los despachos
  * aprobados
  */
+
 ValidacionDespachos.prototype.adjuntarImagen = function (req, res) {
 
     var that = this;
@@ -150,7 +153,6 @@ ValidacionDespachos.prototype.adjuntarImagen = function (req, res) {
             return G.Q.nfcall(__scp, rutaFile);
 
         }).then(function (respuesta) {
-            console.log(" contesta scp ", respuesta);
             if (respuesta) {
                 G.fs.unlinkSync(rutaNueva);
             }
@@ -446,7 +448,7 @@ ValidacionDespachos.prototype.modificarRegistroEntradaBodega = function (req, re
     var that = this;
 
     var args = req.body.data.obj;
-    console.log("args", args);
+
     var obj = {
         "prefijo": args.prefijo,
         "numero": args.numero,
@@ -463,7 +465,6 @@ ValidacionDespachos.prototype.modificarRegistroEntradaBodega = function (req, re
         "registro_entrada_bodega_id": args.registro_entrada_bodega_id,
         that: that
     };
-    console.log("obj::: ", obj);
 
     G.Q.ninvoke(that.m_ValidacionDespachos, 'modificarRegistroEntradaBodega', obj).then(function (resultado) {
 
@@ -496,6 +497,103 @@ ValidacionDespachos.prototype.listarRegistroEntrada = function (req, res) {
     }).done();
 };
 
+ValidacionDespachos.prototype.listarRegistroSalida = function (req, res) {
+
+    var that = this;
+    var args = req.body.data.obj;
+    var obj = {
+        "busqueda": args.busqueda,
+        "pagina": args.pagina
+    };
+
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'listarRegistroSalida', obj).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, "listar Registro Salida", 200, {listarRegistroSalida: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
+
+    }).done();
+};
+
+ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data.obj;
+    var obj = {
+        "prefijo": args.prefijo,
+        "numero": args.numero,
+        "numeroGuia": args.numeroGuia,
+        "cantidadCaja": args.tipoEmpaque.cantidadCaja,
+        "cantidadNevera": args.tipoEmpaque.cantidadNevera,
+        "cantidadBolsa": args.tipoEmpaque.cantidadBolsa,
+        "tipoIdtercero": args.tipoIdtercero,
+        "terceroId": args.terceroId,
+        "conductor": args.conductor,
+        "ayudante": args.ayudante,
+        "placa": args.placa,
+        "fechaEnvio": args.fechaEnvio,
+        "tipoPaisId": args.ciudad.pais_id,
+        "tipoDptoid": args.ciudad.departamento_id,
+        "tipoMpioId": args.ciudad.id,
+        "usuarioId": req.session.user.usuario_id,
+        "observacion": args.observacion,
+        "operarioId": args.operarioId,
+        that: that
+    };
+
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'registroSalida', obj).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, "ingreso Correcto", 200, {validacionDespachos: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
+
+    }).done();
+};
+
+ValidacionDespachos.prototype.modificarRegistroSalidaBodega = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data.obj;
+
+    var obj = {
+        "prefijo": args.prefijo,
+        "numero": args.numero,
+        "numeroGuia": args.numeroGuia,
+        "cantidadCaja": args.tipoEmpaque.cantidadCaja,
+        "cantidadNevera": args.tipoEmpaque.cantidadNevera,
+        "cantidadBolsa": args.tipoEmpaque.cantidadBolsa,
+        "tipoIdtercero": args.tipoIdtercero,
+        "terceroId": args.terceroId,
+        "conductor": args.conductor,
+        "ayudante": args.ayudante,
+        "placa": args.placa,
+        "fechaEnvio": args.fechaEnvio,
+        "tipoPaisId": args.ciudad.pais_id,
+        "tipoDptoid": args.ciudad.departamento_id,
+        "tipoMpioId": args.ciudad.id,
+        "usuarioId": req.session.user.usuario_id,
+        "observacion": args.observacion,
+        "operarioId": args.operarioId,
+        "registro_salida_bodega_id": args.registro_salida_bodega_id,
+        that: that
+    };
+
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'modificarRegistroSalidaBodega', obj).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, "modificacion Correcta", 200, {validacionDespachos: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
+
+    }).done();
+};
 
 ValidacionDespachos.$inject = ["m_ValidacionDespachos"];
 

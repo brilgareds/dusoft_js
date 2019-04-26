@@ -14,6 +14,7 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
         "a.id",
         "a.id as numero_guia",
         "a.numero_guia_externo",
+        "a.tipo_planilla",
         "b.transportadora_id",
         "b.descripcion as nombre_transportadora",
         "b.placa_vehiculo",
@@ -54,13 +55,13 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
             .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
-                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
+                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 1\
                       from inv_planillas_detalle_farmacias a\
                       union\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 2\
                       from inv_planillas_detalle_clientes a\
                       union all\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g "), function () {
@@ -92,9 +93,9 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
  */
 PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = function (obj, callback) {
 
-var fecha = new Date();
-var formato = 'YYYY-MM-DD';
-fecha.setMonth(fecha.getMonth() - 1);
+    var fecha = new Date();
+    var formato = 'YYYY-MM-DD';
+    fecha.setMonth(fecha.getMonth() - 1);
 
     var columnas = [
         G.knex.raw("'0' as tipo"),
@@ -102,6 +103,7 @@ fecha.setMonth(fecha.getMonth() - 1);
         "b.farmacia_id",
         "b.centro_utilidad",
         "b.bodega",
+        "b.estado as estado",
         "a.empresa_id",
         G.knex.raw("e.razon_social as nombre_empresa"),
         "d.centro_utilidad as centro_utilidad_id",
@@ -113,17 +115,7 @@ fecha.setMonth(fecha.getMonth() - 1);
         "a.solicitud_prod_a_bod_ppal_id as numero_pedido",
         "a.fecha_registro",
         G.knex.raw("(SELECT id_aprobacion_planillas FROM aprobacion_despacho_planillas_d as bb WHERE bb.prefijo = a.prefijo AND bb.numero = a.numero and (bb.cantidad_cajas > 0 or bb.cantidad_neveras > 0) ) as id_aprobacion_planillas"),
-        G.knex.raw("case when (\n\
-                    SELECT j.numero\
-                    FROM (\
-                        SELECT f.prefijo, f.numero, f.id_aprobacion_planillas FROM aprobacion_despacho_planillas_d f \
-                        WHERE f.prefijo = a.prefijo AND f.numero = a.numero\
-                        UNION\
-                        SELECT g.prefijo, g.numero, g.id_aprobacion_planillas FROM aprobacion_despacho_planillas g\
-                        WHERE g.prefijo = a.prefijo AND g.numero = a.numero\
-                    ) as j\
-                ) is null then '0'\
-                ELSE '1' end as estado_documento")
+        G.knex.raw("'0' as estado_documento")
     ];
 
     if (obj.estadoListarValidacionDespachos !== 1) {
@@ -164,12 +156,15 @@ fecha.setMonth(fecha.getMonth() - 1);
     }
 
     query.where(function () {
-        this.andWhere(G.knex.raw("a.fecha_registro >= '"+G.moment(fecha).format(formato)+"'"));
+        this.andWhere(G.knex.raw("a.fecha_registro >= '" + G.moment(fecha).format(formato) + "'"));
         this.andWhere('a.empresa_id', obj.empresa_id);
         this.andWhere('b.farmacia_id', obj.farmacia_id);
         this.andWhere('b.centro_utilidad', obj.centro_utilidad_id);
         this.whereIn('b.estado', [2, 3, 8, 9]);
         this.andWhere(G.knex.raw("a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_farmacias b )"));
+        if (obj.estadoListarValidacionDespachos === 1) {
+            this.andWhere(G.knex.raw("a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from aprobacion_despacho_planillas_d b )"));
+        }
         this.andWhere(G.knex.raw("( a.prefijo || ' ' || a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%' or \
                     a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%' or \
                     a.solicitud_prod_a_bod_ppal_id :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%')"));
@@ -197,6 +192,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
         "a.empresa_id",
         "a.prefijo",
         "a.numero",
+        "b.estado_pedido as estado",
         G.knex.raw("a.pedido_cliente_id as numero_pedido"),
         "a.fecha_registro",
         G.knex.raw("case when (\
@@ -270,6 +266,7 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
         "a.id as numero_guia",
         "a.numero_guia_externo",
         "a.numero_placa_externo",
+        "a.tipo_planilla",
         "b.transportadora_id",
         "b.descripcion as nombre_transportadora",
         "b.placa_vehiculo",
@@ -310,13 +307,13 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
             .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
-                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
+                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 1\
                       from inv_planillas_detalle_farmacias a\
-                      union\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
+                      union \
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 2\
                       from inv_planillas_detalle_clientes a\
                       union all \
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g "), function () {
@@ -489,7 +486,7 @@ PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function (paramet
 
     var query = G.knex('inv_planillas_despacho').
             returning('id').
-            insert({pais_id: parametros.pais_id, departamento_id: parametros.departamento_id, ciudad_id: parametros.ciudad_id,
+            insert({pais_id: parametros.pais_id, departamento_id: parametros.departamento_id, ciudad_id: parametros.ciudad_id, tipo_planilla: parametros.tipo_planilla,
                 inv_transportador_id: parametros.transportador_id, nombre_conductor: parametros.nombre_conductor, observacion: parametros.observacion,
                 numero_guia_externo: parametros.numero_guia_externo, usuario_id: parametros.usuario_id, numero_placa_externo: parametros.numero_placa_externo
             });
@@ -659,6 +656,27 @@ PlanillasDespachosModel.prototype.insertarLioDocumento = function (obj, callback
         callback(err);
     }).done();
 };
+
+/**
+ *@author German Galvis
+ *@fecha  17/04/2019
+ *+Descripcion Metodo encargado de traer el consecutivo de los lios
+ *              
+ *             
+ **/
+PlanillasDespachosModel.prototype.consecutivoLio = function (callback) {
+    var sql = " SELECT nextval('inv_planilla_despacho_lio_seq'::regclass); ";
+    G.knex.raw(sql).
+            then(function (resultado) {
+                callback(false, resultado.rows);
+            }).catch(function (error) {
+        console.log("error [consecutivoLio]: ", error);
+        callback(error);
+    });
+};
+
+
+
 function __insertarLioDocumento(obj, callback) {
 
     var documento = obj.documentos[0];
@@ -667,10 +685,19 @@ function __insertarLioDocumento(obj, callback) {
         callback(false);
         return;
     }
-    var observacion = obj.observacion.lenght === 0 ? documento.prefijo + " - " + documento.numero : "'" + obj.observacion + "'";
-    if (obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes") {
 
-        sql = "INSERT INTO " + obj.tabla + " (\n\
+    var tabla;
+    if (documento.tipo === '0') {
+        tabla = "inv_planillas_detalle_farmacias";
+    } else if (documento.tipo === '1') {
+        tabla = "inv_planillas_detalle_clientes";
+    }
+
+    var observacion = obj.observacion.lenght === 0 ? documento.prefijo + " - " + documento.numero : "'" + obj.observacion + "'";
+//    if ((obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes") && documento.tipo !== '2') {
+    if (documento.tipo !== '2') {
+
+        sql = "INSERT INTO " + tabla + " (\n\
                 inv_planillas_despacho_id, \n\
                 empresa_id, \
                 prefijo,\
@@ -681,7 +708,8 @@ function __insertarLioDocumento(obj, callback) {
                 observacion, \
                 usuario_id,\
                 fecha_registro,\
-                numero_lios)\
+                numero_lios,\
+                lio_id)\
                 (select " + obj.numeroGuia + " as inv_planillas_despacho_id,\
                 empresa_id,\
                 prefijo,\
@@ -692,7 +720,8 @@ function __insertarLioDocumento(obj, callback) {
                 " + observacion + " as observacion,\
                 " + parseInt(obj.usuario_id) + " as usuario_id,\
                 now() as fecha_registro,\
-                " + obj.cantidadLios + " as numero_lios \
+                " + obj.cantidadLios + " as numero_lios, \
+                " + obj.consecutivoLio + " as lio_id \
                  FROM inv_bodegas_movimiento_d\
                  WHERE empresa_id = :1\
                  AND prefijo= :2\
@@ -714,7 +743,8 @@ function __insertarLioDocumento(obj, callback) {
                 empresa_destino, \
                 centro_utilidad,\
                 bodega,\
-                numero_lios\
+                numero_lios,\
+                lio_id\
                 )\
                 (select " + obj.numeroGuia + " as inv_planillas_despacho_id,\
                 aa.empresa_id,\
@@ -729,7 +759,8 @@ function __insertarLioDocumento(obj, callback) {
                 :4 as empresa_destino,\
                 :5 as centro_utilidad,\
                 :6 as bodega,\
-                " + obj.cantidadLios + " as numero_lios \
+                " + obj.cantidadLios + " as numero_lios, \
+                " + obj.consecutivoLio + " as lio_id \
                  FROM aprobacion_despacho_planillas as aa \
                  INNER JOIN aprobacion_despacho_planillas_d as bb ON aa.id_aprobacion_planillas = bb.id_aprobacion_planillas\
                  WHERE  aa.empresa_id = :1\

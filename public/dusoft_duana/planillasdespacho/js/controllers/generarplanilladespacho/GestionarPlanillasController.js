@@ -142,7 +142,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.seleccionar_transportadora = function () {
-            $scope.planilla.set_numero_placa_externo($scope.planilla.transportadora.placa);
+                $scope.planilla.set_numero_placa_externo($scope.planilla.transportadora.placa);
             };
 
             $scope.buscador_documentos_planillas = function (ev) {
@@ -224,6 +224,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     var documento = Documento.get(data.id, data.empresa_id, data.prefijo, data.numero, data.numero_pedido, data.cantidad_cajas, data.cantidad_neveras, data.temperatura_neveras, data.observacion, data.tipo);
                     documento.set_tercero(data.descripcion_destino);
+                    documento.lio_id = data.lio_id;
 
                     $scope.planilla.set_documentos(documento);
                 });
@@ -461,18 +462,72 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     </div>\
                                  </div>',
                 columnDefs: [
-                    {field: 'get_tercero()', displayName: 'Cliente', width: "35%"},
-                    {field: 'get_descripcion()', displayName: 'Documento', width: "25%"},
+                    {field: 'get_tercero()', displayName: 'Cliente', width: "30%"},
+                    {field: 'get_descripcion()', displayName: 'Documento', width: "20%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
                     {field: 'get_temperatura_neveras()', displayName: 'Temp. Neveras', width: "10%"},
+                    {field: 'lio_id', displayName: 'Lio', width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="modificar_documento_planilla(row.entity.lio_id)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-pencil"></span></button>\
                                         </div>'
                     }
                 ]
             };
+
+
+            $scope.modificar_documento_planilla = function (lio_id) {
+                var documentos = $scope.planilla.get_documentos();
+                var DocsLio = [];
+                documentos.forEach(function (documento) {
+
+                    if (documento.lio_id !== null && documento.lio_id === lio_id) {
+                        DocsLio.push(documento);
+                    }
+                });
+
+                console.log("documentos lio", DocsLio);
+
+                if (DocsLio.length > 0) {
+
+                    that.mostrarVentanaLiosModificar(DocsLio);
+
+                } else {
+                    console.log("NOP");
+//                    $scope.cerrar_gestion_documentos_bodega();
+                }
+
+
+            };
+
+
+            that.mostrarVentanaLiosModificar = function (documentos) {
+                $scope.opts = {
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: 'views/generarplanilladespacho/gestionarLios.html',
+                    controller: "GestionarLiosController",
+                    resolve: {
+                        documentos: function () {
+                            return documentos;
+                        },
+                        tipo: function () {
+                            return 0;
+                        },
+                        numeroGuia: function () {
+                            return $scope.planilla.get_numero_guia();
+                        }
+                    }
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+
+            };
+
+
+
 
             that.gestionar_consultas();
 

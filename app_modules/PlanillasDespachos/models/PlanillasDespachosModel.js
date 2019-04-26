@@ -370,7 +370,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     where pedido_cliente_id = b.solicitud_prod_a_bod_ppal_id\
                     ) as a\
                     ) as factura,\
-                    a.usuario_id \
+                    a.usuario_id,\
+                    a.lio_id \
                     from inv_planillas_detalle_farmacias a\
                     inner join inv_bodegas_movimiento_despachos_farmacias b on a.empresa_id = b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
                     inner join solicitud_productos_a_bodega_principal c on b.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\
@@ -417,7 +418,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     limit 1\
                     ) as a\
                     ) as factura,\
-                    a.usuario_id\
+                    a.usuario_id,\
+                    a.lio_id\
                     from inv_planillas_detalle_clientes a\
                     inner join inv_bodegas_movimiento_despachos_clientes b on a.empresa_id = b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
                     inner join ventas_ordenes_pedidos c on b.pedido_cliente_id = c.pedido_cliente_id\
@@ -453,7 +455,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     '' as descripcion_sede,\
                     '' as direccion_sede,\
                     '' as factura,\
-                    a.usuario_id\
+                    a.usuario_id,\
+                    a.lio_id\
                     from inv_planillas_detalle_empresas a\
                     inner join (\
                         SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) f.cantidad_cajas, f.cantidad_neveras, g.numero, g.prefijo\

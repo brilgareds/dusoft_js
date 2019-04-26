@@ -189,7 +189,7 @@ NotasProveedoresModel.prototype.verNotasFactura = (obj, callback) => {
 
         const consultarNotasFactura =
             G.knex
-                .seledsct([
+                .select([
                     'a.empresa_id',
                     'a.prefijo',
                     'a.numero',

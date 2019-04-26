@@ -376,8 +376,6 @@ ValidacionDespachosModel.prototype.validarExistenciaMultiplesDocumentos = functi
     }).done();
 };
 
-<<<<<<< HEAD
-=======
 ValidacionDespachosModel.prototype.modificarRegistroEntradaBodega = function (obj, callback) {
 
     var query = G.knex("inv_registro_entrada_bodega").
@@ -723,5 +721,4 @@ ValidacionDespachosModel.prototype.listarRegistroEntrada = function (obj, callba
     });
 
 };
->>>>>>> certicamara_nueva_factura_15_11_2018
 module.exports = ValidacionDespachosModel;

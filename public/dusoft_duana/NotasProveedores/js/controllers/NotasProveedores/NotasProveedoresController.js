@@ -213,7 +213,7 @@ define(
                             $scope.NotaTemporal = data.obj;
                             console.log($scope.NotaTemporal);
                             if(modal){
-                                $scope.ejemploModal($scope.NotaTemporal);
+                                $scope.modal($scope.NotaTemporal);
                             }
                         }else{
                             console.log('Error: ', data.obj.err);
@@ -267,14 +267,14 @@ define(
                     }
                 };
 
-                $scope.ejemploModal = function (obj) {
+                $scope.modal = function (obj) {
 
                     $scope.opts = {
                         backdrop: true,
                         backdropClick: true,
                         dialogFade: true,
                         keyboard: true,
-                        templateUrl: 'views/modals/createNote.html',
+                        templateUrl: 'views/modals/showNotes.html',
                         scope: $scope,
                         // controller: "VentanaMensajeSincronizacionController",
                         resolve: {
@@ -317,6 +317,8 @@ define(
                         if (data.status === 200) {
                             console.log('Ajax fine!!');
                             console.log('data is: ', data.obj);
+                            $scope.NotasGeneradas = data.obj;
+                            $scope.modal($scope.NotasGeneradas);
                         } else { console.log('Hubo un error: ', data.obj); }
                     });
                 };

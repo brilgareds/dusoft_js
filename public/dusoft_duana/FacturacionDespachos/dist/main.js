@@ -34681,7 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -62263,21 +62263,24 @@ define('controllers/facturacionProveedor/DetalleRecepcionParcialController',["an
  ], function(angular, controllers) {
     
         controllers.controller('DetalleRecepcionParcialController', [
-        '$scope', '$rootScope', "Request",
-        "$filter", '$state', '$modal',
-        "API", "AlertService", 'localStorageService',
-        "Usuario", "socket", "$timeout",
-        "Empresa",
-        function($scope, $rootScope, Request,
-                $filter, $state, $modal,
-                API, AlertService, localStorageService,
-                Usuario, socket, $timeout,
-                Empresa) {
-                    
-                    var that = this;
-                    var filtroPedido = localStorageService.get("verificacionDetalle");
-               }]);
+            '$scope', '$rootScope', "Request",
+            "$filter", '$state', '$modal',
+            "API", "AlertService", 'localStorageService',
+            "Usuario", "socket", "$timeout",
+            "Empresa",
+            function($scope, $rootScope, Request,
+                    $filter, $state, $modal,
+                    API, AlertService, localStorageService,
+                    Usuario, socket, $timeout,
+                    Empresa) {
+
+                        var that = this;
+                        var filtroPedido = localStorageService.get("verificacionDetalle");
+            }
+            ]
+        );
 });
+
 define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controllers"], function (angular, controllers) {
 
     var fo = controllers.controller('CajaGeneralController',
@@ -67479,9 +67482,9 @@ define('app',[
                     controller: "PedidosClientesController",
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {
-                    url: "/NotasProveedores",
+                    url: "/FacturacionProveedores",
                     text: "Facturacion Proveedores", 
-                    templateUrl: "views/facturacionProveedores/index.html",
+                    templateUrl: "views/FacturacionProveedores/index.html",
                     parent_name: "Despacho",
                     controller: "FacturacionProveedorController"
                 }).state('DetalleRecepcionParcial', {

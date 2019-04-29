@@ -63,6 +63,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
+            $scope.gestionar_consultas = function () {
+                that.gestionar_consultas();
+            };
+
             $scope.listar_ciudades = function (termino_busqueda) {
 
                 if (termino_busqueda.length < 3) {
@@ -462,12 +466,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     </div>\
                                  </div>',
                 columnDefs: [
-                    {field: 'get_tercero()', displayName: 'Cliente', width: "30%"},
-                    {field: 'get_descripcion()', displayName: 'Documento', width: "20%"},
+                    {field: 'get_tercero()', displayName: 'Cliente', width: "35%"},
+                    {field: 'get_descripcion()', displayName: 'Documento', width: "25%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
                     {field: 'get_temperatura_neveras()', displayName: 'Temp. Neveras', width: "10%"},
-                    {field: 'lio_id', displayName: 'Lio', width: "10%"},
+//                    {field: 'lio_id', displayName: 'Lio', width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
@@ -493,8 +497,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     that.mostrarVentanaLiosModificar(DocsLio);
 
                 } else {
-                    console.log("NOP", docSelec);
-//                    $scope.verModificarUnico(docSelec);
+                    that.verModificarUnico(docSelec);
                 }
 
 
@@ -507,6 +510,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     dialogClass: "editarproductomodal",
                     templateUrl: 'views/generarplanilladespacho/gestionarLios.html',
                     controller: "GestionarLiosController",
+                    scope: $scope,
                     resolve: {
                         documentos: function () {
                             return documentos;
@@ -524,92 +528,68 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-            that.verModificarUnico = function (nota, datos) {
+            that.verModificarUnico = function (datos) {
 
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: false,
-                    windowClass: 'app-modal-window-xlg-ls',
+                    windowClass: 'app-modal-window-ls-xlg-ls',
                     keyboard: true,
                     showFilter: true,
                     cellClass: "ngCellText",
                     templateUrl: 'views/generarplanilladespacho/modificarDocumentos.html',
                     scope: $scope,
-                    controller: ['$scope', '$modalInstance', 'notasService', function ($scope, $modalInstance, notasService) {
+                    controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
-                            $scope.root.impuestosnota = {
-                                valorSubtotal: 0,
-                                iva: 0,
-                                retencionFuente: 0,
-                                retencionIca: 0,
-                                totalGeneral: 0
-                            };
-
-
-                            /**
-                             * +Descripcion Metodo encargado de invocar el servicio que consulta
-                             *              el detalle de la factura
-                             * @author German Galvis
-                             * @fecha 08/08/2018 DD/MM/YYYY
-                             * @returns {undefined}
-                             */
-                            that.listarDetalleFactura = function () {
-
-                                var obj = {
-                                    session: $scope.session,
-                                    data: {
-                                        empresa_id: datos.empresa,
-                                        facturaFiscal: datos.numeroFactura,
-                                        tipoFactura: nota
-                                    }
-                                };
-
-                                notasService.detalleFactura(obj, function (data) {
-                                    if (data.status === 200) {
-
-                                        $scope.root.listadoProductos = notasService.renderProductoFacturas(data.obj.ConsultarDetalleFactura);
-
-                                    } else {
-                                        $scope.root.listadoProductos = null;
-                                    }
-
-                                });
-                            };
-
-                            that.listarDetalleFactura();
+                            $scope.DocModificar = datos;
 
                             $scope.cerrar = function () {
                                 $modalInstance.close();
                             };
 
+                            /**
+                             * +Descripcion Metodo encargado de validar la activacion del boton guardar
+                             * @author German Galvis
+                             * @fecha 27/04/2019 DD/MM/YYYY
+                             * @returns {undefined}
+                             */
+                            $scope.habilitarGuardar = function () {
+                                var disabled = false;
 
-                            $scope.guardarNotas = function () {
+                                if ($scope.DocModificar.cantidad_cajas === undefined || $scope.DocModificar.cantidad_cajas === "" || parseInt($scope.DocModificar.cantidad_cajas) < 0) {
+                                    disabled = true;
+                                } else if ($scope.DocModificar.cantidad_neveras === undefined || $scope.DocModificar.cantidad_neveras === "" || parseInt($scope.DocModificar.cantidad_neveras) < 0) {
+                                    disabled = true;
+                                } else if (parseInt($scope.DocModificar.cantidad_cajas) == 0 && parseInt($scope.DocModificar.cantidad_neveras) == 0) {
+                                    disabled = true;
+                                }
+
+                                return disabled;
+                            };
+
+
+                            $scope.guardarDoc = function () {
 
                                 var obj = {
                                     session: $scope.session,
                                     data: {
-                                        empresaId: datos.empresa,
-                                        factura_fiscal: datos.numeroFactura,
-                                        prefijo: datos.prefijo,
-                                        valor: $scope.root.impuestosnota.valorSubtotal,
-                                        total: $scope.root.impuestosnota.totalGeneral,
-                                        tipo_factura: datos.tipoFactura
+                                        documento: $scope.DocModificar,
+                                        tipo: $scope.DocModificar.tipo
                                     }
                                 };
 
-                                notasService.guardarNota(obj, function (data) {
+                                Request.realizarRequest(API.PLANILLAS.MODIFICAR_DOCUMENTO_PLANILLA, "POST", obj, function (data) {
 
                                     if (data.status === 200) {
-                                        that.mensajeCreacion(data.obj.crearNota, data.obj.respuestaFI.resultado.mensaje_ws);
-                                        that.listarFacturasGeneradas();
+                                        AlertService.mostrarMensaje("warning", data.msj);
+                                        that.gestionar_consultas();
                                         $modalInstance.close();
+
                                     } else {
                                         AlertService.mostrarMensaje("warning", data.msj);
                                     }
-
                                 });
-
 
                             };
                         }]

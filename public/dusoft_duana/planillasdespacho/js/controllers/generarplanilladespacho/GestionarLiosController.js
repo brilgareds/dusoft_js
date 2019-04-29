@@ -34,8 +34,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var cantidadLios = parseInt($scope.root.cantidadLios);
                 var cantidadNeveras = parseInt($scope.root.cantidadNeveras);
 
-                //console.log("cantidad cajas ", cantidadCajas, " cantidadLios ", cantidadLios, " neveras " , cantidadNeveras);
-
                 if (isNaN(cantidadCajas) || isNaN(cantidadLios) || isNaN(cantidadNeveras) || cantidadLios === 0 || cantidadCajas < 0 || cantidadNeveras < 0
                         || (cantidadCajas === 0 && cantidadNeveras === 0)) {
                     return false;
@@ -50,8 +48,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $modalInstance.opened.then(function () {
-                console.log("documentos ", documentos);
-
+//                console.log("documentos ", documentos);
 
             });
 
@@ -88,11 +85,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 }
 
                 if (tipo === 4) {
-                    console.log("ingreso");
-//                    self.modificarLio();
+                    self.modificarLio();
                 } else {
-                    console.log("no");
-//                    self.crearLio();
+                    self.crearLio();
                 }
 
             };
@@ -173,20 +168,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 };
 
+                Request.realizarRequest(API.PLANILLAS.MODIFICAR_LIOS, "POST", obj, function (data) {
 
-//                Request.realizarRequest(API.PLANILLAS.GESTIONAR_LIOS, "POST", obj, function (data) {
-//
-//                    if (data.status === 200) {
-//                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha guardado el registro correctamente");
-//                        $scope.cerrar();
-//                    } else if (data.status === 403) {
-//
-//                        AlertService.mostrarVentanaAlerta("Alerta del sistema", data.msj);
-//                    } else {
-//                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
-//                    }
-//
-//                });
+                    if (data.status === 200) {
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha modificado el registro correctamente");
+                        $scope.gestionar_consultas();
+                        $scope.cerrar();
+                    } else if (data.status === 403) {
+
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", data.msj);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
+                    }
+
+                });
             };
 
             self.init();

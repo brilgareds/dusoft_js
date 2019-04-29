@@ -1,4 +1,6 @@
 
+/* global G */
+
 var PlanillasDespachos = function (planillas_despachos, e008, pedidos_farmacias, eventos_pedidos_farmacias, pedidos_clientes, eventos_pedidos_clientes, emails) {
 
     this.m_planillas_despachos = planillas_despachos;
@@ -961,6 +963,60 @@ PlanillasDespachos.prototype.gestionarLios = function (req, res) {
 
 };
 
+/**
+ * @author German Galvis
+ * @fecha 29/04/2019
+ *+Descripcion Controlador encargado de actualizar la cantidad de cajas o neveras de un lio
+ **/
+PlanillasDespachos.prototype.modificarLios = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+
+    if (args.planillas_despachos === undefined) {
+        res.send(G.utils.r(req.url, 'planillas_despachos no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.documentos === undefined) {
+        res.send(G.utils.r(req.url, 'La variable documentos no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.totalCaja === undefined || args.planillas_despachos.totalCaja === '' || args.planillas_despachos.totalCaja === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de cajas debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.cantidadLios === undefined || args.planillas_despachos.cantidadLios === '' || args.planillas_despachos.cantidadLios === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de lios debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.cantidadNeveras === undefined || args.planillas_despachos.cantidadNeveras === '' || args.planillas_despachos.cantidadNeveras === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de neveras debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    args.planillas_despachos.usuario_id = req.session.user.usuario_id;
+    var temperatura = parseInt(args.planillas_despachos.cantidadNeveras) > 0 ? '3.2' : '0';
+
+    args.planillas_despachos.temperatura = temperatura;
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'modificarLioDocumento', args.planillas_despachos).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Se modifica satisfactoriamente los lios', 200, {planillas_despachos: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
+
+    }).done();
+
+};
+
 
 
 /**
@@ -1009,6 +1065,61 @@ PlanillasDespachos.prototype.actualizarLioDocumento = function (req, res) {
                 return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
 
             }).fail(function (err) {
+
+
+        res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
+
+    }).done();
+
+
+};
+
+/**
+ * @author German Galvis
+ * @fecha 29/04/2019
+ * +Descripcion: Controlador encargado de actualizar la cantidad de cajas o neveras de un documento
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+PlanillasDespachos.prototype.modificarDocumentoPlanilla = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+
+    if (args === undefined) {
+        res.send(G.utils.r(req.url, ' no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.documento === undefined) {
+        res.send(G.utils.r(req.url, 'La variable documento no esta definido', 404, {}));
+        return;
+    }
+
+
+    var tipo = args.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
+
+    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
+
+    tabla = tabla[tipo];
+
+    if (tabla === undefined) {
+        res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        documento: args.documento,
+        tabla: tabla
+    };
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'modificarDocumento', parametros, false).then(function (resultado) {
+
+        return res.send(G.utils.r(req.url, 'Documento Modificado Correctamente', 200, {planillas_despachos: resultado}));
+
+    }).fail(function (err) {
 
 
         res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));

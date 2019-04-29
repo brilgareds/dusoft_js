@@ -13,7 +13,11 @@ module.exports = function(app, di_container) {
     });
 
     app.post('/api/Sistema/verificarSincronizacion', function(req, res) {
-         c_sistema.verificarSincronizacion(req, res);
+         c_sistema.jasperReport(req, res);
+    });
+    
+    app.post('/api/Sistema/jasperReport', function(req, res) {
+         c_sistema.jasperReport(req, res);
     });
 
         // ======== Events E008 ========

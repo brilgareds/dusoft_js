@@ -1,0 +1,39 @@
+#search_provider{
+
+}
+
+#search_provider div{
+    display: inline-block;
+}
+
+.title-container-nota{
+    text-align: center;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.container-table{
+    padding-top: 15px;
+}
+
+.cyan{
+    color: #fff;
+    background-color: #28a3c7;
+    border-color: #28a3c7;
+}
+.cyan:active{
+    color: #fff;
+    background: #1c7f9c;
+}
+
+.cyan:hover{
+    color: #fff;
+}
+
+.cyan:focus{
+    color: #fff;
+}
+
+@media (max-width: 1010px) {
+
+}

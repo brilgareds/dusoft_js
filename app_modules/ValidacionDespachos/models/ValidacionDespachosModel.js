@@ -9,6 +9,7 @@ var ValidacionDespachosModel = function () {
  * @fecha  04/02/2016
  * +Descripcion Metodo encargado listar los despachos aprobados
  */
+
 ValidacionDespachosModel.prototype.listarDespachosAprobados = function (obj, callback) {
 
     var columnas = [
@@ -87,15 +88,15 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function (obj, cal
 ValidacionDespachosModel.prototype.agregarImagen = function (obj, callback) {
 
     G.knex("aprobacion_despacho_planillas_imagenes").
-            returning("id").
-            insert({"id_aprobacion": obj.id_aprobacion, "path": obj.path}).
-            then(function (resultado) {
+        returning("id").
+        insert({"id_aprobacion": obj.id_aprobacion, "path": obj.path})
+            .then(function (resultado) {
                 callback(false, resultado);
-
-            }).catch(function (err) {
-        console.log("error sql", err);
-        callback(err);
-    });
+            })
+            .catch(function (err) {
+                console.log("error sql", err);
+                callback(err);
+            });
 };
 
 /*

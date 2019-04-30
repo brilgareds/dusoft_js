@@ -14,7 +14,7 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function (obj, cal
 
     var columnas = [
         G.knex.raw("distinct on (todo.fecha_registro, todo.id_aprobacion_planillas,todo.observacion, todo.empresa_id,todo.razon_social,\
-                todo.nombre, todo.sw_otras_salidas, todo.cantidad_cajas, todo.cantidad_neveras) todo.fecha_registro"),
+                todo.nombre, todo.sw_otras_salidas, todo.cantidad_cajas, todo.cantidad_neveras, todo.cantidad_bolsas) todo.fecha_registro"),
         "todo.id_aprobacion_planillas",
         "todo.observacion",
         "todo.empresa_id",
@@ -23,13 +23,14 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function (obj, cal
         "todo.sw_otras_salidas",
         "todo.cantidad_cajas",
         "todo.cantidad_neveras",
+        "todo.cantidad_bolsas",
         "todo.prefijo",
         "todo.numero"
     ];
 
     var columnas_subquery = [
         G.knex.raw("distinct on (fecha_registro, a.id_aprobacion_planillas, observacion, b.empresa_id, b.razon_social, c.nombre, a.sw_otras_salidas,\
-                    a.cantidad_cajas, a.cantidad_neveras) fecha_registro"),
+                    a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas) fecha_registro"),
         "a.id_aprobacion_planillas",
         "observacion",
         "b.empresa_id",
@@ -37,7 +38,8 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function (obj, cal
         "c.nombre",
         "a.sw_otras_salidas",
         "a.cantidad_cajas",
-        "a.cantidad_neveras"
+        "a.cantidad_neveras",
+        "a.cantidad_bolsas"
     ];
 
     var subQuery = G.knex.select(G.knex.raw(columnas_subquery + ", d.prefijo,d.numero"))
@@ -212,10 +214,10 @@ function __registrarDetalleAprobacion(contexto, index, idPlanilla, documentos, t
  */
 ValidacionDespachosModel.prototype.registrarAprobacion = function (obj, transaccion, callback) {
 
-    var sql = "INSERT INTO aprobacion_despacho_planillas (empresa_id, observacion, fecha_registro, cantidad_cajas, cantidad_neveras, usuario_id) \
-                 VALUES ( :1, :2,  NOW(), :3, :4, :5 ) returning id_aprobacion_planillas;";
+    var sql = "INSERT INTO aprobacion_despacho_planillas (empresa_id, observacion, fecha_registro, cantidad_cajas, cantidad_neveras, cantidad_bolsas, usuario_id) \
+                 VALUES ( :1, :2,  NOW(), :3, :4, :5, :6) returning id_aprobacion_planillas;";
 
-    var query = G.knex.raw(sql, {1: obj.empresaId, 2: obj.observacion, 3: obj.cantidadTotalCajas, 4: obj.cantidadTotalNeveras, 5: obj.usuarioId});
+    var query = G.knex.raw(sql, {1: obj.empresaId, 2: obj.observacion, 3: obj.cantidadTotalCajas, 4: obj.cantidadTotalNeveras, 5: obj.cantidadTotalBolsas, 6: obj.usuarioId});
 
     if (transaccion)
         query.transacting(transaccion);
@@ -236,12 +238,12 @@ ValidacionDespachosModel.prototype.registrarAprobacion = function (obj, transacc
 ValidacionDespachosModel.prototype.registrarDetalleAprobacion = function (idPlanilla, obj, transaccion, callback) {
 
 
-    var sql = "INSERT INTO aprobacion_despacho_planillas_d (id_aprobacion_planillas, prefijo, numero, cantidad_cajas, cantidad_neveras,sw_otras_salidas) \
-                 VALUES ( :1, :2, :3, :4, :5, :6) returning id_aprobacion_planillas;";
+    var sql = "INSERT INTO aprobacion_despacho_planillas_d (id_aprobacion_planillas, prefijo, numero, cantidad_cajas, cantidad_neveras, cantidad_bolsas, sw_otras_salidas) \
+                 VALUES ( :1, :2, :3, :4, :5, :6, :7) returning id_aprobacion_planillas;";
 
-    var query = G.knex.raw(sql, {1: idPlanilla, 2: obj.prefijo.toUpperCase(), 3: obj.numero, 4: obj.cantidadCajas, 5: obj.cantidadNeveras, 6: obj.estado});
+    var query = G.knex.raw(sql, {1: idPlanilla, 2: obj.prefijo.toUpperCase(), 3: obj.numero, 4: obj.cantidadCajas, 5: obj.cantidadNeveras, 6: obj.cantidadBolsas, 7: obj.estado});
 
-    if (transaccion)
+    if (transaccion) 
         query.transacting(transaccion);
     query.then(function (resultado) {
         callback(false, resultado.rows[0]);
@@ -348,7 +350,7 @@ ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj,
 
 ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (obj, callback) {
 
-    var sql = "SELECT '2' as tipo, a.numero, a.prefijo, b.observacion, b.empresa_id,a.cantidad_cajas,a.cantidad_neveras FROM aprobacion_despacho_planillas_d as a\
+    var sql = "SELECT '2' as tipo, a.numero, a.prefijo, b.observacion, b.empresa_id,a.cantidad_cajas,a.cantidad_neveras,a.cantidad_bolsas FROM aprobacion_despacho_planillas_d as a\
                inner join aprobacion_despacho_planillas as b on a.id_aprobacion_planillas = b.id_aprobacion_planillas \
                WHERE a.prefijo = :1\
                AND a.numero NOT IN( SELECT numero FROM inv_planillas_detalle_empresas WHERE prefijo = :1)\
@@ -451,6 +453,7 @@ ValidacionDespachosModel.prototype.validarExistenciaDocumento = function (obj, c
                 callback(error);
             }).done();
 };
+
 ValidacionDespachosModel.prototype.modificarRegistroEntradaBodega = function (obj, callback) {
 
     var query = G.knex("inv_registro_entrada_bodega").

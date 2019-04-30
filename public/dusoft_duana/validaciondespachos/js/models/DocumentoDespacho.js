@@ -12,6 +12,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.seleccionado = false;
                 this.cantidadCajas = 0;
                 this.cantidadNeveras = 0;
+                this.cantidadBolsas = 0;
                 this.empresaId = empresaId;
                 this.estado = 0;
                 this.estadoDocumento;
@@ -81,6 +82,14 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
 
             DocumentoDespacho.prototype.setCantidadNeveras = function (cantidadNeveras) {
                 this.cantidadNeveras = cantidadNeveras;
+            };
+
+            DocumentoDespacho.prototype.getCantidadBolsas = function () {
+                return this.cantidadBolsas;
+            };
+
+            DocumentoDespacho.prototype.setCantidadBolsas = function (cantidadBolsas) {
+                this.cantidadBolsas = cantidadBolsas;
             };
 
             DocumentoDespacho.prototype.getNumeroPedido = function () {

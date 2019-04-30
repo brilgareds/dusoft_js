@@ -276,6 +276,7 @@ ValidacionDespachos.prototype.registrarAprobacion = function (req, res) {
     var args = req.body.data;
     var totalCajas = 0;
     var totalNeveras = 0;
+    var totalBolsas = 0;
 
     if (args.validacionDespachos === undefined) {
         res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
@@ -291,10 +292,12 @@ ValidacionDespachos.prototype.registrarAprobacion = function (req, res) {
     args.validacionDespachos.detalle.forEach(function (row) {
         totalCajas += parseInt(row.cantidadCajas);
         totalNeveras += parseInt(row.cantidadNeveras);
+        totalBolsas += parseInt(row.cantidadBolsas);
     });
 
     args.validacionDespachos.cantidadTotalCajas = totalCajas;
     args.validacionDespachos.cantidadTotalNeveras = totalNeveras;
+    args.validacionDespachos.cantidadTotalBolsas = totalBolsas;
 
     G.Q.ninvoke(that.m_ValidacionDespachos, 'transaccionRegistrarAprobacion', args.validacionDespachos).then(function (resultado) {
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {validacionDespachos: resultado}));

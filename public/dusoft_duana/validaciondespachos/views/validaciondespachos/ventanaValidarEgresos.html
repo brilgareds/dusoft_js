@@ -56,11 +56,12 @@
                                 <fieldset>
 
                                     <input type="checkbox" value="caja" ng-checked="numeroCaja" ng-click="pulsar($event.currentTarget.checked, 'caja')"> Cajas <br>
-                                    <input type="checkbox" value="nevera" ng-checked="numeroNevera" ng-click="pulsar($event.currentTarget.checked, 'nevera')"> Neveras 
+                                    <input type="checkbox" value="nevera" ng-checked="numeroNevera" ng-click="pulsar($event.currentTarget.checked, 'nevera')"> Neveras <br>
+                                    <input type="checkbox" value="nevera" ng-checked="numeroBolsa" ng-click="pulsar($event.currentTarget.checked, 'bolsa')"> Bolsas 
                                     <div class="col-md-12">
                                         <div class="input-group">
                                             <span class="input-group-btn">
-                                                <button type="button" class="btn btn-primary" ng-disabled="(!numeroNevera && !numeroCaja)"  ng-click="distribuirCajas()" >Distribuir</button>
+                                                <button type="button" class="btn btn-primary" ng-disabled="(!numeroNevera && !numeroCaja && !numeroBolsa)"  ng-click="distribuirCajas()" >Distribuir</button>
                                             </span>
                                             <input type="text" class="form-control"  placeholder="" ng-model="datosView.cantidadCajas">                                        
                                         </div> 
@@ -92,7 +93,7 @@
         </div>
         <div class="modal-footer">    
             <button type="button" class="btn btn-warning" ng-click="cerrarVentana()">Cerrar</button>
-            <button type="button" class="btn btn-primary" ng-disabled="(numeroNevera || numeroCaja)" ng-click="guardarDocumentosSeleccionados()">Guardar</button>
+            <button type="button" class="btn btn-primary" ng-disabled="(numeroNevera || numeroCaja || numeroBolsa)" ng-click="guardarDocumentosSeleccionados()">Guardar</button>
         </div>
     </div>
 </div> 

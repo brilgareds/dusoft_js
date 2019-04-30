@@ -18,6 +18,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.fecha_registro = fecha_registro;
                 this.cantidadCajas = 0;
                 this.cantidadNeveras = 0;
+                this.cantidadBolsas = 0;
                 this.estado =0;
                 this.observacion;
                 this.razon_social;
@@ -88,8 +89,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             AprobacionDespacho.prototype.getCantidadCajas = function () {
                 return this.cantidadCajas;
-            };
-            
+            };            
             
             AprobacionDespacho.prototype.setCantidadNeveras = function (cantidadNeveras) {
                 this.cantidadNeveras = cantidadNeveras;
@@ -97,6 +97,14 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             AprobacionDespacho.prototype.getCantidadNeveras = function () {
                 return this.cantidadNeveras;
+            };
+            
+            AprobacionDespacho.prototype.getCantidadBolsas = function () {
+                return this.cantidadBolsas;
+            };
+            
+            AprobacionDespacho.prototype.setCantidadBolsas = function (cantidadBolsas) {
+                this.cantidadBolsas = cantidadBolsas;
             };
 
             AprobacionDespacho.prototype.setEstado = function (estado) {

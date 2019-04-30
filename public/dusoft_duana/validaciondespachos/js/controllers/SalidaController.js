@@ -2,12 +2,16 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
     controllers.controller('SalidaController',
             ['$scope', 'Request', 'API', 'AlertService', 'Usuario',
-                 "$filter",  "ValidacionDespachosService","localStorageService",
-                function ($scope,  Request, API, AlertService, Usuario,
-                         $filter, ValidacionDespachosService,localStorageService) {
+                "$filter", "ValidacionDespachosService", "localStorageService",
+                function ($scope, Request, API, AlertService, Usuario,
+                        $filter, ValidacionDespachosService, localStorageService) {
 
                     var that = this;
+                    $scope.listaAgrupados = [];
+                    var i = 0;
                     var fecha_actual = new Date();
+                    $scope.selected = [];
+                    var controlModifica = false;
                     $scope.date = $filter('date')(fecha_actual, "yyyy-MM-dd");
                     $scope.paginaactual = 1;
                     $scope.format = 'yyyy/MM/dd';
@@ -17,46 +21,49 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
                     };
-                 
+
                     that.init = function () {
 
                         $scope.root = {
+                            isGuia: true,
                             guardarButton: true,
                             modificarButton: false,
                             prefijo: "Prefijo",
+                            disabledGuia: false,
                             registrosLength: 0,
                             termino_busqueda_clientes: "",
                             hora_envio: "",
-                            fechaEnvio : $scope.date,
+                            documentosPlanillas: [],
+                            fechaEnvio: $scope.date,
+                            empaqueNumero: {caja: 0, nevera: 0},
                             pref: {},
                             operario: {},
                             cliente: {},
                             filtro: "",
                             empaques: [{id: 0, nombre: 'Caja'}, {id: 1, nombre: 'Nevera'}, {id: 2, nombre: 'Bolsa'}]
                         };
-                        
+
                         var datosFormulario = localStorageService.get("datosFormulario");
-                        if(datosFormulario){
-                          $scope.root.operarios = datosFormulario.operarios;
-                          $scope.root.prefijos = datosFormulario.prefijos;
-                        }else{
-                          that.listarPrefijos();
-                          that.listarOperarios();
+                        if (datosFormulario) {
+                            $scope.root.operarios = datosFormulario.operarios;
+                            $scope.root.prefijos = datosFormulario.prefijos;
+                        } else {
+                            that.listarPrefijos();
+                            that.listarOperarios();
                         }
-                        
+
                         that.limpiar();
-                        
+
                         var datosCiudades = localStorageService.get("datosCiudades");
-                        console.log("datosCiudades",datosCiudades);
-                         if(datosCiudades){
-                          $scope.root.ciudades = datosCiudades.ciudades;
-                         }else{
-                         that.listarCiudadesPais();                         
-                         }
-                         
-                      //  $scope.filtro();
+
+                        if (datosCiudades) {
+                            $scope.root.ciudades = datosCiudades.ciudades;
+                        } else {
+                            that.listarCiudadesPais();
+                        }
+
                     };
-                    
+
                     var localStrorage = function () {
                         localStorageService.add("datosCiudades", {
                             ciudades: $scope.root.ciudades
@@ -66,6 +73,130 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.horaDespacho = {
                         value: new Date(fecha_actual.getFullYear(), fecha_actual.getMonth(), fecha_actual.getDate(), fecha_actual.getHours(), fecha_actual.getMinutes())
                     };
+
+                    $scope.cargar_guia = function ($event) {
+                        if ($event.which === 13) {
+                            if (isNaN($scope.root.guia)) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El campo es Numerico");
+                            } else {
+                                if ($scope.root.guia != 0) {
+                                    var obj = { numero_guia: $scope.root.guia, modificar : 0};                            
+                                    that.documentosPlanillasDetalle(obj);
+                                } else {
+                                    console.log('no hay guia');
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Guia no registrada");
+                                }
+                            }
+                        }
+                    };
+
+                    that.documentosPlanillasDetalle = function (obj) {
+                        var obj = {
+                            session: $scope.session,
+                            planilla_id: obj.numero_guia,
+                            termino_busqueda: "",
+//                            tercero : {tercero_id: $scope.root.cliente.tercero_id , tipo_id_tercero : $scope.root.cliente.tipo_id_tercero} 
+                            tercero : {tercero_id: obj.tercero_id , tipo_id_tercero : obj.tipo_id_tercero},
+                            modificar : obj.modificar 
+                        };
+
+                        ValidacionDespachosService.documentosPlanillasDetalle(obj, function (data) {
+
+                            if (data.status === 200) {
+                                if (data.obj.planillas_despachos.length > 0) {
+                                    that.numeroEmpaque(data.obj.planillas_despachos, 0, {caja: 0, nevera: 0}, function (empaque) {
+                                        $scope.root.empaqueNumero = empaque;
+                                    });
+                                    $scope.root.isGuia = false;
+                                    $scope.root.documentosPlanillas = data.obj.planillas_despachos;
+                                    $scope.tamano = 35 + (30 * data.obj.planillas_despachos.length) + 'px';
+                                } else {
+                                    $scope.root.isGuia = true;
+                                }
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        });
+                    };
+
+//                    that.documentosPlanillas = function (guia) {
+//                        var obj = {
+//                            session: $scope.session,
+//                            planilla_id: guia,
+//                            termino_busqueda: ""
+//                        };
+//
+//                        ValidacionDespachosService.documentosPlanillas(obj, function (data) {
+//
+//                            if (data.status === 200) {
+//                                if (data.obj.planillas_despachos.length > 0) {
+//                                    that.numeroEmpaque(data.obj.planillas_despachos, 0, {caja: 0, nevera: 0}, function (empaque) {
+//                                        $scope.root.empaqueNumero = empaque;
+//                                    });
+//                                    $scope.root.isGuia = false;
+//                                    $scope.root.cliente = "";
+//                                   // $scope.root.empaqueNumero = "";
+//                                    $scope.root.empaque = "";
+//                                    
+//                                    $scope.root.documentosPlanillas = data.obj.planillas_despachos;
+//                                    $scope.tamano = 30 + (30 * data.obj.planillas_despachos.length) + 'px';
+//                                } else {
+//                                    $scope.root.isGuia = true;
+//                                }
+//
+//                            } else {
+//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+//                            }
+//                        });
+//                    };
+
+                    that.numeroEmpaque = function (datos, index, empaque, callback) {
+                        var dato = datos[index];
+                        if (!dato) {
+                            callback(empaque);
+                            return;
+                        }
+                        if (dato.chequeado === true) {
+                            $scope.listaAgrupados.push(dato);
+                        }
+                        empaque.caja += dato.cantidad_cajas;
+                        empaque.nevera += dato.cantidad_neveras;
+                        index++;
+                        that.numeroEmpaque(datos, index, empaque, callback);
+                    };
+                    
+                    $scope.mostar = function(){
+                        if($scope.root.cliente.tercero_id !== undefined && $scope.root.cliente.tipo_id_tercero !== undefined){
+                            var obj = { numero_guia: "", tercero_id: $scope.root.cliente.tercero_id , tipo_id_tercero : $scope.root.cliente.tipo_id_tercero , modificar : 0};
+                            that.documentosPlanillasDetalle(obj);
+                        }else{
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar un Cliente");   
+                        }
+                    };
+
+
+                    $scope.listaPlanillas = {
+                        data: 'root.documentosPlanillas',
+                        enableColumnResize: true,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+                        enableSorting: true,
+                        enableFiltering: true,
+                        showSelectionCheckbox: true,
+                        enableRowSelection: true,
+                        selectedItems: $scope.listaAgrupados,
+                        columnDefs: [
+                            {field: 'descripcion_destino', displayName: 'Cliente', width: "40%"},
+                            {field: 'factura', displayName: 'Factura', width: "10%"},
+                            {field: 'prefijo', displayName: 'Prefijo', width: "10%"},
+                            {field: 'numero', displayName: 'Documento', width: "10%"},
+                            {field: 'cantidad_cajas', displayName: 'Caja', width: "6%"},
+                            {field: 'cantidad_neveras', displayName: 'Nevera', width: "8%"},
+                            {field: 'temperatura_neveras', displayName: '°C', width: "6%"},
+                            {field: 'ciudad', displayName: 'Ciudad', width: "10%"}
+                        ]
+                    };
+
 
                     /**
                      * @author Cristian Ardila
@@ -110,7 +241,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         };
 
                         ValidacionDespachosService.listarRegistroSalida(obj, function (data) {
-                            console.log("data",data);
                             if (data.status === 200) {
                                 $scope.root.registrosLength = data.obj.listarRegistroSalida.length;
                                 $scope.root.listarRegistros = data.obj.listarRegistroSalida;
@@ -126,10 +256,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     $scope.listaRegistros = {
                         data: 'root.listarRegistros',
-                        enableColumnResize: true,
                         enableRowSelection: false,
+                        enablePinning: true,
+                        enablePaging: true,
+                        enableColumnResize: true,
                         enableCellSelection: true,
-                        enableHighlighting: true,
                         columnDefs: [
                             {field: 'prefijo_id', displayName: 'Prefijo', width: "5%"},
                             {field: 'numero', displayName: 'Numero', width: "5%"},
@@ -148,7 +279,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'detalle', width: "5%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="activar(row.entity)">Modificar</span></button></div>'
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="activar(row.entity)">Ver</span></button></div>'
 
                             }
                         ]
@@ -157,8 +288,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.activar = function (obj) {
                         var d = new Date(obj.fecha_envio);
                         that.limpiar();
+                        $scope.root.disabledGuia = true;
                         $scope.root.guardarButton = false;
-                        $scope.root.modificarButton = true;
+                        $scope.root.modificarButton = false;//se comenta boton de modificar ya que no se debe realizar esta accion despues de guardar la aprobacion de la guia (despacho)
                         $scope.root.pref = {prefijo: obj.prefijo_id};
                         $scope.root.factura = obj.numero;
                         $scope.root.registro_salida_bodega_id = obj.registro_salida_bodega_id;
@@ -176,9 +308,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.empaque = {cantidadCaja: obj.cantidad_caja, cantidadNevera: obj.cantidad_nevera, cantidadBolsa: obj.cantidad_bolsa};
                         $scope.root.cliente = {tercero_id: obj.tercero_id, tipo_id_tercero: obj.tipo_id_tercero, nombre_tercero: obj.nombre_tercero};
                         $scope.root.observacion = obj.observacion;
+                        if (parseInt(obj.guia_multiple) > 0) {
+                            $scope.root.isGuia = false;
+                            obj.modificar = 1;
+                            that.documentosPlanillasDetalle(obj);
+                        }
                     };
 
                     $scope.modificar = function (obj) {
+                        if (($scope.root.empaque === "" || $scope.root.empaque === undefined || ($scope.root.empaque.cantidadCaja === null && $scope.root.empaque.cantidadNevera === null && $scope.root.empaque.cantidadBolsa === null))) {
+                            if ($scope.root.documentosPlanillas.length === 0) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Cantidad de empaque");
+                                return;
+                            } else {
+
+                                if ($scope.listaAgrupados.length === 0) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe chequear los Items");
+                                    return;
+                                }
+                            }
+                        }
+
                         var d = new Date($scope.root.fechaEnvio);
                         var obj = {
                             session: $scope.session,
@@ -195,7 +345,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             registro_salida_bodega_id: $scope.root.registro_salida_bodega_id,
                             placa: $scope.root.placa,
                             fechaEnvio: d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
-                            ciudad: $scope.root.ciudad
+                            ciudad: $scope.root.ciudad,
+                            documentos: $scope.listaAgrupados.length === 0 ? [] : $scope.listaAgrupados
                         };
                         ValidacionDespachosService.modificaRegistroSalidaBodega(obj, function (data) {
 
@@ -220,10 +371,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             if (data.status === 200) {
                                 that.limpiar();
-                                if(obj.numero !==""){
-                                $scope.root.filtro = obj.numero;
-                                }else{
-                                $scope.root.filtro = obj.numeroGuia; 
+                                if (obj.numero !== "") {
+                                    $scope.root.filtro = obj.numero;
+                                } else {
+                                    $scope.root.filtro = obj.numeroGuia;
                                 }
                                 $scope.filtro();
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Almacenado Correctamente");
@@ -235,6 +386,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
                     that.limpiar = function () {
+                        $scope.listaAgrupados.length = 0;
+                        $scope.root.disabledGuia = false;
                         $scope.root.pref = "";
                         $scope.root.factura = "";
                         $scope.root.guia = "";
@@ -247,7 +400,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.observacion = "";
                         $scope.root.registro_entrada_bodega_id = "";
                         $scope.root.operario = "";
-//                        that.listarRegistroSalidaBodega();
+                        $scope.root.documentosPlanillas = [];
+                        $scope.root.empaqueNumero = "";
+                        $scope.root.isGuia = true;
                     };
 
                     $scope.cancelar = function () {
@@ -312,50 +467,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.seleccionarTransportadora = function () {
 
                     };
-                    $scope.seleccionarPrefijo = function () {                        
-                        if($scope.root.pref.sw_ingreso_automatico_datos === '1'){
-//                           $scope.root.operario = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
-                           $scope.root.conductor = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
-                           $scope.root.ayudante = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
-                           $scope.root.ciudad = {departamento_id: "76",id: "001",nombre_ciudad: "CALI",nombre_departamento: "VALLE DEL CAUCA",nombre_pais: "COLOMBIA",pais_id: "CO"};
-                           $scope.root.placa = '000';
-                           console.log("prefijo::: ",$scope.root.pref); 
+                    $scope.seleccionarPrefijo = function () {
+                        if ($scope.root.pref.sw_ingreso_automatico_datos === '1') {
+                            $scope.root.conductor = {nombre_operario: "RECLAMA EN BODEGA", operario_id: 90};
+                            $scope.root.ayudante = {nombre_operario: "RECLAMA EN BODEGA", operario_id: 90};
+                            $scope.root.ciudad = {departamento_id: "76", id: "001", nombre_ciudad: "CALI", nombre_departamento: "VALLE DEL CAUCA", nombre_pais: "COLOMBIA", pais_id: "CO"};
+                            $scope.root.placa = '000';
+
                         }
                     };
                     $scope.seleccionar_operario = function () {
-console.log("despacha::: ",$scope.root.operario);
+
                     };
                     $scope.seleccionar_ciudad = function () {
-console.log("ciudad::: ",$scope.root.ciudad);
+
                     };
 
                     $scope.guardar = function () {
-                        if ($scope.root.factura === "" && $scope.root.guia === "") {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar numero de Factura o numero de Guia");
-                            return;
-                        }
 
-                        if ($scope.root.empaque === "" || $scope.root.empaque === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Cantidad de empaque");
-                            return;
-                        }
-
-                        if ($scope.root.placa === "" || $scope.root.placa === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la placa");
-                            return;
-                        }
-                        if ($scope.root.operario === "" || $scope.root.operario === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el despachador");
-                            return;
-                        }
-                        if ($scope.root.conductor === "" || $scope.root.conductor === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el conductor");
-                            return;
-                        }
-                        if ($scope.root.ayudante === "" || $scope.root.ayudante === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el ayudante");
-                            return;
-                        }
                         if ($scope.root.fechaEnvio === "" || $scope.root.fechaEnvio === undefined) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la fecha");
                             return;
@@ -364,6 +493,7 @@ console.log("ciudad::: ",$scope.root.ciudad);
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la hora");
                             return;
                         }
+
                         if ($scope.horaDespacho.value.getHours() === "" || $scope.horaDespacho.value.getHours() === undefined) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la hora");
                             return;
@@ -376,13 +506,72 @@ console.log("ciudad::: ",$scope.root.ciudad);
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar los segundos");
                             return;
                         }
-                        if ($scope.root.cliente === "" || $scope.root.cliente === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el cliente");
+                        
+                        if (($scope.root.ciudad === "" || $scope.root.ciudad === undefined)) {
+                            if ($scope.root.documentosPlanillas.length === 0) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar la ciudad");
+                                return;
+                            } 
+//                            else {
+//                                if ($scope.listaAgrupados.length === 0) {
+//                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe chequear los Items");
+//                                    return;
+//                                }
+//                            }
+                        }
+
+                        if ($scope.root.operario === "" || $scope.root.operario === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el despachador");
                             return;
                         }
-                        if ($scope.root.ciudad === "" || $scope.root.ciudad === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la ciudad");
+
+                        if ($scope.root.factura === "" && $scope.root.guia === "") {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar numero de Factura o numero de Guia");
                             return;
+                        }
+
+                        if ($scope.root.cliente === "" || $scope.root.cliente === undefined) {
+                            if ($scope.root.documentosPlanillas.length === 0) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el cliente");
+                                return;
+                            } else {
+                                if ($scope.listaAgrupados.length === 0) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe chequear los Items");
+                                    return;
+                                }
+                            }
+                        }
+
+                        if ($scope.root.placa === "" || $scope.root.placa === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la placa");
+                            return;
+                        }
+
+                        if ($scope.root.conductor === "" || $scope.root.conductor === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el conductor");
+                            return;
+                        }
+
+                        if ($scope.root.ayudante === "" || $scope.root.ayudante === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el ayudante");
+                            return;
+                        }
+
+                        if (($scope.root.empaque === "" || $scope.root.empaque === undefined)) {
+                            if ($scope.root.documentosPlanillas.length === 0 ) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Cantidad de empaque");
+                                return;
+                            } else {
+                                if ($scope.listaAgrupados.length === 0) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe chequear los Items");
+                                    return;
+                                }
+                            }
+                        }else{
+                            if(!($scope.root.empaque.cantidadBolsa > 0 || $scope.root.empaque.cantidadCaja > 0  || $scope.root.empaque.cantidadNevera > 0)){
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La cantidad debe ser mayor a Cero");
+                                return;
+                            }
                         }
 
                         var obj = {
@@ -397,8 +586,9 @@ console.log("ciudad::: ",$scope.root.ciudad);
                             conductor: $scope.root.conductor.operario_id,
                             ayudante: $scope.root.ayudante.operario_id,
                             placa: $scope.root.placa,
-                            fechaEnvio: $scope.root.fechaEnvio,//.getFullYear() + "/" + ($scope.root.fechaEnvio.getMonth() + 1) + "/" + $scope.root.fechaEnvio.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
-                            ciudad: $scope.root.ciudad
+                            fechaEnvio: $scope.root.fechaEnvio, //.getFullYear() + "/" + ($scope.root.fechaEnvio.getMonth() + 1) + "/" + $scope.root.fechaEnvio.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
+                            ciudad: $scope.root.ciudad,
+                            documentos: $scope.listaAgrupados.length === 0 ? [] : $scope.listaAgrupados
                         };
                         that.registroSalidaBodega(obj);
                     };
@@ -451,8 +641,8 @@ console.log("ciudad::: ",$scope.root.ciudad);
                      */
                     that.buscar_clientes = function (callback) {
                         var busquedaDocumento = [];
-                        if(!isNaN($scope.root.termino_busqueda_clientes)){
-                           busquedaDocumento = [{entra:0},{entra:0}];
+                        if (!isNaN($scope.root.termino_busqueda_clientes)) {
+                            busquedaDocumento = [{entra: 0}, {entra: 0}];
                         }
                         var obj = {
                             session: $scope.session,

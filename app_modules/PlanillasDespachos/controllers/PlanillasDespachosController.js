@@ -171,6 +171,39 @@ PlanillasDespachos.prototype.consultarDocumentosPlanillaDespacho = function (req
     });
 };
 
+PlanillasDespachos.prototype.consultarDocumentosPlanillaDespachoDetalle = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined) {
+        res.send(G.utils.r(req.url, 'No se definieron parametros de consulta', 404, {}));
+        return;
+    }
+
+    var planilla_id = args.planillas_despachos.planilla_id;
+    var termino_busqueda = args.planillas_despachos.termino_busqueda;
+    var obj = args.planillas_despachos.tercero;
+    
+    var obj = {}; 
+    if(args.planillas_despachos.tercero !== undefined){
+      obj = args.planillas_despachos.tercero;
+    }
+    if(args.planillas_despachos.modificar !== undefined){
+      obj.modificar = args.planillas_despachos.modificar;
+    }
+
+    that.m_planillas_despachos.consultar_documentos_planilla_despacho_detalle(planilla_id, termino_busqueda, obj, function (err, planilla_despacho) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultado los documentos de la  planilla', 500, {planillas_despachos: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Documentos planilla despacho', 200, {planillas_despachos: planilla_despacho}));
+        }
+    });
+};
+
 PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
 
     var that = this;

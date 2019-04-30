@@ -421,7 +421,7 @@ ValidacionDespachosModel.prototype.modificarRegistroEntradaBodega = function (ob
         callback(false, resultado);
 
     }).catch(function (err) {
-        console.log("error sql registroEntrada", err);
+        console.log("error sql modificarRegistroEntradaBodega", err);
         callback(err);
     });
 };
@@ -457,7 +457,7 @@ ValidacionDespachosModel.prototype.modificarRegistroSalidaBodega = function (obj
         callback(false, resultado);
         
     }).catch(function(err){
-        console.log("error sql registroEntrada",err);
+        console.log("error sql modificarRegistroSalidaBodega",err);
         callback(err);       
     });
 };
@@ -487,14 +487,83 @@ ValidacionDespachosModel.prototype.registroSalida = function (obj ,callback) {
                  "fecha_registro":'now()',
                  "observacion":obj.observacion,
                  "operario_id":obj.operarioId
+               }).returning('registro_salida_bodega_id');
+    if (obj.transaccion)
+        query.transacting(obj.transaccion);           
+    query.then(function(resultado){
+        
+        callback(false, resultado[0]);
+        
+    }).catch(function(err){
+        console.log("error sql registroSalida",err);
+        callback(err);       
+    });
+};
+
+ValidacionDespachosModel.prototype.registroSalidaDetalle = function (obj ,callback) {
+    
+     var query=G.knex("inv_registro_salida_bodega_detalle").
+      
+        insert(
+               {
+                 "prefijo_id" :obj.prefijo, 
+                 "numero" :obj.numero,
+                 "tipo" :obj.tipo,
+                 "id" :obj.id,
+                 "planilla_id" :obj.planilla_id,
+                 "empresa_id" :obj.empresa_id,
+                 "fecha_registro":'now()',
+                 "registro_salida_bodega_id":obj.registro_salida_bodega_id
                });
-               
+        
+     if (obj.transaccion)
+        query.transacting(obj.transaccion);
     query.then(function(resultado){
         
         callback(false, resultado);
         
     }).catch(function(err){
-        console.log("error sql registroEntrada",err);
+        console.log("error sql registroSalidaDetalle",err);
+        callback(err);       
+    });
+};
+
+ValidacionDespachosModel.prototype.deleteSalidaDetalle = function (obj ,callback) {  
+     
+      
+    var query = G.knex('inv_registro_salida_bodega_detalle')
+       .where('registro_salida_bodega_id', obj.registro_salida_bodega_id)
+       .del();
+    
+     if (obj.transaccion)
+        query.transacting(obj.transaccion);
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("err (/catch) [deleteSalidaDetalle]: ", err);
+        callback({err: err, msj: "Error al eliminar deleteSalidaDetalle"});
+    });
+};
+
+ValidacionDespachosModel.prototype.listarOneSalidaDetalle = function (obj ,callback) {  
+     
+    var column =  ["a.registro_salida_bodega_id"];
+    var query  =  G.knex.column(column)
+                     .select()
+                     .from('inv_registro_salida_bodega as a')
+                     .where(function(){
+                         this.andWhere("a.numero_guia",obj.numeroGuia);
+                         this.andWhere(G.knex.raw("a.numero_guia not in (100)"));
+                     });
+                    
+    query.then(function(resultado){
+        
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        console.log("error sql listarRegistroSalida",err);
         callback(err);       
     });
 };
@@ -516,6 +585,7 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
                     "a.conductor",
                     "a.ayudante",
                     G.knex.raw("to_char(a.fecha_envio,'YYYY-MM-DD HH24:MI:SS') as fecha_envio"),
+                    G.knex.raw("(select count(*) from inv_registro_salida_bodega_detalle where planilla_id = a.numero_guia ) as guia_multiple"),
                     "f.municipio",
                     "a.usuario_id",
                     "a.observacion",
@@ -531,7 +601,7 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
     var query = G.knex.column(column)
                 .select()
                 .from('inv_registro_salida_bodega as a')
-                .innerJoin('terceros as b', function () {
+                .leftJoin('terceros as b', function () {
                             this.on("b.tipo_id_tercero", "a.tipo_id_tercero")
                                 .on("b.tercero_id", "a.tercero_id");
                         })
@@ -568,13 +638,13 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
                 }).orderBy("a.fecha_registro","desc")
                   .limit(G.settings.limit).
                    offset((obj.pagina - 1) * G.settings.limit);    
-           
+       
     query.then(function(resultado){
      
         callback(false, resultado);
         
     }).catch(function(err){
-        console.log("error sql registroEntrada",err);
+        console.log("error sql listarRegistroSalida",err);
         callback(err);       
     });
 };

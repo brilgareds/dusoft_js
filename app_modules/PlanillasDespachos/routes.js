@@ -24,6 +24,10 @@ module.exports = function(app, di_container) {
     app.post('/api/PlanillasDespachos/consultarDocumentosPlanillaDespacho', function(req, res) {
         c_planillas_despachos.consultarDocumentosPlanillaDespacho(req, res);
     });
+    
+    app.post('/api/PlanillasDespachos/consultarDocumentosPlanillaDespachoDetalle', function(req, res) {
+        c_planillas_despachos.consultarDocumentosPlanillaDespachoDetalle(req, res);
+    });
 
     app.post('/api/PlanillasDespachos/generarPlanillaDespacho', function(req, res) {
         c_planillas_despachos.generarPlanillaDespacho(req, res);

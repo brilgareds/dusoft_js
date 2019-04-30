@@ -253,6 +253,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                     a.pedido_cliente_id :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%')"));
     });
     query.orderBy('a.fecha_registro', 'desc');
+    
+    console.log("*-*-*-**",G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -343,7 +345,15 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
  * @returns {callback}
  */
 PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = function (planilla_id, termino_busqueda, callback) {
-    var sql = " select * from (\
+    var sql= "";
+    if(planilla_id !== undefined && planilla_id !== ""){
+       sql = " and a.planilla_id = :1 ";
+    }
+    if(termino_busqueda !== undefined && termino_busqueda !== ""){
+        sql += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
+    }
+    
+    var sql = " select *,false as chequeado from (\
                     select \
                     '0' as tipo,\
                     'FARMACIAS' as descripcion_tipo,\
@@ -469,8 +479,256 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as b ON (b.prefijo = a.prefijo AND b.numero = a.numero)\
                     inner join bodegas d on a.empresa_destino = d.empresa_id and a.centro_utilidad = d.centro_utilidad and a.bodega = d.bodega\
-                ) as a where a.planilla_id = :1 and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 );";
+                ) as a where true "+sql+";";  
     var query = G.knex.raw(sql, {1: planilla_id, 2: '%' + termino_busqueda + '%'});
+    query.then(function (resultado) {
+        callback(false, resultado.rows);
+    }).catch(function (err) {
+        console.log("error generado ", err);
+        callback(err);
+    });
+};
+
+PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle = function (planilla_id, termino_busqueda, obj, callback) {
+    var sql= "";
+    var sql3= "";
+    if(planilla_id !== undefined && planilla_id !== ""){
+        sql = " and a.planilla_id = :1 ";
+    }
+    if(termino_busqueda !== undefined && termino_busqueda !== ""){
+        sql += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
+    }
+    
+    if(obj.tercero_id !== undefined && obj.tercero_id !== "" && obj.tercero_id !== null){
+        sql += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
+        sql3 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
+    }
+    
+    if(obj.modificar === 1){
+        sql += " AND b.planilla_id is not null"; 
+    }else if(obj.modificar === 0){
+        sql += " AND b.planilla_id is null";  
+    } 
+    
+    var sql = "( select a.*,case when b.planilla_id is not null then true else false end  as chequeado from (\
+                    select \
+                    '0' as tipo,\
+                    'FARMACIAS' as descripcion_tipo,\
+                    a.id,\
+                    (\
+                    SELECT muni.municipio\
+                    from inv_planillas_despacho as ipd\
+                    INNER JOIN tipo_mpios as muni ON (ipd.ciudad_id = muni.tipo_mpio_id and ipd.departamento_id = muni.tipo_dpto_id)\
+                    where ipd.id = a.inv_planillas_despacho_id\
+                    ) as ciudad,\
+                    a.inv_planillas_despacho_id as planilla_id,\
+                    a.empresa_id,\
+                    e.descripcion as descripcion_destino,\
+                    e.ubicacion as direccion_destino,\
+                    d.tipo_id_tercero,\
+                    d.tercero_id,\
+                    a.prefijo,\
+                    a.numero,\
+                    b.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                    f.cantidad_cajas,\
+                    f.cantidad_neveras,\
+                    a.temperatura_neveras,\
+                    a.observacion,\
+                    '' as descripcion_sede,\
+                    '' as direccion_sede,\
+                    ( select a.prefijo||'-'||a.factura_fiscal\
+                    from( \
+                    SELECT a.prefijo,a.factura_fiscal\
+                    FROM  inv_facturas_despacho as a\
+                    where pedido_cliente_id = b.solicitud_prod_a_bod_ppal_id\
+                    UNION\
+                    SELECT a.prefijo,a.factura_fiscal\
+                    FROM  inv_facturas_agrupadas_despacho_d as a\
+                    where pedido_cliente_id = b.solicitud_prod_a_bod_ppal_id\
+                    ) as a\
+                    ) as factura,\
+                    a.usuario_id \
+                    from inv_planillas_detalle_farmacias a\
+                    inner join inv_bodegas_movimiento_despachos_farmacias b on a.empresa_id = b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
+                    inner join solicitud_productos_a_bodega_principal c on b.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\
+                    inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
+                    inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad\
+                    inner join (\n\
+                        SELECT  distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo \
+                        FROM aprobacion_despacho_planillas f \n\
+                        INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
+                    ) as f ON (f.numero = a.numero and f.prefijo = a.prefijo)\
+                    UNION \
+                    select \
+                    '1' as tipo,\
+                    'CLIENTES' as descripcion_tipo,\
+                    a.id,\
+                    (\
+                    SELECT muni.municipio\
+                    from inv_planillas_despacho as ipd\
+                    INNER JOIN tipo_mpios as muni ON (ipd.ciudad_id = muni.tipo_mpio_id and ipd.departamento_id = muni.tipo_dpto_id)\
+                    where ipd.id = a.inv_planillas_despacho_id\
+                    ) as ciudad,\
+                    a.inv_planillas_despacho_id as planilla_id,\
+                    a.empresa_id,\
+                    d.nombre_tercero as descripcion_destino,\
+                    d.direccion as direccion_destino,\
+                    d.tipo_id_tercero,\
+                    d.tercero_id,\
+                    a.prefijo,\
+                    a.numero,\
+                    b.pedido_cliente_id as numero_pedido,\
+                    e.cantidad_cajas,\
+                    e.cantidad_neveras,\
+                    a.temperatura_neveras,\
+                    a.observacion,\
+                    f.nombre_tercero as descripcion_sede,\
+                    f.direccion as direccion_sede,\
+                    ( select a.prefijo||'-'||a.factura_fiscal\
+                    from( \
+                    SELECT a.prefijo,a.factura_fiscal\
+                    FROM  inv_facturas_despacho as a\
+                    where pedido_cliente_id = b.pedido_cliente_id\
+                    UNION\
+                    SELECT a.prefijo,a.factura_fiscal\
+                    FROM  inv_facturas_agrupadas_despacho_d as a\
+                    where pedido_cliente_id = b.pedido_cliente_id\
+                    limit 1\
+                    ) as a\
+                    ) as factura,\
+                    a.usuario_id\
+                    from inv_planillas_detalle_clientes a\
+                    inner join inv_bodegas_movimiento_despachos_clientes b on a.empresa_id = b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
+                    inner join ventas_ordenes_pedidos c on b.pedido_cliente_id = c.pedido_cliente_id\
+                    inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id\
+                    left join terceros f on c.tipo_id_sede = f.tipo_id_tercero and c.sede_id = f.tercero_id\
+                    inner join (\n\
+                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo\
+                        FROM aprobacion_despacho_planillas f \
+                        INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
+                    ) as e ON (e.numero = a.numero and e.prefijo = a.prefijo)\
+                    UNION\
+                    select \
+                    '2' as tipo,\
+                    'EMPRESAS' as descripcion_tipo,\
+                    a.id,\
+                    (\
+                    SELECT muni.municipio\
+                    from inv_planillas_despacho as ipd\
+                    INNER JOIN tipo_mpios as muni ON (ipd.ciudad_id = muni.tipo_mpio_id and ipd.departamento_id = muni.tipo_dpto_id)\
+                    where ipd.id = a.inv_planillas_despacho_id\
+                    ) as ciudad,\
+                    a.inv_planillas_despacho_id as planilla_id,\
+                    a.empresa_id,\
+                    d.descripcion as descripcion_destino,\
+                    d.ubicacion as direccion_destino,\
+                    d.tipo_id_tercero,\
+                    d.tercero_id, \
+                    a.prefijo,\
+                    a.numero,\
+                    0 as numero_pedido,\
+                    a.cantidad_cajas,\
+                    a.cantidad_neveras,\
+                    a.temperatura_neveras,\
+                    a.observacion,\
+                    '' as descripcion_sede,\
+                    '' as direccion_sede,\
+                    '' as factura,\
+                    a.usuario_id\
+                    from inv_planillas_detalle_empresas a\
+                    inner join (\
+                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) f.cantidad_cajas, f.cantidad_neveras, g.numero, g.prefijo\
+                        FROM aprobacion_despacho_planillas f \
+                        INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
+                    ) as b ON (b.prefijo = a.prefijo AND b.numero = a.numero)\
+                    inner join bodegas d on a.empresa_destino = d.empresa_id and a.centro_utilidad = d.centro_utilidad and a.bodega = d.bodega\
+                ) as a \
+                 left join inv_registro_salida_bodega_detalle as b on (b.prefijo_id=a.prefijo and a.numero=b.numero and a.tipo=b.tipo and a.id=b.id and a.planilla_id=b.planilla_id and a.empresa_id=b.empresa_id)\
+                 where true "+sql+")";
+     var sql2 = "(select\
+        '1' as tipo,\
+        'CLIENTES' as descripcion_tipo,\
+        a.numero as id,\
+        d.municipio as ciudad,\
+        0 as planilla_id,\
+        a.empresa_id,\
+        c.nombre_tercero, \
+        c.direccion,\
+	a.tipo_id_tercero,\
+	a.tercero_id,\
+        a.prefijo,\
+        a.numero,\
+        a.pedido_cliente_id as numero_pedido,\
+	h.cantidad_cajas,\
+	h.cantidad_neveras,\
+	 cast('0.0' as double precision )  as temperatura_neveras,\
+	a.observacion,\
+	'' as descripcion_sede,\
+	'' as direccion_sede,\
+	'' as factura,\
+	a.usuario_id,\
+        case\
+            when q.planilla_id is not null then true\
+            else false\
+        end  as chequeado\
+            \
+         from\
+             inv_bodegas_movimiento_despachos_clientes as a\
+         inner join\
+             ventas_ordenes_pedidos as b\
+                 on b.pedido_cliente_id = a.pedido_cliente_id\
+         inner join terceros as c on a.tipo_id_tercero = c.tipo_id_tercero and a.tercero_id=c.tercero_id\
+         inner join tipo_mpios as d on d.tipo_pais_id = c.tipo_pais_id and d.tipo_dpto_id = c.tipo_dpto_id and c.tipo_mpio_id = d.tipo_mpio_id\
+         inner join\
+         (\
+                SELECT\
+                    f.prefijo,\
+                    f.numero,\
+                    f.cantidad_cajas,\
+                    f.cantidad_neveras\
+                FROM\
+                    aprobacion_despacho_planillas_d f\
+                UNION\
+                SELECT\
+                    g.prefijo,\
+                    g.numero,\
+                    g.cantidad_cajas,\
+                    g.cantidad_neveras\
+                FROM\
+                    aprobacion_despacho_planillas g\
+        ) as h on h.prefijo = a.prefijo and h.numero = a.numero\
+        left join\
+            inv_registro_salida_bodega_detalle as q\
+                on (\
+                    q.prefijo_id=a.prefijo\
+                    and a.numero=q.numero\
+                    and q.tipo='1'\
+                    and q.id=a.numero \
+                    and a.empresa_id=q.empresa_id\
+                )\
+        where\
+            (\
+               b.estado_pedido in (\
+                    '2', '3', '8', '9'\
+                ) "+sql3+"\
+                and a.prefijo || '-' || a.numero NOT IN(\
+                    select\
+                        b.prefijo || '-' || b.numero\
+                    from\
+                        inv_planillas_detalle_clientes b\
+                )\
+                and (\
+                    a.prefijo || ' ' || a.numero :: varchar ilike'%%'\
+                    or a.numero :: varchar ilike'%%'\
+                    or a.pedido_cliente_id :: varchar ilike'%%'\
+                )\
+            )\
+        order by\
+            a.fecha_registro desc)";
+    var sql3 =   sql+" union "+sql2;
+    
+    var query = G.knex.raw(sql3, {1: planilla_id, 2: '%' + termino_busqueda + '%', 3: obj.tercero_id , 4: obj.tipo_id_tercero});
+    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado.rows);
     }).catch(function (err) {

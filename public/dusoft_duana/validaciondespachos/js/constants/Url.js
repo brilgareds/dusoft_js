@@ -45,8 +45,11 @@ define(["angular"], function (angular) {
             },
             'CIUDADES': {
                 'LISTAR_CIUDADES_PAIS': BASE_URL + '/Ciudades/listarCiudadesPais'
-            }
-            
+            },
+            'PLANILLAS':{
+                'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',   
+                'DOCUMENTOS_PLANILLA_DETALLE': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespachoDetalle',   
+            }            
         }
 
     };

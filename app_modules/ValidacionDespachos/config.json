@@ -13,6 +13,11 @@
                     "module": "ValidacionDespachos",
                     "model": "ValidacionDespachosModel",
                     "alias": "m_ValidacionDespachos"
+                },
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
                 }
             }],
         "events": [],

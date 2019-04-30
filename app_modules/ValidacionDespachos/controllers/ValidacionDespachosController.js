@@ -1,8 +1,9 @@
 
-var ValidacionDespachos = function (induccion, imprimir_productos) {
+var ValidacionDespachos = function (induccion, m_pedidos_farmacias,m_pedidos_clientes) {
 
     this.m_ValidacionDespachos = induccion;
-    this.m_imprimir_productos = imprimir_productos;
+    this.m_pedidos_farmacias = m_pedidos_farmacias;
+    this.m_pedidos_clientes = m_pedidos_clientes;
 
 };
 
@@ -446,7 +447,7 @@ ValidacionDespachos.prototype.modificarRegistroEntradaBodega = function (req, re
     var that = this;
 
     var args = req.body.data.obj;
-    
+      
     var obj = {
                  "prefijo":args.prefijo, 
                  "numero":args.numero,
@@ -515,84 +516,231 @@ ValidacionDespachos.prototype.listarRegistroSalida= function(req, res){
     }).done();
 };
 
-ValidacionDespachos.prototype.registroSalidaBodega = function(req, res){
+ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
 
     var that = this;
 
     var args = req.body.data.obj;
+    if(args.numeroGuia === ""){
+       args.numeroGuia = '100'; 
+       console.log("**args.numeroGuia",args.numeroGuia)
+    }
+    console.log("args.numeroGuia",args.numeroGuia)
     var obj = {
-                 "prefijo":args.prefijo, 
-                 "numero":args.numero,
-                 "numeroGuia":args.numeroGuia,
-                 "cantidadCaja":args.tipoEmpaque.cantidadCaja,
-                 "cantidadNevera":args.tipoEmpaque.cantidadNevera,
-                 "cantidadBolsa":args.tipoEmpaque.cantidadBolsa,
-                 "tipoIdtercero":args.tipoIdtercero,
-                 "terceroId":args.terceroId,
-                 "conductor":args.conductor,
-                 "ayudante":args.ayudante,
-                 "placa":args.placa,
-                 "fechaEnvio":args.fechaEnvio,
-                 "tipoPaisId":args.ciudad.pais_id,
-                 "tipoDptoid":args.ciudad.departamento_id,
-                 "tipoMpioId":args.ciudad.id,
-                 "usuarioId": req.session.user.usuario_id,
-                 "observacion": args.observacion,
-                 "operarioId": args.operarioId,
-                 that:that
-              };
-    
-     G.Q.ninvoke(that.m_ValidacionDespachos, 'registroSalida', obj).then(function(resultado) {
-       
+        "prefijo": args.prefijo,
+        "numero": args.numero,
+        "numeroGuia": args.numeroGuia,
+        "cantidadCaja": args.tipoEmpaque.cantidadCaja,
+        "cantidadNevera": args.tipoEmpaque.cantidadNevera,
+        "cantidadBolsa": args.tipoEmpaque.cantidadBolsa,
+        "tipoIdtercero": args.tipoIdtercero,
+        "terceroId": args.terceroId,
+        "conductor": args.conductor,
+        "ayudante": args.ayudante,
+        "placa": args.placa,
+        "fechaEnvio": args.fechaEnvio,
+        "tipoPaisId": args.ciudad.pais_id,
+        "tipoDptoid": args.ciudad.departamento_id,
+        "tipoMpioId": args.ciudad.id,
+        "usuarioId": req.session.user.usuario_id,
+        "observacion": args.observacion,
+        "operarioId": args.operarioId,
+        "listaAgrupados": args.documentos,
+        that: that
+    };
+
+    G.knex.transaction(function (transaccion) {
+
+        obj.transaccion = transaccion;
+
+        G.Q.ninvoke(that.m_ValidacionDespachos, 'listarOneSalidaDetalle', obj).then(function (resultado) {
+
+            if (resultado.length === 0 || obj.numeroGuia.trim() === "") {
+
+                return G.Q.ninvoke(that.m_ValidacionDespachos, 'registroSalida', obj);
+
+            } else {
+
+                throw {msj: 'La Guia ya se encuentra registrada'};
+
+            }
+
+        }).then(function (respuesta) {
+
+            if (args.documentos.length > 0) {
+
+                obj.registro_salida_bodega_id = respuesta;
+                return G.Q.nfcall(__registroSalidaDetalle, obj, 0);
+
+            } else {
+
+                return true;
+
+            }
+
+        }).then(function (respuesta) {
+
+            transaccion.commit();
+
+        }).fail(function (err) {
+
+            transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function (resultado) {
+
         res.send(G.utils.r(req.url, "ingreso Correcto", 200, {validacionDespachos: resultado}));
 
-     }).fail(function(err) {
-        
-        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err:err}}));
+    }).catch(function (err) {
+console.log("err ",err);
+        var mensaje = 'Error en el registro';
+
+        if (err.msj !== undefined) {
+            mensaje = err.msj;
+        }
+
+        res.send(G.utils.r(req.url, mensaje, 404, {validacionDespachos: {err: err}}));
 
     }).done();
 };
 
-ValidacionDespachos.prototype.modificarRegistroSalidaBodega = function(req, res){
+function __registroSalidaDetalle(obj, index, callback) {
 
+    var detalle = obj.listaAgrupados[index];
+
+    if (!detalle) {
+        callback(false);
+        return;
+    }
+
+    detalle.transaccion = obj.transaccion;
+
+    detalle.registro_salida_bodega_id = obj.registro_salida_bodega_id;
+
+    G.Q.ninvoke(obj.that.m_ValidacionDespachos, 'registroSalidaDetalle', detalle).then(function (resultado) {
+
+        if (detalle.tipo === 0) {//0-farmacia 1-cliente 2-empresa
+            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'consultarEstadoActualPedidoFarmacia', detalle);
+        } else if (detalle.tipo === 1) {
+            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'consultarEstadoActualPedidoCliente', detalle);
+        } else {
+            return true;
+        }
+
+    }).then(function (resultado) {
+        if (detalle.tipo === 0) {//0-farmacia 1-cliente 2-empresa
+            if (resultado[0].estado === 2) {
+                detalle.sw_estado = 4;
+            } else {
+                detalle.sw_estado = 5;
+            }
+            detalle.sw_despacho = 1;
+            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'actualizarEstadoActualPedidoFarmacia', detalle);
+        } else if (detalle.tipo === 1) {
+            if (resultado[0].estado_pedido === 2) {
+                detalle.sw_estado = 4;
+                detalle.estado_pedido = 4;
+            } else {
+                detalle.sw_estado = 5;
+                detalle.estado_pedido = 5;
+            }
+            detalle.estadoEntrega = 3;
+            console.log("entro cliente");
+            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'actualizarEstadoActualPedidoCliente', detalle);
+        } else {
+            return true;
+        }
+    }).then(function (resultado) {//registro en la tablas de estados
+
+        detalle.usuario = obj.usuarioId;
+        
+        if (detalle.tipo === 0) {//0-farmacia 1-cliente 2-empresa
+           console.log("entro farmacia estado");
+            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'insertar_responsables_pedidos', obj.numero_pedido, obj.estado_pedido, detalle.usuario, detalle.usuario);
+
+        } else if (detalle.tipo === 1) {
+            console.log("entro cliente estado");
+            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'insertar_responsables_pedidos', obj.numero_pedido, obj.estado_pedido, detalle.usuario, detalle.usuario);
+            
+        } else {
+            return true;
+        }
+
+    }).then(function (resultado) {
+
+        index++;
+        __registroSalidaDetalle(obj, index, callback);
+
+    }).fail(function (err) {
+
+        callback(err);
+
+    }).done();
+
+}
+
+ValidacionDespachos.prototype.modificarRegistroSalidaBodega = function (req, res) {
     var that = this;
-
     var args = req.body.data.obj;
-    
+    console.log("args.documentos::: ", args.documentos)
     var obj = {
-                 "prefijo":args.prefijo, 
-                 "numero":args.numero,
-                 "numeroGuia":args.numeroGuia,
-                 "cantidadCaja":args.tipoEmpaque.cantidadCaja,
-                 "cantidadNevera":args.tipoEmpaque.cantidadNevera,
-                 "cantidadBolsa":args.tipoEmpaque.cantidadBolsa,
-                 "tipoIdtercero":args.tipoIdtercero,
-                 "terceroId":args.terceroId,
-                 "conductor":args.conductor,
-                 "ayudante":args.ayudante,
-                 "placa":args.placa,
-                 "fechaEnvio":args.fechaEnvio,
-                 "tipoPaisId":args.ciudad.pais_id,
-                 "tipoDptoid":args.ciudad.departamento_id,
-                 "tipoMpioId":args.ciudad.id,
-                 "usuarioId": req.session.user.usuario_id,
-                 "observacion": args.observacion,
-                 "operarioId": args.operarioId,
-                 "registro_salida_bodega_id": args.registro_salida_bodega_id,
-                 that:that
-              };
-    
-     G.Q.ninvoke(that.m_ValidacionDespachos, 'modificarRegistroSalidaBodega', obj).then(function(resultado) {
-       
+        "prefijo": args.prefijo,
+        "numero": args.numero,
+        "numeroGuia": args.numeroGuia,
+        "cantidadCaja": args.tipoEmpaque.cantidadCaja,
+        "cantidadNevera": args.tipoEmpaque.cantidadNevera,
+        "cantidadBolsa": args.tipoEmpaque.cantidadBolsa,
+        "tipoIdtercero": args.tipoIdtercero,
+        "terceroId": args.terceroId,
+        "conductor": args.conductor,
+        "ayudante": args.ayudante,
+        "placa": args.placa,
+        "fechaEnvio": args.fechaEnvio,
+        "tipoPaisId": args.ciudad.pais_id,
+        "tipoDptoid": args.ciudad.departamento_id,
+        "tipoMpioId": args.ciudad.id,
+        "usuarioId": req.session.user.usuario_id,
+        "observacion": args.observacion,
+        "operarioId": args.operarioId,
+        "registro_salida_bodega_id": args.registro_salida_bodega_id,
+        "listaAgrupados": args.documentos,
+        that: that
+    };
+
+    G.knex.transaction(function (transaccion) {
+
+        obj.transaccion = transaccion;
+
+        G.Q.ninvoke(that.m_ValidacionDespachos, 'modificarRegistroSalidaBodega', obj).then(function (resultado) {
+
+            return G.Q.ninvoke(that.m_ValidacionDespachos, 'deleteSalidaDetalle', obj);
+
+        }).then(function (resultado) {
+
+            return G.Q.nfcall(__registroSalidaDetalle, obj, 0);
+
+        }).then(function (respuesta) {
+
+            transaccion.commit();
+
+        }).fail(function (err) {
+
+            transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function (resultado) {
+
         res.send(G.utils.r(req.url, "modificacion Correcta", 200, {validacionDespachos: resultado}));
 
-     }).fail(function(err) {
-        
-        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err:err}}));
+    }).catch(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
 
     }).done();
 };
 
-ValidacionDespachos.$inject = ["m_ValidacionDespachos"];
+ValidacionDespachos.$inject = ["m_ValidacionDespachos","m_pedidos_farmacias","m_pedidos_clientes"];
 
 module.exports = ValidacionDespachos;

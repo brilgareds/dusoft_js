@@ -671,7 +671,7 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
                 .innerJoin('operarios_bodega as e', function () {
                             this.on("e.operario_id", "a.operario_id")
                         })
-                .innerJoin('tipo_mpios as f', function () {
+                .leftJoin('tipo_mpios as f', function () {
                             this.on("f.tipo_pais_id", "a.tipo_pais_id")
                                 .on("f.tipo_dpto_id", "a.tipo_dpto_id")
                                 .on("f.tipo_mpio_id", "a.tipo_mpio_id")
@@ -692,7 +692,8 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
                 }).orderBy("a.fecha_registro","desc")
                   .limit(G.settings.limit).
                    offset((obj.pagina - 1) * G.settings.limit);    
-       
+       console.log(G.sqlformatter.format(query.toString())); 
+
     query.then(function(resultado){
      
         callback(false, resultado);

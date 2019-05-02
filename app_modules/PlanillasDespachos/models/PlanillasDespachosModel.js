@@ -494,12 +494,16 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
         sql3 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
     }
     
-    if(obj.modificar === 1){
-        sql1 += " AND b.planilla_id is not null"; 
-        sql3 += " AND q.planilla_id is not null"; 
-    }else if(obj.modificar === 0){
-        sql1 += " AND b.planilla_id is null";  
-        sql3 += " AND q.planilla_id is null";  
+    if (obj.modificar === 1) {
+        sql1 += " AND b.planilla_id is not null";
+        if (planilla_id !== "" && planilla_id !== undefined)
+            sql3 += " AND q.planilla_id = :1";
+        sql3 += " AND q.planilla_id is not null";
+    } else if (obj.modificar === 0) {
+        // sql1 += " AND b.planilla_id is null";  
+        if (planilla_id !== "" && planilla_id !== undefined)
+            sql3 += " AND q.planilla_id = :1";
+        sql3 += " AND q.planilla_id is null";
     } 
     
     var sql = "( select a.*,case when b.planilla_id is not null then true else false end  as chequeado from (\

@@ -622,12 +622,13 @@ function __registroSalidaDetalle(obj, index, callback) {
     detalle.registro_salida_bodega_id = obj.registro_salida_bodega_id;
 
     G.Q.ninvoke(obj.that.m_ValidacionDespachos, 'registroSalidaDetalle', detalle).then(function (resultado) {
-
+console.log("detalle.tipo->>>>>",detalle.tipo);
         if (detalle.tipo === 0) {//0-farmacia 1-cliente 2-empresa
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'consultarEstadoActualPedidoFarmacia', detalle);
         } else if (detalle.tipo === 1) {
             return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'consultarEstadoActualPedidoCliente', detalle);
         } else {
+            console.log("<<<<<<<<<<<->>>>>");
             return true;
         }
 
@@ -639,7 +640,9 @@ function __registroSalidaDetalle(obj, index, callback) {
                 detalle.sw_estado = 5;
             }
             detalle.sw_despacho = 1;
+            
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'actualizarEstadoActualPedidoFarmacia', detalle);
+            
         } else if (detalle.tipo === 1) {
             if (resultado[0].estado_pedido === 2) {
                 detalle.sw_estado = 4;

@@ -50,9 +50,15 @@ module.exports = function(app, di_container) {
         c_planillas_despachos.reportePlanillaDespacho(req, res);
     });
     
+    app.post('/api/PlanillasDespachos/modificarDocumentoPlanilla', function(req, res) {
+        c_planillas_despachos.modificarDocumentoPlanilla(req, res);
+    });
     
+    app.post('/api/PlanillasDespachos/modificarLios', function(req, res) {
+        c_planillas_despachos.modificarLios(req, res);
+    });
     
-    
+            
     /**
      * @author Cristian Ardila
      * @fecha 02/02/2016

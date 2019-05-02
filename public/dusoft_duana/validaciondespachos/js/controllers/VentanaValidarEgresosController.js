@@ -115,6 +115,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
             $scope.numeroCaja = false;
             $scope.numeroNevera = false;
+            $scope.numeroBolsa = false;
 
             $scope.pulsar = function (check, tipo) {
 
@@ -122,13 +123,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     if (tipo === 'nevera') {
                         $scope.numeroCaja = false;
                         $scope.numeroNevera = true;
-                    } else {
+                        $scope.numeroBolsa = false;
+                    } else if (tipo === 'caja') {
                         $scope.numeroCaja = true;
                         $scope.numeroNevera = false;
+                        $scope.numeroBolsa = false;
+                    } else if (tipo === 'bolsa') {
+                        $scope.numeroCaja = false;
+                        $scope.numeroNevera = false;
+                        $scope.numeroBolsa = true;
                     }
                 } else {
                     $scope.numeroCaja = false;
                     $scope.numeroNevera = false;
+                    $scope.numeroBolsa = false;
                 }
             };
 
@@ -154,6 +162,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         _documento = DocumentoDespacho.get(0, _documento.prefijo, _documento.numero, _documento.empresaId);
                         _documento.setCantidadCajas(parseInt(documento.cantidadCajas));
                         _documento.setCantidadNeveras(parseInt(documento.cantidadNeveras));
+                        _documento.setCantidadBolsas(parseInt(documento.cantidadBolsas));
                     }
                     if (_documento.get_prefijo() === documento.get_prefijo() && _documento.get_numero() === documento.get_numero()) {
                         return false;
@@ -203,6 +212,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             var totalDecimal = 0;
             var cantidadCajas = 0;
             var cantidadNeveras = 0;
+            var cantidadBolsas = 0;
             var pos = "";
             that.documentosStorageActual = [];
             that.distribuirCajas = function (index, documentoSeleccionadoPreparado, callback) {
@@ -240,12 +250,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     _documento.setCantidadNeveras(Math.floor(cantidadCajas));
                 }
 
+                if ($scope.numeroBolsa) {
+                    _documento.setCantidadBolsas(Math.floor(cantidadCajas));
+                }
+
                 if (index === documentoSeleccionadoPreparado.length - 1) {
                     if ($scope.numeroCaja) {
                         _documento.setCantidadCajas(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
                     }
                     if ($scope.numeroNevera) {
                         _documento.setCantidadNeveras(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
+                    }
+                    if ($scope.numeroBolsa) {
+                        _documento.setCantidadBolsas(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
                     }
                 }
 
@@ -264,8 +281,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
              */
             $scope.distribuirCajas = function () {
                 that.documentosStorageActual = [];
-                if ($scope.numeroCaja === $scope.numeroNevera) {
-                    AlertService.mostrarMensaje("warning", "Debe chequear Caja o Nevera");
+                if ($scope.numeroCaja === $scope.numeroNevera && $scope.numeroCaja === $scope.numeroBolsa) {
+                    AlertService.mostrarMensaje("warning", "Debe chequear Caja, Nevera o Bolsa");
                     return;
                 }
                 if (!$scope.centroUtilidad && !$scope.clienteEgresos) {
@@ -273,8 +290,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     return;
                 }
                 var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
-                /*---------parte nueva----------*/
-//                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
 
                 if (documentoSeleccionadoPreparado.length <= 0) {
                     AlertService.mostrarMensaje("warning", "Debe seleccionar documentos");
@@ -291,10 +306,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     documentoSeleccionadoPreparado[0].setCantidadNeveras(Math.floor(cantidadNeveras));
                 }
 
-                that.documentosStorageActual = documentoSeleccionadoPreparado;
-                /*---------fin parte nueva----------*/
+                if ($scope.numeroBolsa) {
+                    cantidadBolsas = parseInt($scope.datosView.cantidadCajas);
+                    documentoSeleccionadoPreparado[0].setCantidadBolsas(Math.floor(cantidadBolsas));
+                }
 
-                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: cantidadCajas, totalNeveras: cantidadNeveras});
+                that.documentosStorageActual = documentoSeleccionadoPreparado;
+
+                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: cantidadCajas, totalNeveras: cantidadNeveras, totalBolsas: cantidadBolsas});
 
                 if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
                     var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
@@ -315,13 +334,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 $state.go('ValidacionEgresosDetalle');
                 $modalInstance.close();
 
-//                });
-
             };
 
 
             that.guardarCantidadCajas = 0;
             that.guardarCantidadNeveras = 0;
+            that.guardarCantidadBolsas = 0;
             var documentoDespachoStorage;
             /**
              * +Descripcion Metodo que recorrera los documentos seleccionados
@@ -344,15 +362,18 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     documentoDespachoStorage.setSeleccionado(true);
                     documentoDespachoStorage.setCantidadCajas(parseInt(_documento.cantidadCajas));
                     documentoDespachoStorage.setCantidadNeveras(parseInt(_documento.cantidadNeveras));
+                    documentoDespachoStorage.setCantidadBolsas(parseInt(_documento.cantidadBolsas));
                     that.documentosStorageActual.push(_documento);
                 } else {
                     _documento.setCantidadCajas(parseInt(_documento.cantidadCajas));
                     _documento.setCantidadNeveras(parseInt(_documento.cantidadNeveras));
+                    _documento.setCantidadBolsas(parseInt(_documento.cantidadBolsas));
                     that.documentosStorageActual.push(_documento);
                 }
 
                 that.guardarCantidadCajas += parseInt(_documento.cantidadCajas);
                 that.guardarCantidadNeveras += parseInt(_documento.cantidadNeveras);
+                that.guardarCantidadBolsas += parseInt(_documento.cantidadBolsas);
 
                 setTimeout(function () {
                     that.guardarDocumentosSeleccionados(index, documentoSeleccionadoPreparado, callback);
@@ -376,7 +397,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
                 that.guardarDocumentosSeleccionados(0, documentoSeleccionadoPreparado, function (estado) {
 
-                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: that.guardarCantidadCajas, totalNeveras: that.guardarCantidadNeveras});
+                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: that.guardarCantidadCajas, totalNeveras: that.guardarCantidadNeveras, totalBolsas: that.guardarCantidadBolsas});
 
                     if ($scope.centroUtilidad) {
                         var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
@@ -548,6 +569,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     documento.setNumeroPedido(data.numero_pedido);
                     documento.setFechaRegistro(data.fecha_registro);
                     documento.setEstadoDocumento(data.estado_documento);
+                    documento.setTipo(data.tipo);
+                    documento.setEstadoPedido(data.estado);
 
                     if (that.documentosStorage) {
 
@@ -557,6 +580,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 documento.setSeleccionado(true);
                                 documento.setCantidadCajas(row.cantidadCajas);
                                 documento.setCantidadNeveras(row.cantidadNeveras);
+                                documento.setCantidadBolsas(row.cantidadBolsas);
 
                                 $scope.datosView.documentosSeleccionados.push(documento);
 
@@ -571,6 +595,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 documento.setSeleccionado(true);
                                 documento.setCantidadCajas(row.cantidadCajas);
                                 documento.setCantidadNeveras(row.cantidadNeveras);
+                                documento.setCantidadBolsas(row.cantidadBolsas);
 
                             }
                         });
@@ -599,7 +624,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         cellTemplate: "<div><input-check \
                         ng-model='row.entity.seleccionado' \
                         ng-change='onAgregarDocumentoALio(row.entity)' \
-                        ng-disabled='row.entity.cantidadNeveras == 0 && row.entity.cantidadCajas == 0 && datosView.cantidadCajas ==0 || row.entity.estadoDocumento == \"1\" '  /></div>"},
+                        ng-disabled='row.entity.cantidadNeveras == 0 && row.entity.cantidadCajas == 0 && row.entity.cantidadBolsas == 0 && datosView.cantidadCajas ==0 || row.entity.estadoDocumento == \"1\" '  /></div>"},
                     {
                         displayName: 'Documento Bodega',
                         cellTemplate: '<div class="ngCellText">\
@@ -617,6 +642,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         cellTemplate: '<div class="col-xs-12"> \n\
                         <input type="text"\
                         ng-model="row.entity.cantidadNeveras"\
+                        validacion-numero-entero\
+                        class="form-control grid-inline-input" ng-focus="desCheckearDocumento(row.entity)"\
+                        name="" id="" /> </div>'},
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%",
+                        cellTemplate: '<div class="col-xs-12"> \n\
+                        <input type="text"\
+                        ng-model="row.entity.cantidadBolsas"\
                         validacion-numero-entero\
                         class="form-control grid-inline-input" ng-focus="desCheckearDocumento(row.entity)"\
                         name="" id="" /> </div>'},

@@ -47811,6 +47811,7 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
                 this.fecha_registro = fecha_registro;
                 this.cantidadCajas = 0;
                 this.cantidadNeveras = 0;
+                this.cantidadBolsas = 0;
                 this.estado =0;
                 this.observacion;
                 this.razon_social;
@@ -47881,8 +47882,7 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
             
             AprobacionDespacho.prototype.getCantidadCajas = function () {
                 return this.cantidadCajas;
-            };
-            
+            };            
             
             AprobacionDespacho.prototype.setCantidadNeveras = function (cantidadNeveras) {
                 this.cantidadNeveras = cantidadNeveras;
@@ -47890,6 +47890,14 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
             
             AprobacionDespacho.prototype.getCantidadNeveras = function () {
                 return this.cantidadNeveras;
+            };
+            
+            AprobacionDespacho.prototype.getCantidadBolsas = function () {
+                return this.cantidadBolsas;
+            };
+            
+            AprobacionDespacho.prototype.setCantidadBolsas = function (cantidadBolsas) {
+                this.cantidadBolsas = cantidadBolsas;
             };
 
             AprobacionDespacho.prototype.setEstado = function (estado) {
@@ -47924,9 +47932,9 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
 });
 
 
-define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Documento"], function(angular, models) {
+define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Documento"], function (angular, models) {
 
-    models.factory('DocumentoDespacho', ["Documento", function(Documento, $filter) {
+    models.factory('DocumentoDespacho', ["Documento", function (Documento, $filter) {
 
             function DocumentoDespacho(bodegas_doc_id, prefijo, numero, empresaId) {
 
@@ -47938,94 +47946,121 @@ define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Doc
                 this.seleccionado = false;
                 this.cantidadCajas = 0;
                 this.cantidadNeveras = 0;
+                this.cantidadBolsas = 0;
                 this.empresaId = empresaId;
                 this.estado = 0;
                 this.estadoDocumento;
+                this.estadoPedido;
+                this.tipo;
             }
 
-            this.get = function(bodegas_doc_id, prefijo, numero, empresaId) {
+            this.get = function (bodegas_doc_id, prefijo, numero, empresaId) {
                 return new DocumentoDespacho(bodegas_doc_id, prefijo, numero, empresaId);
             };
-            
+
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
-            
-            
-            DocumentoDespacho.prototype.getEstadoDocumento = function() {
+
+
+            DocumentoDespacho.prototype.getEstadoDocumento = function () {
                 return this.estadoDocumento;
             };
-            
-            DocumentoDespacho.prototype.setEstadoDocumento = function(estadoDocumento) {
-                this.estadoDocumento = estadoDocumento ;
+
+            DocumentoDespacho.prototype.setEstadoDocumento = function (estadoDocumento) {
+                this.estadoDocumento = estadoDocumento;
             };
-            
-            DocumentoDespacho.prototype.getEstado = function() {
+
+            DocumentoDespacho.prototype.getEstado = function () {
                 return this.estado;
             };
-            
-            DocumentoDespacho.prototype.setEstado = function(estado) {
+
+            DocumentoDespacho.prototype.setEstado = function (estado) {
                 this.estado = estado;
             };
-            
-            DocumentoDespacho.prototype.getFechaRegistro = function() {
+
+            DocumentoDespacho.prototype.getTipo = function () {
+                return this.tipo;
+            };
+
+            DocumentoDespacho.prototype.setTipo = function (tipo) {
+                this.tipo = tipo;
+            };
+
+            DocumentoDespacho.prototype.getEstadoPedido = function () {
+                return this.estadoPedido;
+            };
+
+            DocumentoDespacho.prototype.setEstadoPedido = function (estadoPedido) {
+                this.estadoPedido = estadoPedido;
+            };
+
+            DocumentoDespacho.prototype.getFechaRegistro = function () {
                 return this.fechaRegistro;
             };
-            
-            DocumentoDespacho.prototype.setFechaRegistro = function(fechaRegistro) {
+
+            DocumentoDespacho.prototype.setFechaRegistro = function (fechaRegistro) {
                 this.fechaRegistro = fechaRegistro;
             };
-            
-            
-            DocumentoDespacho.prototype.getCantidadCajas = function() {
+
+
+            DocumentoDespacho.prototype.getCantidadCajas = function () {
                 return this.cantidadCajas;
             };
-            
-            DocumentoDespacho.prototype.setCantidadCajas = function(cantidadCajas) {
+
+            DocumentoDespacho.prototype.setCantidadCajas = function (cantidadCajas) {
                 this.cantidadCajas = cantidadCajas;
             };
-            
-            DocumentoDespacho.prototype.getCantidadNeveras = function() {
+
+            DocumentoDespacho.prototype.getCantidadNeveras = function () {
                 return this.cantidadNeveras;
             };
-            
-            DocumentoDespacho.prototype.setCantidadNeveras = function(cantidadNeveras) {
+
+            DocumentoDespacho.prototype.setCantidadNeveras = function (cantidadNeveras) {
                 this.cantidadNeveras = cantidadNeveras;
             };
-            
-            DocumentoDespacho.prototype.getNumeroPedido = function() {
+
+            DocumentoDespacho.prototype.getCantidadBolsas = function () {
+                return this.cantidadBolsas;
+            };
+
+            DocumentoDespacho.prototype.setCantidadBolsas = function (cantidadBolsas) {
+                this.cantidadBolsas = cantidadBolsas;
+            };
+
+            DocumentoDespacho.prototype.getNumeroPedido = function () {
                 return this.numeroPedido;
             };
-            
-            DocumentoDespacho.prototype.setNumeroPedido = function(numeroPedido) {
+
+            DocumentoDespacho.prototype.setNumeroPedido = function (numeroPedido) {
                 this.numeroPedido = numeroPedido;
             };
-            
-            DocumentoDespacho.prototype.get_empresa_id = function() {
+
+            DocumentoDespacho.prototype.get_empresa_id = function () {
                 return this.empresaId;
             };
-            
-            DocumentoDespacho.prototype.set_documentos = function(documento) {
+
+            DocumentoDespacho.prototype.set_documentos = function (documento) {
                 this.documentos.push(documento);
             };
-            
-            DocumentoDespacho.prototype.get_documentos = function() {
+
+            DocumentoDespacho.prototype.get_documentos = function () {
                 return this.documentos;
             };
-            
-            DocumentoDespacho.prototype.limpiar_documentos = function() {
+
+            DocumentoDespacho.prototype.limpiar_documentos = function () {
                 return this.documentos = [];
             };
-            
-            DocumentoDespacho.prototype.getSeleccionado = function() {
+
+            DocumentoDespacho.prototype.getSeleccionado = function () {
                 return this.seleccionado;
             };
-            
-            DocumentoDespacho.prototype.setSeleccionado = function(seleccionado) {
-                this.seleccionado = seleccionado ;
+
+            DocumentoDespacho.prototype.setSeleccionado = function (seleccionado) {
+                this.seleccionado = seleccionado;
             };
-            
-            
-           
-                        
+
+
+
+
             return this;
         }]);
 });
@@ -48831,6 +48866,7 @@ define('controllers/ValidacionDespachosController',["angular", "js/controllers"]
 
                             documento.setCantidadCajas(_documento.cantidad_cajas);
                             documento.setCantidadNeveras(_documento.cantidad_neveras);
+                            documento.setCantidadBolsas(_documento.cantidad_bolsas);
                             documento.setObservacion(_documento.observacion);
                             documento.setRazonSocial(_documento.razon_social);
                             documento.setEmpresaId(_documento.empresa_id);
@@ -48956,6 +48992,7 @@ define('controllers/ValidacionDespachosController',["angular", "js/controllers"]
                             {field: 'getObservacion()', displayName: 'Observacion', width: "60%"},
                             {field: 'getCantidadCajas()', displayName: 'Cant Cajas', width: "5%"},
                             {field: 'getCantidadNeveras()', displayName: 'Cant Neveras', width: "5%"},
+                            {field: 'getCantidadBolsas()', displayName: 'Cant Bolsas', width: "5%"},
                             {field: 'fecha_registro', displayName: 'Fecha Registro'},
                             {field: 'detalle', width: "10%",
                                 displayName: "Opciones",
@@ -50394,7 +50431,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         validacionDespachos: {
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
                             prefijo: prefijo,
-                            numero: numeroDocumentos//$scope.documentoDespachoAprobado.numero
+                            numero: numeroDocumentos
                         }
                     }
                 };
@@ -50470,10 +50507,11 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                     if (data.status === 200) {
 
                         if (parseInt($scope.documentoDespachoAprobado.cantidadCajas) === data.obj.planillas_despachos.totalCajas &&
-                                parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === parseInt(data.obj.planillas_despachos.totalNeveras)) {
+                                parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === parseInt(data.obj.planillas_despachos.totalNeveras) &&
+                                parseInt($scope.documentoDespachoAprobado.cantidadBolsas) === parseInt(data.obj.planillas_despachos.totalBolsas)) {
                             that.registrarAprobacion(0);
                         } else {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Las cantidades de cajas,neveras y/o bolsas NO coinciden con las cantidades auditadas");
                         }
                     }
 
@@ -50508,6 +50546,8 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 var cantidadCajas = 0;
                 var totalDecimalNeveras = 0;
                 var cantidadNeveras = 0;
+                var totalDecimalBolsas = 0;
+                var cantidadBolsas = 0;
                 var pos = "";
                 /**
                  * +Descripcion Contar las veces que aparece el caracter [COMA] en la cadena String
@@ -50544,8 +50584,10 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 res = 0;
                 totalDecimal = 0;
                 totalDecimalNeveras = 0;
+                totalDecimalBolsas = 0;
                 cantidadCajas = 0;
                 cantidadNeveras = 0;
+                cantidadBolsas = 0;
                 numeroArray.forEach(function (rowNumero) {
 
                     index++;
@@ -50563,6 +50605,13 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         totalDecimalNeveras += parseFloat("0." + res);
                     }
 
+                    cantidadBolsas = parseInt($scope.documentoDespachoAprobado.cantidadBolsas) / numeroArray.length;
+                    pos = cantidadBolsas.toString().indexOf(".");
+                    if (pos > 0) {
+                        res = String(cantidadBolsas).substring((pos + 1), cantidadBolsas.length);
+                        totalDecimalBolsas += parseFloat("0." + res);
+                    }
+
                     if (index === numeroArray.length - 1) {
 
                         multiplesDocumentosOtros.push({
@@ -50570,6 +50619,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                             numero: rowNumero,
                             cantidadCajas: parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)),
                             cantidadNeveras: parseInt(cantidadNeveras) + parseInt(Math.ceil(totalDecimalNeveras)),
+                            cantidadBolsas: parseInt(cantidadBolsas) + parseInt(Math.ceil(totalDecimalBolsas)),
                             estado: estado
                         });
                         return multiplesDocumentosOtros;
@@ -50579,6 +50629,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         numero: rowNumero,
                         cantidadCajas: parseInt(cantidadCajas),
                         cantidadNeveras: parseInt(cantidadNeveras),
+                        cantidadBolsas: parseInt(cantidadBolsas),
                         estado: estado
                     });
 
@@ -50605,6 +50656,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 var numeroDocumento = $scope.documentoDespachoAprobado.numero;
                 var cantidadCajas = $scope.documentoDespachoAprobado.cantidadCajas;
                 var cantidadNeveras = parseInt($scope.documentoDespachoAprobado.cantidadNeveras);
+                var cantidadBolsas = parseInt($scope.documentoDespachoAprobado.cantidadBolsas);
 
                 if (that.documentosSeleccionados) {
 
@@ -50623,21 +50675,8 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                             }
                         }
 
-//                    that.observacionValidacion = "";
                         that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ? $scope.documentoDespachoAprobado.observacion + " " : "";
-//                    that.documentosSeleccionados.documentos.forEach(function(row){
-//                       
-//                        var observacion="";
-//                        if(row.cantidadCajas>0){
-//                            var s=row.cantidadCajas>1?"S":"";
-//                            observacion=" | CAJA"+s+": " + row.cantidadCajas;
-//                        }
-//                        if(row.cantidadNeveras>0){
-//                            var s=row.cantidadNeveras>1?"S":"";
-//                            observacion+=" | NEVERA"+s+": " + row.cantidadNeveras; 
-//                        }
-//                        that.observacionValidacion += "("+row.prefijo +"-"+ row.numero +" "+observacion+") ";
-//                    });
+
                         obj = {
                             session: $scope.session,
                             data: {
@@ -50660,8 +50699,10 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                             numeroDocumento = that.documentosSeleccionados.documentos[0].numero;
                             $scope.documentoDespachoAprobado.cantidadCajas = that.documentosSeleccionados.totalCajas;
                             $scope.documentoDespachoAprobado.cantidadNeveras = that.documentosSeleccionados.totalNeveras;
+                            $scope.documentoDespachoAprobado.cantidadBolsas = that.documentosSeleccionados.totalBolsas;
                             cantidadCajas = that.documentosSeleccionados.totalCajas;
                             cantidadNeveras = parseInt(that.documentosSeleccionados.totalNeveras);
+                            cantidadBolsas = parseInt(that.documentosSeleccionados.totalBolsas);
                         }
 
                         /**
@@ -50669,8 +50710,8 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                          *              se validara que obligatoriamente tenga unidad de caja o de nevera
                          *              diligenciada
                          */
-                        if (numeroDocumento.toString().length > 0 && cantidadCajas.toString() === "0" && cantidadNeveras.toString() === "0") {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe agregar la cantidad correspondiente de Cajas/Neveras");
+                        if (numeroDocumento.toString().length > 0 && cantidadCajas.toString() === "0" && cantidadNeveras.toString() === "0" && cantidadBolsas.toString() === "0") {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe agregar la cantidad correspondiente de Cajas/Neveras/Bolsas");
                             return;
                         }
 
@@ -50681,7 +50722,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
 
                 } else {
 
-                    if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 && (cantidadCajas > 0 || cantidadNeveras > 0)) {
+                    if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 && (cantidadCajas > 0 || cantidadNeveras > 0 || cantidadBolsas > 0)) {
                         that.llenarObservacion(1);
                         obj = {
                             session: $scope.session,
@@ -50714,6 +50755,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 var prefijo = that.validarPrefijoEmpresasOtras();
                 var totalCajas = 0;
                 var totalNeveras = 0;
+                var totalBolsas = 0;
                 var documentos = $scope.datos_view.documentosMedipol;
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
                 var numeroDocumento = $scope.documentoDespachoAprobado.numero;
@@ -50736,11 +50778,16 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                             var s = data.cantidadNeveras > 1 ? "S" : "";
                             observacion += " | NEVERA" + s + ": " + data.cantidadNeveras;
                         }
+                        if (data.cantidadBolsas > 0) {
+                            var s = data.cantidadBolsas > 1 ? "S" : "";
+                            observacion += " | BOLSA" + s + ": " + data.cantidadBolsas;
+                        }
                         that.observacionValidacion += "(" + data.prefijo + "-" + data.numero + " " + observacion + ") ";
 
 
                         totalCajas = totalCajas + data.cantidadCajas;
                         totalNeveras = totalNeveras + data.cantidadNeveras;
+                        totalBolsas = totalBolsas + data.cantidadBolsas;
 
 
                     });
@@ -50778,10 +50825,9 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         numeroDocumento = $scope.datos_view.documentosMedipol[0].numero;
                         $scope.documentoDespachoAprobado.cantidadCajas = totalCajas;
                         $scope.documentoDespachoAprobado.cantidadNeveras = totalNeveras;
+                        $scope.documentoDespachoAprobado.cantidadBolsas = totalBolsas;
                         $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;
                     }
-
-
 
                     that.ejecutarServicioRegistroAprobacion(obj);
                 } else {
@@ -50844,6 +50890,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                                 $scope.documentoDespachoAprobado = AprobacionDespacho.get(1, resultado.prefijo, resultado.numero, resultado.fecha_registro)
                                 $scope.documentoDespachoAprobado.setCantidadCajas(resultado.cantidad_cajas);
                                 $scope.documentoDespachoAprobado.setCantidadNeveras(resultado.cantidad_neveras);
+                                $scope.documentoDespachoAprobado.setCantidadBolsas(resultado.cantidad_bolsas);
                                 $scope.documentoDespachoAprobado.setObservacion(resultado.observacion);
                                 that.listarImagenes(function () {
 
@@ -51091,6 +51138,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 }
                 var cantidadCajas = 0;
                 var cantidadNeveras = 0;
+                var cantidadBolsas = 0;
                 that.documentosSeleccionados.forEach(function (row) {
                     var observacion = "";
 
@@ -51105,11 +51153,17 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         var s = parseInt(row.cantidadNeveras) > 1 ? "S" : "";
                         observacion += " | NEVERA" + s + ": " + row.cantidadNeveras + " ";
                     }
+                    if (parseInt(row.cantidadBolsas) > 0) {
+                        cantidadBolsas += row.cantidadBolsas;
+                        var s = parseInt(row.cantidadBolsas) > 1 ? "S" : "";
+                        observacion += " | BOLSA" + s + ": " + row.cantidadBolsas + " ";
+                    }
                     that.observacionValidacion += "(" + row.prefijo + "-" + row.numero + " " + observacion + ") "
 
                 });
                 $scope.documentoDespachoAprobado.cantidadCajas = cantidadCajas;
                 $scope.documentoDespachoAprobado.cantidadNeveras = cantidadNeveras;
+                $scope.documentoDespachoAprobado.cantidadBolsas = cantidadBolsas;
                 $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;//+ " - Total Cajas: "+ that.documentosSeleccionados.totalCajas
 
             };
@@ -51172,6 +51226,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                     {field: 'get_numero()', displayName: 'Nro Documento', width: "20%"},
                     {field: 'cantidadCajas', displayName: 'Cajas', width: "15%"},
                     {field: 'cantidadNeveras', displayName: 'Nevera', width: "15%"},
+                    {field: 'cantidadBolsas', displayName: 'Bolsa', width: "15%"},
                     {field: 'temperatura_neveras', displayName: 'Temperatura', width: "15%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
@@ -51202,20 +51257,20 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         documento.setSeleccionado(true);
                         documento.setCantidadCajas(0);
                         documento.setCantidadNeveras(0);
+                        documento.setCantidadBolsas(0);
                         documento.temperatura_neveras = '';
-//                        documento.setCantidadCajas(data.cantidadCajas);
-//                        documento.setCantidadNeveras(data.cantidadNeveras);
-//                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
                         documento.setEstado(1);
 
                         $scope.datos_view.documentosMedipol.push(documento);
 
                     });
-                        var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
-                        var cantidadNeveras = ( parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
-                                            
+                    var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
+                    var cantidadNeveras = (parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
+                    var cantidadBolsas = (parseInt($scope.documentoDespachoAprobado.cantidadBolsas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadBolsas()));
+
                     $scope.datos_view.documentosMedipol[0].setCantidadCajas(cantidadCajas);
                     $scope.datos_view.documentosMedipol[0].setCantidadNeveras(cantidadNeveras);
+                    $scope.datos_view.documentosMedipol[0].setCantidadBolsas(cantidadBolsas);
                     $scope.datos_view.documentosMedipol[0].temperatura_neveras = cantidadNeveras > 0 ? '3,2' : '';
                     that.limpiarVariables();
                 } else {
@@ -51270,6 +51325,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 $scope.documentoDespachoAprobado.numero = '';
                 $scope.documentoDespachoAprobado.cantidadCajas = 0;
                 $scope.documentoDespachoAprobado.cantidadNeveras = 0;
+                $scope.documentoDespachoAprobado.cantidadBolsas = 0;
             };
 
             that.init();
@@ -51401,6 +51457,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
 
             $scope.numeroCaja = false;
             $scope.numeroNevera = false;
+            $scope.numeroBolsa = false;
 
             $scope.pulsar = function (check, tipo) {
 
@@ -51408,13 +51465,20 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     if (tipo === 'nevera') {
                         $scope.numeroCaja = false;
                         $scope.numeroNevera = true;
-                    } else {
+                        $scope.numeroBolsa = false;
+                    } else if (tipo === 'caja') {
                         $scope.numeroCaja = true;
                         $scope.numeroNevera = false;
+                        $scope.numeroBolsa = false;
+                    } else if (tipo === 'bolsa') {
+                        $scope.numeroCaja = false;
+                        $scope.numeroNevera = false;
+                        $scope.numeroBolsa = true;
                     }
                 } else {
                     $scope.numeroCaja = false;
                     $scope.numeroNevera = false;
+                    $scope.numeroBolsa = false;
                 }
             };
 
@@ -51440,6 +51504,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                         _documento = DocumentoDespacho.get(0, _documento.prefijo, _documento.numero, _documento.empresaId);
                         _documento.setCantidadCajas(parseInt(documento.cantidadCajas));
                         _documento.setCantidadNeveras(parseInt(documento.cantidadNeveras));
+                        _documento.setCantidadBolsas(parseInt(documento.cantidadBolsas));
                     }
                     if (_documento.get_prefijo() === documento.get_prefijo() && _documento.get_numero() === documento.get_numero()) {
                         return false;
@@ -51489,6 +51554,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
             var totalDecimal = 0;
             var cantidadCajas = 0;
             var cantidadNeveras = 0;
+            var cantidadBolsas = 0;
             var pos = "";
             that.documentosStorageActual = [];
             that.distribuirCajas = function (index, documentoSeleccionadoPreparado, callback) {
@@ -51526,12 +51592,19 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     _documento.setCantidadNeveras(Math.floor(cantidadCajas));
                 }
 
+                if ($scope.numeroBolsa) {
+                    _documento.setCantidadBolsas(Math.floor(cantidadCajas));
+                }
+
                 if (index === documentoSeleccionadoPreparado.length - 1) {
                     if ($scope.numeroCaja) {
                         _documento.setCantidadCajas(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
                     }
                     if ($scope.numeroNevera) {
                         _documento.setCantidadNeveras(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
+                    }
+                    if ($scope.numeroBolsa) {
+                        _documento.setCantidadBolsas(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
                     }
                 }
 
@@ -51550,8 +51623,8 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
              */
             $scope.distribuirCajas = function () {
                 that.documentosStorageActual = [];
-                if ($scope.numeroCaja === $scope.numeroNevera) {
-                    AlertService.mostrarMensaje("warning", "Debe chequear Caja o Nevera");
+                if ($scope.numeroCaja === $scope.numeroNevera && $scope.numeroCaja === $scope.numeroBolsa) {
+                    AlertService.mostrarMensaje("warning", "Debe chequear Caja, Nevera o Bolsa");
                     return;
                 }
                 if (!$scope.centroUtilidad && !$scope.clienteEgresos) {
@@ -51559,8 +51632,6 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     return;
                 }
                 var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
-                /*---------parte nueva----------*/
-//                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
 
                 if (documentoSeleccionadoPreparado.length <= 0) {
                     AlertService.mostrarMensaje("warning", "Debe seleccionar documentos");
@@ -51577,10 +51648,14 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     documentoSeleccionadoPreparado[0].setCantidadNeveras(Math.floor(cantidadNeveras));
                 }
 
-                that.documentosStorageActual = documentoSeleccionadoPreparado;
-                /*---------fin parte nueva----------*/
+                if ($scope.numeroBolsa) {
+                    cantidadBolsas = parseInt($scope.datosView.cantidadCajas);
+                    documentoSeleccionadoPreparado[0].setCantidadBolsas(Math.floor(cantidadBolsas));
+                }
 
-                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: cantidadCajas, totalNeveras: cantidadNeveras});
+                that.documentosStorageActual = documentoSeleccionadoPreparado;
+
+                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: cantidadCajas, totalNeveras: cantidadNeveras, totalBolsas: cantidadBolsas});
 
                 if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
                     var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
@@ -51601,13 +51676,12 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                 $state.go('ValidacionEgresosDetalle');
                 $modalInstance.close();
 
-//                });
-
             };
 
 
             that.guardarCantidadCajas = 0;
             that.guardarCantidadNeveras = 0;
+            that.guardarCantidadBolsas = 0;
             var documentoDespachoStorage;
             /**
              * +Descripcion Metodo que recorrera los documentos seleccionados
@@ -51630,15 +51704,18 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     documentoDespachoStorage.setSeleccionado(true);
                     documentoDespachoStorage.setCantidadCajas(parseInt(_documento.cantidadCajas));
                     documentoDespachoStorage.setCantidadNeveras(parseInt(_documento.cantidadNeveras));
+                    documentoDespachoStorage.setCantidadBolsas(parseInt(_documento.cantidadBolsas));
                     that.documentosStorageActual.push(_documento);
                 } else {
                     _documento.setCantidadCajas(parseInt(_documento.cantidadCajas));
                     _documento.setCantidadNeveras(parseInt(_documento.cantidadNeveras));
+                    _documento.setCantidadBolsas(parseInt(_documento.cantidadBolsas));
                     that.documentosStorageActual.push(_documento);
                 }
 
                 that.guardarCantidadCajas += parseInt(_documento.cantidadCajas);
                 that.guardarCantidadNeveras += parseInt(_documento.cantidadNeveras);
+                that.guardarCantidadBolsas += parseInt(_documento.cantidadBolsas);
 
                 setTimeout(function () {
                     that.guardarDocumentosSeleccionados(index, documentoSeleccionadoPreparado, callback);
@@ -51662,7 +51739,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                 var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
                 that.guardarDocumentosSeleccionados(0, documentoSeleccionadoPreparado, function (estado) {
 
-                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: that.guardarCantidadCajas, totalNeveras: that.guardarCantidadNeveras});
+                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: that.guardarCantidadCajas, totalNeveras: that.guardarCantidadNeveras, totalBolsas: that.guardarCantidadBolsas});
 
                     if ($scope.centroUtilidad) {
                         var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
@@ -51834,6 +51911,8 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     documento.setNumeroPedido(data.numero_pedido);
                     documento.setFechaRegistro(data.fecha_registro);
                     documento.setEstadoDocumento(data.estado_documento);
+                    documento.setTipo(data.tipo);
+                    documento.setEstadoPedido(data.estado);
 
                     if (that.documentosStorage) {
 
@@ -51843,6 +51922,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                                 documento.setSeleccionado(true);
                                 documento.setCantidadCajas(row.cantidadCajas);
                                 documento.setCantidadNeveras(row.cantidadNeveras);
+                                documento.setCantidadBolsas(row.cantidadBolsas);
 
                                 $scope.datosView.documentosSeleccionados.push(documento);
 
@@ -51857,6 +51937,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                                 documento.setSeleccionado(true);
                                 documento.setCantidadCajas(row.cantidadCajas);
                                 documento.setCantidadNeveras(row.cantidadNeveras);
+                                documento.setCantidadBolsas(row.cantidadBolsas);
 
                             }
                         });
@@ -51885,7 +51966,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                         cellTemplate: "<div><input-check \
                         ng-model='row.entity.seleccionado' \
                         ng-change='onAgregarDocumentoALio(row.entity)' \
-                        ng-disabled='row.entity.cantidadNeveras == 0 && row.entity.cantidadCajas == 0 && datosView.cantidadCajas ==0 || row.entity.estadoDocumento == \"1\" '  /></div>"},
+                        ng-disabled='row.entity.cantidadNeveras == 0 && row.entity.cantidadCajas == 0 && row.entity.cantidadBolsas == 0 && datosView.cantidadCajas ==0 || row.entity.estadoDocumento == \"1\" '  /></div>"},
                     {
                         displayName: 'Documento Bodega',
                         cellTemplate: '<div class="ngCellText">\
@@ -51903,6 +51984,13 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                         cellTemplate: '<div class="col-xs-12"> \n\
                         <input type="text"\
                         ng-model="row.entity.cantidadNeveras"\
+                        validacion-numero-entero\
+                        class="form-control grid-inline-input" ng-focus="desCheckearDocumento(row.entity)"\
+                        name="" id="" /> </div>'},
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%",
+                        cellTemplate: '<div class="col-xs-12"> \n\
+                        <input type="text"\
+                        ng-model="row.entity.cantidadBolsas"\
                         validacion-numero-entero\
                         class="form-control grid-inline-input" ng-focus="desCheckearDocumento(row.entity)"\
                         name="" id="" /> </div>'},

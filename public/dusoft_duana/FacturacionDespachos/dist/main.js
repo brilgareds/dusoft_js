@@ -45332,12 +45332,12 @@ define('url',["angular"], function(angular) {
                  "GENERAR_SINCRONIZACION_DIAN" : BASE_URL + "/FacturacionClientes/generarSincronizacionDian"
             },   
             'FACTURACIONPROVEEDOR': {
-                "LISTAR_ORDENES_COMPRA_PROVEEDORES": BASE_URL + "/FacturacionProveedores/listarOrdenesCompraProveedor",
-                "DETALLE_RECEPCION_PARCIAL": BASE_URL + "/FacturacionProveedores/detalleRecepcionParcial",
-                "INSERTAR_FACTURA": BASE_URL + "/FacturacionProveedores/ingresarFactura",
-                "LISTAR_FACTURA_PROVEEDOR": BASE_URL + "/FacturacionProveedores/listarFacturaProveedor",
-                "REPORTE_FACTURA_PROVEEDOR": BASE_URL + "/FacturacionProveedores/reporteFacturaProveedor",
-                "SINCRONIZAR_FI": BASE_URL + "/FacturacionProveedores/sincronizarFi",
+                "LISTAR_ORDENES_COMPRA_PROVEEDORES": BASE_URL + "/NotasProveedores/listarOrdenesCompraProveedor",
+                "DETALLE_RECEPCION_PARCIAL": BASE_URL + "/NotasProveedores/detalleRecepcionParcial",
+                "INSERTAR_FACTURA": BASE_URL + "/NotasProveedores/ingresarFactura",
+                "LISTAR_FACTURA_PROVEEDOR": BASE_URL + "/NotasProveedores/listarFacturaProveedor",
+                "REPORTE_FACTURA_PROVEEDOR": BASE_URL + "/NotasProveedores/reporteFacturaProveedor",
+                "SINCRONIZAR_FI": BASE_URL + "/NotasProveedores/sincronizarFi",
 
             },
             'CAJA_GENERAL': {
@@ -62263,21 +62263,24 @@ define('controllers/facturacionProveedor/DetalleRecepcionParcialController',["an
  ], function(angular, controllers) {
     
         controllers.controller('DetalleRecepcionParcialController', [
-        '$scope', '$rootScope', "Request",
-        "$filter", '$state', '$modal',
-        "API", "AlertService", 'localStorageService',
-        "Usuario", "socket", "$timeout",
-        "Empresa",
-        function($scope, $rootScope, Request,
-                $filter, $state, $modal,
-                API, AlertService, localStorageService,
-                Usuario, socket, $timeout,
-                Empresa) {
-                    
-                    var that = this;
-                    var filtroPedido = localStorageService.get("verificacionDetalle");
-               }]);
+            '$scope', '$rootScope', "Request",
+            "$filter", '$state', '$modal',
+            "API", "AlertService", 'localStorageService',
+            "Usuario", "socket", "$timeout",
+            "Empresa",
+            function($scope, $rootScope, Request,
+                    $filter, $state, $modal,
+                    API, AlertService, localStorageService,
+                    Usuario, socket, $timeout,
+                    Empresa) {
+
+                        var that = this;
+                        var filtroPedido = localStorageService.get("verificacionDetalle");
+            }
+            ]
+        );
 });
+
 define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controllers"], function (angular, controllers) {
 
     var fo = controllers.controller('CajaGeneralController',
@@ -64482,7 +64485,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                         };
 
                         notasService.imprimirReporteFacturaDian(obj, function (data) {
-                            console.log("imprimirReporteFacturaDian:: ", data);
+                            
                             if (data.status === 200) {
                                 var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;
                                 $scope.visualizarReporte("/reports/doc_dian/" + nombre, nombre, "_blank");
@@ -65242,8 +65245,6 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                     empresaId: $scope.root.empresaSeleccionada.getCodigo()
                                 };
                                 that.listarNotas(parametros);
-                            } else {
-
                             }
                         }
                     };

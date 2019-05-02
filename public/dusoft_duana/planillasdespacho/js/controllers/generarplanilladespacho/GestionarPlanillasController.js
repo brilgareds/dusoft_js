@@ -63,6 +63,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
+            $scope.gestionar_consultas = function () {
+                that.gestionar_consultas();
+            };
+
             $scope.listar_ciudades = function (termino_busqueda) {
 
                 if (termino_busqueda.length < 3) {
@@ -142,7 +146,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.seleccionar_transportadora = function () {
-            $scope.planilla.set_numero_placa_externo($scope.planilla.transportadora.placa);
+                $scope.planilla.set_numero_placa_externo($scope.planilla.transportadora.placa);
             };
 
             $scope.buscador_documentos_planillas = function (ev) {
@@ -224,6 +228,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     var documento = Documento.get(data.id, data.empresa_id, data.prefijo, data.numero, data.numero_pedido, data.cantidad_cajas, data.cantidad_neveras, data.temperatura_neveras, data.observacion, data.tipo);
                     documento.set_tercero(data.descripcion_destino);
+                    documento.lio_id = data.lio_id;
 
                     $scope.planilla.set_documentos(documento);
                 });
@@ -466,13 +471,134 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
                     {field: 'get_temperatura_neveras()', displayName: 'Temp. Neveras', width: "10%"},
+//                    {field: 'lio_id', displayName: 'Lio', width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="modificar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-pencil"></span></button>\
                                         </div>'
                     }
                 ]
             };
+
+
+            $scope.modificar_documento_planilla = function (docSelec) {
+                var documentos = $scope.planilla.get_documentos();
+                var DocsLio = [];
+                documentos.forEach(function (documento) {
+
+                    if (documento.lio_id !== null && documento.lio_id === docSelec.lio_id) {
+                        DocsLio.push(documento);
+                    }
+                });
+
+                if (DocsLio.length > 0) {
+
+                    that.mostrarVentanaLiosModificar(DocsLio);
+
+                } else {
+                    that.verModificarUnico(docSelec);
+                }
+
+
+            };
+
+
+            that.mostrarVentanaLiosModificar = function (documentos) {
+                $scope.opts = {
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: 'views/generarplanilladespacho/gestionarLios.html',
+                    controller: "GestionarLiosController",
+                    scope: $scope,
+                    resolve: {
+                        documentos: function () {
+                            return documentos;
+                        },
+                        tipo: function () {
+                            return 4;
+                        },
+                        numeroGuia: function () {
+                            return $scope.planilla.get_numero_guia();
+                        }
+                    }
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+
+            };
+
+            that.verModificarUnico = function (datos) {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    windowClass: 'app-modal-window-ls-xlg-ls',
+                    keyboard: true,
+                    showFilter: true,
+                    cellClass: "ngCellText",
+                    templateUrl: 'views/generarplanilladespacho/modificarDocumentos.html',
+                    scope: $scope,
+                    controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+
+                            $scope.DocModificar = datos;
+
+                            $scope.cerrar = function () {
+                                $modalInstance.close();
+                            };
+
+                            /**
+                             * +Descripcion Metodo encargado de validar la activacion del boton guardar
+                             * @author German Galvis
+                             * @fecha 27/04/2019 DD/MM/YYYY
+                             * @returns {undefined}
+                             */
+                            $scope.habilitarGuardar = function () {
+                                var disabled = false;
+
+                                if ($scope.DocModificar.cantidad_cajas === undefined || $scope.DocModificar.cantidad_cajas === "" || parseInt($scope.DocModificar.cantidad_cajas) < 0) {
+                                    disabled = true;
+                                } else if ($scope.DocModificar.cantidad_neveras === undefined || $scope.DocModificar.cantidad_neveras === "" || parseInt($scope.DocModificar.cantidad_neveras) < 0) {
+                                    disabled = true;
+                                } else if (parseInt($scope.DocModificar.cantidad_cajas) == 0 && parseInt($scope.DocModificar.cantidad_neveras) == 0) {
+                                    disabled = true;
+                                }
+
+                                return disabled;
+                            };
+
+
+                            $scope.guardarDoc = function () {
+
+                                var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        documento: $scope.DocModificar,
+                                        tipo: $scope.DocModificar.tipo
+                                    }
+                                };
+
+                                Request.realizarRequest(API.PLANILLAS.MODIFICAR_DOCUMENTO_PLANILLA, "POST", obj, function (data) {
+
+                                    if (data.status === 200) {
+                                        AlertService.mostrarMensaje("warning", data.msj);
+                                        that.gestionar_consultas();
+                                        $modalInstance.close();
+
+                                    } else {
+                                        AlertService.mostrarMensaje("warning", data.msj);
+                                    }
+                                });
+
+                            };
+                        }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+
+
+            };
+
 
             that.gestionar_consultas();
 

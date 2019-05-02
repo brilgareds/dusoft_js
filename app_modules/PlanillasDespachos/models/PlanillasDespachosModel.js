@@ -490,24 +490,26 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
 };
 
 PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle = function (planilla_id, termino_busqueda, obj, callback) {
-    var sql= "";
+    var sql1= "";
     var sql3= "";
     if(planilla_id !== undefined && planilla_id !== ""){
-        sql = " and a.planilla_id = :1 ";
+        sql1 = " and a.planilla_id = :1 ";
     }
     if(termino_busqueda !== undefined && termino_busqueda !== ""){
-        sql += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
+        sql1 += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
     }
     
     if(obj.tercero_id !== undefined && obj.tercero_id !== "" && obj.tercero_id !== null){
-        sql += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
+        sql1 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
         sql3 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
     }
     
     if(obj.modificar === 1){
-        sql += " AND b.planilla_id is not null"; 
+        sql1 += " AND b.planilla_id is not null"; 
+        sql3 += " AND q.planilla_id is not null"; 
     }else if(obj.modificar === 0){
-        sql += " AND b.planilla_id is null";  
+        sql1 += " AND b.planilla_id is null";  
+        sql3 += " AND q.planilla_id is null";  
     } 
     
     var sql = "( select a.*,case when b.planilla_id is not null then true else false end  as chequeado from (\
@@ -644,7 +646,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     inner join bodegas d on a.empresa_destino = d.empresa_id and a.centro_utilidad = d.centro_utilidad and a.bodega = d.bodega\
                 ) as a \
                  left join inv_registro_salida_bodega_detalle as b on (b.prefijo_id=a.prefijo and a.numero=b.numero and a.tipo=b.tipo and a.id=b.id and a.planilla_id=b.planilla_id and a.empresa_id=b.empresa_id)\
-                 where true "+sql+")";
+                 where true "+sql1+")";
      var sql2 = "(select\
         '1' as tipo,\
         'CLIENTES' as descripcion_tipo,\

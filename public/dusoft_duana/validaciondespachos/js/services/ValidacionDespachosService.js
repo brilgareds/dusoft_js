@@ -94,6 +94,7 @@ define(["angular", "js/services"], function (angular, services) {
                             termino_busqueda: obj.termino_busqueda,
                             tercero : obj.tercero,
                             modificar : obj.modificar,
+                            registro_salida_bodega_id : obj.registro_salida_bodega_id
                         }
                 }
             };

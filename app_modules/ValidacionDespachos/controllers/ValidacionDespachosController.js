@@ -1,9 +1,12 @@
 
-var ValidacionDespachos = function (induccion, m_pedidos_farmacias,m_pedidos_clientes) {
+var ValidacionDespachos = function (induccion, m_pedidos_farmacias,m_pedidos_clientes, e_pedidos_farmacias, e_pedidos_clientes,m_terceros) {
 
     this.m_ValidacionDespachos = induccion;
     this.m_pedidos_farmacias = m_pedidos_farmacias;
     this.m_pedidos_clientes = m_pedidos_clientes;
+    this.e_pedidos_farmacias = e_pedidos_farmacias;
+    this.e_pedidos_clientes = e_pedidos_clientes;
+    this.m_terceros = m_terceros;
 
 };
 
@@ -524,6 +527,7 @@ ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
     var that = this;
 
     var args = req.body.data.obj;
+    var registro_salida_bodega_id = "";
     if(args.numeroGuia === ""){
        args.numeroGuia = '100'; 
        console.log("**args.numeroGuia",args.numeroGuia)
@@ -569,10 +573,14 @@ ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
             }
 
         }).then(function (respuesta) {
-
+            registro_salida_bodega_id = respuesta;
+            return G.Q.ninvoke(that.m_terceros, 'seleccionar_operario_por_usuario_id', req.session.user.usuario_id);
+            
+        }).then(function (respuesta) {    
+            
             if (args.documentos.length > 0) {
-
-                obj.registro_salida_bodega_id = respuesta;
+                obj.operario = respuesta[0].operario_id;
+                obj.registro_salida_bodega_id = registro_salida_bodega_id;
                 return G.Q.nfcall(__registroSalidaDetalle, obj, 0);
 
             } else {
@@ -623,33 +631,43 @@ function __registroSalidaDetalle(obj, index, callback) {
 
     G.Q.ninvoke(obj.that.m_ValidacionDespachos, 'registroSalidaDetalle', detalle).then(function (resultado) {
 console.log("detalle.tipo->>>>>",detalle.tipo);
-        if (detalle.tipo === 0) {//0-farmacia 1-cliente 2-empresa
+        if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
+            console.log("00<<<<<<<<<<<->>>>>",detalle.tipo);
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'consultarEstadoActualPedidoFarmacia', detalle);
-        } else if (detalle.tipo === 1) {
+        } else if (detalle.tipo === '1') {
+            console.log("11<<<<<<<<<<<->>>>>",detalle.tipo);
             return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'consultarEstadoActualPedidoCliente', detalle);
         } else {
-            console.log("<<<<<<<<<<<->>>>>");
+            console.log("22<<<<<<<<<<<->>>>>return");
             return true;
         }
 
     }).then(function (resultado) {
-        if (detalle.tipo === 0) {//0-farmacia 1-cliente 2-empresa
-            if (resultado[0].estado === 2) {
+        if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
+            console.log("##########**********<<<<<<<<<<<->>>>>",resultado[0].estado);
+            if (resultado[0].estado === '3') {
+                console.log("**********<<<<<<<<<<<->>>>>",resultado[0].estado);
                 detalle.sw_estado = 4;
-            } else {
+            } else if (resultado[0].estado === '9') {
+                console.log("**********<<<<<<<<<<<->>>>>",resultado[0].estado);
                 detalle.sw_estado = 5;
+            }else{
+                console.log("**********<<<<<<<<<<<->>>>>return");
+                return true;
             }
             detalle.sw_despacho = 1;
             
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'actualizarEstadoActualPedidoFarmacia', detalle);
             
-        } else if (detalle.tipo === 1) {
-            if (resultado[0].estado_pedido === 2) {
+        } else if (detalle.tipo === '1') {
+            if (resultado[0].estado_pedido === '3') {
                 detalle.sw_estado = 4;
                 detalle.estado_pedido = 4;
-            } else {
+            } else if (resultado[0].estado_pedido === '9') {
                 detalle.sw_estado = 5;
                 detalle.estado_pedido = 5;
+            }else{
+                return true;
             }
             detalle.estadoEntrega = 3;
             console.log("entro cliente");
@@ -661,13 +679,15 @@ console.log("detalle.tipo->>>>>",detalle.tipo);
 
         detalle.usuario = obj.usuarioId;
         
-        if (detalle.tipo === 0) {//0-farmacia 1-cliente 2-empresa
-           console.log("entro farmacia estado");
-            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'insertar_responsables_pedidos', obj.numero_pedido, obj.estado_pedido, detalle.usuario, detalle.usuario);
+        if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
+            
+            obj.that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: detalle.numero_pedido});
+            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'insertarResponsablesPedidos',{numero_pedido: detalle.numero_pedido,estado: detalle.sw_estado,usuario: detalle.usuario,responsable: obj.operario, transaccion: detalle.transaccion,sw_terminado : '1'});
 
-        } else if (detalle.tipo === 1) {
-            console.log("entro cliente estado");
-            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'insertar_responsables_pedidos', obj.numero_pedido, obj.estado_pedido, detalle.usuario, detalle.usuario);
+        } else if (detalle.tipo === '1') {
+            console.log("entro cliente estado"); 
+            obj.that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: detalle.numero_pedido});
+            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'insertarResponsablesPedidos',{numero_pedido: detalle.numero_pedido,estado_pedido: detalle.estado_pedido,responsable: obj.operario,usuario: detalle.usuario, transaccion: detalle.transaccion,sw_terminado : '1'});
             
         } else {
             return true;
@@ -746,6 +766,6 @@ ValidacionDespachos.prototype.modificarRegistroSalidaBodega = function (req, res
     }).done();
 };
 
-ValidacionDespachos.$inject = ["m_ValidacionDespachos","m_pedidos_farmacias","m_pedidos_clientes"];
+ValidacionDespachos.$inject = ["m_ValidacionDespachos","m_pedidos_farmacias","m_pedidos_clientes", "e_pedidos_farmacias", "e_pedidos_clientes","m_terceros"];
 
 module.exports = ValidacionDespachos;

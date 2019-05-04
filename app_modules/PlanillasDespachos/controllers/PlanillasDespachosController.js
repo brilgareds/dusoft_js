@@ -178,7 +178,7 @@ PlanillasDespachos.prototype.consultarDocumentosPlanillaDespachoDetalle = functi
     var that = this;
 
     var args = req.body.data;
-
+console.log("args::: ",args);
     if (args.planillas_despachos === undefined) {
         res.send(G.utils.r(req.url, 'No se definieron parametros de consulta', 404, {}));
         return;
@@ -187,6 +187,7 @@ PlanillasDespachos.prototype.consultarDocumentosPlanillaDespachoDetalle = functi
     var planilla_id = args.planillas_despachos.planilla_id;
     var termino_busqueda = args.planillas_despachos.termino_busqueda;
     var obj = args.planillas_despachos.tercero;
+        obj.registro_salida_bodega_id = args.planillas_despachos.registro_salida_bodega_id;
     
     var obj = {}; 
     if(args.planillas_despachos.tercero !== undefined){
@@ -738,10 +739,10 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
 
                 if (estado_actual_pedido === '3') {
                     // si es Zona de despacho  => pasa a Despachado
-                    estado_pedido = '4';
+                    estado_pedido = '3';
                 } else if (estado_actual_pedido === '9') {
                     // si es Zona con pdtes => pasa a Despachado con pdtes                    
-                    estado_pedido = '5';
+                    estado_pedido = '9';
                 } else {
                     estado_pedido = estado_actual_pedido;
                 }

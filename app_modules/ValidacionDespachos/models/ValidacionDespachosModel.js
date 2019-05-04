@@ -288,7 +288,7 @@ ValidacionDespachosModel.prototype.modificarEstadoPedido = function (documento, 
     } else {
         callback(false, true);
     }
-
+console.log("modificarEstadoPedido",G.sqlformatter.format(query.toString())); 
     if (transaccion)
         query.transacting(transaccion);
     query.then(function (resultado) {

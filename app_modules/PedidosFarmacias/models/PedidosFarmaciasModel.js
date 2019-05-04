@@ -1270,6 +1270,22 @@ PedidosFarmaciasModel.prototype.insertar_responsables_pedidos = function (numero
     }).done();
 };
 
+PedidosFarmaciasModel.prototype.insertarResponsablesPedidos = function (obj, callback) {
+
+    var query = G.knex("solicitud_productos_a_bodega_principal_estado").
+            returning("solicitud_prod_a_bod_ppal_est_id").
+            insert({solicitud_prod_a_bod_ppal_id: obj.numero_pedido, estado: obj.estado, responsable_id: obj.responsable, fecha: 'now()', usuario_id: obj.usuario});
+ console.log(G.sqlformatter.format(query.toString())); 
+    if (obj.transaccion)
+        query.transacting(obj.transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+};
+
 // actualizacion del responsable del pedido
 PedidosFarmaciasModel.prototype.actualizar_responsables_pedidos = function (numero_pedido, estado_pedido, responsable, usuario, callback) {
 
@@ -1312,6 +1328,38 @@ PedidosFarmaciasModel.prototype.actualizar_estado_actual_pedido = function (nume
         callback(err);
     });
 
+};
+
+PedidosFarmaciasModel.prototype.actualizarEstadoActualPedidoFarmacia = function (obj, callback) {
+
+    var query = G.knex("solicitud_productos_a_bodega_principal").
+            where("solicitud_prod_a_bod_ppal_id", obj.numero_pedido).
+            update({estado: obj.sw_estado,sw_despacho: obj.sw_despacho});
+    console.log(G.sqlformatter.format(query.toString())); 
+    if (obj.transaccion)
+        query.transacting(obj.transaccion);
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+        
+    }).catch(function (err) {
+        console.log("Error actualizar_estado_actual_pedido ", err);
+        callback(err);
+    });
+};
+
+PedidosFarmaciasModel.prototype.consultarEstadoActualPedidoFarmacia= function (obj, callback) {
+
+    var query = G.knex("solicitud_productos_a_bodega_principal").
+                where("solicitud_prod_a_bod_ppal_id", obj.numero_pedido).
+                select(['estado']);    
+    
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [actualizarEstadoActualPedidoFarmacia]: ", err);
+        callback(err);
+    });
 };
 
 

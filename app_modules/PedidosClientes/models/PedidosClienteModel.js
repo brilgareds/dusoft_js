@@ -1289,6 +1289,40 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function (numero_p
 
 };
 
+PedidosClienteModel.prototype.insertarResponsablesPedidos = function (obj, callback) {
+
+
+    var query = G.knex("ventas_ordenes_pedidos_estado").
+            returning("venta_orden_pedido_estado_id").
+            insert({pedido_cliente_id: obj.numero_pedido, estado: obj.estado_pedido, responsable_id: obj.responsable, fecha: 'now()', usuario_id: obj.usuario,sw_terminado:obj.sw_terminado});
+    console.log(G.sqlformatter.format(query.toString()));
+        if (obj.transaccion)
+        query.transacting(obj.transaccion);
+        query.then(function (resultado) {
+
+                callback(false, resultado);
+            }).catch(function (err) {
+        console.log("err [insertar_responsables_pedidos]: ", err);
+        callback(err);
+    }).done();
+
+};
+
+PedidosClienteModel.prototype.consultarEstadoActualPedidoCliente = function (obj, callback) {
+
+    var query = G.knex("ventas_ordenes_pedidos").
+            where("pedido_cliente_id", obj.numero_pedido).
+            select(['estado_pedido']);
+console.log(G.sqlformatter.format(query.toString()));
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [actualizar_estado_actual_pedido222]: ", err);
+        callback(err);
+    });
+
+};
+
 /**
  * @api {sql} actualizar_responsables_pedidos Actualizar Responsables Pedido
  * @apiName Actualizar Responsables Pedido
@@ -1392,6 +1426,25 @@ PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function (numero
             where("pedido_cliente_id", numero_pedido).
             update({estado_pedido: estado_pedido});
 
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [actualizar_estado_actual_pedido222]: ", err);
+        callback(err);
+    });
+
+};
+
+PedidosClienteModel.prototype.actualizarEstadoActualPedidoCliente = function (obj, callback) {
+
+    var query = G.knex("ventas_ordenes_pedidos").
+            where("pedido_cliente_id", obj.numero_pedido).
+            update({estado_pedido: obj.estado_pedido, estado: obj.estadoEntrega});
+    
+console.log(G.sqlformatter.format(query.toString())); 
+
+if (obj.transaccion)
+        query.transacting(obj.transaccion);
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

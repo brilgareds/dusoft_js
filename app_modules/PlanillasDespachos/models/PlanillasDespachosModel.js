@@ -480,29 +480,35 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
 };
 
 PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle = function (planilla_id, termino_busqueda, obj, callback) {
-    var sql1= "";
-    var sql3= "";
-    if(planilla_id !== undefined && planilla_id !== ""){
+    var sql1 = "";
+    var sql3 = "";
+    if (planilla_id !== undefined && planilla_id !== "") {
         sql1 = " and a.planilla_id = :1 ";
     }
-    if(termino_busqueda !== undefined && termino_busqueda !== ""){
+    if (termino_busqueda !== undefined && termino_busqueda !== "") {
         sql1 += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
     }
-    
-    if(obj.tercero_id !== undefined && obj.tercero_id !== "" && obj.tercero_id !== null){
+
+    if (obj.tercero_id !== undefined && obj.tercero_id !== "" && obj.tercero_id !== null) {
         sql1 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
         sql3 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
     }
-    
     if (obj.modificar === 1) {
         sql1 += " AND b.planilla_id is not null";
-        if (planilla_id !== "" && planilla_id !== undefined)
-            sql3 += " AND q.planilla_id = :1";
+        if (planilla_id !== "" && planilla_id !== undefined) {
+            if (obj.registro_salida_bodega_id !== undefined && obj.registro_salida_bodega_id !== "") {            
+                sql3 += " AND q.registro_salida_bodega_id = " + obj.registro_salida_bodega_id;
+                sql1 += " AND b.registro_salida_bodega_id = " + obj.registro_salida_bodega_id;
+            } else {
+                sql3 += " AND q.planilla_id = :1";
+            }
+        }
         sql3 += " AND q.planilla_id is not null";
     } else if (obj.modificar === 0) {
         // sql1 += " AND b.planilla_id is null";  
-        if (planilla_id !== "" && planilla_id !== undefined)
+        if (planilla_id !== "" && planilla_id !== undefined) {
             sql3 += " AND q.planilla_id = :1";
+        }
         sql3 += " AND q.planilla_id is null";
     } 
     
@@ -705,7 +711,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
         where\
             (\
                b.estado_pedido in (\
-                    '2', '3', '8', '9'\
+                    '2', '3', '8', '9','4','5'\
                 ) "+sql3+"\
                 and a.prefijo || '-' || a.numero NOT IN(\
                     select\

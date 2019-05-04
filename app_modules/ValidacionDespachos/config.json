@@ -18,9 +18,26 @@
                     "module": "PedidosFarmacias",
                     "model": "PedidosFarmaciasModel",
                     "alias": "m_pedidos_farmacias"
+                },
+                "terceros_model": {
+                    "module": "Terceros/OperariosBodega",
+                    "model": "OperariosBodegaModel",
+                    "alias": "m_terceros"
                 }
             }],
-        "events": [],
+        "events": [{
+                "pedidos_clientes_events": {
+                    "module": "PedidosClientes",
+                    "event": "PedidosClientesEvents",
+                    "alias": "e_pedidos_clientes"
+                },
+                "pedidos_farmacias_events": {
+                    "module": "PedidosFarmacias",
+                    "event": "PedidosFarmaciasEvents",
+                    "alias": "e_pedidos_farmacias"
+                        }
+                }
+                ],
         "cronJobs": []
     }
 }

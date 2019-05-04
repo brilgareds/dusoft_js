@@ -79,7 +79,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (isNaN($scope.root.guia)) {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El campo es Numerico");
                             } else {
+                                console.log("$scope.root.guia",$scope.root.guia);
                                 if ($scope.root.guia != 0) {
+                                    
                                     var obj = { numero_guia: $scope.root.guia, modificar : 0};                            
                                     that.documentosPlanillasDetalle(obj);
                                 } else {
@@ -95,9 +97,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             session: $scope.session,
                             planilla_id: obj.numero_guia,
                             termino_busqueda: "",
-//                            tercero : {tercero_id: $scope.root.cliente.tercero_id , tipo_id_tercero : $scope.root.cliente.tipo_id_tercero} 
                             tercero : {tercero_id: obj.tercero_id , tipo_id_tercero : obj.tipo_id_tercero},
-                            modificar : obj.modificar 
+                            modificar : obj.modificar ,
+                            registro_salida_bodega_id : $scope.root.registro_salida_bodega_id
                         };
 
                         ValidacionDespachosService.documentosPlanillasDetalle(obj, function (data) {

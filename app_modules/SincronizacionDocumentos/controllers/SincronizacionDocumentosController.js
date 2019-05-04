@@ -265,7 +265,7 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = function (req, res) {
     G.Q.nfcall(funcion_ws, obj, that).then(function (result) {
 
         param = result;
-        console.log('URL: ', url);
+        
         //console.log('Sincronizar es: ', sincronizar);
 
         if (sincronizar === 1) {

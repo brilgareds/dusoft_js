@@ -126,7 +126,7 @@ Productos.prototype.subeCosto = function(req, res) {
     console.log('Controlador Backend!!!');
 
     if(parametros.reimprimir != undefined && parametros.ajuste_precio_id != undefined){
-        console.log('parametros en reimprimir son: ',parametros);
+   
         var datos = {
             cabecera: '',
             impuestos: '',

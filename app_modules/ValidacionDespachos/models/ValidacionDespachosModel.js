@@ -288,7 +288,6 @@ ValidacionDespachosModel.prototype.modificarEstadoPedido = function (documento, 
     } else {
         callback(false, true);
     }
-console.log("modificarEstadoPedido",G.sqlformatter.format(query.toString())); 
     if (transaccion)
         query.transacting(transaccion);
     query.then(function (resultado) {
@@ -691,8 +690,7 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj ,callbac
                     }
                 }).orderBy("a.fecha_registro","desc")
                   .limit(G.settings.limit).
-                   offset((obj.pagina - 1) * G.settings.limit);    
-       console.log(G.sqlformatter.format(query.toString())); 
+                   offset((obj.pagina - 1) * G.settings.limit); 
 
     query.then(function(resultado){
      

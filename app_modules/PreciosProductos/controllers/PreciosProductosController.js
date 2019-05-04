@@ -105,7 +105,7 @@ Precios_productos.prototype.eliminarGrupoFactura = function (req, res) {
     var that = this;
     var args = req.body.data;
     var parametros = args;
-    console.log(parametros);
+
     G.Q.ninvoke(that.m_precios_productos, "eliminarGrupoFactura", parametros).then(function (resultado) {
 
         return G.Q.ninvoke(that.m_precios_productos, "modificarEntregado", {sw_entregado: 0, factura_id: parametros.factura_id});

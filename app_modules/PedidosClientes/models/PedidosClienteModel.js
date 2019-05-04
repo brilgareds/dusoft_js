@@ -1441,7 +1441,6 @@ PedidosClienteModel.prototype.actualizarEstadoActualPedidoCliente = function (ob
             where("pedido_cliente_id", obj.numero_pedido).
             update({estado_pedido: obj.estado_pedido, estado: obj.estadoEntrega});
     
-console.log(G.sqlformatter.format(query.toString())); 
 
 if (obj.transaccion)
         query.transacting(obj.transaccion);
@@ -3661,7 +3660,6 @@ function __insertar_encabezado_pedido_cliente_duplicado(numero_pedido, tipo_id_t
                 ) returning pedido_cliente_id as numero_pedido ";
 //                                    pedido_multiple_farmacia
     var query = G.knex.raw(sql, {1: numero_pedido});
-    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

@@ -3,7 +3,7 @@ var SincronizacionDocumentosModel = function () {
 };
 
 SincronizacionDocumentosModel.prototype.listarPrefijos = function (obj, callback) {
-    console.log('entro en el modelo!', obj);
+    
     var data = {prefijos: '', prefijosFiltrados: ''};
 
     var query = G.knex
@@ -289,7 +289,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
     if(obj.tipoLogsWs !== undefined){
         if(obj.tipoLogsWs === 'Clientes'){
 
-            console.log('Function Logs of "Clients"');
+           
             query = G.knex('logs_facturacion_clientes_ws_fi')
                 .insert({
                     prefijo: obj.prefijo,
@@ -302,7 +302,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
                 });
         }else if(obj.tipoLogsWs === 'Proveedores'){
 
-            console.log('En funcion Proveedores');
+          
             query = G.knex('logs_facturacion_proveedores_ws_fi')
                 .insert({
                     codigo_proveedor_id: obj.proveedor_id,
@@ -314,7 +314,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
                 });
         }else if(obj.tipoLogsWs === 'Bonificaciones'){
 
-            console.log('En funcion Bonificaciones');
+         
             query = G.knex('logs_bonificaciones_ws_fi')
                 .insert({
                     prefijo: obj.prefijo,
@@ -325,7 +325,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
                 });
         }else if(obj.tipoLogsWs === 'Recibos'){
 
-            console.log('En funcion Recibos');
+          
             query = G.knex('logs_recibos_ws_fi')
                 .insert({
                     prefijo: obj.prefijo,
@@ -335,7 +335,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
                     estado: obj.estado
                 });
         }else{
-            console.log('El tipo de Logs "'+obj.tipoLogsWs+'" no existe!!');
+           
             callback('El tipo de Logs "'+obj.tipoLogsWs+'" no existe!!');
         }
     }else{
@@ -352,7 +352,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
 };
 
 SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function (obj, callback) {
-    console.log('In Model "obtenerEncabezadoBonificacion": ', obj);
+    
     var response = {};
 
     var query = G.knex.column(
@@ -527,7 +527,7 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function (o
 };
 
 SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function (obj, callback) {
-    console.log('In model "listarDetalleRCWSFI"');
+    
     var credito = parseFloat('0');
     var debito = parseFloat('0');
     var response = {};
@@ -769,7 +769,7 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function (obj, callback
 };
 
 SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function (obj, callback) {
-    console.log('entro en el modelo de "listarTiposCuentasCategorias"!');
+
 
     var query = G.knex.select(['categoria_id as id', 'categoria_descripcion as descripcion'])
         .from('tipos_cuentas_categorias');

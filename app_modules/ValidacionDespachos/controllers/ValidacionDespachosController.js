@@ -530,9 +530,7 @@ ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
     var registro_salida_bodega_id = "";
     if(args.numeroGuia === ""){
        args.numeroGuia = '100'; 
-       console.log("**args.numeroGuia",args.numeroGuia)
     }
-    console.log("args.numeroGuia",args.numeroGuia)
     var obj = {
         "prefijo": args.prefijo,
         "numero": args.numero,
@@ -630,29 +628,29 @@ function __registroSalidaDetalle(obj, index, callback) {
     detalle.registro_salida_bodega_id = obj.registro_salida_bodega_id;
 
     G.Q.ninvoke(obj.that.m_ValidacionDespachos, 'registroSalidaDetalle', detalle).then(function (resultado) {
-console.log("detalle.tipo->>>>>",detalle.tipo);
+
         if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
-            console.log("00<<<<<<<<<<<->>>>>",detalle.tipo);
+   
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'consultarEstadoActualPedidoFarmacia', detalle);
         } else if (detalle.tipo === '1') {
-            console.log("11<<<<<<<<<<<->>>>>",detalle.tipo);
+
             return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'consultarEstadoActualPedidoCliente', detalle);
         } else {
-            console.log("22<<<<<<<<<<<->>>>>return");
+
             return true;
         }
 
     }).then(function (resultado) {
         if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
-            console.log("##########**********<<<<<<<<<<<->>>>>",resultado[0].estado);
+  
             if (resultado[0].estado === '3') {
-                console.log("**********<<<<<<<<<<<->>>>>",resultado[0].estado);
+
                 detalle.sw_estado = 4;
             } else if (resultado[0].estado === '9') {
-                console.log("**********<<<<<<<<<<<->>>>>",resultado[0].estado);
+
                 detalle.sw_estado = 5;
             }else{
-                console.log("**********<<<<<<<<<<<->>>>>return");
+ 
                 return true;
             }
             detalle.sw_despacho = 1;

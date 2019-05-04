@@ -246,7 +246,6 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
     });
     query.orderBy('a.fecha_registro', 'desc');
     
-    console.log("*-*-*-**",G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -730,7 +729,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
     var sql3 =   sql+" union "+sql2;
     
     var query = G.knex.raw(sql3, {1: planilla_id, 2: '%' + termino_busqueda + '%', 3: obj.tercero_id , 4: obj.tipo_id_tercero});
-    console.log(G.sqlformatter.format(query.toString())); 
+ 
     query.then(function (resultado) {
         callback(false, resultado.rows);
     }).catch(function (err) {

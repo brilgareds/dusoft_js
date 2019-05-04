@@ -1275,7 +1275,7 @@ PedidosFarmaciasModel.prototype.insertarResponsablesPedidos = function (obj, cal
     var query = G.knex("solicitud_productos_a_bodega_principal_estado").
             returning("solicitud_prod_a_bod_ppal_est_id").
             insert({solicitud_prod_a_bod_ppal_id: obj.numero_pedido, estado: obj.estado, responsable_id: obj.responsable, fecha: 'now()', usuario_id: obj.usuario});
- console.log(G.sqlformatter.format(query.toString())); 
+
     if (obj.transaccion)
         query.transacting(obj.transaccion);
 
@@ -1335,7 +1335,7 @@ PedidosFarmaciasModel.prototype.actualizarEstadoActualPedidoFarmacia = function 
     var query = G.knex("solicitud_productos_a_bodega_principal").
             where("solicitud_prod_a_bod_ppal_id", obj.numero_pedido).
             update({estado: obj.sw_estado,sw_despacho: obj.sw_despacho});
-    console.log(G.sqlformatter.format(query.toString())); 
+  
     if (obj.transaccion)
         query.transacting(obj.transaccion);
     query.then(function (resultado) {

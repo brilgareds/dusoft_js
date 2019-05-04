@@ -833,7 +833,6 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
             
     query.limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit);
-    console.log("ppp",G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){    

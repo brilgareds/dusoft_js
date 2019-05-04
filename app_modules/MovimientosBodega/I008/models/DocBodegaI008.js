@@ -413,10 +413,6 @@ DocumentoBodegaI008.prototype.updateEstadoMovimientoDespachoFarmacia = function 
             .update("'" + parametros.modificacion + "'", parametros.sw_estado);
     //.update(G.knex.raw(parametros.modificacion + " SET " + parametros.sw_estado));
 
-    console.log("Query resultado", G.sqlformatter.format(
-            query.toString()));
-
-
     if (transaccion)
         query.transacting(transaccion);
 

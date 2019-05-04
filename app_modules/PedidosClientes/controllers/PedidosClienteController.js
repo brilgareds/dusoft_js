@@ -1559,23 +1559,13 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
         return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "generar_pedido_cliente", cotizacion);
 
     }).then(function (resultado) {
-//        console.log("parametros.bodegaActual",parametros.bodegaActual);
-//        console.log("cabecera.bodega",cabecera.bodega);
         if (parametros.bodegaActual !== cabecera.bodega) {//validar
-//            console.log("111111111");
             idsPedidos.numeroCotizacionDestino = parametros.numeroPedido;
             idsPedidos.numeroPedidoDestino = resultado.numero_pedido;
         } else {
-//            console.log("22222222");
             idsPedidos.numeroCotizacionOrigen = cabecera.numero_cotizacion;
             idsPedidos.numeroPedidoOrigen = resultado.numero_pedido;
         }
-        // var obj = {cotizacion: cabecera.numero_cotizacion, numero_pedido : resultado.numero_pedido};
-
-        //   return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"actualizarPedidoMultipleCliente",obj);
-
-        //  }).then(function (resultado) {
-
         __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedidos, callback);
 
     }).fail(function (err) {
@@ -1583,12 +1573,6 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
         callback(err);
 
     }).done();
-
-//    }else{ 
-//        
-//     __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
-//    
-//    }
 }
 
 

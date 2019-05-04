@@ -602,7 +602,6 @@ I008Controller.prototype.crearHtmlDocumento = function (req, res) {
     }).then(function (resultado) {
 
         var bodega_origen = resultado[0];
-        console.log("bodega_origen",bodega_origen);
         var fecha = new Date();
         var formatoFecha = fecha.toFormat('DD-MM-YYYY');
         var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
@@ -639,7 +638,6 @@ I008Controller.prototype.crearHtmlDocumento = function (req, res) {
  * ==================================================================================================================================================================*/
 
 function __generarPdf(datos, callback) {
-    console.log("__generarPdf");
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/' + datos.archivoHtml, 'utf8'),

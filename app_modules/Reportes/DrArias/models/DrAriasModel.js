@@ -585,7 +585,7 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
                 order by 1,3 ;";
     
      var query = G.knex.raw(sql);
-     console.log(G.sqlformatter.format(query.toString())); 
+
     query.then(function(resultado) {
         G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);

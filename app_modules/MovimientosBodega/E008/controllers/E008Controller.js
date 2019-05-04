@@ -3015,27 +3015,27 @@ function __validarCajaProducto(req, that, callback) {
                         usuario_id: usuario_id,
                         tipo: tipo,
                         tipoPedido: tipoPedido,
-                        sede: args.documento_temporal.nombre_sede?args.documento_temporal.nombre_sede:''
+                        sede: args.documento_temporal.nombre_sede ? args.documento_temporal.nombre_sede : ''
                     };
 
 
                     that.m_e008.generar_rotulo_caja(parametros, function (err, rotulo_caja) {
-                                if (err) {
+                        if (err) {
 //                                    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                    send.msj = 'Se ha generado un error interno';
-                                    send.status = 500;
-                                    send.respuesta = {movimientos_bodegas: {}};
-                                    callback(false, send);
-                                    return;
-                                } else {
+                            send.msj = 'Se ha generado un error interno';
+                            send.status = 500;
+                            send.respuesta = {movimientos_bodegas: {}};
+                            callback(false, send);
+                            return;
+                        } else {
 //                                    res.send(G.utils.r(req.url, 'Rotulo generado correctamente', 200, {movimientos_bodegas: {caja_valida: true}}));
-                                    send.msj = 'Rotulo generado correctamente ';
-                                    send.status = 200;
-                                    send.respuesta = {movimientos_bodegas: {caja_valida: true}};
-                                    callback(false, send);
-                                    return;
-                                }
-                            });
+                            send.msj = 'Rotulo generado correctamente ';
+                            send.status = 200;
+                            send.respuesta = {movimientos_bodegas: {caja_valida: true}};
+                            callback(false, send);
+                            return;
+                        }
+                    });
                 }
             }
         });

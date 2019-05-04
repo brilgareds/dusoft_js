@@ -1,3 +1,5 @@
+/* global G */
+
 var DocumentoBodegaE008 = function(movientos_bodegas, m_pedidos_clientes, m_pedidos_farmacias) {
 
     this.m_movimientos_bodegas = movientos_bodegas;
@@ -1569,6 +1571,7 @@ var sql1 =" a.*,\
                 a.numero,\
                 b.razon_social,\
                 a.empresa_id,\
+                a.bodega,\
                 to_char(a.fecha_registro, 'DD Mon YYYY')as fecha_registro,\
                 a.empresa_destino,\
                (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \

@@ -83,7 +83,7 @@
                                     <div class="col-md-7">
                                         <div class="input-group">
                                             <input type="text" 
-                                                   ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"
+                                                   ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0 || !datos_view.seleccionarOtros"
                                                    class="form-control"  
                                                    ng-model="documentoDespachoAprobado.numero" 
                                                    placeholder="Numero" 

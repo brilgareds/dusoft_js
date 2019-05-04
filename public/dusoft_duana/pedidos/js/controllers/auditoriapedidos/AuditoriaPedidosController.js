@@ -681,7 +681,9 @@ define(["angular", "js/controllers",
                                     localStorageService.set("DocumentoDespachoImprimir",detallado);
                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                                    
+                                  if(empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() !=='03'){
                                    that.sincronizarDocumento(documento, $scope.documento_generado);
+                               }
                             }
 
                         });

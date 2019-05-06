@@ -114,15 +114,17 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
         "a.numero",
         "a.solicitud_prod_a_bod_ppal_id as numero_pedido",
         "a.fecha_registro",
-        G.knex.raw("(SELECT id_aprobacion_planillas FROM aprobacion_despacho_planillas_d as bb WHERE bb.prefijo = a.prefijo AND bb.numero = a.numero and (bb.cantidad_cajas > 0 or bb.cantidad_neveras > 0) ) as id_aprobacion_planillas"),
         G.knex.raw("'0' as estado_documento")
     ];
 
     if (obj.estadoListarValidacionDespachos !== 1) {
         columnas.push("h.cantidad_cajas");
         columnas.push("h.cantidad_neveras");
+        columnas.push("h.id_aprobacion_planillas");
+    } else {
+        columnas.push(G.knex.raw("(SELECT id_aprobacion_planillas FROM aprobacion_despacho_planillas_d as bb WHERE bb.prefijo = a.prefijo AND bb.numero = a.numero and (bb.cantidad_cajas > 0 or bb.cantidad_neveras > 0) ) as id_aprobacion_planillas"));
     }
-
+        
 
     var query = G.knex.select(columnas)
             .from("inv_bodegas_movimiento_despachos_farmacias as a")
@@ -147,8 +149,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                     .on("h.numero", "a.numero");
         });
     } else {
-        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero, f.cantidad_cajas, f.cantidad_neveras FROM aprobacion_despacho_planillas_d f\
-                                           UNION SELECT g.prefijo, g.numero, g.cantidad_cajas, g.cantidad_neveras FROM aprobacion_despacho_planillas g) as h"), function () {
+        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero, f.cantidad_cajas, f.cantidad_neveras, f.id_aprobacion_planillas FROM aprobacion_despacho_planillas_d f\
+                                           UNION SELECT g.prefijo, g.numero, g.cantidad_cajas, g.cantidad_neveras, g.id_aprobacion_planillas FROM aprobacion_despacho_planillas g) as h"), function () {
 
             this.on("h.prefijo", "a.prefijo")
                     .on("h.numero", "a.numero");
